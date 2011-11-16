@@ -86,14 +86,24 @@ class PrettyFormatter(object):
     def match(self, match):
         self._match = match
         self.print_statement()
-        self.print_step('executing', self._match.arguments,
+        # self.print_step('executing', self._match.arguments,
+        #                self._match.location, False)
+        self.print_step('executing', [],
                         self._match.location, False)
         self.stream.flush()
 
     def result(self, result):
         self.stream.write(up(1))
-        self.print_step(result.status, self._match.arguments,
-                        self._match.location, True)
+        arguments = []
+        location = None
+        if self._match:
+            arguments = self._match.arguments
+            location = self._match.location
+        self.print_step(result.status, arguments, location, True)
+        if result.error_message:
+            self.stream.write(self.indent(result.error_message.strip(),
+                                          '      '))
+            self.stream.write('\n')
         self.stream.flush()
 
     def arg_format(self, key):
@@ -179,10 +189,9 @@ class PrettyFormatter(object):
                                  escapes['reset'])
 
     def calculate_location_indentations(self):
-        lines = [self.statement] + self.steps
         line_widths = []
-        for s in lines:
-            string = s.keyword + s.name
+        for s in self.steps:
+            string = s.keyword + ' '+ s.name
             if type(string) is str:
                 string = string.decode('utf8')
             line_widths.append(len(string))
@@ -236,7 +245,7 @@ class PrettyFormatter(object):
         if not tags:
             return
 
-        self.stream.write(indent + ' '.join(['@' + tag for tag in tags]) + '\n')
+        self.stream.write(indent + ' '.join(tags) + '\n')
 
     def print_comments(self, comments, indent):
         if not comments:

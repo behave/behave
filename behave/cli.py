@@ -1,11 +1,15 @@
+import collections
 import os
 import os.path
 import sys
+import time
+import traceback
 
 import yaml
 
-from behave import parser
+from behave import model, parser, runner
 from behave.configuration import Configuration
+from behave.formatter.ansi_escapes import escapes
 from behave.formatter.pretty_formatter import PrettyFormatter
 
 TAG_HELP = """
@@ -50,14 +54,14 @@ class Language(object):
         if language_name not in languages:
             return None
         return cls(languages[language_name], languages[default_language_name])
-    
+
     def __init__(self, mappings, default_mappings=None):
         self.mappings = mappings
         self.default_mappings = default_mappings
-    
+
     def words(self, key):
         """
-        Give all the synonymns of a word in the requested language 
+        Give all the synonymns of a word in the requested language
         (or the default language if no word is available).
         """
         if self.default_mappings is not None and key not in self.mappings:
@@ -80,32 +84,149 @@ def feature_files(paths):
         else:
             raise Exception("Can't find path: " + path)
     return files
-    
+
 def main():
     config = Configuration()
-        
-    if config.tags and config.tags[0] == 'help':
+
+    if config.tags and config.tags == 'help':
         print TAG_HELP
         sys.exit(0)
-    
+
     if not config.paths:
         config.paths = ['features']
-    
+
+    passed = []
+    failed = []
+    undefined = []
+    skipped = []
+
+    stream = sys.stdout
+
+    start = os.path.abspath(config.paths[0])
+    if not os.path.isdir(start):
+        start = os.path.dirname(start)
+    while not os.path.isdir(os.path.join(start, 'step_definitions')):
+        start = os.path.dirname(start)
+        if start == os.getcwd():
+            start = None
+            break
+
+    if start:
+        step_defs_dir = os.path.join(start, 'step_definitions')
+        sys.path.insert(0, step_defs_dir)
+        for name in os.listdir(step_defs_dir):
+            if name.endswith('.py'):
+                __import__(name[:-3])
+            elif os.path.isdir(os.path.join(step_defs_dir, name)):
+                dirname = os.path.join(step_defs_dir, name)
+                if os.path.exists(os.path.join(dirname, '__init__.py')):
+                    __import__(name)
+
+    context = runner.Context()
+    features = []
+
     for filename in feature_files(config.paths):
+        context.reset_feature()
+
         feature = parser.parse_file(os.path.abspath(filename), Language.load('en'))
-        formatter = PrettyFormatter(sys.stdout, False, False)
+        features.append(feature)
+
+        feature_match = config.tags.check(feature.tags)
+
+        formatter = PrettyFormatter(stream, False, False)
         formatter.uri(filename)
         formatter.feature(feature)
         if feature.has_background():
             formatter.background(feature.background)
-        for s in feature.iter_scenarios():
-            if isinstance(s, parser.Scenario):
-                formatter.scenario(s)
-            else:
-                formater.scenario_outline(s)
-            for scenario in s.iterate():
-                for step in scenario.iter_steps():
-                    formatter.step(step)
+
+        for scenario in feature:
+            run_steps = feature_match or config.tags.check(scenario.tags)
+
+            formatter.scenario(scenario)
+
+            context.reset_scenario()
+
+            for step in scenario:
+                formatter.step(step)
+                
+            for step in scenario:
+                if run_steps:
+                    match = runner.steps.find_match(step)
+                    if match is None:
+                        undefined.append(step)
+                        formatter.match(model.NoMatch())
+                        result = model.Result('undefined', 0, None)
+                        formatter.result(result)
+                        run_steps = False
+                    else:
+                        formatter.match(match)
+                        try:
+                            start = time.time()
+                            match.run(context)
+                            elapsed = time.time() - start
+                            step.status = 'passed'
+                            step.duration = elapsed
+                        except:
+                            elapsed = time.time() - start
+                            error = traceback.format_exc()
+                            step.status = 'failed'
+                            step.duration = elapsed
+                            step.error_message = error
+                            run_steps = False
+
+                        formatter.result(step)
+                else:
+                    step.status = 'skipped'
+                    if scenario.status is None:
+                        scenario.status = 'skipped'
+
         formatter.eof()
-                    
+
         print ''
+
+    feature_summary = {'passed': 0, 'failed': 0, 'skipped': 0}
+    scenario_summary = {'passed': 0, 'failed': 0, 'skipped': 0}
+    step_summary = {'passed': 0, 'failed': 0, 'skipped': 0}
+    duration = 0.0
+    
+    for feature in features:
+        feature_summary[feature.status] += 1
+        for scenario in feature:
+            scenario_summary[scenario.status] += 1
+            for step in scenario:
+                step_summary[step.status] += 1
+                duration += step.duration
+    
+    summary = '{passed:d} {name:s} passed, {failed:d} failed, {skipped:d} skipped'
+    if feature_summary['passed'] == 1:
+        feature_summary['name'] = 'feature'
+    else:
+        feature_summary['name'] = 'features'
+    print summary.format(**feature_summary)
+    if scenario_summary['passed'] == 1:
+        scenario_summary['name'] = 'scenario'
+    else:
+        scenario_summary['name'] = 'scenarios'
+    print summary.format(**scenario_summary)
+    if step_summary['passed'] == 1:
+        step_summary['name'] = 'step'
+    else:
+        step_summary['name'] = 'steps'
+    print summary.format(**step_summary)
+
+    if undefined:
+        msg =  "You can implement step definitions for undefined steps with "
+        msg += "these snippets:\n\n"
+        printed = set()
+        for step in undefined:
+            if step in printed:
+                continue
+            printed.add(step)
+
+            func_name = step.name.lower().replace(' ', '_')
+            msg += "@" + step.keyword + "('" + step.name + "')\n"
+            msg += "def " + func_name + "(context):\n"
+            msg += "    assert False\n\n"
+
+        stream.write(escapes['undefined'] + msg + escapes['reset'])
+        stream.flush()

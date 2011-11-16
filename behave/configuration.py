@@ -1,6 +1,8 @@
 import argparse
 import sys
 
+from behave.tag_expression import TagExpression
+
 parser = argparse.ArgumentParser(usage="%(prog)s [options] [ [FILE|DIR|URL][:LINE[:LINE]*] ]+")
 
 parser.add_argument('-b', '--backtrace', action='store_true',
@@ -67,4 +69,8 @@ class Configuration(object):
             if key.startswith('_'):
                 continue
             setattr(self, key, value)
-            
+        
+        if self.tags and 'help' in self.tags:
+            self.tags = 'help'
+        else:
+            self.tags = TagExpression(self.tags or [])

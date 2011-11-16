@@ -8,159 +8,13 @@ __unittest = 1
 
 from pyparsing import *
 import copy
-import logging
 import os
 import re
 import textwrap
 
-try:
-    from os.path import relpath
-except Exception, e:
-    from freshen.compat import relpath
+from os.path import relpath
 
-log = logging.getLogger('freshen')
-
-class Feature(object):
-
-    def __init__(self, use_step_defs, tags, keyword, name, description,
-                 background, scenarios):
-        self.use_step_defs = use_step_defs
-        self.tags = tags
-        self.keyword = keyword
-        self.name = name
-        self.description = '\n'.join(description)
-        self.scenarios = scenarios
-        self.background = None
-
-        if background != []:
-            self.background = background[0]
-
-        for sc in scenarios:
-            sc.feature = self
-            sc.background = self.background
-
-    def __repr__(self):
-        return '<Feature "%s": %d scenario(s)>' % (self.name, len(self.scenarios))
-
-    def has_background(self):
-        return self.background is not None
-
-    def iter_scenarios(self):
-        for sco in self.scenarios:
-            yield sco
-
-
-class Background(object):
-
-    def __init__(self, keyword, name, steps):
-        self.keyword = keyword
-        self.name = name
-        self.steps = steps
-
-    def __repr__(self):
-        return '<Background "%s">' % self.name
-
-    def iter_steps(self):
-        for step in self.steps:
-            yield step
-
-class Scenario(object):
-
-    def __init__(self, tags, keyword, name, steps):
-        self.tags = tags
-        self.keyword = keyword
-        self.name = name
-        self.steps = steps
-        self.background = None
-
-    def __repr__(self):
-        return '<Scenario "%s">' % self.name
-
-    def get_tags(self):
-        return self.tags + self.feature.tags
-
-    def iterate(self):
-        yield self
-
-    def iter_steps(self):
-        if self.background is not None:
-            for step in self.background.iter_steps():
-                yield step
-
-        for step in self.steps:
-            yield step
-
-
-class ScenarioOutline(Scenario):
-
-    def __init__(self, tags, keyword, name, steps, examples):
-        self.examples = examples
-        super(ScenarioOutline, self).__init__(tags, keyword, name, steps)
-
-    def __repr__(self):
-        return '<ScenarioOutline "%s">' % self.name
-
-    def iterate(self):
-        for ex in self.examples:
-            for values in ex.table.iterrows():
-                new_steps = []
-                for step in self.steps:
-                    new_steps.append(step.set_values(values))
-                sc = Scenario(self.tags, self.name, new_steps)
-                sc.feature = self.feature
-                sc.background = self.background
-                yield sc
-
-
-class Step(object):
-
-    def __init__(self, step_type, name, arg=None):
-        self.keyword, self.step_type = step_type
-        self.name = name
-        if isinstance(arg, Table):
-            self.table = arg
-            self.string = None
-        else:
-            self.table = None
-            self.string = arg
-
-    def __repr__(self):
-        return '<%s "%s">' % (self.step_type, self.name)
-
-    def source_location(self, absolute=True):
-        p = relpath(self.src_file, os.getcwd()) if absolute else self.src_file
-        return '%s:%d' % (p, self.src_line)
-
-    def set_values(self, value_dict):
-        result = copy.deepcopy(self)
-        for name, value in value_dict.iteritems():
-            result.match = result.match.replace("<%s>" % name, value)
-        return result
-
-
-class Examples(object):
-
-    def __init__(self, keyword, name, table):
-        self.keyword = keyword
-        self.name = name
-        self.table = table
-
-
-class Table(object):
-
-    def __init__(self, headings, rows):
-        assert [len(r) == len(headings) for r in rows], "Malformed table"
-
-        self.headings = headings
-        self.rows = rows
-
-    def __repr__(self):
-        return "<Table: %dx%d>" % (len(self.headings), len(self.rows))
-
-    def iterrows(self):
-        for row in self.rows:
-            yield dict(zip(self.headings, row))
-
+from behave import model
 
 def grammar(fname, l, convert=True, base_line=0):
     # l = language
@@ -209,7 +63,7 @@ def grammar(fname, l, convert=True, base_line=0):
         return textwrap.dedent(s[0])
 
     def process_tag(s):
-        return s[0].strip("@")
+        return s[0]
 
     def or_words(words, kind, suffix='', parse_acts=None):
         elements = []
@@ -223,10 +77,6 @@ def grammar(fname, l, convert=True, base_line=0):
 
     empty_not_n    = empty.copy().setWhitespaceChars(" \t")
     tags           = OneOrMore(Word("@", alphanums + "_").setParseAction(process_tag))
-
-    step_file      = quotedString.setParseAction( removeQuotes )
-    list_of_step_files = step_file + ZeroOrMore(Suppress(',') + step_file)
-    use_step_defs  = or_words(['use_step_defs'], Suppress, ':') + list_of_step_files
 
     following_text = empty_not_n + restOfLine + Suppress(lineEnd)
     section_header = lambda name: Literal(name) + Suppress(":") + following_text
@@ -260,8 +110,7 @@ def grammar(fname, l, convert=True, base_line=0):
     scenario       = Group(Optional(tags)) + or_words(['scenario'], section_header) + steps
     scenario_outline = Group(Optional(tags)) + or_words(['scenario_outline'], section_header) + steps + Group(OneOrMore(example))
 
-    feature        = (Group(Optional(use_step_defs)) +
-                      Group(Optional(tags)) +
+    feature        = (Group(Optional(tags)) +
                       or_words(['feature'], section_header) +
                       descr_block +
                       Group(Optional(background)) +
@@ -272,13 +121,13 @@ def grammar(fname, l, convert=True, base_line=0):
     steps.ignore(pythonStyleComment)
 
     if convert:
-        table.setParseAction(create_object(Table))
-        step.setParseAction(create_object(Step))
-        background.setParseAction(create_object(Background))
-        scenario.setParseAction(create_object(Scenario))
-        scenario_outline.setParseAction(create_object(ScenarioOutline))
-        example.setParseAction(create_object(Examples))
-        feature.setParseAction(create_object(Feature))
+        table.setParseAction(create_object(model.Table))
+        step.setParseAction(create_object(model.Step))
+        background.setParseAction(create_object(model.Background))
+        scenario.setParseAction(create_object(model.Scenario))
+        scenario_outline.setParseAction(create_object(model.ScenarioOutline))
+        example.setParseAction(create_object(model.Examples))
+        feature.setParseAction(create_object(model.Feature))
 
     return feature, steps
 
