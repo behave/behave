@@ -105,14 +105,14 @@ def main():
     start = os.path.abspath(config.paths[0])
     if not os.path.isdir(start):
         start = os.path.dirname(start)
-    while not os.path.isdir(os.path.join(start, 'step_definitions')):
+    while not os.path.isdir(os.path.join(start, 'steps')):
         start = os.path.dirname(start)
         if start == os.getcwd():
             start = None
             break
 
     if start:
-        step_defs_dir = os.path.join(start, 'step_definitions')
+        step_defs_dir = os.path.join(start, 'steps')
         sys.path.insert(0, step_defs_dir)
         for name in os.listdir(step_defs_dir):
             if name.endswith('.py'):
