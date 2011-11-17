@@ -128,7 +128,7 @@ def main():
 
         hooks_path = os.path.join(base_dir, 'hooks.py')
         if os.path.exists(hooks_path):
-            execfile(hooks_path, {}, hooks)
+            execfile(hooks_path, hooks)
 
     def run_hook(name, *args):
         if name in hooks:
