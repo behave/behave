@@ -39,7 +39,7 @@ class StepRegistry(object):
             if not m:
                 continue
                 
-            groupindex = dict((y, x) for x, y in regex.groupindex)
+            groupindex = dict((y, x) for x, y in regex.groupindex.items())
             args = []
             for index, group in enumerate(m.groups()):
                 index += 1
