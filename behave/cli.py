@@ -7,7 +7,7 @@ import traceback
 
 import yaml
 
-from behave import model, parser, runner
+from behave import decorators, model, parser, runner
 from behave.configuration import Configuration
 from behave.formatter.ansi_escapes import escapes
 from behave.formatter.pretty_formatter import PrettyFormatter
@@ -102,25 +102,27 @@ def main():
 
     stream = sys.stdout
 
-    start = os.path.abspath(config.paths[0])
-    if not os.path.isdir(start):
-        start = os.path.dirname(start)
-    while not os.path.isdir(os.path.join(start, 'steps')):
-        start = os.path.dirname(start)
-        if start == os.getcwd():
-            start = None
+    base_dir = os.path.abspath(config.paths[0])
+    if not os.path.isdir(base_dir):
+        base_dir = os.path.dirname(base_dir)
+    while not os.path.isdir(os.path.join(base_dir, 'steps')):
+        base_dir = os.path.dirname(base_dir)
+        if base_dir == os.getcwd():
+            base_dir = None
             break
 
-    if start:
-        step_defs_dir = os.path.join(start, 'steps')
-        sys.path.insert(0, step_defs_dir)
-        for name in os.listdir(step_defs_dir):
+    if base_dir:
+        sys.path.insert(0, base_dir)
+        
+        steps_dir = os.path.join(base_dir, 'steps')
+        for name in os.listdir(steps_dir):
+            step_globals = {
+                'Given': decorators.Given,
+                'When': decorators.When,
+                'Then': decorators.Then,
+            }
             if name.endswith('.py'):
-                __import__(name[:-3])
-            elif os.path.isdir(os.path.join(step_defs_dir, name)):
-                dirname = os.path.join(step_defs_dir, name)
-                if os.path.exists(os.path.join(dirname, '__init__.py')):
-                    __import__(name)
+                execfile(os.path.join(steps_dir, name), step_globals)
 
     context = runner.Context()
     features = []
