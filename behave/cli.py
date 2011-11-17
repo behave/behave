@@ -222,7 +222,7 @@ def main():
     stream.write(format_summary('step', step_summary))
         
     if undefined:
-        msg =  "You can implement step definitions for undefined steps with "
+        msg =  "\nYou can implement step definitions for undefined steps with "
         msg += "these snippets:\n\n"
         printed = set()
         for step in undefined:
