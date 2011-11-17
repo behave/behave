@@ -201,8 +201,7 @@ class PrettyFormatter(object):
             indentation = self.indentations[0]
 
         indentation = ' ' * indentation
-        return '%s %s# %s%s' % (indentation, escapes['comments'], location,
-                                escapes['reset'])
+        return '%s # %s' % (indentation, location)
 
     def calculate_location_indentations(self):
         line_widths = []
@@ -245,11 +244,11 @@ class PrettyFormatter(object):
         #self.print_comments(step.comments, '    ')
         self.stream.write('    ')
         self.stream.write(text_format.text(step.keyword + ' '))
+        line_length = 5 + len(step.keyword)
 
         step_name = unicode(step.name)
 
         text_start = 0
-        line_length = 0
         for arg in arguments:
             if arg.offset != 0:
                 text = step_name[text_start:arg.offset].encode('utf8')
@@ -265,10 +264,10 @@ class PrettyFormatter(object):
             line_length += (len(text))
 
         location = self.indented_location(location, proceed)
-        self.stream.write(location + "\n")
+        self.stream.write(self.format('comments').text(location) + "\n")
         line_length += len(location)
 
-        self.statement_lines = int(line_length / self.display_width)
+        self.statement_lines = int((line_length - 1) / self.display_width)
 
         if step.string:
             self.doc_string(step.string)
