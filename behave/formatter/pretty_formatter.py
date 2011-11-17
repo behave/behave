@@ -119,7 +119,7 @@ class PrettyFormatter(object):
         if result.error_message:
             self.stream.write(self.indent(result.error_message.strip(),
                                           '      '))
-            self.stream.write('\n')
+            self.stream.write('\n\n')
         self.stream.flush()
 
     def arg_format(self, key):

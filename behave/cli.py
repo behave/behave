@@ -1,6 +1,7 @@
 import collections
 import os
 import os.path
+import StringIO
 import sys
 import time
 import traceback
@@ -180,6 +181,8 @@ def main():
                     else:
                         formatter.match(match)
                         run_hook('before_step', context, step)
+                        old_stdout = sys.stdout
+                        sys.stdout = StringIO.StringIO()
                         try:
                             start = time.time()
                             match.run(context)
@@ -189,11 +192,15 @@ def main():
                         except:
                             elapsed = time.time() - start
                             error = traceback.format_exc()
+                            output = sys.stdout.getvalue()
+                            if output:
+                                error += '\nCaptured stdout:\n' + output
                             step.status = 'failed'
                             step.duration = elapsed
                             step.error_message = error
                             run_steps = False
 
+                        sys.stdout = old_stdout
                         formatter.result(step)
                         run_hook('after_step', context, step)
                 else:
