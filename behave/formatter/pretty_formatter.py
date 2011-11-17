@@ -40,6 +40,7 @@ class PrettyFormatter(object):
         self._match = None
         self.statement = None
         self.indentations = []
+        self.statement_lines = 0
 
         self.formats = None
 
@@ -49,7 +50,8 @@ class PrettyFormatter(object):
     def feature(self, feature):
         #self.print_comments(feature.comments, '')
         self.print_tags(feature.tags, '')
-        self.stream.write("%s: %s\n" % (feature.keyword, feature.name))
+        self.stream.write("%s: %s" % (feature.keyword, feature.name))
+        self.stream.write(" %s# %s%s\n" % (escapes['comments'], feature.location, escapes['reset']))
         self.print_description(feature.description, '  ', False)
         self.stream.flush()
 
@@ -93,7 +95,7 @@ class PrettyFormatter(object):
         self.stream.flush()
 
     def result(self, result):
-        self.stream.write(up(1))
+        self.stream.write(up(1 + self.statement_lines))
         arguments = []
         location = None
         if self._match:
@@ -186,11 +188,11 @@ class PrettyFormatter(object):
 
         indentation = ' ' * indentation
         return '%s %s# %s%s' % (indentation, escapes['comments'], location,
-                                 escapes['reset'])
+                                escapes['reset'])
 
     def calculate_location_indentations(self):
         line_widths = []
-        for s in self.steps:
+        for s in [self.statement] + self.steps:
             string = s.keyword + ' '+ s.name
             if type(string) is str:
                 string = string.decode('utf8')
@@ -207,12 +209,9 @@ class PrettyFormatter(object):
         #self.print_comments(self.statement.comments, '  ')
         if hasattr(self.statement, 'tags'):
             self.print_tags(self.statement.tags, '  ')
-        self.stream.write("  %s: %s" % (self.statement.keyword,
-                                        self.statement.name))
-        location = None
-        if self.executing:
-            location = "%s:%d" % (self._uri, self.statement.line)
-        self.stream.write(self.indented_location(location, True) + "\n")
+        self.stream.write("  %s: %s " % (self.statement.keyword,
+                                         self.statement.name))
+        self.stream.write(self.indented_location(self.statement.location, True) + "\n")
         #self.print_description(self.statement.description, '    ')
         self.statement = None
 
@@ -232,9 +231,30 @@ class PrettyFormatter(object):
         #self.print_comments(step.comments, '    ')
         self.stream.write('    ')
         self.stream.write(text_format.text(step.keyword + ' '))
-        self.step_printer.write_step(self.stream, text_format, arg_format,
-                                     step.name, arguments)
-        self.stream.write(self.indented_location(location, proceed) + '\n')
+
+        step_name = unicode(step.name)
+
+        text_start = 0
+        line_length = 0
+        for arg in arguments:
+            if arg.offset != 0:
+                text = step_name[text_start:arg.offset].encode('utf8')
+                self.stream.write(text_format.text(text))
+                line_length += len(text)
+            self.stream.write(arg_format.text(arg.value))
+            line_length += len(arg.value)
+            text_start = arg.offset + len(unicode(arg.value))
+
+        if text_start != len(step_name):
+            text = step_name[text_start:].encode('utf8')
+            self.stream.write(text_format.text(text))
+            line_length += (len(text))
+
+        location = self.indented_location(location, proceed)
+        self.stream.write(location + "\n")
+        line_length += len(location)
+
+        self.statement_lines = int(line_length / 80)
 
         if step.string:
             self.doc_string(step.string)

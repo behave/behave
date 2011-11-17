@@ -24,6 +24,11 @@ class BasicStatement(object):
     def __cmp__(self, other):
         return cmp((self.keyword, self.name), (other.keyword, other.name))
 
+    @property
+    def location(self):
+        p = os.path.relpath(self.src_file, os.getcwd())
+        return '%s:%d' % (p, self.src_line)
+
 class TagStatement(BasicStatement):
     def __init__(self, comments, tags, keyword, name):
         super(TagStatement, self).__init__(comments, keyword, name)
@@ -114,7 +119,7 @@ class Scenario(BasicStatement, Replayable):
             return itertools.chain(self.background, self.steps)
         else:
             return iter(self.steps)
-    
+
     @property
     def status(self):
         status = None
@@ -176,11 +181,6 @@ class Step(BasicStatement, Replayable):
 
     def __repr__(self):
         return '<%s "%s">' % (self.step_type, self.name)
-
-    @property
-    def location(self):
-        p = relpath(self.src_file, os.getcwd())
-        return '%s:%d' % (p, self.src_line)
 
     def set_values(self, value_dict):
         result = copy.deepcopy(self)
