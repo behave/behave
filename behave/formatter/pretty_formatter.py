@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 
 import codecs
+import sys
 
 from behave.formatter.ansi_escapes import escapes, up
 from behave.formatter.step_printer import StepPrinter
@@ -26,6 +27,18 @@ class ColorFormat(object):
             text = text.decode('utf8')
         return escapes[self.status] + text + escapes['reset']
 
+def get_terminal_size():
+    if sys.platform == 'windows':
+        # Autodetecting the size of a Windows command window is left as an
+        # exercise for the reader. Prizes may be awarded for the best answer.
+        return 80
+
+    import fcntl, termios, struct
+    h, w, hp, wp = struct.unpack('HHHH',
+        fcntl.ioctl(0, termios.TIOCGWINSZ,
+        struct.pack('HHHH', 0, 0, 0, 0)))
+    return w, h
+
 class PrettyFormatter(object):
     def __init__(self, stream, monochrome, executing):
         self.stream = utf8writer(stream)
@@ -40,6 +53,7 @@ class PrettyFormatter(object):
         self._match = None
         self.statement = None
         self.indentations = []
+        self.display_width = get_terminal_size()[0]
         self.statement_lines = 0
 
         self.formats = None
@@ -254,7 +268,7 @@ class PrettyFormatter(object):
         self.stream.write(location + "\n")
         line_length += len(location)
 
-        self.statement_lines = int(line_length / 80)
+        self.statement_lines = int(line_length / self.display_width)
 
         if step.string:
             self.doc_string(step.string)
