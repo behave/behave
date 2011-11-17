@@ -11,15 +11,29 @@ class AttrDict(dict):
         
 class Context(object):
     def __init__(self):
-        self.all = AttrDict()
-        self.feature = AttrDict()
-        self.scenario = AttrDict()
+        self._stack = [{}]
     
-    def reset_feature(self):
-        self.feature = AttrDict()
+    def _push(self):
+        self._stack.insert(0, {})
     
-    def reset_scenario(self):
-        self.scenario = AttrDict()
+    def _pop(self):
+        self._stack.pop(0)
+    
+    def __getattr__(self, attr):            
+        for frame in self._stack:
+            if attr in frame:
+                return frame[attr]
+        msg = "'{}' object has no attribute '{}'"
+        msg = msg.format(self.__class__.__name__, attr)
+        raise AttributeError(msg)
+
+    def __setattr__(self, attr, value):
+        if attr == '_stack':
+            self.__dict__['_stack'] = value
+            return
+
+        frame = self.__dict__['_stack'][0]
+        frame[attr] = value
 
 class StepRegistry(object):
     def __init__(self):

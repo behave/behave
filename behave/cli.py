@@ -126,7 +126,7 @@ def main():
     features = []
 
     for filename in feature_files(config.paths):
-        context.reset_feature()
+        context._push()
 
         feature = parser.parse_file(os.path.abspath(filename), Language.load('en'))
         features.append(feature)
@@ -144,7 +144,7 @@ def main():
 
             formatter.scenario(scenario)
 
-            context.reset_scenario()
+            context._push()
 
             for step in scenario:
                 formatter.step(step)
@@ -179,8 +179,11 @@ def main():
                     step.status = 'skipped'
                     if scenario.status is None:
                         scenario.status = 'skipped'
+                
+            context._pop()
 
         formatter.eof()
+        context._pop()
 
         print ''
 
