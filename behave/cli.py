@@ -155,8 +155,8 @@ def main():
                     if match is None:
                         undefined.append(step)
                         formatter.match(model.NoMatch())
-                        result = model.Result('undefined', 0, None)
-                        formatter.result(result)
+                        step.status = 'undefined'
+                        formatter.result(step)
                         run_steps = False
                     else:
                         formatter.match(match)
@@ -186,34 +186,38 @@ def main():
 
     feature_summary = {'passed': 0, 'failed': 0, 'skipped': 0}
     scenario_summary = {'passed': 0, 'failed': 0, 'skipped': 0}
-    step_summary = {'passed': 0, 'failed': 0, 'skipped': 0}
+    step_summary = {'passed': 0, 'failed': 0, 'skipped': 0, 'undefined': 0}
     duration = 0.0
     
     for feature in features:
-        feature_summary[feature.status] += 1
+        feature_summary[feature.status or 'skipped'] += 1
         for scenario in feature:
-            scenario_summary[scenario.status] += 1
+            scenario_summary[scenario.status or 'skipped'] += 1
             for step in scenario:
-                step_summary[step.status] += 1
-                duration += step.duration
+                step_summary[step.status or 'skipped'] += 1
+                duration += step.duration or 0.0
     
-    summary = '{passed:d} {name:s} passed, {failed:d} failed, {skipped:d} skipped'
-    if feature_summary['passed'] == 1:
-        feature_summary['name'] = 'feature'
-    else:
-        feature_summary['name'] = 'features'
-    print summary.format(**feature_summary)
-    if scenario_summary['passed'] == 1:
-        scenario_summary['name'] = 'scenario'
-    else:
-        scenario_summary['name'] = 'scenarios'
-    print summary.format(**scenario_summary)
-    if step_summary['passed'] == 1:
-        step_summary['name'] = 'step'
-    else:
-        step_summary['name'] = 'steps'
-    print summary.format(**step_summary)
-
+    def format_summary(statement_type, summary):
+        first = True
+        parts = []
+        for status in ('passed', 'failed', 'skipped', 'undefined'):
+            if status not in summary:
+                continue
+            if first:
+                label = statement_type
+                if summary[status] != 1:
+                    label += 's'
+                part = '{:d} {:s} {:s}'.format(summary[status], label, status)
+                first = False
+            else:
+                part = '{:d} {:s}'.format(summary[status], status)
+            parts.append(part)
+        return ', '.join(parts) + '\n'
+        
+    stream.write(format_summary('feature', feature_summary))
+    stream.write(format_summary('scenario', scenario_summary))
+    stream.write(format_summary('step', step_summary))
+        
     if undefined:
         msg =  "You can implement step definitions for undefined steps with "
         msg += "these snippets:\n\n"

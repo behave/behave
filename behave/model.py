@@ -176,7 +176,7 @@ class Step(BasicStatement, Replayable):
             self.string = arg
 
         self.status = None
-        self.duration = None
+        self.duration = 0.0
         self.error_message = None
 
     def __repr__(self):
