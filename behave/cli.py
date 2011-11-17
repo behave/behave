@@ -111,9 +111,11 @@ def main():
             base_dir = None
             break
 
+    hooks = {}
+
     if base_dir:
         sys.path.insert(0, base_dir)
-        
+
         steps_dir = os.path.join(base_dir, 'steps')
         for name in os.listdir(steps_dir):
             step_globals = {
@@ -124,8 +126,18 @@ def main():
             if name.endswith('.py'):
                 execfile(os.path.join(steps_dir, name), step_globals)
 
+        hooks_path = os.path.join(base_dir, 'hooks.py')
+        if os.path.exists(hooks_path):
+            execfile(hooks_path, {}, hooks)
+
+    def run_hook(name, *args):
+        if name in hooks:
+            hooks[name](*args)
+
     context = runner.Context()
     features = []
+
+    run_hook('before_all', context)
 
     for filename in feature_files(config.paths):
         context._push()
@@ -135,22 +147,29 @@ def main():
 
         feature_match = config.tags.check(feature.tags)
 
-        formatter = PrettyFormatter(stream, False, False)
+        formatter = PrettyFormatter(stream, False, True)
         formatter.uri(filename)
         formatter.feature(feature)
+
+        run_hook('before_feature', context, feature)
+
         if feature.has_background():
             formatter.background(feature.background)
 
         for scenario in feature:
-            run_steps = feature_match or config.tags.check(scenario.tags)
+            run_scenario = feature_match or config.tags.check(scenario.tags)
+            run_steps = run_scenario
 
             formatter.scenario(scenario)
 
             context._push()
 
+            if run_scenario:
+                run_hook('before_scenario', context, scenario)
+
             for step in scenario:
                 formatter.step(step)
-                
+
             for step in scenario:
                 if run_steps:
                     match = runner.steps.find_match(step)
@@ -162,6 +181,7 @@ def main():
                         run_steps = False
                     else:
                         formatter.match(match)
+                        run_hook('before_step', context, step)
                         try:
                             start = time.time()
                             match.run(context)
@@ -177,23 +197,32 @@ def main():
                             run_steps = False
 
                         formatter.result(step)
+                        run_hook('after_step', context, step)
                 else:
                     step.status = 'skipped'
                     if scenario.status is None:
                         scenario.status = 'skipped'
-                
+
+            if run_scenario:
+                run_hook('after_scenario', context, scenario)
+
             context._pop()
 
         formatter.eof()
+
+        run_hook('after_feature', context, feature)
+
         context._pop()
 
         print ''
+
+    run_hook('after_all', context)
 
     feature_summary = {'passed': 0, 'failed': 0, 'skipped': 0}
     scenario_summary = {'passed': 0, 'failed': 0, 'skipped': 0}
     step_summary = {'passed': 0, 'failed': 0, 'skipped': 0, 'undefined': 0}
     duration = 0.0
-    
+
     for feature in features:
         feature_summary[feature.status or 'skipped'] += 1
         for scenario in feature:
@@ -201,7 +230,7 @@ def main():
             for step in scenario:
                 step_summary[step.status or 'skipped'] += 1
                 duration += step.duration or 0.0
-    
+
     def format_summary(statement_type, summary):
         first = True
         parts = []
@@ -218,11 +247,11 @@ def main():
                 part = '{:d} {:s}'.format(summary[status], status)
             parts.append(part)
         return ', '.join(parts) + '\n'
-        
+
     stream.write(format_summary('feature', feature_summary))
     stream.write(format_summary('scenario', scenario_summary))
     stream.write(format_summary('step', step_summary))
-        
+
     if undefined:
         msg =  "\nYou can implement step definitions for undefined steps with "
         msg += "these snippets:\n\n"
