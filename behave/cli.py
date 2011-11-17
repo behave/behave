@@ -145,8 +145,6 @@ def main():
         feature = parser.parse_file(os.path.abspath(filename), Language.load('en'))
         features.append(feature)
 
-        feature_match = config.tags.check(feature.tags)
-
         formatter = PrettyFormatter(stream, False, True)
         formatter.uri(filename)
         formatter.feature(feature)
@@ -157,7 +155,7 @@ def main():
             formatter.background(feature.background)
 
         for scenario in feature:
-            run_scenario = feature_match or config.tags.check(scenario.tags)
+            run_scenario = config.tags.check(feature.tags + scenario.tags)
             run_steps = run_scenario
 
             formatter.scenario(scenario)
