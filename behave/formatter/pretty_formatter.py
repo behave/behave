@@ -224,7 +224,8 @@ class PrettyFormatter(object):
             self.print_tags(self.statement.tags, '  ')
         self.stream.write("  %s: %s " % (self.statement.keyword,
                                          self.statement.name))
-        self.stream.write(self.indented_location(self.statement.location, True) + "\n")
+        location = self.indented_location(self.statement.location, True)
+        self.stream.write(self.format('comments').text(location) + "\n")
         #self.print_description(self.statement.description, '    ')
         self.statement = None
 
