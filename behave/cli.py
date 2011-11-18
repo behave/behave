@@ -118,6 +118,10 @@ def main():
         sys.path.insert(0, base_dir)
 
         steps_dir = os.path.join(base_dir, 'steps')
+
+        # allow steps to import other stuff from the steps dir
+        sys.path.insert(0, steps_dir)
+
         for name in os.listdir(steps_dir):
             step_globals = {
                 'Given': decorators.Given,
@@ -126,6 +130,9 @@ def main():
             }
             if name.endswith('.py'):
                 execfile(os.path.join(steps_dir, name), step_globals)
+
+        # clean up the path
+        sys.path.pop(0)
 
         hooks_path = os.path.join(base_dir, 'environment.py')
         if os.path.exists(hooks_path):
