@@ -127,7 +127,7 @@ def main():
             if name.endswith('.py'):
                 execfile(os.path.join(steps_dir, name), step_globals)
 
-        hooks_path = os.path.join(base_dir, 'hooks.py')
+        hooks_path = os.path.join(base_dir, 'environment.py')
         if os.path.exists(hooks_path):
             execfile(hooks_path, hooks)
 
