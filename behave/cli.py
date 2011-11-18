@@ -211,8 +211,9 @@ def main():
 
                         # flesh out the failure with details
                         if step.status == 'failed':
+                            output = stdout_capture.getvalue()
                             if stdout_capture:
-                                error += '\nCaptured stdout:\n' + stdout_capture.getvalue()
+                                error += '\nCaptured stdout:\n' + output
                             if log:
                                 error += '\nCaptured logging:\n' + log.getvalue()
                             step.error_message = error
