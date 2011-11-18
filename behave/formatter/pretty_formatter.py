@@ -44,7 +44,6 @@ class PrettyFormatter(object):
         self.monochrome = monochrome
         self.executing = executing
 
-        self.step_printer = StepPrinter()
         self.tag_statement = None
         self.steps = []
 
