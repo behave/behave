@@ -5,8 +5,8 @@ import sys
 from setuptools import find_packages, setup
 
 requirements = ['pyparsing>=1.5.0', 'PyYAML']
-version = sys.version_info
-if version.major == 2 and version.minor < 7:
+major, minor = sys.version_info[:2]
+if major == 2 and minor < 7:
     requirements.append('argparse')
 
 setup(
