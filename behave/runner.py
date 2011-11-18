@@ -5,25 +5,25 @@ from behave import model
 class AttrDict(dict):
     def __getattr__(self, attr):
         return self.__getitem__(attr)
-    
+
     def __setattr__(self, attr, value):
         return self.__setitem__(attr, value)
-        
+
 class Context(object):
     def __init__(self):
         self._stack = [{}]
-    
+
     def _push(self):
         self._stack.insert(0, {})
-    
+
     def _pop(self):
         self._stack.pop(0)
-    
-    def __getattr__(self, attr):            
+
+    def __getattr__(self, attr):
         for frame in self._stack:
             if attr in frame:
                 return frame[attr]
-        msg = "'{}' object has no attribute '{}'"
+        msg = "'{0}' object has no attribute '{1}'"
         msg = msg.format(self.__class__.__name__, attr)
         raise AttributeError(msg)
 
@@ -42,26 +42,26 @@ class StepRegistry(object):
             'when': [],
             'then': [],
         }
-    
-    def add_definition(self, keyword, regex, func):        
+
+    def add_definition(self, keyword, regex, func):
         match = model.Match(func)
         self.steps[keyword.lower()].append((regex, match))
-    
+
     def find_match(self, step):
         for regex, match in self.steps[step.step_type.lower()]:
             m = regex.match(step.name)
             if not m:
                 continue
-                
+
             groupindex = dict((y, x) for x, y in regex.groupindex.items())
             args = []
             for index, group in enumerate(m.groups()):
                 index += 1
                 name = groupindex.get(index, None)
                 args.append(model.Argument(m.start(index), group, name))
-                            
+
             return match.with_arguments(args)
-            
+
         return None
 
 class HooksRegistry(object):
