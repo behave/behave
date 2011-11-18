@@ -4,7 +4,6 @@ import codecs
 import sys
 
 from behave.formatter.ansi_escapes import escapes, up
-from behave.formatter.step_printer import StepPrinter
 
 utf8writer = codecs.getwriter('utf8')
 
