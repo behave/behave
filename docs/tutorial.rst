@@ -49,7 +49,7 @@ plain-text and look something like::
       When attacked by Chuck Norris
       Then the ninja should run for his life
 
-The "Given", "When" and "Then parts of this prose form the actual steps
+The "Given", "When" and "Then" parts of this prose form the actual steps
 that will be taken by *behave* in testing your system. These map to `Python
 step implementations`_.
 
@@ -62,7 +62,7 @@ Steps used in the scenarios are implemented in Python files in
 as long as they're *filename*.py in the steps directory.
 
 Steps are identified using decorators which match the predicate from the
-feature file: Given, When and The. The decorator accepts a string
+feature file: Given, When and Then. The decorator accepts a string
 containing the rest of the phrase used in the scenario step it belongs to.
 
 Given a Scenario::
@@ -72,7 +72,7 @@ Given a Scenario::
       Then I will see the account details
 
 Step code implementing the two steps here might look like (using selenium
-webdriver and some nose helpers)::
+webdriver and some other helpers)::
 
  @Given('I search for a valid account')
  def step(context):
