@@ -205,6 +205,8 @@ def main():
                             step.status = 'failed'
                             error = traceback.format_exc()
 
+                        step.duration = time.time() - start
+
                         # stop snarfing these guys
                         log.abandon()
                         sys.stdout = old_stdout
@@ -218,8 +220,6 @@ def main():
                                 error += '\nCaptured logging:\n' + log.getvalue()
                             step.error_message = error
                             run_steps = False
-
-                        step.duration = time.time() - start
 
                         formatter.result(step)
                         run_hook('after_step', context, step)
