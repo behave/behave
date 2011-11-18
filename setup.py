@@ -1,7 +1,13 @@
 import os
 import os.path
+import sys
 
 from setuptools import find_packages, setup
+
+requirements = ['pyparsing>=1.5.0', 'PyYAML']
+version = sys.version_info
+if version.major == 2 and version.minor < 7:
+    requirements.append('argparse')
 
 setup(
     name='behave',
@@ -13,7 +19,7 @@ setup(
     packages=find_packages(),
     package_data={'behave': ['languages.yml']},
     scripts=['bin/behave'],
-    install_requires=['pyparsing>=1.5.0', 'PyYAML'],
+    install_requires=requirements,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Environment :: Console",
