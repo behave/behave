@@ -5,6 +5,7 @@ import StringIO
 import sys
 import time
 import traceback
+import logging
 
 import yaml
 
@@ -12,6 +13,7 @@ from behave import decorators, model, parser, runner
 from behave.configuration import Configuration
 from behave.formatter.ansi_escapes import escapes
 from behave.formatter.pretty_formatter import PrettyFormatter
+from behave.log_capture import MemoryHandler
 
 TAG_HELP = """
 Scenarios inherit tags declared on the Feature level. The simplest
@@ -189,25 +191,35 @@ def main():
                         formatter.match(match)
                         run_hook('before_step', context, step)
                         old_stdout = sys.stdout
-                        sys.stdout = StringIO.StringIO()
+                        stdout_capture = sys.stdout = StringIO.StringIO()
+                        log = MemoryHandler()
+                        log.inveigle()
                         try:
                             start = time.time()
                             match.run(context)
-                            elapsed = time.time() - start
                             step.status = 'passed'
-                            step.duration = elapsed
-                        except:
-                            elapsed = time.time() - start
-                            error = traceback.format_exc()
-                            output = sys.stdout.getvalue()
-                            if output:
-                                error += '\nCaptured stdout:\n' + output
+                        except AssertionError, e:
                             step.status = 'failed'
-                            step.duration = elapsed
+                            error = 'Assertion Failed: %s' % (e, )
+                        except Exception:
+                            step.status = 'failed'
+                            error = traceback.format_exc()
+
+                        # stop snarfing these guys
+                        log.abandon()
+                        sys.stdout = old_stdout
+
+                        # flesh out the failure with details
+                        if step.status == 'failed':
+                            if stdout_capture:
+                                error += '\nCaptured stdout:\n' + stdout_capture.getvalue()
+                            if log:
+                                error += '\nCaptured logging:\n' + log.getvalue()
                             step.error_message = error
                             run_steps = False
 
-                        sys.stdout = old_stdout
+                        step.duration = time.time() - start
+
                         formatter.result(step)
                         run_hook('after_step', context, step)
                 else:
