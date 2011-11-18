@@ -19,6 +19,11 @@ class Context(object):
     def _pop(self):
         self._stack.pop(0)
     
+    def _dump(self):
+        for level, frame in enumerate(self._stack):
+            print 'Level %d' % level
+            print repr(frame)
+
     def __getattr__(self, attr):            
         for frame in self._stack:
             if attr in frame:
