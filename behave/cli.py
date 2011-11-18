@@ -268,7 +268,7 @@ def main():
 
             func_name = step.name.lower().replace(' ', '_')
             msg += "@" + step.keyword + "('" + step.name + "')\n"
-            msg += "def " + func_name + "(context):\n"
+            msg += "def step(context):\n"
             msg += "    assert False\n\n"
 
         stream.write(escapes['undefined'] + msg + escapes['reset'])
