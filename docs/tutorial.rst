@@ -10,11 +10,11 @@ containing:
 2. a "steps" directory with `Python step implementations`_ for the
    scenarios.
 
-You may optionally include some `environment controls`_ (code to run
+You may optionally include some `environmental controls`_ (code to run
 before and after steps, scenarios, features or the whole shooting
 match).
 
-A typical "features" directory tree might look like:
+A typical "features" directory tree might look like::
 
   features/
   features/signup.feature
@@ -72,7 +72,7 @@ Given a Scenario::
       Then I will see the account details
 
 Step code implementing the two steps here might look like (using selenium
-webdriver and some nose helpers):
+webdriver and some nose helpers)::
 
  @Given('I search for a valid account')
  def step(context):
@@ -111,7 +111,7 @@ from the feature file.
 .. todo: document what those objects might be
 
 A common use-case for environmental controls might be to set up a web
-server and browser to run all your tests in. For example:
+server and browser to run all your tests in. For example::
 
   import threading
   from wsgiref import simple_server
