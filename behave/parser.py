@@ -1,152 +1,253 @@
-#-*- coding: utf8 -*-
+import os.path
 
-# This file originates from Freshen: http://github.com/rlisagor/freshen
-# It is distributed under the terms of the GNU GPL Version 3 or later.
-
-# This line ensures that frames from this file will not be shown in tracebacks
-__unittest = 1
-
-from pyparsing import *
-import copy
-import os
-import re
-import textwrap
-
-from os.path import relpath
+import yaml
 
 from behave import model
 
-def grammar(fname, l, convert=True, base_line=0):
-    # l = language
+I18N_FILE = os.path.join(os.path.dirname(__file__), 'i18n.yml')
+parsers = {}
 
-    def create_object(klass):
-        def untokenize(s, loc, toks):
-            result = []
-            for t in toks:
-                if isinstance(t, ParseResults):
-                    t = t.asList()
-                result.append(t)
-            obj = klass(*result)
-            obj.src_file = fname
-            obj.src_line = base_line + lineno(loc, s)
-            return obj
-        return untokenize
+def parse_feature(data, language='en'):
+    global parsers
 
-    def process_descr(s):
-        return [p.strip() for p in s[0].strip().split("\n")]
+    parser = parsers.get(language, None)
+    if parser is None:
+        parser = Parser(language)
+        parsers[language] = parser
 
-    # This has to be an array for compatibility with Python versions which do not have "nonlocal"
-    last_step_type = [None]
+    result = parser.parse(data)
+    print repr(result)
+    return result
 
-    def process_given_step(s):
-        last_step_type[0] = 'given'
-        return (s[0], 'given')
+class ParserError(Exception):
+    def __init__(self, message, line):
+        message += ' at line {0:d}'.format(line)
+        super(ParserError, self).__init__(message)
+        self.line = line
 
-    def process_when_step(s):
-        last_step_type[0] = 'when'
-        return (s[0], 'when')
+class Parser(object):
+    languages = None
 
-    def process_then_step(s):
-        last_step_type[0] = 'then'
-        return (s[0], 'then')
+    def __init__(self, language):
+        if Parser.languages is None:
+            Parser.languages = yaml.load(open(I18N_FILE))
+        if language not in Parser.languages:
+            return None
+        self.keywords = Parser.languages[language]
+        for k, v in self.keywords.items():
+            self.keywords[k] = v.split('|')
+        self.step_keywords = {}
+        for k in ('given', 'when', 'then', 'and', 'but'):
+            for kw in self.keywords[k]:
+                if kw in self.step_keywords:
+                    self.step_keywords[kw] = 'step'
+                else:
+                    self.step_keywords[kw] = k
 
-    def process_and_but_step(orig, loc, s):
-        if last_step_type[0] == None:
-            raise ParseFatalException(orig, loc,
-                        "'And' or 'But' steps can only come after 'Given', 'When', or 'Then'")
-        return (s[0], last_step_type[0])
+        self.reset()
 
-    def process_string(s):
-        return s[0].strip()
+    def reset(self):
+        self._state = 'init'
+        self.line = 0
+        self.last_step = None
+        self.multiline_terminator = None
 
-    def process_m_string(s):
-        return textwrap.dedent(s[0])
+        self.feature = None
+        self.statement = None
+        self.tags = []
+        self.lines = []
+        self.table = None
+        self.examples = None
 
-    def process_tag(s):
-        return s[0]
+    def _get_state(self):
+        return self._state
 
-    def or_words(words, kind, suffix='', parse_acts=None):
-        elements = []
-        for index, native_word in enumerate(words):
-            for word in l.words(native_word):
-                element = kind(word + suffix)
-                if parse_acts is not None:
-                    element.setParseAction(parse_acts[index])
-                elements.append(element)
-        return Or(elements)
+    def _set_state(self, state):
+        print 'STATE: ' + self._state + ' -> ' + state
+        self._state = state
 
-    empty_not_n    = empty.copy().setWhitespaceChars(" \t")
-    tags           = OneOrMore(Word("@", alphanums + "_").setParseAction(process_tag))
+    state = property(_get_state, _set_state)
 
-    following_text = empty_not_n + restOfLine + Suppress(lineEnd)
-    section_header = lambda name: Literal(name) + Suppress(":") + following_text
+    def parse(self, data):
+        self.reset()
 
-    section_name   = or_words(['scenario', 'scenario_outline', 'background'], Literal)
-    descr_block    = Group(SkipTo(section_name | tags).setParseAction(process_descr))
+        for line in data.split('\n'):
+            if not line.strip():
+                continue
+            self.action(line.strip())
+            self.line += 1
 
-    table_row      = Group(Suppress("|") +
-                           delimitedList(
-                                         CharsNotIn("|\n").setParseAction(process_string) +
-                                         Suppress(empty_not_n), delim="|") +
-                           Suppress("|"))
-    table          = table_row + Group(OneOrMore(table_row))
+        if self.table:
+            self.action_table('')
 
-    m_string       = (Suppress(Literal('"""') + lineEnd).setWhitespaceChars(" \t") +
-                      SkipTo((lineEnd +
-                              Literal('"""')).setWhitespaceChars(" \t")).setWhitespaceChars("") +
-                      Suppress('"""'))
-    m_string.setParseAction(process_m_string)
+        feature = self.feature
+        return feature
 
-    step_name      = or_words(['given', 'when', 'then', 'and', 'but'], Keyword,
-                              parse_acts=[process_given_step, process_when_step, process_then_step,
-                                          process_and_but_step, process_and_but_step])
-    step           = step_name + following_text + Optional(table | m_string)
-    steps          = Group(ZeroOrMore(step))
+    def action(self, line):
+        func = getattr(self, 'action_' + self.state, None)
+        if func is None:
+            raise ParserError('Parser in unknown state ' + self.state,
+                              self.line)
+        if not func(line):
+            raise ParserError("Parser failure in state " + self.state,
+                              self.line)
 
-    example        = or_words(['examples'], section_header) + table
+    def action_init(self, line):
+        if line.startswith('@'):
+            self.tags.extend([tag.strip() for tag in line[1:].split('@')])
+            return True
+        feature_kwd = self.match_keyword('feature', line)
+        if feature_kwd:
+            name = line[len(feature_kwd) + 1:].strip()
+            self.feature = model.Feature(feature_kwd, name, tags=self.tags)
+            self.tags = []
+            self.state = 'feature'
+            return True
+        return False
 
-    background     = or_words(['background'], section_header) + steps
+    def action_feature(self, line):
+        if line.startswith('@'):
+            self.tags.extend([tag.strip() for tag in line[1:].split('@')])
+            return True
 
-    scenario       = Group(Optional(tags)) + or_words(['scenario'], section_header) + steps
-    scenario_outline = Group(Optional(tags)) + or_words(['scenario_outline'], section_header) + steps + Group(OneOrMore(example))
+        background_kwd = self.match_keyword('background', line)
+        if background_kwd:
+            name = line[len(background_kwd) + 1:].strip()
+            self.statement = model.Background(background_kwd, name)
+            self.feature.background = self.statement
+            self.state = 'steps'
+            return True
 
-    feature        = (Group(Optional(tags)) +
-                      or_words(['feature'], section_header) +
-                      descr_block +
-                      Group(Optional(background)) +
-                      Group(OneOrMore(scenario | scenario_outline)))
+        scenario_kwd = self.match_keyword('scenario', line)
+        if scenario_kwd:
+            name = line[len(scenario_kwd) + 1:].strip()
+            self.statement = model.Scenario(scenario_kwd, name, tags=self.tags)
+            self.tags = []
+            self.feature.scenarios.append(self.statement)
+            self.state = 'steps'
+            return True
 
-    # Ignore tags for now as they are not supported
-    feature.ignore(pythonStyleComment)
-    steps.ignore(pythonStyleComment)
+        scenario_outline_kwd = self.match_keyword('scenario_outline', line)
+        if scenario_outline_kwd:
+            name = line[len(scenario_outline_kwd) + 1:].strip()
+            self.statement = model.ScenarioOutline(scenario_outline_kwd, name,
+                                                   tags=self.tags)
+            self.tags = []
+            self.feature.scenarios.append(self.statement)
+            self.state = 'steps'
+            return True
 
-    if convert:
-        table.setParseAction(create_object(model.Table))
-        step.setParseAction(create_object(model.Step))
-        background.setParseAction(create_object(model.Background))
-        scenario.setParseAction(create_object(model.Scenario))
-        scenario_outline.setParseAction(create_object(model.ScenarioOutline))
-        example.setParseAction(create_object(model.Examples))
-        feature.setParseAction(create_object(model.Feature))
+        self.feature.description.append(line)
+        return True
 
-    return feature, steps
+    def action_steps(self, line):
+        if self.parse_step(line):
+            return True
 
-def parse_file(fname, language, convert=True):
-    feature, _ = grammar(fname, language, convert)
-    try:
-        file_obj = open(fname)
-        if convert:
-            feat = feature.parseFile(file_obj)[0]
+        if line.startswith('@'):
+            self.tags.extend([tag.strip() for tag in line[1:].split('@')])
+            return True
+
+        scenario_kwd = self.match_keyword('scenario', line)
+        if scenario_kwd:
+            name = line[len(scenario_kwd) + 1:].strip()
+            self.statement = model.Scenario(scenario_kwd, name, tags=self.tags)
+            self.tags = []
+            self.feature.scenarios.append(self.statement)
+            return True
+
+        scenario_outline_kwd = self.match_keyword('scenario_outline', line)
+        if scenario_outline_kwd:
+            name = line[len(scenario_outline_kwd) + 1:].strip()
+            self.statement = model.ScenarioOutline(scenario_outline_kwd, name,
+                                                   tags=self.tags)
+            self.tags = []
+            self.feature.scenarios.append(self.statement)
+            self.state = 'steps'
+            return True
+
+        examples_kwd = self.match_keyword('examples', line)
+        if examples_kwd:
+            if not isinstance(self.statement, model.ScenarioOutline):
+                raise ParserError('Examples must only appear inside scenario outline', self.line)
+            name = line[len(examples_kwd) + 1:].strip()
+            self.examples = model.Examples(examples_kwd, name)
+            self.statement.examples.append(self.examples)
+            self.state = 'table'
+            return True
+
+        if line.startswith('"""') or line.startswith("'''"):
+            self.state = 'multiline'
+            self.multiline_terminator = line[:3]
+            return True
+
+        if line.startswith('|'):
+            self.state = 'table'
+            return self.action_table(line)
+
+        return False
+
+    def action_multiline(self, line):
+        print repr(line)
+        print repr(self.multiline_terminator)
+        if line.startswith(self.multiline_terminator):
+            step = self.statement.steps[-1]
+            step.string = self.lines
+            if step.name.endswith(':'):
+                step.name = step.name[:-1]
+            self.lines = []
+            self.multiline_terminator = None
+            self.state = 'steps'
+            return True
+
+        self.lines.append(line)
+        return True
+
+    def action_table(self, line):
+        if not line.startswith('|'):
+            print 'GLERK', repr(self.examples)
+            if self.examples:
+                self.examples.table = self.table
+                self.examples = None
+            else:
+                step = self.statement.steps[-1]
+                step.table = self.table
+                if step.name.endswith(':'):
+                    step.name = step.name[:-1]
+            self.table = None
+            self.state = 'steps'
+            return self.action_steps(line)
+
+        cells = [cell.strip() for cell in line.split('|')[1:-1]]
+        if self.table is None:
+            self.table = model.Table(cells)
         else:
-            feat = feature.parseFile(file_obj)
-    finally:
-        file_obj.close()
-    return feat
+            if len(cells) != len(self.table.headings):
+                raise ParserError("Malformed table", self.line)
+            self.table.rows.append(cells)
+        return True
 
-def parse_steps(spec, fname, base_line, language, convert=True):
-    _, steps = grammar(fname, language, convert, base_line)
-    if convert:
-        return steps.parseString(spec)[0]
-    else:
-        return steps.parseString(spec)
+    def match_keyword(self, keyword, line):
+        for alias in self.keywords[keyword]:
+            if line.startswith(alias + ':'):
+                return alias
+        return False
+
+    def parse_step(self, line):
+        for kw in self.step_keywords:
+            if line.startswith(kw):
+                name = line[len(kw):].strip()
+                step_type = self.step_keywords[kw]
+                if step_type in ('and', 'but'):
+                    if not self.last_step:
+                        raise ParserError("No previous step", self.line)
+                    step_type = self.last_step
+                else:
+                    self.last_step = step_type
+                step = model.Step(kw, step_type, name)
+                print repr(self.statement)
+                print repr(self.statement.steps)
+                self.statement.steps.append(step)
+                return True
+        return False
 

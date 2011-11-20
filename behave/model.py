@@ -43,17 +43,14 @@ class Replayable(object):
 class Feature(BasicStatement, Replayable):
     type = "feature"
 
-    def __init__(self, tags, keyword, name, description,
-                 background, scenarios):
+    def __init__(self, keyword, name, description=[], scenarios=[], background=None,
+                 tags=[]):
         self.tags = tags
         self.keyword = keyword
         self.name = name
-        self.description = '\n'.join(description)
-        self.scenarios = scenarios
-        self.background = None
-
-        if background != []:
-            self.background = background[0]
+        self.description = description or []
+        self.scenarios = scenarios or []
+        self.background = background
 
         for scenario in scenarios:
             scenario.feature = self
@@ -61,9 +58,6 @@ class Feature(BasicStatement, Replayable):
 
     def __repr__(self):
         return '<Feature "%s": %d scenario(s)>' % (self.name, len(self.scenarios))
-
-    def has_background(self):
-        return self.background is not None
 
     def __iter__(self):
         return iter(self.scenarios)
@@ -90,10 +84,10 @@ class Feature(BasicStatement, Replayable):
 class Background(BasicStatement, Replayable):
     type = "background"
 
-    def __init__(self, keyword, name, steps):
+    def __init__(self, keyword, name, steps=[]):
         self.keyword = keyword
         self.name = name
-        self.steps = steps
+        self.steps = steps or []
 
     def __repr__(self):
         return '<Background "%s">' % self.name
@@ -104,11 +98,11 @@ class Background(BasicStatement, Replayable):
 class Scenario(BasicStatement, Replayable):
     type = "scenario"
 
-    def __init__(self, tags, keyword, name, steps):
+    def __init__(self, keyword, name, steps=[], tags=[]):
         self.tags = tags
         self.keyword = keyword
         self.name = name
-        self.steps = steps
+        self.steps = steps or []
         self.background = None
 
     def __repr__(self):
@@ -133,9 +127,9 @@ class Scenario(BasicStatement, Replayable):
 class ScenarioOutline(Scenario):
     type = "scenario_outline"
 
-    def __init__(self, tags, keyword, name, steps, examples):
-        super(ScenarioOutline, self).__init__(tags, keyword, name, steps)
-        self.examples = examples
+    def __init__(self, keyword, name, steps=[], examples=[], tags=[]):
+        super(ScenarioOutline, self).__init__(keyword, name, steps, tags)
+        self.examples = examples or []
 
         self.scenarios = []
         for example in self.examples:
@@ -157,7 +151,7 @@ class ScenarioOutline(Scenario):
 class Examples(BasicStatement, Replayable):
     type = "examples"
 
-    def __init__(self, keyword, name, table):
+    def __init__(self, keyword, name, table=None):
         self.keyword = keyword
         self.name = name
         self.table = table
@@ -165,15 +159,15 @@ class Examples(BasicStatement, Replayable):
 class Step(BasicStatement, Replayable):
     type = "step"
 
-    def __init__(self, step_type, name, arg=None):
-        self.keyword, self.step_type = step_type
+    def __init__(self, keyword, step_type, name, string=None, table=None):
+        self.keyword = keyword
+        self.step_type = step_type
         self.name = name
-        if isinstance(arg, Table):
-            self.table = arg
-            self.string = None
+        if string:
+            self.string = '\n'.join(string)
         else:
-            self.table = None
-            self.string = arg
+            self.string = None
+        self.table = table
 
         self.status = None
         self.duration = 0.0
@@ -191,14 +185,21 @@ class Step(BasicStatement, Replayable):
 class Table(Replayable):
     type = "table"
 
-    def __init__(self, headings, rows):
-        assert [len(r) == len(headings) for r in rows], "Malformed table"
-
+    def __init__(self, headings, rows=[]):
         self.headings = headings
-        self.rows = rows
+        self.rows = rows or []
 
     def __repr__(self):
         return "<Table: %dx%d>" % (len(self.headings), len(self.rows))
+
+    def __eq__(self, other):
+        print repr(other)
+        if self.headings != other.headings:
+            return False
+        for my_row, their_row in zip(self.rows, other.rows):
+            if my_row != their_row:
+                return False
+        return True
 
     def iterrows(self):
         for row in self.rows:
