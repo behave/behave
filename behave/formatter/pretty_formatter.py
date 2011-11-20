@@ -183,8 +183,10 @@ class PrettyFormatter(object):
         else:
             return escape_cell(cell)
 
-    def indent(self, string, indentation):
-        return '\n'.join([indentation + s for s in string.split('\n')])
+    def indent(self, strings, indentation):
+        if type(strings) is not list:
+            strings = strings.split('\n')
+        return '\n'.join([indentation + s for s in strings])
 
     def escape_triple_quotes(self, string):
         return string.replace(u'"""', u'\\"\\"\\"')
