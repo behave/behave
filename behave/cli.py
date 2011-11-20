@@ -91,7 +91,7 @@ def feature_files(paths):
 def main():
     config = Configuration()
 
-    if config.tags and config.tags == 'help':
+    if config.tags_help:
         print TAG_HELP
         sys.exit(0)
 

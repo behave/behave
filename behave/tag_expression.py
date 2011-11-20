@@ -25,8 +25,18 @@ class TagExpression(object):
         return True
     
     def add(self, tags):
-        negatives = [tag for tag in tags if tag.startswith('~')]
-        positives = [tag for tag in tags if not tag.startswith('~')]
+        negatives = []
+        positives = []
+        
+        for tag in tags:
+            if tag.startswith('@'):
+                positives.append(tag[1:])
+            elif tag.startswith('~@'):
+                negatives.append('~' + tag[2:])
+            elif tag.startswith('~'):
+                negatives.append(tag)
+            else:
+                positives.append(tag)
         
         self.ands.append(self.store_and_extract_limits(negatives, True))
         self.ands.append(self.store_and_extract_limits(positives, False))

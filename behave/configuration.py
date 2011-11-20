@@ -44,7 +44,7 @@ parser.add_argument('-S', '--strict', action='store_true',
                     help='Fail if there are any undefined or pending steps.')
 parser.add_argument('-t', '--tags', action='append', metavar='TAG_EXPRESSION',
                     help="""Only execute features or scenarios with tags
-                            matching TAG_EXPRESSION. Pass '--tags help' for
+                            matching TAG_EXPRESSION. Pass '--tag-help' for
                             more information.""")
 parser.add_argument('-v', '--verbose', action='store_true',
                     help='Show the files and features loaded.')
@@ -55,6 +55,8 @@ parser.add_argument('-x', '--expand', action='store_true',
 parser.add_argument('--i18n', metavar='LANG',
                     help="""List keywords for a particular language
                             (use --i18n help to see all languages)""")
+parser.add_argument('--tags-help', action='store_true',
+                    help="Show help for tag expressions.")
 parser.add_argument('--version', action='store_true', help="Show version.")
 
 parser.add_argument('paths', nargs='*')
@@ -70,7 +72,4 @@ class Configuration(object):
                 continue
             setattr(self, key, value)
         
-        if self.tags and 'help' in self.tags:
-            self.tags = 'help'
-        else:
-            self.tags = TagExpression(self.tags or [])
+        self.tags = TagExpression(self.tags or [])
