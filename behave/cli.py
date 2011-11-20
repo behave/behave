@@ -161,7 +161,7 @@ def main():
 
         run_hook('before_feature', context, feature)
 
-        if feature.has_background():
+        if feature.background:
             formatter.background(feature.background)
 
         for scenario in feature:
