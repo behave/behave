@@ -16,8 +16,9 @@ class Argument(object):
         self.name = name
 
 class BasicStatement(object):
-    def __init__(self, comments, keyword, name):
-        self.comments = comments
+    def __init__(self, filename, line, keyword, name):
+        self.filename = filename or '<string>'
+        self.line = line
         self.keyword = ensure_unicode(keyword)
         self.name = ensure_unicode(name)
 
@@ -26,12 +27,12 @@ class BasicStatement(object):
 
     @property
     def location(self):
-        p = os.path.relpath(self.src_file, os.getcwd())
-        return '%s:%d' % (p, self.src_line)
+        p = os.path.relpath(self.filename, os.getcwd())
+        return '%s:%d' % (p, self.line)
 
 class TagStatement(BasicStatement):
-    def __init__(self, comments, tags, keyword, name):
-        super(TagStatement, self).__init__(comments, keyword, name)
+    def __init__(self, filename, line, keyword, name, tags):
+        super(TagStatement, self).__init__(filename, line, keyword, name)
         self.tags = tags
 
 class Replayable(object):
@@ -40,27 +41,29 @@ class Replayable(object):
     def replay(self, formatter):
         getattr(formatter, self.type)(self)
 
-class Feature(BasicStatement, Replayable):
+class Feature(TagStatement, Replayable):
     type = "feature"
 
-    def __init__(self, keyword, name, description=[], scenarios=[], background=None,
-                 tags=[]):
-        self.tags = tags
-        self.keyword = keyword
-        self.name = name
+    def __init__(self, filename, line, keyword, name, tags=[], description=[],
+                 scenarios=[], background=None):
+        super(Feature, self).__init__(filename, line, keyword, name, tags)
         self.description = description or []
-        self.scenarios = scenarios or []
+        self.scenarios = []
         self.background = background
 
         for scenario in scenarios:
-            scenario.feature = self
-            scenario.background = self.background
+            self.add_scenario(scenario)
 
     def __repr__(self):
         return '<Feature "%s": %d scenario(s)>' % (self.name, len(self.scenarios))
 
     def __iter__(self):
         return iter(self.scenarios)
+
+    def add_scenario(self, scenario):
+        scenario.feature = self
+        scenario.background = self.background
+        self.scenarios.append(scenario)
 
     @property
     def status(self):
@@ -84,9 +87,8 @@ class Feature(BasicStatement, Replayable):
 class Background(BasicStatement, Replayable):
     type = "background"
 
-    def __init__(self, keyword, name, steps=[]):
-        self.keyword = keyword
-        self.name = name
+    def __init__(self, filename, line, keyword, name, steps=[]):
+        super(Background, self).__init__(filename, line, keyword, name)
         self.steps = steps or []
 
     def __repr__(self):
@@ -95,14 +97,13 @@ class Background(BasicStatement, Replayable):
     def __iter__(self):
         return iter(self.steps)
 
-class Scenario(BasicStatement, Replayable):
+class Scenario(TagStatement, Replayable):
     type = "scenario"
 
-    def __init__(self, keyword, name, steps=[], tags=[]):
-        self.tags = tags
-        self.keyword = keyword
-        self.name = name
+    def __init__(self, filename, line, keyword, name, tags=[], steps=[]):
+        super(Scenario, self).__init__(filename, line, keyword, name, tags)
         self.steps = steps or []
+
         self.background = None
 
     def __repr__(self):
@@ -127,8 +128,10 @@ class Scenario(BasicStatement, Replayable):
 class ScenarioOutline(Scenario):
     type = "scenario_outline"
 
-    def __init__(self, keyword, name, steps=[], examples=[], tags=[]):
-        super(ScenarioOutline, self).__init__(keyword, name, steps, tags)
+    def __init__(self, filename, line, keyword, name, tags=[], steps=[],
+                 examples=[]):
+        super(ScenarioOutline, self).__init__(filename, line, keyword, name,
+                                              tags, steps)
         self.examples = examples or []
 
         self.scenarios = []
@@ -151,22 +154,18 @@ class ScenarioOutline(Scenario):
 class Examples(BasicStatement, Replayable):
     type = "examples"
 
-    def __init__(self, keyword, name, table=None):
-        self.keyword = keyword
-        self.name = name
+    def __init__(self, filename, line, keyword, name, table=None):
+        super(Examples, self).__init__(filename, line, keyword, name)
         self.table = table
 
 class Step(BasicStatement, Replayable):
     type = "step"
 
-    def __init__(self, keyword, step_type, name, string=None, table=None):
-        self.keyword = keyword
+    def __init__(self, filename, line, keyword, step_type, name, string=None,
+                 table=None):
+        super(Step, self).__init__(filename, line, keyword, name)
         self.step_type = step_type
-        self.name = name
-        if string:
-            self.string = '\n'.join(string)
-        else:
-            self.string = None
+        self.string = string
         self.table = table
 
         self.status = None
@@ -193,7 +192,6 @@ class Table(Replayable):
         return "<Table: %dx%d>" % (len(self.headings), len(self.rows))
 
     def __eq__(self, other):
-        print repr(other)
         if self.headings != other.headings:
             return False
         for my_row, their_row in zip(self.rows, other.rows):

@@ -152,7 +152,7 @@ def main():
     for filename in feature_files(config.paths):
         context._push()
 
-        feature = parser.parse_file(os.path.abspath(filename), Language.load('en'))
+        feature = parser.parse_file(os.path.abspath(filename))
         features.append(feature)
 
         formatter = PrettyFormatter(stream, False, True)

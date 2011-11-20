@@ -7,21 +7,27 @@ from behave import model
 I18N_FILE = os.path.join(os.path.dirname(__file__), 'i18n.yml')
 parsers = {}
 
-def parse_feature(data, language='en'):
+def parse_file(filename, language=None):
+    return parse_feature(open(filename).read(), language, filename)
+
+def parse_feature(data, language=None, filename=None):
     global parsers
+
+    if not language:
+        language = 'en'
 
     parser = parsers.get(language, None)
     if parser is None:
         parser = Parser(language)
         parsers[language] = parser
 
-    result = parser.parse(data)
-    print repr(result)
+    result = parser.parse(data, filename)
     return result
 
 class ParserError(Exception):
     def __init__(self, message, line):
-        message += ' at line {0:d}'.format(line)
+        if line:
+            message += ' at line {0:d}'.format(line)
         super(ParserError, self).__init__(message)
         self.line = line
 
@@ -32,7 +38,7 @@ class Parser(object):
         if Parser.languages is None:
             Parser.languages = yaml.load(open(I18N_FILE))
         if language not in Parser.languages:
-            return None
+            raise ParserError("Unknown language: " + repr(language), None)
         self.keywords = Parser.languages[language]
         for k, v in self.keywords.items():
             self.keywords[k] = v.split('|')
@@ -47,11 +53,12 @@ class Parser(object):
         self.reset()
 
     def reset(self):
-        self._state = 'init'
+        self.state = 'init'
         self.line = 0
         self.last_step = None
         self.multiline_terminator = None
 
+        self.filename = None
         self.feature = None
         self.statement = None
         self.tags = []
@@ -59,23 +66,16 @@ class Parser(object):
         self.table = None
         self.examples = None
 
-    def _get_state(self):
-        return self._state
-
-    def _set_state(self, state):
-        print 'STATE: ' + self._state + ' -> ' + state
-        self._state = state
-
-    state = property(_get_state, _set_state)
-
-    def parse(self, data):
+    def parse(self, data, filename=None):
         self.reset()
 
+        self.filename = filename
+
         for line in data.split('\n'):
+            self.line += 1
             if not line.strip():
                 continue
             self.action(line.strip())
-            self.line += 1
 
         if self.table:
             self.action_table('')
@@ -99,7 +99,8 @@ class Parser(object):
         feature_kwd = self.match_keyword('feature', line)
         if feature_kwd:
             name = line[len(feature_kwd) + 1:].strip()
-            self.feature = model.Feature(feature_kwd, name, tags=self.tags)
+            self.feature = model.Feature(self.filename, self.line, feature_kwd,
+                                         name, tags=self.tags)
             self.tags = []
             self.state = 'feature'
             return True
@@ -113,7 +114,8 @@ class Parser(object):
         background_kwd = self.match_keyword('background', line)
         if background_kwd:
             name = line[len(background_kwd) + 1:].strip()
-            self.statement = model.Background(background_kwd, name)
+            self.statement = model.Background(self.filename, self.line,
+                                              background_kwd, name)
             self.feature.background = self.statement
             self.state = 'steps'
             return True
@@ -121,19 +123,21 @@ class Parser(object):
         scenario_kwd = self.match_keyword('scenario', line)
         if scenario_kwd:
             name = line[len(scenario_kwd) + 1:].strip()
-            self.statement = model.Scenario(scenario_kwd, name, tags=self.tags)
+            self.statement = model.Scenario(self.filename, self.line,
+                                            scenario_kwd, name, tags=self.tags)
             self.tags = []
-            self.feature.scenarios.append(self.statement)
+            self.feature.add_scenario(self.statement)
             self.state = 'steps'
             return True
 
         scenario_outline_kwd = self.match_keyword('scenario_outline', line)
         if scenario_outline_kwd:
             name = line[len(scenario_outline_kwd) + 1:].strip()
-            self.statement = model.ScenarioOutline(scenario_outline_kwd, name,
+            self.statement = model.ScenarioOutline(self.filename, self.line,
+                                                   scenario_outline_kwd, name,
                                                    tags=self.tags)
             self.tags = []
-            self.feature.scenarios.append(self.statement)
+            self.feature.add_scenario(self.statement)
             self.state = 'steps'
             return True
 
@@ -151,18 +155,20 @@ class Parser(object):
         scenario_kwd = self.match_keyword('scenario', line)
         if scenario_kwd:
             name = line[len(scenario_kwd) + 1:].strip()
-            self.statement = model.Scenario(scenario_kwd, name, tags=self.tags)
+            self.statement = model.Scenario(self.filename, self.line,
+                                            scenario_kwd, name, tags=self.tags)
             self.tags = []
-            self.feature.scenarios.append(self.statement)
+            self.feature.add_scenario(self.statement)
             return True
 
         scenario_outline_kwd = self.match_keyword('scenario_outline', line)
         if scenario_outline_kwd:
             name = line[len(scenario_outline_kwd) + 1:].strip()
-            self.statement = model.ScenarioOutline(scenario_outline_kwd, name,
+            self.statement = model.ScenarioOutline(self.filename, self.line,
+                                                   scenario_outline_kwd, name,
                                                    tags=self.tags)
             self.tags = []
-            self.feature.scenarios.append(self.statement)
+            self.feature.add_scenario(self.statement)
             self.state = 'steps'
             return True
 
@@ -171,7 +177,8 @@ class Parser(object):
             if not isinstance(self.statement, model.ScenarioOutline):
                 raise ParserError('Examples must only appear inside scenario outline', self.line)
             name = line[len(examples_kwd) + 1:].strip()
-            self.examples = model.Examples(examples_kwd, name)
+            self.examples = model.Examples(self.filename, self.line,
+                                           examples_kwd, name)
             self.statement.examples.append(self.examples)
             self.state = 'table'
             return True
@@ -188,8 +195,6 @@ class Parser(object):
         return False
 
     def action_multiline(self, line):
-        print repr(line)
-        print repr(self.multiline_terminator)
         if line.startswith(self.multiline_terminator):
             step = self.statement.steps[-1]
             step.string = self.lines
@@ -205,7 +210,6 @@ class Parser(object):
 
     def action_table(self, line):
         if not line.startswith('|'):
-            print 'GLERK', repr(self.examples)
             if self.examples:
                 self.examples.table = self.table
                 self.examples = None
@@ -244,9 +248,7 @@ class Parser(object):
                     step_type = self.last_step
                 else:
                     self.last_step = step_type
-                step = model.Step(kw, step_type, name)
-                print repr(self.statement)
-                print repr(self.statement.steps)
+                step = model.Step(self.filename, self.line, kw, step_type, name)
                 self.statement.steps.append(step)
                 return True
         return False
