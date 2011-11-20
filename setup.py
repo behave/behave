@@ -4,7 +4,7 @@ import sys
 
 from setuptools import find_packages, setup
 
-requirements = ['LEPL>=5.0.0', 'PyYAML']
+requirements = ['PyYAML']
 major, minor = sys.version_info[:2]
 if major == 2 and minor < 7:
     requirements.append('argparse')
