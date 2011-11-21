@@ -100,9 +100,7 @@ class PrettyFormatter(object):
     def match(self, match):
         self._match = match
         self.print_statement()
-        # self.print_step('executing', self._match.arguments,
-        #                self._match.location, False)
-        self.print_step('executing', [],
+        self.print_step('executing', self._match.arguments,
                         self._match.location, False)
         self.stream.flush()
 
