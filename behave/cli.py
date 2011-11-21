@@ -48,30 +48,6 @@ are more than 3 occurrences of the @qa tag:
 --tags @qa:3
 """.strip()
 
-class Language(object):
-    @classmethod
-    def load(cls, language_name, default_language_name="en"):
-        directory, _f = os.path.split(os.path.abspath(__file__))
-        language_path = os.path.join(directory, 'languages.yml')
-        languages = yaml.load(open(language_path))
-        if language_name not in languages:
-            return None
-        return cls(languages[language_name], languages[default_language_name])
-
-    def __init__(self, mappings, default_mappings=None):
-        self.mappings = mappings
-        self.default_mappings = default_mappings
-
-    def words(self, key):
-        """
-        Give all the synonymns of a word in the requested language
-        (or the default language if no word is available).
-        """
-        if self.default_mappings is not None and key not in self.mappings:
-            return self.default_mappings[key].encode('utf').split("|")
-        else:
-            return self.mappings[key].encode('utf').split("|")
-
 def feature_files(paths):
     files = []
     for path in paths:
