@@ -151,7 +151,7 @@ class Runner(object):
         self.load_hooks()
         self.load_step_definitions()
         
-        context = Context()
+        context = self.context = Context()
         stream = sys.stdout
         
         self.run_hook('before_all', context)
@@ -162,78 +162,38 @@ class Runner(object):
             feature = parser.parse_file(os.path.abspath(filename))
             self.features.append(feature)
 
-            formatter = PrettyFormatter(stream, False, True)
-            formatter.uri(filename)
-            formatter.feature(feature)
+            self.formatter = PrettyFormatter(stream, False, True)
+            self.formatter.uri(filename)
+            self.formatter.feature(feature)
 
             self.run_hook('before_feature', context, feature)
 
             if feature.background:
-                formatter.background(feature.background)
+                self.formatter.background(feature.background)
 
             for scenario in feature:
                 tags = feature.tags + scenario.tags
                 run_scenario = self.config.tags.check(tags)
                 run_steps = run_scenario
 
-                formatter.scenario(scenario)
+                self.formatter.scenario(scenario)
 
                 context._push()
 
                 if run_scenario:
                     self.run_hook('before_scenario', context, scenario)
 
-                stdout_capture = StringIO.StringIO()
-                log = MemoryHandler()
-                log.inveigle()
+                self.stdout_capture = StringIO.StringIO()
+                self.log = MemoryHandler()
+                self.log.inveigle()
 
                 for step in scenario:
-                    formatter.step(step)
+                    self.formatter.step(step)
 
                 for step in scenario:
                     if run_steps:
-                        match = self.steps.find_match(step)
-                        if match is None:
-                            self.undefined.append(step)
-                            formatter.match(model.NoMatch())
-                            step.status = 'undefined'
-                            formatter.result(step)
+                        if not self.run_step(step):
                             run_steps = False
-                        else:
-                            formatter.match(match)
-                            self.run_hook('before_step', context, step)
-                            old_stdout = sys.stdout
-                            sys.stdout = stdout_capture
-                            try:
-                                start = time.time()
-                                match.run(context)
-                                step.status = 'passed'
-                            except AssertionError, e:
-                                step.status = 'failed'
-                                error = 'Assertion Failed: %s' % (e, )
-                            except Exception:
-                                step.status = 'failed'
-                                error = traceback.format_exc()
-
-                            step.duration = time.time() - start
-
-                            # stop snarfing these guys
-                            log.abandon()
-                            sys.stdout = old_stdout
-
-                            # flesh out the failure with details
-                            if step.status == 'failed':
-                                output = stdout_capture.getvalue()
-                                if output:
-                                    error += '\nCaptured stdout:\n' + output
-                                if log:
-                                    error += '\nCaptured logging:\n' + \
-                                        log.getvalue()
-                                step.error_message = error
-                                run_steps = False
-
-                            formatter.result(step)
-                            self.run_hook('after_step', context, step)
                     else:
                         step.status = 'skipped'
                         if scenario.status is None:
@@ -244,7 +204,7 @@ class Runner(object):
 
                 context._pop()
 
-            formatter.eof()
+            self.formatter.eof()
 
             self.run_hook('after_feature', context, feature)
 
@@ -255,6 +215,53 @@ class Runner(object):
         self.run_hook('after_all', context)
     
         self.calculate_summaries()
+    
+    def run_step(self, step):
+        match = self.steps.find_match(step)
+        if match is None:
+            self.undefined.append(step)
+            self.formatter.match(model.NoMatch())
+            step.status = 'undefined'
+            self.formatter.result(step)
+            return False
+
+        keep_going = True
+        
+        self.formatter.match(match)
+        self.run_hook('before_step', self.context, step)
+        old_stdout = sys.stdout
+        sys.stdout = self.stdout_capture
+        try:
+            start = time.time()
+            match.run(self.context)
+            step.status = 'passed'
+        except AssertionError, e:
+            step.status = 'failed'
+            error = 'Assertion Failed: %s' % (e, )
+        except Exception:
+            step.status = 'failed'
+            error = traceback.format_exc()
+
+        step.duration = time.time() - start
+
+        # stop snarfing these guys
+        self.log.abandon()
+        sys.stdout = old_stdout
+
+        # flesh out the failure with details
+        if step.status == 'failed':
+            output = self.stdout_capture.getvalue()
+            if output:
+                error += '\nCaptured stdout:\n' + output
+            if log:
+                error += '\nCaptured logging:\n' + self.log.getvalue()
+            step.error_message = error
+            keep_going = False
+
+        self.formatter.result(step)
+        self.run_hook('after_step', self.context, step)
+        
+        return keep_going
         
     def calculate_summaries(self):
         for feature in self.features:
