@@ -10,7 +10,7 @@ class Matcher(object):
         self.string = string
         
     def check_match(self, step):
-        raise NotImplemented
+        raise NotImplementedError
 
     def match(self, step):
         result = self.check_match(step)
@@ -29,7 +29,7 @@ class ParseMatcher(Matcher):
             return None
             
         args = []
-        for index, arg in enumerate(result.fixed):
+        for index, arg in enumerate(result.fixed, 1):
             start, end = result.spans[index]
             args.append(model.Argument(start, end, step[start:end], arg))
         for name, arg in result.named.items():
@@ -49,8 +49,7 @@ class RegexMatcher(Matcher):
 
         groupindex = dict((y, x) for x, y in self.regex.groupindex.items())
         args = []
-        for index, group in enumerate(m.groups()):
-            index += 1
+        for index, group in enumerate(m.groups(), 1):
             name = groupindex.get(index, None)
             args.append(model.Argument(m.start(index), m.end(index), group,
                                        group, name))
@@ -68,5 +67,5 @@ def step_matcher(name):
     global current_matcher
     current_matcher = matcher_mapping[name]
 
-def get_matcher(match, string):
-    return current_matcher(match, string)
+def get_matcher(func, string):
+    return current_matcher(func, string)
