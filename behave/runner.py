@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from behave import model
+from behave import matchers, model
 
 class AttrDict(dict):
     def __getattr__(self, attr):
@@ -49,28 +49,18 @@ class StepRegistry(object):
             'step': [],
         }
 
-    def add_definition(self, keyword, regex, func):
-        match = model.Match(func)
-        self.steps[keyword.lower()].append((regex, match))
+    def add_definition(self, keyword, string, func):
+        self.steps[keyword.lower()].append(matchers.get_matcher(func, string))
 
     def find_match(self, step):
         candidates = self.steps[step.step_type]
         if step.step_type is not 'step':
             candidates += self.steps['step']
 
-        for regex, match in candidates:
-            m = regex.match(step.name)
-            if not m:
-                continue
-
-            groupindex = dict((y, x) for x, y in regex.groupindex.items())
-            args = []
-            for index, group in enumerate(m.groups()):
-                index += 1
-                name = groupindex.get(index, None)
-                args.append(model.Argument(m.start(index), group, name))
-
-            return match.with_arguments(args)
+        for matcher in candidates:
+            result = matcher.match(step.name)
+            if result:
+                return result
 
         return None
 
