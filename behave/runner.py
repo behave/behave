@@ -194,7 +194,7 @@ class Runner(object):
                     if run_steps:
                         match = self.steps.find_match(step)
                         if match is None:
-                            undefined.append(step)
+                            self.undefined.append(step)
                             formatter.match(model.NoMatch())
                             step.status = 'undefined'
                             formatter.result(step)

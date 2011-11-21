@@ -2,6 +2,7 @@ import sys
 
 from behave import matchers, model, parser
 from behave.configuration import Configuration
+from behave.formatter.ansi_escapes import escapes
 from behave.runner import Runner
 
 TAG_HELP = """
