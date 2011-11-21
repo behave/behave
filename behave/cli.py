@@ -263,8 +263,7 @@ def main():
                 continue
             printed.add(step)
 
-            func_name = step.name.lower().replace(' ', '_')
-            msg += "@" + step.keyword + "('" + step.name + "')\n"
+            msg += "@" + step.step_type + "(" + repr(step.name) + ")\n"
             msg += "def step(context):\n"
             msg += "    assert False\n\n"
 
