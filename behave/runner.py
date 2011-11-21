@@ -106,9 +106,9 @@ class Runner(object):
                 self.steps.add_definition(step_type, string, func)
                 return func
             return wrapper
-        return decorator
-        
-    def load_steps(self, extra_step_paths=[]):
+        return decorator        
+    
+    def load_step_definitions(self, extra_step_paths=[]):
         steps_dir = os.path.join(self.base_dir, 'steps')
 
         # allow steps to import other stuff from the steps dir
@@ -149,7 +149,7 @@ class Runner(object):
     
     def run(self):
         self.load_hooks()
-        self.load_steps()
+        self.load_step_definitions()
         
         context = Context()
         stream = sys.stdout
