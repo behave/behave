@@ -1,28 +1,25 @@
-import re
-import types
-
-from .runner import hooks, steps
+from .runner import steps
 
 __all__ = 'Given given When when Then then Step step'.split()
 
-def make_wrapper(regex, step_type):
+def make_wrapper(string, step_type):
     def wrapper(func):
-        steps.add_definition(step_type, re.compile(regex), func)
+        steps.add_definition(step_type, string, func)
         return func
     return wrapper
 
-def given(regex):
-    return make_wrapper(regex, 'given')
+def given(string):
+    return make_wrapper(string, 'given')
 Given = given
 
-def when(regex):
-    return make_wrapper(regex, 'when')
+def when(string):
+    return make_wrapper(string, 'when')
 When = when
 
-def then(regex):
-    return make_wrapper(regex, 'then')
+def then(string):
+    return make_wrapper(string, 'then')
 Then = then
 
-def step(regex):
-    return make_wrapper(regex, 'step')
+def step(string):
+    return make_wrapper(string, 'step')
 Step = step
