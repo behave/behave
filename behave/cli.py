@@ -152,6 +152,10 @@ def main():
             if run_scenario:
                 run_hook('before_scenario', context, scenario)
 
+            stdout_capture = StringIO.StringIO()
+            log = MemoryHandler()
+            log.inveigle()
+            
             for step in scenario:
                 formatter.step(step)
 
@@ -168,9 +172,7 @@ def main():
                         formatter.match(match)
                         run_hook('before_step', context, step)
                         old_stdout = sys.stdout
-                        stdout_capture = sys.stdout = StringIO.StringIO()
-                        log = MemoryHandler()
-                        log.inveigle()
+                        sys.stdout = stdout_capture
                         try:
                             start = time.time()
                             match.run(context)
