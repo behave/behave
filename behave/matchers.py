@@ -62,11 +62,11 @@ matcher_mapping = {
     're': RegexMatcher,
 }
 
-default_matcher = 're'
+current_matcher = RegexMatcher
 
 def step_matcher(name):
-    global default_matcher
-    default_matcher = name
+    global current_matcher
+    current_matcher = matcher_mapping[name]
 
 def get_matcher(match, string):
-    return matcher_mapping[default_matcher](match, string)
+    return current_matcher(match, string)
