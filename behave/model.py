@@ -10,9 +10,11 @@ def ensure_unicode(value):
     return value
 
 class Argument(object):
-    def __init__(self, offset, value, name=None):
-        self.offset = offset
-        self.value = ensure_unicode(value)
+    def __init__(self, start, end, original, value, name=None):
+        self.start = start
+        self.end = end
+        self.original = original
+        self.value = value
         self.name = name
 
 class BasicStatement(object):

@@ -249,13 +249,13 @@ class PrettyFormatter(object):
 
         text_start = 0
         for arg in arguments:
-            if arg.offset != 0:
-                text = step_name[text_start:arg.offset].encode('utf8')
+            if arg.start:
+                text = step_name[text_start:arg.start].encode('utf8')
                 self.stream.write(text_format.text(text))
                 line_length += len(text)
-            self.stream.write(arg_format.text(arg.value))
-            line_length += len(arg.value)
-            text_start = arg.offset + len(unicode(arg.value))
+            self.stream.write(arg_format.text(arg.original))
+            line_length += len(arg.original)
+            text_start = arg.end
 
         if text_start != len(step_name):
             text = step_name[text_start:].encode('utf8')

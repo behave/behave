@@ -12,26 +12,27 @@ class Matcher(object):
 
     def match(self, step):
         result = self.check_match(step)
-        if result is False:
+        if result is None:
             return None
         return model.Match(self.func, result)
 
 class RegexMatcher(Matcher):
-    def __init__(self, func, regex):
-        super(RegexMatcher, self).__init__(func, regex)
+    def __init__(self, func, string):
+        super(RegexMatcher, self).__init__(func, string)
         self.regex = re.compile(self.string)
     
     def check_match(self, step):
         m = self.regex.match(step)
         if not m:
-            return False
+            return None
 
         groupindex = dict((y, x) for x, y in self.regex.groupindex.items())
         args = []
         for index, group in enumerate(m.groups()):
             index += 1
             name = groupindex.get(index, None)
-            args.append(model.Argument(m.start(index), group, name))
+            args.append(model.Argument(m.start(index), m.end(index), group,
+                                       group, name))
         
         return args
 
