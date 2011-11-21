@@ -101,11 +101,12 @@ def main():
         sys.path.insert(0, steps_dir)
 
         for name in os.listdir(steps_dir):
-            step_globals = {
-                'Given': decorators.Given,
-                'When': decorators.When,
-                'Then': decorators.Then,
-            }
+            step_globals = {}
+            for step_type in ('given', 'when', 'then', 'step'):
+                step_globals[step_type] = getattr(decorators, step_type)
+                step_type = step_type.title()
+                step_globals[step_type] = getattr(decorators, step_type)
+
             if name.endswith('.py'):
                 execfile(os.path.join(steps_dir, name), step_globals)
 

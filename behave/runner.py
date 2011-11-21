@@ -18,13 +18,13 @@ class Context(object):
 
     def _pop(self):
         self._stack.pop(0)
-    
+
     def _dump(self):
         for level, frame in enumerate(self._stack):
             print 'Level %d' % level
             print repr(frame)
 
-    def __getattr__(self, attr):            
+    def __getattr__(self, attr):
         for frame in self._stack:
             if attr in frame:
                 return frame[attr]
@@ -46,6 +46,7 @@ class StepRegistry(object):
             'given': [],
             'when': [],
             'then': [],
+            'step': [],
         }
 
     def add_definition(self, keyword, regex, func):
@@ -53,7 +54,11 @@ class StepRegistry(object):
         self.steps[keyword.lower()].append((regex, match))
 
     def find_match(self, step):
-        for regex, match in self.steps[step.step_type.lower()]:
+        candidates = self.steps[step.step_type]
+        if step.step_type is not 'step':
+            candidates += self.steps['step']
+
+        for regex, match in candidates:
             m = regex.match(step.name)
             if not m:
                 continue
