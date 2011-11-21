@@ -279,6 +279,7 @@ class PrettyFormatter(object):
         if not tags:
             return
 
+        tags = ['@' + tag for tag in tags]
         self.stream.write(indent + ' '.join(tags) + '\n')
 
     def print_comments(self, comments, indent):
