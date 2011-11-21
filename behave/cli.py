@@ -9,7 +9,7 @@ import logging
 
 import yaml
 
-from behave import decorators, model, parser, runner
+from behave import decorators, matchers, model, parser, runner
 from behave.configuration import Configuration
 from behave.formatter.ansi_escapes import escapes
 from behave.formatter.pretty_formatter import PrettyFormatter
@@ -101,7 +101,7 @@ def main():
         sys.path.insert(0, steps_dir)
 
         for name in os.listdir(steps_dir):
-            step_globals = {}
+            step_globals = {'step_matcher': matchers.step_matcher}
             for step_type in ('given', 'when', 'then', 'step'):
                 step_globals[step_type] = getattr(decorators, step_type)
                 step_type = step_type.title()
