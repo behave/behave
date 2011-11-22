@@ -273,7 +273,7 @@ class Runner(object):
             output = self.stdout_capture.getvalue()
             if output:
                 error += '\nCaptured stdout:\n' + output
-            if log:
+            if self.log:
                 error += '\nCaptured logging:\n' + self.log.getvalue()
             step.error_message = error
             keep_going = False
