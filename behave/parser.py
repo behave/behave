@@ -81,6 +81,8 @@ class Parser(object):
             self.action_table('')
 
         feature = self.feature
+        feature.parser = self
+        self.reset()
         return feature
 
     def action(self, line):
@@ -145,7 +147,9 @@ class Parser(object):
         return True
 
     def action_steps(self, line):
-        if self.parse_step(line):
+        step = self.parse_step(line)
+        if step:
+            self.statement.steps.append(step)
             return True
 
         if line.startswith('@'):
@@ -249,7 +253,6 @@ class Parser(object):
                 else:
                     self.last_step = step_type
                 step = model.Step(self.filename, self.line, kw, step_type, name)
-                self.statement.steps.append(step)
-                return True
-        return False
+                return step
+        return None
 

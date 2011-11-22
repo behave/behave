@@ -77,6 +77,8 @@ class Runner(object):
         self.failed = []
         self.undefined = []
         self.skipped = []
+        
+        self.feature = None
 
         self.feature_summary = {'passed': 0, 'failed': 0, 'skipped': 0}
         self.scenario_summary = {'passed': 0, 'failed': 0, 'skipped': 0}
@@ -108,13 +110,26 @@ class Runner(object):
             return wrapper
         return decorator        
     
+    def execute_steps(self, steps):
+        for step in steps.strip().split('\n'):
+            step = self.feature.parser.parse_step(step.strip())
+            if step is None:
+                return False
+            passed = self.run_step(step, quiet=True)
+            if not passed:
+                return False
+        return True
+        
     def load_step_definitions(self, extra_step_paths=[]):
         steps_dir = os.path.join(self.base_dir, 'steps')
 
         # allow steps to import other stuff from the steps dir
         sys.path.insert(0, steps_dir)
 
-        step_globals = {'step_matcher': matchers.step_matcher}
+        step_globals = {
+            'execute_steps': self.execute_steps,
+            'step_matcher': matchers.step_matcher,
+        }
         for step_type in ('given', 'when', 'then', 'step'):
             step_globals[step_type] = self.make_step_decorator(step_type)
             step_globals[step_type.title()] = step_globals[step_type]
@@ -161,6 +176,7 @@ class Runner(object):
 
             feature = parser.parse_file(os.path.abspath(filename))
             self.features.append(feature)
+            self.feature = feature
 
             self.formatter = PrettyFormatter(stream, False, True)
             self.formatter.uri(filename)
@@ -199,6 +215,8 @@ class Runner(object):
                         if scenario.status is None:
                             scenario.status = 'skipped'
 
+                self.log.abandon()
+
                 if run_scenario:
                     self.run_hook('after_scenario', context, scenario)
 
@@ -216,18 +234,21 @@ class Runner(object):
     
         self.calculate_summaries()
     
-    def run_step(self, step):
+    def run_step(self, step, quiet=False):
         match = self.steps.find_match(step)
         if match is None:
             self.undefined.append(step)
-            self.formatter.match(model.NoMatch())
+            if not quiet:
+                self.formatter.match(model.NoMatch())
             step.status = 'undefined'
-            self.formatter.result(step)
+            if not quiet:
+                self.formatter.result(step)
             return False
 
         keep_going = True
         
-        self.formatter.match(match)
+        if not quiet:
+            self.formatter.match(match)
         self.run_hook('before_step', self.context, step)
         old_stdout = sys.stdout
         sys.stdout = self.stdout_capture
@@ -245,7 +266,6 @@ class Runner(object):
         step.duration = time.time() - start
 
         # stop snarfing these guys
-        self.log.abandon()
         sys.stdout = old_stdout
 
         # flesh out the failure with details
@@ -258,7 +278,8 @@ class Runner(object):
             step.error_message = error
             keep_going = False
 
-        self.formatter.result(step)
+        if not quiet:
+            self.formatter.result(step)
         self.run_hook('after_step', self.context, step)
         
         return keep_going

@@ -52,6 +52,7 @@ class Feature(TagStatement, Replayable):
         self.description = description or []
         self.scenarios = []
         self.background = background
+        self.parser = None
 
         for scenario in scenarios:
             self.add_scenario(scenario)
