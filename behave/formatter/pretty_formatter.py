@@ -52,7 +52,7 @@ class PrettyFormatter(object):
         self.statement = None
         self.indentations = []
         self.display_width = get_terminal_size()[0]
-        self.statement_lines = 0
+        self.step_lines = 0
 
         self.formats = None
 
@@ -105,7 +105,10 @@ class PrettyFormatter(object):
         self.stream.flush()
 
     def result(self, result):
-        self.stream.write(up(1 + self.statement_lines))
+        lines = self.step_lines + 1
+        if result.table:
+            lines += len(result.table.rows) + 1
+        self.stream.write(up(lines))
         arguments = []
         location = None
         if self._match:
@@ -138,22 +141,23 @@ class PrettyFormatter(object):
         self.replay()
         self.stream.flush()
 
-    def table(self, rows):
+    def table(self, table):
         cell_lengths = []
-        for row in rows:
-            lengths = [len(escape_cell(c)) for c in row.cells]
+        all_rows = [table.headings] + table.rows
+        for row in all_rows:
+            lengths = [len(escape_cell(c)) for c in row]
             cell_lengths.append(lengths)
 
         max_lengths = []
         for col in range(0, len(cell_lengths[0])):
             max_lengths.append(max([c[col] for c in cell_lengths]))
 
-        for i, row in enumerate(rows):
-            for comment in row.comments:
-                self.stream.write('      %s\n' % comment.value)
+        for i, row in enumerate(all_rows):
+            #for comment in row.comments:
+            #    self.stream.write('      %s\n' % comment.value)
             j = -1
             self.stream.write('      |')
-            for cell, max_length in zip(row.cells, max_lengths):
+            for cell, max_length in zip(row, max_lengths):
                 j += 1
                 self.stream.write(' ')
                 self.stream.write(self.color(cell, None, j))
@@ -249,10 +253,9 @@ class PrettyFormatter(object):
 
         text_start = 0
         for arg in arguments:
-            if arg.start:
-                text = step_name[text_start:arg.start].encode('utf8')
-                self.stream.write(text_format.text(text))
-                line_length += len(text)
+            text = step_name[text_start:arg.start].encode('utf8')
+            self.stream.write(text_format.text(text))
+            line_length += len(text)
             self.stream.write(arg_format.text(arg.original))
             line_length += len(arg.original)
             text_start = arg.end
@@ -266,12 +269,12 @@ class PrettyFormatter(object):
         self.stream.write(self.format('comments').text(location) + "\n")
         line_length += len(location)
 
-        self.statement_lines = int((line_length - 1) / self.display_width)
+        self.step_lines = int((line_length - 1) / self.display_width)
 
         if step.string:
             self.doc_string(step.string)
         if step.table:
-            self.table(step.table.rows)
+            self.table(step.table)
 
     def print_tags(self, tags, indent):
         if not tags:
