@@ -254,6 +254,8 @@ class Runner(object):
         sys.stdout = self.stdout_capture
         try:
             start = time.time()
+            if step.table:
+                self.context.table = step.table
             match.run(self.context)
             step.status = 'passed'
         except AssertionError, e:
