@@ -35,6 +35,7 @@ class ParseMatcher(Matcher):
         for name, arg in result.named.items():
             start, end = result.spans[name]
             args.append(model.Argument(start, end, step[start:end], arg, name))
+        args.sort(key=lambda x: x.start)
         return args
 
 class RegexMatcher(Matcher):
