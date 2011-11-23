@@ -168,6 +168,7 @@ class Runner(object):
         
         context = self.context = Context()
         stream = self.config.output
+        monochrome = self.config.no_color
         
         self.run_hook('before_all', context)
 
@@ -178,7 +179,7 @@ class Runner(object):
             self.features.append(feature)
             self.feature = feature
 
-            self.formatter = PrettyFormatter(stream, False, True)
+            self.formatter = PrettyFormatter(stream, monochrome, True)
             self.formatter.uri(filename)
             self.formatter.feature(feature)
 

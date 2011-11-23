@@ -63,7 +63,8 @@ class PrettyFormatter(object):
         #self.print_comments(feature.comments, '')
         self.print_tags(feature.tags, '')
         self.stream.write("%s: %s" % (feature.keyword, feature.name))
-        self.stream.write(" %s# %s%s\n" % (escapes['comments'], feature.location, escapes['reset']))
+        format = self.format('comments')
+        self.stream.write(format.text(" # %s\n" % feature.location))
         self.print_description(feature.description, '  ', False)
         self.stream.flush()
 
@@ -101,20 +102,21 @@ class PrettyFormatter(object):
         self._match = match
         self.print_statement()
         self.print_step('executing', self._match.arguments,
-                        self._match.location, False)
+                        self._match.location, self.monochrome)
         self.stream.flush()
 
     def result(self, result):
-        lines = self.step_lines + 1
-        if result.table:
-            lines += len(result.table.rows) + 1
-        self.stream.write(up(lines))
-        arguments = []
-        location = None
-        if self._match:
-            arguments = self._match.arguments
-            location = self._match.location
-        self.print_step(result.status, arguments, location, True)
+        if not self.monochrome:
+            lines = self.step_lines + 1
+            if result.table:
+                lines += len(result.table.rows) + 1
+            self.stream.write(up(lines))
+            arguments = []
+            location = None
+            if self._match:
+                arguments = self._match.arguments
+                location = self._match.location
+            self.print_step(result.status, arguments, location, True)
         if result.error_message:
             self.stream.write(self.indent(result.error_message.strip(),
                                           '      '))
