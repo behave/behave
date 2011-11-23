@@ -48,7 +48,7 @@ def main():
     if not config.paths:
         config.paths = ['features']
 
-    stream = sys.stdout
+    stream = config.output
 
     runner = Runner(config)
     runner.run()

@@ -28,13 +28,8 @@ parser.add_argument('-n', '--name', action="append",
                     help="""Only execute the feature elements which match part
                             of the given name. If this option is given more than
                             once, it will match against all the given names.""")
-parser.add_argument('-o', '--out', action='append', metavar='FILE|DIR',
-                    help="""Write to specified file or directory instead of
-                            stdout. This option applies to the immediately
-                            preceding formatter or the default formatter if no
-                            formatters have yet been specified. Check the
-                            documentation for each formatter to see if they
-                            require a file or a directory.""")
+parser.add_argument('-o', '--outfile', metavar='FILE',
+                    help="Write to specified file instead of stdout.")
 parser.add_argument('-q', '--quiet', action='store_true',
                     help="Alias for --no-snippets --no-source.")
 parser.add_argument('-s', '--no-source', action='store_true',
@@ -64,12 +59,16 @@ parser.add_argument('paths', nargs='*')
 class Configuration(object):
     def __init__(self):
         self.formatters = []
-        self.output = sys.stdout
-        
+
         args = parser.parse_args()
         for key, value in args.__dict__.items():
             if key.startswith('_'):
                 continue
             setattr(self, key, value)
-        
+
+        if args.outfile and args.outfile != '-':
+            self.output = open(args.outfile, 'w')
+        else:
+            self.output = sys.stdout
+
         self.tags = TagExpression(self.tags or [])

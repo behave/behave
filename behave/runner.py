@@ -167,7 +167,7 @@ class Runner(object):
         self.load_step_definitions()
         
         context = self.context = Context()
-        stream = sys.stdout
+        stream = self.config.output
         
         self.run_hook('before_all', context)
 
@@ -228,7 +228,7 @@ class Runner(object):
 
             context._pop()
 
-            print ''
+            stream.write('\n')
 
         self.run_hook('after_all', context)
     
