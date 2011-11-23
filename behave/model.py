@@ -1,3 +1,4 @@
+import collections
 import copy
 import itertools
 import os.path
@@ -202,9 +203,9 @@ class Table(Replayable):
                 return False
         return True
 
-    def iterrows(self):
-        for row in self.rows:
-            yield dict(zip(self.headings, row))
+    def __iter__(self):
+        Row = collections.namedtuple('Row', self.headings)
+        return iter([Row(*row) for row in self.rows])
 
 class Tag(object):
     def __init__(self, name, line):
