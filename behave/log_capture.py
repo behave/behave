@@ -36,7 +36,7 @@ class MemoryHandler(BufferingHandler):
         return matched
 
     def getvalue(self):
-        return '\n'.join('%8s %s' % (record.levelname, record.getMessage())
+        return '\n'.join('%s %s %s' % (record.name, record.levelname, record.getMessage())
             for record in self.buffer)
 
     def findEvent(self, pattern):
