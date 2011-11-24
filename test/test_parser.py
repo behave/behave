@@ -631,8 +631,7 @@ Feature: Stuff
   Scenario: Failing at stuff
     And we should fail
 """.lstrip()
-        with assert_raises(parser.ParserError):
-            feature = parser.parse_feature(doc)
+        assert_raises(parser.ParserError, parser.parse_feature, doc)
 
     def test_fails_to_parse_when_but_is_out_of_order(self):
         doc = """
@@ -641,8 +640,7 @@ Feature: Stuff
   Scenario: Failing at stuff
     But we shall fail
 """.lstrip()
-        with assert_raises(parser.ParserError):
-            feature = parser.parse_feature(doc)
+        assert_raises(parser.ParserError, parser.parse_feature, doc)
 
     def test_fails_to_parse_when_examples_is_in_the_wrong_place(self):
         doc = """
@@ -654,8 +652,7 @@ Feature: Stuff
     Examples: Failure
       | Fail | Wheel|
 """.lstrip()
-        with assert_raises(parser.ParserError):
-            feature = parser.parse_feature(doc)
+        assert_raises(parser.ParserError, parser.parse_feature, doc)
 
     def compare_steps(self, steps, expected):
         have = [(s.step_type, s.keyword, s.name, s.string, s.table) for s in steps]
