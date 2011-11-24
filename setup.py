@@ -17,7 +17,7 @@ setup(
     author_email='benno@jeamland.net',
     url='http://github.com/jeamland/behave',
     packages=find_packages(),
-    package_data={'behave': ['languages.yml']},
+    package_data={'behave': ['i18n.yml']},
     scripts=['bin/behave'],
     install_requires=requirements,
     classifiers=[

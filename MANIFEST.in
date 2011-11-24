@@ -1,2 +1,2 @@
 include README.rst MANIFEST.in
-include behave/languages.yml
+include behave/i18n.yml
