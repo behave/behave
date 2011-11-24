@@ -119,13 +119,14 @@ class Runner(object):
 
     def execute_steps(self, steps):
         for step in steps.strip().split('\n'):
-            step = self.feature.parser.parse_step(step.strip())
-            if step is None:
+            step = step.strip()
+            step_obj = self.feature.parser.parse_step(step)
+            if step_obj is None:
                 return False
-            passed = self.run_step(step, quiet=True)
+            passed = self.run_step(step_obj, quiet=True)
             if not passed:
-                return False
-        return True
+                assert False, "Sub-step failed: %s" % step
+        return
 
     def load_step_definitions(self, extra_step_paths=[]):
         steps_dir = os.path.join(self.base_dir, 'steps')
