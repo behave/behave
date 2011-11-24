@@ -41,17 +41,29 @@ plain-text and look something like::
 
     Scenario: Weaker opponent
       Given the ninja has a third level black-belt 
-      When attacked by a samurai
-      Then the ninja should engage the opponent
+       When attacked by a samurai
+       Then the ninja should engage the opponent
 
     Scenario: Stronger opponent
       Given the ninja has a third level black-belt 
-      When attacked by Chuck Norris
-      Then the ninja should run for his life
+       When attacked by Chuck Norris
+       Then the ninja should run for his life
 
 The "Given", "When" and "Then" parts of this prose form the actual steps
 that will be taken by *behave* in testing your system. These map to `Python
 step implementations`_.
+
+You may also include "And" as a step - this is renamed by behave to take
+the name of the preceding step, so::
+
+    Scenario: Stronger opponent
+      Given the ninja has a third level black-belt 
+       When attacked by Chuck Norris
+       Then the ninja should run for his life
+        And fall off a cliff
+
+In this case behave will look for a step definiton for "Then fall off a
+cliff".
 
 
 Python Step Implementations
@@ -62,7 +74,8 @@ Steps used in the scenarios are implemented in Python files in
 as long as they're *filename*.py in the steps directory.
 
 Steps are identified using decorators which match the predicate from the
-feature file: Given, When and Then. The decorator accepts a string
+feature file: given, when, then and step (variants with Title case are also
+available if that's your preference.) The decorator accepts a string
 containing the rest of the phrase used in the scenario step it belongs to.
 
 Given a Scenario::
@@ -72,22 +85,60 @@ Given a Scenario::
       Then I will see the account details
 
 Step code implementing the two steps here might look like (using selenium
-webdriver and some other helpers)::
+webdriver and some other helpers):
 
- @Given('I search for a valid account')
+ @given('I search for a valid account')
  def step(context):
     context.browser.get('http://localhost:8000/index')
     form = get_element(context.browser, tag='form')
     get_element(form, name="jt_msisdn").send_keys('61415551234)
     form.submit()
 
- @Then('I will see the account details')
+ @then('I will see the account details')
  def step(context):
     elements = find_elements(context.browser, id='no-account')
     eq_(elements, [], 'account not found')
     h = get_element(context.browser, id='account-head')
     ok_(h.text.startswith("Account 61415551234"),
         'Heading %r has wrong text' % h.text)
+
+The ``step`` decorator matches the step to *any* step type, "given", "when"
+or "then".
+
+
+Step Variables
+--------------
+
+You may find that your feature steps sometimes include very common phrases
+with only some variation. For example:
+
+  Scenario: look up a book
+    Given I search for a valid book
+     Then the result page will include "success"
+
+  Scenario: look up an invalid book
+    Given I search for a invalid book
+     Then the result page will include "failure"
+
+You may define a single Python step that handles both of those Then
+clauses (with a Given step that puts some text into
+``context.response``):
+
+ @then('the result page will include "{text}"')
+ def step(context, text):
+    if text not in context.response:
+        fail('%r not in %r' % (message, context.response)
+
+There's two parsers available by default in behave:
+
+**parse** (the default)
+  This is a `simple parser`_ that uses a format very much like the Python
+  builtin ``format()``. You must use named fields which are then matched to
+  your ``step()`` function arguments.
+**re**
+  This uses full regular expressions to parse the clause text. You will
+  need to use named groups "(?P<name>...)" to define the variables pulled
+  from the text and passed to your ``step()`` function.
 
 
 Environmental Controls
@@ -137,4 +188,45 @@ server and browser to run all your tests in. For example::
 Of course if you wish you could have a new browser for each feature, or to
 retain the database state between features or even initialise the database
 for to each scenario.
+
+
+Controlling Things With Tags
+============================
+
+You may also "tag" parts of your feature file. At the simplest level this
+allows behave to selectively check parts of your feature set.
+
+Given a feature file with:
+
+  Feature: Fight or flight
+    In order to increase the ninja survival rate,
+    As a ninja commander
+    I want my ninjas to decide whether to take on an 
+    opponent based on their skill levels
+
+    @slow
+    Scenario: Weaker opponent
+      Given the ninja has a third level black-belt 
+      When attacked by a samurai
+      Then the ninja should engage the opponent
+
+    Scenario: Stronger opponent
+      Given the ninja has a third level black-belt 
+      When attacked by Chuck Norris
+      Then the ninja should run for his life
+      
+then running ``behave --tags slow`` will run just the scenarios tagged
+``@slow``. If you wish to check everything *except* the slow ones then you
+may run ``behave --tags ~slow``.
+
+Another common use-case is to tag a scenario you're working on with
+``@wip`` and then ``behave --tags wip`` to just test that one case.
+
+Tag selection on the command-line may be combined:
+
+**--tags wip,slow**
+   This will select all the cases tagged *either* "wip" or "slow".
+
+**--tags wip --tags slow**
+   This will select all the cases tagged *both* "wip" and "slow".
 
