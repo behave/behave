@@ -1,3 +1,5 @@
+import os.path
+
 from mock import Mock, patch
 from nose.tools import *
 
@@ -121,3 +123,30 @@ class TestStepRegistry(object):
         assert registry.find_match(step) is magic_object
         for mock in step_defs[6:]:
             eq_(mock.match.call_count, 0)
+
+class TestRunner(object):
+    def test_load_hooks_execfiles_hook_file(self):
+        with patch('__builtin__.execfile') as ef:
+            with patch('os.path.exists') as exists:
+                exists.return_value = True
+                base_dir = 'fake/path'
+                hooks_path = os.path.join(base_dir, 'environment.py')
+
+                r = runner.Runner(None)
+                r.base_dir = base_dir
+                r.load_hooks()
+
+                exists.assert_called_with(hooks_path)
+                ef.assert_called_with(hooks_path, r.hooks)
+
+    def test_make_step_decorator_ends_up_adding_a_step_definition(self):
+        r = runner.Runner(None)
+        with patch.object(r.steps, 'add_definition') as add_definition:
+            step_type = object()
+            string = object()
+            func = object()
+
+            decorator = r.make_step_decorator(step_type)
+            wrapper = decorator(string)
+            assert wrapper(func) is func
+            add_definition.assert_called_with(step_type, string, func)
