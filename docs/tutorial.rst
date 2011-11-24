@@ -2,7 +2,7 @@
 Tutorial, behave!
 =================
 
-To make behave work for you create a directory called "features"
+To make *behave* work for you create a directory called "features"
 containing:
 
 1. `feature files`_ written by your Business Analyst / Sponsor / whoever
@@ -14,7 +14,14 @@ You may optionally include some `environmental controls`_ (code to run
 before and after steps, scenarios, features or the whole shooting
 match).
 
-A typical "features" directory tree might look like::
+The minimum requirement for a features directory is:
+
+  features/
+  features/everything.feature
+  features/steps/
+  features/steps/steps.py
+
+A more complex directory might look like:
 
   features/
   features/signup.feature
@@ -24,6 +31,7 @@ A typical "features" directory tree might look like::
   features/steps/
   features/steps/website.py
   features/steps/utils.py
+
 
 
 Feature Files
@@ -53,7 +61,7 @@ The "Given", "When" and "Then" parts of this prose form the actual steps
 that will be taken by *behave* in testing your system. These map to `Python
 step implementations`_.
 
-You may also include "And" as a step - this is renamed by behave to take
+You may also include "And" as a step - this is renamed by *behave* to take
 the name of the preceding step, so::
 
     Scenario: Stronger opponent
@@ -62,7 +70,7 @@ the name of the preceding step, so::
        Then the ninja should run for his life
         And fall off a cliff
 
-In this case behave will look for a step definiton for "Then fall off a
+In this case *behave* will look for a step definiton for "Then fall off a
 cliff".
 
 
@@ -85,7 +93,7 @@ Given a Scenario::
       Then I will see the account details
 
 Step code implementing the two steps here might look like (using selenium
-webdriver and some other helpers):
+webdriver and some other helpers)::
 
  @given('I search for a valid account')
  def step(context):
@@ -110,7 +118,7 @@ Step Variables
 --------------
 
 You may find that your feature steps sometimes include very common phrases
-with only some variation. For example:
+with only some variation. For example::
 
   Scenario: look up a book
     Given I search for a valid book
@@ -122,14 +130,14 @@ with only some variation. For example:
 
 You may define a single Python step that handles both of those Then
 clauses (with a Given step that puts some text into
-``context.response``):
+``context.response``)::
 
  @then('the result page will include "{text}"')
  def step(context, text):
     if text not in context.response:
         fail('%r not in %r' % (message, context.response)
 
-There's two parsers available by default in behave:
+There's two parsers available by default in *behave*:
 
 **parse** (the default)
   This is a `simple parser`_ that uses a format very much like the Python
@@ -206,9 +214,9 @@ Controlling Things With Tags
 ============================
 
 You may also "tag" parts of your feature file. At the simplest level this
-allows behave to selectively check parts of your feature set.
+allows *behave* to selectively check parts of your feature set.
 
-Given a feature file with:
+Given a feature file with::
 
   Feature: Fight or flight
     In order to increase the ninja survival rate,
@@ -252,9 +260,27 @@ them. On those objects there is an attribute called "tags" which is a list
 of the tag names attached, in the order they're found in the features file.
 
 There are also `environmental controls`_ specific to tags, so in the above
-example behave will attempt to invoke an ``environment.py`` function
+example *behave* will attempt to invoke an ``environment.py`` function
 ``before_tag`` and ``after_tag`` before and after the Scenario tagged
 ``@slow``, passing in the name "slow". If multiple tags are present then
 the functions will be called multiple times with each tag in the order
 they're defined in the feature file.
+
+Re-visiting the example from above; if only some of the features required a
+browser and web server then you could tag them ``@browser``::
+
+  def before_feature(context, feature):
+      model.init(environment='test')
+      if 'browser' in feature.tags:
+          context.server = simple_server.WSGIServer(('', 8000))
+          context.server.set_app(web_app.main(environment='test'))
+          context.thread = threading.Thread(target=context.server.serve_forever)
+          context.thread.start()
+          context.browser = webdriver.Chrome()
+
+  def after_feature(context, feature):
+      if 'browser' in feature.tags:
+          context.server.shutdown()
+          context.thread.join()
+          context.browser.quit()
 
