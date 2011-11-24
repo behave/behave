@@ -68,7 +68,7 @@ class StepRegistry(object):
 class Runner(object):
     def __init__(self, config):
         self.config = config
-        
+
         self.steps = StepRegistry()
         self.hooks = {}
 
@@ -77,12 +77,12 @@ class Runner(object):
         self.failed = []
         self.undefined = []
         self.skipped = []
-        
+
         self.feature = None
 
         self.feature_summary = {'passed': 0, 'failed': 0, 'skipped': 0}
         self.scenario_summary = {'passed': 0, 'failed': 0, 'skipped': 0}
-        self.step_summary = {'passed': 0, 'failed': 0, 'skipped': 0, 
+        self.step_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
                              'undefined': 0}
         self.duration = 0.0
 
@@ -96,20 +96,20 @@ class Runner(object):
                 break
         self.base_dir = base_dir
         sys.path.insert(0, base_dir)
-        
+
     def load_hooks(self, filename='environment.py'):
         hooks_path = os.path.join(self.base_dir, filename)
         if os.path.exists(hooks_path):
             execfile(hooks_path, self.hooks)
-    
+
     def make_step_decorator(self, step_type):
         def decorator(string):
             def wrapper(func):
                 self.steps.add_definition(step_type, string, func)
                 return func
             return wrapper
-        return decorator        
-    
+        return decorator
+
     def execute_steps(self, steps):
         for step in steps.strip().split('\n'):
             step = self.feature.parser.parse_step(step.strip())
@@ -119,7 +119,7 @@ class Runner(object):
             if not passed:
                 return False
         return True
-        
+
     def load_step_definitions(self, extra_step_paths=[]):
         steps_dir = os.path.join(self.base_dir, 'steps')
 
@@ -138,14 +138,14 @@ class Runner(object):
             for name in os.listdir(path):
                 if name.endswith('.py'):
                     execfile(os.path.join(path, name), step_globals)
-        
+
         # clean up the path
         sys.path.pop(0)
-    
+
     def run_hook(self, name, *args):
         if name in self.hooks:
             self.hooks[name](*args)
-    
+
     def feature_files(self):
         files = []
         for path in self.config.paths:
@@ -161,15 +161,15 @@ class Runner(object):
             else:
                 raise Exception("Can't find path: " + path)
         return files
-    
+
     def run(self):
         self.load_hooks()
         self.load_step_definitions()
-        
+
         context = self.context = Context()
         stream = self.config.output
         monochrome = self.config.no_color
-        
+
         self.run_hook('before_all', context)
 
         for filename in self.feature_files():
@@ -183,7 +183,10 @@ class Runner(object):
             self.formatter.uri(filename)
             self.formatter.feature(feature)
 
-            self.run_hook('before_feature', context, feature)
+            run_feature = self.config.tags.check(feature.tags)
+
+            if run_feature:
+                self.run_hook('before_feature', context, feature)
 
             if feature.background:
                 self.formatter.background(feature.background)
@@ -225,16 +228,17 @@ class Runner(object):
 
             self.formatter.eof()
 
-            self.run_hook('after_feature', context, feature)
+            if run_feature:
+                self.run_hook('after_feature', context, feature)
 
             context._pop()
 
             stream.write('\n')
 
         self.run_hook('after_all', context)
-    
+
         self.calculate_summaries()
-    
+
     def run_step(self, step, quiet=False):
         match = self.steps.find_match(step)
         if match is None:
@@ -247,7 +251,7 @@ class Runner(object):
             return False
 
         keep_going = True
-        
+
         if not quiet:
             self.formatter.match(match)
         self.run_hook('before_step', self.context, step)
@@ -284,9 +288,9 @@ class Runner(object):
         if not quiet:
             self.formatter.result(step)
         self.run_hook('after_step', self.context, step)
-        
+
         return keep_going
-        
+
     def calculate_summaries(self):
         for feature in self.features:
             self.feature_summary[feature.status or 'skipped'] += 1
@@ -295,4 +299,4 @@ class Runner(object):
                 for step in scenario:
                     self.step_summary[step.status or 'skipped'] += 1
                     self.duration += step.duration or 0.0
-        
+
