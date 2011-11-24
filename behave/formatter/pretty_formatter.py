@@ -30,13 +30,15 @@ def get_terminal_size():
     if sys.platform == 'windows':
         # Autodetecting the size of a Windows command window is left as an
         # exercise for the reader. Prizes may be awarded for the best answer.
-        return 80
+        return (80, 24)
 
-    import fcntl, termios, struct
-    h, w, hp, wp = struct.unpack('HHHH',
-        fcntl.ioctl(0, termios.TIOCGWINSZ,
-        struct.pack('HHHH', 0, 0, 0, 0)))
-    return w, h
+    try:
+        import fcntl, termios, struct
+        h, w, hp, wp = struct.unpack('HHHH',
+            fcntl.ioctl(0, termios.TIOCGWINSZ, struct.pack('HHHH', 0, 0, 0, 0)))
+        return w, h
+    except:
+        return (80, 24)
 
 class PrettyFormatter(object):
     def __init__(self, stream, monochrome, executing):
