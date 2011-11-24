@@ -99,7 +99,7 @@ webdriver and some other helpers)::
  def step(context):
     context.browser.get('http://localhost:8000/index')
     form = get_element(context.browser, tag='form')
-    get_element(form, name="jt_msisdn").send_keys('61415551234)
+    get_element(form, name="msisdn").send_keys('61415551234')
     form.submit()
 
  @then('I will see the account details')
