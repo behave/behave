@@ -186,6 +186,8 @@ class Runner(object):
             run_feature = self.config.tags.check(feature.tags)
 
             if run_feature:
+                for tag in feature.tags:
+                    self.run_hook('before_tag', context, tag)
                 self.run_hook('before_feature', context, feature)
 
             if feature.background:
@@ -201,6 +203,8 @@ class Runner(object):
                 context._push()
 
                 if run_scenario:
+                    for tag in scenario.tags:
+                        self.run_hook('before_tag', context, tag)
                     self.run_hook('before_scenario', context, scenario)
 
                 self.stdout_capture = StringIO.StringIO()
@@ -223,6 +227,8 @@ class Runner(object):
 
                 if run_scenario:
                     self.run_hook('after_scenario', context, scenario)
+                    for tag in scenario.tags:
+                        self.run_hook('after_tag', context, tag)
 
                 context._pop()
 
@@ -230,6 +236,8 @@ class Runner(object):
 
             if run_feature:
                 self.run_hook('after_feature', context, feature)
+                for tag in feature.tags:
+                    self.run_hook('after_tag', context, tag)
 
             context._pop()
 
