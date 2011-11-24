@@ -153,13 +153,25 @@ events during your testing:
   These run before and after each scenario is run.
 **before_feature(context, feature), after_feature(context, feature)**
   These run before and after each feature file is exercised.
+**before_tag(context, tag), after_tag(context, tag)**
+  These run before and after a section tagged with the given name. They are
+  invoked for each tag encountered in the order they're found in the
+  feature file. See  `controlling things with tags`_.
 **before_all(context), after_all(context)**
   These run before and after the whole shooting match.
 
 The feature, scenario and step objects represent the information parsed
-from the feature file.
+from the feature file. They have a number of attributes:
 
-.. todo: document what those objects might be
+**keyword**
+  "Feature", "Scenario", "Given", etc.
+**name**
+  The name of the step (the text after the keyword.)
+**tags**
+  A list of the tags attached to the section or step. See `controlling
+  things with tags`_.
+**filename** and **line**
+  The file name (or "<string>") and line number of the statement.
 
 A common use-case for environmental controls might be to set up a web
 server and browser to run all your tests in. For example::
@@ -229,4 +241,20 @@ Tag selection on the command-line may be combined:
 
 **--tags wip --tags slow**
    This will select all the cases tagged *both* "wip" and "slow".
+
+If a feature or scenario is tagged and then skipped because of a
+command-line control then the *before_* and *after_* environment functions
+will not be called for that feature or scenario.
+
+The tags attached to a feature and scenario are available in
+the environment functions via the "feature" or "scenario" object passed to
+them. On those objects there is an attribute called "tags" which is a list
+of the tag names attached, in the order they're found in the features file.
+
+There are also `environmental controls`_ specific to tags, so in the above
+example behave will attempt to invoke an ``environment.py`` function
+``before_tag`` and ``after_tag`` before and after the Scenario tagged
+``@slow``, passing in the name "slow". If multiple tags are present then
+the functions will be called multiple times with each tag in the order
+they're defined in the feature file.
 
