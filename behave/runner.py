@@ -86,8 +86,7 @@ class Runner(object):
                              'undefined': 0}
         self.duration = 0.0
 
-        sys.path.insert(0, os.getcwd())
-
+    def setup_paths(self):
         base_dir = os.path.abspath(self.config.paths[0])
         if not os.path.isdir(base_dir):
             base_dir = os.path.dirname(base_dir)
@@ -97,7 +96,13 @@ class Runner(object):
                 base_dir = None
                 break
         self.base_dir = base_dir
+
+        sys.path.insert(0, os.getcwd())
         sys.path.insert(0, base_dir)
+
+    def teardown_paths(self):
+        sys.path.pop(0)
+        sys.path.pop(0)
 
     def load_hooks(self, filename='environment.py'):
         hooks_path = os.path.join(self.base_dir, filename)
@@ -165,6 +170,7 @@ class Runner(object):
         return files
 
     def run(self):
+        self.setup_paths()
         self.load_hooks()
         self.load_step_definitions()
 
@@ -248,6 +254,7 @@ class Runner(object):
         self.run_hook('after_all', context)
 
         self.calculate_summaries()
+        self.teardown_paths()
 
     def run_step(self, step, quiet=False):
         match = self.steps.find_match(step)
