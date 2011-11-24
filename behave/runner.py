@@ -86,6 +86,8 @@ class Runner(object):
                              'undefined': 0}
         self.duration = 0.0
 
+        sys.path.insert(0, os.getcwd())
+
         base_dir = os.path.abspath(self.config.paths[0])
         if not os.path.isdir(base_dir):
             base_dir = os.path.dirname(base_dir)
