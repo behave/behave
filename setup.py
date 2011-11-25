@@ -20,6 +20,8 @@ setup(
     package_data={'behave': ['i18n.yml']},
     scripts=['bin/behave'],
     install_requires=requirements,
+    use_2to3=True,
+    zip_safe=False,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Environment :: Console",
