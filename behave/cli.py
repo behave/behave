@@ -89,3 +89,7 @@ def main():
 
         stream.write(escapes['undefined'] + msg + escapes['reset'])
         stream.flush()
+
+if __name__ == '__main__':
+    main()
+
