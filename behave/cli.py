@@ -51,7 +51,7 @@ def main():
     stream = config.output
 
     runner = Runner(config)
-    runner.run()
+    failed = runner.run()
 
     def format_summary(statement_type, summary):
         first = True
@@ -89,3 +89,6 @@ def main():
 
         stream.write(escapes['undefined'] + msg + escapes['reset'])
         stream.flush()
+
+    if failed:
+       sys.exit(1)

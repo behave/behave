@@ -178,6 +178,7 @@ class Runner(object):
         context = self.context = Context()
         stream = self.config.output
         monochrome = self.config.no_color
+        failed = False
 
         self.run_hook('before_all', context)
 
@@ -227,6 +228,7 @@ class Runner(object):
                     if run_steps:
                         if not self.run_step(step):
                             run_steps = False
+                            failed = True
                     else:
                         step.status = 'skipped'
                         if scenario.status is None:
@@ -256,6 +258,8 @@ class Runner(object):
 
         self.calculate_summaries()
         self.teardown_paths()
+
+        return failed
 
     def run_step(self, step, quiet=False):
         match = self.steps.find_match(step)
