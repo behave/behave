@@ -56,6 +56,7 @@ class Parser(object):
         self.state = 'init'
         self.line = 0
         self.last_step = None
+        self.multiline_leading = None
         self.multiline_terminator = None
 
         self.filename = None
@@ -75,7 +76,7 @@ class Parser(object):
             self.line += 1
             if not line.strip():
                 continue
-            self.action(line.strip())
+            self.action(line)
 
         if self.table:
             self.action_table('')
@@ -95,6 +96,8 @@ class Parser(object):
                               self.line)
 
     def action_init(self, line):
+        line = line.strip()
+
         if line.startswith('@'):
             self.tags.extend([tag.strip() for tag in line[1:].split('@')])
             return True
@@ -109,6 +112,8 @@ class Parser(object):
         return False
 
     def action_feature(self, line):
+        line = line.strip()
+
         if line.startswith('@'):
             self.tags.extend([tag.strip() for tag in line[1:].split('@')])
             return True
@@ -147,6 +152,15 @@ class Parser(object):
         return True
 
     def action_steps(self, line):
+        stripped = line.lstrip()
+        if stripped.startswith('"""') or stripped.startswith("'''"):
+            self.state = 'multiline'
+            self.multiline_terminator = stripped[:3]
+            self.multiline_leading = line.index(stripped[0])
+            return True
+
+        line = line.strip()
+
         step = self.parse_step(line)
         if step:
             self.statement.steps.append(step)
@@ -187,11 +201,6 @@ class Parser(object):
             self.state = 'table'
             return True
 
-        if line.startswith('"""') or line.startswith("'''"):
-            self.state = 'multiline'
-            self.multiline_terminator = line[:3]
-            return True
-
         if line.startswith('|'):
             self.state = 'table'
             return self.action_table(line)
@@ -199,9 +208,9 @@ class Parser(object):
         return False
 
     def action_multiline(self, line):
-        if line.startswith(self.multiline_terminator):
+        if line.strip().startswith(self.multiline_terminator):
             step = self.statement.steps[-1]
-            step.string = self.lines
+            step.string = '\n'.join(self.lines)
             if step.name.endswith(':'):
                 step.name = step.name[:-1]
             self.lines = []
@@ -209,10 +218,12 @@ class Parser(object):
             self.state = 'steps'
             return True
 
-        self.lines.append(line)
+        self.lines.append(line[self.multiline_leading:])
         return True
 
     def action_table(self, line):
+        line = line.strip()
+
         if not line.startswith('|'):
             if self.examples:
                 self.examples.table = self.table

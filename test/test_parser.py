@@ -315,7 +315,32 @@ Feature: Stuff
         assert(len(feature.scenarios) == 1)
         eq_(feature.scenarios[0].name, 'Doing stuff')
         self.compare_steps(feature.scenarios[0].steps, [
-            ('given', 'Given', 'there is stuff', ["So", "Much", "Stuff"], None),
+            ('given', 'Given', 'there is stuff', "So\nMuch\nStuff", None),
+            ('then', 'Then', 'stuff happens', None, None),
+        ])
+
+    def test_parses_string_argument_correctly_handle_whitespace(self):
+        doc = '''
+Feature: Stuff
+
+  Scenario: Doing stuff
+    Given there is stuff:
+      """
+      So
+        Much
+          Stuff
+        Has
+      Indents
+      """
+    Then stuff happens
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Stuff")
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, 'Doing stuff')
+        string = "So\n  Much\n    Stuff\n  Has\nIndents"
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Given', 'there is stuff', string, None),
             ('then', 'Then', 'stuff happens', None, None),
         ])
 
@@ -496,9 +521,9 @@ Feature: Stuff
     But this is an important test
     When we test with a multiline string:
       """
-Yarr, my hovercraft be full of stuff.
-Also, I be feelin' this pirate schtick be a mite overdone, me hearties.
-Also: rum.
+      Yarr, my hovercraft be full of stuff.
+      Also, I be feelin' this pirate schtick be a mite overdone, me hearties.
+          Also: rum.
       """
     Then we want it to work
 
@@ -551,12 +576,12 @@ Also: rum.
 
         eq_(feature.scenarios[0].name, 'Testing stuff')
         eq_(feature.scenarios[0].tags, ['fred'])
-        string = [
+        string = '\n'.join([
             'Yarr, my hovercraft be full of stuff.',
             "Also, I be feelin' this pirate schtick be a mite overdone, " + \
                 "me hearties.",
-            'Also: rum.'
-        ]
+            '    Also: rum.'
+        ])
         self.compare_steps(feature.scenarios[0].steps, [
             ('given', 'Given', 'we are testing', None, None),
             ('given', 'And', 'this is only a test', None, None),
