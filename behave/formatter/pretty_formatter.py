@@ -7,15 +7,18 @@ from behave.formatter.ansi_escapes import escapes, up
 
 utf8writer = codecs.getwriter('utf8')
 
+
 def escape_cell(cell):
     cell = cell.replace(u'\\', u'\\\\')
     cell = cell.replace(u'\n', u'\\n')
     cell = cell.replace(u'|', u'\\|')
     return cell
 
+
 class MonochromeFormat(object):
     def text(self, text):
         return text
+
 
 class ColorFormat(object):
     def __init__(self, status):
@@ -26,6 +29,7 @@ class ColorFormat(object):
             text = text.decode('utf8')
         return escapes[self.status] + text + escapes['reset']
 
+
 def get_terminal_size():
     if sys.platform == 'windows':
         # Autodetecting the size of a Windows command window is left as an
@@ -33,12 +37,18 @@ def get_terminal_size():
         return (80, 24)
 
     try:
-        import fcntl, termios, struct
-        h, w, hp, wp = struct.unpack('HHHH',
-            fcntl.ioctl(0, termios.TIOCGWINSZ, struct.pack('HHHH', 0, 0, 0, 0)))
+        import fcntl
+        import termios
+        import struct
+
+        zero_struct = struct.pack('HHHH', 0, 0, 0, 0)
+        result = fcntl.ioctl(0, termios.TIOCGWINSZ, zero_struct)
+        h, w, hp, wp = struct.unpack('HHHH', result)
+
         return w, h
     except:
         return (80, 24)
+
 
 class PrettyFormatter(object):
     def __init__(self, stream, monochrome, executing):
@@ -212,7 +222,7 @@ class PrettyFormatter(object):
     def calculate_location_indentations(self):
         line_widths = []
         for s in [self.statement] + self.steps:
-            string = s.keyword + ' '+ s.name
+            string = s.keyword + ' ' + s.name
             if type(string) is str:
                 string = string.decode('utf8')
             line_widths.append(len(string))
@@ -291,8 +301,8 @@ class PrettyFormatter(object):
         if not comments:
             return
 
-        line = indent + ('\n' + indent).join([c.value for c in comments]) + '\n'
-        self.stream.write(line)
+        line = ('\n' + indent).join([c.value for c in comments])
+        self.stream.write(indent + line + '\n')
 
     def print_description(self, description, indent, newline=True):
         if not description:

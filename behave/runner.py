@@ -10,6 +10,7 @@ from behave.formatter.ansi_escapes import escapes
 from behave.formatter.pretty_formatter import PrettyFormatter
 from behave.log_capture import MemoryHandler
 
+
 class Context(object):
     def __init__(self):
         self._stack = [{}]
@@ -41,6 +42,7 @@ class Context(object):
         frame = self.__dict__['_stack'][0]
         frame[attr] = value
 
+
 class StepRegistry(object):
     def __init__(self):
         self.steps = {
@@ -65,12 +67,14 @@ class StepRegistry(object):
 
         return None
 
+
 def exec_file(filename, globals={}, locals={}):
     if sys.version_info[0] == 3:
         with open(filename) as f:
             exec(f.read(), globals, locals)
     else:
         execfile(filename, globals, locals)
+
 
 class Runner(object):
     def __init__(self, config):
@@ -328,4 +332,3 @@ class Runner(object):
                 for step in scenario:
                     self.step_summary[step.status or 'skipped'] += 1
                     self.duration += step.duration or 0.0
-

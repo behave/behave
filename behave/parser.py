@@ -7,8 +7,10 @@ from behave import model
 I18N_FILE = os.path.join(os.path.dirname(__file__), 'i18n.yml')
 parsers = {}
 
+
 def parse_file(filename, language=None):
     return parse_feature(open(filename).read(), language, filename)
+
 
 def parse_feature(data, language=None, filename=None):
     global parsers
@@ -24,12 +26,14 @@ def parse_feature(data, language=None, filename=None):
     result = parser.parse(data, filename)
     return result
 
+
 class ParserError(Exception):
     def __init__(self, message, line):
         if line:
             message += ' at line {0:d}'.format(line)
         super(ParserError, self).__init__(message)
         self.line = line
+
 
 class Parser(object):
     languages = None
@@ -193,7 +197,8 @@ class Parser(object):
         examples_kwd = self.match_keyword('examples', line)
         if examples_kwd:
             if not isinstance(self.statement, model.ScenarioOutline):
-                raise ParserError('Examples must only appear inside scenario outline', self.line)
+                message = 'Examples must only appear inside scenario outline'
+                raise ParserError(message, self.line)
             name = line[len(examples_kwd) + 1:].strip()
             self.examples = model.Examples(self.filename, self.line,
                                            examples_kwd, name)
@@ -263,7 +268,7 @@ class Parser(object):
                     step_type = self.last_step
                 else:
                     self.last_step = step_type
-                step = model.Step(self.filename, self.line, kw, step_type, name)
+                step = model.Step(self.filename, self.line, kw, step_type,
+                                  name)
                 return step
         return None
-

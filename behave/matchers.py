@@ -4,11 +4,12 @@ import parse
 
 from behave import model
 
+
 class Matcher(object):
     def __init__(self, func, string):
         self.func = func
         self.string = string
-        
+
     def check_match(self, step):
         raise NotImplementedError
 
@@ -18,16 +19,17 @@ class Matcher(object):
             return None
         return model.Match(self.func, result)
 
+
 class ParseMatcher(Matcher):
     def __init__(self, func, string):
         super(ParseMatcher, self).__init__(func, string)
         self.parser = parse.compile(self.string)
-    
+
     def check_match(self, step):
         result = self.parser.parse(step)
         if not result:
             return None
-            
+
         args = []
         for index, arg in enumerate(result.fixed, 1):
             start, end = result.spans[index]
@@ -38,11 +40,12 @@ class ParseMatcher(Matcher):
         args.sort(key=lambda x: x.start)
         return args
 
+
 class RegexMatcher(Matcher):
     def __init__(self, func, string):
         super(RegexMatcher, self).__init__(func, string)
         self.regex = re.compile(self.string)
-    
+
     def check_match(self, step):
         m = self.regex.match(step)
         if not m:
@@ -54,7 +57,7 @@ class RegexMatcher(Matcher):
             name = groupindex.get(index, None)
             args.append(model.Argument(m.start(index), m.end(index), group,
                                        group, name))
-        
+
         return args
 
 matcher_mapping = {
@@ -64,9 +67,11 @@ matcher_mapping = {
 
 current_matcher = RegexMatcher
 
+
 def step_matcher(name):
     global current_matcher
     current_matcher = matcher_mapping[name]
+
 
 def get_matcher(func, string):
     return current_matcher(func, string)

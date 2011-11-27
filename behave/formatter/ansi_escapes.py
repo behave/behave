@@ -40,5 +40,6 @@ for alias in aliases:
     arg_seq = aliases.get(arg_alias, aliases[alias] + ',bold')
     escapes[arg_alias] = ''.join([colors[c] for c in arg_seq.split(',')])
 
+
 def up(n):
     return u"\x1b[#%dA" % n

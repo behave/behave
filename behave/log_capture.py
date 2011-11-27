@@ -1,6 +1,6 @@
-
 import logging
 from logging.handlers import BufferingHandler
+
 
 # from nostetsts logcapture plugin
 # filter for specific log destinations by adding to .filters
@@ -16,7 +16,7 @@ class MemoryHandler(BufferingHandler):
         return bool(self.buffer)
 
     def flush(self):
-        pass # do nothing
+        pass  # do nothing
 
     def truncate(self):
         self.buffer = []
@@ -29,15 +29,15 @@ class MemoryHandler(BufferingHandler):
         if not self.filters:
             return True
         matched = False
-        rname = record.name # shortcut
+        rname = record.name  # shortcut
         for name in self.filters:
-            if rname == name or rname.startswith(name+'.'):
+            if rname == name or rname.startswith(name + '.'):
                 matched = True
         return matched
 
     def getvalue(self):
-        return '\n'.join('%s %s %s' % (record.name, record.levelname, record.getMessage())
-            for record in self.buffer)
+        records = ((r.name, r.levelname, r.getMessage()) for r in self.buffer)
+        return '\n'.join('%s %s %s' % record for record in records)
 
     def findEvent(self, pattern):
         pattern = re.compile(pattern)
@@ -75,4 +75,3 @@ class MemoryHandler(BufferingHandler):
     def abandon(self):
         for logger, handler in self.old_handlers:
             logger.addHandler(handler)
-

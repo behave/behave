@@ -31,12 +31,13 @@ you have to use logical AND:
 
 --tags ~@fixme --tags ~@buggy.
 
-Positive tags can be given a threshold to limit the number of occurrences. Which
-can be practical if you are practicing Kanban or CONWIP. This will fail if there
-are more than 3 occurrences of the @qa tag:
+Positive tags can be given a threshold to limit the number of occurrences.
+Which can be practical if you are practicing Kanban or CONWIP. This will fail
+if there are more than 3 occurrences of the @qa tag:
 
 --tags @qa:3
 """.strip()
+
 
 def main():
     config = Configuration()
@@ -63,7 +64,8 @@ def main():
                 label = statement_type
                 if summary[status] != 1:
                     label += 's'
-                part = '{0:d} {1:s} {2:s}'.format(summary[status], label, status)
+                part = '{0:d} {1:s} {2:s}'.format(summary[status], label,
+                                                  status)
                 first = False
             else:
                 part = '{0:d} {1:s}'.format(summary[status], status)
@@ -75,7 +77,7 @@ def main():
     stream.write(format_summary('step', runner.step_summary))
 
     if runner.undefined:
-        msg =  "\nYou can implement step definitions for undefined steps with "
+        msg = "\nYou can implement step definitions for undefined steps with "
         msg += "these snippets:\n\n"
         printed = set()
         for step in runner.undefined:
@@ -91,4 +93,4 @@ def main():
         stream.flush()
 
     if failed:
-       sys.exit(1)
+        sys.exit(1)

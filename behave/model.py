@@ -3,12 +3,14 @@ import copy
 import itertools
 import os.path
 
+
 def ensure_unicode(value):
     if value is None:
         return None
     if type(value) is not unicode:
         value = value.decode('utf8')
     return value
+
 
 class Argument(object):
     def __init__(self, start, end, original, value, name=None):
@@ -17,6 +19,7 @@ class Argument(object):
         self.original = original
         self.value = value
         self.name = name
+
 
 class BasicStatement(object):
     def __init__(self, filename, line, keyword, name):
@@ -33,16 +36,19 @@ class BasicStatement(object):
         p = os.path.relpath(self.filename, os.getcwd())
         return '%s:%d' % (p, self.line)
 
+
 class TagStatement(BasicStatement):
     def __init__(self, filename, line, keyword, name, tags):
         super(TagStatement, self).__init__(filename, line, keyword, name)
         self.tags = tags
+
 
 class Replayable(object):
     type = None
 
     def replay(self, formatter):
         getattr(formatter, self.type)(self)
+
 
 class Feature(TagStatement, Replayable):
     type = "feature"
@@ -59,7 +65,8 @@ class Feature(TagStatement, Replayable):
             self.add_scenario(scenario)
 
     def __repr__(self):
-        return '<Feature "%s": %d scenario(s)>' % (self.name, len(self.scenarios))
+        return '<Feature "%s": %d scenario(s)>' % \
+            (self.name, len(self.scenarios))
 
     def __iter__(self):
         return iter(self.scenarios)
@@ -88,6 +95,7 @@ class Feature(TagStatement, Replayable):
                         skipped = False
         return skipped and 'skipped' or 'passed'
 
+
 class Background(BasicStatement, Replayable):
     type = "background"
 
@@ -100,6 +108,7 @@ class Background(BasicStatement, Replayable):
 
     def __iter__(self):
         return iter(self.steps)
+
 
 class Scenario(TagStatement, Replayable):
     type = "scenario"
@@ -129,6 +138,7 @@ class Scenario(TagStatement, Replayable):
                 return 'skipped'
         return 'passed'
 
+
 class ScenarioOutline(Scenario):
     type = "scenario_outline"
 
@@ -155,12 +165,14 @@ class ScenarioOutline(Scenario):
     def __iter__(self):
         return iter(self.scenarios)
 
+
 class Examples(BasicStatement, Replayable):
     type = "examples"
 
     def __init__(self, filename, line, keyword, name, table=None):
         super(Examples, self).__init__(filename, line, keyword, name)
         self.table = table
+
 
 class Step(BasicStatement, Replayable):
     type = "step"
@@ -185,6 +197,7 @@ class Step(BasicStatement, Replayable):
             result.match = result.match.replace("<%s>" % name, value)
         return result
 
+
 class Table(Replayable):
     type = "table"
 
@@ -207,6 +220,7 @@ class Table(Replayable):
         Row = collections.namedtuple('Row', self.headings)
         return iter([Row(*row) for row in self.rows])
 
+
 class Tag(object):
     def __init__(self, name, line):
         self.name = ensure_unicode(name)
@@ -218,6 +232,7 @@ class Tag(object):
     def __hash__(self):
         return hash(self.name)
 
+
 class DocString(object):
     def __init__(self, content_type, value, line):
         self.content_type = ensure_unicode(content_type)
@@ -228,11 +243,13 @@ class DocString(object):
         line_count = len(self.value.splitlines())
         return (self.line, self.line + line_count + 1)
 
+
 class Row(object):
     def __init__(self, comments, cells, line):
         self.comments = comments
         self.cells = [ensure_unicode(c) for c in cells]
         self.line = line
+
 
 class Match(Replayable):
     type = "match"
@@ -263,11 +280,13 @@ class Match(Replayable):
 
         self.func(context, *args, **kwargs)
 
+
 class NoMatch(Match):
     def __init__(self):
         self.func = None
         self.arguments = []
         self.location = None
+
 
 class Result(Replayable):
     type = "result"
