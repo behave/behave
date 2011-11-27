@@ -3,10 +3,8 @@ import StringIO
 import sys
 import time
 import traceback
-import logging
 
 from behave import matchers, model, parser
-from behave.formatter.ansi_escapes import escapes
 from behave.formatter.pretty_formatter import PrettyFormatter
 from behave.log_capture import MemoryHandler
 

@@ -1,5 +1,6 @@
 import logging
 from logging.handlers import BufferingHandler
+import re
 
 
 # from nostetsts logcapture plugin

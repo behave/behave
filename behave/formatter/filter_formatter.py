@@ -1,6 +1,5 @@
 import re
 
-from gherkin.formatter import model
 from gherkin.formatter import filters
 
 re_type = type(re.compile(''))

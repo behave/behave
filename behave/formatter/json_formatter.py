@@ -1,8 +1,6 @@
 import base64
 import json
 
-from gherkin.formatter import model
-
 
 class JSONFormatter(object):
     def __init__(self, file):

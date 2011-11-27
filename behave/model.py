@@ -78,7 +78,6 @@ class Feature(TagStatement, Replayable):
 
     @property
     def status(self):
-        status = None
         skipped = True
         for scenario_or_outline in self.scenarios:
             if isinstance(scenario_or_outline, Scenario):
@@ -130,7 +129,6 @@ class Scenario(TagStatement, Replayable):
 
     @property
     def status(self):
-        status = None
         for step in self.steps:
             if step.status == 'failed':
                 return 'failed'
