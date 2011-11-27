@@ -126,7 +126,7 @@ class TestStepRegistry(object):
 
 class TestRunner(object):
     def test_load_hooks_execfiles_hook_file(self):
-        with patch('__builtin__.execfile') as ef:
+        with patch('behave.runner.exec_file') as ef:
             with patch('os.path.exists') as exists:
                 exists.return_value = True
                 base_dir = 'fake/path'

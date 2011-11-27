@@ -65,6 +65,13 @@ class StepRegistry(object):
 
         return None
 
+def exec_file(filename, globals={}, locals={}):
+    if sys.version_info[0] == 3:
+        with open(filename) as f:
+            exec(f.read(), globals, locals)
+    else:
+        execfile(filename, globals, locals)
+
 class Runner(object):
     def __init__(self, config):
         self.config = config
@@ -107,7 +114,7 @@ class Runner(object):
     def load_hooks(self, filename='environment.py'):
         hooks_path = os.path.join(self.base_dir, filename)
         if os.path.exists(hooks_path):
-            execfile(hooks_path, self.hooks)
+            exec_file(hooks_path, self.hooks)
 
     def make_step_decorator(self, step_type):
         def decorator(string):

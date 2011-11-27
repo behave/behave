@@ -20,6 +20,8 @@ setup(
     package_data={'behave': ['i18n.yml']},
     scripts=['bin/behave'],
     install_requires=requirements,
+    use_2to3=True,
+    zip_safe=False,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Environment :: Console",
@@ -27,6 +29,7 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.2",
         "Topic :: Software Development :: Testing",
         "License :: OSI Approved :: BSD License",
     ],
