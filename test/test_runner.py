@@ -185,7 +185,8 @@ class TestFeatureDirectory(object):
             with patch('os.listdir') as ld:
                 opd.return_value = True
                 ld.return_value = ['foo.feature']
-                r.setup_paths()
+                with r.path_manager:
+                    r.setup_paths()
 
         eq_(r.base_dir, os.path.abspath('features'))
 
@@ -203,7 +204,8 @@ class TestFeatureDirectory(object):
                     opd.return_value = True
                     opf.return_value = True
                     ld.return_value = ['foo.feature']
-                    r.setup_paths()
+                    with r.path_manager:
+                        r.setup_paths()
                     opd.assert_called_with(os.path.join(p, 'steps'))
                     opf.assert_called_with(os.path.join(p, 'foo.feature'))
 
@@ -240,7 +242,8 @@ class TestFeatureDirectory(object):
                     opd.return_value = True
                     opf.return_value = False
                     ld.return_value = ['foo.feature']
-                    r.setup_paths()
+                    with r.path_manager:
+                        r.setup_paths()
                     opd.assert_called_with(os.path.join(p, 'steps'))
 
         eq_(r.base_dir, p)

@@ -77,6 +77,19 @@ def exec_file(filename, globals={}, locals=None):
         execfile(filename, globals, locals)
 
 
+class PathManager(object):
+    paths = None
+    def __enter__(self):
+        self.paths = []
+    def __exit__(self, *crap):
+        for path in self.paths:
+            sys.path.remove(path)
+    def add(self, path):
+        assert self.paths is not None, 'PathPusher.add called outside of context'
+        sys.path.insert(0, path)
+        self.paths.append(path)
+
+
 class Runner(object):
     def __init__(self, config):
         self.config = config
@@ -89,6 +102,8 @@ class Runner(object):
         self.failed = []
         self.undefined = []
         self.skipped = []
+
+        self.path_manager = PathManager()
 
         self.feature = None
 
@@ -142,14 +157,10 @@ class Runner(object):
             raise ConfigError('No feature files in "%s"' % base_dir)
 
         self.base_dir = base_dir
-        sys.path.insert(0, base_dir)
+        self.path_manager.add(base_dir)
 
         if base_dir != os.getcwd():
-            sys.path.insert(0, os.getcwd())
-
-    def teardown_paths(self):
-        sys.path.pop(0)
-        sys.path.pop(0)
+            self.path_manager.add(os.getcwd())
 
     def load_hooks(self, filename='environment.py'):
         hooks_path = os.path.join(self.base_dir, filename)
@@ -218,7 +229,11 @@ class Runner(object):
         return files
 
     def run(self):
-        self.setup_paths()
+        with self.path_manager:
+            self.setup_paths()
+            self.run_with_paths()
+
+    def run_with_paths(self):
         self.load_hooks()
         self.load_step_definitions()
 
@@ -304,7 +319,6 @@ class Runner(object):
         self.run_hook('after_all', context)
 
         self.calculate_summaries()
-        self.teardown_paths()
 
         return failed
 
