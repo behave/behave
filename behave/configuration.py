@@ -6,7 +6,8 @@ from behave.tag_expression import TagExpression
 class ConfigError(Exception):
     pass
 
-parser = argparse.ArgumentParser(usage="%(prog)s [options] [ [FILE|DIR|URL][:LINE[:LINE]*] ]+")
+usage = "%(prog)s [options] [ [FILE|DIR|URL][:LINE[:LINE]*] ]+"
+parser = argparse.ArgumentParser(usage=usage)
 
 parser.add_argument('-b', '--backtrace', action='store_true',
                     help="Show full backtraces for all errors.")
@@ -29,8 +30,9 @@ parser.add_argument('-m', '--no-multiline', action='store_true',
                             steps.""")
 parser.add_argument('-n', '--name', action="append",
                     help="""Only execute the feature elements which match part
-                            of the given name. If this option is given more than
-                            once, it will match against all the given names.""")
+                            of the given name. If this option is given more
+                            than once, it will match against all the given
+                            names.""")
 parser.add_argument('-o', '--outfile', metavar='FILE',
                     help="Write to specified file instead of stdout.")
 parser.add_argument('-q', '--quiet', action='store_true',
@@ -58,6 +60,7 @@ parser.add_argument('--tags-help', action='store_true',
 parser.add_argument('--version', action='store_true', help="Show version.")
 
 parser.add_argument('paths', nargs='*')
+
 
 class Configuration(object):
     def __init__(self):

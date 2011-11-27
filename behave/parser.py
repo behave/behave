@@ -7,8 +7,10 @@ from behave import model
 I18N_FILE = os.path.join(os.path.dirname(__file__), 'i18n.yml')
 parsers = {}
 
+
 def parse_file(filename, language=None):
     return parse_feature(open(filename).read(), language, filename)
+
 
 def parse_feature(data, language=None, filename=None):
     global parsers
@@ -24,12 +26,14 @@ def parse_feature(data, language=None, filename=None):
     result = parser.parse(data, filename)
     return result
 
+
 class ParserError(Exception):
     def __init__(self, message, line):
         if line:
             message += ' at line {0:d}'.format(line)
         super(ParserError, self).__init__(message)
         self.line = line
+
 
 class Parser(object):
     languages = None
@@ -56,6 +60,7 @@ class Parser(object):
         self.state = 'init'
         self.line = 0
         self.last_step = None
+        self.multiline_leading = None
         self.multiline_terminator = None
 
         self.filename = None
@@ -75,7 +80,7 @@ class Parser(object):
             self.line += 1
             if not line.strip():
                 continue
-            self.action(line.strip())
+            self.action(line)
 
         if self.table:
             self.action_table('')
@@ -95,6 +100,8 @@ class Parser(object):
                               self.line)
 
     def action_init(self, line):
+        line = line.strip()
+
         if line.startswith('@'):
             self.tags.extend([tag.strip() for tag in line[1:].split('@')])
             return True
@@ -109,6 +116,8 @@ class Parser(object):
         return False
 
     def action_feature(self, line):
+        line = line.strip()
+
         if line.startswith('@'):
             self.tags.extend([tag.strip() for tag in line[1:].split('@')])
             return True
@@ -147,6 +156,15 @@ class Parser(object):
         return True
 
     def action_steps(self, line):
+        stripped = line.lstrip()
+        if stripped.startswith('"""') or stripped.startswith("'''"):
+            self.state = 'multiline'
+            self.multiline_terminator = stripped[:3]
+            self.multiline_leading = line.index(stripped[0])
+            return True
+
+        line = line.strip()
+
         step = self.parse_step(line)
         if step:
             self.statement.steps.append(step)
@@ -179,17 +197,13 @@ class Parser(object):
         examples_kwd = self.match_keyword('examples', line)
         if examples_kwd:
             if not isinstance(self.statement, model.ScenarioOutline):
-                raise ParserError('Examples must only appear inside scenario outline', self.line)
+                message = 'Examples must only appear inside scenario outline'
+                raise ParserError(message, self.line)
             name = line[len(examples_kwd) + 1:].strip()
             self.examples = model.Examples(self.filename, self.line,
                                            examples_kwd, name)
             self.statement.examples.append(self.examples)
             self.state = 'table'
-            return True
-
-        if line.startswith('"""') or line.startswith("'''"):
-            self.state = 'multiline'
-            self.multiline_terminator = line[:3]
             return True
 
         if line.startswith('|'):
@@ -199,9 +213,9 @@ class Parser(object):
         return False
 
     def action_multiline(self, line):
-        if line.startswith(self.multiline_terminator):
+        if line.strip().startswith(self.multiline_terminator):
             step = self.statement.steps[-1]
-            step.string = self.lines
+            step.string = '\n'.join(self.lines)
             if step.name.endswith(':'):
                 step.name = step.name[:-1]
             self.lines = []
@@ -209,10 +223,12 @@ class Parser(object):
             self.state = 'steps'
             return True
 
-        self.lines.append(line)
+        self.lines.append(line[self.multiline_leading:])
         return True
 
     def action_table(self, line):
+        line = line.strip()
+
         if not line.startswith('|'):
             if self.examples:
                 self.examples.table = self.table
@@ -252,7 +268,7 @@ class Parser(object):
                     step_type = self.last_step
                 else:
                     self.last_step = step_type
-                step = model.Step(self.filename, self.line, kw, step_type, name)
+                step = model.Step(self.filename, self.line, kw, step_type,
+                                  name)
                 return step
         return None
-

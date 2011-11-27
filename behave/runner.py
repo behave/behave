@@ -3,13 +3,12 @@ import StringIO
 import sys
 import time
 import traceback
-import logging
 
 from behave import matchers, model, parser
-from behave.formatter.ansi_escapes import escapes
 from behave.formatter.pretty_formatter import PrettyFormatter
 from behave.log_capture import MemoryHandler
 from behave.configuration import ConfigError
+
 
 class Context(object):
     def __init__(self):
@@ -42,6 +41,7 @@ class Context(object):
         frame = self.__dict__['_stack'][0]
         frame[attr] = value
 
+
 class StepRegistry(object):
     def __init__(self):
         self.steps = {
@@ -66,12 +66,16 @@ class StepRegistry(object):
 
         return None
 
-def exec_file(filename, globals={}, locals={}):
+
+def exec_file(filename, globals={}, locals=None):
+    if locals is None:
+        locals = globals
     if sys.version_info[0] == 3:
         with open(filename) as f:
             exec(f.read(), globals, locals)
     else:
         execfile(filename, globals, locals)
+
 
 class Runner(object):
     def __init__(self, config):
@@ -221,6 +225,7 @@ class Runner(object):
         context = self.context = Context()
         stream = self.config.output
         monochrome = self.config.no_color
+        failed = False
 
         self.run_hook('before_all', context)
 
@@ -270,6 +275,7 @@ class Runner(object):
                     if run_steps:
                         if not self.run_step(step):
                             run_steps = False
+                            failed = True
                     else:
                         step.status = 'skipped'
                         if scenario.status is None:
@@ -299,6 +305,8 @@ class Runner(object):
 
         self.calculate_summaries()
         self.teardown_paths()
+
+        return failed
 
     def run_step(self, step, quiet=False):
         match = self.steps.find_match(step)
@@ -360,4 +368,3 @@ class Runner(object):
                 for step in scenario:
                     self.step_summary[step.status or 'skipped'] += 1
                     self.duration += step.duration or 0.0
-
