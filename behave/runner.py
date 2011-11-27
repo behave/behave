@@ -66,7 +66,9 @@ class StepRegistry(object):
         return None
 
 
-def exec_file(filename, globals={}, locals={}):
+def exec_file(filename, globals={}, locals=None):
+    if locals is None:
+        locals = globals
     if sys.version_info[0] == 3:
         with open(filename) as f:
             exec(f.read(), globals, locals)
