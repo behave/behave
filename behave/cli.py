@@ -1,7 +1,7 @@
 import sys
 
 from behave import matchers, model, parser
-from behave.configuration import Configuration
+from behave.configuration import Configuration, ConfigError
 from behave.formatter.ansi_escapes import escapes
 from behave.runner import Runner
 
@@ -45,13 +45,16 @@ def main():
         print TAG_HELP
         sys.exit(0)
 
-    if not config.paths:
-        config.paths = ['features']
+    #if not config.paths:
+        #config.paths = ['features']
 
     stream = config.output
 
     runner = Runner(config)
-    runner.run()
+    try:
+        runner.run()
+    except ConfigError, e:
+        sys.exit(str(e))
 
     def format_summary(statement_type, summary):
         first = True

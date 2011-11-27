@@ -9,6 +9,7 @@ from behave import matchers, model, parser
 from behave.formatter.ansi_escapes import escapes
 from behave.formatter.pretty_formatter import PrettyFormatter
 from behave.log_capture import MemoryHandler
+from behave.configuration import ConfigError
 
 class Context(object):
     def __init__(self):
@@ -94,18 +95,53 @@ class Runner(object):
         self.duration = 0.0
 
     def setup_paths(self):
-        base_dir = os.path.abspath(self.config.paths[0])
-        if not os.path.isdir(base_dir):
-            base_dir = os.path.dirname(base_dir)
-        while not os.path.isdir(os.path.join(base_dir, 'steps')):
-            base_dir = os.path.dirname(base_dir)
-            if base_dir == os.getcwd():
-                base_dir = None
-                break
-        self.base_dir = base_dir
+        if self.config.paths:
+            if self.config.verbose:
+                print 'Supplied path:', ', '.join('"%s"' % path
+                    for path in self.config.paths)
+            base_dir = os.path.abspath(self.config.paths[0])
 
-        sys.path.insert(0, os.getcwd())
+            # supplied path might be to a feature file
+            if os.path.isfile(base_dir):
+                if self.config.verbose:
+                    print 'Primary path is to a file so using its directory'
+                base_dir = os.path.dirname(base_dir)
+        else:
+            if self.config.verbose:
+                print 'Using default path "./features"'
+            base_dir = os.path.abspath('features')
+
+        if self.config.verbose:
+            print 'Trying base directory:', base_dir
+
+        if not os.path.isdir(os.path.join(base_dir, 'steps')):
+            if self.config.verbose:
+                if not self.config.paths:
+                    print 'ERROR: Could not find "steps" directory. Please '\
+                        'specify where to find your features.'
+                else:
+                    print 'ERROR: Could not find "steps" directory in your '\
+                        'specified path "%s"' % base_dir
+            raise ConfigError('No steps directory in "%s"' % base_dir)
+
+        for fn in os.listdir(base_dir):
+            if fn.endswith('.feature'):
+                break
+        else:
+            if self.config.verbose:
+                if not self.config.paths:
+                    print 'ERROR: Could not find any "<name>.feature" files. '\
+                        'Please specify where to find your features.'
+                else:
+                    print 'ERROR: Could not find any "<name>.feature" files '\
+                        'in your specified path "%s"' % base_dir
+            raise ConfigError('No feature files in "%s"' % base_dir)
+
+        self.base_dir = base_dir
         sys.path.insert(0, base_dir)
+
+        if base_dir != os.getcwd():
+            sys.path.insert(0, os.getcwd())
 
     def teardown_paths(self):
         sys.path.pop(0)

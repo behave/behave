@@ -4,6 +4,7 @@ from mock import Mock, patch
 from nose.tools import *
 
 from behave import runner
+from behave.configuration import ConfigError
 
 class TestContext(object):
     def setUp(self):
@@ -150,3 +151,114 @@ class TestRunner(object):
             wrapper = decorator(string)
             assert wrapper(func) is func
             add_definition.assert_called_with(step_type, string, func)
+
+class TestFeatureDirectory(object):
+    def test_default_path_no_steps(self):
+        config = Mock()
+        config.paths = []
+        config.verbose = False
+        r = runner.Runner(config)
+
+        with patch('os.path.isdir') as opd:
+            opd.return_value = False
+            assert_raises(ConfigError, r.setup_paths)
+
+    def test_default_path_no_features(self):
+        config = Mock()
+        config.paths = []
+        config.verbose = False
+        r = runner.Runner(config)
+
+        with patch('os.path.isdir') as opd:
+            with patch('os.listdir') as ld:
+                opd.return_value = True
+                ld.return_value = ['foo']
+                assert_raises(ConfigError, r.setup_paths)
+
+    def test_default_path(self):
+        config = Mock()
+        config.paths = []
+        config.verbose = True
+        r = runner.Runner(config)
+
+        with patch('os.path.isdir') as opd:
+            with patch('os.listdir') as ld:
+                opd.return_value = True
+                ld.return_value = ['foo.feature']
+                r.setup_paths()
+
+        eq_(r.base_dir, os.path.abspath('features'))
+
+    def test_supplied_feature_file(self):
+        config = Mock()
+        config.paths = ['foo.feature']
+        config.verbose = True
+        r = runner.Runner(config)
+
+        p = os.path.abspath('.')
+
+        with patch('os.path.isdir') as opd:
+            with patch('os.path.isfile') as opf:
+                with patch('os.listdir') as ld:
+                    opd.return_value = True
+                    opf.return_value = True
+                    ld.return_value = ['foo.feature']
+                    r.setup_paths()
+                    opd.assert_called_with(os.path.join(p, 'steps'))
+                    opf.assert_called_with(os.path.join(p, 'foo.feature'))
+
+        eq_(r.base_dir, p)
+
+    def test_supplied_feature_file_no_steps(self):
+        config = Mock()
+        config.paths = ['foo.feature']
+        config.verbose = True
+        r = runner.Runner(config)
+
+        p = os.path.abspath('.')
+
+        with patch('os.path.isdir') as opd:
+            with patch('os.path.isfile') as opf:
+                with patch('os.listdir') as ld:
+                    opd.return_value = False
+                    opf.return_value = True
+                    ld.return_value = ['foo.feature']
+                    assert_raises(ConfigError, r.setup_paths)
+                    opd.assert_called_with(os.path.join(p, 'steps'))
+
+    def test_supplied_feature_directory(self):
+        config = Mock()
+        config.paths = ['features']
+        config.verbose = True
+        r = runner.Runner(config)
+
+        p = os.path.abspath('features')
+
+        with patch('os.path.isdir') as opd:
+            with patch('os.path.isfile') as opf:
+                with patch('os.listdir') as ld:
+                    opd.return_value = True
+                    opf.return_value = False
+                    ld.return_value = ['foo.feature']
+                    r.setup_paths()
+                    opd.assert_called_with(os.path.join(p, 'steps'))
+
+        eq_(r.base_dir, p)
+
+    def test_supplied_feature_directory_no_steps(self):
+        config = Mock()
+        config.paths = ['features']
+        config.verbose = True
+        r = runner.Runner(config)
+
+        p = os.path.abspath('features')
+
+        with patch('os.path.isdir') as opd:
+            with patch('os.path.isfile') as opf:
+                with patch('os.listdir') as ld:
+                    opd.return_value = False
+                    opf.return_value = False
+                    ld.return_value = ['foo.feature']
+                    assert_raises(ConfigError, r.setup_paths)
+                    opd.assert_called_with(os.path.join(p, 'steps'))
+

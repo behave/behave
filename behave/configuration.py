@@ -3,6 +3,9 @@ import sys
 
 from behave.tag_expression import TagExpression
 
+class ConfigError(Exception):
+    pass
+
 parser = argparse.ArgumentParser(usage="%(prog)s [options] [ [FILE|DIR|URL][:LINE[:LINE]*] ]+")
 
 parser.add_argument('-b', '--backtrace', action='store_true',
