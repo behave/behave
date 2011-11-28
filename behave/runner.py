@@ -300,7 +300,7 @@ class Runner(object):
                     self.stdout_capture = StringIO.StringIO()
 
                 if self.config.log_capture:
-                    self.log_capture = MemoryHandler()
+                    self.log_capture = MemoryHandler(self.config)
                     self.log_capture.inveigle()
 
                 for step in scenario:

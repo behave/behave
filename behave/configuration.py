@@ -41,6 +41,30 @@ parser.add_argument('--nologcapture', action='store_false', dest='log_capture',
                     default=True,
                     help="""Don't capture logging. Logging configuration will
                             be left intact.""")
+parser.add_argument('--logging-format',
+                    help="""Specify custom format to print statements. Uses the
+                        same format as used by standard logging handlers. The
+                        default is '%(levelname)s:%(name)s:%(message)s'.""")
+parser.add_argument('--logging-level',
+                    help="""Specify a level to capture logging at. The default
+                        is NOTSET - capturing everything.""")
+parser.add_argument('--logging-datefmt',
+                    help="""Specify custom date/time format to print statements.
+                            Uses the same format as used by standard logging
+                            handlers.""")
+parser.add_argument('--logging-filter',
+                    help="""
+                        Specify which statements to filter in/out. By default,
+                        everything is captured. If the output is too verbose,
+                        use this option to filter out needless output.
+                        Example: --logging-filter=foo will capture statements
+                        issued ONLY to foo or foo.what.ever.sub but not foobar
+                        or other logger. Specify multiple loggers with comma:
+                        filter=foo,bar,baz. If any logger name is prefixed
+                        with a minus, eg filter=-foo, it will be excluded
+                        rather than included.""")
+parser.add_argument('--logging-clear-handlers', action='store_true',
+                        help="Clear all other logging handlers")
 parser.add_argument('-o', '--outfile', metavar='FILE',
                     help="Write to specified file instead of stdout.")
 parser.add_argument('-q', '--quiet', action='store_true',
