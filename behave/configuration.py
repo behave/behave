@@ -36,7 +36,11 @@ parser.add_argument('-n', '--name', action="append",
 parser.add_argument('--nocapture', action='store_false', dest='stdout_capture',
                     default=True,
                     help="""Don't capture stdout (any stdout output will be
-                            printed immediately""")
+                            printed immediately.)""")
+parser.add_argument('--nologcapture', action='store_false', dest='log_capture',
+                    default=True,
+                    help="""Don't capture logging. Logging configuration will
+                            be left intact.""")
 parser.add_argument('-o', '--outfile', metavar='FILE',
                     help="Write to specified file instead of stdout.")
 parser.add_argument('-q', '--quiet', action='store_true',

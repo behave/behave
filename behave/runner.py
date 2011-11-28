@@ -281,8 +281,10 @@ class Runner(object):
 
                 if self.config.stdout_capture:
                     self.stdout_capture = StringIO.StringIO()
-                self.log = MemoryHandler()
-                self.log.inveigle()
+
+                if self.config.log_capture:
+                    self.log_capture = MemoryHandler()
+                    self.log_capture.inveigle()
 
                 for step in scenario:
                     self.formatter.step(step)
@@ -297,7 +299,8 @@ class Runner(object):
                         if scenario.status is None:
                             scenario.status = 'skipped'
 
-                self.log.abandon()
+                if self.config.log_capture:
+                    self.log_capture.abandon()
 
                 if run_scenario:
                     self.run_hook('after_scenario', context, scenario)
@@ -367,8 +370,10 @@ class Runner(object):
                 output = self.stdout_capture.getvalue()
                 if output:
                     error += '\nCaptured stdout:\n' + output
-            if self.log:
-                error += '\nCaptured logging:\n' + self.log.getvalue()
+            if self.config.log_capture:
+                output = self.log_capture.getvalue()
+                if output:
+                    error += '\nCaptured logging:\n' + output
             step.error_message = error
             keep_going = False
 
