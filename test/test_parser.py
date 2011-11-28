@@ -1,4 +1,4 @@
-#-*- encoding: utf8 -*-
+#-*- encoding: UTF-8 -*-
 from nose.tools import *
 
 from behave import model, parser
