@@ -12,8 +12,8 @@ from behave.configuration import ConfigError
 
 class Context(object):
     def __init__(self):
-        self._root = {'failed': False}
-        self._stack = [self.root]
+        d = self._root = {'failed': False}
+        self._stack = [d]
 
     def _push(self):
         self._stack.insert(0, {})
@@ -35,7 +35,7 @@ class Context(object):
         raise AttributeError(msg)
 
     def __setattr__(self, attr, value):
-        if attr == '_stack':
+        if attr in ('_stack', '_root'):
             self.__dict__['_stack'] = value
             return
 
