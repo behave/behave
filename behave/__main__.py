@@ -44,6 +44,7 @@ Languages available:
 %s
 """.strip()
 
+
 def main():
     config = Configuration()
 

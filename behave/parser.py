@@ -266,7 +266,8 @@ class Parser(object):
     def parse_step(self, line):
         for step_type in ('given', 'when', 'then', 'and', 'but'):
             for kw in self.keywords[step_type]:
-                if not line.startswith(kw): continue
+                if not line.startswith(kw):
+                    continue
                 name = line[len(kw):].strip()
                 if step_type in ('and', 'but'):
                     if not self.last_step:
