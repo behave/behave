@@ -18,6 +18,9 @@ def parse_file(filename, language=None):
 def parse_feature(data, language=None, filename=None):
     global parsers
 
+    # ALL data operated on by the parser MUST be unicode
+    assert isinstance(data, unicode)
+
     if not language:
         language = 'en'
 

@@ -4,14 +4,6 @@ import itertools
 import os.path
 
 
-def ensure_unicode(value):
-    if value is None:
-        return None
-    if type(value) is not unicode:
-        value = value.decode('utf8')
-    return value
-
-
 class Argument(object):
     def __init__(self, start, end, original, value, name=None):
         self.start = start
@@ -25,8 +17,10 @@ class BasicStatement(object):
     def __init__(self, filename, line, keyword, name):
         self.filename = filename or '<string>'
         self.line = line
-        self.keyword = ensure_unicode(keyword)
-        self.name = ensure_unicode(name)
+        assert isinstance(keyword, unicode)
+        assert isinstance(name, unicode)
+        self.keyword = keyword
+        self.name = name
 
     def __cmp__(self, other):
         return cmp((self.keyword, self.name), (other.keyword, other.name))
@@ -221,7 +215,8 @@ class Table(Replayable):
 
 class Tag(object):
     def __init__(self, name, line):
-        self.name = ensure_unicode(name)
+        assert isinstance(name, unicode)
+        self.name = name
         self.line = line
 
     def __eq__(self, other):
@@ -233,8 +228,10 @@ class Tag(object):
 
 class DocString(object):
     def __init__(self, content_type, value, line):
-        self.content_type = ensure_unicode(content_type)
-        self.value = ensure_unicode(value)
+        assert isinstance(content_type, unicode)
+        assert isinstance(value, unicode)
+        self.content_type = content_type
+        self.value = value
         self.line = line
 
     def line_range(self):
@@ -245,7 +242,9 @@ class DocString(object):
 class Row(object):
     def __init__(self, comments, cells, line):
         self.comments = comments
-        self.cells = [ensure_unicode(c) for c in cells]
+        for c in cells:
+            assert isinstance(c, unicode)
+        self.cells = cells
         self.line = line
 
 
@@ -290,6 +289,8 @@ class Result(Replayable):
     type = "result"
 
     def __init__(self, status, duration, error_message):
-        self.status = ensure_unicode(status)
+        assert isinstance(status, unicode)
+        self.status = status
         self.duration = duration
         self.error_message = ensure_unicode(error_message)
+
