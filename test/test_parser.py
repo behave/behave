@@ -1,4 +1,3 @@
-#-*- encoding: UTF-8 -*-
 from nose.tools import *
 
 from behave import model, parser
@@ -688,17 +687,17 @@ Feature: Stuff
 class TestForeign(Common):
     def test_parses_french(self):
         doc = u"""
-Fonctionnalité: testing stuff
+Fonctionnalit\xe9: testing stuff
   Oh my god, it's full of stuff...
 
   Contexte:
     Soit I found some stuff
 
-  Scénario: test stuff
+  Sc\xe9nario: test stuff
     Soit I am testing stuff
     Alors it should work
 
-  Scénario: test more stuff
+  Sc\xe9nario: test more stuff
     Soit I am testing stuff
     Alors it will work
 """.lstrip()
@@ -719,11 +718,11 @@ Fonctionnalité: testing stuff
 
     def test_parses_french_multi_word(self):
         doc = u"""
-Fonctionnalité: testing stuff
+Fonctionnalit\xe9: testing stuff
   Oh my god, it's full of stuff...
 
-  Scénario: test stuff
-    Etant donné I am testing stuff
+  Sc\xe9nario: test stuff
+    Etant donn\xe9 I am testing stuff
     Alors it should work
 """.lstrip()
         feature = parser.parse_feature(doc, 'fr')
@@ -733,7 +732,7 @@ Fonctionnalité: testing stuff
         assert(len(feature.scenarios) == 1)
         eq_(feature.scenarios[0].name, 'test stuff')
         self.compare_steps(feature.scenarios[0].steps, [
-            ('given', u'Etant donné', 'I am testing stuff', None, None),
+            ('given', u'Etant donn\xe9', 'I am testing stuff', None, None),
             ('then', 'Alors', 'it should work', None, None),
         ])
     test_parses_french_multi_word.go=1
