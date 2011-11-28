@@ -45,8 +45,8 @@ class ParserError(Exception):
 
     def __str__(self):
         if self.filename:
-            return 'Failed to parse "%s": %s' % (self.filename, message)
-        return 'Failed to parse <string>: %s' % (self.filename, message)
+            return 'Failed to parse "%s": %s' % (self.filename, self.message)
+        return 'Failed to parse <string>: %s' % self.message
 
 
 class Parser(object):
