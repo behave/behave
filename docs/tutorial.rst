@@ -38,7 +38,7 @@ Feature Files
 
 A feature file has a simple format describing a feature or part of a
 feature with representative examples of expected outcomes. They're
-plain-text and look something like::
+plain-text (encoded in UTF-8) and look something like::
 
   Feature: Fight or flight
     In order to increase the ninja survival rate,

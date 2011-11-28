@@ -88,7 +88,7 @@ parser.add_argument('-w', '--wip', action='store_true',
                     help="Fail if there are any passing scenarios.")
 parser.add_argument('-x', '--expand', action='store_true',
                     help="Expand scenario outline tables in output.")
-parser.add_argument('--i18n', metavar='LANG',
+parser.add_argument('--i18n', metavar='LANG', default='en',
                     help="""List keywords for a particular language
                             (use --i18n help to see all languages)""")
 parser.add_argument('--tags-help', action='store_true',

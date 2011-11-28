@@ -1,8 +1,14 @@
+#-*- encoding: utf8 -*-
 from nose.tools import *
 
 from behave import model, parser
 
-class TestParser(object):
+class Common(object):
+    def compare_steps(self, steps, expected):
+        have = [(s.step_type, s.keyword, s.name, s.string, s.table) for s in steps]
+        eq_(have, expected)
+
+class TestParser(Common):
     def test_parses_feature_name(self):
         feature = parser.parse_feature("Feature: Stuff\n")
         eq_(feature.name, "Stuff")
@@ -679,6 +685,35 @@ Feature: Stuff
 """.lstrip()
         assert_raises(parser.ParserError, parser.parse_feature, doc)
 
-    def compare_steps(self, steps, expected):
-        have = [(s.step_type, s.keyword, s.name, s.string, s.table) for s in steps]
-        eq_(have, expected)
+class TestForeign(Common):
+    def test_parses_french(self):
+        doc = u"""
+Fonctionnalité: testing stuff
+  Oh my god, it's full of stuff...
+
+  Contexte:
+    Soit I found some stuff
+
+  Scénario: test stuff
+    Soit I am testing stuff
+     Alors it should work
+
+  Scénario: test more stuff
+    Soit I am testing stuff
+     Alors it will work
+""".lstrip()
+        feature = parser.parse_feature(doc, 'fr')
+        eq_(feature.name, "testing stuff")
+        eq_(feature.description, ["Oh my god, it's full of stuff..."])
+        assert(feature.background)
+        self.compare_steps(feature.background.steps, [
+            ('given', 'Soit', 'I found some stuff', None, None),
+        ])
+
+        assert(len(feature.scenarios) == 2)
+        eq_(feature.scenarios[0].name, 'test stuff')
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Soit', 'I am testing stuff', None, None),
+            ('then', 'Alors', 'it should work', None, None),
+        ])
+

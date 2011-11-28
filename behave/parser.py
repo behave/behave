@@ -9,7 +9,10 @@ parsers = {}
 
 
 def parse_file(filename, language=None):
-    return parse_feature(open(filename).read(), language, filename)
+    with open(filename) as f:
+        # file encoding is assumed to be utf8. Oh, yes.
+        data = f.read().decode('utf8')
+    return parse_feature(data, language, filename)
 
 
 def parse_feature(data, language=None, filename=None):
@@ -23,16 +26,27 @@ def parse_feature(data, language=None, filename=None):
         parser = Parser(language)
         parsers[language] = parser
 
-    result = parser.parse(data, filename)
+    try:
+        result = parser.parse(data, filename)
+    except ParserError, e:
+        e.filename = filename
+        raise
+
     return result
 
 
 class ParserError(Exception):
-    def __init__(self, message, line):
+    def __init__(self, message, line, filename=None):
         if line:
             message += ' at line {0:d}'.format(line)
         super(ParserError, self).__init__(message)
         self.line = line
+        self.filename = filename
+
+    def __str__(self):
+        if self.filename:
+            return 'Failed to parse "%s": %s' % (self.filename, message)
+        return 'Failed to parse <string>: %s' % (self.filename, message)
 
 
 class Parser(object):

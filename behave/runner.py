@@ -27,6 +27,8 @@ class Context(object):
             print repr(frame)
 
     def __getattr__(self, attr):
+        if attr in ('_stack', '_root'):
+            return self.__dict__[attr]
         for frame in self._stack:
             if attr in frame:
                 return frame[attr]
@@ -36,7 +38,7 @@ class Context(object):
 
     def __setattr__(self, attr, value):
         if attr in ('_stack', '_root'):
-            self.__dict__['_stack'] = value
+            self.__dict__[attr] = value
             return
 
         frame = self.__dict__['_stack'][0]
@@ -268,7 +270,9 @@ class Runner(object):
         for filename in self.feature_files():
             context._push()
 
-            feature = parser.parse_file(os.path.abspath(filename))
+            feature = parser.parse_file(os.path.abspath(filename),
+                language=self.config.i18n)
+
             self.features.append(feature)
             self.feature = feature
 
@@ -315,7 +319,7 @@ class Runner(object):
                         if not self.run_step(step):
                             run_steps = False
                             failed = True
-                            context._root.failed = True
+                            context._root['failed'] = True
                     else:
                         step.status = 'skipped'
                         if scenario.status is None:
