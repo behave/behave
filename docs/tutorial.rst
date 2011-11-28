@@ -33,7 +33,6 @@ A more complex directory might look like:
   features/steps/utils.py
 
 
-
 Feature Files
 =============
 
@@ -72,6 +71,14 @@ the name of the preceding step, so::
 
 In this case *behave* will look for a step definiton for "Then fall off a
 cliff".
+
+
+Tabular Data
+------------
+
+Sometimes it's useful to associate a table of data with your step.
+
+TODO complete me
 
 
 Python Step Implementations
@@ -147,6 +154,49 @@ There's two parsers available by default in *behave*:
   This uses full regular expressions to parse the clause text. You will
   need to use named groups "(?P<name>...)" to define the variables pulled
   from the text and passed to your ``step()`` function.
+
+
+Context
+-------
+
+You'll have noticed the "context" variable that's passed around. It's a
+clever place where you and *behave* can store information to share around.
+It runs at three levels, automatically managed by *behave*. 
+
+When *behave* launches into a new feature or scenario it adds a new layer
+to the context, allowing the new activity level to add new values, or
+overwrite ones previosuly defined, for the duration of that activity. These
+can be thought of as scopes.
+
+You can define values in your `environmental controls`_ file which may be
+set at the feature level and then overridden for some scenarios. Changes
+made at the scenario level won't permanently affect the value set at the
+feature level.
+
+You may also use it to share values between steps. For example, in some
+steps you define you might have::
+
+  @given('I request a new widget for an account via SOAP')
+  def step(context):
+      client = Client("http://127.0.0.1:8000/soap/")
+      context.response = client.Allocate(customer_first='Firstname',
+          customer_last='Lastname', colour='red')
+
+  @then('I should receive an OK SOAP response')
+  def step(context):
+      eq_(context.response['ok'], 1)
+
+There's also some values added to the context by *behave* itself:
+
+**table**
+  This holds the `tabular data`_ associated with a step, if any.
+
+**failed**
+  This is set at the root of the context when any step fails. It is
+  sometimes useful to use this combined with the ``--stop`` command-line
+  option to prevent some mis-behaving resource from being cleaned up in an
+  ``after_feature()`` or similar (for example, a web browser being driven
+  by Selenium.)
 
 
 Environmental Controls

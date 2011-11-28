@@ -12,7 +12,8 @@ from behave.configuration import ConfigError
 
 class Context(object):
     def __init__(self):
-        self._stack = [{}]
+        self._root = {}
+        self._stack = [self.root]
 
     def _push(self):
         self._stack.insert(0, {})
@@ -314,6 +315,7 @@ class Runner(object):
                         if not self.run_step(step):
                             run_steps = False
                             failed = True
+                            context._root.failed = True
                     else:
                         step.status = 'skipped'
                         if scenario.status is None:
@@ -329,6 +331,9 @@ class Runner(object):
 
                 context._pop()
 
+                if failed and self.config.stop:
+                    break
+
             self.formatter.eof()
 
             if run_feature:
@@ -339,6 +344,9 @@ class Runner(object):
             context._pop()
 
             stream.write('\n')
+
+            if failed and self.config.stop:
+                break
 
         self.run_hook('after_all', context)
 

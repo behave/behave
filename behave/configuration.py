@@ -74,6 +74,8 @@ parser.add_argument('-q', '--quiet', action='store_true',
 parser.add_argument('-s', '--no-source', action='store_true',
                     help="""Don't print the file and line of the step
                             definition with the steps.""")
+parser.add_argument('--stop', action='store_true',
+                    help='Stop running tests at the first failure.')
 parser.add_argument('-S', '--strict', action='store_true',
                     help='Fail if there are any undefined or pending steps.')
 parser.add_argument('-t', '--tags', action='append', metavar='TAG_EXPRESSION',
