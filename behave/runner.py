@@ -12,7 +12,7 @@ from behave.configuration import ConfigError
 
 class Context(object):
     def __init__(self):
-        self._root = {}
+        self._root = {'failed': False}
         self._stack = [self.root]
 
     def _push(self):
