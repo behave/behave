@@ -59,6 +59,9 @@ class Parser(object):
             raise ParserError("Unknown language: " + repr(language), None)
         self.keywords = Parser.languages[language]
         for k, v in self.keywords.items():
+            # bloody YAML parser returns a mixture of unicode and str
+            if not isinstance(v, unicode):
+                v = v.decode('utf8')
             self.keywords[k] = v.split('|')
         self.reset()
 
@@ -259,7 +262,7 @@ class Parser(object):
 
     def match_keyword(self, keyword, line):
         for alias in self.keywords[keyword]:
-            if line.startswith(alias + u':'):
+            if line.startswith(alias + ':'):
                 return alias
         return False
 

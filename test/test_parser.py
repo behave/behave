@@ -9,15 +9,15 @@ class Common(object):
 
 class TestParser(Common):
     def test_parses_feature_name(self):
-        feature = parser.parse_feature("Feature: Stuff\n")
+        feature = parser.parse_feature(u"Feature: Stuff\n")
         eq_(feature.name, "Stuff")
 
     def test_parses_feature_name_without_newline(self):
-        feature = parser.parse_feature("Feature: Stuff")
+        feature = parser.parse_feature(u"Feature: Stuff")
         eq_(feature.name, "Stuff")
 
     def test_parses_feature_description(self):
-        doc = """
+        doc = u"""
 Feature: Stuff
   In order to thing
   As an entity
@@ -29,7 +29,7 @@ Feature: Stuff
             ["In order to thing", "As an entity", "I want to do stuff"])
 
     def test_parses_feature_with_a_tag(self):
-        doc = """
+        doc = u"""
 @foo
 Feature: Stuff
   In order to thing
@@ -43,7 +43,7 @@ Feature: Stuff
         eq_(feature.tags, ['foo'])
 
     def test_parses_feature_with_more_tags(self):
-        doc = """
+        doc = u"""
 @foo @bar @baz @qux @winkle_pickers @number8
 Feature: Stuff
   In order to thing
@@ -58,7 +58,7 @@ Feature: Stuff
                            'number8'])
 
     def test_parses_feature_with_background(self):
-        doc = """
+        doc = u"""
 Feature: Stuff
   Background:
     Given there is stuff
@@ -75,7 +75,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_description_and_background(self):
-        doc = """
+        doc = u"""
 Feature: Stuff
   This... is... STUFF!
 
@@ -95,7 +95,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_a_scenario(self):
-        doc = """
+        doc = u"""
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -114,7 +114,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_description_and_background_and_scenario(self):
-        doc = """
+        doc = u"""
 Feature: Stuff
   Oh my god, it's full of stuff...
 
@@ -143,7 +143,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_multiple_scenarios(self):
-        doc = """
+        doc = u"""
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -184,7 +184,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_multiple_scenarios_with_tags(self):
-        doc = """
+        doc = u"""
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -229,7 +229,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_multiple_scenarios_and_other_bits(self):
-        doc = """
+        doc = u"""
 Feature: Stuff
   Stuffing
 
@@ -280,7 +280,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_a_scenario_with_and_and_but(self):
-        doc = """
+        doc = u"""
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -303,7 +303,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_a_step_with_a_string_argument(self):
-        doc = '''
+        doc = u'''
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -325,7 +325,7 @@ Feature: Stuff
         ])
 
     def test_parses_string_argument_correctly_handle_whitespace(self):
-        doc = '''
+        doc = u'''
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -350,7 +350,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_a_step_with_a_table_argument(self):
-        doc = '''
+        doc = u'''
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -379,7 +379,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_a_scenario_outline(self):
-        doc = '''
+        doc = u'''
 Feature: Stuff
 
   Scenario Outline: Doing all sorts of stuff
@@ -418,7 +418,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_a_scenario_outline_with_multiple_examples(self):
-        doc = '''
+        doc = u'''
 Feature: Stuff
 
   Scenario Outline: Doing all sorts of stuff
@@ -468,7 +468,7 @@ Feature: Stuff
         eq_(feature.scenarios[0].examples[1].table, table)
 
     def test_parses_feature_with_a_scenario_outline_with_tags(self):
-        doc = '''
+        doc = u'''
 Feature: Stuff
 
   @stuff @derp
@@ -509,7 +509,7 @@ Feature: Stuff
         eq_(feature.scenarios[0].examples[0].table, table)
 
     def test_parses_feature_with_the_lot(self):
-        doc = '''
+        doc = u'''
 @derp
 Feature: Stuff
   In order to test my parser
@@ -655,7 +655,7 @@ Feature: Stuff
 
 
     def test_fails_to_parse_when_and_is_out_of_order(self):
-        doc = """
+        doc = u"""
 Feature: Stuff
 
   Scenario: Failing at stuff
@@ -664,7 +664,7 @@ Feature: Stuff
         assert_raises(parser.ParserError, parser.parse_feature, doc)
 
     def test_fails_to_parse_when_but_is_out_of_order(self):
-        doc = """
+        doc = u"""
 Feature: Stuff
 
   Scenario: Failing at stuff
@@ -673,7 +673,7 @@ Feature: Stuff
         assert_raises(parser.ParserError, parser.parse_feature, doc)
 
     def test_fails_to_parse_when_examples_is_in_the_wrong_place(self):
-        doc = """
+        doc = u"""
 Feature: Stuff
 
   Scenario: Failing at stuff
