@@ -170,9 +170,10 @@ class TestFeatureDirectory(object):
         r = runner.Runner(config)
 
         with patch('os.path.isdir') as opd:
-            with patch('os.listdir') as ld:
+            with patch('os.walk') as walk:
+                results = [['', [], ['foo']]]
                 opd.return_value = True
-                ld.return_value = ['foo']
+                walk.return_value = iter(results)
                 assert_raises(ConfigError, r.setup_paths)
 
     def test_default_path(self):
@@ -182,9 +183,10 @@ class TestFeatureDirectory(object):
         r = runner.Runner(config)
 
         with patch('os.path.isdir') as opd:
-            with patch('os.listdir') as ld:
+            with patch('os.walk') as walk:
                 opd.return_value = True
-                ld.return_value = ['foo.feature']
+                results = [['', [], ['foo.feature']]]
+                walk.return_value = iter(results)
                 with r.path_manager:
                     r.setup_paths()
 
@@ -200,10 +202,11 @@ class TestFeatureDirectory(object):
 
         with patch('os.path.isdir') as opd:
             with patch('os.path.isfile') as opf:
-                with patch('os.listdir') as ld:
+                with patch('os.walk') as walk:
                     opd.return_value = True
                     opf.return_value = True
-                    ld.return_value = ['foo.feature']
+                    results = [['', [], ['foo.feature']]]
+                    walk.return_value = iter(results)
                     with r.path_manager:
                         r.setup_paths()
                     opd.assert_called_with(os.path.join(p, 'steps'))
@@ -221,12 +224,20 @@ class TestFeatureDirectory(object):
 
         with patch('os.path.isdir') as opd:
             with patch('os.path.isfile') as opf:
-                with patch('os.listdir') as ld:
+                with patch('os.walk') as walk:
                     opd.return_value = False
-                    opf.return_value = True
-                    ld.return_value = ['foo.feature']
-                    assert_raises(ConfigError, r.setup_paths)
-                    opd.assert_called_with(os.path.join(p, 'steps'))
+
+                    def fake_isfile(path):
+                        if path.endswith('environment.py'):
+                            return False
+                        return True
+                    opf.side_effect = fake_isfile
+
+                    results = [['', [], ['foo.feature']]]
+                    walk.return_value = iter(results)
+                    with r.path_manager:
+                        assert_raises(ConfigError, r.setup_paths)
+                    assert opd.called
 
     def test_supplied_feature_directory(self):
         config = Mock()
@@ -238,10 +249,11 @@ class TestFeatureDirectory(object):
 
         with patch('os.path.isdir') as opd:
             with patch('os.path.isfile') as opf:
-                with patch('os.listdir') as ld:
+                with patch('os.walk') as walk:
                     opd.return_value = True
                     opf.return_value = False
-                    ld.return_value = ['foo.feature']
+                    results = [['', [], ['foo.feature']]]
+                    walk.return_value = iter(results)
                     with r.path_manager:
                         r.setup_paths()
                     opd.assert_called_with(os.path.join(p, 'steps'))
@@ -258,10 +270,11 @@ class TestFeatureDirectory(object):
 
         with patch('os.path.isdir') as opd:
             with patch('os.path.isfile') as opf:
-                with patch('os.listdir') as ld:
+                with patch('os.walk') as walk:
                     opd.return_value = False
                     opf.return_value = False
-                    ld.return_value = ['foo.feature']
+                    results = [['', [], ['foo.feature']]]
+                    walk.return_value = iter(results)
                     assert_raises(ConfigError, r.setup_paths)
-                    opd.assert_called_with(os.path.join(p, 'steps'))
+                    assert opd.called
 

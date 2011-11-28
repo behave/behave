@@ -131,10 +131,22 @@ class Runner(object):
                 print 'Using default path "./features"'
             base_dir = os.path.abspath('features')
 
-        if self.config.verbose:
-            print 'Trying base directory:', base_dir
+        new_base_dir = base_dir
 
-        if not os.path.isdir(os.path.join(base_dir, 'steps')):
+        while True:
+            if self.config.verbose:
+                print 'Trying base directory:', new_base_dir
+
+            if os.path.isdir(os.path.join(new_base_dir, 'steps')):
+                break
+            if os.path.isfile(os.path.join(new_base_dir, 'environment.py')):
+                break
+            if new_base_dir == '/':
+                break
+
+            new_base_dir = os.path.dirname(new_base_dir)
+
+        if new_base_dir == '/':
             if self.config.verbose:
                 if not self.config.paths:
                     print 'ERROR: Could not find "steps" directory. Please '\
@@ -144,8 +156,10 @@ class Runner(object):
                         'specified path "%s"' % base_dir
             raise ConfigError('No steps directory in "%s"' % base_dir)
 
-        for fn in os.listdir(base_dir):
-            if fn.endswith('.feature'):
+        base_dir = new_base_dir
+
+        for dirpath, dirnames, filenames in os.walk(base_dir):
+            if [fn for fn in filenames if fn.endswith('.feature')]:
                 break
         else:
             if self.config.verbose:
@@ -159,6 +173,8 @@ class Runner(object):
 
         self.base_dir = base_dir
         self.path_manager.add(base_dir)
+        if not self.config.paths:
+            self.config.paths = [base_dir]
 
         if base_dir != os.getcwd():
             self.path_manager.add(os.getcwd())
