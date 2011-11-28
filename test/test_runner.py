@@ -1,5 +1,7 @@
 import os.path
 
+from collections import defaultdict
+
 from mock import Mock, patch
 from nose.tools import *
 
@@ -152,28 +154,86 @@ class TestRunner(object):
             assert wrapper(func) is func
             add_definition.assert_called_with(step_type, string, func)
 
+class FsMock(object):
+    def __init__(self, *paths):
+        self.base = os.path.abspath('.')
+        paths = [os.path.join(self.base, path) for path in paths]
+        self.paths = paths
+        self.files = set()
+        self.dirs = defaultdict(list)
+        for path in paths:
+            if path[-1] == '/':
+                self.dirs[path[:-1]] = []
+                d, p = os.path.split(path[:-1])
+                while d and p:
+                    self.dirs[d].append(p)
+                    d, p = os.path.split(d)
+            else:
+                self.files.add(path)
+                d, f = os.path.split(path)
+                self.dirs[d].append(f)
+        self.calls = []
+    def listdir(self, dir):
+        self.calls.append(('listdir', dir))
+        return self.dirs.get(dir, [])
+    def isfile(self, path):
+        self.calls.append(('isfile', path))
+        return path in self.files
+    def isdir(self, path):
+        self.calls.append(('isdir', path))
+        return path in self.dirs
+    def exists(self, path):
+        self.calls.append(('exists', path))
+        return path in self.dirs or path in self.files
+    def walk(self, path, l=None):
+        if l is None:
+            assert path in self.dirs, '%s not in %s' % (path, self.dirs)
+            l = []
+        dirnames = []
+        filenames = []
+        for e in self.dirs[path]:
+            if os.path.join(path, e) in self.dirs:
+                dirnames.append(e)
+                self.walk(os.path.join(path, e), l)
+            else:
+                filenames.append(e)
+        l.append((path, dirnames, filenames))
+        return l
+
+    # utilities that we need
+    def dirname(self, path, orig=os.path.dirname):
+        return orig(path)
+    def abspath(self, path, orig=os.path.abspath):
+        return orig(path)
+    def join(self, a, b, orig=os.path.join):
+        return orig(a, b)
+
+
+
 class TestFeatureDirectory(object):
     def test_default_path_no_steps(self):
         config = Mock()
         config.paths = []
-        config.verbose = False
+        config.verbose = True
         r = runner.Runner(config)
 
-        with patch('os.path.isdir') as opd:
-            opd.return_value = False
+        fs = FsMock()
+
+        # will look for a "features" directory and not find one
+        with patch('os.path', fs):
             assert_raises(ConfigError, r.setup_paths)
+
+        ok_(('isdir', os.path.join(fs.base, 'features/steps')) in fs.calls)
 
     def test_default_path_no_features(self):
         config = Mock()
         config.paths = []
-        config.verbose = False
+        config.verbose = True
         r = runner.Runner(config)
 
-        with patch('os.path.isdir') as opd:
-            with patch('os.walk') as walk:
-                results = [['', [], ['foo']]]
-                opd.return_value = True
-                walk.return_value = iter(results)
+        fs = FsMock('features/steps/')
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
                 assert_raises(ConfigError, r.setup_paths)
 
     def test_default_path(self):
@@ -182,11 +242,10 @@ class TestFeatureDirectory(object):
         config.verbose = True
         r = runner.Runner(config)
 
-        with patch('os.path.isdir') as opd:
-            with patch('os.walk') as walk:
-                opd.return_value = True
-                results = [['', [], ['foo.feature']]]
-                walk.return_value = iter(results)
+        fs = FsMock('features/steps/', 'features/foo.feature')
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
                 with r.path_manager:
                     r.setup_paths()
 
@@ -198,21 +257,16 @@ class TestFeatureDirectory(object):
         config.verbose = True
         r = runner.Runner(config)
 
-        p = os.path.abspath('.')
+        fs = FsMock('steps/', 'foo.feature')
 
-        with patch('os.path.isdir') as opd:
-            with patch('os.path.isfile') as opf:
-                with patch('os.walk') as walk:
-                    opd.return_value = True
-                    opf.return_value = True
-                    results = [['', [], ['foo.feature']]]
-                    walk.return_value = iter(results)
-                    with r.path_manager:
-                        r.setup_paths()
-                    opd.assert_called_with(os.path.join(p, 'steps'))
-                    opf.assert_called_with(os.path.join(p, 'foo.feature'))
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    r.setup_paths()
+        ok_(('isdir', os.path.join(fs.base, 'steps')) in fs.calls)
+        ok_(('isfile', os.path.join(fs.base, 'foo.feature')) in fs.calls)
 
-        eq_(r.base_dir, p)
+        eq_(r.base_dir, fs.base)
 
     def test_supplied_feature_file_no_steps(self):
         config = Mock()
@@ -220,61 +274,54 @@ class TestFeatureDirectory(object):
         config.verbose = True
         r = runner.Runner(config)
 
-        p = os.path.abspath('.')
+        fs = FsMock('foo.feature')
 
-        with patch('os.path.isdir') as opd:
-            with patch('os.path.isfile') as opf:
-                with patch('os.walk') as walk:
-                    opd.return_value = False
-
-                    def fake_isfile(path):
-                        if path.endswith('environment.py'):
-                            return False
-                        return True
-                    opf.side_effect = fake_isfile
-
-                    results = [['', [], ['foo.feature']]]
-                    walk.return_value = iter(results)
-                    with r.path_manager:
-                        assert_raises(ConfigError, r.setup_paths)
-                    assert opd.called
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    assert_raises(ConfigError, r.setup_paths)
 
     def test_supplied_feature_directory(self):
         config = Mock()
-        config.paths = ['features']
+        config.paths = ['spam']
         config.verbose = True
         r = runner.Runner(config)
 
-        p = os.path.abspath('features')
+        fs = FsMock('spam/', 'spam/steps/', 'spam/foo.feature')
 
-        with patch('os.path.isdir') as opd:
-            with patch('os.path.isfile') as opf:
-                with patch('os.walk') as walk:
-                    opd.return_value = True
-                    opf.return_value = False
-                    results = [['', [], ['foo.feature']]]
-                    walk.return_value = iter(results)
-                    with r.path_manager:
-                        r.setup_paths()
-                    opd.assert_called_with(os.path.join(p, 'steps'))
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    r.setup_paths()
 
-        eq_(r.base_dir, p)
+        ok_(('isdir', os.path.join(fs.base, 'spam', 'steps')) in fs.calls)
+
+        eq_(r.base_dir, os.path.join(fs.base, 'spam'))
 
     def test_supplied_feature_directory_no_steps(self):
         config = Mock()
-        config.paths = ['features']
+        config.paths = ['spam']
         config.verbose = True
         r = runner.Runner(config)
 
-        p = os.path.abspath('features')
+        fs = FsMock('spam/', 'spam/foo.feature')
 
-        with patch('os.path.isdir') as opd:
-            with patch('os.path.isfile') as opf:
-                with patch('os.walk') as walk:
-                    opd.return_value = False
-                    opf.return_value = False
-                    results = [['', [], ['foo.feature']]]
-                    walk.return_value = iter(results)
-                    assert_raises(ConfigError, r.setup_paths)
-                    assert opd.called
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                assert_raises(ConfigError, r.setup_paths)
+
+        ok_(('isdir', os.path.join(fs.base, 'spam', 'steps')) in fs.calls)
+
+    def test_supplied_feature_directory_missing(self):
+        config = Mock()
+        config.paths = ['spam']
+        config.verbose = True
+        r = runner.Runner(config)
+
+        fs = FsMock()
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                assert_raises(ConfigError, r.setup_paths)
+
 
