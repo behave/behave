@@ -1,11 +1,9 @@
 # -*- coding: utf8 -*-
 
-import codecs
 import sys
+import codecs
 
 from behave.formatter.ansi_escapes import escapes, up
-
-utf8writer = codecs.getwriter('utf8')
 
 
 def escape_cell(cell):
@@ -17,6 +15,7 @@ def escape_cell(cell):
 
 class MonochromeFormat(object):
     def text(self, text):
+        assert isinstance(text, unicode)
         return text
 
 
@@ -25,7 +24,7 @@ class ColorFormat(object):
         self.status = status
 
     def text(self, text):
-        # text muse be unicode or unicode-able
+        assert isinstance(text, unicode)
         return escapes[self.status] + text + escapes['reset']
 
 
@@ -51,7 +50,18 @@ def get_terminal_size():
 
 class PrettyFormatter(object):
     def __init__(self, stream, monochrome, executing):
-        self.stream = utf8writer(stream)
+        # the stream may already handle encoding (py3k sys.stdout) - if it
+        # doesn't (py2k sys.stdout) then make it do so.
+        if sys.version_info[0] < 3:
+            # py2 does, however, sometimes declare an encoding on sys.stdout,
+            # even if it doesn't use it (or it might be explicitly None)
+            encoding = getattr(stream, 'encoding', None) or 'UTF-8'
+            stream = codecs.getwriter(encoding)(stream)
+        elif not getattr(stream, 'encoding', None):
+            # ok, so the stream doesn't have an encoding at all so add one
+            stream = codecs.getwriter('UTF-8')(stream)
+        self.stream = stream
+
         self.monochrome = monochrome
         self.executing = executing
 
@@ -73,9 +83,9 @@ class PrettyFormatter(object):
     def feature(self, feature):
         #self.print_comments(feature.comments, '')
         self.print_tags(feature.tags, '')
-        self.stream.write("%s: %s" % (feature.keyword, feature.name))
+        self.stream.write(u"%s: %s" % (feature.keyword, feature.name))
         format = self.format('comments')
-        self.stream.write(format.text(" # %s\n" % feature.location))
+        self.stream.write(format.text(u" # %s\n" % feature.location))
         self.print_description(feature.description, '  ', False)
         self.stream.flush()
 
@@ -215,15 +225,13 @@ class PrettyFormatter(object):
         else:
             indentation = self.indentations[0]
 
-        indentation = ' ' * indentation
-        return '%s # %s' % (indentation, location)
+        indentation = u' ' * indentation
+        return u'%s # %s' % (indentation, location)
 
     def calculate_location_indentations(self):
         line_widths = []
         for s in [self.statement] + self.steps:
             string = s.keyword + ' ' + s.name
-            if type(string) is str:
-                string = string.decode('utf8')
             line_widths.append(len(string))
         max_line_width = max(line_widths)
         self.indentations = [max_line_width - width for width in line_widths]
@@ -233,15 +241,15 @@ class PrettyFormatter(object):
             return
 
         self.calculate_location_indentations()
-        self.stream.write("\n")
+        self.stream.write(u"\n")
         #self.print_comments(self.statement.comments, '  ')
         if hasattr(self.statement, 'tags'):
-            self.print_tags(self.statement.tags, '  ')
-        self.stream.write("  %s: %s " % (self.statement.keyword,
+            self.print_tags(self.statement.tags, u'  ')
+        self.stream.write(u"  %s: %s " % (self.statement.keyword,
                                          self.statement.name))
         location = self.indented_location(self.statement.location, True)
-        self.stream.write(self.format('comments').text(location) + "\n")
-        #self.print_description(self.statement.description, '    ')
+        self.stream.write(self.format('comments').text(location) + u"\n")
+        #self.print_description(self.statement.description, u'    ')
         self.statement = None
 
     def print_steps(self):
@@ -266,7 +274,7 @@ class PrettyFormatter(object):
 
         text_start = 0
         for arg in arguments:
-            text = step_name[text_start:arg.start].encode('utf8')
+            text = step_name[text_start:arg.start]
             self.stream.write(text_format.text(text))
             line_length += len(text)
             self.stream.write(arg_format.text(arg.original))
@@ -274,7 +282,7 @@ class PrettyFormatter(object):
             text_start = arg.end
 
         if text_start != len(step_name):
-            text = step_name[text_start:].encode('utf8')
+            text = step_name[text_start:]
             self.stream.write(text_format.text(text))
             line_length += (len(text))
 
@@ -292,9 +300,7 @@ class PrettyFormatter(object):
     def print_tags(self, tags, indent):
         if not tags:
             return
-
-        tags = ['@' + tag for tag in tags]
-        self.stream.write(indent + ' '.join(tags) + '\n')
+        self.stream.write(indent + ' '.join('@' + tag for tag in tags) + '\n')
 
     def print_comments(self, comments, indent):
         if not comments:
