@@ -25,8 +25,7 @@ class ColorFormat(object):
         self.status = status
 
     def text(self, text):
-        if type(text) is str:
-            text = text.decode('utf8')
+        # text muse be unicode or unicode-able
         return escapes[self.status] + text + escapes['reset']
 
 

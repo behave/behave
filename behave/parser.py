@@ -9,7 +9,7 @@ parsers = {}
 
 
 def parse_file(filename, language=None):
-    with open(filename) as f:
+    with open(filename, 'rb') as f:
         # file encoding is assumed to be utf8. Oh, yes.
         data = f.read().decode('utf8')
     return parse_feature(data, language, filename)
@@ -259,7 +259,7 @@ class Parser(object):
 
     def match_keyword(self, keyword, line):
         for alias in self.keywords[keyword]:
-            if line.startswith(alias + ':'):
+            if line.startswith(alias + u':'):
                 return alias
         return False
 
