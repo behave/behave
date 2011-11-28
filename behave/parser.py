@@ -81,6 +81,8 @@ class Parser(object):
         self.reset()
 
         self.filename = filename
+        if type(data) is not unicode:
+            data = unicode(data, 'utf8')
 
         for line in data.split('\n'):
             self.line += 1
@@ -264,6 +266,12 @@ class Parser(object):
         return False
 
     def parse_step(self, line):
+        # This gets used in execute_steps over in the runner so just make
+        # sure we're good and unicodificated.
+
+        if type(line) is not unicode:
+            line = unicode(line, 'utf8')
+
         for step_type in ('given', 'when', 'then', 'and', 'but'):
             for kw in self.keywords[step_type]:
                 if not line.startswith(kw):

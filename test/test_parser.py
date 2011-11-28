@@ -2,10 +2,16 @@ from nose.tools import *
 
 from behave import model, parser
 
+from test.support import forcibly_utf8
+
 class Common(object):
     def compare_steps(self, steps, expected):
-        have = [(s.step_type, s.keyword, s.name, s.string, s.table) for s in steps]
-        eq_(have, expected)
+        for have, want in zip(steps, expected):
+            eq_(have.step_type, want[0])
+            eq_(have.keyword, forcibly_utf8(want[1]))
+            eq_(have.name, forcibly_utf8(want[2]))
+            eq_(have.string, forcibly_utf8(want[3]))
+            eq_(have.table, want[4])
 
 class TestParser(Common):
     def test_parses_feature_name(self):
@@ -686,21 +692,21 @@ Feature: Stuff
 
 class TestForeign(Common):
     def test_parses_french(self):
-        doc = u"""
-Fonctionnalit\xe9: testing stuff
+        doc = forcibly_utf8("""
+Fonctionnalit\xc3\xa9: testing stuff
   Oh my god, it's full of stuff...
 
   Contexte:
     Soit I found some stuff
 
-  Sc\xe9nario: test stuff
+  Sc\xc3\xa9nario: test stuff
     Soit I am testing stuff
     Alors it should work
 
-  Sc\xe9nario: test more stuff
+  Sc\xc3\xa9nario: test more stuff
     Soit I am testing stuff
     Alors it will work
-""".lstrip()
+""").lstrip()
         feature = parser.parse_feature(doc, 'fr')
         eq_(feature.name, "testing stuff")
         eq_(feature.description, ["Oh my god, it's full of stuff..."])
@@ -717,14 +723,14 @@ Fonctionnalit\xe9: testing stuff
         ])
 
     def test_parses_french_multi_word(self):
-        doc = u"""
-Fonctionnalit\xe9: testing stuff
+        doc = forcibly_utf8("""
+Fonctionnalit\xc3\xa9: testing stuff
   Oh my god, it's full of stuff...
 
-  Sc\xe9nario: test stuff
-    Etant donn\xe9 I am testing stuff
+  Sc\xc3\xa9nario: test stuff
+    Etant donn\xc3\xa9 I am testing stuff
     Alors it should work
-""".lstrip()
+""").lstrip()
         feature = parser.parse_feature(doc, 'fr')
         eq_(feature.name, "testing stuff")
         eq_(feature.description, ["Oh my god, it's full of stuff..."])
@@ -732,7 +738,7 @@ Fonctionnalit\xe9: testing stuff
         assert(len(feature.scenarios) == 1)
         eq_(feature.scenarios[0].name, 'test stuff')
         self.compare_steps(feature.scenarios[0].steps, [
-            ('given', u'Etant donn\xe9', 'I am testing stuff', None, None),
+            ('given', 'Etant donn\xc3\xa9', 'I am testing stuff', None, None),
             ('then', 'Alors', 'it should work', None, None),
         ])
     test_parses_french_multi_word.go=1

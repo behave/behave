@@ -73,7 +73,7 @@ class PrettyFormatter(object):
     def feature(self, feature):
         #self.print_comments(feature.comments, '')
         self.print_tags(feature.tags, '')
-        self.stream.write("%s: %s" % (feature.keyword, feature.name))
+        self.stream.write(u"{0}: {1}".format(feature.keyword, feature.name))
         format = self.format('comments')
         self.stream.write(format.text(" # %s\n" % feature.location))
         self.print_description(feature.description, '  ', False)
