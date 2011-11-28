@@ -10,8 +10,6 @@ from nose.tools import *
 
 from behave.formatter import pretty_formatter
 
-from test.support import forcibly_utf8
-
 class TestFormat(object):
 
     def test_feature(self):
@@ -22,7 +20,7 @@ class TestFormat(object):
         p = pretty_formatter.PrettyFormatter(t, False, True)
         f = Mock()
         f.tags = ['spam', 'ham']
-        f.keyword = forcibly_utf8('k\xc3\xa9yword')
+        f.keyword = u'k\xe9yword'
         f.name = 'name'
         f.location = 'location'
         f.description = 'description'

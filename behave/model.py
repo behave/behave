@@ -8,7 +8,7 @@ def ensure_unicode(value):
     if value is None:
         return None
     if type(value) is not unicode:
-        value = unicode(value, 'utf8')
+        value = value.decode('utf8')
     return value
 
 
