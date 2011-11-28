@@ -45,8 +45,8 @@ class ParserError(Exception):
 
     def __str__(self):
         if self.filename:
-            return 'Failed to parse "%s": %s' % (self.filename, self.message)
-        return 'Failed to parse <string>: %s' % self.message
+            return 'Failed to parse "%s": %s' % (self.filename, self.args[0])
+        return 'Failed to parse <string>: %s' % self.args[0]
 
 
 class Parser(object):
@@ -60,14 +60,6 @@ class Parser(object):
         self.keywords = Parser.languages[language]
         for k, v in self.keywords.items():
             self.keywords[k] = v.split('|')
-        self.step_keywords = {}
-        for k in ('given', 'when', 'then', 'and', 'but'):
-            for kw in self.keywords[k]:
-                if kw in self.step_keywords:
-                    self.step_keywords[kw] = 'step'
-                else:
-                    self.step_keywords[kw] = k
-
         self.reset()
 
     def reset(self):
@@ -272,10 +264,10 @@ class Parser(object):
         return False
 
     def parse_step(self, line):
-        for kw in self.step_keywords:
-            if line.startswith(kw):
+        for step_type in ('given', 'when', 'then', 'and', 'but'):
+            for kw in self.keywords[step_type]:
+                if not line.startswith(kw): continue
                 name = line[len(kw):].strip()
-                step_type = self.step_keywords[kw]
                 if step_type in ('and', 'but'):
                     if not self.last_step:
                         raise ParserError("No previous step", self.line)

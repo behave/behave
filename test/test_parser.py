@@ -696,11 +696,11 @@ Fonctionnalité: testing stuff
 
   Scénario: test stuff
     Soit I am testing stuff
-     Alors it should work
+    Alors it should work
 
   Scénario: test more stuff
     Soit I am testing stuff
-     Alors it will work
+    Alors it will work
 """.lstrip()
         feature = parser.parse_feature(doc, 'fr')
         eq_(feature.name, "testing stuff")
@@ -716,4 +716,25 @@ Fonctionnalité: testing stuff
             ('given', 'Soit', 'I am testing stuff', None, None),
             ('then', 'Alors', 'it should work', None, None),
         ])
+
+    def test_parses_french_multi_word(self):
+        doc = u"""
+Fonctionnalité: testing stuff
+  Oh my god, it's full of stuff...
+
+  Scénario: test stuff
+    Etant donné I am testing stuff
+    Alors it should work
+""".lstrip()
+        feature = parser.parse_feature(doc, 'fr')
+        eq_(feature.name, "testing stuff")
+        eq_(feature.description, ["Oh my god, it's full of stuff..."])
+
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, 'test stuff')
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', u'Etant donné', 'I am testing stuff', None, None),
+            ('then', 'Alors', 'it should work', None, None),
+        ])
+    test_parses_french_multi_word.go=1
 
