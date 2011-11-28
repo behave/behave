@@ -85,7 +85,8 @@ class PathManager(object):
         for path in self.paths:
             sys.path.remove(path)
     def add(self, path):
-        assert self.paths is not None, 'PathPusher.add called outside of context'
+        assert self.paths is not None, \
+            self.__class__.__name__ + '.add called outside of context'
         sys.path.insert(0, path)
         self.paths.append(path)
 
