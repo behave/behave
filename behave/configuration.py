@@ -3,6 +3,7 @@ import sys
 
 from behave.tag_expression import TagExpression
 
+
 class ConfigError(Exception):
     pass
 
@@ -49,7 +50,8 @@ parser.add_argument('--logging-level',
                     help="""Specify a level to capture logging at. The default
                         is NOTSET - capturing everything.""")
 parser.add_argument('--logging-datefmt',
-                    help="""Specify custom date/time format to print statements.
+                    help="""Specify custom date/time format to print
+                            statements.
                             Uses the same format as used by standard logging
                             handlers.""")
 parser.add_argument('--logging-filter',

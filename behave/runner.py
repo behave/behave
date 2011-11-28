@@ -79,11 +79,14 @@ def exec_file(filename, globals={}, locals=None):
 
 class PathManager(object):
     paths = None
+
     def __enter__(self):
         self.paths = []
+
     def __exit__(self, *crap):
         for path in self.paths:
             sys.path.remove(path)
+
     def add(self, path):
         assert self.paths is not None, \
             self.__class__.__name__ + '.add called outside of context'

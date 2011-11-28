@@ -115,4 +115,3 @@ class MemoryHandler(BufferingHandler):
         if self.config.logging_clear_handlers:
             for logger, handler in self.old_handlers:
                 logger.addHandler(handler)
-
