@@ -204,7 +204,7 @@ class Runner(object):
             passed = self.run_step(step_obj, quiet=True)
             if not passed:
                 assert False, "Sub-step failed: %s" % step
-        return
+        return True
 
     def load_step_definitions(self, extra_step_paths=[]):
         steps_dir = os.path.join(self.base_dir, 'steps')
