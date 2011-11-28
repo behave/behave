@@ -279,7 +279,8 @@ class Runner(object):
                         self.run_hook('before_tag', context, tag)
                     self.run_hook('before_scenario', context, scenario)
 
-                self.stdout_capture = StringIO.StringIO()
+                if self.config.stdout_capture:
+                    self.stdout_capture = StringIO.StringIO()
                 self.log = MemoryHandler()
                 self.log.inveigle()
 
@@ -338,8 +339,9 @@ class Runner(object):
         if not quiet:
             self.formatter.match(match)
         self.run_hook('before_step', self.context, step)
-        old_stdout = sys.stdout
-        sys.stdout = self.stdout_capture
+        if self.config.stdout_capture:
+            old_stdout = sys.stdout
+            sys.stdout = self.stdout_capture
         try:
             start = time.time()
             if step.table:
@@ -356,13 +358,15 @@ class Runner(object):
         step.duration = time.time() - start
 
         # stop snarfing these guys
-        sys.stdout = old_stdout
+        if self.config.stdout_capture:
+            sys.stdout = old_stdout
 
         # flesh out the failure with details
         if step.status == 'failed':
-            output = self.stdout_capture.getvalue()
-            if output:
-                error += '\nCaptured stdout:\n' + output
+            if self.config.stdout_capture:
+                output = self.stdout_capture.getvalue()
+                if output:
+                    error += '\nCaptured stdout:\n' + output
             if self.log:
                 error += '\nCaptured logging:\n' + self.log.getvalue()
             step.error_message = error

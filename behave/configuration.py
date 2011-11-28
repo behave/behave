@@ -33,6 +33,10 @@ parser.add_argument('-n', '--name', action="append",
                             of the given name. If this option is given more
                             than once, it will match against all the given
                             names.""")
+parser.add_argument('--nocapture', action='store_false', dest='stdout_capture',
+                    default=True,
+                    help="""Don't capture stdout (any stdout output will be
+                            printed immediately""")
 parser.add_argument('-o', '--outfile', metavar='FILE',
                     help="Write to specified file instead of stdout.")
 parser.add_argument('-q', '--quiet', action='store_true',
