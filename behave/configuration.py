@@ -45,7 +45,7 @@ parser.add_argument('--nologcapture', action='store_false', dest='log_capture',
 parser.add_argument('--logging-format',
                     help="""Specify custom format to print statements. Uses the
                         same format as used by standard logging handlers. The
-                        default is '%(levelname)s:%(name)s:%(message)s'.""")
+                        default is '%%(levelname)s:%%(name)s:%%(message)s'.""")
 parser.add_argument('--logging-level',
                     help="""Specify a level to capture logging at. The default
                         is NOTSET - capturing everything.""")
