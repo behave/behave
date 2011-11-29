@@ -201,6 +201,8 @@ class Runner(object):
         return decorator
 
     def execute_steps(self, steps):
+        assert type(steps) is unicode, "Steps must be in unicode."
+
         for step in steps.strip().split('\n'):
             step = step.strip()
             step_obj = self.feature.parser.parse_step(step)
