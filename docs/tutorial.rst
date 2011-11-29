@@ -38,7 +38,9 @@ Feature Files
 
 A feature file has a simple format describing a feature or part of a
 feature with representative examples of expected outcomes. They're
-plain-text (encoded in UTF-8) and look something like::
+plain-text (encoded in UTF-8) and look something like:
+
+.. code-block:: gherkin
 
   Feature: Fight or flight
     In order to increase the ninja survival rate,
@@ -61,7 +63,9 @@ that will be taken by *behave* in testing your system. These map to `Python
 step implementations`_.
 
 You may also include "And" as a step - this is renamed by *behave* to take
-the name of the preceding step, so::
+the name of the preceding step, so:
+
+.. code-block:: gherkin
 
     Scenario: Stronger opponent
       Given the ninja has a third level black-belt 
@@ -94,14 +98,18 @@ feature file: given, when, then and step (variants with Title case are also
 available if that's your preference.) The decorator accepts a string
 containing the rest of the phrase used in the scenario step it belongs to.
 
-Given a Scenario::
+Given a Scenario:
+
+.. code-block:: gherkin
 
   Scenario: Search for an account
      Given I search for a valid account
       Then I will see the account details
 
 Step code implementing the two steps here might look like (using selenium
-webdriver and some other helpers)::
+webdriver and some other helpers):
+
+.. code-block:: python
 
  @given('I search for a valid account')
  def step(context):
@@ -126,7 +134,9 @@ Step Variables
 --------------
 
 You may find that your feature steps sometimes include very common phrases
-with only some variation. For example::
+with only some variation. For example:
+
+.. code-block:: gherkin
 
   Scenario: look up a book
     Given I search for a valid book
@@ -138,7 +148,9 @@ with only some variation. For example::
 
 You may define a single Python step that handles both of those Then
 clauses (with a Given step that puts some text into
-``context.response``)::
+``context.response``):
+
+.. code-block:: python
 
  @then('the result page will include "{text}"')
  def step(context, text):
@@ -156,6 +168,7 @@ There's two parsers available by default in *behave*:
   need to use named groups "(?P<name>...)" to define the variables pulled
   from the text and passed to your ``step()`` function.
 
+.. _`simple parser`: http://pypi.python.org/pypi/parse
 
 Context
 -------
@@ -175,7 +188,9 @@ made at the scenario level won't permanently affect the value set at the
 feature level.
 
 You may also use it to share values between steps. For example, in some
-steps you define you might have::
+steps you define you might have:
+
+.. code-block:: python
 
   @given('I request a new widget for an account via SOAP')
   def step(context):
@@ -233,7 +248,9 @@ from the feature file. They have a number of attributes:
   The file name (or "<string>") and line number of the statement.
 
 A common use-case for environmental controls might be to set up a web
-server and browser to run all your tests in. For example::
+server and browser to run all your tests in. For example:
+
+.. code-block:: python
 
   import threading
   from wsgiref import simple_server
@@ -267,7 +284,9 @@ Controlling Things With Tags
 You may also "tag" parts of your feature file. At the simplest level this
 allows *behave* to selectively check parts of your feature set.
 
-Given a feature file with::
+Given a feature file with:
+
+.. code-block:: gherkin
 
   Feature: Fight or flight
     In order to increase the ninja survival rate,
@@ -318,7 +337,9 @@ the functions will be called multiple times with each tag in the order
 they're defined in the feature file.
 
 Re-visiting the example from above; if only some of the features required a
-browser and web server then you could tag them ``@browser``::
+browser and web server then you could tag them ``@browser``:
+
+.. code-block:: python
 
   def before_feature(context, feature):
       model.init(environment='test')

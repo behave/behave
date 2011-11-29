@@ -5,3 +5,5 @@ dist
 __pycache__
 .coverage
 nosetests.xml
+_build
+.ropeproject
