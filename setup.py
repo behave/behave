@@ -4,7 +4,7 @@ import sys
 
 from setuptools import find_packages, setup
 
-requirements = ['parse>=1.1.5', 'PyYAML']
+requirements = ['parse>=1.1.5']
 major, minor = sys.version_info[:2]
 if major == 2 and minor < 7:
     requirements.append('argparse')
@@ -17,7 +17,6 @@ setup(
     author_email='benno@jeamland.net',
     url='http://github.com/jeamland/behave',
     packages=find_packages(),
-    package_data={'behave': ['i18n.yml']},
     scripts=['bin/behave'],
     install_requires=requirements,
     use_2to3=True,

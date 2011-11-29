@@ -2,9 +2,7 @@ from __future__ import with_statement
 
 import os.path
 
-import yaml
-
-from behave import model
+from behave import model, i18n
 
 I18N_FILE = os.path.join(os.path.dirname(__file__), 'i18n.yml')
 parsers = {}
@@ -55,19 +53,8 @@ class ParserError(Exception):
 
 
 class Parser(object):
-    languages = None
-
     def __init__(self, language):
-        if Parser.languages is None:
-            Parser.languages = yaml.load(open(I18N_FILE))
-        if language not in Parser.languages:
-            raise ParserError("Unknown language: " + repr(language), None)
-        self.keywords = Parser.languages[language]
-        for k, v in self.keywords.items():
-            # bloody YAML parser returns a mixture of unicode and str
-            if not isinstance(v, unicode):
-                v = v.decode('utf8')
-            self.keywords[k] = v.split('|')
+        self.keywords = i18n.languages[language]
         self.reset()
 
     def reset(self):
