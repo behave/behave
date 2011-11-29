@@ -1,8 +1,8 @@
 from __future__ import with_statement
 
-import os.path
-
 from collections import defaultdict
+import os.path
+import warnings
 
 from mock import Mock, patch
 from nose.tools import *
@@ -56,6 +56,52 @@ class TestContext(object):
         eq_(self.context.thing, 'stuff')
         assert getattr(self.context, 'other_thing', None) is None
         assert getattr(self.context, 'third_thing', None) is None
+
+    def test_masking_attribute_at_lower_level_causes_warning(self):
+        warns = []
+
+        def catch_warning(*args, **kwargs):
+            warns.append(args[0])
+
+        old_showwarning = warnings.showwarning
+        warnings.showwarning = catch_warning
+
+        self.context.thing = 'stuff'
+        self.context._push()
+        self.context.thing = 'other stuff'
+
+        warnings.showwarning = old_showwarning
+
+        print repr(warns)
+        assert warns
+        warning = warns[0]
+        assert isinstance(warning, runner.ContextMaskWarning)
+        assert warning.args[0].startswith('Step code')
+        assert "'thing'" in warning.args[0]
+        assert __file__ in warning.args[0]
+
+    def test_setting_root_attribute_that_masks_existing_causes_warning(self):
+        warns = []
+
+        def catch_warning(*args, **kwargs):
+            warns.append(args[0])
+
+        old_showwarning = warnings.showwarning
+        warnings.showwarning = catch_warning
+
+        self.context._push()
+        self.context.thing = 'teak'
+        self.context._set_root_attribute('thing', 'oak')
+
+        warnings.showwarning = old_showwarning
+
+        print repr(warns)
+        assert warns
+        warning = warns[0]
+        assert isinstance(warning, runner.ContextMaskWarning)
+        assert warning.args[0].startswith('behave runner')
+        assert "'thing'" in warning.args[0]
+        assert __file__ in warning.args[0]
 
 class TestStepRegistry(object):
     def test_add_definition_adds_to_lowercased_keyword(self):

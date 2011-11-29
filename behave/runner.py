@@ -5,6 +5,7 @@ import StringIO
 import sys
 import time
 import traceback
+import warnings
 
 from behave import matchers, model, parser
 from behave.formatter.pretty_formatter import PrettyFormatter
@@ -12,10 +13,19 @@ from behave.log_capture import MemoryHandler
 from behave.configuration import ConfigError
 
 
+class ContextMaskWarning(UserWarning):
+    pass
+
+
 class Context(object):
     def __init__(self):
-        d = self._root = {'failed': False}
+        d = self._root = {
+            'failed': False,
+            'table': None,
+            'text': None,
+        }
         self._stack = [d]
+        self._record = {}
 
     def _push(self):
         self._stack.insert(0, {})
@@ -23,13 +33,30 @@ class Context(object):
     def _pop(self):
         self._stack.pop(0)
 
+    def _set_root_attribute(self, attr, value):
+        for frame in self.__dict__['_stack']:
+            if frame is self.__dict__['_root']:
+                continue
+            if attr in frame:
+                msg = "behave runner masked context attribute '%(attr)s' " + \
+                      "orignally set in %(function)s (%(filename)s:%(line)s)"
+                record = self.__dict__['_record'][attr]
+                params = {
+                    'attr': attr,
+                    'filename': record[0],
+                    'line': record[1],
+                    'function': record[3],
+                }
+                msg = msg % params
+                warnings.warn(msg, ContextMaskWarning, stacklevel=2)
+
     def _dump(self):
         for level, frame in enumerate(self._stack):
             print 'Level %d' % level
             print repr(frame)
 
     def __getattr__(self, attr):
-        if attr in ('_stack', '_root'):
+        if attr in ('_root', '_record', '_stack'):
             return self.__dict__[attr]
         for frame in self._stack:
             if attr in frame:
@@ -39,10 +66,26 @@ class Context(object):
         raise AttributeError(msg)
 
     def __setattr__(self, attr, value):
-        if attr in ('_stack', '_root'):
+        if attr in ('_root', '_record', '_stack'):
             self.__dict__[attr] = value
             return
 
+        for frame in self.__dict__['_stack'][1:]:
+            if attr in frame:
+                msg = "Step code masked context attribute '%(attr)s' " + \
+                      "orignally set in %(function)s (%(filename)s:%(line)s)"
+                record = self.__dict__['_record'][attr]
+                params = {
+                    'attr': attr,
+                    'filename': record[0],
+                    'line': record[1],
+                    'function': record[3],
+                }
+                msg = msg % params
+                warnings.warn(msg, ContextMaskWarning, stacklevel=2)
+
+        stack_frame = traceback.extract_stack(limit=2)[0]
+        self.__dict__['_record'][attr] = stack_frame
         frame = self.__dict__['_stack'][0]
         frame[attr] = value
 
@@ -323,7 +366,7 @@ class Runner(object):
                         if not self.run_step(step):
                             run_steps = False
                             failed = True
-                            context._root['failed'] = True
+                            context._set_root_attribute('failed', True)
                     else:
                         step.status = 'skipped'
                         if scenario.status is None:
@@ -363,6 +406,9 @@ class Runner(object):
         return failed
 
     def run_step(self, step, quiet=False):
+        self.context._set_root_attribute('table', None)
+        self.context._set_root_attribute('text', None)
+
         match = self.steps.find_match(step)
         if match is None:
             self.undefined.append(step)
@@ -384,7 +430,7 @@ class Runner(object):
         try:
             start = time.time()
             if step.table:
-                self.context.table = step.table
+                self.context._set_root_attribute('table', step.table)
             match.run(self.context)
             step.status = 'passed'
         except AssertionError, e:
