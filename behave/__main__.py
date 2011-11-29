@@ -78,11 +78,10 @@ def main():
                 label = statement_type
                 if summary[status] != 1:
                     label += 's'
-                part = '{0:d} {1:s} {2:s}'.format(summary[status], label,
-                                                  status)
+                part = '%d %s %s' % (summary[status], label, status)
                 first = False
             else:
-                part = '{0:d} {1:s}'.format(summary[status], status)
+                part = '%d %s' % (summary[status], status)
             parts.append(part)
         return ', '.join(parts) + '\n'
 

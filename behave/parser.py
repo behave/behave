@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 import os.path
 
 import yaml
@@ -41,7 +43,7 @@ def parse_feature(data, language=None, filename=None):
 class ParserError(Exception):
     def __init__(self, message, line, filename=None):
         if line:
-            message += ' at line {0:d}'.format(line)
+            message += ' at line %d' % line
         super(ParserError, self).__init__(message)
         self.line = line
         self.filename = filename

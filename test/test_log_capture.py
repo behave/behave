@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 from nose.tools import *
 from mock import patch
 

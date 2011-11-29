@@ -4,6 +4,13 @@ import itertools
 import os.path
 
 
+def relpath(path, other):
+    # Python 2.5 doesn't know about relpath
+    if hasattr(os.path, 'relpath'):
+        return os.path.relpath(path, other)
+    return path
+
+
 class Argument(object):
     def __init__(self, start, end, original, value, name=None):
         self.start = start
@@ -27,7 +34,7 @@ class BasicStatement(object):
 
     @property
     def location(self):
-        p = os.path.relpath(self.filename, os.getcwd())
+        p = relpath(self.filename, os.getcwd())
         return '%s:%d' % (p, self.line)
 
 
@@ -255,7 +262,7 @@ class Match(Replayable):
         self.func = func
         self.arguments = arguments
 
-        filename = os.path.relpath(func.func_code.co_filename, os.getcwd())
+        filename = relpath(func.func_code.co_filename, os.getcwd())
         self.location = '%s:%d' % (filename, func.func_code.co_firstlineno)
 
     def __repr__(self):

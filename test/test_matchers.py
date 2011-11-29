@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 from mock import Mock, patch
 from nose.tools import *
 import parse
@@ -40,7 +42,7 @@ class TestParseMatcher(object):
     def test_returns_arguments_based_on_matches(self):
         func = lambda x: -x
         matcher = matchers.ParseMatcher(func, 'foo')
-        
+
         results = parse.Result([1, 2, 3], {'foo': 'bar', 'baz': -45.3},
                                {
                                    1: (13, 14),
@@ -49,7 +51,7 @@ class TestParseMatcher(object):
                                    'foo': (32, 35),
                                    'baz': (39, 44),
                                })
-        
+
         expected = [
             (13, 14, '1', 1, None),
             (16, 17, '2', 2, None),
@@ -57,7 +59,7 @@ class TestParseMatcher(object):
             (32, 35, 'bar', 'bar', 'foo'),
             (39, 44, '-45.3', -45.3, 'baz'),
         ]
-        
+
         with patch.object(matcher.parser, 'parse') as p:
             p.return_value = results
             m = matcher.match('some numbers 1, 2 and 3 and the bar is -45.3')
@@ -77,10 +79,10 @@ class TestRegexMatcher(object):
     def test_returns_arguments_based_on_groups(self):
         func = lambda x: -x
         matcher = matchers.RegexMatcher(func, 'foo')
-        
+
         regex = Mock()
         regex.groupindex = {'foo': 4, 'baz': 5}
-        
+
         match = Mock()
         match.groups.return_value = ('1', '2', '3', 'bar', '-45.3')
         positions = {
@@ -95,7 +97,7 @@ class TestRegexMatcher(object):
 
         regex.match.return_value = match
         matcher.regex = regex
-        
+
         expected = [
             (13, 14, '1', '1', None),
             (16, 17, '2', '2', None),
@@ -103,7 +105,7 @@ class TestRegexMatcher(object):
             (32, 35, 'bar', 'bar', 'foo'),
             (39, 44, '-45.3', '-45.3', 'baz'),
         ]
-        
+
         m = matcher.match('some numbers 1, 2 and 3 and the bar is -45.3')
         assert m.func is func
         args = m.arguments
@@ -112,7 +114,7 @@ class TestRegexMatcher(object):
 
 def test_step_matcher_current_matcher():
     current_matcher = matchers.current_matcher
-    
+
     for name, klass in matchers.matcher_mapping.items():
         matchers.step_matcher(name)
         matcher = matchers.get_matcher(lambda x: -x, 'foo')

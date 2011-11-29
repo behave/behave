@@ -31,8 +31,8 @@ class ParseMatcher(Matcher):
             return None
 
         args = []
-        for index, arg in enumerate(result.fixed, 1):
-            start, end = result.spans[index]
+        for index, arg in enumerate(result.fixed):
+            start, end = result.spans[index+1]
             args.append(model.Argument(start, end, step[start:end], arg))
         for name, arg in result.named.items():
             start, end = result.spans[name]
@@ -53,7 +53,8 @@ class RegexMatcher(Matcher):
 
         groupindex = dict((y, x) for x, y in self.regex.groupindex.items())
         args = []
-        for index, group in enumerate(m.groups(), 1):
+        for index, group in enumerate(m.groups()):
+            index += 1
             name = groupindex.get(index, None)
             args.append(model.Argument(m.start(index), m.end(index), group,
                                        group, name))
