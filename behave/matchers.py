@@ -66,7 +66,7 @@ matcher_mapping = {
     're': RegexMatcher,
 }
 
-current_matcher = RegexMatcher
+current_matcher = ParseMatcher
 
 
 def step_matcher(name):
