@@ -104,7 +104,8 @@ class Parser(object):
         line = line.strip()
 
         if line.startswith('@'):
-            self.tags.extend([tag.strip() for tag in line[1:].split('@')])
+            self.tags.extend([model.Tag(tag.strip(), self.line)
+                for tag in line[1:].split('@')])
             return True
         feature_kwd = self.match_keyword('feature', line)
         if feature_kwd:
@@ -120,7 +121,8 @@ class Parser(object):
         line = line.strip()
 
         if line.startswith('@'):
-            self.tags.extend([tag.strip() for tag in line[1:].split('@')])
+            self.tags.extend([model.Tag(tag.strip(), self.line)
+                for tag in line[1:].split('@')])
             return True
 
         background_kwd = self.match_keyword('background', line)
@@ -172,7 +174,8 @@ class Parser(object):
             return True
 
         if line.startswith('@'):
-            self.tags.extend([tag.strip() for tag in line[1:].split('@')])
+            self.tags.extend([model.Tag(tag.strip(), self.line)
+                for tag in line[1:].split('@')])
             return True
 
         scenario_kwd = self.match_keyword('scenario', line)

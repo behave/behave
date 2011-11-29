@@ -1,5 +1,8 @@
 import base64
-import json
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
 
 class JSONFormatter(object):

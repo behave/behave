@@ -40,7 +40,7 @@ Feature: Stuff
         eq_(feature.name, "Stuff")
         eq_(feature.description,
             ["In order to thing", "As an entity", "I want to do stuff"])
-        eq_(feature.tags, ['foo'])
+        eq_(feature.tags, [model.Tag(u'foo', 1)])
 
     def test_parses_feature_with_more_tags(self):
         doc = u"""
@@ -54,8 +54,8 @@ Feature: Stuff
         eq_(feature.name, "Stuff")
         eq_(feature.description,
             ["In order to thing", "As an entity", "I want to do stuff"])
-        eq_(feature.tags, ['foo', 'bar', 'baz', 'qux', 'winkle_pickers',
-                           'number8'])
+        eq_(feature.tags, [model.Tag(name, 1)
+            for name in (u'foo', u'bar', u'baz', u'qux', u'winkle_pickers', u'number8')])
 
     def test_parses_feature_with_background(self):
         doc = u"""
@@ -215,14 +215,14 @@ Feature: Stuff
         ])
 
         eq_(feature.scenarios[1].name, 'Doing other stuff')
-        eq_(feature.scenarios[1].tags, ['one_tag'])
+        eq_(feature.scenarios[1].tags, [model.Tag(u'one_tag', 1)])
         self.compare_steps(feature.scenarios[1].steps, [
             ('when', 'When', 'stuff happens', None, None),
             ('then', 'Then', 'I am stuffed', None, None),
         ])
 
         eq_(feature.scenarios[2].name, 'Doing different stuff')
-        eq_(feature.scenarios[2].tags, ['lots', 'of', 'tags'])
+        eq_(feature.scenarios[2].tags, [model.Tag(n, 1) for n in (u'lots', u'of', u'tags')])
         self.compare_steps(feature.scenarios[2].steps, [
             ('given', 'Given', 'stuff', None, None),
             ('then', 'Then', 'who gives a stuff', None, None),
@@ -489,7 +489,7 @@ Feature: Stuff
 
         assert(len(feature.scenarios) == 1)
         eq_(feature.scenarios[0].name, 'Doing all sorts of stuff')
-        eq_(feature.scenarios[0].tags, ['stuff', 'derp'])
+        eq_(feature.scenarios[0].tags, [model.Tag(u'stuff', 1), model.Tag(u'derp', 1)])
         self.compare_steps(feature.scenarios[0].steps, [
             ('given', 'Given', 'we have <Stuff>', None, None),
             ('when', 'When', 'we do stuff', None, None),
@@ -568,7 +568,7 @@ Feature: Stuff
 '''.lstrip()
         feature = parser.parse_feature(doc)
         eq_(feature.name, "Stuff")
-        eq_(feature.tags, ['derp'])
+        eq_(feature.tags, [model.Tag(u'derp', 1)])
         eq_(feature.description, ['In order to test my parser',
                                   'As a test runner', 'I want to run tests'])
 
@@ -580,7 +580,7 @@ Feature: Stuff
         assert(len(feature.scenarios) == 4)
 
         eq_(feature.scenarios[0].name, 'Testing stuff')
-        eq_(feature.scenarios[0].tags, ['fred'])
+        eq_(feature.scenarios[0].tags, [model.Tag(u'fred', 1)])
         string = '\n'.join([
             'Yarr, my hovercraft be full of stuff.',
             "Also, I be feelin' this pirate schtick be a mite overdone, " + \
@@ -637,7 +637,7 @@ Feature: Stuff
             ]
         )
         eq_(feature.scenarios[3].name, 'Doing all sorts of stuff')
-        eq_(feature.scenarios[3].tags, ['stuff', 'derp'])
+        eq_(feature.scenarios[3].tags, [model.Tag(u'stuff', 1), model.Tag(u'derp', 1)])
         eq_(feature.scenarios[3].examples[0].name, 'Some stuff')
         eq_(feature.scenarios[3].examples[0].table, table)
         table = model.Table(

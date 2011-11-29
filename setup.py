@@ -8,6 +8,8 @@ requirements = ['parse>=1.1.5']
 major, minor = sys.version_info[:2]
 if major == 2 and minor < 7:
     requirements.append('argparse')
+if major == 2 and minor < 6:
+    requirements.append('simplejson')
 
 setup(
     name='behave',

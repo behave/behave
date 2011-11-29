@@ -32,6 +32,9 @@ class BasicStatement(object):
     def __cmp__(self, other):
         return cmp((self.keyword, self.name), (other.keyword, other.name))
 
+    def to_dict(self):
+        return dict((k, v) for k, v in self.__dict__.items() if k[0] != '_')
+
     @property
     def location(self):
         p = relpath(self.filename, os.getcwd())
