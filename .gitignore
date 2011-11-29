@@ -7,3 +7,4 @@ __pycache__
 nosetests.xml
 _build
 .ropeproject
+tools/virtualenvs
