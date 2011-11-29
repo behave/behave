@@ -1,10 +1,10 @@
 import sys
-import yaml
 
 from behave.configuration import Configuration, ConfigError
 from behave.formatter.ansi_escapes import escapes
+from behave.i18n import languages
 from behave.runner import Runner
-from behave.parser import ParserError, I18N_FILE
+from behave.parser import ParserError
 
 TAG_HELP = """
 Scenarios inherit tags declared on the Feature level. The simplest
@@ -41,7 +41,6 @@ if there are more than 3 occurrences of the @qa tag:
 
 LANG_HELP = """
 Languages available:
-%s
 """.strip()
 
 
@@ -53,9 +52,13 @@ def main():
         sys.exit(0)
 
     if config.i18n == 'help':
-        l = yaml.load(open(I18N_FILE))
-        print LANG_HELP % '\n'.join(u'%s: %s / %s' % (k, l[k]['native'],
-            l[k]['name']) for k in l)
+        iso_codes = languages.keys()
+        iso_codes.sort()
+        print LANG_HELP
+        for iso_code in iso_codes:
+            native = languages[iso_code]['native'][0]
+            name = languages[iso_code]['name'][0]
+            print u'%s: %s / %s' % (iso_code, native, name)
         sys.exit(0)
 
     stream = config.output

@@ -302,5 +302,4 @@ class Result(Replayable):
         assert isinstance(status, unicode)
         self.status = status
         self.duration = duration
-        self.error_message = ensure_unicode(error_message)
-
+        self.error_message = error_message
