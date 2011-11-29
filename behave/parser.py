@@ -4,7 +4,6 @@ import os.path
 
 from behave import model, i18n
 
-I18N_FILE = os.path.join(os.path.dirname(__file__), 'i18n.yml')
 parsers = {}
 
 
