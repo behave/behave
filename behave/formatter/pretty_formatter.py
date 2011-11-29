@@ -218,7 +218,7 @@ class PrettyFormatter(object):
 
     def indented_location(self, location, proceed):
         if not location:
-            return ''
+            return u''
 
         if proceed:
             indentation = self.indentations.pop(0)
