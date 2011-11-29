@@ -1,2 +1,1 @@
 include README.rst MANIFEST.in
-include behave/i18n.yml
