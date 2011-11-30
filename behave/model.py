@@ -443,7 +443,7 @@ class Step(BasicStatement, Replayable):
 
     .. attribute:: table
 
-       An instance  of :class:`~behave.model.Table` that came with the step
+       An instance of :class:`~behave.model.Table` that came with the step
        in the *feature file*.
 
     .. attribute:: status
