@@ -344,7 +344,7 @@ class Runner(object):
             context._push()
 
             feature = parser.parse_file(os.path.abspath(filename),
-                language=self.config.i18n)
+                language=self.config.lang)
 
             self.features.append(feature)
             self.feature = feature
