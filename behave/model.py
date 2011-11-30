@@ -441,6 +441,11 @@ class Step(BasicStatement, Replayable):
        then the previous keyword in the *feature file* will determine this
        step's step_type.
 
+    .. attribute:: text
+
+       A string containing a text argument that came with the step in the
+       *feature file*.
+
     .. attribute:: table
 
        An instance of :class:`~behave.model.Table` that came with the step
@@ -482,11 +487,11 @@ class Step(BasicStatement, Replayable):
     '''
     type = "step"
 
-    def __init__(self, filename, line, keyword, step_type, name, string=None,
+    def __init__(self, filename, line, keyword, step_type, name, text=None,
                  table=None):
         super(Step, self).__init__(filename, line, keyword, name)
         self.step_type = step_type
-        self.string = string        # unused?
+        self.text = text
         self.table = table
 
         self.status = 'untested'

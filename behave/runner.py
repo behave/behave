@@ -455,6 +455,8 @@ class Runner(object):
             sys.stdout = self.stdout_capture
         try:
             start = time.time()
+            if step.text:
+                self.context._set_root_attribute('text', step.text)
             if step.table:
                 self.context._set_root_attribute('table', step.table)
             match.run(self.context)

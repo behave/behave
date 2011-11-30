@@ -236,7 +236,7 @@ class Parser(object):
     def action_multiline(self, line):
         if line.strip().startswith(self.multiline_terminator):
             step = self.statement.steps[-1]
-            step.string = '\n'.join(self.lines)
+            step.text = '\n'.join(self.lines)
             if step.name.endswith(':'):
                 step.name = step.name[:-1]
             self.lines = []
