@@ -115,6 +115,44 @@ Feature: Stuff
             ('then', 'Then', 'stuff happens', None, None),
         ])
 
+    def test_parses_lowercase_step_keywords(self):
+        doc = u"""
+Feature: Stuff
+
+  Scenario: Doing stuff
+    giVeN there is stuff
+    when I do stuff
+    tHEn stuff happens
+""".lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Stuff")
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, 'Doing stuff')
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Given', 'there is stuff', None, None),
+            ('when', 'When', 'I do stuff', None, None),
+            ('then', 'Then', 'stuff happens', None, None),
+        ])
+
+    def test_parses_ja_keywords(self):
+        doc = u"""
+機能: Stuff
+
+  シナリオ: Doing stuff
+    前提there is stuff
+    もしI do stuff
+    ならばstuff happens
+""".lstrip()
+        feature = parser.parse_feature(doc, language='ja')
+        eq_(feature.name, "Stuff")
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, 'Doing stuff')
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', u'前提', 'there is stuff', None, None),
+            ('when', u'もし', 'I do stuff', None, None),
+            ('then', u'ならば', 'stuff happens', None, None),
+        ])
+
     def test_parses_feature_with_description_and_background_and_scenario(self):
         doc = u"""
 Feature: Stuff

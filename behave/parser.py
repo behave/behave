@@ -289,7 +289,10 @@ class Parser(object):
                 else:
                     whitespace = ' '
 
-                if not line.startswith(kw + whitespace):
+                # try to match the keyword; also attempt a purely lowercase
+                # match if that'll work
+                if not (line.startswith(kw + whitespace)
+                        or line.lower().startswith(kw.lower() + whitespace)):
                     continue
 
                 name = line[len(kw):].strip()
