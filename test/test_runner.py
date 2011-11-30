@@ -7,7 +7,7 @@ import warnings
 from mock import Mock, patch
 from nose.tools import *
 
-from behave import runner
+from behave import model, runner
 from behave.configuration import ConfigError
 
 class TestContext(object):
@@ -205,6 +205,246 @@ class TestRunner(object):
             wrapper = decorator(string)
             assert wrapper(func) is func
             add_definition.assert_called_with(step_type, string, func)
+
+
+def raiser(exception):
+    def func(*args, **kwargs):
+        raise exception
+    return func
+
+
+class TestRunStep(object):
+    def setUp(self):
+        self.config = Mock()
+        self.runner = runner.Runner(self.config)
+        self.context = self.runner.context = Mock()
+        self.formatter = self.runner.formatter = Mock()
+        self.steps = self.runner.steps = Mock()
+        self.stdout_capture = self.runner.stdout_capture = Mock()
+        self.stdout_capture.getvalue.return_value = ''
+        self.log_capture = self.runner.log_capture = Mock()
+        self.log_capture.getvalue.return_value = ''
+        self.run_hook = self.runner.run_hook = Mock()
+
+    def test_run_step_resets_text_and_table_before_step(self):
+        self.steps.find_match.return_value = None
+        assert not self.runner.run_step(Mock())
+
+        call_args_list = self.context._set_root_attribute.call_args_list
+        call_args_list = [x[0] for x in call_args_list]
+        assert ('text', None) in call_args_list
+        assert ('table', None) in call_args_list
+
+    def test_run_step_appends_step_to_undefined_when_no_match_found(self):
+        step = Mock()
+        self.steps.find_match.return_value = None
+        assert not self.runner.run_step(step)
+
+        assert step in self.runner.undefined
+        eq_(step.status, 'undefined')
+
+    def test_run_step_reports_undefined_step_via_formatter_when_not_quiet(self):
+        step = Mock()
+        self.steps.find_match.return_value = None
+        assert not self.runner.run_step(step)
+
+        self.formatter.match.assert_called_with(model.NoMatch())
+        self.formatter.result.assert_called_with(step)
+
+    def test_run_step_with_no_match_does_not_touch_formatter_when_quiet(self):
+        step = Mock()
+        self.steps.find_match.return_value = None
+        assert not self.runner.run_step(step, quiet=True)
+
+        assert not self.formatter.match.called
+        assert not self.formatter.result.called
+
+    def test_run_step_when_not_quiet_reports_match_and_result(self):
+        step = Mock()
+        match = Mock()
+        self.steps.find_match.return_value = match
+
+        side_effects = (None, raiser(AssertionError('whee')),
+                        raiser(Exception('whee')))
+        for side_effect in side_effects:
+            match.run.side_effect = side_effect
+            self.runner.run_step(step)
+            self.formatter.match.assert_called_with(match)
+            self.formatter.result.assert_called_with(step)
+
+    def test_run_step_when_quiet_reports_nothing(self):
+        step = Mock()
+        match = Mock()
+        self.steps.find_match.return_value = match
+
+        side_effects = (None, raiser(AssertionError('whee')),
+                raiser(Exception('whee')))
+        for side_effect in side_effects:
+            match.run.side_effect = side_effect
+            self.runner.run_step(step, quiet=True)
+            assert not self.formatter.match.called
+            assert not self.formatter.result.called
+
+    def test_run_step_runs_before_hook_then_match_then_after_hook(self):
+        step = Mock()
+        match = Mock()
+        self.steps.find_match.return_value = match
+
+        side_effects = (None, AssertionError('whee'), Exception('whee'))
+        for side_effect in side_effects:
+            self.runner.run_hook = match.run = Mock()
+
+            def effect(thing):
+                def raiser(*args, **kwargs):
+                    match.run.side_effect = None
+                    if thing:
+                        raise thing
+
+                def nonraiser(*args, **kwargs):
+                    match.run.side_effect = raiser
+
+                return nonraiser
+
+            match.run.side_effect = effect(side_effect)
+            self.runner.run_step(step)
+
+            eq_(match.run.call_args_list, [
+                (('before_step', self.context, step), {}),
+                ((self.context,), {}),
+                (('after_step', self.context, step), {}),
+            ])
+
+    def test_run_step_sets_table_if_present(self):
+        step = Mock()
+        step.table = Mock()
+        step.text = None
+        self.steps.find_match.return_value = Mock()
+
+        self.runner.run_step(step)
+
+        self.context._set_root_attribute.assert_called_with('table', step.table)
+
+    def test_run_step_sets_text_if_present(self):
+        step = Mock()
+        step.table = None
+        step.text = Mock()
+        self.steps.find_match.return_value = Mock()
+
+        self.runner.run_step(step)
+
+        self.context._set_root_attribute.assert_called_with('text', step.text)
+
+    def test_run_step_sets_status_to_passed_if_nothing_goes_wrong(self):
+        step = Mock()
+        step.error_message = None
+        self.steps.find_match.return_value = Mock()
+
+        self.runner.run_step(step)
+
+        eq_(step.status, 'passed')
+        eq_(step.error_message, None)
+
+    def test_run_step_sets_status_to_failed_on_assertion_error(self):
+        step = Mock()
+        step.error_message = None
+        match = Mock()
+        match.run.side_effect = raiser(AssertionError('whee'))
+        self.steps.find_match.return_value = match
+
+        self.runner.run_step(step)
+
+        eq_(step.status, 'failed')
+        assert step.error_message.startswith('Assertion Failed')
+
+    @patch('traceback.format_exc')
+    def test_run_step_sets_status_to_failed_on_exception(self, format_exc):
+        step = Mock()
+        step.error_message = None
+        match = Mock()
+        match.run.side_effect = raiser(Exception('whee'))
+        self.steps.find_match.return_value = match
+        format_exc.return_value = 'something to do with an exception'
+
+        self.runner.run_step(step)
+
+        eq_(step.status, 'failed')
+        eq_(step.error_message, format_exc.return_value)
+
+    @patch('time.time')
+    def test_run_step_calculates_duration(self, time_time):
+        step = Mock()
+        step.duration = None
+        match = Mock()
+        self.steps.find_match.return_value = match
+
+        def time_time_1():
+            def time_time_2():
+                return 23
+            time_time.side_effect = time_time_2
+            return 17
+
+        side_effects = (None, raiser(AssertionError('whee')),
+                raiser(Exception('whee')))
+        for side_effect in side_effects:
+            match.run.side_effect = side_effect
+            time_time.side_effect = time_time_1
+
+            self.runner.run_step(step)
+            eq_(step.duration, 23 - 17)
+
+    def test_run_step_captures_stdout_if_requested(self):
+        step = Mock()
+        match = Mock()
+        self.steps.find_match.return_value = match
+
+        def printer(*args, **kwargs):
+            print 'carrots',
+
+        match.run.side_effect = printer
+
+        assert self.runner.run_step(step)
+
+        self.stdout_capture.write.assert_called_with('carrots')
+
+    def test_run_step_does_not_captures_stdout_if_requested(self):
+        step = Mock()
+        match = Mock()
+        self.steps.find_match.return_value = match
+        self.config.stdout_capture = False
+
+        def printer(*args, **kwargs):
+            print 'carrots',
+
+        match.run.side_effect = printer
+
+        assert self.runner.run_step(step)
+
+        assert not self.stdout_capture.write.called
+
+    def test_run_step_appends_any_captured_stdout_on_failure(self):
+        step = Mock()
+        match = Mock()
+        self.steps.find_match.return_value = match
+        self.stdout_capture.getvalue.return_value = 'frogs'
+        match.run.side_effect = raiser(Exception('halibut'))
+
+        assert not self.runner.run_step(step)
+
+        assert 'Captured stdout:' in step.error_message
+        assert 'frogs' in step.error_message
+
+    def test_run_step_appends_any_captured_logging_on_failure(self):
+        step = Mock()
+        match = Mock()
+        self.steps.find_match.return_value = match
+        self.log_capture.getvalue.return_value = 'toads'
+        match.run.side_effect = raiser(AssertionError('kipper'))
+
+        assert not self.runner.run_step(step)
+
+        assert 'Captured logging:' in step.error_message
+        assert 'toads' in step.error_message
+
 
 class FsMock(object):
     def __init__(self, *paths):
