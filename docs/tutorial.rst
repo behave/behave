@@ -35,13 +35,19 @@ A more complex directory might look like:
   features/steps/website.py
   features/steps/utils.py
 
+If you're having trouble setting things up and want to see what *behave* is
+doing in attempting to find your features use the "-v" (verbose)
+command-line switch.
+
 
 Feature Files
 =============
 
-A feature file has a simple format describing a feature or part of a
+A feature file has a `simple format`_ describing a feature or part of a
 feature with representative examples of expected outcomes. They're
 plain-text (encoded in UTF-8) and look something like:
+
+.. _`simple format`: gherkin.html#gherkin:-feature-testing-language
 
 .. code-block:: gherkin
 
