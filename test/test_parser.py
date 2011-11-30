@@ -838,3 +838,29 @@ Fonctionnalit\xe9: testing stuff
         ])
     test_parses_french_multi_word.go=1
 
+    def test_properly_handles_whitespace_on_keywords_that_do_not_want_it(self):
+        doc = u"""
+# language: zh-TW
+
+\u529f\u80fd: I have no idea what I'm saying
+
+  \u5834\u666f: No clue whatsoever
+    \u5047\u8a2dI've got no idea
+    \u7576I say things
+    \u800c\u4e14People don't understand
+    \u90a3\u9ebcPeople should laugh
+    \u4f46\u662fI should take it well
+"""
+
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "I have no idea what I'm saying")
+
+        eq_(len(feature.scenarios), 1)
+        eq_(feature.scenarios[0].name, 'No clue whatsoever')
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', u'\u5047\u8a2d', "I've got no idea", None, None),
+            ('when', u'\u7576', 'I say things', None, None),
+            ('when', u'\u800c\u4e14', "People don't understand", None, None),
+            ('then', u'\u90a3\u9ebc', "People should laugh", None, None),
+            ('then', u'\u4f46\u662f', "I should take it well", None, None),
+        ])

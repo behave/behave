@@ -283,8 +283,15 @@ class Parser(object):
     def parse_step(self, line):
         for step_type in ('given', 'when', 'then', 'and', 'but'):
             for kw in self.keywords[step_type]:
-                if not line.startswith(kw):
+                if kw.endswith('<'):
+                    whitespace = ''
+                    kw = kw[:-1]
+                else:
+                    whitespace = ' '
+
+                if not line.startswith(kw + whitespace):
                     continue
+
                 name = line[len(kw):].strip()
                 if step_type in ('and', 'but'):
                     if not self.last_step:
