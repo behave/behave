@@ -2,6 +2,7 @@ from __future__ import with_statement
 
 from behave import model, i18n
 
+DEFAULT_LANGUAGE = 'en'
 parsers = {}
 
 
@@ -17,9 +18,6 @@ def parse_feature(data, language=None, filename=None):
 
     # ALL data operated on by the parser MUST be unicode
     assert isinstance(data, unicode)
-
-    if not language:
-        language = 'en'
 
     parser = parsers.get(language, None)
     if parser is None:
@@ -57,11 +55,16 @@ class ParserError(Exception):
 
 
 class Parser(object):
-    def __init__(self, language):
-        self.keywords = i18n.languages[language]
+    def __init__(self, language=None):
+        self.language = language
         self.reset()
 
     def reset(self):
+        if self.language:
+            self.keywords = i18n.languages[self.language]
+        else:
+            self.keywords = None
+
         self.state = 'init'
         self.line = 0
         self.last_step = None
@@ -97,6 +100,13 @@ class Parser(object):
 
     def action(self, line):
         if line.strip().startswith('#'):
+            if self.keywords or self.state != 'init' or self.tags:
+                return
+
+            line = line.strip()[1:].strip()
+            if line.lower().startswith('language:'):
+                language = line[9:].strip()
+                self.keywords = i18n.languages[language]
             return
 
         func = getattr(self, 'action_' + self.state, None)
@@ -263,6 +273,8 @@ class Parser(object):
         return True
 
     def match_keyword(self, keyword, line):
+        if not self.keywords:
+            self.keywords = i18n.languages[DEFAULT_LANGUAGE]
         for alias in self.keywords[keyword]:
             if line.startswith(alias + ':'):
                 return alias

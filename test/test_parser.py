@@ -2,7 +2,7 @@
 
 from nose.tools import *
 
-from behave import model, parser
+from behave import i18n, model, parser
 
 class Common(object):
     def compare_steps(self, steps, expected):
@@ -693,6 +693,99 @@ Feature: Stuff
         assert_raises(parser.ParserError, parser.parse_feature, doc)
 
 class TestForeign(Common):
+    def test_first_line_comment_sets_language(self):
+        doc = u"""
+# language: fr
+Fonctionnalit\xe9: testing stuff
+  Oh my god, it's full of stuff...
+"""
+
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "testing stuff")
+        eq_(feature.description, ["Oh my god, it's full of stuff..."])
+
+    def test_whitespace_before_first_line_comment_still_sets_language(self):
+        doc = u"""
+
+
+# language: cs
+Po\u017eadavek: testing stuff
+  Oh my god, it's full of stuff...
+"""
+
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "testing stuff")
+        eq_(feature.description, ["Oh my god, it's full of stuff..."])
+
+    def test_anything_before_language_comment_makes_it_not_count(self):
+        doc = u"""
+
+@wombles
+# language: cy-GB
+Arwedd: testing stuff
+  Oh my god, it's full of stuff...
+"""
+
+        assert_raises(parser.ParserError, parser.parse_feature, doc)
+
+    def test_defaults_to_DEFAULT_LANGUAGE(self):
+        feature_kwd = i18n.languages[parser.DEFAULT_LANGUAGE]['feature'][0]
+        doc = u"""
+
+@wombles
+# language: cs
+%s: testing stuff
+  Oh my god, it's full of stuff...
+""" % feature_kwd
+
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "testing stuff")
+        eq_(feature.description, ["Oh my god, it's full of stuff..."])
+
+    def test_whitespace_in_the_language_comment_is_flexible_1(self):
+        doc = u"""
+#language:da
+Egenskab: testing stuff
+  Oh my god, it's full of stuff...
+"""
+
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "testing stuff")
+        eq_(feature.description, ["Oh my god, it's full of stuff..."])
+
+    def test_whitespace_in_the_language_comment_is_flexible_2(self):
+        doc = u"""
+# language:de
+Funktionalit\xe4t: testing stuff
+  Oh my god, it's full of stuff...
+"""
+
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "testing stuff")
+        eq_(feature.description, ["Oh my god, it's full of stuff..."])
+
+    def test_whitespace_in_the_language_comment_is_flexible_3(self):
+        doc = u"""
+#language: en-lol
+OH HAI: testing stuff
+  Oh my god, it's full of stuff...
+"""
+
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "testing stuff")
+        eq_(feature.description, ["Oh my god, it's full of stuff..."])
+
+    def test_whitespace_in_the_language_comment_is_flexible_4(self):
+        doc = u"""
+#       language:     lv
+F\u012b\u010da: testing stuff
+  Oh my god, it's full of stuff...
+"""
+
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "testing stuff")
+        eq_(feature.description, ["Oh my god, it's full of stuff..."])
+
     def test_parses_french(self):
         doc = u"""
 Fonctionnalit\xe9: testing stuff
