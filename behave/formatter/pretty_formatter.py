@@ -292,8 +292,8 @@ class PrettyFormatter(object):
 
         self.step_lines = int((line_length - 1) / self.display_width)
 
-        if step.string:
-            self.doc_string(step.string)
+        if step.text:
+            self.doc_string(step.text)
         if step.table:
             self.table(step.table)
 
