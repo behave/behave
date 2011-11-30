@@ -12,6 +12,30 @@ def relpath(path, other):
 
 
 class Argument(object):
+    '''An argument found in a *feature file* step name and extracted using
+    step decorator `parameters`_.
+
+    .. attribute:: original
+
+       The actual text matched in the step name.
+
+    .. attribute:: value
+
+       The potentially type-converted value of the argument.
+
+    .. attribute:: name
+
+       The name of the argument. This will be None if the parameter is
+       anonymous.
+
+    .. attribute:: start
+
+       The start index in the step name of the argument. Used for display.
+
+    .. attribute:: end
+
+       The end index in the step name of the argument. Used for display.
+    '''
     def __init__(self, start, end, original, value, name=None):
         self.start = start
         self.end = end
@@ -540,6 +564,18 @@ class Row(object):
 
 
 class Match(Replayable):
+    '''An parameter-matched *feature file* step name extracted using
+    step decorator `parameters`_.
+
+    .. attribute:: func
+
+       The step function that this match will be applied to.
+
+    .. attribute:: arguments
+
+       A list of :class:`behave.model.Argument` instances containing the matched
+       parameters from the step name.
+    '''
     type = "match"
 
     def __init__(self, func, arguments=None):

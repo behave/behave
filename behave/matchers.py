@@ -25,6 +25,9 @@ class Matcher(object):
 
         Return None if I don't match otherwise return a list of matches as
         :class:`behave.model.Argument` instances.
+
+        The return value from this function will be converted into a
+        :class:`behave.model.Match` instance by *behave*.
         '''
         raise NotImplementedError
 
