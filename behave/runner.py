@@ -18,6 +18,30 @@ class ContextMaskWarning(UserWarning):
 
 
 class Context(object):
+    '''Hold contextual information during the running of tests.
+
+    This object is a place to store information related to the tests you're
+    running. You may add arbitrary attributes to it of whatever value you need.
+
+    During the running of your tests the object will have additional layers of
+    namespace added and removed automatically. There is a "root" namespace and
+    additional namespaces for features and scenarios.
+
+    Certain names are used by *behave*; be wary of using them yourself as
+    *behave* may overwrite the value you set. These names are:
+
+    **failed**
+      This is set in the root namespace as soon as any step fails.
+
+    **table**
+      This is set at the step level and holds any :class:`~behave.model.Table`
+      associated with the step.
+
+    **text**
+      This is set at the step level and holds any multiline text associated with
+      the step.
+
+    '''
     def __init__(self):
         d = self._root = {
             'failed': False,

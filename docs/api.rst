@@ -43,17 +43,34 @@ The environment.py module may define code to run before and after certain
 events during your testing:
 
 **before_step(context, step), after_step(context, step)**
-  These run before and after every step.
+  These run before and after every step. The step passed in is an instance
+  of :class:`~behave.model.Step`.
 **before_scenario(context, scenario), after_scenario(context, scenario)**
-  These run before and after each scenario is run.
+  These run before and after each scenario is run. The scenario passed in is an
+  instance of :class:`~behave.model.Scenario`.
 **before_feature(context, feature), after_feature(context, feature)**
-  These run before and after each feature file is exercised.
+  These run before and after each feature file is exercised. The feature
+  passed in is an instance of :class:`~behave.model.Feature`.
 **before_tag(context, tag), after_tag(context, tag)**
   These run before and after a section tagged with the given name. They are
   invoked for each tag encountered in the order they're found in the
-  feature file. See  `controlling things with tags`_.
+  feature file. See  `controlling things with tags`_. The tag passed in is
+  an instance of :class:`~behave.model.Tag` and because it's a subclass of
+  string you can do simple tests like:
+
+  .. code-block:: python
+
+     if tag == 'browser':
+         context.browser = webdriver.Chrome()
+
 **before_all(context), after_all(context)**
   These run before and after the whole shooting match.
+
+The *context* variable in all cases is an instance of
+:class:`behave.runner.Context`.
+
+.. autoclass:: behave.runner.Context
+
 
 
 Model Objects

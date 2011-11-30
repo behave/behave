@@ -7,6 +7,8 @@ Test Language
 
 This is the doc descriving gherkin in more detail.
 
+Well, it would be...
+
 Language Features
 =================
 
@@ -27,6 +29,9 @@ Examples
 
 Steps
 -----
+
+Step Parameters
+~~~~~~~~~~~~~~~
 
 Tags
 ----
