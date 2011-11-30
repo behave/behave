@@ -11,10 +11,18 @@ if major == 2 and minor < 7:
 if major == 2 and minor < 6:
     requirements.append('simplejson')
 
+# grab some useful information
+from behave import __version__ as version
+from behave import __doc__ as description
+lines = description.splitlines()
+summary = lines[0].strip()
+description = '\n'.join(lines).strip()
+
 setup(
     name='behave',
-    version='1.0',
-    description='A Cucumber-like BDD tool',
+    version=version,
+    description=summary,
+    long_description=description,
     author='Benno Rice',
     author_email='benno@jeamland.net',
     url='http://github.com/jeamland/behave',

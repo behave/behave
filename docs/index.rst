@@ -14,6 +14,8 @@ Contents:
 
    philosophy
    tutorial
+   gherkin
+   api
 
 
 Indices and tables

@@ -2,6 +2,9 @@
 Tutorial, behave!
 =================
 
+.. if you change any headings in here make sure you haven't broken the
+   cross-references in the API documentation or module docstrings!
+
 To make *behave* work for you create a directory called "features"
 containing:
 

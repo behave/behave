@@ -55,6 +55,62 @@ class Replayable(object):
 
 
 class Feature(TagStatement, Replayable):
+    '''A `feature`_ parsed from a *feature file*.
+
+    .. attribute:: keyword
+
+       This is the keyword as seen in the *feature file*. In English this will
+       be "Feature".
+
+    .. attribute:: name
+
+       The name of the feature (the text after "Feature".)
+
+    .. attribute:: description
+
+       The description of the feature as seen in the *feature file*. This is
+       stored as a list of text lines.
+
+    .. attribute:: background
+
+       The :class:`~behave.model.Background` for this feature, if any.
+
+    .. attribute:: scenarios
+
+       A list of :class:`~behave.model.Scenario` making up this feature.
+
+    .. attribute:: tags
+
+       A list of @tags (as :class:`~behave.model.Tag`) attached to the
+       feature. See `controlling things with tags`_.
+
+    .. attribute:: status
+
+       Read-Only. A summary status of the feature's run. If read before the
+       feature is fully tested it will return "untested" otherwise it will
+       return one of:
+
+       "untested"
+         The feature was has not been completely tested yet.
+       "skipped"
+         One or more steps of this feature was passed over during testing.
+       "passed"
+         The feature was tested successfully.
+       "failed"
+         One or more steps of this feature failed.
+
+    .. attribute:: filename
+
+       The file name (or "<string>") of the *feature file* where the feature was
+       found.
+
+    .. attribute:: line
+
+       The line number of the *feature file* where the feature was found.
+
+    .. _`feature`: gherkin.html#features
+    '''
+
     type = "feature"
 
     def __init__(self, filename, line, keyword, name, tags=[], description=[],
@@ -104,6 +160,32 @@ class Feature(TagStatement, Replayable):
 
 
 class Background(BasicStatement, Replayable):
+    '''A `background`_ parsed from a *feature file*.
+
+    .. attribute:: keyword
+
+       This is the keyword as seen in the *feature file*. In English this will
+       typically be "Background".
+
+    .. attribute:: name
+
+       The name of the background (the text after "Background:".)
+
+    .. attribute:: steps
+
+       A list of :class:`~behave.model.Step` making up this background.
+
+    .. attribute:: filename
+
+       The file name (or "<string>") of the *feature file* where the scenario was
+       found.
+
+    .. attribute:: line
+
+       The line number of the *feature file* where the scenario was found.
+
+    .. _`background`: gherkin.html#scenarios
+    '''
     type = "background"
 
     def __init__(self, filename, line, keyword, name, steps=[]):
@@ -118,6 +200,56 @@ class Background(BasicStatement, Replayable):
 
 
 class Scenario(TagStatement, Replayable):
+    '''A `scenario`_ parsed from a *feature file*.
+
+    .. attribute:: keyword
+
+       This is the keyword as seen in the *feature file*. In English this will
+       typically be "Scenario".
+
+    .. attribute:: name
+
+       The name of the scenario (the text after "Scenario:".)
+
+    .. attribute:: feature
+
+       The :class:`~behave.model.Feature` this scenario belongs to.
+
+    .. attribute:: steps
+
+       A list of :class:`~behave.model.Step` making up this scenario.
+
+    .. attribute:: tags
+
+       A list of @tags (as :class:`~behave.model.Tag`) attached to the
+       scenario. See `controlling things with tags`_.
+
+    .. attribute:: status
+
+       Read-Only. A summary status of the scenario's run. If read before the
+       scenario is fully tested it will return "untested" otherwise it will
+       return one of:
+
+       "untested"
+         The scenario was has not been completely tested yet.
+       "skipped"
+         One or more steps of this scenario was passed over during testing.
+       "passed"
+         The scenario was tested successfully.
+       "failed"
+         One or more steps of this scenario failed.
+
+    .. attribute:: filename
+
+       The file name (or "<string>") of the *feature file* where the scenario was
+       found.
+
+    .. attribute:: line
+
+       The line number of the *feature file* where the scenario was found.
+
+    .. _`scenario`: gherkin.html#scenarios
+    '''
     type = "scenario"
 
     def __init__(self, filename, line, keyword, name, tags=[], steps=[]):
@@ -148,6 +280,64 @@ class Scenario(TagStatement, Replayable):
 
 
 class ScenarioOutline(Scenario):
+    '''A `scenario outline`_ parsed from a *feature file*.
+
+    A scenario outline extends the existing :class:`~behave.model.Scenario`
+    class with the addition of the :class:`~behave.model.Examples` tables of
+    data from the *feature file*.
+
+    .. attribute:: keyword
+
+       This is the keyword as seen in the *feature file*. In English this will
+       typically be "Scenario Outline".
+
+    .. attribute:: name
+
+       The name of the scenario (the text after "Scenario Outline:".)
+
+    .. attribute:: feature
+
+       The :class:`~behave.model.Feature` this scenario outline belongs to.
+
+    .. attribute:: steps
+
+       A list of :class:`~behave.model.Step` making up this scenario outline.
+
+    .. attribute:: examples
+
+       A list of :class:`~behave.model.Examples` used by this scenario outline.
+
+    .. attribute:: tags
+
+       A list of @tags (as :class:`~behave.model.Tag`) attached to the
+       scenario. See `controlling things with tags`_.
+
+    .. attribute:: status
+
+       Read-Only. A summary status of the scenario's run. If read before the
+       scenario is fully tested it will return "untested" otherwise it will
+       return one of:
+
+       "untested"
+         The scenario was has not been completely tested yet.
+       "skipped"
+         One or more steps of this scenario was passed over during testing.
+       "passed"
+         The scenario was tested successfully.
+       "failed"
+         One or more steps of this scenario failed.
+
+    .. attribute:: filename
+
+       The file name (or "<string>") of the *feature file* where the scenario was
+       found.
+
+    .. attribute:: line
+
+       The line number of the *feature file* where the scenario was found.
+
+    .. _`scenario outline`: gherkin.html#scenario-outlines
+    '''
     type = "scenario_outline"
 
     def __init__(self, filename, line, keyword, name, tags=[], steps=[],
@@ -175,6 +365,33 @@ class ScenarioOutline(Scenario):
 
 
 class Examples(BasicStatement, Replayable):
+    '''An `examples`_ table parsed from a *feature file*.
+
+    .. attribute:: keyword
+
+       This is the keyword as seen in the *feature file*. In English this will
+       typically be "Example".
+
+    .. attribute:: name
+
+       The name of the example (the text after "Example:".)
+
+    .. attribute:: table
+
+       An instance  of :class:`~behave.model.Table` that came with the example
+       in the *feature file*.
+
+    .. attribute:: filename
+
+       The file name (or "<string>") of the *feature file* where the scenario was
+       found.
+
+    .. attribute:: line
+
+       The line number of the *feature file* where the scenario was found.
+
+    .. _`examples`: gherkin.html#examples
+    '''
     type = "examples"
 
     def __init__(self, filename, line, keyword, name, table=None):
@@ -183,13 +400,69 @@ class Examples(BasicStatement, Replayable):
 
 
 class Step(BasicStatement, Replayable):
+    '''A single `step`_ parsed from a *feature file*.
+
+    .. attribute:: keyword
+
+       This is the keyword as seen in the *feature file*. In English this will
+       typically be "Given", "When", "Then" or a number of other words.
+
+    .. attribute:: name
+
+       The name of the step (the text after "Given" etc.)
+
+    .. attribute:: step_type
+
+       The type of step as determined by the keyword. If the keyword is "and"
+       then the previous keyword in the *feature file* will determine this
+       step's step_type.
+
+    .. attribute:: table
+
+       An instance  of :class:`~behave.model.Table` that came with the step
+       in the *feature file*.
+
+    .. attribute:: status
+
+       Read-Only. A summary status of the step's run. If read before the
+       step is tested it will return "untested" otherwise it will
+       return one of:
+
+       "skipped"
+         This step was passed over during testing.
+       "passed"
+         The step was tested successfully.
+       "failed"
+         The step failed.
+
+    .. attribute:: duration
+
+       The time, in seconds, that it took to test this step. If read before the
+       step is tested it will return 0.0.
+
+    .. attribute:: error_message
+
+       If the step failed then this will hold any error information, as a single
+       string. It will otherwise be None.
+
+    .. attribute:: filename
+
+       The file name (or "<string>") of the *feature file* where the step was
+       found.
+
+    .. attribute:: line
+
+       The line number of the *feature file* where the step was found.
+
+    .. _`step`: gherkin.html#steps
+    '''
     type = "step"
 
     def __init__(self, filename, line, keyword, step_type, name, string=None,
                  table=None):
         super(Step, self).__init__(filename, line, keyword, name)
         self.step_type = step_type
-        self.string = string
+        self.string = string        # unused?
         self.table = table
 
         self.status = 'untested'
@@ -230,6 +503,14 @@ class Table(Replayable):
 
 
 class Tag(unicode):
+    '''Tags appear may be associated with Features or Scenarios.
+
+    They're a subclass of regular strings (unicode pre-Python 3) with an
+    additional ``line`` number attribute (where the tag was seen in the source
+    feature file.
+
+    See `controlling things with tags`_.
+    '''
     def __new__(cls, name, line):
         o = unicode.__new__(cls, name)
         o.line = line
