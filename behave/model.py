@@ -591,7 +591,16 @@ class Match(Replayable):
         self.location = '%s:%d' % (filename, func.func_code.co_firstlineno)
 
     def __repr__(self):
-        return '<Match %s, %s>' % (self.func.__name__, self.location)
+        if self.func:
+            func_name = self.func.__name__
+        else:
+            func_name = '<no function>'
+        return '<Match %s, %s>' % (func_name, self.location)
+
+    def __eq__(self, other):
+        if not isinstance(other, Match):
+            return False
+        return (self.func, self.location) == (other.func, other.location)
 
     def with_arguments(self, arguments):
         match = copy.copy(self)
