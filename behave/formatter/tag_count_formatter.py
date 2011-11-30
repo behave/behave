@@ -34,10 +34,10 @@ class TagCountFormatter(object):
 
     def record_tags(self, tags, line):
         for tag in tags:
-            if tag.name not in self.tag_counts:
-                self.tag_counts[tag.name] = []
+            if tag not in self.tag_counts:
+                self.tag_counts[tag] = []
             entry = "%s:%d" % (self._uri, line)
-            self.tag_counts[tag.name].append(entry)
+            self.tag_counts[tag].append(entry)
 
     def __getattr__(self, name):
         attr = getattr(self.formatter, name)

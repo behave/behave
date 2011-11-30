@@ -223,18 +223,19 @@ class Table(Replayable):
         return iter([Row(*row) for row in self.rows])
 
 
-class Tag(object):
-    def __init__(self, name, line):
-        assert isinstance(name, unicode)
-        self.name = name
-        self.line = line
+class Tag(unicode):
+    def __new__(cls, name, line):
+        o = unicode.__new__(cls, name)
+        o.line = line
+        return o
 
+'''
     def __eq__(self, other):
         return self.name == other.name
 
     def __hash__(self):
         return hash(self.name)
-
+'''
 
 class DocString(object):
     def __init__(self, content_type, value, line):
