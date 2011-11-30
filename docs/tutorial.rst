@@ -17,14 +17,14 @@ You may optionally include some `environmental controls`_ (code to run
 before and after steps, scenarios, features or the whole shooting
 match).
 
-The minimum requirement for a features directory is:
+The minimum requirement for a features directory is::
 
   features/
   features/everything.feature
   features/steps/
   features/steps/steps.py
 
-A more complex directory might look like:
+A more complex directory might look like::
 
   features/
   features/signup.feature
