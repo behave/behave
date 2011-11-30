@@ -88,12 +88,16 @@ class Feature(TagStatement, Replayable):
                 scenario = scenario_or_outline
                 if scenario.status == 'failed':
                     return 'failed'
+                if scenario.status == 'untested':
+                    return 'untested'
                 if scenario.status != 'skipped':
                     skipped = False
             else:
                 for scenario in scenario_or_outline:
                     if scenario.status == 'failed':
                         return 'failed'
+                    if scenario.status == 'untested':
+                        return 'untested'
                     if scenario.status != 'skipped':
                         skipped = False
         return skipped and 'skipped' or 'passed'
@@ -138,6 +142,8 @@ class Scenario(TagStatement, Replayable):
                 return 'failed'
             if step.status == 'skipped':
                 return 'skipped'
+            if step.status == 'untested':
+                return 'untested'
         return 'passed'
 
 
@@ -186,7 +192,7 @@ class Step(BasicStatement, Replayable):
         self.string = string
         self.table = table
 
-        self.status = None
+        self.status = 'untested'
         self.duration = 0.0
         self.error_message = None
 
