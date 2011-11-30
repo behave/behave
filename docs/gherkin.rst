@@ -11,7 +11,7 @@ Feature Testing Layout
 The simplest way to make *behave* work is to create a directory called
 "features" containing:
 
-1. `feature files`_ written by your Business Analyst / Sponsor / whoever
+1. feature files written by your Business Analyst / Sponsor / whoever
    with your behaviour scenarios in it, and
 2. a "steps" directory with `Python step implementations`_ for the
    scenarios.
@@ -19,6 +19,9 @@ The simplest way to make *behave* work is to create a directory called
 You may optionally include some `environmental controls`_ (code to run
 before and after steps, scenarios, features or the whole shooting
 match).
+
+.. _`Python step implementations`: tutorial.html#python-step-implementations
+.. _`environmental controls`: tutorial.html#environmental-controls
 
 The minimum requirement for a features directory is::
 

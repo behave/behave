@@ -16,12 +16,12 @@ a page further describing this `philosophy`_.
 code.
 
 To get started, we recommend the `tutorial`_ and then the `test setup`_ and
-`programming interface`_ references. 
+`api`_ references. 
 
 .. _`philosophy`: philosophy.html
 .. _`tutorial`: tutorial.html
 .. _`test setup`: gherkin.html
-.. _`interface`: api.html
+.. _`api`: api.html
 
 
 .. toctree::
