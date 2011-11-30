@@ -6,7 +6,7 @@ from behave import i18n, model, parser
 
 class Common(object):
     def compare_steps(self, steps, expected):
-        have = [(s.step_type, s.keyword, s.name, s.string, s.table) for s in steps]
+        have = [(s.step_type, s.keyword, s.name, s.text, s.table) for s in steps]
         eq_(have, expected)
 
 class TestParser(Common):
