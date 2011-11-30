@@ -389,7 +389,7 @@ class ScenarioOutline(Scenario):
 
 
 class Examples(BasicStatement, Replayable):
-    '''An `examples`_ table parsed from a *feature file*.
+    '''A table parsed from a `scenario outline`_ in a *feature file*.
 
     .. attribute:: keyword
 
