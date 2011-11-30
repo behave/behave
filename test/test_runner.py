@@ -179,6 +179,7 @@ class TestStepRegistry(object):
         for mock in step_defs[6:]:
             eq_(mock.match.call_count, 0)
 
+
 class TestRunner(object):
     def test_load_hooks_execfiles_hook_file(self):
         with patch('behave.runner.exec_file') as ef:
@@ -206,6 +207,13 @@ class TestRunner(object):
             assert wrapper(func) is func
             add_definition.assert_called_with(step_type, string, func)
 
+    def test_run_hook_runs_a_hook_that_exists(self):
+        r = runner.Runner(None)
+        r.hooks['before_lunch'] = hook = Mock()
+        args = (Mock(),) * 3
+        r.run_hook('before_lunch', *args)
+
+        hook.assert_called_with(*args)
 
 def raiser(exception):
     def func(*args, **kwargs):
