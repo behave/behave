@@ -1,7 +1,5 @@
 from __future__ import with_statement
 
-import os.path
-
 from behave import model, i18n
 
 parsers = {}
