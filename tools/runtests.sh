@@ -1,5 +1,23 @@
 #!/bin/sh
 
+# Usage:
+# *in* the "behave" working directory, run "tools/runtests.sh"
+
+# NOTE!!
+# This script will do some setup work for you but you will NEED to:
+# 1. set up a tools/virtualenvs directory.
+# 2. ensure that each of your Python versions has pip, distribute and
+#    virtualenv installed.
+# That last step can be tricky! Make sure, for example, that jython
+# *actually has pip etc. installed* and it's not just trying to use
+# whatever's in /usr/local/bin
+# I needed to run "/usr/local/jython2.5.2/bin/pip install virtualenv"
+# manually to get virtualenv installed properly.
+
+# Even then jython can be a little tricky and you may need to help it along
+# with some manual installation...
+
+
 if [ x"$BEHAVE_DIR" != x"" ]; then
     behave_dir=$BEHAVE_DIR
 	venv_dir=$behave_dir/tools/virtualenvs
@@ -53,7 +71,19 @@ function check_venv {
 
     echo "===================== $1 CHECKING PACKAGES ====================="
 
-    $venv_dir/behave$1/bin/pip install --download-cache=$venv_dir/cache nose mock parse argparse
+    $venv_dir/behave$1/bin/pip -q install --download-cache=$venv_dir/cache nose mock parse
+
+    case $1 in
+    py2.5)
+        $venv_dir/behave$1/bin/pip -q install --download-cache=$venv_dir/cache argparse simplejson
+        ;;
+    py2.6)
+        $venv_dir/behave$1/bin/pip -q install --download-cache=$venv_dir/cache argparse
+        ;;
+    jy2.5)
+        $venv_dir/behave$1/bin/pip -q install --download-cache=$venv_dir/cache argparse simplejson
+        ;;
+    esac
 }
 
 failed=""
@@ -76,7 +106,8 @@ function test_version {
     source $venv_dir/behave$1/bin/activate
     cd $behave_dir
     rm -rf build
-    $python setup.py build
+    echo "Running: $python setup.py build 2>&1 > build.log"
+    $python setup.py build 2>&1 > build.log
     $python tools/create_test_features.py
     cd build/lib/
     echo "--------------------- $1 UNIT TESTS --------------------------"

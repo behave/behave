@@ -76,9 +76,11 @@ class TestContext(object):
         assert warns
         warning = warns[0]
         assert isinstance(warning, runner.ContextMaskWarning)
-        assert warning.args[0].startswith('Step code')
-        assert "'thing'" in warning.args[0]
-        assert __file__ in warning.args[0]
+        info = warning.args[0]
+        assert info.startswith('Step code'), "%r doesn't start with 'Step code'" % info
+        assert "'thing'" in info, '%r not in %r' % ("'thing'", info)
+        file = __file__.rsplit('.', 1)[0]
+        assert file in info, '%r not in %r' % (file, info)
 
     def test_setting_root_attribute_that_masks_existing_causes_warning(self):
         warns = []
@@ -99,9 +101,11 @@ class TestContext(object):
         assert warns
         warning = warns[0]
         assert isinstance(warning, runner.ContextMaskWarning)
-        assert warning.args[0].startswith('behave runner')
-        assert "'thing'" in warning.args[0]
-        assert __file__ in warning.args[0]
+        info = warning.args[0]
+        assert info.startswith('behave runner'), "%r doesn't start with 'behave runner'" % info
+        assert "'thing'" in info, '%r not in %r' % ("'thing'", info)
+        file = __file__.rsplit('.', 1)[0]
+        assert file in info, '%r not in %r' % (file, info)
 
 class TestStepRegistry(object):
     def test_add_definition_adds_to_lowercased_keyword(self):
