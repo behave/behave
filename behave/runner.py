@@ -50,6 +50,8 @@ class Context(object):
                 msg = msg % params
                 warnings.warn(msg, ContextMaskWarning, stacklevel=2)
 
+        self.__dict__['_root'][attr] = value
+
     def _dump(self):
         for level, frame in enumerate(self._stack):
             print 'Level %d' % level
