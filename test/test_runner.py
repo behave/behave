@@ -406,7 +406,7 @@ class TestRunStep(object):
 
         self.stdout_capture.write.assert_called_with('carrots')
 
-    def test_run_step_does_not_captures_stdout_if_requested(self):
+    def test_run_step_does_not_capture_stdout_if_requested(self):
         step = Mock()
         match = Mock()
         self.steps.find_match.return_value = match
