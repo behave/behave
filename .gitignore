@@ -8,3 +8,4 @@ nosetests.xml
 _build
 .ropeproject
 tools/virtualenvs
+build.log
