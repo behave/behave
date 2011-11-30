@@ -398,13 +398,15 @@ class TestRunStep(object):
         self.steps.find_match.return_value = match
 
         def printer(*args, **kwargs):
-            print 'carrots',
+            print 'carrots'
 
         match.run.side_effect = printer
 
         assert self.runner.run_step(step)
 
-        self.stdout_capture.write.assert_called_with('carrots')
+        call_args_list = self.stdout_capture.write.call_args_list
+        stdout = ''.join(a[0][0] for a in call_args_list)
+        eq_(stdout.strip(), 'carrots')
 
     def test_run_step_does_not_capture_stdout_if_requested(self):
         step = Mock()
@@ -413,7 +415,7 @@ class TestRunStep(object):
         self.config.stdout_capture = False
 
         def printer(*args, **kwargs):
-            print 'carrots',
+            print 'carrots'
 
         match.run.side_effect = printer
 
