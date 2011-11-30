@@ -1,3 +1,5 @@
+#-*- encoding: UTF-8 -*-
+
 from nose.tools import *
 
 from behave import model, parser
@@ -510,12 +512,15 @@ Feature: Stuff
 
     def test_parses_feature_with_the_lot(self):
         doc = u'''
+# This one's got comments too.
+
 @derp
 Feature: Stuff
   In order to test my parser
   As a test runner
   I want to run tests
 
+  # A møøse once bit my sister
   Background:
     Given this is a test
 
@@ -532,6 +537,7 @@ Feature: Stuff
       """
     Then we want it to work
 
+  #These comments are everywhere man
   Scenario Outline: Gosh this is long
     Given this is <length>
     Then we want it to be <width>
@@ -539,15 +545,16 @@ Feature: Stuff
 
     Examples: Initial
       | length | width | height |
+# I don't know why this one is here
       | 1      | 2     | 3      |
       | 4      | 5     | 6      |
 
     Examples: Subsequent
       | length | width | height |
-      | 7      | 8     | 9      |
+      | 7      | 8     | 9      | # This line sucks.
 
   Scenario: This one doesn't have a tag
-    Given we don't have a tag
+    Given we don't have a tag # This line sucks too.
     Then we don't really mind
 
   @stuff @derp
@@ -556,6 +563,7 @@ Feature: Stuff
     When we do stuff with a table:
       | a | b | c | d | e |
       | 1 | 2 | 3 | 4 | 5 |
+                             # I can see a comment line from here
       | 6 | 7 | 8 | 9 | 10 |
     Then we have <Things>
 
