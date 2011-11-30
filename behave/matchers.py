@@ -6,11 +6,26 @@ from behave import model
 
 
 class Matcher(object):
+    '''Pull parameters out of step names.
+
+    .. attribute:: string
+
+       The match pattern attached to the step function.
+
+    .. attribute:: func
+
+       The step function the pattern is being attached to.
+    '''
     def __init__(self, func, string):
         self.func = func
         self.string = string
 
     def check_match(self, step):
+        '''Match me against the "step" name supplied.
+
+        Return None if I don't match otherwise return a list of matches as
+        :class:`behave.model.Argument` instances.
+        '''
         raise NotImplementedError
 
     def match(self, step):

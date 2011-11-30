@@ -4,10 +4,42 @@ behave API reference
 
 
 Step File Decorators
---------------------
+====================
+
+Several decorators are defined by *behave* to allow you to identify your
+step functions. These are available in both PEP-8 (all lowercase) and
+traditional (title case) versions: "given", "when", "then" and the generic
+"step".
+
+These decorators do not appear anywhere in the behave API - don't look for
+them. They're created temporarily when the step Python files are executed.
+
+The decorators typically take a simple Python string argument which matches
+the text in the *feature file* exactly.
+
+You may additionally use `parameters`_ in your step names. These will be
+handled by either the default `simple parser`_ or by regular expressions if
+you invoke :func:`~behave.matchers.step_matcher`.
+
+.. _`parameters`: tutorial.html#step-parameters
+.. _`simple parser`: http://pypi.python.org/pypi/parse
+
+
+Adding Parameter Matchers
+-------------------------
+
+You may define a new parameter matcher by subclassing
+:class:`behave.matchers.Matcher` and registering it with
+:attr:`behave.matchers.matcher_mapping` which is a dictionary of "matcher
+name" to :class:`~behave.matchers.Matcher` class.
+
+.. autoclass:: behave.matchers.Matcher
+   :members:
+
+
 
 Environment File Functions
---------------------------
+==========================
 
 The environment.py module may define code to run before and after certain
 events during your testing:
@@ -27,7 +59,7 @@ events during your testing:
 
 
 Model Objects
--------------
+=============
 
 The feature, scenario and step objects represent the information parsed
 from the feature file. They have a number of common attributes:

@@ -133,8 +133,8 @@ The ``step`` decorator matches the step to *any* step type, "given", "when"
 or "then".
 
 
-Step Variables
---------------
+Step Parameters
+---------------
 
 You may find that your feature steps sometimes include very common phrases
 with only some variation. For example:
@@ -170,6 +170,11 @@ There's two parsers available by default in *behave*:
   This uses full regular expressions to parse the clause text. You will
   need to use named groups "(?P<name>...)" to define the variables pulled
   from the text and passed to your ``step()`` function.
+
+To specify which parser to use invoke :func:`~behave.matchers.step_matcher`
+with the name of the matcher to use. You may change matcher to suit
+specific step functions - the last call to ``step_matcher`` before a step
+function declaration will be the one it uses.
 
 .. _`simple parser`: http://pypi.python.org/pypi/parse
 
