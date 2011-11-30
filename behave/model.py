@@ -229,13 +229,6 @@ class Tag(unicode):
         o.line = line
         return o
 
-'''
-    def __eq__(self, other):
-        return self.name == other.name
-
-    def __hash__(self):
-        return hash(self.name)
-'''
 
 class DocString(object):
     def __init__(self, content_type, value, line):
