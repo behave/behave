@@ -99,7 +99,6 @@ html_theme = 'agogo'
 # documentation.
 
 # agogo options:
-# bodyfont (CSS font family): Font for normal text.
 # headerfont (CSS font family): Font for headings.
 # pagewidth (CSS length): Width of the page content, default 70em.
 # documentwidth (CSS length): Width of the document (without sidebar), default 50em.
@@ -112,8 +111,9 @@ html_theme = 'agogo'
 # headerlinkcolor (CSS color): Color for the backreference link in headings.
 # textalign (CSS text-align value): Text alignment for the body, default is justify.
 
-#html_theme_options = {}
-
+#html_theme_options = {
+ #'bodyfont': '"Ubuntu", sans-serif', # (CSS font family): Font for normal text.
+#}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
