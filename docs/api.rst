@@ -187,6 +187,8 @@ The *context* variable in all cases is an instance of
 
 .. autoclass:: behave.runner.Context
 
+.. autoclass:: behave.runner.ContextMaskWarning
+
 
 Model Objects
 =============

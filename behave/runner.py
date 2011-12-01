@@ -14,6 +14,14 @@ from behave.configuration import ConfigError
 
 
 class ContextMaskWarning(UserWarning):
+    '''Raised if a context variable is being overwritten in some situations.
+
+    If the variable was originally set by user code then this will be raised if
+    *behave* overwites the value.
+
+    If the variable was originally set by *behave* then this will be raised if
+    user code overwites the value.
+    '''
     pass
 
 
@@ -41,6 +49,9 @@ class Context(object):
       This is set at the step level and holds any multiline text associated with
       the step.
 
+    If an attempt made by user code to overwrite one of these variables, or
+    indeed by *behave* to overwite a user-set variable, then a
+    :class:`behave.runner.ContextMaskWarning` warning will be raised.
     '''
     def __init__(self):
         d = self._root = {

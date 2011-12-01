@@ -69,10 +69,21 @@ plain-text (encoded in UTF-8) and look something like:
 
 The "Given", "When" and "Then" parts of this prose form the actual steps
 that will be taken by *behave* in testing your system. These map to `Python
-step implementations`_.
+step implementations`_. As a general guide:
 
-You may also include "And" as a step - this is renamed by *behave* to take
-the name of the preceding step, so:
+**Given**
+  The purpose of *Given* is to **put the system in a known state** before the
+  user (or external system) starts interacting with the system (in the When
+  steps). Avoid talking about user interaction in givens.
+**When**
+  The purpose of *When* steps is to **describe the key action** the user
+  performs. This is the user interaction with your system which should (or
+  perhaps should not) cause some state to change.
+**Then**
+  The purpose of *Then* steps is to **observe outcomes**.
+
+You may also include "And" or "But" as a step - this is renamed by *behave*
+to take the name of the preceding step, so:
 
 .. code-block:: gherkin
 
@@ -86,12 +97,85 @@ In this case *behave* will look for a step definiton for "Then fall off a
 cliff".
 
 
-Tabular Data
-------------
+Scenario Outlines
+-----------------
+
+Sometimes a scenario should be run with a number of variables giving a set
+of known states, actions to take and expected outcomes, all using the same
+basic actions. You may use a Scenario Outline to achieve this:
+
+.. code-block:: gherkin
+
+  Scenario Outline: Blenders
+     Given I put <thing> in a blender,
+      when I swtich the blender on
+      then it should trasform into <other thing>
+
+   Examples: Amphipians
+     | thing         | other thing |
+     | Red Tree Frog | mush        |
+
+   Examples: Consumer Electronics
+     | thing         | other thing |
+     | iPhone        | toxic waste |
+     | Galaxy Nexus  | toxic waste |
+
+*behave* will run the scenario once for each (non-heading) line appearing
+in the example data tables.
+
+
+Step Data
+---------
 
 Sometimes it's useful to associate a table of data with your step.
 
-TODO 
+Any consistently indented text following a step which does not itself start
+with a Gherkin keyword will be associated with the step. For example:
+
+.. code-block:: gherkin
+
+   Scenario: some scenario
+     Given a sample text loaded into the frobulator
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    When we activate the frobulator
+    Then we will find it similar to English
+
+The text is available to the Python step code as the ".text" attribute
+in the :class:`~behave.runner.Context` variable passed into each step
+function.
+
+You may also associate a table of data with a step by simply entering it,
+indented, following the step. This can be useful for loading specific
+required data into a model.
+
+.. code-block:: gherkin
+
+   Scenario: some scenario
+     Given a set of specific users
+        | name      | department  |
+        | Barry     | Beer Cans   |
+        | Pudey     | Silly Walks |
+        | Two-Lumps | Silly Walks | 
+ 
+    When we count the number of people in each department
+    Then we will find two people in "Silly Walks"
+     But we will find one person in "Beer Cans"
+
+The table is available to the Python step code as the ".table" attribute
+in the :class:`~behave.runner.Context` variable passed into each step
+function. The table for the example above could be accessed like so:
+
+.. code-block:: python
+
+  @given('a set of specific users')
+  def step(context):
+      for row in context.table:
+          model.add_user(name=row['name'], department=row['department'])
+
+There's a variety of ways to access the table data - see the
+:class:`~behave.model.Table` API documentation for the full details.
+
 
 
 Python Step Implementations
@@ -220,7 +304,10 @@ steps you define you might have:
 There's also some values added to the context by *behave* itself:
 
 **table**
-  This holds the `tabular data`_ associated with a step, if any.
+  This holds any table data associated with a step.
+
+**text**
+  This holds any multiline text associated with a step.
 
 **failed**
   This is set at the root of the context when any step fails. It is
@@ -228,6 +315,9 @@ There's also some values added to the context by *behave* itself:
   option to prevent some mis-behaving resource from being cleaned up in an
   ``after_feature()`` or similar (for example, a web browser being driven
   by Selenium.)
+
+The *context* variable in all cases is an instance of
+:class:`behave.runner.Context`.
 
 
 Environmental Controls
