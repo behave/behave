@@ -589,10 +589,10 @@ Feature: Stuff
 
     Examples: Subsequent
       | length | width | height |
-      | 7      | 8     | 9      | # This line sucks.
+      | 7      | 8     | 9      |
 
   Scenario: This one doesn't have a tag
-    Given we don't have a tag # This line sucks too.
+    Given we don't have a tag
     Then we don't really mind
 
   @stuff @derp
