@@ -33,13 +33,6 @@ def parse_feature(data, language=None, filename=None):
     return result
 
 
-def strip_comments_and_whitespace(string):
-    string = string.strip()
-    if '#' in string:
-        return string[:string.index('#')]
-    return string
-
-
 class ParserError(Exception):
     def __init__(self, message, line, filename=None):
         if line:
@@ -118,7 +111,7 @@ class Parser(object):
                               self.line)
 
     def action_init(self, line):
-        line = strip_comments_and_whitespace(line)
+        line = line.strip()
 
         if line.startswith('@'):
             self.tags.extend([model.Tag(tag.strip(), self.line)
@@ -135,7 +128,7 @@ class Parser(object):
         return False
 
     def action_feature(self, line):
-        line = strip_comments_and_whitespace(line)
+        line = line.strip()
 
         if line.startswith('@'):
             self.tags.extend([model.Tag(tag.strip(), self.line)
@@ -183,7 +176,7 @@ class Parser(object):
             self.multiline_leading = line.index(stripped[0])
             return True
 
-        line = strip_comments_and_whitespace(line)
+        line = line.strip()
 
         step = self.parse_step(line)
         if step:
@@ -248,7 +241,7 @@ class Parser(object):
         return True
 
     def action_table(self, line):
-        line = strip_comments_and_whitespace(line)
+        line = line.strip()
 
         if not line.startswith('|'):
             if self.examples:
