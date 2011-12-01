@@ -382,10 +382,10 @@ class ScenarioOutline(Scenario):
 
         self.scenarios = []
         for example in self.examples:
-            for values in example.table.iterrows():
+            for row in example.table:
                 new_steps = []
                 for step in self.steps:
-                    new_steps.append(step.set_values(values))
+                    new_steps.append(step.set_values(row))
                 scenario = Scenario(self.tags, self.name, new_steps)
                 scenario.feature = self.feature
                 scenario.background = self.background
@@ -515,9 +515,9 @@ class Step(BasicStatement, Replayable):
     def __repr__(self):
         return '<%s "%s">' % (self.step_type, self.name)
 
-    def set_values(self, value_dict):
+    def set_values(self, values):
         result = copy.deepcopy(self)
-        for name, value in value_dict.iteritems():
+        for name, value in values.iteritems():
             result.match = result.match.replace("<%s>" % name, value)
         return result
 
