@@ -87,14 +87,30 @@ command-line switch.
 Gherkin: Feature Testing Language
 =================================
 
-*behave* uses a language called `Gherkin`_ to structure the "*name*.feature" files.
+*behave* uses a language called `Gherkin`_ (with with `some
+modifications`_) to structure the feature files.
+
+.. _`some modifications`: #modifications-to-the-gherkin-standard
 
 These files should be written using natural language - ideally by the
-non-technical business participants in the software project.
+non-technical business participants in the software project. Feature files
+serve two purposes – documentation and automated tests.
 
 It is very flexible but has a few simple rules that writers need to adhere to.
 
-.. _`gherkin`: TODO
+Feature files contain a single `feature`_ and are named "*name*.feature".
+
+.. _`feature`: #features
+
+Line endings terminate statements (eg, steps). Either spaces or tabs may be
+used for indentation (but spaces are more portable). Indentation is almost
+always ignored - it's a tool for the feature writer to express some
+structure in the text. Most lines start with a keyword.
+
+Comment lines are allowed anywhere in the file. They begin with zero or
+more spaces, followed by a sharp sign (#) and some amount of text.
+
+.. _`gherkin`: https://github.com/cucumber/cucumber/wiki/Gherkin
 
 
 Features
@@ -139,7 +155,8 @@ In all its glory it could look like:
 The feature name should just be some reasonably descriptive title for the
 feature being tested, like "the message posting interface". The following
 description is optional and serves to clarify any potential confusion or
-scope issue in the feature name.
+scope issue in the feature name. The description is for the benefit of
+humans reading the feature text.
 
 .. any other advice we could include here?
 
@@ -152,7 +169,8 @@ Backgrounds
 A background is a series of steps to be executed before the scenarios for
 the feature are tested. It is run just once, and is useful for performing
 setup operations like logging into a web browser or setting up a database
-with test data used by the scenarios.
+with test data used by the scenarios. The background description is for the
+benefit of humans reading the feature text.
 
 Again the background name should just be a reasonably descriptive title
 for the background operation being performed or requirement being met.
@@ -162,16 +180,67 @@ then it probably should be a scenario to be tested.
 
 It contains `steps`_ as described below.
 
+**Good practices for using Background**
+
+Don’t use “Background” to set up complicated state unless that state is actually something the client needs to know.
+ For example, if the user and site names don’t matter to the client, you
+ should use a high-level step such as “Given that I am logged in as a site
+ owner”.
+
+Keep your “Background” section short.
+ You’re expecting the user to actually remember this stuff when reading
+ your scenarios. If the background is more than 4 lines long, can you move
+ some of the irrelevant details into high-level steps? See Calling Steps
+ from Step Definitions.
+
+Make your “Background” section vivid.
+ You should use colorful names and try to tell a story, because the human
+ brain can keep track of stories much better than it can keep track of
+ names like “User A”, “User B”, “Site 1”, and so on.
+
+Keep your scenarios short, and don’t have too many.
+ If the background section has scrolled off the screen, you should think
+ about using higher-level steps, or splitting the features file in two.
+
 
 Scenarios
 ---------
 
-Scenarios describe the discrete behaviours being tested.
+Scenarios describe the discrete behaviours being tested. They are given a
+title which should be a reasonably descriptive title for the scenario being
+tested. The scenario description is for the benefit of humans reading the
+feature text.
 
+Scenarios are composed of a series of `steps`_ as described below. The
+steps typically take the form of "given some condition" "then we expect
+some test will pass." In this simplest form, a scenario might be:
 
-TODO
+.. code-block:: gherkin
 
-It is good practise to have them test only one behaviour each.
+ Scenario: we have some stock when we open the store
+   Given that the store has just opened
+    then we should have items for sale.
+
+There may be additional conditions imposed on the scenario, and these would
+take the form of "when" steps following the initial "given" condition. If
+necessary, additional "and" or "but" steps may also follow the "given",
+"when" and "then" steps if more needs to be tested. A more complex example
+of a scenario might be:
+
+.. code-block:: gherkin
+
+ Scenario: Replaced items should be returned to stock
+   Given that a customer buys a blue garment
+     and I have two blue garments in stock
+     but I have no red garments in stock
+     and three black garments in stock.
+    When he returns the garment for a replacement in black,
+    then I should have three blue garments in stock
+     and no red garments in stock,
+     and two black garments in stock.
+
+It is good practise to have a scenario test only one behaviour or desired
+outcome.
 
 Scenarios contain `steps`_ as described below.
 
@@ -205,11 +274,13 @@ in each scenario outline.
 Steps
 -----
 
-Steps take a line each and begin with a *keyword* 
+Steps take a line each and begin with a *keyword* - one of "given", "when",
+"then", "and" or "but".
 
-TODO
+In a formal sense the keywords are all Title Case, though some languages
+allow all-lowercase keywords where that makes sense.
 
-They should not need to contain significant degree of detail about the
+Steps should not need to contain significant degree of detail about the
 mechanics of testing; that is, instead of:
 
 .. code-block:: gherkin
@@ -221,6 +292,105 @@ the step could instead simply say:
 .. code-block:: gherkin
 
   Given we are looking at the home page
+
+Steps are implemented using Python code which is implemented in the "steps"
+directory in Python modules (files with Python code which are named
+"*name*.py".) The naming of the Python modules does not matter. *All* modules
+in the "steps" directory will be imported by *behave* at startup to
+discover the step implementations.
+
+Given, When, Then, And, But
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*behave* doesn't technically distinguish between the various kinds of steps.
+However, we strongly recommend that you do! These words have been carefully
+selected for their purpose, and you should know what the purpose is to get
+into the BDD mindset.
+
+**Given**
+
+The purpose of givens is to *put the system in a known state* before the
+user (or external system) starts interacting with the system (in the When
+steps). Avoid talking about user interaction in givens.  If you had worked
+with usecases, you would call this preconditions.
+
+Examples:
+
+- Create records (model instances) / set up the database state.
+- It's ok to call into the layer "inside" the UI layer here (in Rails: talk to the models).
+- Log in a user (An exception to the no-interaction recommendation. Things that "happened earlier" are ok).
+
+And for all the Rails users out there - we recommend using a "Given with a multiline table argument":https://github.com/aslakhellesoy/cucumber-rails-test/blob/master/features/manage_lorries.feature to "set up records":https://github.com/aslakhellesoy/cucumber-rails-test/blob/master/features/step_definitions/lorry_steps.rb instead of fixtures. This way you can read the scenario and make sense out of it without having to look elsewhere (at the fixtures).
+
+**When**
+
+The purpose of When steps is to *describe the key action* the user performs (or, using Robert C. Martin's metaphor, the state transition).
+
+Examples:
+
+- Interact with a web page (Webrat/Watir/Selenium _interaction_ etc should mostly go into When steps).
+- Interact with some other user interface element.
+- Developing a library? Kicking off some kind of action that has an observable effect somewhere else.
+
+**Then**
+
+The purpose of Then steps is to *observe outcomes*. The observations should be related to the business value/benefit in your feature description. The observations should also be on some kind of _output_ - that is something that comes _out_ of the system (report, user interface, message) and not something that is deeply buried inside it (that has no business value).
+
+Examples:
+
+- Verify that something related to the Given+When is (or is not) in the output
+- Check that some external system has received the expected message (was an email with specific content sent?)
+
+While it might be tempting to implement Then steps to just look in the database - resist the temptation. You should only verify outcome that is observable for the user (or external system) and databases usually are not.
+
+**And, But**
+
+If you have several givens, whens or thens you can write:
+
+.. code-block:: gherkin
+
+  Scenario: Multiple Givens
+    Given one thing
+    Given an other thing
+    Given yet an other thing
+     When I open my eyes
+     Then I see something
+     Then I don't see something else
+
+
+Or you can make it read more fluently by writing:
+
+.. code-block:: gherkin
+
+  Scenario: Multiple Givens
+    Given one thing
+      And an other thing
+      And yet an other thing
+     When I open my eyes
+     Then I see something
+      But I don't see something else
+
+To *behave* steps beginning with "and" or "but" are exactly the same kind
+of steps as all the others.
+
+
+Step Data
+~~~~~~~~~
+
+Steps may have some text or a table of data attached to them.
+
+**text**
+  Any indented text following a step which does not itself start with a
+  Gherkin keyword will be associated with the step. This is the one case
+  where indentation is actually parsed: the leading whitespace is stripped
+  from the text, and successive lines of the text should have at least the
+  same amount of whitespace as the first line.
+
+  The step text is available to the Python step code as the ".text" attribute
+  in the :class:`behave.runner.Context` variable.
+
+**table**
+  TODO
 
 
 Tags
@@ -254,4 +424,11 @@ the language equivalents recognised by *behave* are, use::
 
    behave --lang-help fr
 
+
+Modifications to the Gherkin Standard
+-------------------------------------
+
+*behave* can parse standard Gherkin files and extends Gherkin to allow
+lowercase step keywords because these can sometimes allow more readable
+feature specifications.
 

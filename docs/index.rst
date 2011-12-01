@@ -1,7 +1,7 @@
 Welcome to behave!
 ==================
 
-.. pypi-release:: roundup
+.. pypi-release:: behave
    :prefix: Download
    :class: note
 
@@ -27,8 +27,8 @@ To get started, we recommend the `tutorial`_ and then the `test setup`_ and
 .. toctree::
    :maxdepth: 2
 
-   philosophy
    tutorial
+   philosophy
    gherkin
    api
 

@@ -136,7 +136,9 @@ webdriver and some other helpers):
         'Heading %r has wrong text' % h.text)
 
 The ``step`` decorator matches the step to *any* step type, "given", "when"
-or "then".
+or "then". The "and" and "but" step types are renamed internally to take
+the preceding step's keyword (so an "and" following a "given" will become a
+"given" internally and use a "give" decorated step).
 
 
 Step Parameters
@@ -164,7 +166,7 @@ clauses (with a Given step that puts some text into
  @then('the result page will include "{text}"')
  def step(context, text):
     if text not in context.response:
-        fail('%r not in %r' % (message, context.response)
+        fail('%r not in %r' % (message, context.response))
 
 There's two parsers available by default in *behave*:
 
@@ -269,8 +271,8 @@ server and browser to run all your tests in. For example:
   import threading
   from wsgiref import simple_server
   from selenium import webdriver
-  import my_application import model
-  import my_application import web_app
+  from my_application import model
+  from my_application import web_app
 
   def before_all(context):
       context.server = simple_server.WSGIServer(('', 8000))

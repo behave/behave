@@ -96,17 +96,17 @@ examples. The language of the examples below is called Gherkin and is used
 
  Scenario: Refunded items should be returned to stock
    Given a customer previously bought a black sweater from me
-     And I currently have three black sweaters left in stock
+     and I currently have three black sweaters left in stock.
     When he returns the sweater for a refund
-    Then I should have four black sweaters in stock.
+    then I should have four black sweaters in stock.,
 
  Scenario: Replaced items should be returned to stock
    Given that a customer buys a blue garment
-     And I have two blue garments in stock
-     And three black garments in stock.
+     and I have two blue garments in stock
+     and three black garments in stock.
     When he returns the garment for a replacement in black,
-    Then I should have three blue garments in stock
-     And two black garments in stock.
+    then I should have three blue garments in stock
+     and two black garments in stock.
 
 Each scenario is an exemplar, designed to illustrate a specific aspect of behavior of the application.
 
@@ -144,12 +144,12 @@ describe an aspect of behavior of a list:
 
  Scenario: New lists are empty
    Given a new list
-    Then the list should be empty.
+    then the list should be empty.
 
  Scenario: Lists with things in them are not empty.
    Given a new list
-    When we add an object
-    Then the list should not be empty.
+    when we add an object
+    then the list should not be empty.
 
 Both these examples are required to describe the boolean nature of a list
 in Python and to derive the benefit of the nature. These examples are
