@@ -405,11 +405,53 @@ Steps may have some text or a table of data attached to them.
   from the text, and successive lines of the text should have at least the
   same amount of whitespace as the first line.
 
-  The step text is available to the Python step code as the ".text" attribute
-  in the :class:`behave.runner.Context` variable.
+  So for this rather contrived example:
+
+  .. code-block:: gherkin
+
+     Scenario: some scenario
+       Given a sample text loaded into the frobulator
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+          enim ad minim veniam, quis nostrud exercitation ullamco laboris
+          nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+          reprehenderit in voluptate velit esse cillum dolore eu fugiat
+          nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+          sunt in culpa qui officia deserunt mollit anim id est laborum.
+      When we activate the frobulator
+      Then we will find it similar to English
+
+  The text is available to the Python step code as the ".text" attribute
+  in the :class:`~behave.runner.Context` variable passed into each step
+  function. The text supplied on the first step in a scenario will be
+  available on the context variable for the duration of that scenario. Any
+  further text present on a subsequent step will overwrite previously-set
+  text.
 
 **table**
-  TODO
+  You may associate a table of data with a step by simply entering it,
+  indented, following the step. This can be useful for loading specific
+  required data into a model.
+
+  .. code-block:: gherkin
+
+     Scenario: some scenario
+       Given a set of specific users
+          | name      | department  |
+          | Barry     | Beer Cans   |
+          | Pudey     | Silly Walks |
+          | Two-Lumps | Silly Walks | 
+ 
+      When we count the number of people in each department
+      Then we will find two people in "Silly Walks"
+       But we will find one person in "Beer Cans"
+
+  The table is available to the Python step code as the ".table" attribute
+  in the :class:`~behave.runner.Context` variable passed into each step
+  function. The table is an instance of :class:`~behave.model.Table` and
+  for the example above could be accessed like so:
+
+TODO
 
 
 Tags
