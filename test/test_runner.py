@@ -2,6 +2,7 @@ from __future__ import with_statement
 
 from collections import defaultdict
 import os.path
+import sys
 import warnings
 
 from mock import Mock, patch
@@ -215,6 +216,369 @@ class TestRunner(object):
 
         hook.assert_called_with(*args)
 
+
+class TestRunWithPaths(object):
+    def setUp(self):
+        self.config = Mock()
+        self.runner = runner.Runner(self.config)
+        self.load_hooks = self.runner.load_hooks = Mock()
+        self.load_step_definitions = self.runner.load_step_definitions = Mock()
+        self.run_hook = self.runner.run_hook = Mock()
+        self.run_step = self.runner.run_step = Mock()
+        self.feature_files = self.runner.feature_files = Mock()
+        self.calculate_summaries = self.runner.calculate_summaries = Mock()
+
+        self.parse_file_patch = patch('behave.runner.parser.parse_file')
+        self.parse_file = self.parse_file_patch.start()
+        self.abspath_patch = patch('os.path.abspath')
+        self.abspath = self.abspath_patch.start()
+        self.context_class = patch('behave.runner.Context')
+        context_class = self.context_class.start()
+        context_class.return_value = self.context = Mock()
+        self.formatter_class = patch('behave.runner.PrettyFormatter')
+        formatter_class = self.formatter_class.start()
+        formatter_class.return_value = self.formatter = Mock()
+
+    def tearDown(self):
+        self.parse_file_patch.stop()
+        self.abspath_patch.stop()
+        self.context_class.stop()
+        self.formatter_class.stop()
+
+    def test_loads_hooks_and_step_definitions(self):
+        self.feature_files.return_value = []
+        self.runner.run_with_paths()
+
+        assert self.load_hooks.called
+        assert self.load_step_definitions.called
+
+    def test_runs_before_all_and_after_all_hooks(self):
+        # Make runner.feature_files() and runner.run_hook() the same mock so
+        # we can make sure things happen in the right order.
+        self.runner.feature_files = self.run_hook
+        self.runner.feature_files.return_value = []
+        self.runner.run_with_paths()
+
+        eq_(self.run_hook.call_args_list, [
+            (('before_all', self.runner.context), {}),
+            ((), {}),
+            (('after_all', self.runner.context), {}),
+        ])
+
+    def test_parses_feature_files_and_appends_to_feature_list(self):
+        feature_files = ['one', 'two', 'three']
+        feature = Mock()
+        feature.tags = []
+        feature.__iter__ = Mock(return_value=iter([]))
+        self.runner.feature_files.return_value = feature_files
+        self.abspath.side_effect = lambda x: x.upper()
+        self.config.lang = 'fritz'
+        self.parse_file.return_value = feature
+
+        self.runner.run_with_paths()
+
+        expected_parse_file_args = \
+            [((x.upper(),), {'language': 'fritz'}) for x in feature_files]
+        eq_(self.parse_file.call_args_list, expected_parse_file_args)
+        eq_(self.runner.features, [feature] * 3)
+
+    def test_formatter_sequence_with_no_scenarios_or_background(self):
+        feature_files = ['one']
+        feature = Mock()
+        feature.tags = []
+        feature.background = None
+        feature.__iter__ = Mock(return_value=iter([]))
+        self.runner.feature_files.return_value = feature_files
+        self.parse_file.return_value = feature
+
+        self.runner.run_with_paths()
+
+        self.formatter.uri.assert_called_with('one')
+        self.formatter.feature.assert_called_with(feature)
+        assert not self.formatter.background.called
+        self.formatter.eof.assert_called_with()
+
+    def test_formatter_background_called_when_feature_has_background(self):
+        feature_files = ['one']
+        feature = Mock()
+        feature.tags = []
+        feature.background = Mock()
+        feature.__iter__ = Mock(return_value=iter([]))
+        self.runner.feature_files.return_value = feature_files
+        self.parse_file.return_value = feature
+
+        self.runner.run_with_paths()
+
+        self.formatter.uri.assert_called_with('one')
+        self.formatter.feature.assert_called_with(feature)
+        self.formatter.background.assert_called_with(feature.background)
+        self.formatter.eof.assert_called_with()
+
+    def test_formatter_scenario_and_step_invoked_correctly(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        feature_files = ['one']
+        feature = Mock()
+        feature.tags = []
+        feature.background = None
+        scenario1 = Mock()
+        scenario1.tags = []
+        steps1 = [Mock(), Mock()]
+        scenario1.__iter__ = Mock(return_value=iter(steps1))
+        scenario2 = Mock()
+        scenario2.tags = []
+        steps2 = [Mock(), Mock(), Mock()]
+        scenario2.__iter__ = Mock(return_value=iter(steps2))
+        scenarios = [scenario1, scenario2]
+        feature.__iter__ = Mock(return_value=iter(scenarios))
+        self.runner.feature_files.return_value = feature_files
+        self.parse_file.return_value = feature
+
+        self.runner.run_with_paths()
+
+        self.formatter.uri.assert_called_with('one')
+        self.formatter.feature.assert_called_with(feature)
+        eq_(self.formatter.scenario.call_args_list, [
+            ((x,), {}) for x in scenarios
+        ])
+        eq_(self.formatter.step.call_args_list, [
+            ((x,), {}) for x in steps1 + steps2
+        ])
+        self.formatter.eof.assert_called_with()
+
+    def test_the_whole_hooks_gamut(self):
+        # Make runner.feature_files(), runner.run_step() and runner.run_hook()
+        # the same mock so we can make sure things happen in the right order.
+        self.runner.feature_files = self.run_hook
+        self.runner.run_step = self.run_hook
+
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        self.config.tags.check.return_value = True
+        feature_files = ['one']
+        feature = Mock()
+        feature.tags = ['feature_tag_one', 'feature_tag_two']
+        feature.background = None
+        scenario1 = Mock()
+        scenario1.tags = ['scenario_tag_one', 'scenario_tag_two']
+        steps1 = [Mock(), Mock()]
+        scenario1.__iter__ = Mock(side_effect=lambda: iter(steps1))
+        scenario2 = Mock()
+        scenario2.tags = ['scenario_tag_three']
+        steps2 = [Mock(), Mock(), Mock()]
+        scenario2.__iter__ = Mock(side_effect=lambda: iter(steps2))
+        scenarios = [scenario1, scenario2]
+        feature.__iter__ = Mock(return_value=iter(scenarios))
+        self.runner.feature_files.return_value = feature_files
+        self.parse_file.return_value = feature
+
+        self.runner.run_with_paths()
+
+        context = self.runner.context
+        expected_calls = [
+            ('before_all', context),
+            (), # feature_files
+            ('before_tag', context, 'feature_tag_one'),
+            ('before_tag', context, 'feature_tag_two'),
+            ('before_feature', context, feature),
+            ('before_tag', context, 'scenario_tag_one'),
+            ('before_tag', context, 'scenario_tag_two'),
+            ('before_scenario', context, scenario1),
+            (steps1[0],), # run_step
+            (steps1[1],), # run_step
+            ('after_scenario', context, scenario1),
+            ('after_tag', context, 'scenario_tag_one'),
+            ('after_tag', context, 'scenario_tag_two'),
+            ('before_tag', context, 'scenario_tag_three'),
+            ('before_scenario', context, scenario2),
+            (steps2[0],), # run_step
+            (steps2[1],), # run_step
+            (steps2[2],), # run_step
+            ('after_scenario', context, scenario2),
+            ('after_tag', context, 'scenario_tag_three'),
+            ('after_feature', context, feature),
+            ('after_tag', context, 'feature_tag_one'),
+            ('after_tag', context, 'feature_tag_two'),
+            ('after_all', context),
+        ]
+        eq_(self.run_hook.call_args_list, [(x, {}) for x in expected_calls])
+
+    def test_feature_hooks_not_run_if_feature_not_being_run(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        self.config.tags.check.return_value = False
+
+        feature_files = ['one']
+        feature = Mock()
+        feature.tags = ['feature_tag_one', 'feature_tag_two']
+        feature.background = None
+        feature.__iter__ = Mock(return_value=iter([]))
+
+        self.runner.feature_files.return_value = feature_files
+        self.parse_file.return_value = feature
+
+        self.runner.run_with_paths()
+
+        eq_(self.run_hook.call_args_list, [
+            (('before_all', self.runner.context), {}),
+            (('after_all', self.runner.context), {}),
+        ])
+
+    def test_scenario_hooks_not_run_if_scenario_not_being_run(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+
+        def tags1(*args, **kwargs):
+            def tags2(*args, **kwargs):
+                return False
+            self.config.tags.check.side_effect = tags2
+            return True
+        self.config.tags.check.side_effect = tags1
+
+        feature_files = ['one']
+        feature = Mock()
+        feature.tags = ['feature_tag_one']
+        feature.background = None
+        scenario = Mock()
+        scenario.tags = ['scenario_tag_one']
+        steps = [Mock(), Mock()]
+        scenario.__iter__ = Mock(return_value=iter(steps))
+        feature.__iter__ = Mock(return_value=iter([scenario]))
+
+        self.runner.feature_files.return_value = feature_files
+        self.parse_file.return_value = feature
+
+        self.runner.run_with_paths()
+
+        eq_(self.run_hook.call_args_list, [
+            (('before_all', self.runner.context), {}),
+            (('before_tag', self.runner.context, 'feature_tag_one'), {}),
+            (('before_feature', self.runner.context, feature), {}),
+            (('after_feature', self.runner.context, feature), {}),
+            (('after_tag', self.runner.context, 'feature_tag_one'), {}),
+            (('after_all', self.runner.context), {}),
+        ])
+
+    if sys.version_info[0] == 3:
+        stringio_target = 'io.StringIO'
+    else:
+        stringio_target = 'StringIO.StringIO'
+
+    @patch(stringio_target)
+    @patch('behave.runner.MemoryHandler')
+    def test_handles_stdout_and_logs(self, handler_class, stringio):
+        self.config.stdout_capture = True
+        self.config.log_capture = True
+        self.config.tags.check.return_value = True
+
+        feature_files = ['one']
+        feature = Mock()
+        feature.tags = ['feature_tag_one']
+        feature.background = None
+        scenario = Mock()
+        scenario.tags = ['scenario_tag_one']
+        steps = [Mock(), Mock()]
+        scenario.__iter__ = Mock(return_value=iter(steps))
+        feature.__iter__ = Mock(return_value=iter([scenario]))
+
+        self.runner.feature_files.return_value = feature_files
+        self.parse_file.return_value = feature
+
+        stringio.return_value = Mock()
+        handler_class.return_value = handler = Mock()
+
+        self.runner.run_with_paths()
+
+        assert stringio.called
+        assert self.runner.stdout_capture is stringio.return_value
+
+        handler_class.assert_called_with(self.config)
+        handler.inveigle.assert_called_with()
+        handler.abandon.assert_called_with()
+
+    def test_skipped_steps_set_status_correctly(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+
+        def tags1(*args, **kwargs):
+            def tags2(*args, **kwargs):
+                return False
+            self.config.tags.check.side_effect = tags2
+            return True
+        self.config.tags.check.side_effect = tags1
+
+        feature_files = ['one']
+        feature = Mock()
+        feature.tags = ['feature_tag_one', 'feature_tag_two']
+        feature.background = None
+        scenario1 = Mock()
+        scenario1.status = None
+        scenario1.tags = ['scenario_tag_one', 'scenario_tag_two']
+        steps1 = [Mock(), Mock()]
+        scenario1.__iter__ = Mock(side_effect=lambda: iter(steps1))
+        scenario2 = Mock()
+        scenario2.status = 'stoned'
+        scenario2.tags = ['scenario_tag_three']
+        steps2 = [Mock(), Mock(), Mock()]
+        scenario2.__iter__ = Mock(side_effect=lambda: iter(steps2))
+        scenarios = [scenario1, scenario2]
+        feature.__iter__ = Mock(return_value=iter(scenarios))
+        self.runner.feature_files.return_value = feature_files
+        self.parse_file.return_value = feature
+
+        self.runner.run_with_paths()
+
+        assert False not in [s.status == 'skipped' for s in steps1 + steps2]
+        eq_(scenario1.status, 'skipped')
+        eq_(scenario2.status, 'stoned')
+
+    def test_failed_step_causes_remaining_steps_to_be_skipped(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        self.config.tags.check.return_value = True
+
+        feature_files = ['one']
+        feature = Mock()
+        feature.tags = ['feature_tag_one']
+        feature.background = None
+        scenario = Mock()
+        scenario.tags = ['scenario_tag_one']
+        steps = [Mock(), Mock()]
+        scenario.__iter__ = Mock(side_effect=lambda: iter(steps))
+        feature.__iter__ = Mock(return_value=iter([scenario]))
+
+        self.runner.feature_files.return_value = feature_files
+        self.parse_file.return_value = feature
+        self.run_step.return_value = False
+
+        assert self.runner.run_with_paths()
+
+        eq_(steps[1].status, 'skipped')
+
+    def test_failed_step_causes_context_failure_to_be_set(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        self.config.tags.check.return_value = True
+
+        feature_files = ['one']
+        feature = Mock()
+        feature.tags = ['feature_tag_one']
+        feature.background = None
+        scenario = Mock()
+        scenario.tags = ['scenario_tag_one']
+        steps = [Mock(), Mock()]
+        scenario.__iter__ = Mock(side_effect=lambda: iter(steps))
+        feature.__iter__ = Mock(return_value=iter([scenario]))
+
+        self.runner.feature_files.return_value = feature_files
+        self.parse_file.return_value = feature
+        self.run_step.return_value = False
+
+        assert self.runner.run_with_paths()
+
+        self.context._set_root_attribute.assert_called_with('failed', True)
+
+
 def raiser(exception):
     def func(*args, **kwargs):
         raise exception
@@ -300,6 +664,8 @@ class TestRunStep(object):
 
         side_effects = (None, AssertionError('whee'), Exception('whee'))
         for side_effect in side_effects:
+            # Make match.run() and runner.run_hook() the same mock so
+            # we can make sure things happen in the right order.
             self.runner.run_hook = match.run = Mock()
 
             def effect(thing):
