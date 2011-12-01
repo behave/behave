@@ -258,11 +258,11 @@ class Parser(object):
 
         cells = [cell.strip() for cell in line.split('|')[1:-1]]
         if self.table is None:
-            self.table = model.Table(cells)
+            self.table = model.Table(cells, self.line)
         else:
             if len(cells) != len(self.table.headings):
                 raise ParserError("Malformed table", self.line)
-            self.table.rows.append(cells)
+            self.table.add_row(cells, self.line)
         return True
 
     def match_keyword(self, keyword, line):

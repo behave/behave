@@ -406,11 +406,12 @@ Feature: Stuff
         assert(len(feature.scenarios) == 1)
         eq_(feature.scenarios[0].name, 'Doing stuff')
         table = model.Table(
-            ['type of stuff', 'awesomeness', 'ridiculousness'],
+            [u'type of stuff', u'awesomeness', u'ridiculousness'],
+            0,
             [
-                ['fluffy', 'large', 'frequent'],
-                ['lint', 'low', 'high'],
-                ['green', 'variable', 'awkward'],
+                [u'fluffy', u'large', u'frequent'],
+                [u'lint', u'low', u'high'],
+                [u'green', u'variable', u'awkward'],
             ]
         )
         self.compare_steps(feature.scenarios[0].steps, [
@@ -441,12 +442,13 @@ Feature: Stuff
         eq_(feature.scenarios[0].name, 'Doing all sorts of stuff')
 
         table = model.Table(
-            ['Stuff', 'Things'],
+            [u'Stuff', u'Things'],
+            0,
             [
-                ['wool', 'felt'],
-                ['cotton', 'thread'],
-                ['wood', 'paper'],
-                ['explosives', 'hilarity'],
+                [u'wool', u'felt'],
+                [u'cotton', u'thread'],
+                [u'wood', u'paper'],
+                [u'explosives', u'hilarity'],
             ]
         )
         eq_(feature.scenarios[0].examples[0].name, 'Some stuff')
@@ -488,20 +490,22 @@ Feature: Stuff
         ])
 
         table = model.Table(
-            ['Stuff', 'Things'],
+            [u'Stuff', u'Things'],
+            0,
             [
-                ['wool', 'felt'],
-                ['cotton', 'thread'],
+                [u'wool', u'felt'],
+                [u'cotton', u'thread'],
             ]
         )
         eq_(feature.scenarios[0].examples[0].name, 'Some stuff')
         eq_(feature.scenarios[0].examples[0].table, table)
 
         table = model.Table(
-            ['Stuff', 'Things'],
+            [u'Stuff', u'Things'],
+            0,
             [
-                ['wood', 'paper'],
-                ['explosives', 'hilarity'],
+                [u'wood', u'paper'],
+                [u'explosives', u'hilarity'],
             ]
         )
         eq_(feature.scenarios[0].examples[1].name, 'Some other stuff')
@@ -537,12 +541,13 @@ Feature: Stuff
         ])
 
         table = model.Table(
-            ['Stuff', 'Things'],
+            [u'Stuff', u'Things'],
+            0,
             [
-                ['wool', 'felt'],
-                ['cotton', 'thread'],
-                ['wood', 'paper'],
-                ['explosives', 'hilarity'],
+                [u'wool', u'felt'],
+                [u'cotton', u'thread'],
+                [u'wood', u'paper'],
+                [u'explosives', u'hilarity'],
             ]
         )
         eq_(feature.scenarios[0].examples[0].name, 'Some stuff')
@@ -644,18 +649,20 @@ Feature: Stuff
         eq_(feature.scenarios[1].name, 'Gosh this is long')
         eq_(feature.scenarios[1].tags, [])
         table = model.Table(
-            ['length', 'width', 'height'],
+            [u'length', u'width', u'height'],
+            0,
             [
-                ['1', '2', '3'],
-                ['4', '5', '6'],
+                [u'1', u'2', u'3'],
+                [u'4', u'5', u'6'],
             ]
         )
         eq_(feature.scenarios[1].examples[0].name, 'Initial')
         eq_(feature.scenarios[1].examples[0].table, table)
         table = model.Table(
-            ['length', 'width', 'height'],
+            [u'length', u'width', u'height'],
+            0,
             [
-                ['7', '8', '9'],
+                [u'7', u'8', u'9'],
             ]
         )
         eq_(feature.scenarios[1].examples[1].name, 'Subsequent')
@@ -674,12 +681,13 @@ Feature: Stuff
         ])
 
         table = model.Table(
-            ['Stuff', 'Things'],
+            [u'Stuff', u'Things'],
+            0,
             [
-                ['wool', 'felt'],
-                ['cotton', 'thread'],
-                ['wood', 'paper'],
-                ['explosives', 'hilarity'],
+                [u'wool', u'felt'],
+                [u'cotton', u'thread'],
+                [u'wood', u'paper'],
+                [u'explosives', u'hilarity'],
             ]
         )
         eq_(feature.scenarios[3].name, 'Doing all sorts of stuff')
@@ -687,10 +695,11 @@ Feature: Stuff
         eq_(feature.scenarios[3].examples[0].name, 'Some stuff')
         eq_(feature.scenarios[3].examples[0].table, table)
         table = model.Table(
-            ['a', 'b', 'c', 'd', 'e'],
+            [u'a', u'b', u'c', u'd', u'e'],
+            0,
             [
-                ['1', '2', '3', '4', '5'],
-                ['6', '7', '8', '9', '10'],
+                [u'1', u'2', u'3', u'4', u'5'],
+                [u'6', u'7', u'8', u'9', u'10'],
             ]
         )
         self.compare_steps(feature.scenarios[3].steps, [

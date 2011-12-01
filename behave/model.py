@@ -511,9 +511,15 @@ class Step(BasicStatement, Replayable):
 class Table(Replayable):
     type = "table"
 
-    def __init__(self, headings, rows=[]):
+    def __init__(self, headings, line, rows=[]):
         self.headings = headings
-        self.rows = rows or []
+        self.line = line
+        self.rows = []
+        for row in rows:
+            self.add_row(row, line)
+
+    def add_row(self, row, line):
+        self.rows.append(Row(self.headings, None, row, line))
 
     def __repr__(self):
         return "<Table: %dx%d>" % (len(self.headings), len(self.rows))
@@ -522,13 +528,51 @@ class Table(Replayable):
         if self.headings != other.headings:
             return False
         for my_row, their_row in zip(self.rows, other.rows):
+            print my_row, their_row
             if my_row != their_row:
                 return False
         return True
 
+    def __ne__(self, other):
+        return not self == other
+
     def __iter__(self):
-        Row = collections.namedtuple('Row', self.headings)
-        return iter([Row(*row) for row in self.rows])
+        return iter(self.rows)
+
+    def __getitem__(self, index):
+        return self.rows[index]
+
+
+class Row(object):
+    def __init__(self, headings, comments, cells, line):
+        self.headings = headings
+        self.comments = comments
+        for c in cells:
+            assert isinstance(c, unicode)
+        self.cells = cells
+        self.line = line
+
+    def __getitem__(self, name):
+        try:
+            index = self.headings.index(name)
+        except ValueError:
+            if isinstance(name, int):
+                index = name
+            else:
+                raise KeyError('"%s" is not a row heading' % name)
+        return self.cells[index]
+
+    def __repr__(self):
+        return '<Row %r>' % (self.cells,)
+
+    def __eq__(self, other):
+        return self.cells == other.cells
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __iter__(self):
+        return iter(self.cells)
 
 
 class Tag(unicode):
@@ -557,15 +601,6 @@ class DocString(object):
     def line_range(self):
         line_count = len(self.value.splitlines())
         return (self.line, self.line + line_count + 1)
-
-
-class Row(object):
-    def __init__(self, comments, cells, line):
-        self.comments = comments
-        for c in cells:
-            assert isinstance(c, unicode)
-        self.cells = cells
-        self.line = line
 
 
 class Match(Replayable):
@@ -634,3 +669,4 @@ class Result(Replayable):
         self.status = status
         self.duration = duration
         self.error_message = error_message
+
