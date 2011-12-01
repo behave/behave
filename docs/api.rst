@@ -230,13 +230,15 @@ be:
 
 .. autoclass:: behave.model.Examples
 
+.. autoclass:: behave.model.Tag
+
 .. autoclass:: behave.model.Step
 
 Tables may be associated with either Examples or Steps:
 
 .. autoclass:: behave.model.Table
 
-.. autoclass:: behave.model.Tag
+.. autoclass:: behave.model.Row
 
 .. _`controlling things with tags`: tutorial.html#controlling-things-with-tags
 

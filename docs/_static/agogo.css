@@ -273,6 +273,11 @@ div.document ol {
   margin: 1.5em;
 }
 
+dl.function, dl.class {
+    border-left: thick solid #ddd;
+    padding-left: 1em;
+    margin-bottom: .5em;
+}
 
 /* Sidebar */
 

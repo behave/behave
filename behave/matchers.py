@@ -107,7 +107,7 @@ def step_matcher(name):
 
     You may `define your own matcher`_.
 
-    _`define your own matcher`: api.html#step-parameters
+    .. _`define your own matcher`: api.html#step-parameters
     '''
     global current_matcher
     current_matcher = matcher_mapping[name]

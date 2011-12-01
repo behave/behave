@@ -15,6 +15,8 @@ class Argument(object):
     '''An argument found in a *feature file* step name and extracted using
     step decorator `parameters`_.
 
+    The attributes are:
+
     .. attribute:: original
 
        The actual text matched in the step name.
@@ -80,6 +82,8 @@ class Replayable(object):
 
 class Feature(TagStatement, Replayable):
     '''A `feature`_ parsed from a *feature file*.
+
+    The attributes are:
 
     .. attribute:: keyword
 
@@ -186,6 +190,8 @@ class Feature(TagStatement, Replayable):
 class Background(BasicStatement, Replayable):
     '''A `background`_ parsed from a *feature file*.
 
+    The attributes are:
+
     .. attribute:: keyword
 
        This is the keyword as seen in the *feature file*. In English this will
@@ -225,6 +231,8 @@ class Background(BasicStatement, Replayable):
 
 class Scenario(TagStatement, Replayable):
     '''A `scenario`_ parsed from a *feature file*.
+
+    The attributes are:
 
     .. attribute:: keyword
 
@@ -310,6 +318,8 @@ class ScenarioOutline(Scenario):
     class with the addition of the :class:`~behave.model.Examples` tables of
     data from the *feature file*.
 
+    The attributes are:
+
     .. attribute:: keyword
 
        This is the keyword as seen in the *feature file*. In English this will
@@ -391,6 +401,8 @@ class ScenarioOutline(Scenario):
 class Examples(BasicStatement, Replayable):
     '''A table parsed from a `scenario outline`_ in a *feature file*.
 
+    The attributes are:
+
     .. attribute:: keyword
 
        This is the keyword as seen in the *feature file*. In English this will
@@ -425,6 +437,8 @@ class Examples(BasicStatement, Replayable):
 
 class Step(BasicStatement, Replayable):
     '''A single `step`_ parsed from a *feature file*.
+
+    The attributes are:
 
     .. attribute:: keyword
 
@@ -509,6 +523,34 @@ class Step(BasicStatement, Replayable):
 
 
 class Table(Replayable):
+    '''A `table`_ extracted from a *feature file*.
+
+    Table instance data is accessible using a number of methods:
+
+    **iteration**
+      Iterating over the Table will yield the :class:`~behave.model.Row`
+      instances from the .rows attribute.
+
+    **indexed access**
+      Individual rows may be accessed directly by index on the Table instance;
+      table[0] gives the first non-heading row and table[-1] gives the last row.
+
+    The attributes are:
+
+    .. attribute:: headings
+
+       The headings of the table as a list of strings.
+
+    .. attribute:: rows
+
+       An list of instances of :class:`~behave.model.Row` that make up the body
+       of the table in the *feature file*.
+
+    Tables are also comparable, for what that's worth. Headings and row data are
+    compared.
+
+    .. _`table`: gherkin.html#table
+    '''
     type = "table"
 
     def __init__(self, headings, line, rows=[]):
@@ -544,6 +586,36 @@ class Table(Replayable):
 
 
 class Row(object):
+    '''One row of a `table`_ parsed from a *feature file*.
+
+    Row data is accessible using a number of methods:
+
+    **iteration**
+      Iterating over the Row will yield the individual cells as strings.
+
+    **named access**
+      Individual cells may be accessed by heading name; row['name'] would give
+      the cell value for the column with heading "name".
+
+    **indexed access**
+      Individual cells may be accessed directly by index on the Row instance;
+      row[0] gives the first cell and row[-1] gives the last cell.
+
+    The attributes are:
+
+    .. attribute:: cells
+
+       The list of strings that form the cells of this row.
+
+    .. attribute:: headings
+
+       The headings of the table as a list of strings.
+
+    Rows are also comparable, for what that's worth. Only the cells are
+    compared.
+
+    .. _`table`: gherkin.html#table
+    '''
     def __init__(self, headings, comments, cells, line):
         self.headings = headings
         self.comments = comments
