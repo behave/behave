@@ -88,6 +88,27 @@ current_matcher = ParseMatcher
 
 
 def step_matcher(name):
+    '''Change the parameter matcher used in parsing step text.
+
+    The change is immediate and may be performed between step definitions in
+    your step implementation modules - allowing adjacent steps to use different
+    matchers if necessary.
+
+    There's two parsers available by default in *behave*:
+
+    **parse** (the default)
+       This is a `simple parser`_ that uses a format very much like the Python
+       builtin ``format()``. You must use named fields which are then matched to
+       your ``step()`` function arguments.
+    **re**
+       This uses full regular expressions to parse the clause text. You will
+       need to use named groups "(?P<name>...)" to define the variables pulled
+       from the text and passed to your ``step()`` function.
+
+    You may `define your own matcher`_.
+
+    _`define your own matcher`: api.html#step-parameters
+    '''
     global current_matcher
     current_matcher = matcher_mapping[name]
 

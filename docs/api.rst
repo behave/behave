@@ -98,6 +98,8 @@ you invoke :func:`~behave.matchers.step_matcher`.
 .. _`parameters`: tutorial.html#step-parameters
 .. _`simple parser`: http://pypi.python.org/pypi/parse
 
+.. autofunction:: behave.matchers.step_matcher
+
 You may define a new parameter matcher by subclassing
 :class:`behave.matchers.Matcher` and registering it with
 :attr:`behave.matchers.matcher_mapping` which is a dictionary of "matcher
