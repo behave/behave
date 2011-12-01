@@ -187,26 +187,27 @@ It contains `steps`_ as described below.
 
 **Good practices for using Background**
 
-Don’t use “Background” to set up complicated state unless that state is actually something the client needs to know.
+Don’t use "Background" to set up complicated state unless that state is actually something the client needs to know.
  For example, if the user and site names don’t matter to the client, you
- should use a high-level step such as “Given that I am logged in as a site
- owner”.
+ should use a high-level step such as "Given that I am logged in as a site
+ owner".
 
-Keep your “Background” section short.
+Keep your "Background" section short.
  You’re expecting the user to actually remember this stuff when reading
  your scenarios. If the background is more than 4 lines long, can you move
- some of the irrelevant details into high-level steps? See Calling Steps
- from Step Definitions.
+ some of the irrelevant details into high-level steps? See `calling steps
+ from other steps`_.
 
-Make your “Background” section vivid.
+Make your "Background" section vivid.
  You should use colorful names and try to tell a story, because the human
  brain can keep track of stories much better than it can keep track of
- names like “User A”, “User B”, “Site 1”, and so on.
+ names like "User A", "User B", "Site 1", and so on.
 
 Keep your scenarios short, and don’t have too many.
  If the background section has scrolled off the screen, you should think
  about using higher-level steps, or splitting the features file in two.
 
+.. _`calling steps from other steps`: api.html#calling-steps-from-other-steps
 
 Scenarios
 ---------
