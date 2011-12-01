@@ -39,10 +39,6 @@ if there are more than 3 occurrences of the @qa tag:
 --tags @qa:3
 """.strip()
 
-LANG_HELP = """
-Languages available:
-""".strip()
-
 
 def main():
     config = Configuration()
@@ -51,14 +47,28 @@ def main():
         print TAG_HELP
         sys.exit(0)
 
-    if config.i18n == 'help':
+    if config.lang_list:
         iso_codes = languages.keys()
         iso_codes.sort()
-        print LANG_HELP
+        print "Languages available:"
         for iso_code in iso_codes:
             native = languages[iso_code]['native'][0]
             name = languages[iso_code]['name'][0]
             print u'%s: %s / %s' % (iso_code, native, name)
+        sys.exit(0)
+
+    if config.lang_help:
+        if config.lang_help not in languages:
+            sys.exit('%s is not a recognised language: try --lang-list' %
+                config.lang_help)
+        trans = languages[config.lang_help]
+        print u"Translations for %s / %s" % (trans['name'][0],
+            trans['native'][0])
+        for kw in trans:
+            if kw in 'name native'.split():
+                continue
+            print u'%16s: %s' % (kw.title().replace('_', ' '),
+                u', '.join(w for w in trans[kw] if w != '*'))
         sys.exit(0)
 
     stream = config.output

@@ -1,12 +1,27 @@
-.. behave documentation master file, created by
-   sphinx-quickstart on Tue Nov 29 16:33:26 2011.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Welcome to behave!
+==================
 
-Welcome to behave's documentation!
-==================================
+.. pypi-release:: roundup
+   :prefix: Download
+   :class: note
 
-Contents:
+behave is behaviour-driven development, Python style.
+
+Behavior-driven development (or BDD) is an agile software development
+technique that encourages collaboration between developers, QA and
+non-technical or business participants in a software project. We have
+a page further describing this `philosophy`_.
+
+*behave* uses tests written in a natural language style, backed up by Python
+code.
+
+To get started, we recommend the `tutorial`_ and then the `test setup`_ and
+`api`_ references. 
+
+.. _`philosophy`: philosophy.html
+.. _`tutorial`: tutorial.html
+.. _`test setup`: gherkin.html
+.. _`api`: api.html
 
 
 .. toctree::

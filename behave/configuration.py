@@ -88,9 +88,12 @@ parser.add_argument('-w', '--wip', action='store_true',
                     help="Fail if there are any passing scenarios.")
 parser.add_argument('-x', '--expand', action='store_true',
                     help="Expand scenario outline tables in output.")
-parser.add_argument('--i18n', metavar='LANG', default='en',
-                    help="""List keywords for a particular language
-                            (use --i18n help to see all languages)""")
+parser.add_argument('--lang', metavar='LANG', default='en',
+                    help="Use keywords for a language other than English.")
+parser.add_argument('--lang-list', action='store_true',
+                    help="List the languages abailable for --lang")
+parser.add_argument('--lang-help', metavar='LANG',
+                    help="List the translations accepted for one language.")
 parser.add_argument('--tags-help', action='store_true',
                     help="Show help for tag expressions.")
 parser.add_argument('--version', action='store_true', help="Show version.")
