@@ -309,7 +309,7 @@ into the BDD mindset.
 
 **Given**
 
-The purpose of givens is to *put the system in a known state* before the
+The purpose of givens is to **put the system in a known state** before the
 user (or external system) starts interacting with the system (in the When
 steps). Avoid talking about user interaction in givens.  If you had worked
 with usecases, you would call this preconditions.
@@ -317,31 +317,50 @@ with usecases, you would call this preconditions.
 Examples:
 
 - Create records (model instances) / set up the database state.
-- It's ok to call into the layer "inside" the UI layer here (in Rails: talk to the models).
-- Log in a user (An exception to the no-interaction recommendation. Things that "happened earlier" are ok).
+- It's ok to call directly into your application model here.
+- Log in a user (An exception to the no-interaction recommendation. Things
+  that "happened earlier" are ok).
 
-And for all the Rails users out there - we recommend using a "Given with a multiline table argument":https://github.com/aslakhellesoy/cucumber-rails-test/blob/master/features/manage_lorries.feature to "set up records":https://github.com/aslakhellesoy/cucumber-rails-test/blob/master/features/step_definitions/lorry_steps.rb instead of fixtures. This way you can read the scenario and make sense out of it without having to look elsewhere (at the fixtures).
+You might also use Given with a multiline table argument to set up database
+records instead of fixtures hard-coded in steps. This way you can read
+the scenario and make sense out of it without having to look elsewhere (at
+the fixtures).
 
 **When**
 
-The purpose of When steps is to *describe the key action* the user performs (or, using Robert C. Martin's metaphor, the state transition).
+The purpose of When steps is to **describe the key action** the user
+performs. This is the user interaction with your system which should (or
+perhaps should not) cause some state to change.
 
 Examples:
 
-- Interact with a web page (Webrat/Watir/Selenium _interaction_ etc should mostly go into When steps).
+- Interact with a web page (`Requests`_/`Twill`_/`Selenium`_ *interaction*
+  etc   should mostly go into When steps).
 - Interact with some other user interface element.
-- Developing a library? Kicking off some kind of action that has an observable effect somewhere else.
+- Developing a library? Kicking off some kind of action that has an
+  observable effect somewhere else.
+
+.. _`requests`: http://python-requests.org/
+.. _`twill`: http://twill.idyll.org/
+.. _`selenium`: http://seleniumhq.org/projects/webdriver/
 
 **Then**
 
-The purpose of Then steps is to *observe outcomes*. The observations should be related to the business value/benefit in your feature description. The observations should also be on some kind of _output_ - that is something that comes _out_ of the system (report, user interface, message) and not something that is deeply buried inside it (that has no business value).
+The purpose of Then steps is to **observe outcomes**. The observations should
+be related to the business value/benefit in your feature description. The
+observations should also be on some kind of *output* - that is something
+that comes *out* of the system (report, user interface, message) and not
+something that is deeply buried inside it (that has no business value).
 
 Examples:
 
 - Verify that something related to the Given+When is (or is not) in the output
-- Check that some external system has received the expected message (was an email with specific content sent?)
+- Check that some external system has received the expected message (was an
+  email with specific content sent?)
 
-While it might be tempting to implement Then steps to just look in the database - resist the temptation. You should only verify outcome that is observable for the user (or external system) and databases usually are not.
+While it might be tempting to implement Then steps to just look in the
+database - resist the temptation. You should only verify outcome that is
+observable for the user (or external system) and databases usually are not.
 
 **And, But**
 
