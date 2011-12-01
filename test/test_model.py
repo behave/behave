@@ -41,3 +41,5 @@ class TestTableModel(object):
     def test_table_row_keyerror(self):
         self.table[0]['spam']
 
+    def test_table_row_items(self):
+        eq_(self.table[0].items(), zip(self.HEAD, self.DATA[0]))

@@ -646,6 +646,9 @@ class Row(object):
     def __iter__(self):
         return iter(self.cells)
 
+    def items(self):
+        return zip(self.headings, self.cells)
+
 
 class Tag(unicode):
     '''Tags appear may be associated with Features or Scenarios.
