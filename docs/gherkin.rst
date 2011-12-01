@@ -49,6 +49,11 @@ Layout Variations
 find feature specifications. When launched you may pass on the command
 line:
 
+**nothing**
+  In the absence of any information *behave* will attempt to load your
+  features from a subdirectory called "features" in the directory you launched
+  *behave*.
+
 **a features directory path**
   This is the path to a features directory laid out as described above. It may be called
   anything by *must* contain at least one "*name*.feature" file and a directory
