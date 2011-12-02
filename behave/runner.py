@@ -6,6 +6,7 @@ import sys
 import time
 import traceback
 import warnings
+import contextlib
 
 from behave import matchers, model, parser
 from behave.formatter.pretty_formatter import PrettyFormatter
@@ -53,7 +54,10 @@ class Context(object):
     indeed by *behave* to overwite a user-set variable, then a
     :class:`behave.runner.ContextMaskWarning` warning will be raised.
     '''
-    def __init__(self):
+    BEHAVE = 'behave'
+    USER = 'user'
+    def __init__(self, config):
+        self._config = config
         d = self._root = {
             'failed': False,
             'table': None,
@@ -61,6 +65,8 @@ class Context(object):
         }
         self._stack = [d]
         self._record = {}
+        self._origin = {}
+        self._mode = self.BEHAVE
 
     def _push(self):
         self._stack.insert(0, {})
@@ -68,13 +74,17 @@ class Context(object):
     def _pop(self):
         self._stack.pop(0)
 
+    @contextlib.contextmanager
+    def user_mode(self):
+        self._mode = self.USER
+        yield
+        self._mode = self.BEHAVE
+
     def _set_root_attribute(self, attr, value):
         for frame in self.__dict__['_stack']:
             if frame is self.__dict__['_root']:
                 continue
             if attr in frame:
-                msg = "behave runner masked context attribute '%(attr)s' " + \
-                      "orignally set in %(function)s (%(filename)s:%(line)s)"
                 record = self.__dict__['_record'][attr]
                 params = {
                     'attr': attr,
@@ -82,10 +92,27 @@ class Context(object):
                     'line': record[1],
                     'function': record[3],
                 }
-                msg = msg % params
-                warnings.warn(msg, ContextMaskWarning, stacklevel=2)
+                self._emit_warning(attr, params)
 
         self.__dict__['_root'][attr] = value
+        if attr not in self._origin:
+            self._origin[attr] = self._mode
+
+    def _emit_warning(self, attr, params):
+        msg = ''
+        if self._mode is self.BEHAVE and self._origin[attr] is not self.BEHAVE:
+            msg = "behave runner is masking context attribute '%(attr)s' " \
+                  "orignally set in %(function)s (%(filename)s:%(line)s)"
+        elif self._mode is self.USER:
+            if self._origin[attr] is not self.USER:
+                msg = "user code is masking context attribute '%(attr)s' " \
+                      "orignally set by behave"
+            elif self._config.verbose:
+                msg = "user code is masking context attribute " \
+                    "'%(attr)s'; see the tutorial for what this means"
+        if msg:
+            msg = msg % params
+            warnings.warn(msg, ContextMaskWarning, stacklevel=2)
 
     def _dump(self):
         for level, frame in enumerate(self._stack):
@@ -93,7 +120,7 @@ class Context(object):
             print repr(frame)
 
     def __getattr__(self, attr):
-        if attr in ('_root', '_record', '_stack'):
+        if attr[0] == '_':
             return self.__dict__[attr]
         for frame in self._stack:
             if attr in frame:
@@ -103,14 +130,12 @@ class Context(object):
         raise AttributeError(msg)
 
     def __setattr__(self, attr, value):
-        if attr in ('_root', '_record', '_stack'):
+        if attr[0] == '_':
             self.__dict__[attr] = value
             return
 
         for frame in self.__dict__['_stack'][1:]:
             if attr in frame:
-                msg = "Step code masked context attribute '%(attr)s' " + \
-                      "orignally set in %(function)s (%(filename)s:%(line)s)"
                 record = self.__dict__['_record'][attr]
                 params = {
                     'attr': attr,
@@ -118,13 +143,14 @@ class Context(object):
                     'line': record[1],
                     'function': record[3],
                 }
-                msg = msg % params
-                warnings.warn(msg, ContextMaskWarning, stacklevel=2)
+                self._emit_warning(attr, params)
 
         stack_frame = traceback.extract_stack(limit=2)[0]
         self.__dict__['_record'][attr] = stack_frame
         frame = self.__dict__['_stack'][0]
         frame[attr] = value
+        if attr not in self._origin:
+            self._origin[attr] = self._mode
 
 
 class StepRegistry(object):
@@ -315,9 +341,10 @@ class Runner(object):
         # clean up the path
         sys.path.pop(0)
 
-    def run_hook(self, name, *args):
+    def run_hook(self, name, context, *args):
         if name in self.hooks:
-            self.hooks[name](*args)
+            with context.user_mode():
+                self.hooks[name](context, *args)
 
     def feature_files(self):
         files = []
@@ -344,7 +371,7 @@ class Runner(object):
         self.load_hooks()
         self.load_step_definitions()
 
-        context = self.context = Context()
+        context = self.context = Context(self.config)
         stream = self.config.output
         monochrome = self.config.no_color
         failed = False

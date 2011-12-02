@@ -723,7 +723,8 @@ class Match(Replayable):
             else:
                 args.append(arg.value)
 
-        self.func(context, *args, **kwargs)
+        with context.user_mode():
+            self.func(context, *args, **kwargs)
 
 
 class NoMatch(Match):

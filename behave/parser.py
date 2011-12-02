@@ -7,6 +7,7 @@ parsers = {}
 
 
 def parse_file(filename, language=None):
+    print 'PARSE', `filename`, `language`
     with open(filename, 'rb') as f:
         # file encoding is assumed to be utf8. Oh, yes.
         data = f.read().decode('utf8')
@@ -97,7 +98,7 @@ class Parser(object):
                 return
 
             line = line.strip()[1:].strip()
-            if line.lower().startswith('language:'):
+            if line.lstrip().lower().startswith('language:'):
                 language = line[9:].strip()
                 self.keywords = i18n.languages[language]
             return

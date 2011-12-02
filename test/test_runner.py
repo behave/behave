@@ -13,7 +13,9 @@ from behave.configuration import ConfigError
 
 class TestContext(object):
     def setUp(self):
-        self.context = runner.Context()
+        self.config = Mock()
+        self.config.verbose = False
+        self.context = runner.Context(self.config)
 
     def test_attribute_set_at_upper_level_visible_at_lower_level(self):
         self.context.thing = 'stuff'
@@ -58,7 +60,7 @@ class TestContext(object):
         assert getattr(self.context, 'other_thing', None) is None
         assert getattr(self.context, 'third_thing', None) is None
 
-    def test_masking_attribute_at_lower_level_causes_warning(self):
+    def test_masking_existing_user_attribute_when_verbose_causes_warning(self):
         warns = []
 
         def catch_warning(*args, **kwargs):
@@ -67,7 +69,54 @@ class TestContext(object):
         old_showwarning = warnings.showwarning
         warnings.showwarning = catch_warning
 
-        self.context.thing = 'stuff'
+        self.config.verbose = True
+        with self.context.user_mode():
+            self.context.thing = 'stuff'
+            self.context._push()
+            self.context.thing = 'other stuff'
+
+        warnings.showwarning = old_showwarning
+
+        print repr(warns)
+        assert warns
+        warning = warns[0]
+        assert isinstance(warning, runner.ContextMaskWarning)
+        info = warning.args[0]
+        assert info.startswith('user code'), "%r doesn't start with 'user code'" % info
+        assert "'thing'" in info, '%r not in %r' % ("'thing'", info)
+        assert 'tutorial' in info, '"tutorial" not in %r' % (info, )
+
+    def test_masking_existing_user_attribute_when_not_verbose_causes_no_warning(self):
+        warns = []
+
+        def catch_warning(*args, **kwargs):
+            warns.append(args[0])
+
+        old_showwarning = warnings.showwarning
+        warnings.showwarning = catch_warning
+
+        # explicit
+        self.config.verbose = False
+        with self.context.user_mode():
+            self.context.thing = 'stuff'
+            self.context._push()
+            self.context.thing = 'other stuff'
+
+        warnings.showwarning = old_showwarning
+
+        assert not warns
+
+    def test_behave_masking_user_attribute_causes_warning(self):
+        warns = []
+
+        def catch_warning(*args, **kwargs):
+            warns.append(args[0])
+
+        old_showwarning = warnings.showwarning
+        warnings.showwarning = catch_warning
+
+        with self.context.user_mode():
+            self.context.thing = 'stuff'
         self.context._push()
         self.context.thing = 'other stuff'
 
@@ -78,7 +127,7 @@ class TestContext(object):
         warning = warns[0]
         assert isinstance(warning, runner.ContextMaskWarning)
         info = warning.args[0]
-        assert info.startswith('Step code'), "%r doesn't start with 'Step code'" % info
+        assert info.startswith('behave runner'), "%r doesn't start with 'behave runner'" % info
         assert "'thing'" in info, '%r not in %r' % ("'thing'", info)
         file = __file__.rsplit('.', 1)[0]
         assert file in info, '%r not in %r' % (file, info)
@@ -92,8 +141,9 @@ class TestContext(object):
         old_showwarning = warnings.showwarning
         warnings.showwarning = catch_warning
 
-        self.context._push()
-        self.context.thing = 'teak'
+        with self.context.user_mode():
+            self.context._push()
+            self.context.thing = 'teak'
         self.context._set_root_attribute('thing', 'oak')
 
         warnings.showwarning = old_showwarning
@@ -211,7 +261,7 @@ class TestRunner(object):
     def test_run_hook_runs_a_hook_that_exists(self):
         r = runner.Runner(None)
         r.hooks['before_lunch'] = hook = Mock()
-        args = (Mock(),) * 3
+        args = (runner.Context(Mock()), Mock(), Mock())
         r.run_hook('before_lunch', *args)
 
         hook.assert_called_with(*args)
