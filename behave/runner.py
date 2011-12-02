@@ -402,50 +402,9 @@ class Runner(object):
                 self.formatter.background(feature.background)
 
             for scenario in feature:
-                tags = feature.tags + scenario.tags
-                run_scenario = self.config.tags.check(tags)
-                run_steps = run_scenario
+                failed = self.run_scenario(scenario, feature, context)
 
-                self.formatter.scenario(scenario)
-
-                context._push()
-
-                if run_scenario:
-                    for tag in scenario.tags:
-                        self.run_hook('before_tag', context, tag)
-                    self.run_hook('before_scenario', context, scenario)
-
-                if self.config.stdout_capture:
-                    self.stdout_capture = StringIO.StringIO()
-
-                if self.config.log_capture:
-                    self.log_capture = MemoryHandler(self.config)
-                    self.log_capture.inveigle()
-
-                for step in scenario:
-                    self.formatter.step(step)
-
-                for step in scenario:
-                    if run_steps:
-                        if not self.run_step(step):
-                            run_steps = False
-                            failed = True
-                            context._set_root_attribute('failed', True)
-                    else:
-                        step.status = 'skipped'
-                        if scenario.status is None:
-                            scenario.status = 'skipped'
-
-                if self.config.log_capture:
-                    self.log_capture.abandon()
-
-                if run_scenario:
-                    self.run_hook('after_scenario', context, scenario)
-                    for tag in scenario.tags:
-                        self.run_hook('after_tag', context, tag)
-
-                context._pop()
-
+                # do we want to stop on the first failure?
                 if failed and self.config.stop:
                     break
 
@@ -469,7 +428,60 @@ class Runner(object):
 
         return failed
 
+    def run_scenario(self, scenario, feature, context):
+        '''Run a single scenario or scenario outline.
+        '''
+        failed = False
+
+        tags = feature.tags + scenario.tags
+        run_scenario = self.config.tags.check(tags)
+        run_steps = run_scenario
+
+        self.formatter.scenario(scenario)
+
+        context._push()
+
+        if run_scenario:
+            for tag in scenario.tags:
+                self.run_hook('before_tag', context, tag)
+            self.run_hook('before_scenario', context, scenario)
+
+        if self.config.stdout_capture:
+            self.stdout_capture = StringIO.StringIO()
+
+        if self.config.log_capture:
+            self.log_capture = MemoryHandler(self.config)
+            self.log_capture.inveigle()
+
+        for step in scenario:
+            self.formatter.step(step)
+
+        for step in scenario:
+            if run_steps:
+                if not self.run_step(step):
+                    run_steps = False
+                    failed = True
+                    context._set_root_attribute('failed', True)
+            else:
+                step.status = 'skipped'
+                if scenario.status is None:
+                    scenario.status = 'skipped'
+
+        if self.config.log_capture:
+            self.log_capture.abandon()
+
+        if run_scenario:
+            self.run_hook('after_scenario', context, scenario)
+            for tag in scenario.tags:
+                self.run_hook('after_tag', context, tag)
+
+        context._pop()
+
+        return failed
+
     def run_step(self, step, quiet=False):
+        '''Run a single step for a scenario, scenario outline or background.
+        '''
         self.context._set_root_attribute('table', None)
         self.context._set_root_attribute('text', None)
 
