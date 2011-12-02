@@ -6,6 +6,7 @@ import sys
 import time
 import traceback
 import warnings
+import contextlib
 
 from behave import matchers, model, parser
 from behave.formatter.pretty_formatter import PrettyFormatter
@@ -14,6 +15,14 @@ from behave.configuration import ConfigError
 
 
 class ContextMaskWarning(UserWarning):
+    '''Raised if a context variable is being overwritten in some situations.
+
+    If the variable was originally set by user code then this will be raised if
+    *behave* overwites the value.
+
+    If the variable was originally set by *behave* then this will be raised if
+    user code overwites the value.
+    '''
     pass
 
 
@@ -41,8 +50,14 @@ class Context(object):
       This is set at the step level and holds any multiline text associated with
       the step.
 
+    If an attempt made by user code to overwrite one of these variables, or
+    indeed by *behave* to overwite a user-set variable, then a
+    :class:`behave.runner.ContextMaskWarning` warning will be raised.
     '''
-    def __init__(self):
+    BEHAVE = 'behave'
+    USER = 'user'
+    def __init__(self, config):
+        self._config = config
         d = self._root = {
             'failed': False,
             'table': None,
@@ -50,6 +65,8 @@ class Context(object):
         }
         self._stack = [d]
         self._record = {}
+        self._origin = {}
+        self._mode = self.BEHAVE
 
     def _push(self):
         self._stack.insert(0, {})
@@ -57,13 +74,17 @@ class Context(object):
     def _pop(self):
         self._stack.pop(0)
 
+    @contextlib.contextmanager
+    def user_mode(self):
+        self._mode = self.USER
+        yield
+        self._mode = self.BEHAVE
+
     def _set_root_attribute(self, attr, value):
         for frame in self.__dict__['_stack']:
             if frame is self.__dict__['_root']:
                 continue
             if attr in frame:
-                msg = "behave runner masked context attribute '%(attr)s' " + \
-                      "orignally set in %(function)s (%(filename)s:%(line)s)"
                 record = self.__dict__['_record'][attr]
                 params = {
                     'attr': attr,
@@ -71,10 +92,27 @@ class Context(object):
                     'line': record[1],
                     'function': record[3],
                 }
-                msg = msg % params
-                warnings.warn(msg, ContextMaskWarning, stacklevel=2)
+                self._emit_warning(attr, params)
 
         self.__dict__['_root'][attr] = value
+        if attr not in self._origin:
+            self._origin[attr] = self._mode
+
+    def _emit_warning(self, attr, params):
+        msg = ''
+        if self._mode is self.BEHAVE and self._origin[attr] is not self.BEHAVE:
+            msg = "behave runner is masking context attribute '%(attr)s' " \
+                  "orignally set in %(function)s (%(filename)s:%(line)s)"
+        elif self._mode is self.USER:
+            if self._origin[attr] is not self.USER:
+                msg = "user code is masking context attribute '%(attr)s' " \
+                      "orignally set by behave"
+            elif self._config.verbose:
+                msg = "user code is masking context attribute " \
+                    "'%(attr)s'; see the tutorial for what this means"
+        if msg:
+            msg = msg % params
+            warnings.warn(msg, ContextMaskWarning, stacklevel=2)
 
     def _dump(self):
         for level, frame in enumerate(self._stack):
@@ -82,7 +120,7 @@ class Context(object):
             print repr(frame)
 
     def __getattr__(self, attr):
-        if attr in ('_root', '_record', '_stack'):
+        if attr[0] == '_':
             return self.__dict__[attr]
         for frame in self._stack:
             if attr in frame:
@@ -92,14 +130,12 @@ class Context(object):
         raise AttributeError(msg)
 
     def __setattr__(self, attr, value):
-        if attr in ('_root', '_record', '_stack'):
+        if attr[0] == '_':
             self.__dict__[attr] = value
             return
 
         for frame in self.__dict__['_stack'][1:]:
             if attr in frame:
-                msg = "Step code masked context attribute '%(attr)s' " + \
-                      "orignally set in %(function)s (%(filename)s:%(line)s)"
                 record = self.__dict__['_record'][attr]
                 params = {
                     'attr': attr,
@@ -107,13 +143,14 @@ class Context(object):
                     'line': record[1],
                     'function': record[3],
                 }
-                msg = msg % params
-                warnings.warn(msg, ContextMaskWarning, stacklevel=2)
+                self._emit_warning(attr, params)
 
         stack_frame = traceback.extract_stack(limit=2)[0]
         self.__dict__['_record'][attr] = stack_frame
         frame = self.__dict__['_stack'][0]
         frame[attr] = value
+        if attr not in self._origin:
+            self._origin[attr] = self._mode
 
 
 class StepRegistry(object):
@@ -304,9 +341,10 @@ class Runner(object):
         # clean up the path
         sys.path.pop(0)
 
-    def run_hook(self, name, *args):
+    def run_hook(self, name, context, *args):
         if name in self.hooks:
-            self.hooks[name](*args)
+            with context.user_mode():
+                self.hooks[name](context, *args)
 
     def feature_files(self):
         files = []
@@ -333,7 +371,7 @@ class Runner(object):
         self.load_hooks()
         self.load_step_definitions()
 
-        context = self.context = Context()
+        context = self.context = Context(self.config)
         stream = self.config.output
         monochrome = self.config.no_color
         failed = False
@@ -364,50 +402,15 @@ class Runner(object):
                 self.formatter.background(feature.background)
 
             for scenario in feature:
-                tags = feature.tags + scenario.tags
-                run_scenario = self.config.tags.check(tags)
-                run_steps = run_scenario
+                if isinstance(scenario, model.ScenarioOutline):
+                    for sub in scenario.scenarios:
+                        failed = self.run_scenario(sub, feature, context)
+                        if failed and self.config.stop:
+                            break
+                else:
+                    failed = self.run_scenario(scenario, feature, context)
 
-                self.formatter.scenario(scenario)
-
-                context._push()
-
-                if run_scenario:
-                    for tag in scenario.tags:
-                        self.run_hook('before_tag', context, tag)
-                    self.run_hook('before_scenario', context, scenario)
-
-                if self.config.stdout_capture:
-                    self.stdout_capture = StringIO.StringIO()
-
-                if self.config.log_capture:
-                    self.log_capture = MemoryHandler(self.config)
-                    self.log_capture.inveigle()
-
-                for step in scenario:
-                    self.formatter.step(step)
-
-                for step in scenario:
-                    if run_steps:
-                        if not self.run_step(step):
-                            run_steps = False
-                            failed = True
-                            context._set_root_attribute('failed', True)
-                    else:
-                        step.status = 'skipped'
-                        if scenario.status is None:
-                            scenario.status = 'skipped'
-
-                if self.config.log_capture:
-                    self.log_capture.abandon()
-
-                if run_scenario:
-                    self.run_hook('after_scenario', context, scenario)
-                    for tag in scenario.tags:
-                        self.run_hook('after_tag', context, tag)
-
-                context._pop()
-
+                # do we want to stop on the first failure?
                 if failed and self.config.stop:
                     break
 
@@ -431,7 +434,60 @@ class Runner(object):
 
         return failed
 
+    def run_scenario(self, scenario, feature, context):
+        '''Run a single scenario or scenario outline.
+        '''
+        failed = False
+
+        tags = feature.tags + scenario.tags
+        run_scenario = self.config.tags.check(tags)
+        run_steps = run_scenario
+
+        self.formatter.scenario(scenario)
+
+        context._push()
+
+        if run_scenario:
+            for tag in scenario.tags:
+                self.run_hook('before_tag', context, tag)
+            self.run_hook('before_scenario', context, scenario)
+
+        if self.config.stdout_capture:
+            self.stdout_capture = StringIO.StringIO()
+
+        if self.config.log_capture:
+            self.log_capture = MemoryHandler(self.config)
+            self.log_capture.inveigle()
+
+        for step in scenario:
+            self.formatter.step(step)
+
+        for step in scenario:
+            if run_steps:
+                if not self.run_step(step):
+                    run_steps = False
+                    failed = True
+                    context._set_root_attribute('failed', True)
+            else:
+                step.status = 'skipped'
+                if scenario.status is None:
+                    scenario.status = 'skipped'
+
+        if self.config.log_capture:
+            self.log_capture.abandon()
+
+        if run_scenario:
+            self.run_hook('after_scenario', context, scenario)
+            for tag in scenario.tags:
+                self.run_hook('after_tag', context, tag)
+
+        context._pop()
+
+        return failed
+
     def run_step(self, step, quiet=False):
+        '''Run a single step for a scenario, scenario outline or background.
+        '''
         self.context._set_root_attribute('table', None)
         self.context._set_root_attribute('text', None)
 
@@ -496,8 +552,8 @@ class Runner(object):
     def calculate_summaries(self):
         for feature in self.features:
             self.feature_summary[feature.status or 'skipped'] += 1
+            self.duration += feature.duration
             for scenario in feature:
                 self.scenario_summary[scenario.status or 'skipped'] += 1
                 for step in scenario:
                     self.step_summary[step.status or 'skipped'] += 1
-                    self.duration += step.duration or 0.0

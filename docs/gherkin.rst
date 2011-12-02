@@ -49,6 +49,11 @@ Layout Variations
 find feature specifications. When launched you may pass on the command
 line:
 
+**nothing**
+  In the absence of any information *behave* will attempt to load your
+  features from a subdirectory called "features" in the directory you launched
+  *behave*.
+
 **a features directory path**
   This is the path to a features directory laid out as described above. It may be called
   anything by *must* contain at least one "*name*.feature" file and a directory
@@ -182,26 +187,27 @@ It contains `steps`_ as described below.
 
 **Good practices for using Background**
 
-Don’t use “Background” to set up complicated state unless that state is actually something the client needs to know.
+Don’t use "Background" to set up complicated state unless that state is actually something the client needs to know.
  For example, if the user and site names don’t matter to the client, you
- should use a high-level step such as “Given that I am logged in as a site
- owner”.
+ should use a high-level step such as "Given that I am logged in as a site
+ owner".
 
-Keep your “Background” section short.
+Keep your "Background" section short.
  You’re expecting the user to actually remember this stuff when reading
  your scenarios. If the background is more than 4 lines long, can you move
- some of the irrelevant details into high-level steps? See Calling Steps
- from Step Definitions.
+ some of the irrelevant details into high-level steps? See `calling steps
+ from other steps`_.
 
-Make your “Background” section vivid.
+Make your "Background" section vivid.
  You should use colorful names and try to tell a story, because the human
  brain can keep track of stories much better than it can keep track of
- names like “User A”, “User B”, “Site 1”, and so on.
+ names like "User A", "User B", "Site 1", and so on.
 
 Keep your scenarios short, and don’t have too many.
  If the background section has scrolled off the screen, you should think
  about using higher-level steps, or splitting the features file in two.
 
+.. _`calling steps from other steps`: api.html#calling-steps-from-other-steps
 
 Scenarios
 ---------
@@ -258,8 +264,9 @@ in each scenario outline.
 .. code-block:: gherkin
 
   Scenario Outline: Blenders
-     When I put <thing> in a blender
-     Then <other thing> should ensue
+     Given I put <thing> in a blender,
+      when I swtich the blender on
+      then it should trasform into <other thing>
 
    Examples: Amphipians
      | thing         | other thing |
@@ -269,6 +276,14 @@ in each scenario outline.
      | thing         | other thing |
      | iPhone        | toxic waste |
      | Galaxy Nexus  | toxic waste |
+
+*behave* will run the scenario once for each (non-heading) line appearing
+in the example data tables.
+
+The values to replace are determined using the name appearing in the angle
+brackets "<*name*>" whichi must match a headings of the example tables. The
+name may include almost any character, though not the close angle bracket
+">".
 
 
 Steps
@@ -299,15 +314,16 @@ directory in Python modules (files with Python code which are named
 in the "steps" directory will be imported by *behave* at startup to
 discover the step implementations.
 
-Given, When, Then, And, But
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Given, When, Then (And, But)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 *behave* doesn't technically distinguish between the various kinds of steps.
 However, we strongly recommend that you do! These words have been carefully
 selected for their purpose, and you should know what the purpose is to get
 into the BDD mindset.
 
-**Given**
+Given
+"""""
 
 The purpose of givens is to **put the system in a known state** before the
 user (or external system) starts interacting with the system (in the When
@@ -326,11 +342,12 @@ records instead of fixtures hard-coded in steps. This way you can read
 the scenario and make sense out of it without having to look elsewhere (at
 the fixtures).
 
-**When**
+When
+""""
 
-The purpose of When steps is to **describe the key action** the user
-performs. This is the user interaction with your system which should (or
-perhaps should not) cause some state to change.
+Each of these steps should **describe the key action** the user (or
+external system) performs. This is the interaction with your system which
+should (or perhaps should not) cause some state to change.
 
 Examples:
 
@@ -344,13 +361,14 @@ Examples:
 .. _`twill`: http://twill.idyll.org/
 .. _`selenium`: http://seleniumhq.org/projects/webdriver/
 
-**Then**
+Then
+""""
 
-The purpose of Then steps is to **observe outcomes**. The observations should
-be related to the business value/benefit in your feature description. The
-observations should also be on some kind of *output* - that is something
-that comes *out* of the system (report, user interface, message) and not
-something that is deeply buried inside it (that has no business value).
+Here we **observe outcomes**. The observations should be related to the
+business value/benefit in your feature description. The observations should
+also be on some kind of *output* - that is something that comes *out* of
+the system (report, user interface, message) and not something that is
+deeply buried inside it (that has no business value).
 
 Examples:
 
@@ -362,9 +380,10 @@ While it might be tempting to implement Then steps to just look in the
 database - resist the temptation. You should only verify outcome that is
 observable for the user (or external system) and databases usually are not.
 
-**And, But**
+And, But
+""""""""
 
-If you have several givens, whens or thens you can write:
+If you have several givens, whens or thens you could write:
 
 .. code-block:: gherkin
 
@@ -375,7 +394,6 @@ If you have several givens, whens or thens you can write:
      When I open my eyes
      Then I see something
      Then I don't see something else
-
 
 Or you can make it read more fluently by writing:
 
@@ -389,8 +407,9 @@ Or you can make it read more fluently by writing:
      Then I see something
       But I don't see something else
 
-To *behave* steps beginning with "and" or "but" are exactly the same kind
-of steps as all the others.
+The two scenarios are identical to *bevave* - steps beginning with "and" or
+"but" are exactly the same kind of steps as all the others. They simply
+mimic the step that preceeds them.
 
 
 Step Data
@@ -439,6 +458,11 @@ You may associate a table of data with a step by simply entering it,
 indented, following the step. This can be useful for loading specific
 required data into a model.
 
+The table formatting doesn't have to be stricltly lined up but it does need
+to have the same number of columns on each line. A column is anything
+appearing between two vertical bars "|". Any whitespace between the column
+content and the vertical bar is removed.
+
 .. code-block:: gherkin
 
    Scenario: some scenario
@@ -471,7 +495,115 @@ There's a variety of ways to access the table data - see the
 Tags
 ----
 
-TODO
+You may also "tag" parts of your feature file. At the simplest level this
+allows *behave* to selectively check parts of your feature set.
+
+You may tag features, scenarios or scenario outlines but nothing else.
+
+Tags appear on the line preceding the feature or scenario you wish to tag.
+You may have many space-separated tags on a single line.
+
+A tag takes the form of the at symbol "@" followed by a word (which may
+include underscores "_"). Valid tag lines include:
+
+   @slow
+   @wip
+   @needs_database @slow
+
+For example:
+
+.. code-block:: gherkin
+
+   @wip @slow
+   Feature: annual reporting
+     Some description of a slow reporting system.
+
+Tags may be used to `control your test run`_ by only including certain
+features or scenarios based on tag selection. The tag information may also
+be accessed from the `Python code backing up the tests`_.
+
+.. _`control your test run`: #controlling-your-test-run-with-tags
+.. _`Python code backing up the tests`: #accessing-tag-information-in-python
+
+
+Controlling Your Test Run With Tags
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Given a feature file with:
+
+.. code-block:: gherkin
+
+  Feature: Fight or flight
+    In order to increase the ninja survival rate,
+    As a ninja commander
+    I want my ninjas to decide whether to take on an 
+    opponent based on their skill levels
+
+    @slow
+    Scenario: Weaker opponent
+      Given the ninja has a third level black-belt 
+      When attacked by a samurai
+      Then the ninja should engage the opponent
+
+    Scenario: Stronger opponent
+      Given the ninja has a third level black-belt 
+      When attacked by Chuck Norris
+      Then the ninja should run for his life
+      
+then running ``behave --tags slow`` will run just the scenarios tagged
+``@slow``. If you wish to check everything *except* the slow ones then you
+may run ``behave --tags ~slow``.
+
+Another common use-case is to tag a scenario you're working on with
+``@wip`` and then ``behave --tags wip`` to just test that one case.
+
+Tag selection on the command-line may be combined:
+
+**--tags wip,slow**
+   This will select all the cases tagged *either* "wip" or "slow".
+
+**--tags wip --tags slow**
+   This will select all the cases tagged *both* "wip" and "slow".
+
+If a feature or scenario is tagged and then skipped because of a
+command-line control then the *before_* and *after_* environment functions
+will not be called for that feature or scenario.
+
+
+Accessing Tag Information In Python
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The tags attached to a feature and scenario are available in
+the environment functions via the "feature" or "scenario" object passed to
+them. On those objects there is an attribute called "tags" which is a list
+of the tag names attached, in the order they're found in the features file.
+
+There are also `environmental controls`_ specific to tags, so in the above
+example *behave* will attempt to invoke an ``environment.py`` function
+``before_tag`` and ``after_tag`` before and after the Scenario tagged
+``@slow``, passing in the name "slow". If multiple tags are present then
+the functions will be called multiple times with each tag in the order
+they're defined in the feature file.
+
+Re-visiting the example from above; if only some of the features required a
+browser and web server then you could tag them ``@browser``:
+
+.. code-block:: python
+
+  def before_feature(context, feature):
+      model.init(environment='test')
+      if 'browser' in feature.tags:
+          context.server = simple_server.WSGIServer(('', 8000))
+          context.server.set_app(web_app.main(environment='test'))
+          context.thread = threading.Thread(target=context.server.serve_forever)
+          context.thread.start()
+          context.browser = webdriver.Chrome()
+
+  def after_feature(context, feature):
+      if 'browser' in feature.tags:
+          context.server.shutdown()
+          context.thread.join()
+          context.browser.quit()
 
 
 Languages Other Than English

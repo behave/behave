@@ -97,7 +97,7 @@ class Parser(object):
                 return
 
             line = line.strip()[1:].strip()
-            if line.lower().startswith('language:'):
+            if line.lstrip().lower().startswith('language:'):
                 language = line[9:].strip()
                 self.keywords = i18n.languages[language]
             return

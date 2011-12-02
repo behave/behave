@@ -113,8 +113,8 @@ name" to :class:`~behave.matchers.Matcher` class.
 .. autoclass:: behave.model.Match
 
 
-Invoking Steps From Other Steps
--------------------------------
+Calling Steps From Other Steps
+------------------------------
 
 If you find you'd like your step implementation to invoke another step you
 may do so with :func:`execute_steps`. This is available as a global
@@ -143,7 +143,7 @@ use:
   See above.
 
 **execute_steps**
-  This is described in `invoking steps from other steps`_.
+  This is described in `calling steps from other steps`_.
 
 **stop_matcher**
   This is described in `step parameters`_.
@@ -186,6 +186,8 @@ The *context* variable in all cases is an instance of
 :class:`behave.runner.Context`.
 
 .. autoclass:: behave.runner.Context
+
+.. autoclass:: behave.runner.ContextMaskWarning
 
 
 Model Objects

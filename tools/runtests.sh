@@ -108,12 +108,12 @@ function test_version {
     rm -rf build
     echo "Running: $python setup.py build 2>&1 > build.log"
     $python setup.py build 2>&1 > build.log
-    $python tools/create_test_features.py
+    cp -r tools/test-features build/lib/
     cd build/lib/
     echo "--------------------- $1 UNIT TESTS --------------------------"
     $venv_dir/behave$1/bin/nosetests || failed="$failed $1"
-    echo "--------------------- $1 FRENCH FEATURE --------------------------"
-    $python -m behave.__main__ features-fr --i18n=fr
+    echo "--------------------- $1 TEST FEATURES --------------------------"
+    $python -m behave.__main__ -v test-features
     cd ../../
     echo "--------------------- $1 DONE --------------------------"
     echo
