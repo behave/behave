@@ -131,6 +131,8 @@ class PrettyFormatter(object):
             lines = self.step_lines + 1
             if result.table:
                 lines += len(result.table.rows) + 1
+            if result.text:
+                lines += len(result.text.splitlines()) + 2
             self.stream.write(up(lines))
             arguments = []
             location = None
