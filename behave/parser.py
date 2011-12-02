@@ -7,7 +7,6 @@ parsers = {}
 
 
 def parse_file(filename, language=None):
-    print 'PARSE', `filename`, `language`
     with open(filename, 'rb') as f:
         # file encoding is assumed to be utf8. Oh, yes.
         data = f.read().decode('utf8')
