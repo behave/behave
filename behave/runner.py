@@ -10,7 +10,6 @@ import contextlib
 
 from behave import matchers, model, parser
 from behave.formatter.pretty_formatter import PrettyFormatter
-from behave.log_capture import MemoryHandler
 from behave.configuration import ConfigError
 
 
@@ -417,15 +416,7 @@ class Runner(object):
                 self.formatter.background(feature.background)
 
             for scenario in feature:
-                if isinstance(scenario, model.ScenarioOutline):
-                    for sub in scenario.scenarios:
-                        context._set_root_attribute('active_outline_row', sub._row)
-                        failed = self.run_scenario(sub, feature, context)
-                        if failed and self.config.stop:
-                            break
-                    context._set_root_attribute('active_outline_row', None)
-                else:
-                    failed = self.run_scenario(scenario, feature, context)
+                failed = scenario.run(self)
 
                 # do we want to stop on the first failure?
                 if failed and self.config.stop:
@@ -448,58 +439,6 @@ class Runner(object):
         self.run_hook('after_all', context)
 
         self.calculate_summaries()
-
-        return failed
-
-    def run_scenario(self, scenario, feature, context):
-        '''Run a single scenario or scenario outline.
-        '''
-        failed = False
-
-        tags = feature.tags + scenario.tags
-        run_scenario = self.config.tags.check(tags)
-        run_steps = run_scenario
-
-        self.formatter.scenario(scenario)
-
-        context._push()
-        context.scenario = scenario
-
-        if run_scenario:
-            for tag in scenario.tags:
-                self.run_hook('before_tag', context, tag)
-            self.run_hook('before_scenario', context, scenario)
-
-        if self.config.stdout_capture:
-            self.stdout_capture = StringIO.StringIO()
-
-        if self.config.log_capture:
-            self.log_capture = MemoryHandler(self.config)
-            self.log_capture.inveigle()
-
-        for step in scenario:
-            self.formatter.step(step)
-
-        for step in scenario:
-            if run_steps:
-                if not step.run(self):
-                    run_steps = False
-                    failed = True
-                    context._set_root_attribute('failed', True)
-            else:
-                step.status = 'skipped'
-                if scenario.status is None:
-                    scenario.status = 'skipped'
-
-        if self.config.log_capture:
-            self.log_capture.abandon()
-
-        if run_scenario:
-            self.run_hook('after_scenario', context, scenario)
-            for tag in scenario.tags:
-                self.run_hook('after_tag', context, tag)
-
-        context._pop()
 
         return failed
 

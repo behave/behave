@@ -1,7 +1,160 @@
+import sys
+
 from mock import Mock, patch
 from nose.tools import *
 
 from behave import model
+
+
+class TestScenarioRun(object):
+    def setUp(self):
+        self.runner = Mock()
+        self.runner.feature.tags = []
+        self.config = self.runner.config = Mock()
+        self.context = self.runner.context = Mock()
+        self.formatter = self.runner.formatter = Mock()
+        self.stdout_capture = self.runner.stdout_capture = Mock()
+        self.stdout_capture.getvalue.return_value = ''
+        self.log_capture = self.runner.log_capture = Mock()
+        self.log_capture.getvalue.return_value = ''
+        self.run_hook = self.runner.run_hook = Mock()
+
+    def test_run_invokes_formatter_scenario_and_steps_correctly(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        self.config.tags.check.return_value = True
+        steps = [Mock(), Mock()]
+        scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
+                                  steps=steps)
+
+        scenario.run(self.runner)
+
+        self.formatter.scenario.assert_called_with(scenario)
+        [step.run.assert_called_with(self.runner) for step in steps]
+
+    if sys.version_info[0] == 3:
+        stringio_target = 'io.StringIO'
+    else:
+        stringio_target = 'StringIO.StringIO'
+
+    @patch(stringio_target)
+    @patch('behave.model.MemoryHandler')
+    def test_handles_stdout_and_logs(self, handler_class, stringio):
+        self.config.stdout_capture = True
+        self.config.log_capture = True
+        self.config.tags.check.return_value = True
+
+        steps = [Mock(), Mock()]
+        scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
+                                  steps=steps)
+
+        stringio.return_value = Mock()
+        handler_class.return_value = handler = Mock()
+
+        scenario.run(self.runner)
+
+        assert stringio.called
+        assert self.runner.stdout_capture is stringio.return_value
+
+        handler_class.assert_called_with(self.config)
+        handler.inveigle.assert_called_with()
+        handler.abandon.assert_called_with()
+
+    def test_failed_step_causes_remaining_steps_to_be_skipped(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        self.config.tags.check.return_value = True
+
+        steps = [Mock(), Mock()]
+        scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
+                                  steps=steps)
+        steps[0].run.return_value = False
+
+        assert scenario.run(self.runner)
+
+        eq_(steps[1].status, 'skipped')
+
+    def test_failed_step_causes_context_failure_to_be_set(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        self.config.tags.check.return_value = True
+
+        steps = [Mock(), Mock()]
+        scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
+                                  steps=steps)
+        steps[0].run.return_value = False
+
+        assert scenario.run(self.runner)
+
+        self.context._set_root_attribute.assert_called_with('failed', True)
+
+    def test_skipped_steps_set_step_status_and_scenario_status_if_not_set(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        self.config.tags.check.return_value = False
+
+        steps = [Mock(), Mock()]
+        scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
+                                  steps=steps)
+
+        scenario.run(self.runner)
+
+        assert False not in [s.status == 'skipped' for s in steps]
+        eq_(scenario.status, 'skipped')
+
+
+class TestScenarioOutline(object):
+    def test_run_calls_run_on_each_generated_scenario(self):
+        outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
+                                        u'foo')
+        outline._scenarios = [Mock(), Mock()]
+        for scenario in outline._scenarios:
+            scenario.run.return_value = False
+
+        runner = Mock()
+        context = runner.context = Mock()
+
+        outline.run(runner)
+
+        [s.run.assert_called_with(runner) for s in outline._scenarios]
+
+    def test_run_stops_on_first_failure_if_requested(self):
+        outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
+                                        u'foo')
+        outline._scenarios = [Mock(), Mock()]
+        outline._scenarios[0].run.return_value = True
+
+        runner = Mock()
+        context = runner.context = Mock()
+        config = runner.config = Mock()
+        config.stop = True
+
+        outline.run(runner)
+
+        outline._scenarios[0].run.assert_called_with(runner)
+        assert not outline._scenarios[1].run.called
+
+    def test_run_sets_context_variable_for_outline_row(self):
+        outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
+                                        u'foo')
+        outline._scenarios = [Mock(), Mock(), Mock()]
+        for scenario in outline._scenarios:
+            scenario.run.return_value = False
+
+        runner = Mock()
+        context = runner.context = Mock()
+        config = runner.config = Mock()
+        config.stop = True
+
+        outline.run(runner)
+
+        eq_(context._set_root_attribute.call_args_list, [
+            (('active_outline_row', outline._scenarios[0]._row), {}),
+            (('active_outline_row', outline._scenarios[1]._row), {}),
+            (('active_outline_row', outline._scenarios[2]._row), {}),
+            (('active_outline_row', None), {}),
+        ])
+
 
 def raiser(exception):
     def func(*args, **kwargs):

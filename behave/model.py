@@ -5,9 +5,12 @@ import copy
 import difflib
 import itertools
 import os.path
+import StringIO
 import sys
 import time
 import traceback
+
+from behave.log_capture import MemoryHandler
 
 
 def relpath(path, other):
@@ -355,6 +358,56 @@ class Scenario(TagStatement, Replayable):
             duration += step.duration
         return duration
 
+    def run(self, runner):
+        failed = False
+
+        tags = runner.feature.tags + self.tags
+        run_scenario = runner.config.tags.check(tags)
+        run_steps = run_scenario
+
+        runner.formatter.scenario(self)
+
+        runner.context._push()
+        runner.context.scenario = self
+
+        if run_scenario:
+            for tag in self.tags:
+                runner.run_hook('before_tag', runner.context, tag)
+            runner.run_hook('before_scenario', runner.context, self)
+
+        if runner.config.stdout_capture:
+            runner.stdout_capture = StringIO.StringIO()
+
+        if runner.config.log_capture:
+            runner.log_capture = MemoryHandler(runner.config)
+            runner.log_capture.inveigle()
+
+        for step in self:
+            runner.formatter.step(step)
+
+        for step in self:
+            if run_steps:
+                if not step.run(runner):
+                    run_steps = False
+                    failed = True
+                    runner.context._set_root_attribute('failed', True)
+            else:
+                step.status = 'skipped'
+                if self.status is None:
+                    self.status = 'skipped'
+
+        if runner.config.log_capture:
+            runner.log_capture.abandon()
+
+        if run_scenario:
+            runner.run_hook('after_scenario', runner.context, self)
+            for tag in self.tags:
+                runner.run_hook('after_tag', runner.context, tag)
+
+        runner.context._pop()
+
+        return failed
+
 
 class ScenarioOutline(Scenario):
     '''A `scenario outline`_ parsed from a *feature file*.
@@ -476,6 +529,18 @@ class ScenarioOutline(Scenario):
         for scenario in self.scenarios:
             duration += scenario.duration
         return duration
+
+    def run(self, runner):
+        failed = False
+
+        for sub in self.scenarios:
+            runner.context._set_root_attribute('active_outline_row', sub._row)
+            failed = sub.run(runner)
+            if failed and runner.config.stop:
+                return False
+        runner.context._set_root_attribute('active_outline_row', None)
+
+        return failed
 
 
 class Examples(BasicStatement, Replayable):
