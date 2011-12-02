@@ -180,10 +180,8 @@ class PrettyFormatter(object):
         for i, row in enumerate(all_rows):
             #for comment in row.comments:
             #    self.stream.write('      %s\n' % comment.value)
-            j = -1
             self.stream.write('      |')
-            for cell, max_length in zip(row, max_lengths):
-                j += 1
+            for j, (cell, max_length) in enumerate(zip(row, max_lengths)):
                 self.stream.write(' ')
                 self.stream.write(self.color(cell, None, j))
                 self.stream.write(' ' * (max_length - cell_lengths[i][j]))
