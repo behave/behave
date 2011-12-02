@@ -345,9 +345,9 @@ the fixtures).
 When
 """"
 
-The purpose of When steps is to **describe the key action** the user
-performs. This is the user interaction with your system which should (or
-perhaps should not) cause some state to change.
+Each of these steps should **describe the key action** the user (or
+external system) performs. This is the interaction with your system which
+should (or perhaps should not) cause some state to change.
 
 Examples:
 
@@ -364,11 +364,11 @@ Examples:
 Then
 """"
 
-The purpose of Then steps is to **observe outcomes**. The observations should
-be related to the business value/benefit in your feature description. The
-observations should also be on some kind of *output* - that is something
-that comes *out* of the system (report, user interface, message) and not
-something that is deeply buried inside it (that has no business value).
+Here we **observe outcomes**. The observations should be related to the
+business value/benefit in your feature description. The observations should
+also be on some kind of *output* - that is something that comes *out* of
+the system (report, user interface, message) and not something that is
+deeply buried inside it (that has no business value).
 
 Examples:
 

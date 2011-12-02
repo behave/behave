@@ -71,16 +71,15 @@ The "Given", "When" and "Then" parts of this prose form the actual steps
 that will be taken by *behave* in testing your system. These map to `Python
 step implementations`_. As a general guide:
 
-**Given**
-  The purpose of *Given* is to **put the system in a known state** before the
-  user (or external system) starts interacting with the system (in the When
-  steps). Avoid talking about user interaction in givens.
-**When**
-  The purpose of *When* steps is to **describe the key action** the user
-  performs. This is the user interaction with your system which should (or
-  perhaps should not) cause some state to change.
-**Then**
-  The purpose of *Then* steps is to **observe outcomes**.
+**Given** we *put the system in a known state* before the
+user (or external system) starts interacting with the system (in the When
+steps). Avoid talking about user interaction in givens.
+
+**When** we *take key actions* the user (or external system) performs. This
+is the interaction with your system which should (or perhaps should not)
+cause some state to change.
+
+**Then** we *observe outcomes*.
 
 You may also include "And" or "But" as a step - this is renamed by *behave*
 to take the name of the preceding step, so:
