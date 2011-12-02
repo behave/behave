@@ -753,7 +753,7 @@ class Text(unicode):
 
        Currently only 'text/plain'.
     '''
-    def __new__(cls, value, content_type='text/plain', line=0):
+    def __new__(cls, value, content_type=u'text/plain', line=0):
         assert isinstance(value, unicode)
         assert isinstance(content_type, unicode)
         o = unicode.__new__(cls, value)
