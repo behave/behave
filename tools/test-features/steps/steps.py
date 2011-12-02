@@ -26,3 +26,15 @@ def step(context):
 def step(context):
     pass
 
+@given("some text {prefix}")
+def step(context, prefix):
+    context.prefix = prefix
+
+@when('we add some text {suffix}')
+def step(context, suffix):
+    context.combination = context.prefix + suffix
+
+@then('we should get the {combination}')
+def step(context, combination):
+    assert context.combination == combination
+

@@ -402,7 +402,13 @@ class Runner(object):
                 self.formatter.background(feature.background)
 
             for scenario in feature:
-                failed = self.run_scenario(scenario, feature, context)
+                if isinstance(scenario, model.ScenarioOutline):
+                    for sub in scenario.scenarios:
+                        failed = self.run_scenario(sub, feature, context)
+                        if failed and self.config.stop:
+                            break
+                else:
+                    failed = self.run_scenario(scenario, feature, context)
 
                 # do we want to stop on the first failure?
                 if failed and self.config.stop:
@@ -546,8 +552,8 @@ class Runner(object):
     def calculate_summaries(self):
         for feature in self.features:
             self.feature_summary[feature.status or 'skipped'] += 1
+            self.duration += feature.duration
             for scenario in feature:
                 self.scenario_summary[scenario.status or 'skipped'] += 1
                 for step in scenario:
                     self.step_summary[step.status or 'skipped'] += 1
-                    self.duration += step.duration or 0.0

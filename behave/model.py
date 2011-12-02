@@ -129,6 +129,11 @@ class Feature(TagStatement, Replayable):
        "failed"
          One or more steps of this feature failed.
 
+    .. attribute:: duration
+
+       The time, in seconds, that it took to test this feature. If read before
+       the feature is tested it will return 0.0.
+
     .. attribute:: filename
 
        The file name (or "<string>") of the *feature file* where the feature was
@@ -188,6 +193,16 @@ class Feature(TagStatement, Replayable):
                         skipped = False
         return skipped and 'skipped' or 'passed'
 
+    @property
+    def duration(self):
+        if self.background:
+            duration = self.background.duration or 0.0
+        else:
+            duration = 0.0
+        for scenario in self.scenarios:
+            duration += scenario.duration
+        return duration
+
 
 class Background(BasicStatement, Replayable):
     '''A `background`_ parsed from a *feature file*.
@@ -207,6 +222,11 @@ class Background(BasicStatement, Replayable):
 
        A list of :class:`~behave.model.Step` making up this background.
 
+    .. attribute:: duration
+
+       The time, in seconds, that it took to run this background. If read before
+       the background is run it will return 0.0.
+
     .. attribute:: filename
 
        The file name (or "<string>") of the *feature file* where the scenario was
@@ -216,7 +236,7 @@ class Background(BasicStatement, Replayable):
 
        The line number of the *feature file* where the scenario was found.
 
-    .. _`background`: gherkin.html#scenarios
+    .. _`background`: gherkin.html#backgrounds
     '''
     type = "background"
 
@@ -229,6 +249,13 @@ class Background(BasicStatement, Replayable):
 
     def __iter__(self):
         return iter(self.steps)
+
+    @property
+    def duration(self):
+        duration = 0
+        for step in self.steps:
+            duration += step.duration
+        return duration
 
 
 class Scenario(TagStatement, Replayable):
@@ -273,6 +300,11 @@ class Scenario(TagStatement, Replayable):
        "failed"
          One or more steps of this scenario failed.
 
+    .. attribute:: duration
+
+       The time, in seconds, that it took to test this scenario. If read before
+       the scenario is tested it will return 0.0.
+
     .. attribute:: filename
 
        The file name (or "<string>") of the *feature file* where the scenario was
@@ -312,6 +344,13 @@ class Scenario(TagStatement, Replayable):
                 return 'untested'
         return 'passed'
 
+    @property
+    def duration(self):
+        duration = 0
+        for step in self.steps:
+            duration += step.duration
+        return duration
+
 
 class ScenarioOutline(Scenario):
     '''A `scenario outline`_ parsed from a *feature file*.
@@ -350,18 +389,23 @@ class ScenarioOutline(Scenario):
 
     .. attribute:: status
 
-       Read-Only. A summary status of the scenario's run. If read before the
-       scenario is fully tested it will return "untested" otherwise it will
-       return one of:
+       Read-Only. A summary status of the scenario outlines's run. If read
+       before the scenario is fully tested it will return "untested" otherwise
+       it will return one of:
 
        "untested"
          The scenario was has not been completely tested yet.
        "skipped"
-         One or more steps of this scenario was passed over during testing.
+         One or more scenarios of this outline was passed over during testing.
        "passed"
          The scenario was tested successfully.
        "failed"
-         One or more steps of this scenario failed.
+         One or more scenarios of this outline failed.
+
+    .. attribute:: duration
+
+       The time, in seconds, that it took to test the scenarios of this outline.
+       If read before the scenarios are tested it will return 0.0.
 
     .. attribute:: filename
 
@@ -381,23 +425,52 @@ class ScenarioOutline(Scenario):
         super(ScenarioOutline, self).__init__(filename, line, keyword, name,
                                               tags, steps)
         self.examples = examples or []
+        self._scenarios = []
 
-        self.scenarios = []
+    @property
+    def scenarios(self):
+        '''Return the scenarios with the steps altered to take the values from
+        the examples.
+        '''
+        if self._scenarios:
+           return self._scenarios
+
         for example in self.examples:
-            for values in example.table.iterrows():
+            for values in example.table:
                 new_steps = []
                 for step in self.steps:
                     new_steps.append(step.set_values(values))
-                scenario = Scenario(self.tags, self.name, new_steps)
+                scenario = Scenario(self.filename, self.line, self.keyword,
+                    self.name, self.tags, new_steps)
                 scenario.feature = self.feature
                 scenario.background = self.background
-                self.scenarios.append(scenario)
+                self._scenarios.append(scenario)
+
+        return self._scenarios
 
     def __repr__(self):
         return '<ScenarioOutline "%s">' % self.name
 
     def __iter__(self):
         return iter(self.scenarios)
+
+    @property
+    def status(self):
+        for scenario in self.scenarios:
+            if scenario.status == 'failed':
+                return 'failed'
+            if scenario.status == 'skipped':
+                return 'skipped'
+            if scenario.status == 'untested':
+                return 'untested'
+        return 'passed'
+
+    @property
+    def duration(self):
+        duration = 0
+        for scenario in self.scenarios:
+            duration += scenario.duration
+        return duration
 
 
 class Examples(BasicStatement, Replayable):
@@ -517,10 +590,10 @@ class Step(BasicStatement, Replayable):
     def __repr__(self):
         return '<%s "%s">' % (self.step_type, self.name)
 
-    def set_values(self, value_dict):
+    def set_values(self, table_row):
         result = copy.deepcopy(self)
-        for name, value in value_dict.iteritems():
-            result.match = result.match.replace("<%s>" % name, value)
+        for name, value in table_row.items():
+            result.name = result.name.replace("<%s>" % name, value)
         return result
 
 
@@ -572,7 +645,6 @@ class Table(Replayable):
         if self.headings != other.headings:
             return False
         for my_row, their_row in zip(self.rows, other.rows):
-            print my_row, their_row
             if my_row != their_row:
                 return False
         return True
@@ -635,6 +707,9 @@ class Row(object):
             else:
                 raise KeyError('"%s" is not a row heading' % name)
         return self.cells[index]
+
+    def items(self):
+        return zip(self.headings, self.cells)
 
     def __repr__(self):
         return '<Row %r>' % (self.cells,)
