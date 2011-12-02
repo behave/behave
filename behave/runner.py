@@ -482,7 +482,7 @@ class Runner(object):
 
         for step in scenario:
             if run_steps:
-                if not self.run_step(step):
+                if not step.run(self):
                     run_steps = False
                     failed = True
                     context._set_root_attribute('failed', True)
@@ -503,69 +503,6 @@ class Runner(object):
 
         return failed
 
-    def run_step(self, step, quiet=False):
-        '''Run a single step for a scenario, scenario outline or background.
-        '''
-        self.context._set_root_attribute('table', None)
-        self.context._set_root_attribute('text', None)
-
-        match = self.steps.find_match(step)
-        if match is None:
-            self.undefined.append(step)
-            if not quiet:
-                self.formatter.match(model.NoMatch())
-            step.status = 'undefined'
-            if not quiet:
-                self.formatter.result(step)
-            return False
-
-        keep_going = True
-
-        if not quiet:
-            self.formatter.match(match)
-        self.run_hook('before_step', self.context, step)
-        if self.config.stdout_capture:
-            old_stdout = sys.stdout
-            sys.stdout = self.stdout_capture
-        try:
-            start = time.time()
-            if step.text:
-                self.context._set_root_attribute('text', step.text)
-            if step.table:
-                self.context._set_root_attribute('table', step.table)
-            match.run(self.context)
-            step.status = 'passed'
-        except AssertionError, e:
-            step.status = 'failed'
-            error = 'Assertion Failed: %s' % (e, )
-        except Exception:
-            step.status = 'failed'
-            error = traceback.format_exc()
-
-        step.duration = time.time() - start
-
-        # stop snarfing these guys
-        if self.config.stdout_capture:
-            sys.stdout = old_stdout
-
-        # flesh out the failure with details
-        if step.status == 'failed':
-            if self.config.stdout_capture:
-                output = self.stdout_capture.getvalue()
-                if output:
-                    error += '\nCaptured stdout:\n' + output
-            if self.config.log_capture:
-                output = self.log_capture.getvalue()
-                if output:
-                    error += '\nCaptured logging:\n' + output
-            step.error_message = error
-            keep_going = False
-
-        if not quiet:
-            self.formatter.result(step)
-        self.run_hook('after_step', self.context, step)
-
-        return keep_going
 
     def calculate_summaries(self):
         for feature in self.features:

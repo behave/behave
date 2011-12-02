@@ -2,9 +2,12 @@ from __future__ import with_statement
 
 import collections
 import copy
-import itertools
 import difflib
+import itertools
 import os.path
+import sys
+import time
+import traceback
 
 
 def relpath(path, other):
@@ -603,6 +606,68 @@ class Step(BasicStatement, Replayable):
                     for i, cell in enumerate(row.cells):
                         row.cells[i] = cell.replace("<%s>" % name, value)
         return result
+
+    def run(self, runner, quiet=False):
+        runner.context._set_root_attribute('table', None)
+        runner.context._set_root_attribute('text', None)
+
+        match = runner.steps.find_match(self)
+        if match is None:
+            runner.undefined.append(self)
+            if not quiet:
+                runner.formatter.match(NoMatch())
+            self.status = 'undefined'
+            if not quiet:
+                runner.formatter.result(self)
+            return False
+
+        keep_going = True
+
+        if not quiet:
+            runner.formatter.match(match)
+        runner.run_hook('before_step', runner.context, self)
+        if runner.config.stdout_capture:
+            old_stdout = sys.stdout
+            sys.stdout = runner.stdout_capture
+        try:
+            start = time.time()
+            if self.text:
+                runner.context._set_root_attribute('text', self.text)
+            if self.table:
+                runner.context._set_root_attribute('table', self.table)
+            match.run(runner.context)
+            self.status = 'passed'
+        except AssertionError, e:
+            self.status = 'failed'
+            error = 'Assertion Failed: %s' % (e, )
+        except Exception:
+            self.status = 'failed'
+            error = traceback.format_exc()
+
+        self.duration = time.time() - start
+
+        # stop snarfing these guys
+        if runner.config.stdout_capture:
+            sys.stdout = old_stdout
+
+        # flesh out the failure with details
+        if self.status == 'failed':
+            if runner.config.stdout_capture:
+                output = runner.stdout_capture.getvalue()
+                if output:
+                    error += '\nCaptured stdout:\n' + output
+            if runner.config.log_capture:
+                output = runner.log_capture.getvalue()
+                if output:
+                    error += '\nCaptured logging:\n' + output
+            self.error_message = error
+            keep_going = False
+
+        if not quiet:
+            runner.formatter.result(self)
+        runner.run_hook('after_step', runner.context, self)
+
+        return keep_going
 
 
 class Table(Replayable):
