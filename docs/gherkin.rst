@@ -268,7 +268,7 @@ in each scenario outline.
       when I swtich the blender on
       then it should trasform into <other thing>
 
-   Examples: Amphipians
+   Examples: Amphibians
      | thing         | other thing |
      | Red Tree Frog | mush        |
 
