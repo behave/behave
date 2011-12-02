@@ -81,8 +81,8 @@ cause some state to change.
 
 **Then** we *observe outcomes*.
 
-You may also include "And" or "But" as a step - this is renamed by *behave*
-to take the name of the preceding step, so:
+You may also include "And" or "But" as a step - these are renamed by *behave*
+to take the name of their preceding step, so:
 
 .. code-block:: gherkin
 
@@ -180,9 +180,10 @@ There's a variety of ways to access the table data - see the
 Python Step Implementations
 ===========================
 
-Steps used in the scenarios are implemented in Python files in
-"features/steps". You can call these whatever you like
-as long as they're *filename*.py in the steps directory.
+Steps used in the scenarios are implemented in Python files in the "steps"
+directory. You can call these whatever you like as long as they're
+*filename*.py in the steps directory. You don't need to tell *behave* which
+ones to use - it'll use all of them.
 
 Steps are identified using decorators which match the predicate from the
 feature file: given, when, then and step (variants with Title case are also
