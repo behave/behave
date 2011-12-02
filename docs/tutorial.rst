@@ -1,6 +1,6 @@
-=================
-Tutorial, behave!
-=================
+========
+Tutorial
+========
 
 .. if you change any headings in here make sure you haven't broken the
    cross-references in the API documentation or module docstrings!
@@ -43,11 +43,11 @@ command-line switch.
 Feature Files
 =============
 
-A feature file has a `simple format`_ describing a feature or part of a
-feature with representative examples of expected outcomes. They're
-plain-text (encoded in UTF-8) and look something like:
+A feature file has a `natural language format`_ describing a feature or
+part of a feature with representative examples of expected outcomes.
+They're plain-text (encoded in UTF-8) and look something like:
 
-.. _`simple format`: gherkin.html#gherkin:-feature-testing-language
+.. _`natural language format`: gherkin.html#gherkin:-feature-testing-language
 
 .. code-block:: gherkin
 
