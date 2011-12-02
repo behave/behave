@@ -1,6 +1,401 @@
+import sys
+
+from mock import Mock, patch
 from nose.tools import *
 
 from behave import model
+
+
+class TestScenarioRun(object):
+    def setUp(self):
+        self.runner = Mock()
+        self.runner.feature.tags = []
+        self.config = self.runner.config = Mock()
+        self.context = self.runner.context = Mock()
+        self.formatter = self.runner.formatter = Mock()
+        self.stdout_capture = self.runner.stdout_capture = Mock()
+        self.stdout_capture.getvalue.return_value = ''
+        self.log_capture = self.runner.log_capture = Mock()
+        self.log_capture.getvalue.return_value = ''
+        self.run_hook = self.runner.run_hook = Mock()
+
+    def test_run_invokes_formatter_scenario_and_steps_correctly(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        self.config.tags.check.return_value = True
+        steps = [Mock(), Mock()]
+        scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
+                                  steps=steps)
+
+        scenario.run(self.runner)
+
+        self.formatter.scenario.assert_called_with(scenario)
+        [step.run.assert_called_with(self.runner) for step in steps]
+
+    if sys.version_info[0] == 3:
+        stringio_target = 'io.StringIO'
+    else:
+        stringio_target = 'StringIO.StringIO'
+
+    @patch(stringio_target)
+    @patch('behave.model.MemoryHandler')
+    def test_handles_stdout_and_logs(self, handler_class, stringio):
+        self.config.stdout_capture = True
+        self.config.log_capture = True
+        self.config.tags.check.return_value = True
+
+        steps = [Mock(), Mock()]
+        scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
+                                  steps=steps)
+
+        stringio.return_value = Mock()
+        handler_class.return_value = handler = Mock()
+
+        scenario.run(self.runner)
+
+        assert stringio.called
+        assert self.runner.stdout_capture is stringio.return_value
+
+        handler_class.assert_called_with(self.config)
+        handler.inveigle.assert_called_with()
+        handler.abandon.assert_called_with()
+
+    def test_failed_step_causes_remaining_steps_to_be_skipped(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        self.config.tags.check.return_value = True
+
+        steps = [Mock(), Mock()]
+        scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
+                                  steps=steps)
+        steps[0].run.return_value = False
+
+        assert scenario.run(self.runner)
+
+        eq_(steps[1].status, 'skipped')
+
+    def test_failed_step_causes_context_failure_to_be_set(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        self.config.tags.check.return_value = True
+
+        steps = [Mock(), Mock()]
+        scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
+                                  steps=steps)
+        steps[0].run.return_value = False
+
+        assert scenario.run(self.runner)
+
+        self.context._set_root_attribute.assert_called_with('failed', True)
+
+    def test_skipped_steps_set_step_status_and_scenario_status_if_not_set(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        self.config.tags.check.return_value = False
+
+        steps = [Mock(), Mock()]
+        scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
+                                  steps=steps)
+
+        scenario.run(self.runner)
+
+        assert False not in [s.status == 'skipped' for s in steps]
+        eq_(scenario.status, 'skipped')
+
+
+class TestScenarioOutline(object):
+    def test_run_calls_run_on_each_generated_scenario(self):
+        outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
+                                        u'foo')
+        outline._scenarios = [Mock(), Mock()]
+        for scenario in outline._scenarios:
+            scenario.run.return_value = False
+
+        runner = Mock()
+        context = runner.context = Mock()
+
+        outline.run(runner)
+
+        [s.run.assert_called_with(runner) for s in outline._scenarios]
+
+    def test_run_stops_on_first_failure_if_requested(self):
+        outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
+                                        u'foo')
+        outline._scenarios = [Mock(), Mock()]
+        outline._scenarios[0].run.return_value = True
+
+        runner = Mock()
+        context = runner.context = Mock()
+        config = runner.config = Mock()
+        config.stop = True
+
+        outline.run(runner)
+
+        outline._scenarios[0].run.assert_called_with(runner)
+        assert not outline._scenarios[1].run.called
+
+    def test_run_sets_context_variable_for_outline_row(self):
+        outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
+                                        u'foo')
+        outline._scenarios = [Mock(), Mock(), Mock()]
+        for scenario in outline._scenarios:
+            scenario.run.return_value = False
+
+        runner = Mock()
+        context = runner.context = Mock()
+        config = runner.config = Mock()
+        config.stop = True
+
+        outline.run(runner)
+
+        eq_(context._set_root_attribute.call_args_list, [
+            (('active_outline_row', outline._scenarios[0]._row), {}),
+            (('active_outline_row', outline._scenarios[1]._row), {}),
+            (('active_outline_row', outline._scenarios[2]._row), {}),
+            (('active_outline_row', None), {}),
+        ])
+
+
+def raiser(exception):
+    def func(*args, **kwargs):
+        raise exception
+    return func
+
+
+class TestStepRun(object):
+    def setUp(self):
+        self.runner = Mock()
+        self.config = self.runner.config = Mock()
+        self.context = self.runner.context = Mock()
+        self.formatter = self.runner.formatter = Mock()
+        self.steps = self.runner.steps = Mock()
+        self.stdout_capture = self.runner.stdout_capture = Mock()
+        self.stdout_capture.getvalue.return_value = ''
+        self.log_capture = self.runner.log_capture = Mock()
+        self.log_capture.getvalue.return_value = ''
+        self.run_hook = self.runner.run_hook = Mock()
+
+    def test_run_resets_text_and_table_before_step(self):
+        self.steps.find_match.return_value = None
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        assert not step.run(self.runner)
+
+        call_args_list = self.context._set_root_attribute.call_args_list
+        call_args_list = [x[0] for x in call_args_list]
+        assert ('text', None) in call_args_list
+        assert ('table', None) in call_args_list
+
+    def test_run_appends_step_to_undefined_when_no_match_found(self):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        self.steps.find_match.return_value = None
+        self.runner.undefined = []
+        assert not step.run(self.runner)
+
+        assert step in self.runner.undefined
+        eq_(step.status, 'undefined')
+
+    def test_run_reports_undefined_step_via_formatter_when_not_quiet(self):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        self.steps.find_match.return_value = None
+        assert not step.run(self.runner)
+
+        self.formatter.match.assert_called_with(model.NoMatch())
+        self.formatter.result.assert_called_with(step)
+
+    def test_run_with_no_match_does_not_touch_formatter_when_quiet(self):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        self.steps.find_match.return_value = None
+        assert not step.run(self.runner, quiet=True)
+
+        assert not self.formatter.match.called
+        assert not self.formatter.result.called
+
+    def test_run_when_not_quiet_reports_match_and_result(self):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        match = Mock()
+        self.steps.find_match.return_value = match
+
+        side_effects = (None, raiser(AssertionError('whee')),
+                        raiser(Exception('whee')))
+        for side_effect in side_effects:
+            match.run.side_effect = side_effect
+            step.run(self.runner)
+            self.formatter.match.assert_called_with(match)
+            self.formatter.result.assert_called_with(step)
+
+    def test_run_when_quiet_reports_nothing(self):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        match = Mock()
+        self.steps.find_match.return_value = match
+
+        side_effects = (None, raiser(AssertionError('whee')),
+                raiser(Exception('whee')))
+        for side_effect in side_effects:
+            match.run.side_effect = side_effect
+            step.run(self.runner, quiet=True)
+            assert not self.formatter.match.called
+            assert not self.formatter.result.called
+
+    def test_run_runs_before_hook_then_match_then_after_hook(self):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        match = Mock()
+        self.steps.find_match.return_value = match
+
+        side_effects = (None, AssertionError('whee'), Exception('whee'))
+        for side_effect in side_effects:
+            # Make match.run() and runner.run_hook() the same mock so
+            # we can make sure things happen in the right order.
+            self.runner.run_hook = match.run = Mock()
+
+            def effect(thing):
+                def raiser(*args, **kwargs):
+                    match.run.side_effect = None
+                    if thing:
+                        raise thing
+
+                def nonraiser(*args, **kwargs):
+                    match.run.side_effect = raiser
+
+                return nonraiser
+
+            match.run.side_effect = effect(side_effect)
+            step.run(self.runner)
+
+            eq_(match.run.call_args_list, [
+                (('before_step', self.context, step), {}),
+                ((self.context,), {}),
+                (('after_step', self.context, step), {}),
+            ])
+
+    def test_run_sets_table_if_present(self):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo',
+                          table=Mock())
+        self.steps.find_match.return_value = Mock()
+
+        step.run(self.runner)
+
+        self.context._set_root_attribute.assert_called_with('table', step.table)
+
+    def test_run_sets_text_if_present(self):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo',
+                          text=Mock())
+        self.steps.find_match.return_value = Mock()
+
+        step.run(self.runner)
+
+        self.context._set_root_attribute.assert_called_with('text', step.text)
+
+    def test_run_sets_status_to_passed_if_nothing_goes_wrong(self):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        step.error_message = None
+        self.steps.find_match.return_value = Mock()
+
+        step.run(self.runner)
+
+        eq_(step.status, 'passed')
+        eq_(step.error_message, None)
+
+    def test_run_sets_status_to_failed_on_assertion_error(self):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        step.error_message = None
+        match = Mock()
+        match.run.side_effect = raiser(AssertionError('whee'))
+        self.steps.find_match.return_value = match
+
+        step.run(self.runner)
+
+        eq_(step.status, 'failed')
+        assert step.error_message.startswith('Assertion Failed')
+
+    @patch('traceback.format_exc')
+    def test_run_sets_status_to_failed_on_exception(self, format_exc):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        step.error_message = None
+        match = Mock()
+        match.run.side_effect = raiser(Exception('whee'))
+        self.steps.find_match.return_value = match
+        format_exc.return_value = 'something to do with an exception'
+
+        step.run(self.runner)
+
+        eq_(step.status, 'failed')
+        eq_(step.error_message, format_exc.return_value)
+
+    @patch('time.time')
+    def test_run_calculates_duration(self, time_time):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        match = Mock()
+        self.steps.find_match.return_value = match
+
+        def time_time_1():
+            def time_time_2():
+                return 23
+            time_time.side_effect = time_time_2
+            return 17
+
+        side_effects = (None, raiser(AssertionError('whee')),
+                raiser(Exception('whee')))
+        for side_effect in side_effects:
+            match.run.side_effect = side_effect
+            time_time.side_effect = time_time_1
+
+            step.run(self.runner)
+            eq_(step.duration, 23 - 17)
+
+    def test_run_captures_stdout_if_requested(self):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        match = Mock()
+        self.steps.find_match.return_value = match
+
+        def printer(*args, **kwargs):
+            print 'carrots'
+
+        match.run.side_effect = printer
+
+        assert step.run(self.runner)
+
+        call_args_list = self.stdout_capture.write.call_args_list
+        stdout = ''.join(a[0][0] for a in call_args_list)
+        eq_(stdout.strip(), 'carrots')
+
+    def test_run_does_not_capture_stdout_if_requested(self):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        match = Mock()
+        self.steps.find_match.return_value = match
+        self.config.stdout_capture = False
+
+        def printer(*args, **kwargs):
+            print 'carrots'
+
+        match.run.side_effect = printer
+
+        assert step.run(self.runner)
+
+        assert not self.stdout_capture.write.called
+
+    def test_run_appends_any_captured_stdout_on_failure(self):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        match = Mock()
+        self.steps.find_match.return_value = match
+        self.stdout_capture.getvalue.return_value = 'frogs'
+        match.run.side_effect = raiser(Exception('halibut'))
+
+        assert not step.run(self.runner)
+
+        assert 'Captured stdout:' in step.error_message
+        assert 'frogs' in step.error_message
+
+    def test_run_appends_any_captured_logging_on_failure(self):
+        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
+        match = Mock()
+        self.steps.find_match.return_value = match
+        self.log_capture.getvalue.return_value = 'toads'
+        match.run.side_effect = raiser(AssertionError('kipper'))
+
+        assert not step.run(self.runner)
+
+        assert 'Captured logging:' in step.error_message
+        assert 'toads' in step.error_message
 
 class TestTableModel(object):
     HEAD = [u'type of stuff', u'awesomeness', u'ridiculousness']
@@ -41,3 +436,5 @@ class TestTableModel(object):
     def test_table_row_keyerror(self):
         self.table[0]['spam']
 
+    def test_table_row_items(self):
+        eq_(self.table[0].items(), zip(self.HEAD, self.DATA[0]))

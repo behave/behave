@@ -1,10 +1,15 @@
 from __future__ import with_statement
 
-import collections
 import copy
-import itertools
 import difflib
+import itertools
 import os.path
+import StringIO
+import sys
+import time
+import traceback
+
+from behave.log_capture import MemoryHandler
 
 
 def relpath(path, other):
@@ -352,6 +357,56 @@ class Scenario(TagStatement, Replayable):
             duration += step.duration
         return duration
 
+    def run(self, runner):
+        failed = False
+
+        tags = runner.feature.tags + self.tags
+        run_scenario = runner.config.tags.check(tags)
+        run_steps = run_scenario
+
+        runner.formatter.scenario(self)
+
+        runner.context._push()
+        runner.context.scenario = self
+
+        if run_scenario:
+            for tag in self.tags:
+                runner.run_hook('before_tag', runner.context, tag)
+            runner.run_hook('before_scenario', runner.context, self)
+
+        if runner.config.stdout_capture:
+            runner.stdout_capture = StringIO.StringIO()
+
+        if runner.config.log_capture:
+            runner.log_capture = MemoryHandler(runner.config)
+            runner.log_capture.inveigle()
+
+        for step in self:
+            runner.formatter.step(step)
+
+        for step in self:
+            if run_steps:
+                if not step.run(runner):
+                    run_steps = False
+                    failed = True
+                    runner.context._set_root_attribute('failed', True)
+            else:
+                step.status = 'skipped'
+                if self.status is None:
+                    self.status = 'skipped'
+
+        if runner.config.log_capture:
+            runner.log_capture.abandon()
+
+        if run_scenario:
+            runner.run_hook('after_scenario', runner.context, self)
+            for tag in self.tags:
+                runner.run_hook('after_tag', runner.context, tag)
+
+        runner.context._pop()
+
+        return failed
+
 
 class ScenarioOutline(Scenario):
     '''A `scenario outline`_ parsed from a *feature file*.
@@ -434,7 +489,7 @@ class ScenarioOutline(Scenario):
         the examples.
         '''
         if self._scenarios:
-           return self._scenarios
+            return self._scenarios
 
         for example in self.examples:
             for row in example.table:
@@ -473,6 +528,18 @@ class ScenarioOutline(Scenario):
         for scenario in self.scenarios:
             duration += scenario.duration
         return duration
+
+    def run(self, runner):
+        failed = False
+
+        for sub in self.scenarios:
+            runner.context._set_root_attribute('active_outline_row', sub._row)
+            failed = sub.run(runner)
+            if failed and runner.config.stop:
+                return False
+        runner.context._set_root_attribute('active_outline_row', None)
+
+        return failed
 
 
 class Examples(BasicStatement, Replayable):
@@ -604,6 +671,68 @@ class Step(BasicStatement, Replayable):
                         row.cells[i] = cell.replace("<%s>" % name, value)
         return result
 
+    def run(self, runner, quiet=False):
+        runner.context._set_root_attribute('table', None)
+        runner.context._set_root_attribute('text', None)
+
+        match = runner.steps.find_match(self)
+        if match is None:
+            runner.undefined.append(self)
+            if not quiet:
+                runner.formatter.match(NoMatch())
+            self.status = 'undefined'
+            if not quiet:
+                runner.formatter.result(self)
+            return False
+
+        keep_going = True
+
+        if not quiet:
+            runner.formatter.match(match)
+        runner.run_hook('before_step', runner.context, self)
+        if runner.config.stdout_capture:
+            old_stdout = sys.stdout
+            sys.stdout = runner.stdout_capture
+        try:
+            start = time.time()
+            if self.text:
+                runner.context._set_root_attribute('text', self.text)
+            if self.table:
+                runner.context._set_root_attribute('table', self.table)
+            match.run(runner.context)
+            self.status = 'passed'
+        except AssertionError, e:
+            self.status = 'failed'
+            error = 'Assertion Failed: %s' % (e, )
+        except Exception:
+            self.status = 'failed'
+            error = traceback.format_exc()
+
+        self.duration = time.time() - start
+
+        # stop snarfing these guys
+        if runner.config.stdout_capture:
+            sys.stdout = old_stdout
+
+        # flesh out the failure with details
+        if self.status == 'failed':
+            if runner.config.stdout_capture:
+                output = runner.stdout_capture.getvalue()
+                if output:
+                    error += '\nCaptured stdout:\n' + output
+            if runner.config.log_capture:
+                output = runner.log_capture.getvalue()
+                if output:
+                    error += '\nCaptured logging:\n' + output
+            self.error_message = error
+            keep_going = False
+
+        if not quiet:
+            runner.formatter.result(self)
+        runner.run_hook('after_step', runner.context, self)
+
+        return keep_going
+
 
 class Table(Replayable):
     '''A `table`_ extracted from a *feature file*.
@@ -716,9 +845,6 @@ class Row(object):
                 raise KeyError('"%s" is not a row heading' % name)
         return self.cells[index]
 
-    def items(self):
-        return zip(self.headings, self.cells)
-
     def __repr__(self):
         return '<Row %r>' % (self.cells,)
 
@@ -730,6 +856,9 @@ class Row(object):
 
     def __iter__(self):
         return iter(self.cells)
+
+    def items(self):
+        return zip(self.headings, self.cells)
 
 
 class Tag(unicode):
@@ -858,4 +987,3 @@ class Result(Replayable):
         self.status = status
         self.duration = duration
         self.error_message = error_message
-

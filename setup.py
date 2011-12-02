@@ -23,7 +23,7 @@ setup(
     version=version,
     description=summary,
     long_description=description,
-    author='Benno Rice',
+    author='Benno Rice and Richard Jones',
     author_email='benno@jeamland.net',
     url='http://github.com/jeamland/behave',
     packages=find_packages(),

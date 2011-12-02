@@ -1,16 +1,13 @@
 from __future__ import with_statement
 
 import os.path
-import StringIO
 import sys
-import time
 import traceback
 import warnings
 import contextlib
 
-from behave import matchers, model, parser
+from behave import matchers, parser
 from behave.formatter.pretty_formatter import PrettyFormatter
-from behave.log_capture import MemoryHandler
 from behave.configuration import ConfigError
 
 
@@ -69,6 +66,7 @@ class Context(object):
     '''
     BEHAVE = 'behave'
     USER = 'user'
+
     def __init__(self, config):
         self._config = config
         d = self._root = {
@@ -417,15 +415,7 @@ class Runner(object):
                 self.formatter.background(feature.background)
 
             for scenario in feature:
-                if isinstance(scenario, model.ScenarioOutline):
-                    for sub in scenario.scenarios:
-                        context._set_root_attribute('active_outline_row', sub._row)
-                        failed = self.run_scenario(sub, feature, context)
-                        if failed and self.config.stop:
-                            break
-                    context._set_root_attribute('active_outline_row', None)
-                else:
-                    failed = self.run_scenario(scenario, feature, context)
+                failed = scenario.run(self)
 
                 # do we want to stop on the first failure?
                 if failed and self.config.stop:
@@ -450,122 +440,6 @@ class Runner(object):
         self.calculate_summaries()
 
         return failed
-
-    def run_scenario(self, scenario, feature, context):
-        '''Run a single scenario or scenario outline.
-        '''
-        failed = False
-
-        tags = feature.tags + scenario.tags
-        run_scenario = self.config.tags.check(tags)
-        run_steps = run_scenario
-
-        self.formatter.scenario(scenario)
-
-        context._push()
-        context.scenario = scenario
-
-        if run_scenario:
-            for tag in scenario.tags:
-                self.run_hook('before_tag', context, tag)
-            self.run_hook('before_scenario', context, scenario)
-
-        if self.config.stdout_capture:
-            self.stdout_capture = StringIO.StringIO()
-
-        if self.config.log_capture:
-            self.log_capture = MemoryHandler(self.config)
-            self.log_capture.inveigle()
-
-        for step in scenario:
-            self.formatter.step(step)
-
-        for step in scenario:
-            if run_steps:
-                if not self.run_step(step):
-                    run_steps = False
-                    failed = True
-                    context._set_root_attribute('failed', True)
-            else:
-                step.status = 'skipped'
-                if scenario.status is None:
-                    scenario.status = 'skipped'
-
-        if self.config.log_capture:
-            self.log_capture.abandon()
-
-        if run_scenario:
-            self.run_hook('after_scenario', context, scenario)
-            for tag in scenario.tags:
-                self.run_hook('after_tag', context, tag)
-
-        context._pop()
-
-        return failed
-
-    def run_step(self, step, quiet=False):
-        '''Run a single step for a scenario, scenario outline or background.
-        '''
-        self.context._set_root_attribute('table', None)
-        self.context._set_root_attribute('text', None)
-
-        match = self.steps.find_match(step)
-        if match is None:
-            self.undefined.append(step)
-            if not quiet:
-                self.formatter.match(model.NoMatch())
-            step.status = 'undefined'
-            if not quiet:
-                self.formatter.result(step)
-            return False
-
-        keep_going = True
-
-        if not quiet:
-            self.formatter.match(match)
-        self.run_hook('before_step', self.context, step)
-        if self.config.stdout_capture:
-            old_stdout = sys.stdout
-            sys.stdout = self.stdout_capture
-        try:
-            start = time.time()
-            if step.text:
-                self.context._set_root_attribute('text', step.text)
-            if step.table:
-                self.context._set_root_attribute('table', step.table)
-            match.run(self.context)
-            step.status = 'passed'
-        except AssertionError, e:
-            step.status = 'failed'
-            error = 'Assertion Failed: %s' % (e, )
-        except Exception:
-            step.status = 'failed'
-            error = traceback.format_exc()
-
-        step.duration = time.time() - start
-
-        # stop snarfing these guys
-        if self.config.stdout_capture:
-            sys.stdout = old_stdout
-
-        # flesh out the failure with details
-        if step.status == 'failed':
-            if self.config.stdout_capture:
-                output = self.stdout_capture.getvalue()
-                if output:
-                    error += '\nCaptured stdout:\n' + output
-            if self.config.log_capture:
-                output = self.log_capture.getvalue()
-                if output:
-                    error += '\nCaptured logging:\n' + output
-            step.error_message = error
-            keep_going = False
-
-        if not quiet:
-            self.formatter.result(step)
-        self.run_hook('after_step', self.context, step)
-
-        return keep_going
 
     def calculate_summaries(self):
         for feature in self.features:
