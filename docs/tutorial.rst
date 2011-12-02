@@ -110,7 +110,7 @@ basic actions. You may use a Scenario Outline to achieve this:
       when I swtich the blender on
       then it should trasform into <other thing>
 
-   Examples: Amphipians
+   Examples: Amphibians
      | thing         | other thing |
      | Red Tree Frog | mush        |
 
