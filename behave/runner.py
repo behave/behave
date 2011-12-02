@@ -39,6 +39,14 @@ class Context(object):
     Certain names are used by *behave*; be wary of using them yourself as
     *behave* may overwrite the value you set. These names are:
 
+    **feature**
+      This is set when we start testing a new feature and holds a
+      :class:`~behave.model.Feature`.
+
+    **scenario**
+      This is set when we start testing a new scenario (including the individual
+      scenarios of a scenario outline) and holds a :class:`~behave.model.Scenario`.
+
     **failed**
       This is set in the root namespace as soon as any step fails.
 
@@ -49,6 +57,11 @@ class Context(object):
     **text**
       This is set at the step level and holds any multiline text associated with
       the step.
+
+    **active_outline_row**
+      This is set for each scenario in a scenario outline and references the
+      :class:`~behave.model.Row` that is active for the current scenario. It is
+      present mostly for debugging, but may be useful otherwise.
 
     If an attempt made by user code to overwrite one of these variables, or
     indeed by *behave* to overwite a user-set variable, then a
@@ -62,6 +75,7 @@ class Context(object):
             'failed': False,
             'table': None,
             'text': None,
+            'active_outline_row': None,
         }
         self._stack = [d]
         self._record = {}
@@ -386,6 +400,7 @@ class Runner(object):
 
             self.features.append(feature)
             self.feature = feature
+            context.feature = feature
 
             self.formatter = PrettyFormatter(stream, monochrome, True)
             self.formatter.uri(filename)
@@ -404,9 +419,11 @@ class Runner(object):
             for scenario in feature:
                 if isinstance(scenario, model.ScenarioOutline):
                     for sub in scenario.scenarios:
+                        context._set_root_attribute('active_outline_row', sub._row)
                         failed = self.run_scenario(sub, feature, context)
                         if failed and self.config.stop:
                             break
+                    context._set_root_attribute('active_outline_row', None)
                 else:
                     failed = self.run_scenario(scenario, feature, context)
 
@@ -446,6 +463,7 @@ class Runner(object):
         self.formatter.scenario(scenario)
 
         context._push()
+        context.scenario = scenario
 
         if run_scenario:
             for tag in scenario.tags:

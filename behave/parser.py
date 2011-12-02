@@ -61,6 +61,7 @@ class Parser(object):
         self.state = 'init'
         self.line = 0
         self.last_step = None
+        self.multiline_start = None
         self.multiline_leading = None
         self.multiline_terminator = None
 
@@ -172,6 +173,7 @@ class Parser(object):
         stripped = line.lstrip()
         if stripped.startswith('"""') or stripped.startswith("'''"):
             self.state = 'multiline'
+            self.multiline_start = self.line
             self.multiline_terminator = stripped[:3]
             self.multiline_leading = line.index(stripped[0])
             return True
@@ -229,7 +231,8 @@ class Parser(object):
     def action_multiline(self, line):
         if line.strip().startswith(self.multiline_terminator):
             step = self.statement.steps[-1]
-            step.text = '\n'.join(self.lines)
+            step.text = model.Text(u'\n'.join(self.lines), u'text/plain',
+                self.multiline_start)
             if step.name.endswith(':'):
                 step.name = step.name[:-1]
             self.lines = []

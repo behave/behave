@@ -38,3 +38,59 @@ def step(context, suffix):
 def step(context, combination):
     assert context.combination == combination
 
+@given('some body of text')
+def step(context):
+    assert context.text
+    context.saved_text = context.text
+
+TEXT = '''   Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
+do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+enim ad minim veniam, quis nostrud exercitation ullamco laboris
+nisi ut aliquip ex ea commodo consequat.'''
+@then('the text is as expected')
+def step(context):
+    assert context.saved_text, 'context.saved_text is %r!!' % (context.saved_text, )
+    context.saved_text.assert_equals(TEXT)
+
+@then('the text is as expected')
+def step(context):
+    assert context.saved_text, 'context.saved_text is %r!!' % (context.saved_text, )
+    assert context.saved_text == TEXT, '%r != expected %r' %(context.saved_text, TEXT)
+
+@given('some initial data')
+def step(context):
+    assert context.table
+    context.saved_table = context.table
+
+TABLE_DATA = [
+    dict(name='Barry', department='Beer Cans'),
+    dict(name='Pudey', department='Silly Walks'),
+    dict(name='Two-Lumps', department='Silly Walks'),
+]
+@then('we will have the expected data')
+def step(context):
+    assert context.saved_table, 'context.saved_table is %r!!' % (context.saved_table, )
+    for expected, got in zip(TABLE_DATA, iter(context.saved_table)):
+        assert expected['name'] == got['name']
+        assert expected['department'] == got['department']
+
+@then('the text is substituted as expected')
+def step(context):
+    assert context.saved_text, 'context.saved_text is %r!!' % (context.saved_text, )
+    expected = TEXT.replace('ipsum', context.active_outline_row['ipsum'])
+    context.saved_text.assert_equals(expected)
+
+
+TABLE_DATA = [
+    dict(name='Barry', department='Beer Cans'),
+    dict(name='Pudey', department='Silly Walks'),
+    dict(name='Two-Lumps', department='Silly Walks'),
+]
+@then('we will have the substituted data')
+def step(context):
+    assert context.saved_table, 'context.saved_table is %r!!' % (context.saved_table, )
+    value = context.active_outline_row['spam']
+    expected = value + ' Cans'
+    assert context.saved_table[0]['department'] == expected, '%r != %r' % (
+        context.saved_table[0]['department'], expected)
+

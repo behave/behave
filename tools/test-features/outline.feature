@@ -33,7 +33,6 @@ Feature: support scenario outlines
      Then it won't work
 
      Examples: some simple examples
-      | prefix  | suffix  | combination  |
-      | go      | ogle    | google       |
-      | onomat  | opoeia  | onomatopoeia | 
-      | comb    | ination | combination  |
+      | prefix  |
+      | go      |
+

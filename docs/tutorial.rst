@@ -128,15 +128,17 @@ Step Data
 
 Sometimes it's useful to associate a table of data with your step.
 
-Any consistently indented text following a step which does not itself start
-with a Gherkin keyword will be associated with the step. For example:
+Any text block following a step wrapped in ``"""`` lines will be associated
+with the step. For example:
 
 .. code-block:: gherkin
 
    Scenario: some scenario
      Given a sample text loaded into the frobulator
+        """
         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
         eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        """
     When we activate the frobulator
     Then we will find it similar to English
 

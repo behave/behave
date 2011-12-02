@@ -131,6 +131,8 @@ class PrettyFormatter(object):
             lines = self.step_lines + 1
             if result.table:
                 lines += len(result.table.rows) + 1
+            if result.text:
+                lines += len(result.text.splitlines()) + 2
             self.stream.write(up(lines))
             arguments = []
             location = None
@@ -178,10 +180,8 @@ class PrettyFormatter(object):
         for i, row in enumerate(all_rows):
             #for comment in row.comments:
             #    self.stream.write('      %s\n' % comment.value)
-            j = -1
             self.stream.write('      |')
-            for cell, max_length in zip(row, max_lengths):
-                j += 1
+            for j, (cell, max_length) in enumerate(zip(row, max_lengths)):
                 self.stream.write(' ')
                 self.stream.write(self.color(cell, None, j))
                 self.stream.write(' ' * (max_length - cell_lengths[i][j]))
@@ -190,9 +190,9 @@ class PrettyFormatter(object):
         self.stream.flush()
 
     def doc_string(self, doc_string):
-        self.stream.write('      """' + doc_string.content_type + '\n')
-        doc_string = self.escape_triple_quotes(self.indent(doc_string.value,
-                                                           '      '))
+        #self.stream.write('      """' + doc_string.content_type + '\n')
+        self.stream.write('      """\n')
+        doc_string = self.escape_triple_quotes(self.indent(doc_string, '      '))
         self.stream.write(doc_string)
         self.stream.write('\n      """\n')
         self.stream.flush()
