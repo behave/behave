@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'behave'
-copyright = u'2011, Benno Rice'
+copyright = u'2011, Benno Rice and Richard Jones'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -201,7 +201,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'behave.tex', u'behave Documentation',
-   u'Benno Rice', 'manual'),
+   u'Benno Rice and Richard Jones', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -231,7 +231,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'behave', u'behave Documentation',
-     [u'Benno Rice'], 1)
+     [u'Benno Rice and Richard Jones'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -245,8 +245,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'behave', u'behave Documentation',
-   u'Benno Rice', 'behave', 'One line description of project.',
-   'Miscellaneous'),
+   u'Benno Rice and Richard Jones', 'behave',
+   'One line description of project.', 'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.
