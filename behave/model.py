@@ -1,6 +1,5 @@
 from __future__ import with_statement
 
-import collections
 import copy
 import difflib
 import itertools
@@ -490,7 +489,7 @@ class ScenarioOutline(Scenario):
         the examples.
         '''
         if self._scenarios:
-           return self._scenarios
+            return self._scenarios
 
         for example in self.examples:
             for row in example.table:
@@ -846,9 +845,6 @@ class Row(object):
                 raise KeyError('"%s" is not a row heading' % name)
         return self.cells[index]
 
-    def items(self):
-        return zip(self.headings, self.cells)
-
     def __repr__(self):
         return '<Row %r>' % (self.cells,)
 
@@ -991,4 +987,3 @@ class Result(Replayable):
         self.status = status
         self.duration = duration
         self.error_message = error_message
-

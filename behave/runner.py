@@ -1,14 +1,12 @@
 from __future__ import with_statement
 
 import os.path
-import StringIO
 import sys
-import time
 import traceback
 import warnings
 import contextlib
 
-from behave import matchers, model, parser
+from behave import matchers, parser
 from behave.formatter.pretty_formatter import PrettyFormatter
 from behave.configuration import ConfigError
 
@@ -68,6 +66,7 @@ class Context(object):
     '''
     BEHAVE = 'behave'
     USER = 'user'
+
     def __init__(self, config):
         self._config = config
         d = self._root = {
@@ -441,7 +440,6 @@ class Runner(object):
         self.calculate_summaries()
 
         return failed
-
 
     def calculate_summaries(self):
         for feature in self.features:
