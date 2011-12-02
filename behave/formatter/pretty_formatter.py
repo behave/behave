@@ -190,9 +190,9 @@ class PrettyFormatter(object):
         self.stream.flush()
 
     def doc_string(self, doc_string):
-        self.stream.write('      """' + doc_string.content_type + '\n')
-        doc_string = self.escape_triple_quotes(self.indent(doc_string.value,
-                                                           '      '))
+        #self.stream.write('      """' + doc_string.content_type + '\n')
+        self.stream.write('      """\n')
+        doc_string = self.escape_triple_quotes(self.indent(doc_string, '      '))
         self.stream.write(doc_string)
         self.stream.write('\n      """\n')
         self.stream.flush()

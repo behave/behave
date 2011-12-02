@@ -3,6 +3,7 @@ from __future__ import with_statement
 import collections
 import copy
 import itertools
+import difflib
 import os.path
 
 
@@ -532,8 +533,8 @@ class Step(BasicStatement, Replayable):
 
     .. attribute:: text
 
-       A string containing a text argument that came with the step in the
-       *feature file*.
+       An instance of :class:`~behave.model.Text` that came with the step
+       in the *feature file*.
 
     .. attribute:: table
 
@@ -739,17 +740,45 @@ class Tag(unicode):
         return o
 
 
-class DocString(object):
-    def __init__(self, content_type, value, line):
-        assert isinstance(content_type, unicode)
+class Text(unicode):
+    '''Store multiline text from a Step definition.
+
+    The attributes are:
+
+    .. attribute:: value
+
+       The actual text parsed from the *feature file*.
+
+    .. attribute:: content_type
+
+       Currently only 'text/plain'.
+    '''
+    def __new__(cls, value, content_type='text/plain', line=0):
         assert isinstance(value, unicode)
-        self.content_type = content_type
-        self.value = value
-        self.line = line
+        assert isinstance(content_type, unicode)
+        o = unicode.__new__(cls, value)
+        o.content_type = content_type
+        o.line = line
+        return o
 
     def line_range(self):
-        line_count = len(self.value.splitlines())
+        line_count = len(self.splitlines())
         return (self.line, self.line + line_count + 1)
+
+    def assert_equals(self, expected):
+        '''Assert that my text is identical to the "expected" text.
+
+        A nice context diff will be displayed if they do not match.'
+        '''
+        if self == expected:
+            return True
+        diff = []
+        for line in difflib.unified_diff(self.splitlines(),
+                expected.splitlines()):
+            diff.append(line)
+        # strip unnecessary diff prefix
+        diff = ['Text does not match:'] + diff[3:]
+        raise AssertionError('\n'.join(diff))
 
 
 class Match(Replayable):

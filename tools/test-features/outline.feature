@@ -37,3 +37,4 @@ Feature: support scenario outlines
       | go      | ogle    | google       |
       | onomat  | opoeia  | onomatopoeia | 
       | comb    | ination | combination  |
+

@@ -421,11 +421,11 @@ Steps may have some text or a table of data attached to them.
 Text
 """"
 
-Any consistently indented text following a step which does not itself start
-with a Gherkin keyword will be associated with the step. This is the one
-case where indentation is actually parsed: the leading whitespace is
-stripped from the text, and successive lines of the text should have at
-least the same amount of whitespace as the first line.
+Any text block following a step wrapped in ``"""`` lines will be associated
+with the step.  This is the one case where indentation is actually parsed:
+the leading whitespace is stripped from the text, and successive lines of
+the text should have at least the same amount of whitespace as the first
+line.
 
 So for this rather contrived example:
 
@@ -433,6 +433,7 @@ So for this rather contrived example:
 
    Scenario: some scenario
      Given a sample text loaded into the frobulator
+        """
         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
         eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
         enim ad minim veniam, quis nostrud exercitation ullamco laboris
@@ -440,6 +441,7 @@ So for this rather contrived example:
         reprehenderit in voluptate velit esse cillum dolore eu fugiat
         nulla pariatur. Excepteur sint occaecat cupidatat non proident,
         sunt in culpa qui officia deserunt mollit anim id est laborum.
+        """
     When we activate the frobulator
     Then we will find it similar to English
 
