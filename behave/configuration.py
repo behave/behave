@@ -88,7 +88,7 @@ parser.add_argument('-w', '--wip', action='store_true',
                     help="Fail if there are any passing scenarios.")
 parser.add_argument('-x', '--expand', action='store_true',
                     help="Expand scenario outline tables in output.")
-parser.add_argument('--lang', metavar='LANG', default='en',
+parser.add_argument('--lang', metavar='LANG',
                     help="Use keywords for a language other than English.")
 parser.add_argument('--lang-list', action='store_true',
                     help="List the languages abailable for --lang")
