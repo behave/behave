@@ -281,9 +281,12 @@ in each scenario outline.
 in the example data tables.
 
 The values to replace are determined using the name appearing in the angle
-brackets "<*name*>" whichi must match a headings of the example tables. The
+brackets "<*name*>" which must match a headings of the example tables. The
 name may include almost any character, though not the close angle bracket
 ">".
+
+Substitution may also occur in `step data`_ if the "<*name*>" texts appear
+within the step data text or table cells.
 
 
 Steps
@@ -416,6 +419,10 @@ Step Data
 ~~~~~~~~~
 
 Steps may have some text or a table of data attached to them.
+
+Substitution of scenario outline values will be done in step data text or
+table data if the "<*name*>" texts appear within the step data text or
+table cells.
 
 
 Text

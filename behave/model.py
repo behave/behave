@@ -437,14 +437,15 @@ class ScenarioOutline(Scenario):
            return self._scenarios
 
         for example in self.examples:
-            for values in example.table:
+            for row in example.table:
                 new_steps = []
                 for step in self.steps:
-                    new_steps.append(step.set_values(values))
+                    new_steps.append(step.set_values(row))
                 scenario = Scenario(self.filename, self.line, self.keyword,
                     self.name, self.tags, new_steps)
                 scenario.feature = self.feature
                 scenario.background = self.background
+                scenario._row = row
                 self._scenarios.append(scenario)
 
         return self._scenarios
@@ -595,6 +596,12 @@ class Step(BasicStatement, Replayable):
         result = copy.deepcopy(self)
         for name, value in table_row.items():
             result.name = result.name.replace("<%s>" % name, value)
+            if result.text:
+                result.text = result.text.replace("<%s>" % name, value)
+            if result.table:
+                for row in result.table:
+                    for i, cell in enumerate(row.cells):
+                        row.cells[i] = cell.replace("<%s>" % name, value)
         return result
 
 
@@ -764,6 +771,9 @@ class Text(unicode):
     def line_range(self):
         line_count = len(self.splitlines())
         return (self.line, self.line + line_count + 1)
+
+    def replace(self, old, new):
+        return Text(super(Text, self).replace(old, new), self.content_type, self.line)
 
     def assert_equals(self, expected):
         '''Assert that my text is identical to the "expected" text.

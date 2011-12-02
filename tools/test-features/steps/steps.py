@@ -74,3 +74,23 @@ def step(context):
         assert expected['name'] == got['name']
         assert expected['department'] == got['department']
 
+@then('the text is substituted as expected')
+def step(context):
+    assert context.saved_text, 'context.saved_text is %r!!' % (context.saved_text, )
+    expected = TEXT.replace('ipsum', context.active_outline_row['ipsum'])
+    context.saved_text.assert_equals(expected)
+
+
+TABLE_DATA = [
+    dict(name='Barry', department='Beer Cans'),
+    dict(name='Pudey', department='Silly Walks'),
+    dict(name='Two-Lumps', department='Silly Walks'),
+]
+@then('we will have the substituted data')
+def step(context):
+    assert context.saved_table, 'context.saved_table is %r!!' % (context.saved_table, )
+    value = context.active_outline_row['spam']
+    expected = value + ' Cans'
+    assert context.saved_table[0]['department'] == expected, '%r != %r' % (
+        context.saved_table[0]['department'], expected)
+
