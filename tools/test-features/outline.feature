@@ -27,3 +27,13 @@ Feature: support scenario outlines
       | 1       | 2      | 12          |
       | one     | two    | onetwo      |
 
+  Scenario Outline: scenarios that reference invalid subs
+    Given Some text <prefix>
+     When we add try to use a <broken> reference
+     Then it won't work
+
+     Examples: some simple examples
+      | prefix  | suffix  | combination  |
+      | go      | ogle    | google       |
+      | onomat  | opoeia  | onomatopoeia | 
+      | comb    | ination | combination  |
