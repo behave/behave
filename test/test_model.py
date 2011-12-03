@@ -6,6 +6,63 @@ from nose.tools import *
 from behave import model
 
 
+class TestFeatureRun(object):
+    def setUp(self):
+        self.runner = Mock()
+        self.runner.feature.tags = []
+        self.config = self.runner.config = Mock()
+        self.context = self.runner.context = Mock()
+        self.formatter = self.runner.formatter = Mock()
+        self.run_hook = self.runner.run_hook = Mock()
+
+    def test_formatter_feature_called(self):
+        feature = model.Feature('foo.feature', 1, u'Feature', u'foo',
+                                background=Mock())
+
+        feature.run(self.runner)
+
+        self.formatter.feature.assert_called_with(feature)
+
+    def test_formatter_background_called_when_feature_has_background(self):
+        feature = model.Feature('foo.feature', 1, u'Feature', u'foo',
+                                background=Mock())
+
+        feature.run(self.runner)
+
+        self.formatter.background.assert_called_with(feature.background)
+
+    def test_formatter_background_not_called_when_feature_has_no_background(self):
+        feature = model.Feature('foo.feature', 1, u'Feature', u'foo')
+
+        feature.run(self.runner)
+
+        assert not self.formatter.background.called
+
+    def test_run_runs_scenarios(self):
+        scenarios = [Mock(), Mock()]
+        for scenario in scenarios:
+            scenario.run.return_value = False
+
+        self.config.tags.check.return_value = True
+
+        feature = model.Feature('foo.feature', 1, u'Feature', u'foo',
+                                scenarios=scenarios)
+
+        feature.run(self.runner)
+
+        for scenario in scenarios:
+            scenario.run.assert_called_with(self.runner)
+
+    def test_feature_hooks_not_run_if_feature_not_being_run(self):
+        self.config.tags.check.return_value = False
+
+        feature = model.Feature('foo.feature', 1, u'Feature', u'foo')
+
+        feature.run(self.runner)
+
+        assert not self.run_hook.called
+
+
 class TestScenarioRun(object):
     def setUp(self):
         self.runner = Mock()
@@ -88,6 +145,15 @@ class TestScenarioRun(object):
 
         assert False not in [s.status == 'skipped' for s in steps]
         eq_(scenario.status, 'skipped')
+
+    def test_scenario_hooks_not_run_if_scenario_not_being_run(self):
+        self.config.tags.check.return_value = False
+
+        scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo')
+
+        scenario.run(self.runner)
+
+        assert not self.run_hook.called
 
 
 class TestScenarioOutline(object):

@@ -206,6 +206,40 @@ class Feature(TagStatement, Replayable):
             duration += scenario.duration
         return duration
 
+    def run(self, runner):
+        failed = False
+
+        runner.formatter.feature(self)
+
+        runner.context._push()
+        runner.context.feature = self
+
+        run_feature = runner.config.tags.check(self.tags)
+
+        if run_feature:
+            for tag in self.tags:
+                runner.run_hook('before_tag', runner.context, tag)
+            runner.run_hook('before_feature', runner.context, self)
+
+        if self.background:
+            runner.formatter.background(self.background)
+
+        for scenario in self:
+            failed = scenario.run(runner)
+
+            # do we want to stop on the first failure?
+            if failed and runner.config.stop:
+                break
+
+        if run_feature:
+            runner.run_hook('after_feature', runner.context, self)
+            for tag in self.tags:
+                runner.run_hook('after_tag', runner.context, tag)
+
+        runner.context._pop()
+
+        return failed
+
 
 class Background(BasicStatement, Replayable):
     '''A `background`_ parsed from a *feature file*.

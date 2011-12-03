@@ -397,45 +397,18 @@ class Runner(object):
         self.run_hook('before_all', context)
 
         for filename in self.feature_files():
-            context._push()
-
             feature = parser.parse_file(os.path.abspath(filename),
                 language=self.config.lang)
 
             self.features.append(feature)
             self.feature = feature
-            context.feature = feature
 
             self.formatter = PrettyFormatter(stream, monochrome, True)
             self.formatter.uri(filename)
-            self.formatter.feature(feature)
 
-            run_feature = self.config.tags.check(feature.tags)
-
-            if run_feature:
-                for tag in feature.tags:
-                    self.run_hook('before_tag', context, tag)
-                self.run_hook('before_feature', context, feature)
-
-            if feature.background:
-                self.formatter.background(feature.background)
-
-            for scenario in feature:
-                failed = scenario.run(self)
-
-                # do we want to stop on the first failure?
-                if failed and self.config.stop:
-                    break
+            failed = feature.run(self)
 
             self.formatter.eof()
-
-            if run_feature:
-                self.run_hook('after_feature', context, feature)
-                for tag in feature.tags:
-                    self.run_hook('after_tag', context, tag)
-
-            context._pop()
-
             stream.write('\n')
 
             if failed and self.config.stop:
