@@ -24,7 +24,8 @@ Step Functions
 
 Step functions are implemented in the Python modules present in your
 "steps" directory. All Python files (files ending in ".py") in that
-directory will be imported to find step implementations.
+directory will be imported to find step implementations. They are all
+loaded before *behave* starts executing your feature tests.
 
 Step functions are identified using step decorators.
 
@@ -33,7 +34,7 @@ step functions. These are available in both PEP-8 (all lowercase) and
 traditional (title case) versions: "given", "when", "then" and the generic
 "step".
 
-The decorators all take a single string argument, the string to match
+The decorators all take a single string argument: the string to match
 against the feature file step text *exactly*. So the following step
 implementation code:
 
