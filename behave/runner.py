@@ -1,14 +1,16 @@
 from __future__ import with_statement
 
+import contextlib
 import os.path
+import StringIO
 import sys
 import traceback
 import warnings
-import contextlib
 
 from behave import matchers, parser
 from behave.formatter.pretty_formatter import PrettyFormatter
 from behave.configuration import ConfigError
+from behave.log_capture import MemoryHandler
 
 
 class ContextMaskWarning(UserWarning):
@@ -240,6 +242,10 @@ class Runner(object):
                              'undefined': 0}
         self.duration = 0.0
 
+        self.stdout_capture = None
+        self.log_capture = None
+        self.out_stdout = None
+
     def setup_paths(self):
         if self.config.paths:
             if self.config.verbose:
@@ -391,45 +397,18 @@ class Runner(object):
         self.run_hook('before_all', context)
 
         for filename in self.feature_files():
-            context._push()
-
             feature = parser.parse_file(os.path.abspath(filename),
                 language=self.config.lang)
 
             self.features.append(feature)
             self.feature = feature
-            context.feature = feature
 
             self.formatter = PrettyFormatter(stream, monochrome, True)
             self.formatter.uri(filename)
-            self.formatter.feature(feature)
 
-            run_feature = self.config.tags.check(feature.tags)
-
-            if run_feature:
-                for tag in feature.tags:
-                    self.run_hook('before_tag', context, tag)
-                self.run_hook('before_feature', context, feature)
-
-            if feature.background:
-                self.formatter.background(feature.background)
-
-            for scenario in feature:
-                failed = scenario.run(self)
-
-                # do we want to stop on the first failure?
-                if failed and self.config.stop:
-                    break
+            failed = feature.run(self)
 
             self.formatter.eof()
-
-            if run_feature:
-                self.run_hook('after_feature', context, feature)
-                for tag in feature.tags:
-                    self.run_hook('after_tag', context, tag)
-
-            context._pop()
-
             stream.write('\n')
 
             if failed and self.config.stop:
@@ -440,6 +419,27 @@ class Runner(object):
         self.calculate_summaries()
 
         return failed
+
+    def setup_capture(self):
+        if self.config.stdout_capture:
+            self.stdout_capture = StringIO.StringIO()
+
+        if self.config.log_capture:
+            self.log_capture = MemoryHandler(self.config)
+            self.log_capture.inveigle()
+
+    def start_capture(self):
+        if self.config.stdout_capture:
+            self.old_stdout = sys.stdout
+            sys.stdout = self.stdout_capture
+
+    def stop_capture(self):
+        if self.config.stdout_capture:
+            sys.stdout = self.old_stdout
+
+    def teardown_capture(self):
+        if self.config.log_capture:
+            self.log_capture.abandon()
 
     def calculate_summaries(self):
         for feature in self.features:

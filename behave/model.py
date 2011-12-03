@@ -4,12 +4,9 @@ import copy
 import difflib
 import itertools
 import os.path
-import StringIO
 import sys
 import time
 import traceback
-
-from behave.log_capture import MemoryHandler
 
 
 def relpath(path, other):
@@ -209,6 +206,40 @@ class Feature(TagStatement, Replayable):
             duration += scenario.duration
         return duration
 
+    def run(self, runner):
+        failed = False
+
+        runner.formatter.feature(self)
+
+        runner.context._push()
+        runner.context.feature = self
+
+        run_feature = runner.config.tags.check(self.tags)
+
+        if run_feature:
+            for tag in self.tags:
+                runner.run_hook('before_tag', runner.context, tag)
+            runner.run_hook('before_feature', runner.context, self)
+
+        if self.background:
+            runner.formatter.background(self.background)
+
+        for scenario in self:
+            failed = scenario.run(runner)
+
+            # do we want to stop on the first failure?
+            if failed and runner.config.stop:
+                break
+
+        if run_feature:
+            runner.run_hook('after_feature', runner.context, self)
+            for tag in self.tags:
+                runner.run_hook('after_tag', runner.context, tag)
+
+        runner.context._pop()
+
+        return failed
+
 
 class Background(BasicStatement, Replayable):
     '''A `background`_ parsed from a *feature file*.
@@ -374,12 +405,7 @@ class Scenario(TagStatement, Replayable):
                 runner.run_hook('before_tag', runner.context, tag)
             runner.run_hook('before_scenario', runner.context, self)
 
-        if runner.config.stdout_capture:
-            runner.stdout_capture = StringIO.StringIO()
-
-        if runner.config.log_capture:
-            runner.log_capture = MemoryHandler(runner.config)
-            runner.log_capture.inveigle()
+        runner.setup_capture()
 
         for step in self:
             runner.formatter.step(step)
@@ -395,8 +421,7 @@ class Scenario(TagStatement, Replayable):
                 if self.status is None:
                     self.status = 'skipped'
 
-        if runner.config.log_capture:
-            runner.log_capture.abandon()
+        runner.teardown_capture()
 
         if run_scenario:
             runner.run_hook('after_scenario', runner.context, self)
@@ -690,9 +715,8 @@ class Step(BasicStatement, Replayable):
         if not quiet:
             runner.formatter.match(match)
         runner.run_hook('before_step', runner.context, self)
-        if runner.config.stdout_capture:
-            old_stdout = sys.stdout
-            sys.stdout = runner.stdout_capture
+        runner.start_capture()
+
         try:
             start = time.time()
             if self.text:
@@ -710,9 +734,7 @@ class Step(BasicStatement, Replayable):
 
         self.duration = time.time() - start
 
-        # stop snarfing these guys
-        if runner.config.stdout_capture:
-            sys.stdout = old_stdout
+        runner.stop_capture()
 
         # flesh out the failure with details
         if self.status == 'failed':

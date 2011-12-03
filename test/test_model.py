@@ -6,6 +6,63 @@ from nose.tools import *
 from behave import model
 
 
+class TestFeatureRun(object):
+    def setUp(self):
+        self.runner = Mock()
+        self.runner.feature.tags = []
+        self.config = self.runner.config = Mock()
+        self.context = self.runner.context = Mock()
+        self.formatter = self.runner.formatter = Mock()
+        self.run_hook = self.runner.run_hook = Mock()
+
+    def test_formatter_feature_called(self):
+        feature = model.Feature('foo.feature', 1, u'Feature', u'foo',
+                                background=Mock())
+
+        feature.run(self.runner)
+
+        self.formatter.feature.assert_called_with(feature)
+
+    def test_formatter_background_called_when_feature_has_background(self):
+        feature = model.Feature('foo.feature', 1, u'Feature', u'foo',
+                                background=Mock())
+
+        feature.run(self.runner)
+
+        self.formatter.background.assert_called_with(feature.background)
+
+    def test_formatter_background_not_called_when_feature_has_no_background(self):
+        feature = model.Feature('foo.feature', 1, u'Feature', u'foo')
+
+        feature.run(self.runner)
+
+        assert not self.formatter.background.called
+
+    def test_run_runs_scenarios(self):
+        scenarios = [Mock(), Mock()]
+        for scenario in scenarios:
+            scenario.run.return_value = False
+
+        self.config.tags.check.return_value = True
+
+        feature = model.Feature('foo.feature', 1, u'Feature', u'foo',
+                                scenarios=scenarios)
+
+        feature.run(self.runner)
+
+        for scenario in scenarios:
+            scenario.run.assert_called_with(self.runner)
+
+    def test_feature_hooks_not_run_if_feature_not_being_run(self):
+        self.config.tags.check.return_value = False
+
+        feature = model.Feature('foo.feature', 1, u'Feature', u'foo')
+
+        feature.run(self.runner)
+
+        assert not self.run_hook.called
+
+
 class TestScenarioRun(object):
     def setUp(self):
         self.runner = Mock()
@@ -13,10 +70,6 @@ class TestScenarioRun(object):
         self.config = self.runner.config = Mock()
         self.context = self.runner.context = Mock()
         self.formatter = self.runner.formatter = Mock()
-        self.stdout_capture = self.runner.stdout_capture = Mock()
-        self.stdout_capture.getvalue.return_value = ''
-        self.log_capture = self.runner.log_capture = Mock()
-        self.log_capture.getvalue.return_value = ''
         self.run_hook = self.runner.run_hook = Mock()
 
     def test_run_invokes_formatter_scenario_and_steps_correctly(self):
@@ -37,9 +90,7 @@ class TestScenarioRun(object):
     else:
         stringio_target = 'StringIO.StringIO'
 
-    @patch(stringio_target)
-    @patch('behave.model.MemoryHandler')
-    def test_handles_stdout_and_logs(self, handler_class, stringio):
+    def test_handles_stdout_and_log_capture(self):
         self.config.stdout_capture = True
         self.config.log_capture = True
         self.config.tags.check.return_value = True
@@ -48,17 +99,10 @@ class TestScenarioRun(object):
         scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
                                   steps=steps)
 
-        stringio.return_value = Mock()
-        handler_class.return_value = handler = Mock()
-
         scenario.run(self.runner)
 
-        assert stringio.called
-        assert self.runner.stdout_capture is stringio.return_value
-
-        handler_class.assert_called_with(self.config)
-        handler.inveigle.assert_called_with()
-        handler.abandon.assert_called_with()
+        self.runner.setup_capture.assert_called_with()
+        self.runner.teardown_capture.assert_called_with()
 
     def test_failed_step_causes_remaining_steps_to_be_skipped(self):
         self.config.stdout_capture = False
@@ -101,6 +145,15 @@ class TestScenarioRun(object):
 
         assert False not in [s.status == 'skipped' for s in steps]
         eq_(scenario.status, 'skipped')
+
+    def test_scenario_hooks_not_run_if_scenario_not_being_run(self):
+        self.config.tags.check.return_value = False
+
+        scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo')
+
+        scenario.run(self.runner)
+
+        assert not self.run_hook.called
 
 
 class TestScenarioOutline(object):
@@ -342,36 +395,15 @@ class TestStepRun(object):
             step.run(self.runner)
             eq_(step.duration, 23 - 17)
 
-    def test_run_captures_stdout_if_requested(self):
+    def test_run_captures_stdout_and_logging(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
         match = Mock()
         self.steps.find_match.return_value = match
 
-        def printer(*args, **kwargs):
-            print 'carrots'
-
-        match.run.side_effect = printer
-
         assert step.run(self.runner)
 
-        call_args_list = self.stdout_capture.write.call_args_list
-        stdout = ''.join(a[0][0] for a in call_args_list)
-        eq_(stdout.strip(), 'carrots')
-
-    def test_run_does_not_capture_stdout_if_requested(self):
-        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
-        match = Mock()
-        self.steps.find_match.return_value = match
-        self.config.stdout_capture = False
-
-        def printer(*args, **kwargs):
-            print 'carrots'
-
-        match.run.side_effect = printer
-
-        assert step.run(self.runner)
-
-        assert not self.stdout_capture.write.called
+        self.runner.start_capture.assert_called_with()
+        self.runner.stop_capture.assert_called_with()
 
     def test_run_appends_any_captured_stdout_on_failure(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
@@ -396,6 +428,7 @@ class TestStepRun(object):
 
         assert 'Captured logging:' in step.error_message
         assert 'toads' in step.error_message
+
 
 class TestTableModel(object):
     HEAD = [u'type of stuff', u'awesomeness', u'ridiculousness']
