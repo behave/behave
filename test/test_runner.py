@@ -2,6 +2,7 @@ from __future__ import with_statement
 
 from collections import defaultdict
 import os.path
+import StringIO
 import sys
 import warnings
 
@@ -10,6 +11,7 @@ from nose.tools import *
 
 from behave import model, runner
 from behave.configuration import ConfigError
+from behave.log_capture import MemoryHandler
 
 class TestContext(object):
     def setUp(self):
@@ -265,6 +267,91 @@ class TestRunner(object):
         r.run_hook('before_lunch', *args)
 
         hook.assert_called_with(*args)
+
+    def test_setup_capture_creates_stringio_for_stdout(self):
+        r = runner.Runner(Mock())
+        r.config.stdout_capture = True
+        r.config.log_capture = False
+
+        r.setup_capture()
+
+        assert r.stdout_capture is not None
+        assert isinstance(r.stdout_capture, StringIO.StringIO)
+
+    def test_setup_capture_does_not_create_stringio_if_not_wanted(self):
+        r = runner.Runner(Mock())
+        r.config.stdout_capture = False
+        r.config.log_capture = False
+
+        r.setup_capture()
+
+        assert r.stdout_capture is None
+
+    @patch('behave.runner.MemoryHandler')
+    def test_setup_capture_creates_memory_handler_for_logging(self, handler):
+        r = runner.Runner(Mock())
+        r.config.stdout_capture = False
+        r.config.log_capture = True
+
+        r.setup_capture()
+
+        assert r.log_capture is not None
+        handler.assert_called_with(r.config)
+        r.log_capture.inveigle.assert_called_with()
+
+    def test_setup_capture_does_not_create_memory_handler_if_not_wanted(self):
+        r = runner.Runner(Mock())
+        r.config.stdout_capture = False
+        r.config.log_capture = False
+
+        r.setup_capture()
+
+        assert r.log_capture is None
+
+    def test_start_stop_capture_switcheroos_sys_stdout(self):
+        old_stdout = sys.stdout
+        sys.stdout = new_stdout = Mock()
+
+        r = runner.Runner(Mock())
+        r.config.stdout_capture = True
+        r.config.log_capture = False
+
+        r.setup_capture()
+        r.start_capture()
+
+        eq_(sys.stdout, r.stdout_capture)
+
+        r.stop_capture()
+
+        eq_(sys.stdout, new_stdout)
+
+        sys.stdout = old_stdout
+
+    def test_start_stop_capture_leaves_sys_stdout_alone_if_off(self):
+        r = runner.Runner(Mock())
+        r.config.stdout_capture = False
+        r.config.log_capture = False
+
+        old_stdout = sys.stdout
+
+        r.start_capture()
+
+        eq_(sys.stdout, old_stdout)
+
+        r.stop_capture()
+
+        eq_(sys.stdout, old_stdout)
+
+    def test_teardown_capture_removes_log_tap(self):
+        r = runner.Runner(Mock())
+        r.config.stdout_capture = False
+        r.config.log_capture = True
+
+        r.log_capture = Mock()
+
+        r.teardown_capture()
+
+        r.log_capture.abandon.assert_called_with()
 
 
 class TestRunWithPaths(object):

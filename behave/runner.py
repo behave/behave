@@ -1,14 +1,16 @@
 from __future__ import with_statement
 
+import contextlib
 import os.path
+import StringIO
 import sys
 import traceback
 import warnings
-import contextlib
 
 from behave import matchers, parser
 from behave.formatter.pretty_formatter import PrettyFormatter
 from behave.configuration import ConfigError
+from behave.log_capture import MemoryHandler
 
 
 class ContextMaskWarning(UserWarning):
@@ -240,6 +242,10 @@ class Runner(object):
                              'undefined': 0}
         self.duration = 0.0
 
+        self.stdout_capture = None
+        self.log_capture = None
+        self.out_stdout = None
+
     def setup_paths(self):
         if self.config.paths:
             if self.config.verbose:
@@ -440,6 +446,27 @@ class Runner(object):
         self.calculate_summaries()
 
         return failed
+
+    def setup_capture(self):
+        if self.config.stdout_capture:
+            self.stdout_capture = StringIO.StringIO()
+
+        if self.config.log_capture:
+            self.log_capture = MemoryHandler(self.config)
+            self.log_capture.inveigle()
+
+    def start_capture(self):
+        if self.config.stdout_capture:
+            self.old_stdout = sys.stdout
+            sys.stdout = self.stdout_capture
+
+    def stop_capture(self):
+        if self.config.stdout_capture:
+            sys.stdout = self.old_stdout
+
+    def teardown_capture(self):
+        if self.config.log_capture:
+            self.log_capture.abandon()
 
     def calculate_summaries(self):
         for feature in self.features:
