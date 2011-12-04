@@ -17,7 +17,7 @@ Feature Testing Layout
 3. optionally some `environmental controls`_ (code to run before and after
    steps, scenarios, features or the whole shooting match).
 
-.. _`feature files`: #gherkin:-feature-testing-language
+.. _`feature files`: #gherkin-feature-testing-language
 .. _`Python step implementations`: tutorial.html#python-step-implementations
 .. _`environmental controls`: tutorial.html#environmental-controls
 
@@ -91,8 +91,8 @@ command-line switch.
 Gherkin: Feature Testing Language
 =================================
 
-*behave* uses a language called `Gherkin`_ (with with `some
-modifications`_) to structure the feature files.
+*behave* `features`_ are written using a language called `Gherkin`_ (with
+with `some modifications`_) and are named "*name*.feature".
 
 .. _`some modifications`: #modifications-to-the-gherkin-standard
 
@@ -102,14 +102,11 @@ serve two purposes – documentation and automated tests.
 
 It is very flexible but has a few simple rules that writers need to adhere to.
 
-Feature files contain a single `feature`_ and are named "*name*.feature".
-
-.. _`feature`: #features
-
 Line endings terminate statements (eg, steps). Either spaces or tabs may be
 used for indentation (but spaces are more portable). Indentation is almost
 always ignored - it's a tool for the feature writer to express some
-structure in the text. Most lines start with a keyword.
+structure in the text. Most lines start with a keyword ("Feature",
+"Scenario", "Given", ...)
 
 Comment lines are allowed anywhere in the file. They begin with zero or
 more spaces, followed by a sharp sign (#) and some amount of text.
