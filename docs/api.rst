@@ -2,6 +2,9 @@
 behave API reference
 ====================
 
+.. if you change any headings in here make sure you haven't broken the
+   cross-references in the API documentation or module docstrings!
+
 This reference is meant for people actually writing step implementations
 for feature tests. It contains way more information than a typical step
 implementation will need: most implementations will only need to look at
@@ -189,6 +192,47 @@ The *context* variable in all cases is an instance of
 .. autoclass:: behave.runner.Context
 
 .. autoclass:: behave.runner.ContextMaskWarning
+
+
+Runner Operation
+================
+
+Given all the code that could be run by *behave*, this is the order in
+which that code is invoked (if they exist.)
+
+.. parsed-literal::
+
+    before_all
+    for feature in all_features:
+        before_feature
+        for scenario in feature.scenarios:
+            before_scenario
+            for step in scenario.steps:
+                before_step
+                    step.run()
+                after_step
+            after_scenario
+        after_feature         
+    after_all
+  
+If the feature contains scenario outlines then there is an addtional loop
+over all the scenarios in the outline making the running look like this:
+
+.. parsed-literal::
+
+    before_all
+    for feature in all_features:
+        before_feature
+        for outline in feature.scenarios:
+            for scenario in outline.scenarios:
+                before_scenario
+                for step in scenario.steps:
+                    before_step
+                        step.run()
+                    after_step
+                after_scenario
+        after_feature         
+    after_all
 
 
 Model Objects

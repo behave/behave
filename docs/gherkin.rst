@@ -8,22 +8,21 @@ Feature Testing Setup
 Feature Testing Layout
 ======================
 
-The simplest way to make *behave* work is to create a directory called
-"features" containing:
+*behave* works with three types of files:
 
-1. feature files written by your Business Analyst / Sponsor / whoever
+1. `feature files`_ written by your Business Analyst / Sponsor / whoever
    with your behaviour scenarios in it, and
 2. a "steps" directory with `Python step implementations`_ for the
    scenarios.
+3. optionally some `environmental controls`_ (code to run before and after
+   steps, scenarios, features or the whole shooting match).
 
-You may optionally include some `environmental controls`_ (code to run
-before and after steps, scenarios, features or the whole shooting
-match).
-
+.. _`feature files`: #gherkin:-feature-testing-language
 .. _`Python step implementations`: tutorial.html#python-step-implementations
 .. _`environmental controls`: tutorial.html#environmental-controls
 
-The minimum requirement for a features directory is::
+These files are typically stored in a firectory called "features". The
+minimum requirement for a features directory is::
 
   features/
   features/everything.feature
