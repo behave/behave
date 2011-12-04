@@ -187,7 +187,7 @@ class TestScenarioOutline(object):
         outline._scenarios[0].run.assert_called_with(runner)
         assert not outline._scenarios[1].run.called
 
-    def test_run_sets_context_variable_for_outline_row(self):
+    def test_run_sets_context_variable_for_outline(self):
         outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
                                         u'foo')
         outline._scenarios = [Mock(), Mock(), Mock()]
@@ -202,10 +202,10 @@ class TestScenarioOutline(object):
         outline.run(runner)
 
         eq_(context._set_root_attribute.call_args_list, [
-            (('active_outline_row', outline._scenarios[0]._row), {}),
-            (('active_outline_row', outline._scenarios[1]._row), {}),
-            (('active_outline_row', outline._scenarios[2]._row), {}),
-            (('active_outline_row', None), {}),
+            (('active_outline', outline._scenarios[0]._row), {}),
+            (('active_outline', outline._scenarios[1]._row), {}),
+            (('active_outline', outline._scenarios[2]._row), {}),
+            (('active_outline', None), {}),
         ])
 
 

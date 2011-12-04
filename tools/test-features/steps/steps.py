@@ -77,7 +77,7 @@ def step(context):
 @then('the text is substituted as expected')
 def step(context):
     assert context.saved_text, 'context.saved_text is %r!!' % (context.saved_text, )
-    expected = TEXT.replace('ipsum', context.active_outline_row['ipsum'])
+    expected = TEXT.replace('ipsum', context.active_outline['ipsum'])
     context.saved_text.assert_equals(expected)
 
 
@@ -89,7 +89,7 @@ TABLE_DATA = [
 @then('we will have the substituted data')
 def step(context):
     assert context.saved_table, 'context.saved_table is %r!!' % (context.saved_table, )
-    value = context.active_outline_row['spam']
+    value = context.active_outline['spam']
     expected = value + ' Cans'
     assert context.saved_table[0]['department'] == expected, '%r != %r' % (
         context.saved_table[0]['department'], expected)

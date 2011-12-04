@@ -40,11 +40,14 @@ class Context(object):
 
     **feature**
       This is set when we start testing a new feature and holds a
-      :class:`~behave.model.Feature`.
+      :class:`~behave.model.Feature`. It will not be present outside of a
+      feature (i.e. within the scope of the environment before_all and
+      after_all).
 
     **scenario**
       This is set when we start testing a new scenario (including the individual
       scenarios of a scenario outline) and holds a :class:`~behave.model.Scenario`.
+      It will not be present outside of the scope of a scenario.
 
     **failed**
       This is set in the root namespace as soon as any step fails.
@@ -57,7 +60,7 @@ class Context(object):
       This is set at the step level and holds any multiline text associated with
       the step.
 
-    **active_outline_row**
+    **active_outline**
       This is set for each scenario in a scenario outline and references the
       :class:`~behave.model.Row` that is active for the current scenario. It is
       present mostly for debugging, but may be useful otherwise.
@@ -75,7 +78,7 @@ class Context(object):
             'failed': False,
             'table': None,
             'text': None,
-            'active_outline_row': None,
+            'active_outline': None,
         }
         self._stack = [d]
         self._record = {}

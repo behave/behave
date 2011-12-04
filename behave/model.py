@@ -558,11 +558,11 @@ class ScenarioOutline(Scenario):
         failed = False
 
         for sub in self.scenarios:
-            runner.context._set_root_attribute('active_outline_row', sub._row)
+            runner.context._set_root_attribute('active_outline', sub._row)
             failed = sub.run(runner)
             if failed and runner.config.stop:
                 return False
-        runner.context._set_root_attribute('active_outline_row', None)
+        runner.context._set_root_attribute('active_outline', None)
 
         return failed
 
@@ -817,6 +817,20 @@ class Table(Replayable):
     def __getitem__(self, index):
         return self.rows[index]
 
+    def assert_equals(self, data):
+        '''Assert that this table's cells are the same as the supplied "data".
+
+        The data passed in must be a list of lists giving:
+
+            [
+                [row 1],
+                [row 2],
+                [row 3],
+            ]
+
+        If the cells do not match then a useful AssertionError will be raised.
+        '''
+        TODO
 
 class Row(object):
     '''One row of a `table`_ parsed from a *feature file*.
