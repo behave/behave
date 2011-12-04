@@ -92,7 +92,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'agogo'
+html_theme = 'kr'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -111,12 +111,13 @@ html_theme = 'agogo'
 # headerlinkcolor (CSS color): Color for the backreference link in headings.
 # textalign (CSS text-align value): Text alignment for the body, default is justify.
 
-#html_theme_options = {
+html_theme_options = {
  #'bodyfont': '"Ubuntu", sans-serif', # (CSS font family): Font for normal text.
-#}
+  #'github_fork': 'jeamland/behave'
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
-#html_theme_path = []
+html_theme_path = ['_themes']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
