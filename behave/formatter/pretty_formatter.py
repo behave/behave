@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
 
 import sys
-import codecs
 
 from behave.formatter.ansi_escapes import escapes, up
 
@@ -49,21 +48,14 @@ def get_terminal_size():
 
 
 class PrettyFormatter(object):
-    def __init__(self, stream, monochrome, executing):
-        # the stream may already handle encoding (py3k sys.stdout) - if it
-        # doesn't (py2k sys.stdout) then make it do so.
-        if sys.version_info[0] < 3:
-            # py2 does, however, sometimes declare an encoding on sys.stdout,
-            # even if it doesn't use it (or it might be explicitly None)
-            encoding = getattr(stream, 'encoding', None) or 'UTF-8'
-            stream = codecs.getwriter(encoding)(stream)
-        elif not getattr(stream, 'encoding', None):
-            # ok, so the stream doesn't have an encoding at all so add one
-            stream = codecs.getwriter('UTF-8')(stream)
+    name = 'pretty'
+    description = 'Standard colourised pretty formatter'
+
+    def __init__(self, stream, config):
         self.stream = stream
 
-        self.monochrome = monochrome
-        self.executing = executing
+        self.monochrome = config.no_color
+        self.executing = not config.dry_run
 
         self.tag_statement = None
         self.steps = []
@@ -316,3 +308,4 @@ class PrettyFormatter(object):
         self.stream.write(self.indent(description, indent) + '\n')
         if newline:
             self.stream.write('\n')
+

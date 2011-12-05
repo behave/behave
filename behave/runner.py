@@ -11,7 +11,7 @@ import weakref
 from behave import parser
 from behave import matchers
 from behave import step_registry
-from behave.formatter.pretty_formatter import PrettyFormatter
+from behave.formatter import formatters
 from behave.configuration import ConfigError
 from behave.log_capture import MemoryHandler
 
@@ -391,7 +391,6 @@ class Runner(object):
 
         context = self.context = Context(self)
         stream = self.config.output
-        monochrome = self.config.no_color
         failed = False
 
         self.run_hook('before_all', context)
@@ -403,7 +402,7 @@ class Runner(object):
             self.features.append(feature)
             self.feature = feature
 
-            self.formatter = PrettyFormatter(stream, monochrome, True)
+            self.formatter = formatters.get_formatter(self.config, stream)
             self.formatter.uri(filename)
 
             failed = feature.run(self)

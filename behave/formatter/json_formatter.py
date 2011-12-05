@@ -6,7 +6,10 @@ except ImportError:
 
 
 class JSONFormatter(object):
-    def __init__(self, file):
+    name = 'json'
+    description = 'JSON dump of test run'
+
+    def __init__(self, file, config):
         self.file = file
 
         self._gherkin_object = None
@@ -70,3 +73,4 @@ class JSONFormatter(object):
 
     def _feature_element(self):
         return self._gherkin_object['elements'][-1]
+
