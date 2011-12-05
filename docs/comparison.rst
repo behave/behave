@@ -78,7 +78,8 @@ The issues we had with Freshen that suppoed us using it were:
   match different strings.
 * As with Lettuce, Freshen uses import hackery so .pyc files are left
   around and the module namespace is polluted.
-* Only Before and no contextual before/after control.
+* Only Before and no contextual before/after control, thus requiring use of
+  atexit for teardown operations and no fine-grained control.
 
 The above being said the integration with nose means that you gain things like
 JUnit output and coverage analysis fairly easily. This may or may not be an
