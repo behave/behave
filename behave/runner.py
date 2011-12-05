@@ -55,10 +55,10 @@ class Context(object):
 
     .. attribute:: tags
 
-      The current set of active tags (as a Python set containing
-      :class:`~behave.model.Tag`) combined from the feature and
-      scenario. This attribute will not be present outside of a feature
-      scope.
+      The current set of active tags (as a Python set containing instances of
+      :class:`~behave.model.Tag` which are basically just glorified strings)
+      combined from the feature and scenario. This attribute will not be present
+      outside of a feature scope.
 
     .. attribute:: failed
 
