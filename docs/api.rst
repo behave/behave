@@ -37,10 +37,11 @@ implementations **must** start with the import line:
 
    from behave import *
 
-Several decorators are defined by *behave* to allow you to identify your
-step functions. These are available in both PEP-8 (all lowercase) and
-traditional (title case) versions: "given", "when", "then" and the generic
-"step". See the `full list of variables imported`_ in the above statement.
+This imports several decorators defined by *behave* to allow you to
+identify your step functions. These are available in both PEP-8 (all
+lowercase) and traditional (title case) versions: "given", "when", "then"
+and the generic "step". See the `full list of variables imported`_ in the
+above statement.
 
 .. _`full list of variables imported`: #from-behave-import-*
 
@@ -125,7 +126,22 @@ Calling Steps From Other Steps
 ------------------------------
 
 If you find you'd like your step implementation to invoke another step you
-may do so with the context function :func:`execute_steps`.
+may do so with the :class:`~behave.runner.Context` method
+:func:`~behave.runner.Context.execute_steps`.
+
+This function allows you to, for example:
+
+.. code-block:: python
+
+    @when('I do the same thing as before')
+    def step(context):
+        context.execute_steps('''
+            when I press the big red button
+             and I duck
+        ''')
+
+This will cause the "when I do the same thing as before" step to execute
+the other two steps as though they had also appeared in the scenario file.
 
 
 from behave import *
