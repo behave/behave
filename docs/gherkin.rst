@@ -555,19 +555,19 @@ Given a feature file with:
       When attacked by Chuck Norris
       Then the ninja should run for his life
       
-then running ``behave --tags slow`` will run just the scenarios tagged
+then running ``behave --tags=slow`` will run just the scenarios tagged
 ``@slow``. If you wish to check everything *except* the slow ones then you
-may run ``behave --tags ~slow``.
+may run ``behave --tags=-slow``.
 
 Another common use-case is to tag a scenario you're working on with
-``@wip`` and then ``behave --tags wip`` to just test that one case.
+``@wip`` and then ``behave --tags=wip`` to just test that one case.
 
 Tag selection on the command-line may be combined:
 
-**--tags wip,slow**
+**--tags=wip,slow**
    This will select all the cases tagged *either* "wip" or "slow".
 
-**--tags wip --tags slow**
+**--tags=wip --tags=slow**
    This will select all the cases tagged *both* "wip" and "slow".
 
 If a feature or scenario is tagged and then skipped because of a

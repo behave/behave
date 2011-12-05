@@ -1,3 +1,5 @@
+from __future__ import with_statement
+
 from mock import Mock, patch
 from nose.tools import *
 from behave import step_registry

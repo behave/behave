@@ -216,6 +216,9 @@ class Feature(TagStatement, Replayable):
 
         run_feature = runner.config.tags.check(self.tags)
 
+        # current tags as a set
+        runner.context.tags = set(self.tags)
+
         if run_feature:
             for tag in self.tags:
                 runner.run_hook('before_tag', runner.context, tag)
@@ -399,6 +402,9 @@ class Scenario(TagStatement, Replayable):
 
         runner.context._push()
         runner.context.scenario = self
+
+        # current tags as a set
+        runner.context.tags = set(tags)
 
         if run_scenario:
             for tag in self.tags:

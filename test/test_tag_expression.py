@@ -27,7 +27,7 @@ class TestTagExpressionFoo(object):
 
 class TestTagExpressionNotFoo(object):
     def setUp(self):
-        self.e = TagExpression(['~foo'])
+        self.e = TagExpression(['-foo'])
 
     def test_should_match_bar(self):
         assert self.e.check(['bar'])
@@ -50,7 +50,7 @@ class TestTagExpressionFooOrBar(object):
 
 class TestTagExpressionFooOrBarAndNotZap(object):
     def setUp(self):
-        self.e = TagExpression(['foo,bar', '~zap'])
+        self.e = TagExpression(['foo,bar', '-zap'])
 
     def test_should_match_foo(self):
         assert self.e.check(['foo'])
@@ -60,7 +60,7 @@ class TestTagExpressionFooOrBarAndNotZap(object):
 
 class TestTagExpressionFoo3OrNotBar4AndZap5(object):
     def setUp(self):
-        self.e = TagExpression(['foo:3,~bar', 'zap:5'])
+        self.e = TagExpression(['foo:3,-bar', 'zap:5'])
 
     def test_should_count_tags_for_positive_tags(self):
         tools.eq_(self.e.limits, {'foo': 3, 'zap': 5})
@@ -70,14 +70,14 @@ class TestTagExpressionFoo3OrNotBar4AndZap5(object):
 
 class TestTagExpressionParsing(object):
     def setUp(self):
-        self.e = TagExpression([' foo:3 , ~bar ', ' zap:5 '])
+        self.e = TagExpression([' foo:3 , -bar ', ' zap:5 '])
 
     def test_should_have_limits(self):
         tools.eq_(self.e.limits, {'zap': 5, 'foo': 3})
 
 class TestTagExpressionTagLimits(object):
     def test_should_be_counted_for_negative_tags(self):
-        e = TagExpression(['~todo:3'])
+        e = TagExpression(['-todo:3'])
         tools.eq_(e.limits, {'todo': 3})
 
     def test_should_be_counted_for_positive_tags(self):
@@ -85,9 +85,9 @@ class TestTagExpressionTagLimits(object):
         tools.eq_(e.limits, {'todo': 3})
 
     def test_should_raise_an_error_for_inconsistent_limits(self):
-        tools.assert_raises(Exception, TagExpression, ['todo:3', '~todo:4'])
+        tools.assert_raises(Exception, TagExpression, ['todo:3', '-todo:4'])
 
     def test_should_allow_duplicate_consistent_limits(self):
-        e = TagExpression(['todo:3', '~todo:3'])
+        e = TagExpression(['todo:3', '-todo:3'])
         tools.eq_(e.limits, {'todo': 3})
 

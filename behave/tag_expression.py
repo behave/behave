@@ -10,19 +10,15 @@ class TagExpression(object):
         if not self.ands:
             return True
 
-        params = dict([(tag, True) for tag in tags])
+        params = set(tags)
 
         def test_tag(tag):
-            if tag.startswith('~'):
-                return not params.get(tag[1:], False)
-            return params.get(tag, False)
+            if tag.startswith('-'):
+                return tag[1:] not in params
+            return tag in params
 
-        for ors in self.ands:
-            if not ors:
-                continue
-            if True not in [test_tag(tag) for tag in ors]:
-                return False
-        return True
+        return all(any(test_tag(tag) for tag in ors)
+            for ors in self.ands)
 
     def add(self, tags):
         negatives = []
@@ -31,15 +27,15 @@ class TagExpression(object):
         for tag in tags:
             if tag.startswith('@'):
                 positives.append(tag[1:])
-            elif tag.startswith('~@'):
-                negatives.append('~' + tag[2:])
-            elif tag.startswith('~'):
+            elif tag.startswith('-@'):
+                negatives.append('-' + tag[2:])
+            elif tag.startswith('-'):
                 negatives.append(tag)
             else:
                 positives.append(tag)
 
-        self.ands.append(self.store_and_extract_limits(negatives, True))
-        self.ands.append(self.store_and_extract_limits(positives, False))
+        self.store_and_extract_limits(negatives, True)
+        self.store_and_extract_limits(positives, False)
 
     def store_and_extract_limits(self, tags, negated):
         tags_with_negation = []
@@ -63,7 +59,8 @@ class TagExpression(object):
                     raise Exception(msg)
                 self.limits[tag_without_negation] = limit
 
-        return tags_with_negation
+        if tags_with_negation:
+            self.ands.append(tags_with_negation)
 
     def __len__(self):
         return len(self.ands)

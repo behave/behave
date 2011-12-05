@@ -106,8 +106,9 @@ function test_version {
     source $venv_dir/behave$1/bin/activate
     cd $behave_dir
     rm -rf build
-    echo "Running: $python setup.py build 2>&1 > build.log"
-    $python setup.py build 2>&1 > build.log
+    #echo "Running: $python setup.py build 2>&1 > build.log"
+    #$python setup.py build 2>&1 > build.log
+    $python setup.py build
     cp -r tools/test-features build/lib/
     cd build/lib/
     echo "--------------------- $1 UNIT TESTS --------------------------"

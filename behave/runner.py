@@ -53,6 +53,13 @@ class Context(object):
       scenarios of a scenario outline) and holds a :class:`~behave.model.Scenario`.
       It will not be present outside of the scope of a scenario.
 
+    .. attribute:: tags
+
+      The current set of active tags (as a Python set containing
+      :class:`~behave.model.Tag`) combined from the feature and
+      scenario. This attribute will not be present outside of a feature
+      scope.
+
     .. attribute:: failed
 
       This is set in the root namespace as soon as any step fails.

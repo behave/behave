@@ -11,17 +11,12 @@ if major == 2 and minor < 7:
 if major == 2 and minor < 6:
     requirements.append('simplejson')
 
-# grab some useful information
-from behave import __version__ as version
-from behave import __doc__ as description
-lines = description.splitlines()
-summary = lines[0].strip()
-description = '\n'.join(lines).strip()
+description = open('README.rst').read()
 
 setup(
     name='behave',
-    version=version,
-    description=summary,
+    version='1.0.0',
+    description='behave is behaviour-driven development, Python style',
     long_description=description,
     author='Benno Rice and Richard Jones',
     author_email='benno@jeamland.net',

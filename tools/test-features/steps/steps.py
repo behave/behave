@@ -94,3 +94,11 @@ def step(context):
     assert context.saved_table[0]['department'] == expected, '%r != %r' % (
         context.saved_table[0]['department'], expected)
 
+@given('the tag "{tag}" is set')
+def step(context, tag):
+    assert tag in context.tags, '%r NOT present in %r!' % (tag, context.tags)
+
+@given('the tag "{tag}" is not set')
+def step(context, tag):
+    assert tag not in context.tags, '%r IS present in %r!' % (tag, context.tags)
+
