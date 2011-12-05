@@ -42,6 +42,7 @@ class Matcher(object):
 
 class ParseMatcher(Matcher):
     custom_types = {}
+
     def __init__(self, func, string):
         super(ParseMatcher, self).__init__(func, string)
         self.parser = parse.compile(self.string, self.custom_types)
