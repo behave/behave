@@ -81,7 +81,7 @@ issue for you. Behave will be adding JUnit output soon, and we will more than
 likely forget to remove this sentence when we do.
 
 On the issue of step argument transforms, behave does not currently support
-these but it does support the use, by default, of the parse_ library for
+these but it does support the use, by default, the parse_ library for
 matching step text which provides a similar level of functionality for basic
 types like strings and numbers. Extended functionality may be added at a later
 date.
