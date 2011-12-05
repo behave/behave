@@ -15,12 +15,13 @@ a page further describing this `philosophy`_.
 *behave* uses tests written in a natural language style, backed up by Python
 code.
 
-To get started, we recommend the `tutorial`_ and then the `test setup`_ and
-`api`_ references.
+Once you've `installed`_ *behave* we recommend the `tutorial`_ and then the
+`test setup`_ and `api`_ references.
 
 There is also a `comparison`_ with the other tools available.
 
 .. _`philosophy`: philosophy.html
+.. _`installed`: install.html
 .. _`tutorial`: tutorial.html
 .. _`test setup`: gherkin.html
 .. _`api`: api.html
@@ -30,6 +31,7 @@ There is also a `comparison`_ with the other tools available.
 .. toctree::
    :maxdepth: 2
 
+   install
    tutorial
    philosophy
    gherkin

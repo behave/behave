@@ -114,8 +114,9 @@ class Feature(TagStatement, Replayable):
 
     .. attribute:: tags
 
-       A list of @tags (as :class:`~behave.model.Tag`) attached to the
-       feature. See `controlling things with tags`_.
+       A list of @tags (as :class:`~behave.model.Tag` which are basically
+       glorified strings) attached to the feature. See `controlling
+       things with tags`_.
 
     .. attribute:: status
 
@@ -322,8 +323,9 @@ class Scenario(TagStatement, Replayable):
 
     .. attribute:: tags
 
-       A list of @tags (as :class:`~behave.model.Tag`) attached to the
-       scenario. See `controlling things with tags`_.
+       A list of @tags (as :class:`~behave.model.Tag` which are basically
+       glorified strings) attached to the scenario. See `controlling
+       things with tags`_.
 
     .. attribute:: status
 
@@ -471,8 +473,9 @@ class ScenarioOutline(Scenario):
 
     .. attribute:: tags
 
-       A list of @tags (as :class:`~behave.model.Tag`) attached to the
-       scenario. See `controlling things with tags`_.
+       A list of @tags (as :class:`~behave.model.Tag` which are basically
+       glorified strings) attached to the scenario. See `controlling
+       things with tags`_.
 
     .. attribute:: status
 

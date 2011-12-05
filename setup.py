@@ -11,7 +11,7 @@ if major == 2 and minor < 7:
 if major == 2 and minor < 6:
     requirements.append('simplejson')
 
-description = open('README.rst').read()
+description = ''.join(open('README.rst').readlines()[6:])
 
 setup(
     name='behave',
