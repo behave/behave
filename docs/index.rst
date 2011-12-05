@@ -16,12 +16,15 @@ a page further describing this `philosophy`_.
 code.
 
 To get started, we recommend the `tutorial`_ and then the `test setup`_ and
-`api`_ references. 
+`api`_ references.
+
+There is also a `comparison`_ with the other tools available.
 
 .. _`philosophy`: philosophy.html
 .. _`tutorial`: tutorial.html
 .. _`test setup`: gherkin.html
 .. _`api`: api.html
+.. _`comparison`: comparison.html
 
 
 .. toctree::
@@ -31,6 +34,7 @@ To get started, we recommend the `tutorial`_ and then the `test setup`_ and
    philosophy
    gherkin
    api
+   comparison
 
 
 Indices and tables
