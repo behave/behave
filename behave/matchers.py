@@ -41,9 +41,10 @@ class Matcher(object):
 
 
 class ParseMatcher(Matcher):
+    custom_types = {}
     def __init__(self, func, string):
         super(ParseMatcher, self).__init__(func, string)
-        self.parser = parse.compile(self.string)
+        self.parser = parse.compile(self.string, self.custom_types)
 
     def check_match(self, step):
         result = self.parser.parse(step)
@@ -59,6 +60,19 @@ class ParseMatcher(Matcher):
             args.append(model.Argument(start, end, step[start:end], arg, name))
         args.sort(key=lambda x: x.start)
         return args
+
+
+def register_type(**kw):
+    '''Register a custom type that will be available to "parse" for type
+    conversion during matching.
+
+    Converters should be supplied as name=callable arguments to
+    ``register_type()``.
+
+    The callable should accept a single string argument and return the
+    type-converted value.
+    '''
+    ParseMatcher.custom_types.update(kw)
 
 
 class RegexMatcher(Matcher):

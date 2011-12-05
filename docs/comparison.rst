@@ -55,8 +55,6 @@ Python step definitions. The main differences with behave are:
 
  * Operates as a plugin for nose, and is thus tied to the nose runner and its
    output model.
- * Supports step argument transforms which enable coversion of parts of the
-   step text into arguments to the step definition.
  * Has some additions to its Gherkin syntax allowing it to specify specific step
    definition modules for each feature.
  * Has separate context objects for various levels: ``glc``, ``ftc`` and
@@ -79,12 +77,6 @@ The above being said the integration with nose means that you gain things like
 JUnit output and coverage analysis fairly easily. This may or may not be an
 issue for you. Behave will be adding JUnit output soon and we will more than
 likely forget to remove this sentence when we do.
-
-On the issue of step argument transforms, behave does not currently support
-these but it does support the use, by default, the parse_ library for
-matching step text which provides a similar level of functionality for basic
-types like strings and numbers. Extended functionality may be added at a later
-date.
 
 .. _Freshen: https://github.com/rlisagor/freshen
 .. _nose: http://readthedocs.org/docs/nose/

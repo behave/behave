@@ -109,6 +109,22 @@ you invoke :func:`~behave.matchers.step_matcher`.
 
 .. autofunction:: behave.matchers.step_matcher
 
+You may add new types to the default parser by invoking 
+:func:`~behave.matchers.register_type`.
+
+.. autofunction:: behave.matchers.register_type
+
+An example of this in action could be, in steps.py:
+
+.. code-block:: python
+
+    from behave.matchers import register_type
+    register_type(custom=lambda s: s.upper())
+
+    @given('a string {:custom} a custom type')
+    def step(context, argument):
+        assert argument.isupper()
+
 You may define a new parameter matcher by subclassing
 :class:`behave.matchers.Matcher` and registering it with
 :attr:`behave.matchers.matcher_mapping` which is a dictionary of "matcher
