@@ -42,6 +42,7 @@ class Matcher(object):
 
 class ParseMatcher(Matcher):
     custom_types = {}
+
     def __init__(self, func, string):
         super(ParseMatcher, self).__init__(func, string)
         self.parser = parse.compile(self.string, self.custom_types)
@@ -53,7 +54,7 @@ class ParseMatcher(Matcher):
 
         args = []
         for index, arg in enumerate(result.fixed):
-            start, end = result.spans[index + 1]
+            start, end = result.spans[index]
             args.append(model.Argument(start, end, step[start:end], arg))
         for name, arg in result.named.items():
             start, end = result.spans[name]

@@ -1,13 +1,83 @@
+import struct
 import sys
 import tempfile
 
-from mock import Mock
+from mock import Mock, patch
 from nose.tools import *
 
 from behave.formatter import formatters
 from behave.formatter import tag_count_formatter
 
 from behave.model import Tag, Feature, Scenario
+
+
+class TestGetTerminalSize(object):
+    def setUp(self):
+        try:
+            self.ioctl_patch = patch('fcntl.ioctl')
+            self.ioctl = self.ioctl_patch.start()
+        except ImportError:
+            self.ioctl_patch = None
+            self.ioctl = None
+        self.zero_struct = struct.pack('HHHH', 0, 0, 0, 0)
+
+    def tearDown(self):
+        if self.ioctl_patch:
+            self.ioctl_patch.stop()
+
+    def test_windows_fallback(self):
+        platform = sys.platform
+        sys.platform = 'windows'
+
+        eq_(pretty_formatter.get_terminal_size(), (80, 24))
+
+        sys.platform = platform
+
+    def test_termios_fallback(self):
+        try:
+            import termios
+            return
+        except ImportError:
+            pass
+
+        eq_(pretty_formatter.get_terminal_size(), (80, 24))
+
+    def test_exception_in_ioctl(self):
+        try:
+            import termios
+        except ImportError:
+            return
+
+        def raiser(*args, **kwargs):
+            raise Exception('yeehar!')
+
+        self.ioctl.side_effect = raiser
+
+        eq_(pretty_formatter.get_terminal_size(), (80, 24))
+        self.ioctl.assert_called_with(0, termios.TIOCGWINSZ, self.zero_struct)
+
+    def test_happy_path(self):
+        try:
+            import termios
+        except ImportError:
+            return
+
+        self.ioctl.return_value = struct.pack('HHHH', 17, 23, 5, 5)
+
+        eq_(pretty_formatter.get_terminal_size(), (23, 17))
+        self.ioctl.assert_called_with(0, termios.TIOCGWINSZ, self.zero_struct)
+
+    def test_zero_size_fallback(self):
+        try:
+            import termios
+        except ImportError:
+            return
+
+        self.ioctl.return_value = self.zero_struct
+
+        eq_(pretty_formatter.get_terminal_size(), (80, 24))
+        self.ioctl.assert_called_with(0, termios.TIOCGWINSZ, self.zero_struct)
+
 
 def _tf():
     '''Open a temp file that looks a bunch like stdout.

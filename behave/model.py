@@ -9,6 +9,7 @@ import traceback
 
 from behave import step_registry
 
+
 def relpath(path, other):
     # Python 2.5 doesn't know about relpath
     if hasattr(os.path, 'relpath'):

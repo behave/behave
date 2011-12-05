@@ -4,7 +4,7 @@ from mock import Mock, patch
 from nose.tools import *
 import parse
 
-from behave import matchers, model
+from behave import matchers, model, runner
 
 class DummyMatcher(matchers.Matcher):
     desired_result = None
@@ -33,6 +33,12 @@ class TestMatcher(object):
         assert match.arguments == arguments
 
 class TestParseMatcher(object):
+    def setUp(self):
+        self.recorded_args = None
+
+    def record_args(self, *args, **kwargs):
+        self.recorded_args = (args, kwargs)
+
     def test_returns_none_if_parser_does_not_match(self):
         matcher = matchers.ParseMatcher(None, 'a string')
         with patch.object(matcher.parser, 'parse') as parse:
@@ -45,9 +51,9 @@ class TestParseMatcher(object):
 
         results = parse.Result([1, 2, 3], {'foo': 'bar', 'baz': -45.3},
                                {
-                                   1: (13, 14),
-                                   2: (16, 17),
-                                   3: (22, 23),
+                                   0: (13, 14),
+                                   1: (16, 17),
+                                   2: (22, 23),
                                    'foo': (32, 35),
                                    'baz': (39, 44),
                                })
@@ -67,6 +73,28 @@ class TestParseMatcher(object):
             args = m.arguments
             have = [(a.start, a.end, a.original, a.value, a.name) for a in args]
             eq_(have, expected)
+
+    def test_named_arguments(self):
+        text = "has a {string}, an {integer:d} and a {decimal:f}"
+        matcher = matchers.ParseMatcher(self.record_args, text)
+        context = runner.Context(Mock())
+
+        m = matcher.match("has a foo, an 11 and a 3.14159")
+        m.run(context)
+        eq_(self.recorded_args, ((context,), {
+            'string': 'foo',
+            'integer': 11,
+            'decimal': 3.14159
+        }))
+
+    def test_positional_arguments(self):
+        text = "has a {}, an {:d} and a {:f}"
+        matcher = matchers.ParseMatcher(self.record_args, text)
+        context = runner.Context(Mock())
+
+        m = matcher.match("has a foo, an 11 and a 3.14159")
+        m.run(context)
+        eq_(self.recorded_args, ((context, 'foo', 11, 3.14159), {}))
 
 class TestRegexMatcher(object):
     def test_returns_none_if_regex_does_not_match(self):

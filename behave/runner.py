@@ -15,6 +15,7 @@ from behave.formatter import formatters
 from behave.configuration import ConfigError
 from behave.log_capture import MemoryHandler
 
+
 class ContextMaskWarning(UserWarning):
     '''Raised if a context variable is being overwritten in some situations.
 
