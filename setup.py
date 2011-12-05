@@ -4,7 +4,7 @@ import sys
 
 from setuptools import find_packages, setup
 
-requirements = ['parse>=1.1.5']
+requirements = ['parse>=1.3.3']
 major, minor = sys.version_info[:2]
 if major == 2 and minor < 7:
     requirements.append('argparse')
