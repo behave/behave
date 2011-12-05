@@ -8,6 +8,7 @@ import sys
 import time
 import traceback
 
+from behave import step_registry
 
 def relpath(path, other):
     # Python 2.5 doesn't know about relpath
@@ -697,10 +698,8 @@ class Step(BasicStatement, Replayable):
         return result
 
     def run(self, runner, quiet=False):
-        runner.context._set_root_attribute('table', None)
-        runner.context._set_root_attribute('text', None)
-
-        match = runner.steps.find_match(self)
+        # access module var here to allow test mocking to work
+        match = step_registry.registry.find_match(self)
         if match is None:
             runner.undefined.append(self)
             if not quiet:
@@ -720,9 +719,9 @@ class Step(BasicStatement, Replayable):
         try:
             start = time.time()
             if self.text:
-                runner.context._set_root_attribute('text', self.text)
+                runner.context.text = self.text
             if self.table:
-                runner.context._set_root_attribute('table', self.table)
+                runner.context.table = self.table
             match.run(runner.context)
             self.status = 'passed'
         except AssertionError, e:

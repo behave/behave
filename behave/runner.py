@@ -6,12 +6,14 @@ import StringIO
 import sys
 import traceback
 import warnings
+import weakref
 
-from behave import matchers, parser
+from behave import parser
+from behave import matchers
+from behave import step_registry
 from behave.formatter.pretty_formatter import PrettyFormatter
 from behave.configuration import ConfigError
 from behave.log_capture import MemoryHandler
-
 
 class ContextMaskWarning(UserWarning):
     '''Raised if a context variable is being overwritten in some situations.
@@ -38,29 +40,35 @@ class Context(object):
     Certain names are used by *behave*; be wary of using them yourself as
     *behave* may overwrite the value you set. These names are:
 
-    **feature**
+    .. attribute:: feature
+
       This is set when we start testing a new feature and holds a
       :class:`~behave.model.Feature`. It will not be present outside of a
       feature (i.e. within the scope of the environment before_all and
       after_all).
 
-    **scenario**
+    .. attribute:: scenario
+
       This is set when we start testing a new scenario (including the individual
       scenarios of a scenario outline) and holds a :class:`~behave.model.Scenario`.
       It will not be present outside of the scope of a scenario.
 
-    **failed**
+    .. attribute:: failed
+
       This is set in the root namespace as soon as any step fails.
 
-    **table**
+    .. attribute:: table
+
       This is set at the step level and holds any :class:`~behave.model.Table`
       associated with the step.
 
-    **text**
+    .. attribute:: text
+
       This is set at the step level and holds any multiline text associated with
       the step.
 
-    **active_outline**
+    .. attribute:: active_outline
+
       This is set for each scenario in a scenario outline and references the
       :class:`~behave.model.Row` that is active for the current scenario. It is
       present mostly for debugging, but may be useful otherwise.
@@ -72,12 +80,11 @@ class Context(object):
     BEHAVE = 'behave'
     USER = 'user'
 
-    def __init__(self, config):
-        self._config = config
+    def __init__(self, runner):
+        self._runner = weakref.proxy(runner)
+        self._config = runner.config
         d = self._root = {
             'failed': False,
-            'table': None,
-            'text': None,
             'active_outline': None,
         }
         self._stack = [d]
@@ -151,9 +158,9 @@ class Context(object):
             self.__dict__[attr] = value
             return
 
-        for frame in self.__dict__['_stack'][1:]:
+        for frame in self._stack[1:]:
             if attr in frame:
-                record = self.__dict__['_record'][attr]
+                record = self._record[attr]
                 params = {
                     'attr': attr,
                     'filename': record[0],
@@ -163,36 +170,39 @@ class Context(object):
                 self._emit_warning(attr, params)
 
         stack_frame = traceback.extract_stack(limit=2)[0]
-        self.__dict__['_record'][attr] = stack_frame
-        frame = self.__dict__['_stack'][0]
+        self._record[attr] = stack_frame
+        frame = self._stack[0]
         frame[attr] = value
         if attr not in self._origin:
             self._origin[attr] = self._mode
 
+    def execute_steps(self, steps):
+        '''The steps identified in the "steps" text string will be parsed and
+        executed in turn just as though they were defined in a feature file.
 
-class StepRegistry(object):
-    def __init__(self):
-        self.steps = {
-            'given': [],
-            'when': [],
-            'then': [],
-            'step': [],
-        }
+        If the execute_steps call fails (either through error or failure
+        assertion) then the step invoking it will fail.
 
-    def add_definition(self, keyword, string, func):
-        self.steps[keyword.lower()].append(matchers.get_matcher(func, string))
+        ValueError will be raised if this is invoked outside a feature context.
 
-    def find_match(self, step):
-        candidates = self.steps[step.step_type]
-        if step.step_type is not 'step':
-            candidates += self.steps['step']
+        Returns boolean False if the steps are not parseable, True otherwise.
+        '''
+        assert type(steps) is unicode, "Steps must be unicode."
+        try:
+            feature = self.feature
+        except AttributeError:
+            raise ValueError('execute_steps() called outside of a '
+                'feature context')
 
-        for matcher in candidates:
-            result = matcher.match(step.name)
-            if result:
-                return result
-
-        return None
+        for step in steps.strip().split('\n'):
+            step = step.strip()
+            step_obj = self.feature.parser.parse_step(step)
+            if step_obj is None:
+                return False
+            passed = step_obj.run(self._runner, quiet=True)
+            if not passed:
+                assert False, "Sub-step failed: %s" % step
+        return True
 
 
 def exec_file(filename, globals={}, locals=None):
@@ -226,7 +236,6 @@ class Runner(object):
     def __init__(self, config):
         self.config = config
 
-        self.steps = StepRegistry()
         self.hooks = {}
 
         self.features = []
@@ -319,27 +328,6 @@ class Runner(object):
         if os.path.exists(hooks_path):
             exec_file(hooks_path, self.hooks)
 
-    def make_step_decorator(self, step_type):
-        def decorator(string):
-            def wrapper(func):
-                self.steps.add_definition(step_type, string, func)
-                return func
-            return wrapper
-        return decorator
-
-    def execute_steps(self, steps):
-        assert type(steps) is unicode, "Steps must be in unicode."
-
-        for step in steps.strip().split('\n'):
-            step = step.strip()
-            step_obj = self.feature.parser.parse_step(step)
-            if step_obj is None:
-                return False
-            passed = self.run_step(step_obj, quiet=True)
-            if not passed:
-                assert False, "Sub-step failed: %s" % step
-        return True
-
     def load_step_definitions(self, extra_step_paths=[]):
         steps_dir = os.path.join(self.base_dir, 'steps')
 
@@ -347,12 +335,13 @@ class Runner(object):
         sys.path.insert(0, steps_dir)
 
         step_globals = {
-            'execute_steps': self.execute_steps,
             'step_matcher': matchers.step_matcher,
         }
+
         for step_type in ('given', 'when', 'then', 'step'):
-            step_globals[step_type] = self.make_step_decorator(step_type)
-            step_globals[step_type.title()] = step_globals[step_type]
+            decorator = getattr(step_registry, step_type)
+            step_globals[step_type] = decorator
+            step_globals[step_type.title()] = decorator
 
         for path in [steps_dir] + list(extra_step_paths):
             for name in os.listdir(path):
@@ -392,7 +381,7 @@ class Runner(object):
         self.load_hooks()
         self.load_step_definitions()
 
-        context = self.context = Context(self.config)
+        context = self.context = Context(self)
         stream = self.config.output
         monochrome = self.config.no_color
         failed = False

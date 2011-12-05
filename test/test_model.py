@@ -220,8 +220,9 @@ class TestStepRun(object):
         self.runner = Mock()
         self.config = self.runner.config = Mock()
         self.context = self.runner.context = Mock()
+        print ('context is', self.context)
         self.formatter = self.runner.formatter = Mock()
-        self.steps = self.runner.steps = Mock()
+        self.step_registry = Mock()
         self.stdout_capture = self.runner.stdout_capture = Mock()
         self.stdout_capture.getvalue.return_value = ''
         self.log_capture = self.runner.log_capture = Mock()
@@ -229,9 +230,10 @@ class TestStepRun(object):
         self.run_hook = self.runner.run_hook = Mock()
 
     def test_run_resets_text_and_table_before_step(self):
-        self.steps.find_match.return_value = None
+        self.step_registry.find_match.return_value = None
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
-        assert not step.run(self.runner)
+        with patch('behave.step_registry.registry', self.step_registry):
+            assert not step.run(self.runner)
 
         call_args_list = self.context._set_root_attribute.call_args_list
         call_args_list = [x[0] for x in call_args_list]
@@ -240,25 +242,28 @@ class TestStepRun(object):
 
     def test_run_appends_step_to_undefined_when_no_match_found(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
-        self.steps.find_match.return_value = None
+        self.step_registry.find_match.return_value = None
         self.runner.undefined = []
-        assert not step.run(self.runner)
+        with patch('behave.step_registry.registry', self.step_registry):
+            assert not step.run(self.runner)
 
         assert step in self.runner.undefined
         eq_(step.status, 'undefined')
 
     def test_run_reports_undefined_step_via_formatter_when_not_quiet(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
-        self.steps.find_match.return_value = None
-        assert not step.run(self.runner)
+        self.step_registry.find_match.return_value = None
+        with patch('behave.step_registry.registry', self.step_registry):
+            assert not step.run(self.runner)
 
         self.formatter.match.assert_called_with(model.NoMatch())
         self.formatter.result.assert_called_with(step)
 
     def test_run_with_no_match_does_not_touch_formatter_when_quiet(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
-        self.steps.find_match.return_value = None
-        assert not step.run(self.runner, quiet=True)
+        self.step_registry.find_match.return_value = None
+        with patch('behave.step_registry.registry', self.step_registry):
+            assert not step.run(self.runner, quiet=True)
 
         assert not self.formatter.match.called
         assert not self.formatter.result.called
@@ -266,20 +271,21 @@ class TestStepRun(object):
     def test_run_when_not_quiet_reports_match_and_result(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
         match = Mock()
-        self.steps.find_match.return_value = match
+        self.step_registry.find_match.return_value = match
 
         side_effects = (None, raiser(AssertionError('whee')),
                         raiser(Exception('whee')))
         for side_effect in side_effects:
             match.run.side_effect = side_effect
-            step.run(self.runner)
+            with patch('behave.step_registry.registry', self.step_registry):
+                step.run(self.runner)
             self.formatter.match.assert_called_with(match)
             self.formatter.result.assert_called_with(step)
 
     def test_run_when_quiet_reports_nothing(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
         match = Mock()
-        self.steps.find_match.return_value = match
+        self.step_registry.find_match.return_value = match
 
         side_effects = (None, raiser(AssertionError('whee')),
                 raiser(Exception('whee')))
@@ -292,7 +298,7 @@ class TestStepRun(object):
     def test_run_runs_before_hook_then_match_then_after_hook(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
         match = Mock()
-        self.steps.find_match.return_value = match
+        self.step_registry.find_match.return_value = match
 
         side_effects = (None, AssertionError('whee'), Exception('whee'))
         for side_effect in side_effects:
@@ -312,7 +318,8 @@ class TestStepRun(object):
                 return nonraiser
 
             match.run.side_effect = effect(side_effect)
-            step.run(self.runner)
+            with patch('behave.step_registry.registry', self.step_registry):
+                step.run(self.runner)
 
             eq_(match.run.call_args_list, [
                 (('before_step', self.context, step), {}),
@@ -323,27 +330,30 @@ class TestStepRun(object):
     def test_run_sets_table_if_present(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo',
                           table=Mock())
-        self.steps.find_match.return_value = Mock()
+        self.step_registry.find_match.return_value = Mock()
 
-        step.run(self.runner)
+        with patch('behave.step_registry.registry', self.step_registry):
+            step.run(self.runner)
 
-        self.context._set_root_attribute.assert_called_with('table', step.table)
+        eq_(self.context.table, step.table)
 
     def test_run_sets_text_if_present(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo',
-                          text=Mock())
-        self.steps.find_match.return_value = Mock()
+                          text=Mock(name='text'))
+        self.step_registry.find_match.return_value = Mock()
 
-        step.run(self.runner)
+        with patch('behave.step_registry.registry', self.step_registry):
+            step.run(self.runner)
 
-        self.context._set_root_attribute.assert_called_with('text', step.text)
+        eq_(self.context.text, step.text)
 
     def test_run_sets_status_to_passed_if_nothing_goes_wrong(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
         step.error_message = None
-        self.steps.find_match.return_value = Mock()
+        self.step_registry.find_match.return_value = Mock()
 
-        step.run(self.runner)
+        with patch('behave.step_registry.registry', self.step_registry):
+            step.run(self.runner)
 
         eq_(step.status, 'passed')
         eq_(step.error_message, None)
@@ -353,9 +363,10 @@ class TestStepRun(object):
         step.error_message = None
         match = Mock()
         match.run.side_effect = raiser(AssertionError('whee'))
-        self.steps.find_match.return_value = match
+        self.step_registry.find_match.return_value = match
 
-        step.run(self.runner)
+        with patch('behave.step_registry.registry', self.step_registry):
+            step.run(self.runner)
 
         eq_(step.status, 'failed')
         assert step.error_message.startswith('Assertion Failed')
@@ -366,10 +377,11 @@ class TestStepRun(object):
         step.error_message = None
         match = Mock()
         match.run.side_effect = raiser(Exception('whee'))
-        self.steps.find_match.return_value = match
+        self.step_registry.find_match.return_value = match
         format_exc.return_value = 'something to do with an exception'
 
-        step.run(self.runner)
+        with patch('behave.step_registry.registry', self.step_registry):
+            step.run(self.runner)
 
         eq_(step.status, 'failed')
         eq_(step.error_message, format_exc.return_value)
@@ -378,7 +390,7 @@ class TestStepRun(object):
     def test_run_calculates_duration(self, time_time):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
         match = Mock()
-        self.steps.find_match.return_value = match
+        self.step_registry.find_match.return_value = match
 
         def time_time_1():
             def time_time_2():
@@ -392,15 +404,17 @@ class TestStepRun(object):
             match.run.side_effect = side_effect
             time_time.side_effect = time_time_1
 
-            step.run(self.runner)
+            with patch('behave.step_registry.registry', self.step_registry):
+                step.run(self.runner)
             eq_(step.duration, 23 - 17)
 
     def test_run_captures_stdout_and_logging(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
         match = Mock()
-        self.steps.find_match.return_value = match
+        self.step_registry.find_match.return_value = match
 
-        assert step.run(self.runner)
+        with patch('behave.step_registry.registry', self.step_registry):
+            assert step.run(self.runner)
 
         self.runner.start_capture.assert_called_with()
         self.runner.stop_capture.assert_called_with()
@@ -408,11 +422,12 @@ class TestStepRun(object):
     def test_run_appends_any_captured_stdout_on_failure(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
         match = Mock()
-        self.steps.find_match.return_value = match
+        self.step_registry.find_match.return_value = match
         self.stdout_capture.getvalue.return_value = 'frogs'
         match.run.side_effect = raiser(Exception('halibut'))
 
-        assert not step.run(self.runner)
+        with patch('behave.step_registry.registry', self.step_registry):
+            assert not step.run(self.runner)
 
         assert 'Captured stdout:' in step.error_message
         assert 'frogs' in step.error_message
@@ -420,11 +435,12 @@ class TestStepRun(object):
     def test_run_appends_any_captured_logging_on_failure(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
         match = Mock()
-        self.steps.find_match.return_value = match
+        self.step_registry.find_match.return_value = match
         self.log_capture.getvalue.return_value = 'toads'
         match.run.side_effect = raiser(AssertionError('kipper'))
 
-        assert not step.run(self.runner)
+        with patch('behave.step_registry.registry', self.step_registry):
+            assert not step.run(self.runner)
 
         assert 'Captured logging:' in step.error_message
         assert 'toads' in step.error_message

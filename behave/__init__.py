@@ -16,3 +16,11 @@ To get started, we recommend the `tutorial`_ and then the `test language`_ and
 '''
 
 __version__ = '1.0.0'
+
+from behave.step_registry import *
+from behave.matchers import step_matcher
+
+names = 'given when then step'
+names = names + ' ' + names.title()
+names = names + ' step_matcher'
+__all__ = names.split()

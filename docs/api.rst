@@ -30,12 +30,19 @@ Step functions are implemented in the Python modules present in your
 directory will be imported to find step implementations. They are all
 loaded before *behave* starts executing your feature tests.
 
-Step functions are identified using step decorators.
+Step functions are identified using step decorators. All step
+implementations **must** start with the import line:
+
+.. code-block:: python
+
+   from behave import *
 
 Several decorators are defined by *behave* to allow you to identify your
 step functions. These are available in both PEP-8 (all lowercase) and
 traditional (title case) versions: "given", "when", "then" and the generic
-"step".
+"step". See the `full list of variables imported`_ in the above statement.
+
+.. _`full list of variables imported`: #from-behave-import-*
 
 The decorators all take a single string argument: the string to match
 against the feature file step text *exactly*. So the following step
@@ -55,9 +62,6 @@ will match the "Given" step from the following feature:
  Scenario: test something
   Given some known state
    then some observed outcome.
-
-These decorators do not appear anywhere in the behave API - don't look for
-them. They're created temporarily when the step Python files are executed.
 
 *You don't need to import the decorators*: they're automatically available
 to your step implmentation modules as `global variables`_.
@@ -121,33 +125,25 @@ Calling Steps From Other Steps
 ------------------------------
 
 If you find you'd like your step implementation to invoke another step you
-may do so with :func:`execute_steps`. This is available as a global
-variable to step implementation modules.
-
-.. function:: execute_steps(steps)
-
-   The steps identified in the steps text string will be parsed and
-   executed in turn just as though they were defined in a feature file.
-
-   If the execute_steps call fails (either through error or failure
-   assertion) then the step invoking it will fail.
+may do so with the context function :func:`execute_steps`.
 
 
-Step Global Variables
----------------------
+from behave import *
+--------------------
 
-When your step implementations are imported (technically they are
-exec()'ed) there are a number of global variables defined for the module to
-use:
+The import statement:
+
+.. code-block:: python
+
+  from behave import *
+
+is written to introduce a restricted set of variables into your code:
 
 **given**, **when**, **then**, **step**
   These are the decorators used to identify implementations.
 
 **Given**, **When**, **Then**, **Step**
   See above.
-
-**execute_steps**
-  This is described in `calling steps from other steps`_.
 
 **stop_matcher**
   This is described in `step parameters`_.
@@ -190,6 +186,7 @@ The *context* variable in all cases is an instance of
 :class:`behave.runner.Context`.
 
 .. autoclass:: behave.runner.Context
+   :members:
 
 .. autoclass:: behave.runner.ContextMaskWarning
 
