@@ -28,22 +28,24 @@ Lettuce_
 Lettuce is similar to behave in that it's a fairly straight port of the basic
 functionality of Cucumber. The main differences with behave are:
 
- * Single decorator for step definitions, ``@step``.
- * The context variable, ``world``, is simply a shared holder of attributes. It
-   never gets cleaned up during the run.
- * Hooks are declared using decorators rather than as simple functions.
- * No support for tags.
- * Step definition code files can be anywhere in the feature directory
-   hierarchy.
+* Single decorator for step definitions, ``@step``.
+* The context variable, ``world``, is simply a shared holder of attributes. It
+  never gets cleaned up during the run.
+* Hooks are declared using decorators rather than as simple functions.
+* No support for tags.
+* Step definition code files can be anywhere in the feature directory
+  hierarchy.
 
-The issues we had with lettuce that stopped us using it were:
+The issues we had with Lettuce that stopped us using it were:
 
- * Lack of tags.
- * The hooks functionality was patchy. For instance it was very hard to clean
-   up the ``world`` variable between scenario outlines. Behave clears the
-   scenario-level context between outlines automatically.
- * Lettuce's handling of stdout would occasionally cause it to crash mid-run in
-   such a way that cleanup hooks were never run.
+* Lack of tags.
+* The hooks functionality was patchy. For instance it was very hard to clean
+  up the ``world`` variable between scenario outlines. Behave clears the
+  scenario-level context between outlines automatically.
+* Lettuce's handling of stdout would occasionally cause it to crash mid-run in
+  such a way that cleanup hooks were never run.
+* Lettuce uses import hackery so .pyc files are left around and the module
+  namespace is polluted.
 
 .. _Lettuce: http://lettuce.it/
 
@@ -53,25 +55,29 @@ Freshen_
 Freshen is a plugin for nose_ that implements a Gherkin-style language with
 Python step definitions. The main differences with behave are:
 
- * Operates as a plugin for nose, and is thus tied to the nose runner and its
-   output model.
- * Has some additions to its Gherkin syntax allowing it to specify specific step
-   definition modules for each feature.
- * Has separate context objects for various levels: ``glc``, ``ftc`` and
-   ``scc``. These relate to global, feature and scenario levels respectively.
+* Operates as a plugin for nose, and is thus tied to the nose runner and its
+  output model.
+* Has some additions to its Gherkin syntax allowing it to specify specific step
+  definition modules for each feature.
+* Has separate context objects for various levels: ``glc``, ``ftc`` and
+  ``scc``. These relate to global, feature and scenario levels respectively.
 
-The issues we had with freshen that suppoed us using it were:
+The issues we had with Freshen that suppoed us using it were:
 
- * The integration with the nose runner made it quite hard to properly debug
-   how and why tests were failing. Quite often you'd get a rather cryptic
-   message with the actual exception having been swallowed.
- * The feature-specific step includes could lead to specific sets of step
-   definitions for each feature despite them warning against doing that.
- * The output being handled by nose meant that you couldn't do cucumber-style
-   output without the addition of more plugins.
- * The context variable names are cryptic and moving context data from one
-   level to another takes a certain amount of work finding and renaming. The
-   behave `context` variable is much more flexible.
+* The integration with the nose runner made it quite hard to properly debug
+  how and why tests were failing. Quite often you'd get a rather cryptic
+  message with the actual exception having been swallowed.
+* The feature-specific step includes could lead to specific sets of step
+  definitions for each feature despite them warning against doing that.
+* The output being handled by nose meant that you couldn't do cucumber-style
+  output without the addition of more plugins.
+* The context variable names are cryptic and moving context data from one
+  level to another takes a certain amount of work finding and renaming. The
+  behave `context` variable is much more flexible.
+* Step functions must have unique names, even though they're decorated to
+  match different strings.
+* As with Lettuce, Freshen uses import hackery so .pyc files are left
+  around and the module namespace is polluted.
 
 The above being said the integration with nose means that you gain things like
 JUnit output and coverage analysis fairly easily. This may or may not be an
