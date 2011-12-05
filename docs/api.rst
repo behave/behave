@@ -121,9 +121,9 @@ An example of this in action could be, in steps.py:
     from behave.matchers import register_type
     register_type(custom=lambda s: s.upper())
 
-    @given('a string {:custom} a custom type')
-    def step(context, argument):
-        assert argument.isupper()
+    @given('a string {param:custom} a custom type')
+    def step(context, param):
+        assert param.isupper()
 
 You may define a new parameter matcher by subclassing
 :class:`behave.matchers.Matcher` and registering it with
