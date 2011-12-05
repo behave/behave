@@ -4,7 +4,6 @@ import copy
 import difflib
 import itertools
 import os.path
-import sys
 import time
 import traceback
 
@@ -830,6 +829,7 @@ class Table(Replayable):
         If the cells do not match then a useful AssertionError will be raised.
         '''
         TODO
+
 
 class Row(object):
     '''One row of a `table`_ parsed from a *feature file*.

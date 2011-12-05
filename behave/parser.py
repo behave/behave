@@ -3,7 +3,6 @@ from __future__ import with_statement
 from behave import model, i18n
 
 DEFAULT_LANGUAGE = 'en'
-parsers = {}
 
 
 def parse_file(filename, language=None):
@@ -14,18 +13,11 @@ def parse_file(filename, language=None):
 
 
 def parse_feature(data, language=None, filename=None):
-    global parsers
-
     # ALL data operated on by the parser MUST be unicode
     assert isinstance(data, unicode)
 
-    parser = parsers.get(language, None)
-    if parser is None:
-        parser = Parser(language)
-        parsers[language] = parser
-
     try:
-        result = parser.parse(data, filename)
+        result = Parser(language).parse(data, filename)
     except ParserError, e:
         e.filename = filename
         raise
@@ -53,6 +45,7 @@ class Parser(object):
         self.reset()
 
     def reset(self):
+        # This can probably go away.
         if self.language:
             self.keywords = i18n.languages[self.language]
         else:
@@ -100,6 +93,7 @@ class Parser(object):
             line = line.strip()[1:].strip()
             if line.lstrip().lower().startswith('language:'):
                 language = line[9:].strip()
+                self.language = language
                 self.keywords = i18n.languages[language]
             return
 
@@ -270,6 +264,7 @@ class Parser(object):
 
     def match_keyword(self, keyword, line):
         if not self.keywords:
+            self.language = DEFAULT_LANGUAGE
             self.keywords = i18n.languages[DEFAULT_LANGUAGE]
         for alias in self.keywords[keyword]:
             if line.startswith(alias + ':'):
