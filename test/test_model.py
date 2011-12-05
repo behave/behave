@@ -229,17 +229,6 @@ class TestStepRun(object):
         self.log_capture.getvalue.return_value = ''
         self.run_hook = self.runner.run_hook = Mock()
 
-    def test_run_resets_text_and_table_before_step(self):
-        self.step_registry.find_match.return_value = None
-        step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
-        with patch('behave.step_registry.registry', self.step_registry):
-            assert not step.run(self.runner)
-
-        call_args_list = self.context._set_root_attribute.call_args_list
-        call_args_list = [x[0] for x in call_args_list]
-        assert ('text', None) in call_args_list
-        assert ('table', None) in call_args_list
-
     def test_run_appends_step_to_undefined_when_no_match_found(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
         self.step_registry.find_match.return_value = None
