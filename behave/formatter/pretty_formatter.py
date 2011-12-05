@@ -43,7 +43,7 @@ def get_terminal_size():
         result = fcntl.ioctl(0, termios.TIOCGWINSZ, zero_struct)
         h, w, hp, wp = struct.unpack('HHHH', result)
 
-        return w, h
+        return w or 80, h or 24
     except:
         return (80, 24)
 
