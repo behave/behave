@@ -15,19 +15,18 @@ description = ''.join(open('README.rst').readlines()[6:])
 
 setup(
     name='behave',
-    version='1.0.0',
+    version='1.0',
     description='behave is behaviour-driven development, Python style',
     long_description=description,
     author='Benno Rice and Richard Jones',
-    author_email='benno@jeamland.net',
+    author_email='behave-users@googlegroups.com',
     url='http://github.com/jeamland/behave',
     packages=find_packages(),
     scripts=['bin/behave'],
     install_requires=requirements,
     use_2to3=True,
-    zip_safe=False,
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
