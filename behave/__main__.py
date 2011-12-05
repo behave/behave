@@ -3,6 +3,7 @@ import sys
 from behave.configuration import Configuration, ConfigError
 from behave.formatter.ansi_escapes import escapes
 from behave.i18n import languages
+from behave.formatter import formatters
 from behave.runner import Runner
 from behave.parser import ParserError
 
@@ -69,6 +70,13 @@ def main():
                 continue
             print u'%16s: %s' % (kw.title().replace('_', ' '),
                 u', '.join(w for w in trans[kw] if w != '*'))
+        sys.exit(0)
+
+    if not config.format:
+        config.format = ['pretty']
+    elif config.format == ['help']:
+        print "Available formatters:"
+        formatters.list_formatters(sys.stdout)
         sys.exit(0)
 
     stream = config.output

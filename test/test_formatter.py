@@ -4,8 +4,7 @@ import tempfile
 from mock import Mock
 from nose.tools import *
 
-from behave.formatter import pretty_formatter
-from behave.formatter import json_formatter
+from behave.formatter import formatters
 from behave.formatter import tag_count_formatter
 
 from behave.model import Tag, Feature, Scenario
@@ -23,12 +22,21 @@ def _tf():
 
 
 class FormatterTests(object):
+    def setUp(self):
+        self.config = Mock()
+        self.config.no_color = False
+        self.config.executing = True
 
     _line = 0
     @property
     def line(self):
         self._line += 1
         return self._line
+
+    def _formatter(self, file, config):
+        f = formatters.get_formatter(self.formatter_name, file, config)
+        f.uri('<string>')
+        return f
 
     def _feature(self, keyword=u'k\xe9yword', name=u'name', tags=[u'spam', u'ham'],
             location=u'location', description=[u'description'], scenarios=[],
@@ -48,7 +56,7 @@ class FormatterTests(object):
         # this test does not actually check the result of the formatting; it
         # just exists to make sure that formatting doesn't explode in the face of
         # unicode and stuff
-        p = self._formatter(_tf())
+        p = self._formatter(_tf(), self.config)
         f = self._feature()
         p.feature(f)
 
@@ -58,30 +66,29 @@ class FormatterTests(object):
 
 
 class TestPretty(FormatterTests):
-    def _formatter(self, file, monochrome=False, executing=True):
-        f = pretty_formatter.PrettyFormatter(file, monochrome, executing)
-        f.uri('<string>')
-        return f
+    formatter_name = 'pretty'
+
+
+class TestPlain(FormatterTests):
+    formatter_name = 'plain'
 
 
 class TestJson(FormatterTests):
-    def _formatter(self, file):
-        f = json_formatter.JSONFormatter(file)
-        f.uri('<string>')
-        return f
+    formatter_name = 'json'
 
 
 class TestTagCount(FormatterTests):
-    def _formatter(self, file, tag_counts=None):
+    def _formatter(self, file, config, tag_counts=None):
         if tag_counts is None: tag_counts = {}
-        formatter = pretty_formatter.PrettyFormatter(file, False, True)
-        f = tag_count_formatter.TagCountFormatter(formatter, tag_counts)
+        f = formatters.get_formatter('plain', file, config)
+        f.uri('<string>')
+        f = tag_count_formatter.TagCountFormatter(f, tag_counts)
         f.uri('<string>')
         return f
 
     def test_tag_count(self):
         counts = {}
-        p = self._formatter(_tf(), counts)
+        p = self._formatter(_tf(), self.config, counts)
 
         s = self._scenario()
         f = self._feature(scenarios=[s])

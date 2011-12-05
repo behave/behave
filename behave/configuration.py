@@ -18,8 +18,8 @@ parser.add_argument('-d', '--dry-run', action='store_true',
                     help="Invokes formatters without executing the steps.")
 parser.add_argument('-e', '--exclude', metavar="PATTERN",
                     help="Don't run feature files matching PATTERN.")
-parser.add_argument('-f', '--format', action='append',
-                    help="""Add a formatter. By default, only a 'pretty'
+parser.add_argument('-f', '--format', action='append', default=[],
+                    help="""Specify a formatter. By default the 'pretty'
                             formatter is used. Pass '--format help' to get a
                             list of available formatters.""")
 parser.add_argument('-g', '--guess', action='store_true',
