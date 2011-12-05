@@ -53,7 +53,7 @@ class ParseMatcher(Matcher):
 
         args = []
         for index, arg in enumerate(result.fixed):
-            start, end = result.spans[index + 1]
+            start, end = result.spans[index]
             args.append(model.Argument(start, end, step[start:end], arg))
         for name, arg in result.named.items():
             start, end = result.spans[name]
