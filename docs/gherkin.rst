@@ -504,6 +504,8 @@ You may also "tag" parts of your feature file. At the simplest level this
 allows *behave* to selectively check parts of your feature set.
 
 You may tag features, scenarios or scenario outlines but nothing else.
+Any tag that exists in a feature will be inherited by its scenarios and
+scenario outlines.
 
 Tags appear on the line preceding the feature or scenario you wish to tag.
 You may have many space-separated tags on a single line.
