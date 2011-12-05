@@ -286,7 +286,7 @@ class TestRunWithPaths(object):
         self.feature_files = self.runner.feature_files = Mock()
         self.calculate_summaries = self.runner.calculate_summaries = Mock()
 
-        self.formatter_class = patch('behave.runner.PrettyFormatter')
+        self.formatter_class = patch('behave.formatter.pretty_formatter.PrettyFormatter')
         formatter_class = self.formatter_class.start()
         formatter_class.return_value = self.formatter = Mock()
 
@@ -326,6 +326,8 @@ class TestRunWithPaths(object):
         self.runner.feature_files.return_value = feature_files
         abspath.side_effect = lambda x: x.upper()
         self.config.lang = 'fritz'
+        self.config.format = ['plain']
+        self.config.output.encoding = None
         parse_file.return_value = feature
 
         self.runner.run_with_paths()

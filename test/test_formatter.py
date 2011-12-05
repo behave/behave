@@ -6,9 +6,10 @@ from mock import Mock, patch
 from nose.tools import *
 
 from behave.formatter import formatters
+from behave.formatter import pretty_formatter
 from behave.formatter import tag_count_formatter
 
-from behave.model import Tag, Feature, Scenario
+from behave.model import Tag, Feature, Scenario, Step
 
 
 class TestGetTerminalSize(object):
@@ -96,6 +97,7 @@ class FormatterTests(object):
         self.config = Mock()
         self.config.no_color = False
         self.config.executing = True
+        self.config.format = [self.formatter_name]
 
     _line = 0
     @property
@@ -104,7 +106,7 @@ class FormatterTests(object):
         return self._line
 
     def _formatter(self, file, config):
-        f = formatters.get_formatter(self.formatter_name, file, config)
+        f = formatters.get_formatter(config, file)
         f.uri('<string>')
         return f
 
@@ -122,6 +124,10 @@ class FormatterTests(object):
         tags = [Tag(name, line) for name in tags]
         return Scenario('<string>', line, keyword, name, tags=tags, steps=steps)
 
+    def _step(self, keyword=u'k\xe9yword', step_type='given', name=u'name', text=None, table=None):
+        line = self.line
+        return Step('<string>', line, keyword, step_type, name, text=text, table=table)
+
     def test_feature(self):
         # this test does not actually check the result of the formatting; it
         # just exists to make sure that formatting doesn't explode in the face of
@@ -130,9 +136,23 @@ class FormatterTests(object):
         f = self._feature()
         p.feature(f)
 
-#    def test_step(self):
-        # make a feature, scenario and step, format each in turn and then
-        # .result
+    def test_scenario(self):
+        p = self._formatter(_tf(), self.config)
+        f = self._feature()
+        p.feature(f)
+        s = self._scenario()
+        p.scenario(s)
+
+    def test_step(self):
+        p = self._formatter(_tf(), self.config)
+        f = self._feature()
+        p.feature(f)
+        s = self._scenario()
+        p.scenario(s)
+        s = self._step()
+        p.step(s)
+        s.status = u'passed'
+        p.result(s)
 
 
 class TestPretty(FormatterTests):
@@ -148,9 +168,11 @@ class TestJson(FormatterTests):
 
 
 class TestTagCount(FormatterTests):
-    def _formatter(self, file, config, tag_counts=None):
+    formatter_name = 'plain'
+
+    def _formatter(self, stream, config, tag_counts=None):
         if tag_counts is None: tag_counts = {}
-        f = formatters.get_formatter('plain', file, config)
+        f = formatters.get_formatter(config, stream)
         f.uri('<string>')
         f = tag_count_formatter.TagCountFormatter(f, tag_counts)
         f.uri('<string>')

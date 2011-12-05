@@ -64,13 +64,13 @@ class BasicStatement(object):
     def __cmp__(self, other):
         return cmp((self.keyword, self.name), (other.keyword, other.name))
 
-    def to_dict(self):
-        return dict((k, v) for k, v in self.__dict__.items() if k[0] != '_')
-
     @property
     def location(self):
         p = relpath(self.filename, os.getcwd())
         return '%s:%d' % (p, self.line)
+
+    def to_dict(self):
+        return dict((k, v) for k, v in self.__dict__.items() if k[0] != '_')
 
 
 class TagStatement(BasicStatement):
@@ -1023,12 +1023,3 @@ class NoMatch(Match):
         self.arguments = []
         self.location = None
 
-
-class Result(Replayable):
-    type = "result"
-
-    def __init__(self, status, duration, error_message):
-        assert isinstance(status, unicode)
-        self.status = status
-        self.duration = duration
-        self.error_message = error_message
