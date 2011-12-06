@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
 import re
+import sys
 import conf
 import textwrap
+
+sys.argv[0] = 'behave'
 
 from behave import configuration
 
