@@ -16,7 +16,8 @@ a page further describing this `philosophy`_.
 code.
 
 Once you've `installed`_ *behave* we recommend the `tutorial`_ and then the
-`test setup`_ and `api`_ references.
+`test setup`_ and `api`_ references and finally the information on `how to use
+and configure`_ the *behave* tool.
 
 There is also a `comparison`_ with the other tools available.
 
@@ -25,6 +26,7 @@ There is also a `comparison`_ with the other tools available.
 .. _`tutorial`: tutorial.html
 .. _`test setup`: gherkin.html
 .. _`api`: api.html
+.. _`how to use and configure`: behave.html
 .. _`comparison`: comparison.html
 
 
@@ -35,6 +37,7 @@ There is also a `comparison`_ with the other tools available.
    tutorial
    philosophy
    gherkin
+   behave
    api
    comparison
 

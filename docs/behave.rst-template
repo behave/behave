@@ -1,0 +1,45 @@
+==============
+*behave* usage
+==============
+
+The command-line tool *behave* has a bunch of `command-line arguments`_ and is
+also configurable using `configuration files`_.
+
+Values defined in the configuration files are used as defaults which the
+command-line arguments may override.
+
+
+Command-Line Arguments
+======================
+
+You may see the same information presented below at any time using ``behave
+-h``.
+
+{cmdline}
+
+
+Configuration Files
+===================
+
+Configuration files for *behave* are called either ".behaverc" or
+"behave.ini" (your preference) and are located in one of three places:
+
+1. the current working directory (good for per-project settings),
+2. your home directory ($HOME), or
+3. on Windows, in the %APPDATA% directory.
+
+If you are wondering where *behave* is getting its configuration defaults
+from you can use the "-v" command-line argument and it'll tell you.
+
+Confuguration files **must** start with the label "[behave]" and are
+formatted in the Windows INI style, for example:
+
+.. code-block:: ini
+  
+  [behave]
+  format=plain
+  logging_clear_handlers=yes
+  logging_filter=-suds
+
+{config}
+

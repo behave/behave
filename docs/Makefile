@@ -3,7 +3,8 @@
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
-SPHINXBUILD   = sphinx-build
+UPDATE        = ./update_behave_rst.py
+SPHINXBUILD   = $(UPDATE) && sphinx-build
 PAPER         =
 BUILDDIR      = _build
 
