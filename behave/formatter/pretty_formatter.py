@@ -78,7 +78,8 @@ class PrettyFormatter(object):
         self.stream.write(u"%s: %s" % (feature.keyword, feature.name))
         if self.show_source:
             format = self.format('comments')
-            self.stream.write(format.text(u" # %s\n" % feature.location))
+            self.stream.write(format.text(u" # %s" % feature.location))
+        self.stream.write("\n")
         self.print_description(feature.description, '  ', False)
         self.stream.flush()
 
@@ -284,7 +285,7 @@ class PrettyFormatter(object):
 
         location = self.indented_location(location, proceed)
         if self.show_source:
-            self.stream.write(self.format('comments').text(location) + "\n")
+            self.stream.write(self.format('comments').text(location))
             line_length += len(location)
         self.stream.write("\n")
 
