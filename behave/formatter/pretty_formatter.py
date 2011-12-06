@@ -55,6 +55,7 @@ class PrettyFormatter(object):
         self.stream = stream
 
         self.monochrome = config.no_color
+        self.show_source = config.show_source
 
         self.tag_statement = None
         self.steps = []
@@ -75,8 +76,9 @@ class PrettyFormatter(object):
         #self.print_comments(feature.comments, '')
         self.print_tags(feature.tags, '')
         self.stream.write(u"%s: %s" % (feature.keyword, feature.name))
-        format = self.format('comments')
-        self.stream.write(format.text(u" # %s\n" % feature.location))
+        if self.show_source:
+            format = self.format('comments')
+            self.stream.write(format.text(u" # %s\n" % feature.location))
         self.print_description(feature.description, '  ', False)
         self.stream.flush()
 
@@ -238,8 +240,11 @@ class PrettyFormatter(object):
             self.print_tags(self.statement.tags, u'  ')
         self.stream.write(u"  %s: %s " % (self.statement.keyword,
                                          self.statement.name))
+
         location = self.indented_location(self.statement.location, True)
-        self.stream.write(self.format('comments').text(location) + u"\n")
+        if self.show_source:
+            self.stream.write(self.format('comments').text(location))
+        self.stream.write("\n")
         #self.print_description(self.statement.description, u'    ')
         self.statement = None
 
@@ -278,8 +283,10 @@ class PrettyFormatter(object):
             line_length += (len(text))
 
         location = self.indented_location(location, proceed)
-        self.stream.write(self.format('comments').text(location) + "\n")
-        line_length += len(location)
+        if self.show_source:
+            self.stream.write(self.format('comments').text(location) + "\n")
+            line_length += len(location)
+        self.stream.write("\n")
 
         self.step_lines = int((line_length - 1) / self.display_width)
 

@@ -13,6 +13,7 @@ class ConfigError(Exception):
 options = [
 #    (('-b', '--backtrace'), dict(action='store_true',
 #         help="Show full backtraces for all errors.")),
+# TODO: invert sense here and add --color
     (('-c', '--no-color'), dict(action='store_true',
          help="Disable the use of ANSI color escapes.")),
     (('-d', '--dry-run'), dict(action='store_true',
@@ -25,11 +26,11 @@ options = [
                  list of available formatters.""")),
 #    (('-g', '--guess'), dict(action='store_true',
 #         help="Guess best match for ambiguous steps.")),
-    (('-i', '--no-snippets'), dict(action='store_true',
-         help="Don't print snippets for pending steps.")),
-    (('-m', '--no-multiline'), dict(action='store_true',
-         help="""Don't print multiline strings and tables under
-                 steps.""")),
+#    (('-i', '--no-snippets'), dict(action='store_true',
+#         help="Don't print snippets for pending steps.")),
+#    (('-m', '--no-multiline'), dict(action='store_true',
+#         help="""Don't print multiline strings and tables under
+#                 steps.""")),
     (('-n', '--name'), dict(action="append",
          help="""Only execute the feature elements which match part
                  of the given name. If this option is given more
@@ -38,6 +39,12 @@ options = [
     (('--nocapture',), dict(action='store_false', dest='stdout_capture',
          help="""Don't capture stdout (any stdout output will be
                  printed immediately.)""")),
+    (('--capture',), dict(action='store_true', dest='stdout_capture',
+         help="""Do capture stdout (any stdout output will be
+                 printed if there is a failure.) This is the default
+                 behaviour. This switch is used to override a
+                 configuration file setting.""")),
+# TODO: add --logcapture
     (('--nologcapture',), dict(action='store_false', dest='log_capture',
          help="""Don't capture logging. Logging configuration will
                  be left intact.""")),
@@ -65,14 +72,19 @@ options = [
              with a minus, eg filter=-foo, it will be excluded
              rather than included.""")),
     (('--logging-clear-handlers',), dict(action='store_true',
-             help="Clear all other logging handlers")),
+             help="Clear all other logging handlers.")),
     (('-o', '--outfile'), dict(metavar='FILE',
          help="Write to specified file instead of stdout.")),
-    (('-q', '--quiet'), dict(action='store_true',
-         help="Alias for --no-snippets --no-source.")),
-    (('-s', '--no-source'), dict(action='store_true',
+#    (('-q', '--quiet'), dict(action='store_true',
+#         help="Alias for --no-snippets --no-source.")),
+    (('-s', '--no-source'), dict(action='store_false', dest='show_source',
          help="""Don't print the file and line of the step
                  definition with the steps.""")),
+    (('--show-source',), dict(action='store_true', dest='show_source',
+         help="""Do print the file and line of the step
+                 definition with the steps. This is the default
+                 behaviour. This switch is used to override a
+                 configuration file setting.""")),
     (('--stop',), dict(action='store_true',
          help='Stop running tests at the first failure.')),
     (('-S', '--strict'), dict(action='store_true',
@@ -177,6 +189,7 @@ class Configuration(object):
             stdout_capture=True,
             log_capture=True,
             dry_run=False,
+            show_source=True,
             logging_format='%(levelname)s:%(name)s:%(message)s',
         )
         load_configuration(defaults)
