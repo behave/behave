@@ -9,36 +9,40 @@ from behave.parser import ParserError
 
 TAG_HELP = """
 Scenarios inherit tags declared on the Feature level. The simplest
-TAG_EXPRESSION is simply a tag:
+TAG_EXPRESSION is simply a tag::
 
---tags @dev
+    --tags @dev
 
-When a tag in a tag expression starts with a ~, this represents boolean NOT:
+You may even leave off the "@" - behave doesn't mind.
 
---tags ~@dev
+When a tag in a tag expression starts with a ~, this represents boolean NOT::
+
+    --tags ~@dev
 
 A tag expression can have several tags separated by a comma, which represents
-logical OR:
+logical OR::
 
---tags @dev,@wip
+    --tags @dev,@wip
 
 The --tags option can be specified several times, and this represents logical
 AND, for instance this represents the boolean expression
-(@foo || !@bar) && @zap:
+"(@foo or not @bar) and @zap"::
 
---tags @foo,~@bar --tags @zap.
+    --tags @foo,~@bar --tags @zap.
 
 Beware that if you want to use several negative tags to exclude several tags
-you have to use logical AND:
+you have to use logical AND::
 
---tags ~@fixme --tags ~@buggy.
-
-Positive tags can be given a threshold to limit the number of occurrences.
-Which can be practical if you are practicing Kanban or CONWIP. This will fail
-if there are more than 3 occurrences of the @qa tag:
-
---tags @qa:3
+    --tags ~@fixme --tags ~@buggy.
 """.strip()
+
+# TODO
+# Positive tags can be given a threshold to limit the number of occurrences.
+# Which can be practical if you are practicing Kanban or CONWIP. This will fail
+# if there are more than 3 occurrences of the @qa tag:
+#
+# --tags @qa:3
+# """.strip()
 
 
 def main():

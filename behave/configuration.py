@@ -80,7 +80,10 @@ options = [
     (('-t', '--tags'), dict(action='append', metavar='TAG_EXPRESSION',
          help="""Only execute features or scenarios with tags
                  matching TAG_EXPRESSION. Pass '--tag-help' for
-                 more information.""")),
+                 more information.""",
+         config_help="""Only execute certain features or scenarios based
+                 on the tag expression given. See below for how to code
+                 tag expressions in configuration files.""")),
     (('-v', '--verbose'), dict(action='store_true',
          help='Show the files and features loaded.')),
     (('-w', '--wip'), dict(action='store_true',
@@ -100,8 +103,8 @@ options = [
 
 
 def read_configuration(path):
-    c = ConfigParser.ConfigParser()
-    c.read(path)
+    cfg = ConfigParser.ConfigParser()
+    cfg.read(path)
     result = {}
     for fixed, keywords in options:
         if 'dest' in keywords:
@@ -115,18 +118,19 @@ def read_configuration(path):
                     dest = opt[1:]
         if dest in 'tags_help lang_list lang_help version'.split():
             continue
-        if not c.has_option('behave', dest):
+        if not cfg.has_option('behave', dest):
             continue
         action = keywords.get('action', 'store')
         if action == 'store':
-            result[dest] = c.get('behave', dest)
+            result[dest] = cfg.get('behave', dest)
         elif action in ('store_true','store_false'):
-            result[dest] = c.getboolean('behave', dest)
+            result[dest] = cfg.getboolean('behave', dest)
         elif action == 'append':
-            if dest in desult:
-                result[dest].append(c.get('behave', dest))
+            if dest == 'tags':
+                c = '&'
             else:
-                result[dest] = [c.get('behave', dest)]
+                c = ','
+            result[dest] = [s.strip() for s in cfg.get('behave', dest).split(c)]
         else:
              raise ValueError('action "%s" not implemented' % action)
     return result
@@ -158,6 +162,9 @@ def load_configuration(defaults):
 usage = "%(prog)s [options] [ [FILE|DIR] ]+"
 parser = argparse.ArgumentParser(usage=usage)
 for fixed, keywords in options:
+    if 'config_help' in keywords:
+        keywords = dict(keywords)
+        del keywords['config_help']
     parser.add_argument(*fixed, **keywords)
 parser.add_argument('paths', nargs='*')
 

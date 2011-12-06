@@ -8,6 +8,7 @@ import textwrap
 sys.argv[0] = 'behave'
 
 from behave import configuration
+from behave import __main__
 
 with open('behave.rst-template') as f:
     template = f.read()
@@ -39,7 +40,7 @@ for fixed, keywords in configuration.options:
     else:
         raise ValueError('unknown action %s' % action)
 
-    text = re.sub(r'\s+', ' ', keywords['help']).strip()
+    text = re.sub(r'\s+', ' ', keywords.get('config_help', keywords['help'])).strip()
     text = text.replace('%%', '%')
     text = textwrap.fill(text, 70, initial_indent='   ', subsequent_indent='   ')
     config.append('**%s** -- %s\n%s' % (dest, type, text))
@@ -47,6 +48,7 @@ for fixed, keywords in configuration.options:
 
 values = dict(
     cmdline=cmdline,
+    tag_expression=__main__.TAG_HELP,
     config='\n'.join(config),
 )
 

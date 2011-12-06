@@ -18,6 +18,12 @@ You may see the same information presented below at any time using ``behave
 {cmdline}
 
 
+TAG_EXPRESSION
+--------------
+
+{tag_expression}
+
+
 Configuration Files
 ===================
 
@@ -42,4 +48,20 @@ formatted in the Windows INI style, for example:
   logging_filter=-suds
 
 {config}
+
+
+Tag Expressions in Configuration Files
+--------------------------------------
+
+Coding tag expressions in configuration files is quite similar to the
+`TAG_EXPRESSION`_ format above with one alteration: the groups of tags to
+be ANDed together are separated by an ampersand ("&"). So for example what
+you might express on the command line as::
+
+    --tags @foo,~@bar --tags @zap.
+
+becomes in the configuration file::
+
+    tags = @foo,~@bar & @zap
+
 
