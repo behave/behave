@@ -403,7 +403,7 @@ class Scenario(TagStatement, Replayable):
 
         tags = runner.feature.tags + self.tags
         run_scenario = runner.config.tags.check(tags)
-        run_steps = run_scenario
+        run_steps = run_scenario and not runner.config.dry_run
 
         runner.formatter.scenario(self)
 

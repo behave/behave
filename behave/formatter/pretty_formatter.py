@@ -55,7 +55,6 @@ class PrettyFormatter(object):
         self.stream = stream
 
         self.monochrome = config.no_color
-        self.executing = not config.dry_run
 
         self.tag_statement = None
         self.steps = []
