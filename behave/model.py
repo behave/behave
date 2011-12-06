@@ -216,7 +216,11 @@ class Feature(TagStatement, Replayable):
         runner.context._push()
         runner.context.feature = self
 
+        # run this feature if the tags say to for itself or any one of its
+        # scenarios
         run_feature = runner.config.tags.check(self.tags)
+        for scenario in self:
+            run_feature = run_feature or runner.config.tags.check(scenario.tags)
 
         # current tags as a set
         runner.context.tags = set(self.tags)
