@@ -70,6 +70,7 @@ class TestScenarioRun(object):
         self.runner = Mock()
         self.runner.feature.tags = []
         self.config = self.runner.config = Mock()
+        self.config.dry_run = False
         self.context = self.runner.context = Mock()
         self.formatter = self.runner.formatter = Mock()
         self.run_hook = self.runner.run_hook = Mock()
