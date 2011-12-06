@@ -13,9 +13,12 @@ class ConfigError(Exception):
 options = [
 #    (('-b', '--backtrace'), dict(action='store_true',
 #         help="Show full backtraces for all errors.")),
-# TODO: invert sense here and add --color
-    (('-c', '--no-color'), dict(action='store_true',
+    (('-c', '--no-color'), dict(action='store_false', dest='color',
          help="Disable the use of ANSI color escapes.")),
+    (('--color',), dict(action='store_true', dest='color',
+         help="""Use ANSI color escapes. This is the default
+                 behaviour. This switch is used to override a
+                 configuration file setting.""")),
     (('-d', '--dry-run'), dict(action='store_true',
          help="Invokes formatters without executing the steps.")),
 #    (('-e', '--exclude'), dict(metavar="PATTERN",
@@ -186,6 +189,7 @@ class Configuration(object):
         self.formatters = []
 
         defaults = dict(
+            color=True,
             stdout_capture=True,
             log_capture=True,
             dry_run=False,

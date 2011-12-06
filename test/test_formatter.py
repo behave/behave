@@ -95,8 +95,7 @@ def _tf():
 class FormatterTests(object):
     def setUp(self):
         self.config = Mock()
-        self.config.no_color = False
-        self.config.executing = True
+        self.config.color = True
         self.config.format = [self.formatter_name]
 
     _line = 0

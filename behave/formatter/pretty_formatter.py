@@ -54,7 +54,7 @@ class PrettyFormatter(object):
     def __init__(self, stream, config):
         self.stream = stream
 
-        self.monochrome = config.no_color
+        self.monochrome = not config.color
         self.show_source = config.show_source
 
         self.tag_statement = None
