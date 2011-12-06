@@ -75,6 +75,12 @@ class Context(object):
       This is set at the step level and holds any multiline text associated with
       the step.
 
+    .. attribute:: config
+
+      The configuration of *behave* as determined by configuration files and
+      command-line options. The attributes of this object are the same as the
+      `configuration file settion names`_.
+
     .. attribute:: active_outline
 
       This is set for each scenario in a scenario outline and references the
@@ -84,6 +90,8 @@ class Context(object):
     If an attempt made by user code to overwrite one of these variables, or
     indeed by *behave* to overwite a user-set variable, then a
     :class:`behave.runner.ContextMaskWarning` warning will be raised.
+
+    .. _`configuration file settion names`: behave.html#configuration-files
     '''
     BEHAVE = 'behave'
     USER = 'user'
@@ -93,6 +101,7 @@ class Context(object):
         self._config = runner.config
         d = self._root = {
             'failed': False,
+            'config': self._config,
             'active_outline': None,
         }
         self._stack = [d]
