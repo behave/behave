@@ -256,10 +256,10 @@ class Runner(object):
 
         self.feature = None
 
-        self.feature_summary = {'passed': 0, 'failed': 0, 'skipped': 0}
-        self.scenario_summary = {'passed': 0, 'failed': 0, 'skipped': 0}
+        self.feature_summary = {'passed': 0, 'failed': 0, 'skipped': 0, 'untested': 0}
+        self.scenario_summary = {'passed': 0, 'failed': 0, 'skipped': 0, 'untested': 0}
         self.step_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
-                             'undefined': 0}
+                             'undefined': 0, 'untested': 0}
         self.duration = 0.0
 
         self.stdout_capture = None
