@@ -9,7 +9,7 @@ First, `install *behave*.`_
 
 .. _`Install *behave*.`: install.html
 
-Now make a directory called "features". In that directory create a file
+Now make a directory called "tutorial". In that directory create a file
 called "tutorial.feature" containing:
 
 .. code-block:: gherkin
@@ -21,7 +21,7 @@ called "tutorial.feature" containing:
        when we implement a test
        then behave will test it for us!
 
-Make a new directory called "features/steps". In that directory create a
+Make a new directory called "tutorial/steps". In that directory create a
 file called "tutorial.py" containing:
 
 .. code-block:: python
