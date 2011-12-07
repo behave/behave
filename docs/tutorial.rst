@@ -5,8 +5,62 @@ Tutorial
 .. if you change any headings in here make sure you haven't broken the
    cross-references in the API documentation or module docstrings!
 
-To make *behave* work for you create a directory called "features"
-containing:
+First, `install *behave*.`_
+
+.. _`Install *behave*.`: install.html
+
+Now make a directory called "features". In that directory create a file
+called "tutorial.feature" containing:
+
+.. code-block:: gherkin
+
+ Feature: showing off behave
+
+   Scenario: run a simple test
+      Given we have behave installed
+       when we implement a test
+       then behave will test it for us!
+
+Make a new directory called "features/steps". In that directory create a
+file called "tutorial.py" containing:
+
+.. code-block:: python
+
+  from behave import *
+
+  @given('we have behave installed')
+  def step(context):
+      pass
+
+  @when('we implement a test')
+  def step(context):
+      assert True is not False
+
+  @then('behave will test it for us!')
+  def step(context):
+      assert context.failed is False
+
+Run behave::
+
+    % behave
+    Feature: showin off behave # tutorial/tutorial.feature:1
+
+      Scenario: run a simple test        # tutorial/tutorial.feature:3
+        Given we have behave installed   # tutorial/steps/tutorial.py:3
+        When we implement a test         # tutorial/steps/tutorial.py:7
+        Then behave will test it for us! # tutorial/steps/tutorial.py:11
+
+    1 feature passed, 0 failed, 0 skipped
+    1 scenario passed, 0 failed, 0 skipped
+    3 steps passed, 0 failed, 0 skipped, 0 undefined
+
+Now, continue reading to learn how to the most of *behave*.
+
+
+Features
+========
+
+*behave* operates on directories containing:
 
 1. `feature files`_ written by your Business Analyst / Sponsor / whoever
    with your behaviour scenarios in it, and
