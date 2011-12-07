@@ -56,6 +56,7 @@ class PrettyFormatter(object):
 
         self.monochrome = not config.color
         self.show_source = config.show_source
+        self.show_multiline = config.show_multiline
 
         self.tag_statement = None
         self.steps = []
@@ -123,10 +124,11 @@ class PrettyFormatter(object):
     def result(self, result):
         if not self.monochrome:
             lines = self.step_lines + 1
-            if result.table:
-                lines += len(result.table.rows) + 1
-            if result.text:
-                lines += len(result.text.splitlines()) + 2
+            if self.show_multiline:
+                if result.table:
+                    lines += len(result.table.rows) + 1
+                if result.text:
+                    lines += len(result.text.splitlines()) + 2
             self.stream.write(up(lines))
             arguments = []
             location = None
@@ -291,10 +293,11 @@ class PrettyFormatter(object):
 
         self.step_lines = int((line_length - 1) / self.display_width)
 
-        if step.text:
-            self.doc_string(step.text)
-        if step.table:
-            self.table(step.table)
+        if self.show_multiline:
+            if step.text:
+                self.doc_string(step.text)
+            if step.table:
+                self.table(step.table)
 
     def print_tags(self, tags, indent):
         if not tags:

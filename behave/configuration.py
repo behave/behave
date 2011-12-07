@@ -29,28 +29,41 @@ options = [
                  list of available formatters.""")),
 #    (('-g', '--guess'), dict(action='store_true',
 #         help="Guess best match for ambiguous steps.")),
-#    (('-i', '--no-snippets'), dict(action='store_true',
-#         help="Don't print snippets for pending steps.")),
-#    (('-m', '--no-multiline'), dict(action='store_true',
-#         help="""Don't print multiline strings and tables under
-#                 steps.""")),
+#    (('-i', '--no-snippets'), dict(action='store_false', dest='show_snippets',
+#         help="Do print snippets for pending steps.")),
+#    (('--snippets'), dict(action='store_true',
+#         help="""Do print snippets for pending steps.
+#                 This is the default behaviour. This switch is used to override a
+#                 configuration file setting.""")),
+    (('-m', '--no-multiline'), dict(action='store_false', dest='show_multiline',
+         help="""Don't print multiline strings and tables under
+                 steps.""")),
+    (('--multiline', ), dict(action='store_true', dest='show_multiline',
+         help="""Do print multiline strings and tables under
+                 steps.
+                 This is the default behaviour. This switch is used to override a
+                 configuration file setting.""")),
     (('-n', '--name'), dict(action="append",
          help="""Only execute the feature elements which match part
                  of the given name. If this option is given more
                  than once, it will match against all the given
                  names.""")),
-    (('--nocapture',), dict(action='store_false', dest='stdout_capture',
+    (('--no-capture',), dict(action='store_false', dest='stdout_capture',
          help="""Don't capture stdout (any stdout output will be
                  printed immediately.)""")),
     (('--capture',), dict(action='store_true', dest='stdout_capture',
          help="""Do capture stdout (any stdout output will be
-                 printed if there is a failure.) This is the default
-                 behaviour. This switch is used to override a
+                 printed if there is a failure.)
+                 This is the default behaviour. This switch is used to override a
                  configuration file setting.""")),
-# TODO: add --logcapture
-    (('--nologcapture',), dict(action='store_false', dest='log_capture',
+    (('--no-logcapture',), dict(action='store_false', dest='log_capture',
          help="""Don't capture logging. Logging configuration will
                  be left intact.""")),
+    (('--logcapture',), dict(action='store_true', dest='log_capture',
+         help="""Do capture logging. All logging during a step will be captured
+                 and displayed in the event of a failure.
+                 This is the default behaviour. This switch is used to override a
+                 configuration file setting.""")),
     (('--logging-format',), dict(
          help="""Specify custom format to print statements. Uses the
              same format as used by standard logging handlers. The
