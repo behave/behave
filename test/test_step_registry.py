@@ -14,13 +14,13 @@ class TestStepRegistry(object):
             get_matcher.return_value = magic_object
 
             for step_type in registry.steps.keys():
-                mock = Mock()
-                registry.steps[step_type] = mock
+                l = []
+                registry.steps[step_type] = l
 
                 registry.add_definition(step_type.upper(), string, func)
 
                 get_matcher.assert_called_with(func, string)
-                mock.append.assert_called_with(magic_object)
+                eq_(l, [magic_object])
 
     def test_find_match_with_specific_step_type_also_searches_generic(self):
         registry = step_registry.StepRegistry()
