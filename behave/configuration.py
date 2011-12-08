@@ -88,11 +88,11 @@ options = [
          config_help="""
              Specify which statements to filter in/out. By default, everything
              is captured. If the output is too verbose, use this option to
-             filter out needless output.  Example: logging_filter=foo will
+             filter out needless output.  Example: ``logging_filter = foo`` will
              capture statements issued ONLY to "foo" or "foo.what.ever.sub" but
              not "foobar" or other logger. Specify multiple loggers with comma:
-             logging_filter=foo,bar,baz. If any logger name is prefixed with a
-             minus, eg logging_filter=-foo, it will be excluded rather than
+             ``logging_filter = foo,bar,baz``. If any logger name is prefixed with a
+             minus, eg ``logging_filter = -foo``, it will be excluded rather than
              included.""")),
     (('--logging-clear-handlers',), dict(action='store_true',
              help="Clear all other logging handlers.")),
