@@ -1,14 +1,12 @@
+from behave.formatter.base import Formatter
 
-class PlainFormatter(object):
+class PlainFormatter(Formatter):
     name = 'plain'
     description = 'Very basic formatter with maximum compatibility'
 
     def __init__(self, stream, config):
-        self.stream = stream
+        super(PlainFormatter, self).__init__(stream, config)
         self.steps = []
-
-    def uri(self, uri):
-        pass
 
     def feature(self, feature):
         self.stream.write(u'%s: %s\n' % (feature.keyword, feature.name))
@@ -22,14 +20,8 @@ class PlainFormatter(object):
     def scenario_outline(self, outline):
         self.stream.write(u' %s: %s\n' % (outline.keyword, outline.name))
 
-    def examples(self, examples):
-        pass
-
     def step(self, step):
         self.steps.append(step)
-
-    def match(self, match):
-        pass
 
     def result(self, result):
         step = self.steps.pop(0)
@@ -39,7 +31,3 @@ class PlainFormatter(object):
             self.stream.write(u'%s: %s\n' % (result.status, result.error_message))
         else:
             self.stream.write(u'%s\n' % result.status)
-
-    def eof(self):
-        pass
-

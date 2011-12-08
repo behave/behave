@@ -4,13 +4,14 @@ try:
 except ImportError:
     import simplejson as json
 
+from behave.formatter.base import Formatter
 
-class JSONFormatter(object):
+class JSONFormatter(Formatter):
     name = 'json'
     description = 'JSON dump of test run'
 
-    def __init__(self, file, config):
-        self.file = file
+    def __init__(self, stream, config):
+        super(JSONFormatter, self).__init__(stream, config)
 
         self._gherkin_object = None
         self._step_index = 0
@@ -62,9 +63,9 @@ class JSONFormatter(object):
         })
 
     def eof(self):
-        if not self.file:
+        if not self.stream:
             return
-        self.file.write(json.dumps(self._gherkin_object))
+        self.stream.write(json.dumps(self._gherkin_object))
 
     def _add_feature_element(self, element):
         if 'elements' not in self._gherkin_object:

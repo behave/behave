@@ -3,6 +3,7 @@
 import sys
 
 from behave.formatter.ansi_escapes import escapes, up
+from behave.formatter.base import Formatter
 
 
 def escape_cell(cell):
@@ -47,12 +48,12 @@ def get_terminal_size():
         return (80, 24)
 
 
-class PrettyFormatter(object):
+class PrettyFormatter(Formatter):
     name = 'pretty'
     description = 'Standard colourised pretty formatter'
 
     def __init__(self, stream, config):
-        self.stream = stream
+        super(PrettyFormatter, self).__init__(stream, config)
 
         self.monochrome = not config.color
         self.show_source = config.show_source
