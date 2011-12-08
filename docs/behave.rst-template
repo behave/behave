@@ -18,7 +18,7 @@ You may see the same information presented below at any time using ``behave
 {cmdline}
 
 
-TAG_EXPRESSION
+Tag Expression
 --------------
 
 {tag_expression}
@@ -58,28 +58,22 @@ The types possible are:
   and "off".
 
 **text (multiple allowed)**
-  These fields accept one or more ampersand-separated ("&") values, for
-  example: "foo & bar".
+  These fields accept one or more values on new lines, for example a tag
+  expression might look like:
+
+  .. code-block:: ini
+
+    tags=@foo,~@bar
+         @zap
+
+  which is the equivalent of the command-line usage::
+
+    --tags @foo,~@bar --tags @zap.
 
 
 Recognised Settings
 -------------------
 
 {config}
-
-
-Tag Expressions in Configuration Files
---------------------------------------
-
-Coding tag expressions in configuration files is quite similar to the
-`TAG_EXPRESSION`_ format above with one alteration: the groups of tags to
-be ANDed together are separated by an ampersand ("&"). So for example what
-you might express on the command line as::
-
-    --tags @foo,~@bar --tags @zap.
-
-becomes in the configuration file::
-
-    tags = @foo,~@bar & @zap
 
 

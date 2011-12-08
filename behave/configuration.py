@@ -75,25 +75,22 @@ options = [
                  handlers.""")),
     (('--logging-filter',), dict(
          help="""
-             Specify which statements to filter in/out. By default,
-             everything is captured. If the output is too verbose,
-             use this option to filter out needless output.
-             Example: --logging-filter=foo will capture statements
-             issued ONLY to foo or foo.what.ever.sub but not foobar
-             or other logger. Specify multiple loggers with comma:
-             filter=foo,bar,baz. If any logger name is prefixed
-             with a minus, eg filter=-foo, it will be excluded
-             rather than included.""",
+             Specify which statements to filter in/out. By default, everything
+             is captured. If the output is too verbose, use this option to
+             filter out needless output.  Example: --logging-filter=foo will
+             capture statements issued ONLY to foo or foo.what.ever.sub but not
+             foobar or other logger. Specify multiple loggers with comma:
+             filter=foo,bar,baz. If any logger name is prefixed with a minus, eg
+             filter=-foo, it will be excluded rather than included.""",
          config_help="""
-             Specify which statements to filter in/out. By default,
-             everything is captured. If the output is too verbose,
-             use this option to filter out needless output.
-             Example: logging_filter=foo will capture statements
-             issued ONLY to foo or foo.what.ever.sub but not foobar
-             or other logger. Specify multiple loggers with comma:
-             logging_filter=foo,bar,baz. If any logger name is prefixed
-             with a minus, eg logging_filter=-foo, it will be excluded
-             rather than included.""")),
+             Specify which statements to filter in/out. By default, everything
+             is captured. If the output is too verbose, use this option to
+             filter out needless output.  Example: logging_filter=foo will
+             capture statements issued ONLY to "foo" or "foo.what.ever.sub" but
+             not "foobar" or other logger. Specify multiple loggers with comma:
+             logging_filter=foo,bar,baz. If any logger name is prefixed with a
+             minus, eg logging_filter=-foo, it will be excluded rather than
+             included.""")),
     (('--logging-clear-handlers',), dict(action='store_true',
              help="Clear all other logging handlers.")),
     (('-o', '--outfile'), dict(metavar='FILE',
@@ -128,7 +125,7 @@ options = [
     (('--lang',), dict(metavar='LANG',
          help="Use keywords for a language other than English.")),
     (('--lang-list',), dict(action='store_true',
-         help="List the languages abailable for --lang")),
+         help="List the languages available for --lang.")),
     (('--lang-help',), dict(metavar='LANG',
          help="List the translations accepted for one language.")),
     (('--tags-help',), dict(action='store_true',
@@ -161,11 +158,7 @@ def read_configuration(path):
         elif action in ('store_true','store_false'):
             result[dest] = cfg.getboolean('behave', dest)
         elif action == 'append':
-            if dest == 'tags':
-                c = '&'
-            else:
-                c = ','
-            result[dest] = [s.strip() for s in cfg.get('behave', dest).split(c)]
+            result[dest] = [s.strip() for s in cfg.get('behave', dest).splitlines()]
         else:
              raise ValueError('action "%s" not implemented' % action)
     return result
