@@ -11,8 +11,6 @@ class ConfigError(Exception):
 
 
 options = [
-#    (('-b', '--backtrace'), dict(action='store_true',
-#         help="Show full backtraces for all errors.")),
     (('-c', '--no-color'), dict(action='store_false', dest='color',
          help="Disable the use of ANSI color escapes.")),
     (('--color',), dict(action='store_true', dest='color',
@@ -29,18 +27,17 @@ options = [
                  list of available formatters.""")),
 #    (('-g', '--guess'), dict(action='store_true',
 #         help="Guess best match for ambiguous steps.")),
-#    (('-i', '--no-snippets'), dict(action='store_false', dest='show_snippets',
-#         help="Do print snippets for pending steps.")),
-#    (('--snippets'), dict(action='store_true',
-#         help="""Do print snippets for pending steps.
-#                 This is the default behaviour. This switch is used to override a
-#                 configuration file setting.""")),
+    (('-i', '--no-snippets'), dict(action='store_false', dest='show_snippets',
+         help="Don't print snippets for unimplemented steps.")),
+    (('--snippets',), dict(action='store_true',
+         help="""Print snippets for unimplemented steps.
+                 This is the default behaviour. This switch is used to override a
+                 configuration file setting.""")),
     (('-m', '--no-multiline'), dict(action='store_false', dest='show_multiline',
          help="""Don't print multiline strings and tables under
                  steps.""")),
     (('--multiline', ), dict(action='store_true', dest='show_multiline',
-         help="""Do print multiline strings and tables under
-                 steps.
+         help="""Print multiline strings and tables under steps.
                  This is the default behaviour. This switch is used to override a
                  configuration file setting.""")),
     (('-n', '--name'), dict(action="append",
@@ -52,7 +49,7 @@ options = [
          help="""Don't capture stdout (any stdout output will be
                  printed immediately.)""")),
     (('--capture',), dict(action='store_true', dest='stdout_capture',
-         help="""Do capture stdout (any stdout output will be
+         help="""Capture stdout (any stdout output will be
                  printed if there is a failure.)
                  This is the default behaviour. This switch is used to override a
                  configuration file setting.""")),
@@ -60,7 +57,7 @@ options = [
          help="""Don't capture logging. Logging configuration will
                  be left intact.""")),
     (('--logcapture',), dict(action='store_true', dest='log_capture',
-         help="""Do capture logging. All logging during a step will be captured
+         help="""Capture logging. All logging during a step will be captured
                  and displayed in the event of a failure.
                  This is the default behaviour. This switch is used to override a
                  configuration file setting.""")),
@@ -91,13 +88,13 @@ options = [
              help="Clear all other logging handlers.")),
     (('-o', '--outfile'), dict(metavar='FILE',
          help="Write to specified file instead of stdout.")),
-#    (('-q', '--quiet'), dict(action='store_true',
-#         help="Alias for --no-snippets --no-source.")),
+    (('-q', '--quiet'), dict(action='store_true',
+         help="Alias for --no-snippets --no-source.")),
     (('-s', '--no-source'), dict(action='store_false', dest='show_source',
          help="""Don't print the file and line of the step
                  definition with the steps.""")),
     (('--show-source',), dict(action='store_true', dest='show_source',
-         help="""Do print the file and line of the step
+         help="""Print the file and line of the step
                  definition with the steps. This is the default
                  behaviour. This switch is used to override a
                  configuration file setting.""")),
@@ -204,6 +201,7 @@ class Configuration(object):
         defaults = dict(
             color=True,
             stdout_capture=True,
+            show_snippets=True,
             log_capture=True,
             dry_run=False,
             show_source=True,

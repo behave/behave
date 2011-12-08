@@ -85,6 +85,10 @@ def main():
 
     stream = config.output
 
+    if config.quiet:
+        config.show_source = False
+        config.show_snippets = False
+
     runner = Runner(config)
     try:
         failed = runner.run()
@@ -114,7 +118,7 @@ def main():
     stream.write(format_summary('scenario', runner.scenario_summary))
     stream.write(format_summary('step', runner.step_summary))
 
-    if runner.undefined:
+    if config.show_snippets and runner.undefined:
         msg = "\nYou can implement step definitions for undefined steps with "
         msg += "these snippets:\n\n"
         printed = set()
