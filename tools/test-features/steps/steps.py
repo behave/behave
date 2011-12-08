@@ -52,11 +52,6 @@ def step(context):
     assert context.saved_text, 'context.saved_text is %r!!' % (context.saved_text, )
     context.saved_text.assert_equals(TEXT)
 
-@then('the text is as expected')
-def step(context):
-    assert context.saved_text, 'context.saved_text is %r!!' % (context.saved_text, )
-    assert context.saved_text == TEXT, '%r != expected %r' %(context.saved_text, TEXT)
-
 @given('some initial data')
 def step(context):
     assert context.table
