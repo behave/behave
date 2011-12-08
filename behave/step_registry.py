@@ -1,3 +1,9 @@
+
+
+class AmbiguousStep(ValueError):
+    pass
+
+
 class StepRegistry(object):
     def __init__(self):
         self.steps = {
@@ -10,7 +16,11 @@ class StepRegistry(object):
     def add_definition(self, keyword, string, func):
         # TODO try to fix module dependencies to avoid this
         from behave import matchers
-        self.steps[keyword.lower()].append(matchers.get_matcher(func, string))
+        keyword = self.steps[keyword.lower()]
+        for existing in keyword:
+            if existing.match(string):
+                raise AmbiguousStep('"%s" has already been defined' % string)
+        keyword.append(matchers.get_matcher(func, string))
 
     def find_match(self, step):
         candidates = self.steps[step.step_type]
