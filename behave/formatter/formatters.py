@@ -31,10 +31,10 @@ def get_formatter(config, stream):
             formatter = formatters[name](formatter, config)
     return formatter
 
-from behave.formatter import plain_formatter
-register(plain_formatter.PlainFormatter)
-from behave.formatter import pretty_formatter
-register(pretty_formatter.PrettyFormatter)
-from behave.formatter import json_formatter
-register(json_formatter.JSONFormatter)
+from behave.formatter import plain
+register(plain.PlainFormatter)
+from behave.formatter import pretty
+register(pretty.PrettyFormatter)
+from behave.formatter import json
+register(json.JSONFormatter)
 

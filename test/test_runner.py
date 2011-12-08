@@ -286,7 +286,7 @@ class TestRunWithPaths(object):
         self.feature_files = self.runner.feature_files = Mock()
         self.calculate_summaries = self.runner.calculate_summaries = Mock()
 
-        self.formatter_class = patch('behave.formatter.pretty_formatter.PrettyFormatter')
+        self.formatter_class = patch('behave.formatter.pretty.PrettyFormatter')
         formatter_class = self.formatter_class.start()
         formatter_class.return_value = self.formatter = Mock()
 

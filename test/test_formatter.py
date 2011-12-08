@@ -6,8 +6,8 @@ from mock import Mock, patch
 from nose.tools import *
 
 from behave.formatter import formatters
-from behave.formatter import pretty_formatter
-from behave.formatter import tag_count_formatter
+from behave.formatter import pretty
+from behave.formatter import tag_count
 
 from behave.model import Tag, Feature, Scenario, Step
 
@@ -30,7 +30,7 @@ class TestGetTerminalSize(object):
         platform = sys.platform
         sys.platform = 'windows'
 
-        eq_(pretty_formatter.get_terminal_size(), (80, 24))
+        eq_(pretty.get_terminal_size(), (80, 24))
 
         sys.platform = platform
 
@@ -41,7 +41,7 @@ class TestGetTerminalSize(object):
         except ImportError:
             pass
 
-        eq_(pretty_formatter.get_terminal_size(), (80, 24))
+        eq_(pretty.get_terminal_size(), (80, 24))
 
     def test_exception_in_ioctl(self):
         try:
@@ -54,7 +54,7 @@ class TestGetTerminalSize(object):
 
         self.ioctl.side_effect = raiser
 
-        eq_(pretty_formatter.get_terminal_size(), (80, 24))
+        eq_(pretty.get_terminal_size(), (80, 24))
         self.ioctl.assert_called_with(0, termios.TIOCGWINSZ, self.zero_struct)
 
     def test_happy_path(self):
@@ -65,7 +65,7 @@ class TestGetTerminalSize(object):
 
         self.ioctl.return_value = struct.pack('HHHH', 17, 23, 5, 5)
 
-        eq_(pretty_formatter.get_terminal_size(), (23, 17))
+        eq_(pretty.get_terminal_size(), (23, 17))
         self.ioctl.assert_called_with(0, termios.TIOCGWINSZ, self.zero_struct)
 
     def test_zero_size_fallback(self):
@@ -76,7 +76,7 @@ class TestGetTerminalSize(object):
 
         self.ioctl.return_value = self.zero_struct
 
-        eq_(pretty_formatter.get_terminal_size(), (80, 24))
+        eq_(pretty.get_terminal_size(), (80, 24))
         self.ioctl.assert_called_with(0, termios.TIOCGWINSZ, self.zero_struct)
 
 
@@ -173,7 +173,7 @@ class TestTagCount(FormatterTests):
         if tag_counts is None: tag_counts = {}
         f = formatters.get_formatter(config, stream)
         f.uri('<string>')
-        f = tag_count_formatter.TagCountFormatter(f, tag_counts)
+        f = tag_count.TagCountFormatter(f, tag_counts)
         f.uri('<string>')
         return f
 
