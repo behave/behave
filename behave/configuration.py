@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import argparse
 import ConfigParser
@@ -19,15 +20,17 @@ options = [
                  configuration file setting.""")),
     (('-d', '--dry-run'), dict(action='store_true',
          help="Invokes formatters without executing the steps.")),
-#    (('-e', '--exclude'), dict(metavar="PATTERN",
-#         help="Don't run feature files matching PATTERN.")),
+    (('-e', '--exclude'), dict(metavar="PATTERN", dest='exclude_re',
+         help="Don't run feature files matching regular expression PATTERN.")),
+    (('-i', '--include'), dict(metavar="PATTERN", dest='include_re',
+         help="Only run feature files matching regular expression PATTERN.")),
     (('-f', '--format'), dict(action='append',
          help="""Specify a formatter. By default the 'pretty'
                  formatter is used. Pass '--format help' to get a
                  list of available formatters.""")),
 #    (('-g', '--guess'), dict(action='store_true',
 #         help="Guess best match for ambiguous steps.")),
-    (('-i', '--no-snippets'), dict(action='store_false', dest='show_snippets',
+    (('--no-snippets',), dict(action='store_false', dest='show_snippets',
          help="Don't print snippets for unimplemented steps.")),
     (('--snippets',), dict(action='store_true',
          help="""Print snippets for unimplemented steps.
@@ -225,3 +228,21 @@ class Configuration(object):
             self.output = sys.stdout
 
         self.tags = TagExpression(self.tags or [])
+
+        if self.quiet:
+            self.show_source = False
+            self.show_snippets = False
+
+        if self.exclude_re:
+            self.exclude_re = re.compile(self.exclude_re)
+
+        if self.include_re:
+            self.include_re = re.compile(self.include_re)
+
+    def exclude(self, filename):
+        if self.include_re and self.include_re.search(filename) is None:
+            return True
+        if self.exclude_re and self.exclude_re.search(filename) is not None:
+            return True
+        return False
+

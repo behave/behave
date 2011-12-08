@@ -85,10 +85,6 @@ def main():
 
     stream = config.output
 
-    if config.quiet:
-        config.show_source = False
-        config.show_snippets = False
-
     runner = Runner(config)
     try:
         failed = runner.run()
