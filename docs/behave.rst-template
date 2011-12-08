@@ -47,6 +47,24 @@ formatted in the Windows INI style, for example:
   logging_clear_handlers=yes
   logging_filter=-suds
 
+The types possible are:
+
+**text**
+  This just assigns whatever text you supply to the configuration setting.
+
+**boolean**
+  This assigns a boolean value to the configuration setting. True values
+  are "1", "yes", "true", and "on". False values are "0", "no", "false",
+  and "off".
+
+**text (multiple allowed)**
+  These fields accept one or more ampersand-separated ("&") values, for
+  example: "foo & bar".
+
+
+Recognised Settings
+-------------------
+
 {config}
 
 

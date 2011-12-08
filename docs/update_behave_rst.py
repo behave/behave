@@ -17,17 +17,20 @@ cmdline = configuration.parser.format_help()
 
 config = []
 for fixed, keywords in configuration.options:
+    skip = False
     if 'dest' in keywords:
         dest = keywords['dest']
     else:
         for opt in fixed:
+            if opt.startswith('--no'):
+                skip = True
             if opt.startswith('--'):
                 dest = opt[2:].replace('-', '_')
             else:
                 assert len(opt) == 2
                 dest = opt[1:]
 
-    if dest in 'tags_help lang_list lang_help version'.split():
+    if skip or dest in 'tags_help lang_list lang_help version'.split():
         continue
 
     action = keywords.get('action', 'store')
