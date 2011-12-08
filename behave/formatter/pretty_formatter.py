@@ -5,6 +5,8 @@ import sys
 from behave.formatter.ansi_escapes import escapes, up
 from behave.formatter.base import Formatter
 
+DEFAULT_WIDTH = 80
+DEFAULT_HEIGHT = 24
 
 def escape_cell(cell):
     cell = cell.replace(u'\\', u'\\\\')
@@ -32,7 +34,7 @@ def get_terminal_size():
     if sys.platform == 'windows':
         # Autodetecting the size of a Windows command window is left as an
         # exercise for the reader. Prizes may be awarded for the best answer.
-        return (80, 24)
+        return (DEFAULT_WIDTH, DEFAULT_HEIGHT)
 
     try:
         import fcntl
@@ -43,9 +45,9 @@ def get_terminal_size():
         result = fcntl.ioctl(0, termios.TIOCGWINSZ, zero_struct)
         h, w, hp, wp = struct.unpack('HHHH', result)
 
-        return w or 80, h or 24
+        return w or DEFAULT_WIDTH, h or DEFAULT_HEIGHT
     except:
-        return (80, 24)
+        return (DEFAULT_WIDTH, DEFAULT_HEIGHT)
 
 
 class PrettyFormatter(Formatter):
