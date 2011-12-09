@@ -405,6 +405,9 @@ class Runner(object):
         self.run_hook('before_all', context)
 
         for filename in self.feature_files():
+            if self.config.exclude(filename):
+                continue
+
             feature = parser.parse_file(os.path.abspath(filename),
                 language=self.config.lang)
 

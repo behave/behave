@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import argparse
 import ConfigParser
@@ -19,15 +20,17 @@ options = [
                  configuration file setting.""")),
     (('-d', '--dry-run'), dict(action='store_true',
          help="Invokes formatters without executing the steps.")),
-#    (('-e', '--exclude'), dict(metavar="PATTERN",
-#         help="Don't run feature files matching PATTERN.")),
+    (('-e', '--exclude'), dict(metavar="PATTERN", dest='exclude_re',
+         help="Don't run feature files matching regular expression PATTERN.")),
+    (('-i', '--include'), dict(metavar="PATTERN", dest='include_re',
+         help="Only run feature files matching regular expression PATTERN.")),
     (('-f', '--format'), dict(action='append',
          help="""Specify a formatter. By default the 'pretty'
                  formatter is used. Pass '--format help' to get a
                  list of available formatters.""")),
 #    (('-g', '--guess'), dict(action='store_true',
 #         help="Guess best match for ambiguous steps.")),
-    (('-i', '--no-snippets'), dict(action='store_false', dest='show_snippets',
+    (('--no-snippets',), dict(action='store_false', dest='show_snippets',
          help="Don't print snippets for unimplemented steps.")),
     (('--snippets',), dict(action='store_true',
          help="""Print snippets for unimplemented steps.
@@ -75,25 +78,22 @@ options = [
                  handlers.""")),
     (('--logging-filter',), dict(
          help="""
-             Specify which statements to filter in/out. By default,
-             everything is captured. If the output is too verbose,
-             use this option to filter out needless output.
-             Example: --logging-filter=foo will capture statements
-             issued ONLY to foo or foo.what.ever.sub but not foobar
-             or other logger. Specify multiple loggers with comma:
-             filter=foo,bar,baz. If any logger name is prefixed
-             with a minus, eg filter=-foo, it will be excluded
-             rather than included.""",
+             Specify which statements to filter in/out. By default, everything
+             is captured. If the output is too verbose, use this option to
+             filter out needless output.  Example: --logging-filter=foo will
+             capture statements issued ONLY to foo or foo.what.ever.sub but not
+             foobar or other logger. Specify multiple loggers with comma:
+             filter=foo,bar,baz. If any logger name is prefixed with a minus, eg
+             filter=-foo, it will be excluded rather than included.""",
          config_help="""
-             Specify which statements to filter in/out. By default,
-             everything is captured. If the output is too verbose,
-             use this option to filter out needless output.
-             Example: logging_filter=foo will capture statements
-             issued ONLY to foo or foo.what.ever.sub but not foobar
-             or other logger. Specify multiple loggers with comma:
-             logging_filter=foo,bar,baz. If any logger name is prefixed
-             with a minus, eg logging_filter=-foo, it will be excluded
-             rather than included.""")),
+             Specify which statements to filter in/out. By default, everything
+             is captured. If the output is too verbose, use this option to
+             filter out needless output.  Example: ``logging_filter = foo`` will
+             capture statements issued ONLY to "foo" or "foo.what.ever.sub" but
+             not "foobar" or other logger. Specify multiple loggers with comma:
+             ``logging_filter = foo,bar,baz``. If any logger name is prefixed with a
+             minus, eg ``logging_filter = -foo``, it will be excluded rather than
+             included.""")),
     (('--logging-clear-handlers',), dict(action='store_true',
              help="Clear all other logging handlers.")),
     (('-o', '--outfile'), dict(metavar='FILE',
@@ -128,7 +128,7 @@ options = [
     (('--lang',), dict(metavar='LANG',
          help="Use keywords for a language other than English.")),
     (('--lang-list',), dict(action='store_true',
-         help="List the languages abailable for --lang")),
+         help="List the languages available for --lang.")),
     (('--lang-help',), dict(metavar='LANG',
          help="List the translations accepted for one language.")),
     (('--tags-help',), dict(action='store_true',
@@ -161,11 +161,7 @@ def read_configuration(path):
         elif action in ('store_true','store_false'):
             result[dest] = cfg.getboolean('behave', dest)
         elif action == 'append':
-            if dest == 'tags':
-                c = '&'
-            else:
-                c = ','
-            result[dest] = [s.strip() for s in cfg.get('behave', dest).split(c)]
+            result[dest] = [s.strip() for s in cfg.get('behave', dest).splitlines()]
         else:
              raise ValueError('action "%s" not implemented' % action)
     return result
@@ -232,3 +228,21 @@ class Configuration(object):
             self.output = sys.stdout
 
         self.tags = TagExpression(self.tags or [])
+
+        if self.quiet:
+            self.show_source = False
+            self.show_snippets = False
+
+        if self.exclude_re:
+            self.exclude_re = re.compile(self.exclude_re)
+
+        if self.include_re:
+            self.include_re = re.compile(self.include_re)
+
+    def exclude(self, filename):
+        if self.include_re and self.include_re.search(filename) is None:
+            return True
+        if self.exclude_re and self.exclude_re.search(filename) is not None:
+            return True
+        return False
+

@@ -7,8 +7,10 @@ from behave import configuration
 # one entry of each kind handled
 TEST_CONFIG='''[behave]
 outfile=/tmp/spam
-tags = @foo,~@bar & @zap
-format=pretty, tag-counter
+tags = @foo,~@bar
+       @zap
+format=pretty
+       tag-counter
 stdout_capture=no
 bogus=spam
 '''

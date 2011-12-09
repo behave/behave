@@ -13,9 +13,10 @@ from behave import __main__
 with open('behave.rst-template') as f:
     template = f.read()
 
-cmdline = configuration.parser.format_help()
+#cmdline = configuration.parser.format_help()
 
 config = []
+cmdline = []
 for fixed, keywords in configuration.options:
     skip = False
     if 'dest' in keywords:
@@ -29,6 +30,11 @@ for fixed, keywords in configuration.options:
             else:
                 assert len(opt) == 2
                 dest = opt[1:]
+
+    text = re.sub(r'\s+', ' ', keywords['help']).strip()
+    text = text.replace('%%', '%')
+    text = textwrap.fill(text, 70, initial_indent='   ', subsequent_indent='   ')
+    cmdline.append('**%s**\n%s' % (', '.join(fixed), text))
 
     if skip or dest in 'tags_help lang_list lang_help version'.split():
         continue
@@ -50,7 +56,7 @@ for fixed, keywords in configuration.options:
 
 
 values = dict(
-    cmdline=cmdline,
+    cmdline='\n'.join(cmdline),
     tag_expression=__main__.TAG_HELP,
     config='\n'.join(config),
 )
