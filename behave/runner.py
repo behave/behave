@@ -14,6 +14,7 @@ from behave import step_registry
 from behave.formatter import formatters
 from behave.configuration import ConfigError
 from behave.log_capture import MemoryHandler
+from behave.reporter import reporters
 
 
 class ContextMaskWarning(UserWarning):
@@ -265,12 +266,6 @@ class Runner(object):
 
         self.feature = None
 
-        self.feature_summary = {'passed': 0, 'failed': 0, 'skipped': 0, 'untested': 0}
-        self.scenario_summary = {'passed': 0, 'failed': 0, 'skipped': 0, 'untested': 0}
-        self.step_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
-                             'undefined': 0, 'untested': 0}
-        self.duration = 0.0
-
         self.stdout_capture = None
         self.log_capture = None
         self.out_stdout = None
@@ -402,6 +397,8 @@ class Runner(object):
         stream = self.config.output
         failed = False
 
+        reporter_list = reporters.get_reporters(self.config)
+
         self.run_hook('before_all', context)
 
         for filename in self.feature_files():
@@ -422,12 +419,14 @@ class Runner(object):
             self.formatter.eof()
             stream.write('\n')
 
+            [reporter.feature(feature) for reporter in reporter_list]
+
             if failed and self.config.stop:
                 break
 
         self.run_hook('after_all', context)
 
-        self.calculate_summaries()
+        [reporter.end() for reporter in reporter_list]
 
         return failed
 
@@ -451,12 +450,3 @@ class Runner(object):
     def teardown_capture(self):
         if self.config.log_capture:
             self.log_capture.abandon()
-
-    def calculate_summaries(self):
-        for feature in self.features:
-            self.feature_summary[feature.status or 'skipped'] += 1
-            self.duration += feature.duration
-            for scenario in feature:
-                self.scenario_summary[scenario.status or 'skipped'] += 1
-                for step in scenario:
-                    self.step_summary[step.status or 'skipped'] += 1

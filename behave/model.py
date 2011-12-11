@@ -694,6 +694,7 @@ class Step(BasicStatement, Replayable):
         self.status = 'untested'
         self.duration = 0.0
         self.error_message = None
+        self.exception = None
 
     def __repr__(self):
         return '<%s "%s">' % (self.step_type, self.name)
@@ -740,9 +741,11 @@ class Step(BasicStatement, Replayable):
         except AssertionError, e:
             self.status = 'failed'
             error = 'Assertion Failed: %s' % (e, )
-        except Exception:
+            self.exception = e
+        except Exception, e:
             self.status = 'failed'
             error = traceback.format_exc()
+            self.exception = e
 
         self.duration = time.time() - start
 

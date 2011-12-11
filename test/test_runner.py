@@ -329,6 +329,8 @@ class TestRunWithPaths(object):
         self.config.format = ['plain']
         self.config.output.encoding = None
         self.config.exclude = lambda s: False
+        self.config.junit = False
+        self.config.summary = False
         parse_file.return_value = feature
 
         self.runner.run_with_paths()

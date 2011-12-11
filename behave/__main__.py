@@ -93,27 +93,6 @@ def main():
     except ConfigError, e:
         sys.exit(str(e))
 
-    def format_summary(statement_type, summary):
-        first = True
-        parts = []
-        for status in ('passed', 'failed', 'skipped', 'undefined'):
-            if status not in summary:
-                continue
-            if first:
-                label = statement_type
-                if summary[status] != 1:
-                    label += 's'
-                part = '%d %s %s' % (summary[status], label, status)
-                first = False
-            else:
-                part = '%d %s' % (summary[status], status)
-            parts.append(part)
-        return ', '.join(parts) + '\n'
-
-    stream.write(format_summary('feature', runner.feature_summary))
-    stream.write(format_summary('scenario', runner.scenario_summary))
-    stream.write(format_summary('step', runner.step_summary))
-
     if config.show_snippets and runner.undefined:
         msg = "\nYou can implement step definitions for undefined steps with "
         msg += "these snippets:\n\n"

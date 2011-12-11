@@ -24,6 +24,13 @@ options = [
          help="Don't run feature files matching regular expression PATTERN.")),
     (('-i', '--include'), dict(metavar="PATTERN", dest='include_re',
          help="Only run feature files matching regular expression PATTERN.")),
+    (('--no-junit',), dict(action='store_false', dest='junit',
+         help="Don't output JUnit-compatible reports.")),
+    (('--junit',), dict(action='store_true',
+         help="""Output JUnit-compatible reports.""")),
+    (('--junit-directory',), dict(metavar='PATH', dest='junit_directory',
+         default='reports',
+         help ="""Directory in which to store JUnit reports.""")),
     (('-f', '--format'), dict(action='append',
          help="""Specify a formatter. By default the 'pretty'
                  formatter is used. Pass '--format help' to get a
@@ -96,6 +103,10 @@ options = [
              included.""")),
     (('--logging-clear-handlers',), dict(action='store_true',
              help="Clear all other logging handlers.")),
+    (('--no-summary',), dict(action='store_false', dest='summary',
+         help="""Don't display the summary at the end of the run.""")),
+    (('--summary',), dict(action='store_true', dest='summary',
+         help="""Display the summary at the end of the run.""")),
     (('-o', '--outfile'), dict(metavar='FILE',
          help="Write to specified file instead of stdout.")),
     (('-q', '--quiet'), dict(action='store_true',
@@ -212,6 +223,8 @@ class Configuration(object):
             dry_run=False,
             show_source=True,
             logging_format='%(levelname)s:%(name)s:%(message)s',
+            summary=True,
+            junit=False,
         )
         load_configuration(defaults)
         parser.set_defaults(**defaults)
