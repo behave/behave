@@ -419,9 +419,6 @@ class Runner(object):
 
             failed = feature.run(self)
 
-            self.formatter.eof()
-            stream.write('\n')
-
             if failed and self.config.stop:
                 break
 
