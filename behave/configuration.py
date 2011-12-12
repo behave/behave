@@ -4,6 +4,8 @@ import sys
 import argparse
 import ConfigParser
 
+from behave.reporter.junit import JUnitReporter
+from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import TagExpression
 
 
@@ -214,6 +216,7 @@ parser.add_argument('paths', nargs='*')
 class Configuration(object):
     def __init__(self):
         self.formatters = []
+        self.reporters = []
 
         defaults = dict(
             color=True,
@@ -251,6 +254,12 @@ class Configuration(object):
 
         if self.include_re:
             self.include_re = re.compile(self.include_re)
+
+        if self.junit:
+            self.reporters.append(JUnitReporter(self))
+        if self.summary:
+            self.reporters.append(SummaryReporter(self))
+
 
     def exclude(self, filename):
         if self.include_re and self.include_re.search(filename) is None:

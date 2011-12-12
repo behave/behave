@@ -14,7 +14,6 @@ from behave import step_registry
 from behave.formatter import formatters
 from behave.configuration import ConfigError
 from behave.log_capture import MemoryHandler
-from behave.reporter import reporters
 
 
 class ContextMaskWarning(UserWarning):
@@ -397,8 +396,6 @@ class Runner(object):
         stream = self.config.output
         failed = False
 
-        reporter_list = reporters.get_reporters(self.config)
-
         self.run_hook('before_all', context)
 
         for filename in self.feature_files():
@@ -419,14 +416,14 @@ class Runner(object):
             self.formatter.eof()
             stream.write('\n')
 
-            [reporter.feature(feature) for reporter in reporter_list]
+            [reporter.feature(feature) for reporter in self.config.reporters]
 
             if failed and self.config.stop:
                 break
 
         self.run_hook('after_all', context)
 
-        [reporter.end() for reporter in reporter_list]
+        [reporter.end() for reporter in self.config.reporters]
 
         return failed
 
