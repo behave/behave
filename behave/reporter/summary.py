@@ -23,8 +23,10 @@ class SummaryReporter(Reporter):
 
         self.stream = self.config.output
 
-        self.feature_summary = {'passed': 0, 'failed': 0, 'skipped': 0, 'untested': 0}
-        self.scenario_summary = {'passed': 0, 'failed': 0, 'skipped': 0, 'untested': 0}
+        self.feature_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
+                                'untested': 0}
+        self.scenario_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
+                                 'untested': 0}
         self.step_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
                              'undefined': 0, 'untested': 0}
         self.duration = 0.0
