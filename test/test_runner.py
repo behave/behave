@@ -278,6 +278,7 @@ class TestRunner(object):
 class TestRunWithPaths(object):
     def setUp(self):
         self.config = Mock()
+        self.config.reporters = []
         self.runner = runner.Runner(self.config)
         self.load_hooks = self.runner.load_hooks = Mock()
         self.load_step_definitions = self.runner.load_step_definitions = Mock()
