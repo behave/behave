@@ -29,6 +29,11 @@ You may see the same information presented below at any time using ``behave
 **-f, --format**
    Specify a formatter. By default the 'pretty' formatter is used.
    Pass '--format help' to get a list of available formatters.
+**-k, --no-skipped**
+   Don't print skipped steps (due to tags).
+**--show-skipped**
+   Print skipped steps. This is the default behaviour. This switch is
+   used to override a configuration file setting.
 **--no-snippets**
    Don't print snippets for unimplemented steps.
 **--snippets**
@@ -209,6 +214,11 @@ Recognised Settings
 **format** -- text (multiple allowed)
    Specify a formatter. By default the 'pretty' formatter is used.
    Pass '--format help' to get a list of available formatters.
+**show_skipped** -- boolean
+   Don't print skipped steps (due to tags).
+**show_skipped** -- boolean
+   Print skipped steps. This is the default behaviour. This switch is
+   used to override a configuration file setting.
 **show_snippets** -- boolean
    Don't print snippets for unimplemented steps.
 **snippets** -- boolean
