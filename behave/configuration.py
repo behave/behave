@@ -39,6 +39,13 @@ options = [
                  list of available formatters.""")),
 #    (('-g', '--guess'), dict(action='store_true',
 #         help="Guess best match for ambiguous steps.")),
+
+    (('-k', '--no-skipped'), dict(action='store_false', dest='show_skipped',
+         help="Don't print skipped steps (due to tags).")),
+    (('--show-skipped',), dict(action='store_true',
+         help="""Print skipped steps.
+                 This is the default behaviour. This switch is used to override a
+                 configuration file setting.""")),
     (('--no-snippets',), dict(action='store_false', dest='show_snippets',
          help="Don't print snippets for unimplemented steps.")),
     (('--snippets',), dict(action='store_true',
@@ -222,6 +229,7 @@ class Configuration(object):
             color=True,
             stdout_capture=True,
             show_snippets=True,
+            show_skipped=True,
             log_capture=True,
             dry_run=False,
             show_source=True,

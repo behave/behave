@@ -211,8 +211,6 @@ class Feature(TagStatement, Replayable):
     def run(self, runner):
         failed = False
 
-        runner.formatter.feature(self)
-
         runner.context._push()
         runner.context.feature = self
 
@@ -222,6 +220,9 @@ class Feature(TagStatement, Replayable):
         for scenario in self:
             run_feature = run_feature or runner.config.tags.check(scenario.tags)
 
+        if run_feature or runner.config.show_skipped:
+            runner.formatter.feature(self)
+
         # current tags as a set
         runner.context.tags = set(self.tags)
 
@@ -230,7 +231,7 @@ class Feature(TagStatement, Replayable):
                 runner.run_hook('before_tag', runner.context, tag)
             runner.run_hook('before_feature', runner.context, self)
 
-        if self.background:
+        if self.background and (run_feature or runner.config.show_skipped):
             runner.formatter.background(self.background)
 
         for scenario in self:
@@ -246,6 +247,10 @@ class Feature(TagStatement, Replayable):
                 runner.run_hook('after_tag', runner.context, tag)
 
         runner.context._pop()
+
+        runner.formatter.eof()
+        if run_feature or runner.config.show_skipped:
+            runner.formatter.stream.write('\n')
 
         return failed
 
@@ -405,7 +410,8 @@ class Scenario(TagStatement, Replayable):
         run_scenario = runner.config.tags.check(tags)
         run_steps = run_scenario and not runner.config.dry_run
 
-        runner.formatter.scenario(self)
+        if run_scenario or runner.config.show_skipped:
+            runner.formatter.scenario(self)
 
         runner.context._push()
         runner.context.scenario = self
@@ -420,8 +426,9 @@ class Scenario(TagStatement, Replayable):
 
         runner.setup_capture()
 
-        for step in self:
-            runner.formatter.step(step)
+        if run_scenario or runner.config.show_skipped:
+            for step in self:
+                runner.formatter.step(step)
 
         for step in self:
             if run_steps:
