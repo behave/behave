@@ -214,6 +214,29 @@ events during your testing:
 **before_all(context), after_all(context)**
   These run before and after the whole shooting match.
 
+Some Useful Environment Ideas
+-----------------------------
+
+Here's some ideas for things you could use the environment for.
+
+1. Setting up basic logging configuration for when you've turned off
+   logging capture by *behave*:
+
+   .. code-block:: python
+    
+      import logging
+
+      def before_all(context):
+          if not context.config.log_capture:
+              logging.basicConfig(level=logging.DEBUG)
+
+   Note that you could also achieve this through always configuring basic
+   logging and then using the ``--logging-clear-handlers`` command-line
+   argument, but we think the above is a little nicer.
+
+2. TODO
+
+
 The *context* variable in all cases is an instance of
 :class:`behave.runner.Context`.
 
