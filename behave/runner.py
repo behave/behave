@@ -91,6 +91,13 @@ class Context(object):
     indeed by *behave* to overwite a user-set variable, then a
     :class:`behave.runner.ContextMaskWarning` warning will be raised.
 
+    You may use the "in" operator to test whether a certain value has been set
+    on the context, for example:
+
+        'feature' in context
+
+    checks whether there is a "feature" value in the context.
+
     .. _`configuration file settion names`: behave.html#configuration-files
     '''
     BEHAVE = 'behave'
@@ -192,6 +199,14 @@ class Context(object):
         frame[attr] = value
         if attr not in self._origin:
             self._origin[attr] = self._mode
+
+    def __contains__(self, attr):
+        if attr[0] == '_':
+            return attr in self.__dict__
+        for frame in self._stack:
+            if attr in frame:
+                return True
+        return False
 
     def execute_steps(self, steps):
         '''The steps identified in the "steps" text string will be parsed and
