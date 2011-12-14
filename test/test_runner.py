@@ -20,6 +20,13 @@ class TestContext(object):
         r.config.verbose = False
         self.context = runner.Context(r)
 
+    def test_context_contains(self):
+        eq_('thing' in self.context, False)
+        self.context.thing = 'stuff'
+        eq_('thing' in self.context, True)
+        self.context._push()
+        eq_('thing' in self.context, True)
+
     def test_attribute_set_at_upper_level_visible_at_lower_level(self):
         self.context.thing = 'stuff'
         self.context._push()
