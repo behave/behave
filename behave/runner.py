@@ -240,6 +240,7 @@ class Context(object):
 def exec_file(filename, globals={}, locals=None):
     if locals is None:
         locals = globals
+    locals['__file__'] = filename
     if sys.version_info[0] == 3:
         with open(filename) as f:
             exec(f.read(), globals, locals)

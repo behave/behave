@@ -5,6 +5,7 @@ import os.path
 import StringIO
 import sys
 import warnings
+import tempfile
 
 from mock import Mock, patch
 from nose.tools import *
@@ -280,6 +281,17 @@ class TestRunner(object):
         r.teardown_capture()
 
         r.log_capture.abandon.assert_called_with()
+
+    def test_exec_file(self):
+        fn = tempfile.mktemp()
+        with open(fn, 'w') as f:
+            f.write('spam = __file__\n')
+        g = {}
+        l = {}
+        runner.exec_file(fn, g, l)
+        assert '__file__' in l
+        assert 'spam' in l, '"spam" variable not set in locals (%r)' % (g, l)
+        eq_(l['spam'], fn)
 
 
 class TestRunWithPaths(object):
