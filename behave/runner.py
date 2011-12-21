@@ -379,7 +379,7 @@ class Runner(object):
         for path in [steps_dir] + list(extra_step_paths):
             for name in os.listdir(path):
                 if name.endswith('.py'):
-                    execfile(os.path.join(path, name), step_globals)
+                    exec_file(os.path.join(path, name), step_globals)
 
         # clean up the path
         sys.path.pop(0)
