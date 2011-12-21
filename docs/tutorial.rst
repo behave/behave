@@ -241,6 +241,11 @@ directory. You can call these whatever you like as long as they're
 *filename*.py in the steps directory. You don't need to tell *behave* which
 ones to use - it'll use all of them.
 
+The full detail of the Python side of *behave* is in the `API
+documenation`_.
+
+.. _`API documenation`: api.html
+
 Steps are identified using decorators which match the predicate from the
 feature file: given, when, then and step (variants with Title case are also
 available if that's your preference.) The decorator accepts a string
@@ -278,6 +283,24 @@ The ``step`` decorator matches the step to *any* step type, "given", "when"
 or "then". The "and" and "but" step types are renamed internally to take
 the preceding step's keyword (so an "and" following a "given" will become a
 "given" internally and use a "give" decorated step).
+
+If you find you'd like your step implementation to invoke another step you
+may do so with the :class:`~behave.runner.Context` method
+:func:`~behave.runner.Context.execute_steps`.
+
+This function allows you to, for example:
+
+.. code-block:: python
+
+    @when('I do the same thing as before')
+    def step(context):
+        context.execute_steps('''
+            when I press the big red button
+             and I duck
+        ''')
+
+This will cause the "when I do the same thing as before" step to execute
+the other two steps as though they had also appeared in the scenario file.
 
 
 Step Parameters
