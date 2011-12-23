@@ -129,7 +129,9 @@ options = [
     (('-v', '--verbose'), dict(action='store_true',
          help='Show the files and features loaded.')),
     (('-w', '--wip'), dict(action='store_true',
-         help="Fail if there are any passing scenarios.")),
+         help="""Only run scenarios tagged with "wip". Additionally: use the
+                 "plain" formatter, do not capture stdout or logging output and
+                 stop at the first failure.""")),
     (('-x', '--expand'), dict(action='store_true',
          help="Expand scenario outline tables in output.")),
     (('--lang',), dict(metavar='LANG',

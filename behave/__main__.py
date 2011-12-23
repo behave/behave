@@ -76,6 +76,15 @@ def main():
                 u', '.join(w for w in trans[kw] if w != '*'))
         sys.exit(0)
 
+    if config.wip:
+        # Only run scenarios tagged with "wip". Additionally: use the "plain"
+        # formatter, do not capture stdout or logging output and stop at the
+        # first failure.
+        config.format = ['plain']
+        config.stop = True
+        config.log_capture = False
+        config.stdou_capture = False
+
     if not config.format:
         config.format = ['pretty']
     elif config.format == ['help']:
