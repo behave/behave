@@ -237,6 +237,16 @@ class Configuration(object):
         else:
             self.output = sys.stdout
 
+        if self.wip:
+            # Only run scenarios tagged with "wip". Additionally: use the "plain"
+            # formatter, do not capture stdout or logging output and stop at the
+            # first failure.
+            self.format = ['plain']
+            self.tags = ['wip']
+            self.stop = True
+            self.log_capture = False
+            self.stdou_capture = False
+
         self.tags = TagExpression(self.tags or [])
 
         if self.quiet:
