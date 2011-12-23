@@ -245,7 +245,7 @@ class Configuration(object):
             self.tags = ['wip']
             self.stop = True
             self.log_capture = False
-            self.stdou_capture = False
+            self.stdout_capture = False
 
         self.tags = TagExpression(self.tags or [])
 
