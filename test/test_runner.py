@@ -173,6 +173,22 @@ class TestContext(object):
         file = __file__.rsplit('.', 1)[0]
         assert file in info, '%r not in %r' % (file, info)
 
+    def test_context_deletable(self):
+        eq_('thing' in self.context, False)
+        self.context.thing = 'stuff'
+        eq_('thing' in self.context, True)
+        del self.context.thing
+        eq_('thing' in self.context, False)
+
+    @raises(AttributeError)
+    def test_context_deletable(self):
+        eq_('thing' in self.context, False)
+        self.context.thing = 'stuff'
+        eq_('thing' in self.context, True)
+        self.context._push()
+        eq_('thing' in self.context, True)
+        del self.context.thing
+
 
 class TestRunner(object):
     def test_load_hooks_execfiles_hook_file(self):

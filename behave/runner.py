@@ -98,6 +98,10 @@ class Context(object):
 
     checks whether there is a "feature" value in the context.
 
+    Values may be deleted from the context using "del" but only at the level
+    they are set. You can't delete a value set by a feature at a scenario level
+    but you can delete a value set for a scenario in that scenario.
+
     .. _`configuration file settion names`: behave.html#configuration-files
     '''
     BEHAVE = 'behave'
@@ -199,6 +203,16 @@ class Context(object):
         frame[attr] = value
         if attr not in self._origin:
             self._origin[attr] = self._mode
+
+    def __delattr__(self, attr):
+        frame = self._stack[0]
+        if attr in frame:
+            del frame[attr]
+            del self._record[attr]
+        else:
+            msg = "'{0}' object has no attribute '{1}' at the current level"
+            msg = msg.format(self.__class__.__name__, attr)
+            raise AttributeError(msg)
 
     def __contains__(self, attr):
         if attr[0] == '_':
