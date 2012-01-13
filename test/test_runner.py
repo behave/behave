@@ -5,6 +5,7 @@ import os.path
 import StringIO
 import sys
 import warnings
+import tempfile
 
 from mock import Mock, patch
 from nose.tools import *
@@ -19,6 +20,13 @@ class TestContext(object):
         self.config = r.config = Mock()
         r.config.verbose = False
         self.context = runner.Context(r)
+
+    def test_context_contains(self):
+        eq_('thing' in self.context, False)
+        self.context.thing = 'stuff'
+        eq_('thing' in self.context, True)
+        self.context._push()
+        eq_('thing' in self.context, True)
 
     def test_attribute_set_at_upper_level_visible_at_lower_level(self):
         self.context.thing = 'stuff'
@@ -165,6 +173,22 @@ class TestContext(object):
         file = __file__.rsplit('.', 1)[0]
         assert file in info, '%r not in %r' % (file, info)
 
+    def test_context_deletable(self):
+        eq_('thing' in self.context, False)
+        self.context.thing = 'stuff'
+        eq_('thing' in self.context, True)
+        del self.context.thing
+        eq_('thing' in self.context, False)
+
+    @raises(AttributeError)
+    def test_context_deletable(self):
+        eq_('thing' in self.context, False)
+        self.context.thing = 'stuff'
+        eq_('thing' in self.context, True)
+        self.context._push()
+        eq_('thing' in self.context, True)
+        del self.context.thing
+
 
 class TestRunner(object):
     def test_load_hooks_execfiles_hook_file(self):
@@ -273,6 +297,17 @@ class TestRunner(object):
         r.teardown_capture()
 
         r.log_capture.abandon.assert_called_with()
+
+    def test_exec_file(self):
+        fn = tempfile.mktemp()
+        with open(fn, 'w') as f:
+            f.write('spam = __file__\n')
+        g = {}
+        l = {}
+        runner.exec_file(fn, g, l)
+        assert '__file__' in l
+        assert 'spam' in l, '"spam" variable not set in locals (%r)' % (g, l)
+        eq_(l['spam'], fn)
 
 
 class TestRunWithPaths(object):

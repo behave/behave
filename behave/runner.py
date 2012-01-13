@@ -91,6 +91,17 @@ class Context(object):
     indeed by *behave* to overwite a user-set variable, then a
     :class:`behave.runner.ContextMaskWarning` warning will be raised.
 
+    You may use the "in" operator to test whether a certain value has been set
+    on the context, for example:
+
+        'feature' in context
+
+    checks whether there is a "feature" value in the context.
+
+    Values may be deleted from the context using "del" but only at the level
+    they are set. You can't delete a value set by a feature at a scenario level
+    but you can delete a value set for a scenario in that scenario.
+
     .. _`configuration file settion names`: behave.html#configuration-files
     '''
     BEHAVE = 'behave'
@@ -193,6 +204,24 @@ class Context(object):
         if attr not in self._origin:
             self._origin[attr] = self._mode
 
+    def __delattr__(self, attr):
+        frame = self._stack[0]
+        if attr in frame:
+            del frame[attr]
+            del self._record[attr]
+        else:
+            msg = "'{0}' object has no attribute '{1}' at the current level"
+            msg = msg.format(self.__class__.__name__, attr)
+            raise AttributeError(msg)
+
+    def __contains__(self, attr):
+        if attr[0] == '_':
+            return attr in self.__dict__
+        for frame in self._stack:
+            if attr in frame:
+                return True
+        return False
+
     def execute_steps(self, steps):
         '''The steps identified in the "steps" text string will be parsed and
         executed in turn just as though they were defined in a feature file.
@@ -225,6 +254,7 @@ class Context(object):
 def exec_file(filename, globals={}, locals=None):
     if locals is None:
         locals = globals
+    locals['__file__'] = filename
     if sys.version_info[0] == 3:
         with open(filename) as f:
             exec(f.read(), globals, locals)
@@ -357,7 +387,7 @@ class Runner(object):
         for path in [steps_dir] + list(extra_step_paths):
             for name in os.listdir(path):
                 if name.endswith('.py'):
-                    execfile(os.path.join(path, name), step_globals)
+                    exec_file(os.path.join(path, name), step_globals)
 
         # clean up the path
         sys.path.pop(0)

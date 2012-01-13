@@ -104,7 +104,9 @@ You may see the same information presented below at any time using ``behave
 **-v, --verbose**
    Show the files and features loaded.
 **-w, --wip**
-   Fail if there are any passing scenarios.
+   Only run scenarios tagged with "wip". Additionally: use the "plain"
+   formatter, do not capture stdout or logging output and stop at the
+   first failure.
 **-x, --expand**
    Expand scenario outline tables in output.
 **--lang**
@@ -291,7 +293,9 @@ Recognised Settings
 **verbose** -- boolean
    Show the files and features loaded.
 **wip** -- boolean
-   Fail if there are any passing scenarios.
+   Only run scenarios tagged with "wip". Additionally: use the "plain"
+   formatter, do not capture stdout or logging output and stop at the
+   first failure.
 **expand** -- boolean
    Expand scenario outline tables in output.
 **lang** -- text

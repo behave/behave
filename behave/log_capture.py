@@ -115,3 +115,31 @@ class MemoryHandler(BufferingHandler):
         if self.config.logging_clear_handlers:
             for logger, handler in self.old_handlers:
                 logger.addHandler(handler)
+
+def capture(func):
+    '''Decorator to wrap an *environment file function* in log file capture.
+
+    It configures the logging capture using the *behave* context - the first
+    argument to the function being decorated (so don't use this to decorate
+    something that doesn't have *context* as the first argument.)
+
+    The function prints any captured logging directly to stdout, regardless of
+    error conditions. It is mostly useful for debugging in situations where
+    you are seeing a message like::
+
+        No handlers could be found for logger "name"
+
+    '''
+    def f(context, *args):
+        h = MemoryHandler(context.config)
+        h.inveigle()
+        try:
+            func(context, *args)
+        finally:
+            h.abandon()
+        v = h.getvalue()
+        if v:
+            print 'Captured Logging:'
+            print v
+    return f
+

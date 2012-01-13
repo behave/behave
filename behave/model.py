@@ -747,9 +747,12 @@ class Step(BasicStatement, Replayable):
             self.status = 'passed'
         except AssertionError, e:
             self.status = 'failed'
-            error = 'Assertion Failed: %s' % (e, )
-            self.exception = e
-        except Exception, e:
+            if e.args:
+                error = u'Assertion Failed: {0}'.format(e)
+            else:
+                # no assertion text; format the exception
+                error = traceback.format_exc()
+        except Exception:
             self.status = 'failed'
             error = traceback.format_exc()
             self.exception = e

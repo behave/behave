@@ -214,6 +214,44 @@ events during your testing:
 **before_all(context), after_all(context)**
   These run before and after the whole shooting match.
 
+Some Useful Environment Ideas
+-----------------------------
+
+Here's some ideas for things you could use the environment for.
+
+1. Setting up basic logging configuration for when you've turned off
+   logging capture by *behave*:
+
+   .. code-block:: python
+    
+      import logging
+
+      def before_all(context):
+          if not context.config.log_capture:
+              logging.basicConfig(level=logging.DEBUG)
+
+   Note that you could also achieve this through always configuring basic
+   logging and then using the ``--logging-clear-handlers`` command-line
+   argument, but we think the above is a little nicer.
+
+   Also if you wish to capture any logging generated during an environment
+   hook function's invocation you may use the
+   :function:`~behave.log_capture.capture` decorator, like so:
+
+   .. code-block:: python
+
+      from behave.log_capture import capture
+     
+      @capture
+      def after_scenario(context):
+          ...
+
+   This will capture any logging done during the call to *after_scenario*
+   and print it out.
+
+2. TODO
+
+
 The *context* variable in all cases is an instance of
 :class:`behave.runner.Context`.
 
@@ -321,4 +359,14 @@ And Text may be associated with Steps:
 .. autoclass:: behave.model.Text
 
 .. _`controlling things with tags`: tutorial.html#controlling-things-with-tags
+
+
+
+Helpers
+=======
+
+The *log_capture* module defines a handy logging capture decorator that's
+intended to be used on your `environment file functions`_.
+
+.. autofunction:: behave.log_capture.capture
 
