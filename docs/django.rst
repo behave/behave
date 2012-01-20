@@ -35,7 +35,7 @@ Implementation
      Then I see my account summary
       And I see a warm and welcoming message
 
-__ tutorial.html#python-step-implementations
+__ tutorial.html#feature-files
 
 `Steps Python code`__ "features/steps/browser.py":
 
@@ -73,7 +73,7 @@ __ tutorial.html#python-step-implementations
         msg = str(soup.findAll('h2', attrs={'class': 'welcome'})[0])
         assert "Welcome, foo!" in msg
 
-__ tutorial.html#feature-files
+__ tutorial.html#python-step-implementations
 
 `Environment setup`__ in "features/environment.py":
 
