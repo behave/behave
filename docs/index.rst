@@ -42,6 +42,7 @@ There is also a `comparison`_ with the other tools available.
    gherkin
    behave
    api
+   django
    related
    comparison
 
