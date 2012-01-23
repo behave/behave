@@ -506,7 +506,8 @@ Tag selection on the command-line may be combined:
 
 If a feature or scenario is tagged and then skipped because of a
 command-line control then the *before_* and *after_* environment functions
-will not be called for that feature or scenario.
+will not be called for that feature or scenario. Note that *behave* has
+additional support specifically for testing `works in progress`_.
 
 The tags attached to a feature and scenario are available in
 the environment functions via the "feature" or "scenario" object passed to
@@ -539,4 +540,29 @@ browser and web server then you could tag them ``@browser``:
           context.server.shutdown()
           context.thread.join()
           context.browser.quit()
+
+Works In Progress
+=================
+
+*behave* supports the concept of a highly-unstable "work in progress"
+scenario that you're actively developing. This scenario may produce strange
+logging, or odd output to stdout or just plain interact in unexepected ways
+with *behave*'s scenario runner.
+
+To make testing such scenarios simpler we've implemented a "-w"
+command-line flag. This flag:
+
+1. turns off stdout capture
+2. turns off logging capture; you will still need to configure your own
+   logging handlers - we recommend a ``before_all()`` with:
+
+   .. code-block:: python
+
+    if not context.config.log_capture:
+        logging.basicConfig(level=logging.DEBUG)
+     
+3. turns off pretty output - no ANSI escape sequences to confuse your
+   scenario's output
+4. only runs scenarios tagged with "@wip"
+5. stops at the first error
 
