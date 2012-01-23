@@ -752,7 +752,7 @@ class Step(BasicStatement, Replayable):
             else:
                 # no assertion text; format the exception
                 error = traceback.format_exc()
-        except Exception:
+        except Exception, e:
             self.status = 'failed'
             error = traceback.format_exc()
             self.exception = e
