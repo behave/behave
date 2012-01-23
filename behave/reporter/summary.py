@@ -1,5 +1,6 @@
 from behave.reporter.base import Reporter
 
+
 def format_summary(statement_type, summary):
     first = True
     parts = []
@@ -17,6 +18,7 @@ def format_summary(statement_type, summary):
         parts.append(part)
     return ', '.join(parts) + '\n'
 
+
 class SummaryReporter(Reporter):
     def __init__(self, config):
         super(SummaryReporter, self).__init__(config)
@@ -30,7 +32,6 @@ class SummaryReporter(Reporter):
         self.step_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
                              'undefined': 0, 'untested': 0}
         self.duration = 0.0
-
 
     def feature(self, feature):
         self.feature_summary[feature.status or 'skipped'] += 1
