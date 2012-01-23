@@ -855,7 +855,7 @@ class Table(Replayable):
 
         If the cells do not match then a useful AssertionError will be raised.
         '''
-        TODO
+        raise NotImplementedError
 
 
 class Row(object):

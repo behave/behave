@@ -235,8 +235,8 @@ class Context(object):
         '''
         assert type(steps) is unicode, "Steps must be unicode."
         try:
-            feature = self.feature
-        except AttributeError:
+            assert self.feature
+        except AttributeError, AssertionError:
             raise ValueError('execute_steps() called outside of a '
                 'feature context')
 
