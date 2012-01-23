@@ -1,5 +1,6 @@
 from behave.formatter.base import Formatter
 
+
 class PlainFormatter(Formatter):
     name = 'plain'
     description = 'Very basic formatter with maximum compatibility'

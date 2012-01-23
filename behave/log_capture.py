@@ -116,6 +116,7 @@ class MemoryHandler(BufferingHandler):
             for logger, handler in self.old_handlers:
                 logger.addHandler(handler)
 
+
 def capture(func):
     '''Decorator to wrap an *environment file function* in log file capture.
 
@@ -142,4 +143,3 @@ def capture(func):
             print 'Captured Logging:'
             print v
     return f
-

@@ -8,6 +8,7 @@ from behave.formatter.base import Formatter
 DEFAULT_WIDTH = 80
 DEFAULT_HEIGHT = 24
 
+
 def escape_cell(cell):
     cell = cell.replace(u'\\', u'\\\\')
     cell = cell.replace(u'\n', u'\\n')
@@ -321,4 +322,3 @@ class PrettyFormatter(Formatter):
         self.stream.write(self.indent(description, indent) + '\n')
         if newline:
             self.stream.write('\n')
-

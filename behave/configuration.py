@@ -32,7 +32,7 @@ options = [
          help="""Output JUnit-compatible reports.""")),
     (('--junit-directory',), dict(metavar='PATH', dest='junit_directory',
          default='reports',
-         help ="""Directory in which to store JUnit reports.""")),
+         help="""Directory in which to store JUnit reports.""")),
     (('-f', '--format'), dict(action='append',
          help="""Specify a formatter. By default the 'pretty'
                  formatter is used. Pass '--format help' to get a
@@ -44,21 +44,22 @@ options = [
          help="Don't print skipped steps (due to tags).")),
     (('--show-skipped',), dict(action='store_true',
          help="""Print skipped steps.
-                 This is the default behaviour. This switch is used to override a
-                 configuration file setting.""")),
+                 This is the default behaviour. This switch is used to override
+                 a configuration file setting.""")),
     (('--no-snippets',), dict(action='store_false', dest='show_snippets',
          help="Don't print snippets for unimplemented steps.")),
     (('--snippets',), dict(action='store_true',
          help="""Print snippets for unimplemented steps.
-                 This is the default behaviour. This switch is used to override a
-                 configuration file setting.""")),
-    (('-m', '--no-multiline'), dict(action='store_false', dest='show_multiline',
+                 This is the default behaviour. This switch is used to override
+                 a configuration file setting.""")),
+    (('-m', '--no-multiline'), dict(action='store_false',
+         dest='show_multiline',
          help="""Don't print multiline strings and tables under
                  steps.""")),
     (('--multiline', ), dict(action='store_true', dest='show_multiline',
          help="""Print multiline strings and tables under steps.
-                 This is the default behaviour. This switch is used to override a
-                 configuration file setting.""")),
+                 This is the default behaviour. This switch is used to override
+                 a configuration file setting.""")),
     (('-n', '--name'), dict(action="append",
          help="""Only execute the feature elements which match part
                  of the given name. If this option is given more
@@ -70,16 +71,16 @@ options = [
     (('--capture',), dict(action='store_true', dest='stdout_capture',
          help="""Capture stdout (any stdout output will be
                  printed if there is a failure.)
-                 This is the default behaviour. This switch is used to override a
-                 configuration file setting.""")),
+                 This is the default behaviour. This switch is used to override
+                 a configuration file setting.""")),
     (('--no-logcapture',), dict(action='store_false', dest='log_capture',
          help="""Don't capture logging. Logging configuration will
                  be left intact.""")),
     (('--logcapture',), dict(action='store_true', dest='log_capture',
          help="""Capture logging. All logging during a step will be captured
                  and displayed in the event of a failure.
-                 This is the default behaviour. This switch is used to override a
-                 configuration file setting.""")),
+                 This is the default behaviour. This switch is used to override
+                 a configuration file setting.""")),
     (('--logging-format',), dict(
          help="""Specify custom format to print statements. Uses the
              same format as used by standard logging handlers. The
@@ -99,16 +100,17 @@ options = [
              filter out needless output.  Example: --logging-filter=foo will
              capture statements issued ONLY to foo or foo.what.ever.sub but not
              foobar or other logger. Specify multiple loggers with comma:
-             filter=foo,bar,baz. If any logger name is prefixed with a minus, eg
-             filter=-foo, it will be excluded rather than included.""",
+             filter=foo,bar,baz. If any logger name is prefixed with a minus,
+             eg filter=-foo, it will be excluded rather than included.""",
          config_help="""
              Specify which statements to filter in/out. By default, everything
              is captured. If the output is too verbose, use this option to
-             filter out needless output.  Example: ``logging_filter = foo`` will
-             capture statements issued ONLY to "foo" or "foo.what.ever.sub" but
-             not "foobar" or other logger. Specify multiple loggers with comma:
-             ``logging_filter = foo,bar,baz``. If any logger name is prefixed with a
-             minus, eg ``logging_filter = -foo``, it will be excluded rather than
+             filter out needless output.  Example: ``logging_filter = foo``
+             will capture statements issued ONLY to "foo" or
+             "foo.what.ever.sub" but not "foobar" or other logger. Specify
+             multiple loggers with comma: ``logging_filter = foo,bar,baz``. If
+             any logger name is prefixed with a minus, eg
+             ``logging_filter = -foo``, it will be excluded rather than
              included.""")),
     (('--logging-clear-handlers',), dict(action='store_true',
              help="Clear all other logging handlers.")),
@@ -180,12 +182,13 @@ def read_configuration(path):
         action = keywords.get('action', 'store')
         if action == 'store':
             result[dest] = cfg.get('behave', dest)
-        elif action in ('store_true','store_false'):
+        elif action in ('store_true', 'store_false'):
             result[dest] = cfg.getboolean('behave', dest)
         elif action == 'append':
-            result[dest] = [s.strip() for s in cfg.get('behave', dest).splitlines()]
+            result[dest] = \
+                [s.strip() for s in cfg.get('behave', dest).splitlines()]
         else:
-             raise ValueError('action "%s" not implemented' % action)
+            raise ValueError('action "%s" not implemented' % action)
     return result
 
 
@@ -254,9 +257,9 @@ class Configuration(object):
             self.output = sys.stdout
 
         if self.wip:
-            # Only run scenarios tagged with "wip". Additionally: use the "plain"
-            # formatter, do not capture stdout or logging output and stop at the
-            # first failure.
+            # Only run scenarios tagged with "wip". Additionally: use the
+            # "plain" formatter, do not capture stdout or logging output and
+            # stop at the first failure.
             self.format = ['plain']
             self.tags = ['wip']
             self.stop = True
@@ -280,11 +283,9 @@ class Configuration(object):
         if self.summary:
             self.reporters.append(SummaryReporter(self))
 
-
     def exclude(self, filename):
         if self.include_re and self.include_re.search(filename) is None:
             return True
         if self.exclude_re and self.exclude_re.search(filename) is not None:
             return True
         return False
-

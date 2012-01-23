@@ -1039,4 +1039,3 @@ class NoMatch(Match):
         self.func = None
         self.arguments = []
         self.location = None
-

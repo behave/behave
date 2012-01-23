@@ -35,4 +35,3 @@ class Formatter(object):
 
     def eof(self):
         pass
-

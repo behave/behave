@@ -8,6 +8,7 @@ except ImportError:
 
 from behave.formatter.base import Formatter
 
+
 class JSONFormatter(Formatter):
     name = 'json'
     description = 'JSON dump of test run'
@@ -76,4 +77,3 @@ class JSONFormatter(Formatter):
 
     def _feature_element(self):
         return self._gherkin_object['elements'][-1]
-

@@ -3,12 +3,15 @@ import codecs
 
 formatters = {}
 
+
 def register(formatter):
     formatters[formatter.name] = formatter
+
 
 def list_formatters(stream):
     for name in formatters:
         stream.write(u'%s: %s\n' % (name, formatters[name].description))
+
 
 def get_formatter(config, stream):
     # the stream may already handle encoding (py3k sys.stdout) - if it
@@ -37,4 +40,3 @@ from behave.formatter import pretty
 register(pretty.PrettyFormatter)
 from behave.formatter import json
 register(json.JSONFormatter)
-
