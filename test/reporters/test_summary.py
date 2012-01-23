@@ -78,8 +78,8 @@ class TestSummaryReporter(object):
         minutes = int(reporter.duration / 60)
         seconds = reporter.duration % 60
 
-        assert '{0:d}m'.format(minutes) in output
-        assert '{0:02.1f}'.format(seconds) in output
+        assert '%dm' % (minutes,) in output
+        assert '%02.1f' % (seconds,) in output
 
     @patch('behave.reporter.summary.format_summary')
     def test_feature_status_is_collected_and_reported(self, format_summary):

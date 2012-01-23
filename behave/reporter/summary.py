@@ -46,4 +46,4 @@ class SummaryReporter(Reporter):
         self.stream.write(format_summary('scenario', self.scenario_summary))
         self.stream.write(format_summary('step', self.step_summary))
         timings = int(self.duration / 60), self.duration % 60
-        self.stream.write('Took {0:d}m{1:02.1f}s\n'.format(*timings))
+        self.stream.write('Took %dm%02.1fs\n' % timings)
