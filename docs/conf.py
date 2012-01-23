@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'behave'
-copyright = u'2011, Benno Rice and Richard Jones'
+copyright = u'2012, Benno Rice and Richard Jones'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
