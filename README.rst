@@ -60,6 +60,29 @@ we recommend the `tutorial`_ and then the `feature testing language`_ and
 
 Download from http://pypi.python.org/pypi/behave
 
+---------------
+Version History
+---------------
+
+Version 1.1.0 - January 23, 2012
+
+* Context variable now contains current configuration.
+* Context values can now be tested for (``name in context``) and deleted.
+* ``__file__`` now available inside step definition files.
+* Fixes for various formatting issues.
+* Add support for configuration files.
+* Add finer-grained controls for various things like log capture, coloured
+  output, etc.
+* Fixes for tag handling.
+* Various documentation enhancements, including an example of full-stack
+  testing with Django thanks to David Eyk.
+* Split reports into a set of modules, add junit output.
+* Added "wip" mode, see documentation for details.
+
+Version 1.0.0 - December 5, 2011
+
+* Initial release
+
 .. _`Install *behave*.`: http://packages.python.org/behave/install.html
 .. _`tutorial`: http://packages.python.org/behave/tutorial.html#features
 .. _`feature testing language`: http://packages.python.org/behave/gherkin.html
