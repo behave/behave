@@ -77,7 +77,8 @@ Version 1.1.0 - January 23, 2012
 * Various documentation enhancements, including an example of full-stack
   testing with Django thanks to David Eyk.
 * Split reports into a set of modules, add junit output.
-* Added "wip" mode, see documentation for details.
+* Added work-in-progress ("wip") mode which is useful when developing new code
+  or new tests. See documentation for more details.
 
 Version 1.0.0 - December 5, 2011
 
