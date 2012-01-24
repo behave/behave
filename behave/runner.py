@@ -93,6 +93,12 @@ class Context(object):
       logging as an instance of :class:`~behave.log_capture.LoggingCapture`.
       It is not present if logging is not being captured.
 
+    .. attribute:: stdout_capture
+
+      If logging capture is enabled then this attribute contains the captured
+      stdout as a StringIO instance. It is not present if stdout is not being
+      captured.
+
     If an attempt made by user code to overwrite one of these variables, or
     indeed by *behave* to overwite a user-set variable, then a
     :class:`behave.runner.ContextMaskWarning` warning will be raised.
@@ -466,10 +472,12 @@ class Runner(object):
     def setup_capture(self):
         if self.config.stdout_capture:
             self.stdout_capture = StringIO.StringIO()
+            self.context.stdout_capture = self.stdout_capture
 
         if self.config.log_capture:
             self.log_capture = LoggingCapture(self.config)
             self.log_capture.inveigle()
+            self.context.log_capture = self.log_capture
 
     def start_capture(self):
         if self.config.stdout_capture:

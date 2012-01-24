@@ -217,6 +217,7 @@ class TestRunner(object):
         r = runner.Runner(Mock())
         r.config.stdout_capture = True
         r.config.log_capture = False
+        r.context = Mock()
 
         r.setup_capture()
 
@@ -237,6 +238,7 @@ class TestRunner(object):
         r = runner.Runner(Mock())
         r.config.stdout_capture = False
         r.config.log_capture = True
+        r.context = Mock()
 
         r.setup_capture()
 
@@ -260,6 +262,7 @@ class TestRunner(object):
         r = runner.Runner(Mock())
         r.config.stdout_capture = True
         r.config.log_capture = False
+        r.context = Mock()
 
         r.setup_capture()
         r.start_capture()
@@ -479,6 +482,7 @@ class TestFeatureDirectory(object):
         config.paths = ['foo.feature']
         config.verbose = True
         r = runner.Runner(config)
+        r.context = Mock()
 
         fs = FsMock('steps/', 'foo.feature')
 
