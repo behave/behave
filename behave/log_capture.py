@@ -1,4 +1,5 @@
 import logging
+import functools
 from logging.handlers import BufferingHandler
 import re
 
@@ -54,7 +55,7 @@ class LoggingCapture(BufferingHandler):
     .. __: behave.html#command-line-arguments
 
     '''
-    def __init__(self, config):
+    def __init__(self, config, level=None):
         BufferingHandler.__init__(self, 1000)
 
         self.config = config
@@ -73,7 +74,9 @@ class LoggingCapture(BufferingHandler):
         self.setFormatter(fmt)
 
         # figure the level we're logging at
-        if config.logging_level:
+        if level is not None:
+            self.level = level
+        elif config.logging_level:
             self.level = getattr(logging, config.logging_level.upper(),
                 None)
             if self.level is None:
@@ -171,30 +174,59 @@ class LoggingCapture(BufferingHandler):
 # pre-1.2 backwards compatibility
 MemoryHandler = LoggingCapture
 
-def capture(func):
+def capture(*args, **kw):
     '''Decorator to wrap an *environment file function* in log file capture.
 
     It configures the logging capture using the *behave* context - the first
     argument to the function being decorated (so don't use this to decorate
     something that doesn't have *context* as the first argument.)
 
-    The function prints any captured logging directly to stdout, regardless of
-    error conditions. It is mostly useful for debugging in situations where
-    you are seeing a message like::
+    The basic usage is:
+
+    .. code-block: python
+
+        @capture
+        def after_scenario(context, scenario):
+            ...
+
+    The function prints any captured logging (at the level determined by the
+    ``log_level`` configuration setting) directly to stdout, regardless of error
+    conditions.
+
+    It is mostly useful for debugging in situations where you are seeing a
+    message like::
 
         No handlers could be found for logger "name"
 
+    The decorator takes an optional "level" keyword argument which limits the
+    level of logging captured, overriding the level in the run's configuration:
+
+    .. code-block: python
+
+        @capture(level=logging.ERROR)
+        def after_scenario(context, scenario):
+            ...
+
+    This would limit the logging captured to just ERROR and above, and thus only
+    display logged events if they are interesting.
     '''
-    def f(context, *args):
-        h = LoggingCapture(context.config)
-        h.inveigle()
-        try:
-            func(context, *args)
-        finally:
-            h.abandon()
-        v = h.getvalue()
-        if v:
-            print 'Captured Logging:'
-            print v
-    return f
+    def create_decorator(func, level=None):
+        def f(context, *args):
+            h = LoggingCapture(context.config, level=level)
+            h.inveigle()
+            try:
+                func(context, *args)
+            finally:
+                h.abandon()
+            v = h.getvalue()
+            if v:
+                print 'Captured Logging:'
+                print v
+        return f
+
+    if not args:
+        return functools.partial(create_decorator, level=kw.get('level'))
+    else:
+        return create_decorator(args[0])
+
 
