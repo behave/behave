@@ -12,7 +12,7 @@ from nose.tools import *
 
 from behave import model, runner, step_registry
 from behave.configuration import ConfigError
-from behave.log_capture import MemoryHandler
+from behave.log_capture import LoggingCapture
 
 class TestContext(object):
     def setUp(self):
@@ -232,7 +232,7 @@ class TestRunner(object):
 
         assert r.stdout_capture is None
 
-    @patch('behave.runner.MemoryHandler')
+    @patch('behave.runner.LoggingCapture')
     def test_setup_capture_creates_memory_handler_for_logging(self, handler):
         r = runner.Runner(Mock())
         r.config.stdout_capture = False

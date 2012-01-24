@@ -13,7 +13,7 @@ from behave import matchers
 from behave import step_registry
 from behave.formatter import formatters
 from behave.configuration import ConfigError
-from behave.log_capture import MemoryHandler
+from behave.log_capture import LoggingCapture
 
 
 class ContextMaskWarning(UserWarning):
@@ -86,6 +86,12 @@ class Context(object):
       This is set for each scenario in a scenario outline and references the
       :class:`~behave.model.Row` that is active for the current scenario. It is
       present mostly for debugging, but may be useful otherwise.
+
+    .. attribute:: log_capture
+
+      If logging capture is enabled then this attribute contains the captured
+      logging as an instance of :class:`~behave.log_capture.LoggingCapture`.
+      It is not present if logging is not being captured.
 
     If an attempt made by user code to overwrite one of these variables, or
     indeed by *behave* to overwite a user-set variable, then a
@@ -462,7 +468,7 @@ class Runner(object):
             self.stdout_capture = StringIO.StringIO()
 
         if self.config.log_capture:
-            self.log_capture = MemoryHandler(self.config)
+            self.log_capture = LoggingCapture(self.config)
             self.log_capture.inveigle()
 
     def start_capture(self):

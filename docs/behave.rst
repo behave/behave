@@ -26,6 +26,12 @@ You may see the same information presented below at any time using ``behave
    Don't run feature files matching regular expression PATTERN.
 **-i, --include**
    Only run feature files matching regular expression PATTERN.
+**--no-junit**
+   Don't output JUnit-compatible reports.
+**--junit**
+   Output JUnit-compatible reports.
+**--junit-directory**
+   Directory in which to store JUnit reports.
 **-f, --format**
    Specify a formatter. By default the 'pretty' formatter is used.
    Pass '--format help' to get a list of available formatters.
@@ -83,6 +89,10 @@ You may see the same information presented below at any time using ``behave
    filter=-foo, it will be excluded rather than included.
 **--logging-clear-handlers**
    Clear all other logging handlers.
+**--no-summary**
+   Don't display the summary at the end of the run.
+**--summary**
+   Display the summary at the end of the run.
 **-o, --outfile**
    Write to specified file instead of stdout.
 **-q, --quiet**
@@ -213,6 +223,12 @@ Recognised Settings
    Don't run feature files matching regular expression PATTERN.
 **include_re** -- text
    Only run feature files matching regular expression PATTERN.
+**junit** -- boolean
+   Don't output JUnit-compatible reports.
+**junit** -- boolean
+   Output JUnit-compatible reports.
+**junit_directory** -- text
+   Directory in which to store JUnit reports.
 **format** -- text (multiple allowed)
    Specify a formatter. By default the 'pretty' formatter is used.
    Pass '--format help' to get a list of available formatters.
@@ -271,6 +287,10 @@ Recognised Settings
    rather than included.
 **logging_clear_handlers** -- boolean
    Clear all other logging handlers.
+**summary** -- boolean
+   Don't display the summary at the end of the run.
+**summary** -- boolean
+   Display the summary at the end of the run.
 **outfile** -- text
    Write to specified file instead of stdout.
 **quiet** -- boolean

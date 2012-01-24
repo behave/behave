@@ -25,7 +25,35 @@ class RecordFilter(object):
 
 
 # originally from nostetsts logcapture plugin
-class MemoryHandler(BufferingHandler):
+class LoggingCapture(BufferingHandler):
+    '''Capture logging events in a memory buffer for later display or query.
+
+    Captured logging events are stored on the attribute
+    :attr:`~LoggingCapture.buffer`:
+
+    .. attribute:: buffer
+
+       This is a list of captured logging events as `logging.LogRecords`_.
+
+    .. _`logging.LogRecords`: http://docs.python.org/library/logging.html#logrecord-objects
+
+    By default the format of the messages will be::
+
+        '%(levelname)s:%(name)s:%(message)s'
+
+    This may be overridden using standard logging formatter names in the
+    configuration variable ``logging_format``.
+
+    The level of logging captured is set to ``logging.NOTSET`` by default. You
+    may override this using the configuration setting ``logging_level`` (which
+    is set to a level name.)
+
+    Finally there may be `filtering of logging events`__ specified by the
+    configuration variable ``logging_filter``.
+
+    .. __: behave.html#command-line-arguments
+
+    '''
     def __init__(self, config):
         BufferingHandler.__init__(self, 1000)
 
@@ -71,6 +99,11 @@ class MemoryHandler(BufferingHandler):
         return '\n'.join(self.formatter.format(r) for r in self.buffer)
 
     def findEvent(self, pattern):
+        '''Search through the buffer for a message that matches the given
+        regular expression.
+
+        Returns boolean indicating whether a match was found.
+        '''
         pattern = re.compile(pattern)
         for record in self.buffer:
             if pattern.search(record.getMessage()) is not None:
@@ -78,10 +111,24 @@ class MemoryHandler(BufferingHandler):
         return False
 
     def any_errors(self):
+        '''Search through the buffer for any ERROR or CRITICAL events.
+
+        Returns boolean indicating whether a match was found.
+        '''
         return any(record for record in self.buffer
             if record.levelname in ('ERROR', 'CRITICAL'))
 
     def inveigle(self):
+        '''Turn on logging capture by replacing all existing handlers configured
+        in the logging module.
+
+        If the config var logging_clear_handlers is set then we also remove all
+        existing handlers.
+
+        We also set the level of the root logger.
+
+        The opposite of this is :meth:`~LoggingCapture.abandon`.
+        '''
         root_logger = logging.getLogger()
 
         if self.config.logging_clear_handlers:
@@ -92,9 +139,9 @@ class MemoryHandler(BufferingHandler):
                         self.old_handlers.append((logger, handler))
                         logger.removeHandler(handler)
 
-        # sanity check: remove any existing MemoryHandler
+        # sanity check: remove any existing LoggingCapture
         for handler in root_logger.handlers[:]:
-            if isinstance(handler, MemoryHandler):
+            if isinstance(handler, LoggingCapture):
                 root_logger.handlers.remove(handler)
             elif self.config.logging_clear_handlers:
                 self.old_handlers.append((root_logger, handler))
@@ -107,6 +154,11 @@ class MemoryHandler(BufferingHandler):
         root_logger.setLevel(self.level)
 
     def abandon(self):
+        '''Turn off logging capture.
+
+        If other handlers were removed by :meth:`~LoggingCapture.inveigle` then
+        they are reinstated.
+        '''
         root_logger = logging.getLogger()
         for handler in root_logger.handlers[:]:
             if handler is self:
@@ -132,7 +184,7 @@ def capture(func):
 
     '''
     def f(context, *args):
-        h = MemoryHandler(context.config)
+        h = LoggingCapture(context.config)
         h.inveigle()
         try:
             func(context, *args)
@@ -143,3 +195,4 @@ def capture(func):
             print 'Captured Logging:'
             print v
     return f
+

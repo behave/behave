@@ -236,7 +236,7 @@ Here's some ideas for things you could use the environment for.
 
    Also if you wish to capture any logging generated during an environment
    hook function's invocation you may use the
-   :function:`~behave.log_capture.capture` decorator, like so:
+   :func:`~behave.log_capture.capture` decorator, like so:
 
    .. code-block:: python
 
@@ -362,10 +362,16 @@ And Text may be associated with Steps:
 
 
 
-Helpers
-=======
+Logging Capture
+===============
 
-The *log_capture* module defines a handy logging capture decorator that's
+The logging capture *behave* uses by default is implemented by the class
+:class:`~behave.log_capture.LoggingCapture`. It has methods 
+
+.. autoclass:: behave.log_capture.LoggingCapture
+   :members:
+
+The *log_capture* module also defines a handy logging capture decorator that's
 intended to be used on your `environment file functions`_.
 
 .. autofunction:: behave.log_capture.capture
