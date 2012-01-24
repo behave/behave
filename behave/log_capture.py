@@ -168,6 +168,8 @@ class LoggingCapture(BufferingHandler):
             for logger, handler in self.old_handlers:
                 logger.addHandler(handler)
 
+# pre-1.2 backwards compatibility
+MemoryHandler = LoggingCapture
 
 def capture(func):
     '''Decorator to wrap an *environment file function* in log file capture.
