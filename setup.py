@@ -3,7 +3,8 @@ import os.path
 import sys
 
 from setuptools import find_packages, setup
-from behave.version import VERSION
+# DISABLED, use VERSION.txt now: from behave.version import VERSION
+VERSION = open("VERSION.txt").read()
 
 requirements = ['parse>=1.3.3']
 major, minor = sys.version_info[:2]
