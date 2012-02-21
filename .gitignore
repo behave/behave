@@ -4,9 +4,12 @@ build
 dist
 __pycache__
 .coverage
+.ropeproject
+.idea/*
+.DS_Store
 nosetests.xml
 _build
-.ropeproject
 tools/virtualenvs
 build.log
-.idea/*
+_/
+_WORKSPACE/

@@ -6,6 +6,7 @@ from behave.i18n import languages
 from behave.formatter import formatters
 from behave.runner import Runner
 from behave.parser import ParserError
+from behave.version import VERSION
 
 TAG_HELP = """
 Scenarios inherit tags declared on the Feature level. The simplest
@@ -51,6 +52,9 @@ def main():
     if config.tags_help:
         print TAG_HELP
         sys.exit(0)
+    if config.version:
+        print VERSION
+        sys.exit(0)
 
     if config.lang_list:
         iso_codes = languages.keys()
@@ -78,13 +82,12 @@ def main():
 
     if not config.format:
         config.format = ['pretty']
-    elif config.format == ['help']:
+    elif "help" in config.format:
         print "Available formatters:"
         formatters.list_formatters(sys.stdout)
         sys.exit(0)
 
     stream = config.output
-
     runner = Runner(config)
     try:
         failed = runner.run()
