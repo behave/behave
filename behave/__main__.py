@@ -1,5 +1,6 @@
 import sys
 
+from behave import __version__
 from behave.configuration import Configuration, ConfigError
 from behave.formatter.ansi_escapes import escapes
 from behave.i18n import languages
@@ -47,6 +48,10 @@ you have to use logical AND::
 
 def main():
     config = Configuration()
+
+    if config.version:
+        print "behave " + __version__
+        sys.exit(0)
 
     if config.tags_help:
         print TAG_HELP
