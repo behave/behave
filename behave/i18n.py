@@ -79,7 +79,7 @@ languages = \
         'then': [u'*', u'S\xe5'],
         'when': [u'*', u'N\xe5r']},
  'de': {'and': [u'*', u'Und'],
-        'background': [u'Grundlage'],
+        'background': [u'Hintergrund'],
         'but': [u'*', u'Aber'],
         'examples': [u'Beispiele'],
         'feature': [u'Funktionalit\xe4t'],
