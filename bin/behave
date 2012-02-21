@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
-from behave.__main__ import main
+from behave.main import main
 
-main()
+if __name__ == "__main__":
+    main()
