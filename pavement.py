@@ -32,17 +32,18 @@ sys.path.insert(0, ".")
 # ----------------------------------------------------------------------------
 # TASK CONFIGURATION:
 # ----------------------------------------------------------------------------
+NAME = "behave"
 options(
     sphinx=Bunch(
-        # docroot=".",
-        # sourcedir="docs",
+        docroot="docs",
+        sourcedir=".",
         builddir="../build/docs"
     ),
     minilib=Bunch(
         extra_files=[ 'doctools', 'virtual' ]
     ),
-    test=Bunch(
-        default_args=[ "features/" ]
+    behave_test=Bunch(
+        default_args=[ "tools/test-features/" ]
     ),
     pychecker = Bunch(
         default_dirs=[ "behave" ]
@@ -56,26 +57,20 @@ options(
 # TASKS:
 # ----------------------------------------------------------------------------
 @task
-def init():
-    """Initialze workspace."""
-    pass
+@consume_args
+def docs(args):
+    """Generate the documentation: html, pdf, ... (default: html)"""
+    builders = args
+    if not builders:
+        builders = [ "html" ]
+    for builder in builders:
+        sphinx_build(builder)
 
 @task
-def docs_html():
-    """Generate the HTML-based documentation."""
-    call_task("prepare_docs")
-    sphinx_build("html")
+def linkcheck():
+    """Check hyperlinks in documentation."""
+    sphinx_build("linkcheck")
 
-@task
-def docs_pdf():
-    """Generate the PDF-based documentation."""
-    sphinx_build("pdf")
-    # sh("make -C docs pdf")
-
-@task
-def docs():
-    """Generate the documentation."""
-    call_task("docs_html")
 
 
 # ----------------------------------------------------------------------------
@@ -84,33 +79,77 @@ def docs():
 @task
 @consume_args
 def test(args):
-    """Execute all tests"""
+    """Execute all tests (unittests, feature tests)."""
+    call_task("unittest")
+    call_task("feature_test")
+
+@task
+@consume_args
+def unittest(args):
+    """Execute all unittests w/ nosetest runner."""
+    cmdline = ""
+    if args:
+        cmdline = " ".join(args)
+    nosetests(cmdline)
+
+@task
+@consume_args
+def feature_test(args):
+    """Execute all feature tests w/ behave."""
     if not args:
         # args = [ "features" ]
-        args = options.test.default_args
+        args = options.behave_test.default_args
+    excluded_tags = "--tags=-xfail"
+    cmdopts = excluded_tags
     for arg in args:
-        behave(arg)
+        behave(arg, cmdopts)
+
 
 # ----------------------------------------------------------------------------
 # TASK: test coverage
 # ----------------------------------------------------------------------------
-#@task
-#def coverage_report():
-#    """Generate coverage report from collected coverage data."""
-#    sh("coverage combine")
-#    sh("coverage report")
-#    sh("coverage html")
-#    # -- DISABLED: sh("coverage xml")
-#
-#@task
-#@consume_args
-#def coverage(args):
-#    """Execute all tests to collect code-coverage data, generate report."""
-#    tests = " ".join(args)
-#    sh("coverage run bin/pytest.py --cov=%s %s" % (NAME, tests),
-#       ignore_error=True)   #< Show coverage-report even if tests fail.
-#    call_task("coverage_report")
-#
+@task
+def coverage_report():
+    """Generate coverage report from collected coverage data."""
+    sh("coverage combine")
+    sh("coverage report")
+    sh("coverage html")
+    # -- DISABLED: sh("coverage xml")
+
+@task
+@consume_args
+def coverage(args):
+    """Run unittests and collect coverage, then generate report."""
+    unittests = []
+    feature_tests = []
+
+    # -- STEP: Select unittests and feature-tests (if any).
+    for arg in args:
+        if arg.startswith("test"):
+            unittests.append(arg)
+        elif arg.startswith("tools"):
+            feature_tests.append(arg)
+        else:
+            unittests.append(arg)
+            feature_tests.append(arg)
+
+    # -- STEP: Check if all tests should be run (normally: no args provided).
+    should_always_run = not unittests and not feature_tests
+    if should_always_run:
+        feature_tests = list(options.behave_test.default_args)
+
+    # -- STEP: Run unittests.
+    if unittests or should_always_run:
+        nosetests_coverage_run2(" ".join(unittests))
+
+    # -- STEP: Run feature-tests.
+    if feature_tests or should_always_run:
+        feature_tests.insert(0, "--tags=-xfail")
+        behave = path("bin/behave").normpath()
+        coverage_run("{behave} {args}".format(
+                behave=behave, args=" ".join(feature_tests)))
+        call_task("coverage_report")
+
 
 # ----------------------------------------------------------------------------
 # TASK: pychecker, pylint
@@ -125,7 +164,6 @@ def pylint(args):
             args.extend(path(dir_).walkfiles("*.py"))
     cmdline = " ".join(args)
     sh("pylint --rcfile=.pylintrc %s" % cmdline, ignore_error=True)
-    # XXX-JE-TODO
 
 @task
 @consume_args
@@ -183,7 +221,6 @@ def clean():
     patterns = [
         "*.pyc", "*.pyo", "*.bak", "*.log", "*.tmp",
         ".coverage", ".coverage.*",
-        "*.output", "*.diff",   #< RAVEN
         ".DS_Store", "*.~*~",   #< MACOSX
     ]
     for pattern in patterns:
@@ -206,23 +243,40 @@ def clean():
 # ----------------------------------------------------------------------------
 # UTILS:
 # ----------------------------------------------------------------------------
-BEHAVE = path("bin/behave").normpath()
+BEHAVE   = path("bin/behave").normpath()
 
 def python(cmdline, cwd="."):
     """Execute a python script by using the current python interpreter."""
-    return sh("%s %s" % (sys.executable, cmdline), cwd=cwd)
+    return sh("{python} {cmd}".format(python=sys.executable, cmd=cmdline),
+                cwd=cwd)
 
-def behave(cmdline, options=""):
-    """
-    Run behave command
-    """
-    # XXX return python("{behave} {options} {args}".format(
+def coverage_run(cmdline):
+    return sh("coverage run {cmdline}".format(cmdline=cmdline))
+        # ignore_error=True)   #< Show coverage-report even if tests fail.
+
+def nosetests(cmdline, cmdopts=""):
+    """Run nosetest command"""
+    return sh("nosetests {options} {args}".format(options=cmdopts, args=cmdline))
+
+def nosetests_coverage_run(cmdline, cmdopts=""):
+    """Collect coverage w/ nose-builtin coverage plugin."""
+    cmdopts += " --with-coverage --cover-package={package}".format(package=NAME)
+    return nosetests(cmdline, cmdopts)
+
+def nosetests_coverage_run2(cmdline, cmdopts=""):
+    """Collect coverage w/ extra nose-cov plugin."""
+    cmdopts += " --with-cov --cov={package}".format(package=NAME)
+    return nosetests(cmdline, cmdopts)
+
+def behave(cmdline, cmdopts=""):
+    """Run behave command"""
     return sh("{behave} {options} {args}".format(
-                behave=BEHAVE, options=options, args=cmdline))
+                behave=BEHAVE, options=cmdopts, args=cmdline))
 
-def sphinx_build(builder="html"):
-    # sourcedir = "docs"
-    destdir   = "../build/docs"
-    command = "sphinx-build -b {builder} . {destdir}/{builder}".format(
-                builder=builder, destdir=destdir)
-    sh(command, cwd="docs")
+def sphinx_build(builder="html", cmdopts=""):
+    sourcedir = options.sphinx.sourcedir
+    destdir   = options.sphinx.builddir
+    cmd = "sphinx-build {opts} -b {builder} {sourcedir} {destdir}/{builder}"\
+            .format(builder=builder, sourcedir=sourcedir,
+                    destdir=destdir, opts=cmdopts)
+    sh(cmd, cwd=options.sphinx.docroot)
