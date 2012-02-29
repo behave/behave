@@ -1,1 +1,16 @@
-include README.rst MANIFEST.in
+include README.rst 
+include MANIFEST.in
+include setup.py
+include pavement.py
+include *.cfg
+include *.ini
+include *.txt
+include *.rst
+include .gitignore
+include .coveragerc
+include .pylintrc
+include .pycheckrc
+recursive-include bin           *.py *.cmd *.zip
+recursive-include docs          *.rst *.css Makefile
+recursive-include tools         *.feature *.py *.yml
+

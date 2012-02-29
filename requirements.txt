@@ -1,0 +1,25 @@
+# ============================================================================
+# PYTHON PACKAGE REQUIREMENTS:
+# ============================================================================
+# REQUIRES: Python >= 2.5
+# REQUIRES: Python >= 3.2
+# DESCRIPTION:
+#    pip install -r <THIS_FILE>
+#
+# ============================================================================
+
+argparse
+parse >= 1.4
+
+# -- TESTS:
+nose  >= 1.0
+mock
+
+# -- DEVELOPMENT SUPPORT:
+paver >= 1.0
+tox   >= 1.2
+
+# -- DOCUMENTATION: Tutorials with examples.
+sphinx >= 1.0
+sphinxcontrib-cheeseshop
+
