@@ -27,6 +27,7 @@ Feature: support scenario outlines
       | 1       | 2      | 12          |
       | one     | two    | onetwo      |
 
+  @xfail
   Scenario Outline: scenarios that reference invalid subs
     Given Some text <prefix>
      When we add try to use a <broken> reference
