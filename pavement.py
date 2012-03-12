@@ -206,6 +206,7 @@ def clean():
 
     # -- STEP: Remove temporary directory subtrees.
     patterns = [
+        "*.egg-info",
         "__pycache__",
     ]
     for pattern in patterns:

@@ -18,6 +18,7 @@ mock
 # -- DEVELOPMENT SUPPORT:
 paver >= 1.0
 tox   >= 1.2
+nose-cov
 
 # -- DOCUMENTATION: Tutorials with examples.
 sphinx >= 1.0
