@@ -1,12 +1,12 @@
 import sys
 
+from behave import __version__
 from behave.configuration import Configuration, ConfigError
 from behave.formatter.ansi_escapes import escapes
 from behave.i18n import languages
 from behave.formatter import formatters
 from behave.runner import Runner
 from behave.parser import ParserError
-from behave.version import VERSION
 
 TAG_HELP = """
 Scenarios inherit tags declared on the Feature level. The simplest
@@ -49,11 +49,15 @@ you have to use logical AND::
 def main():
     config = Configuration()
 
+    if config.version:
+        print "behave " + __version__
+        sys.exit(0)
+
     if config.tags_help:
         print TAG_HELP
         sys.exit(0)
     if config.version:
-        print VERSION
+        print __version__
         sys.exit(0)
 
     if config.lang_list:

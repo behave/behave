@@ -184,7 +184,7 @@ def pychecker(args):
 def bump_version(info, error):
     """Update VERSION.txt"""
     try:
-        from behave.version import VERSION
+        from behave import __version__ as VERSION
         info("VERSION: %s" % VERSION)
         file_ = open("VERSION.txt", "w+")
         file_.write("%s\n" % VERSION)
