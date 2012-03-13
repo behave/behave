@@ -64,6 +64,13 @@ Download from http://pypi.python.org/pypi/behave
 Version History
 ---------------
 
+Version UNRELEASED
+
+* FIX issue #34: "behave --version" runs features, but shows no version
+* FIX issue #32: "behave ... --junit-directory=xxx" fails for more than 1 level
+* FIX issue #32: "behave --format help" raises an error
+
+
 Version 1.1.0 - January 23, 2012
 
 * Context variable now contains current configuration.
