@@ -4,7 +4,7 @@ import sys
 
 from setuptools import find_packages, setup
 # DISABLED, use VERSION.txt now: from behave.version import VERSION
-VERSION = open("VERSION.txt").read()
+VERSION = open("VERSION.txt").read().strip()
 
 requirements = ['parse>=1.3.3']
 major, minor = sys.version_info[:2]
@@ -27,6 +27,7 @@ setup(
     scripts=['bin/behave'],
     install_requires=requirements,
     use_2to3=True,
+    license="BSD",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",
