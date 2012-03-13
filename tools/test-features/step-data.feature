@@ -18,6 +18,7 @@ Feature: steps may have associated data
         | Two-Lumps | Silly Walks | 
      Then we will have the expected data
 
+  @xfail
   Scenario: step with text that fails
     Given some body of text
         """
