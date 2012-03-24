@@ -1,5 +1,5 @@
 # ============================================================================
-# PYTHON PACKAGE REQUIREMENTS:
+# PYTHON PACKAGE REQUIREMENTS: For development only
 # ============================================================================
 # REQUIRES: Python >= 2.5
 # REQUIRES: Python >= 3.2
@@ -8,7 +8,16 @@
 #
 # ============================================================================
 
-argparse >= 1.2
-parse >= 1.4
+# -- TESTS:
+nose  >= 1.1
+mock  >= 0.8
 
+# -- DEVELOPMENT SUPPORT:
+paver >= 1.0.5
+tox   >= 1.3
+nose-cov >= 1.4
+coverage >= 3.5
 
+# -- DOCUMENTATION: Tutorials with examples.
+sphinx >= 1.1
+sphinxcontrib-cheeseshop >= 0.2

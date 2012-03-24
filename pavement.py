@@ -196,6 +196,21 @@ def bump_version(info, error):
 # TASK: clean
 # ----------------------------------------------------------------------------
 @task
+def make_package_index():
+    """Make local package index (used by tox)."""
+    info("MAKE LOCAL PACKAGE-INDEX: .packages/")
+    requirement_files = [
+        "requirements.txt",
+        "requirements-develop.txt",
+    ]
+    for reqs in requirement_files:
+        sh("pip2pi .packages -r {requirements}".format(requirements=reqs))
+
+
+# ----------------------------------------------------------------------------
+# TASK: clean
+# ----------------------------------------------------------------------------
+@task
 def clean():
     """Cleanup the project workspace."""
 
@@ -229,6 +244,14 @@ def clean():
         for f in files:
             f.remove()
 
+@task
+def clean_all():
+    """Clean everything.."""
+    # -- ORDERING: Is important
+    path(".packages").rmtree()
+
+    # -- MORE: Use normal cleanings, too.
+    call_task("clean")
 
 # ----------------------------------------------------------------------------
 # PLATFORM-SPECIFIC TASKS: win32
