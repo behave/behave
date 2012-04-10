@@ -6,6 +6,7 @@
 *.tmp
 build/
 dist/
+downloads/
 _/
 _WORKSPACE/
 _build/

@@ -18,8 +18,12 @@
 # ============================================================================
 
 from paver.easy import *
-# -- JE-DISABLED: from paver.setuputils import setup, install_distutils_tasks
-# -- JE-DISABLED: import paver.doctools
+# -- JE-DISABLED:
+# from paver.setuputils import setup, install_distutils_tasks
+# import paver.doctools
+# -- USE EXTENSIONS: tasks, utility functions
+from paver_ext.pip_download import download_depends, localpi
+
 # -- REQUIRED-FOR: setup, sdist, ...
 # NOTE: Adds a lot more python-project related tasks.
 # install_distutils_tasks()
@@ -50,7 +54,14 @@ options(
     ),
     pylint = Bunch(
         default_dirs=[ "behave" ]
-    )
+    ),
+    develop=Bunch(
+        requirements_files=[
+            "requirements.txt",
+            "requirements-develop.txt",
+        ],
+        download_dir="downloads",
+    ),
 )
 
 # ----------------------------------------------------------------------------
@@ -114,6 +125,7 @@ def coverage_report():
     sh("coverage combine")
     sh("coverage report")
     sh("coverage html")
+    info("WRITTEN TO: build/coverage.html/")
     # -- DISABLED: sh("coverage xml")
 
 @task
@@ -191,20 +203,6 @@ def bump_version(info, error):
         file_.close()
     except StandardError, e:
         error("Update VERSION.txt FAILED: %s" % e)
-
-# ----------------------------------------------------------------------------
-# TASK: clean
-# ----------------------------------------------------------------------------
-@task
-def make_package_index():
-    """Make local package index (used by tox)."""
-    info("MAKE LOCAL PACKAGE-INDEX: .packages/")
-    requirement_files = [
-        "requirements.txt",
-        "requirements-develop.txt",
-    ]
-    for reqs in requirement_files:
-        sh("pip2pi .packages -r {requirements}".format(requirements=reqs))
 
 
 # ----------------------------------------------------------------------------
