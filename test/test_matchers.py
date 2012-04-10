@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import with_statement
 
 from mock import Mock, patch
 from nose.tools import *
 import parse
-
 from behave import matchers, model, runner
+import unittest
 
 class DummyMatcher(matchers.Matcher):
     desired_result = None
@@ -12,7 +14,7 @@ class DummyMatcher(matchers.Matcher):
     def check_match(self, step):
         return DummyMatcher.desired_result
 
-class TestMatcher(object):
+class TestMatcher(unittest.TestCase):
     def setUp(self):
         DummyMatcher.desired_result = None
 
@@ -32,7 +34,7 @@ class TestMatcher(object):
         assert match.func is func
         assert match.arguments == arguments
 
-class TestParseMatcher(object):
+class TestParseMatcher(unittest.TestCase):
     def setUp(self):
         self.recorded_args = None
 
@@ -96,7 +98,7 @@ class TestParseMatcher(object):
         m.run(context)
         eq_(self.recorded_args, ((context, 'foo', 11, 3.14159), {}))
 
-class TestRegexMatcher(object):
+class TestRegexMatcher(unittest.TestCase):
     def test_returns_none_if_regex_does_not_match(self):
         matcher = matchers.RegexMatcher(None, 'a string')
         regex = Mock()

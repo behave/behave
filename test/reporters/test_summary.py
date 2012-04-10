@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
+
 from mock import Mock, patch
 from nose.tools import *
-
 from behave.reporter.summary import SummaryReporter, format_summary
+import unittest
 
-class TestFormatStatus(object):
+class TestFormatStatus(unittest.TestCase):
     def test_passed_entry_contains_label(self):
         summary = {
             'passed': 1,
@@ -51,7 +53,7 @@ class TestFormatStatus(object):
         assert '2 failed' in output
         assert 'undefined' not in output
 
-class TestSummaryReporter(object):
+class TestSummaryReporter(unittest.TestCase):
     def test_duration_is_totalled_up_and_outputted(self):
         features = [Mock(), Mock(), Mock(), Mock()]
         features[0].duration = 1.9

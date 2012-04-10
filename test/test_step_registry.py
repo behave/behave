@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import with_statement
 
 from mock import Mock, patch
 from nose.tools import *
 from behave import step_registry
+import unittest
 
-class TestStepRegistry(object):
+class TestStepRegistry(unittest.TestCase):
     def test_add_definition_adds_to_lowercased_keyword(self):
         registry = step_registry.StepRegistry()
         with patch('behave.matchers.get_matcher') as get_matcher:

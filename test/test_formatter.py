@@ -1,18 +1,17 @@
+# -*- coding: utf-8 -*-
+
 import struct
 import sys
 import tempfile
-
 from mock import Mock, patch
 from nose.tools import *
-
 from behave.formatter import formatters
 from behave.formatter import pretty
 from behave.formatter import tag_count
-
 from behave.model import Tag, Feature, Scenario, Step
+import unittest
 
-
-class TestGetTerminalSize(object):
+class TestGetTerminalSize(unittest.TestCase):
     def setUp(self):
         try:
             self.ioctl_patch = patch('fcntl.ioctl')
@@ -92,7 +91,9 @@ def _tf():
     return tempfile.TemporaryFile(mode='w')
 
 
-class FormatterTests(object):
+class FormatterTests(unittest.TestCase):
+    formatter_name = "plain"    #< DEFAULT
+
     def setUp(self):
         self.config = Mock()
         self.config.color = True

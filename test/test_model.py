@@ -1,14 +1,14 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import with_statement
 
 import sys
-
 from mock import Mock, patch
 from nose.tools import *
-
 from behave import model
+import unittest
 
-
-class TestFeatureRun(object):
+class TestFeatureRun(unittest.TestCase):
     def setUp(self):
         self.runner = Mock()
         self.runner.feature.tags = []
@@ -65,7 +65,7 @@ class TestFeatureRun(object):
         assert not self.run_hook.called
 
 
-class TestScenarioRun(object):
+class TestScenarioRun(unittest.TestCase):
     def setUp(self):
         self.runner = Mock()
         self.runner.feature.tags = []
@@ -159,7 +159,7 @@ class TestScenarioRun(object):
         assert not self.run_hook.called
 
 
-class TestScenarioOutline(object):
+class TestScenarioOutline(unittest.TestCase):
     def test_run_calls_run_on_each_generated_scenario(self):
         outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
                                         u'foo')
@@ -218,7 +218,7 @@ def raiser(exception):
     return func
 
 
-class TestStepRun(object):
+class TestStepRun(unittest.TestCase):
     def setUp(self):
         self.runner = Mock()
         self.config = self.runner.config = Mock()
@@ -438,7 +438,7 @@ class TestStepRun(object):
         assert 'toads' in step.error_message
 
 
-class TestTableModel(object):
+class TestTableModel(unittest.TestCase):
     HEAD = [u'type of stuff', u'awesomeness', u'ridiculousness']
     DATA = [
         [u'fluffy', u'large', u'frequent'],

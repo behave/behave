@@ -1,11 +1,13 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import with_statement
 
 from nose.tools import *
 from mock import patch
-
 from behave.log_capture import LoggingCapture
+import unittest
 
-class TestLogCapture(object):
+class TestLogCapture(unittest.TestCase):
     def test_get_value_returns_all_log_records(self):
         class FakeConfig(object):
             logging_filter = None

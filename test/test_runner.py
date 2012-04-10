@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import with_statement
 
 from collections import defaultdict
@@ -6,15 +8,14 @@ import StringIO
 import sys
 import warnings
 import tempfile
-
 from mock import Mock, patch
 from nose.tools import *
-
 from behave import model, runner, step_registry
 from behave.configuration import ConfigError
-from behave.log_capture import LoggingCapture
+# -- NOT-USED: from behave.log_capture import LoggingCapture
+import unittest
 
-class TestContext(object):
+class TestContext(unittest.TestCase):
     def setUp(self):
         r = Mock()
         self.config = r.config = Mock()
@@ -190,7 +191,7 @@ class TestContext(object):
         del self.context.thing
 
 
-class TestRunner(object):
+class TestRunner(unittest.TestCase):
     def test_load_hooks_execfiles_hook_file(self):
         with patch('behave.runner.exec_file') as ef:
             with patch('os.path.exists') as exists:
@@ -313,7 +314,7 @@ class TestRunner(object):
         eq_(l['spam'], fn)
 
 
-class TestRunWithPaths(object):
+class TestRunWithPaths(unittest.TestCase):
     def setUp(self):
         self.config = Mock()
         self.config.reporters = []
@@ -436,7 +437,7 @@ class FsMock(object):
 
 
 
-class TestFeatureDirectory(object):
+class TestFeatureDirectory(unittest.TestCase):
     def test_default_path_no_steps(self):
         config = Mock()
         config.paths = []

@@ -1,10 +1,10 @@
-#-*- encoding: UTF-8 -*-
+# -*- encoding: utf-8 -*-
 
 from nose.tools import *
-
 from behave import i18n, model, parser
+import unittest
 
-class Common(object):
+class Common(unittest.TestCase):
     def compare_steps(self, steps, expected):
         have = [(s.step_type, s.keyword, s.name, s.text, s.table) for s in steps]
         eq_(have, expected)

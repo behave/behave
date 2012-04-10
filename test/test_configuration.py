@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import with_statement
 import tempfile
 
 from nose.tools import *
 from behave import configuration
+import unittest
 
 # one entry of each kind handled
 TEST_CONFIG='''[behave]
@@ -15,7 +18,7 @@ stdout_capture=no
 bogus=spam
 '''
 
-class TestConfiguration(object):
+class TestConfiguration(unittest.TestCase):
 
     def test_read_file(self):
         tn = tempfile.mktemp()
