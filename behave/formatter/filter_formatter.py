@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# JE-NOTE: status=DEAD, cannot be imported due to: gherkin.formatter
+
 import re
 
 from gherkin.formatter import filters

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 class TagExpression(object):
     def __init__(self, tag_expressions):
         self.ands = []

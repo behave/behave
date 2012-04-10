@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# JE-NOTE: status=DEAD, cannot be imported due to: gherkin.tag_expression
+
 from gherkin.tag_expression import TagExpression
 
 

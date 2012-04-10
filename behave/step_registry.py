@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 
 class AmbiguousStep(ValueError):
     pass
@@ -24,7 +24,7 @@ class StepRegistry(object):
 
     def find_match(self, step):
         candidates = self.steps[step.step_type]
-        if step.step_type is not 'step':
+        if step.step_type != 'step':
             candidates += self.steps['step']
 
         for matcher in candidates:

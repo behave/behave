@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 class Formatter(object):
     name = None
     description = None

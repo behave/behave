@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from behave.formatter.base import Formatter
 
 

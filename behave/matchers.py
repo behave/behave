@@ -1,9 +1,9 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import with_statement
 
 import re
-
 import parse
-
 from behave import model
 
 
