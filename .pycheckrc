@@ -1,20 +1,27 @@
-#
-# .pycheckrc file created by PyChecker v0.8.17 @ Wed Dec 19 17:18:57 2007
+# ========================================================================================
+# PYCHECKER CONFIGURATION
+# ========================================================================================
+# .pycheckrc file created by PyChecker v0.8.18 
 #
 # It should be placed in your home directory (value of $HOME).
 # If $HOME is not set, it will look in the current directory.
 #
-# XXX-JE-UNDOCUMENTED: Allow getattr(o, "name") ...
-constAttr = 0
+# SEE ALSO:
+#  * http://pychecker.sourceforge.net/
+#  * http://sourceforge.net/projects/pychecker
+# ========================================================================================
 
 # only warn about files passed on the command line
-only = 1
+only = 0
 
 # the maximum number of warnings to be displayed
 limit = 200
 
 # list of evil C extensions that crash the interpreter
 evil = []
+
+# ignore import errors
+ignoreImportErrors = 0
 
 # unused imports
 importUsed = 1
@@ -88,7 +95,6 @@ callingAttribute = 0
 # class attribute does not exist
 classAttrExists = 1
 
-
 # First argument to methods
 methodArgName = 'self'
 
@@ -140,6 +146,9 @@ modulo1 = 1
 # check if using (expr is const-literal), doesn't always work on integers and strings
 isLiteral = 1
 
+# check if a constant string is passed to getattr()/setattr()
+constAttr = 1
+
 # check consistent return values
 checkReturnValues = 1
 
@@ -177,23 +186,16 @@ usesExec = 0
 ignoreStandardLibrary = 1
 
 # ignore warnings from the list of modules
-blacklist = [
-    'optparse',
-    'configparse',
-    'subprocess',
-    'Tkinter',
-    'wxPython',
-    'gtk',
-    'GTK',
-    'GDK',
-    "ssl"
-]
+blacklist = ['Tkinter', 'wxPython', 'gtk', 'GTK', 'GDK', "ssl" ]
 
 # ignore global variables not used if name is one of these values
-variablesToIgnore = ['__version__', '__warningregistry__', '__all__', '__credits__', '__test__', '__author__', '__email__', '__revision__', '__id__', '__copyright__', '__license__', '__date__', '__status__', '__state__', '__version_id__']
+variablesToIgnore = ['__version__', '__warningregistry__', '__all__', '__credits__', '__test__', '__author__', '__email__', '__revision__', '__id__', '__copyright__', '__license__', '__date__']
 
 # ignore unused locals/arguments if name is one of these values
 unusedNames = ['_', 'empty', 'unused', 'dummy']
+
+# ignore missing class attributes if name is one of these values
+missingAttrs = []
 
 # ignore use of deprecated modules/functions
 deprecated = 1
@@ -230,6 +232,9 @@ printParse = 0
 
 # turn on debugging for checker
 debug = 0
+
+# print each class object to find one that crashes
+findEvil = 0
 
 # turn off all output except warnings
 quiet = 1

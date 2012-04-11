@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=C0103,R0201,W0401,W0614
+#   C0103   Invalid name (setUp(), ...)
+#   R0201   Method could be a function
+#   W0401   Wildcard import
+#   W0614   Unused import ... from wildcard import
 
 from mock import Mock, patch
 from nose.tools import *
@@ -72,7 +77,8 @@ class TestSummaryReporter(unittest.TestCase):
         config = Mock()
         reporter = SummaryReporter(config)
 
-        [reporter.feature(f) for f in features]
+        for f in features:
+            reporter.feature(f)
         eq_(round(reporter.duration, 3), 12.400)
 
         reporter.end()
@@ -85,6 +91,8 @@ class TestSummaryReporter(unittest.TestCase):
 
     @patch('behave.reporter.summary.format_summary')
     def test_feature_status_is_collected_and_reported(self, format_summary):
+        # pylint: disable=W0621
+        #   W0621   Redefining name ... from outer scope (format_summary)
         features = [Mock(), Mock(), Mock(), Mock(), Mock()]
         features[0].duration = 1.9
         features[0].status = 'passed'
@@ -105,7 +113,8 @@ class TestSummaryReporter(unittest.TestCase):
         config = Mock()
         reporter = SummaryReporter(config)
 
-        [reporter.feature(f) for f in features]
+        for f in features:
+            reporter.feature(f)
         reporter.end()
 
         expected = {
@@ -119,6 +128,8 @@ class TestSummaryReporter(unittest.TestCase):
 
     @patch('behave.reporter.summary.format_summary')
     def test_scenario_status_is_collected_and_reported(self, format_summary):
+        # pylint: disable=W0621
+        #   W0621   Redefining name ... from outer scope (format_summary)
         feature = Mock()
         scenarios = [Mock(), Mock(), Mock(), Mock(), Mock()]
         scenarios[0].status = 'failed'
@@ -152,6 +163,8 @@ class TestSummaryReporter(unittest.TestCase):
 
     @patch('behave.reporter.summary.format_summary')
     def test_step_status_is_collected_and_reported(self, format_summary):
+        # pylint: disable=W0621
+        #   W0621   Redefining name ... from outer scope (format_summary)
         feature = Mock()
         scenario = Mock()
         steps = [Mock(), Mock(), Mock(), Mock(), Mock()]

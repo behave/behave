@@ -39,7 +39,7 @@ you have to use logical AND::
     --tags ~@fixme --tags ~@buggy.
 """.strip()
 
-# TODO
+# TODO: Enable positive Tags w/ threshold
 # Positive tags can be given a threshold to limit the number of occurrences.
 # Which can be practical if you are practicing Kanban or CONWIP. This will fail
 # if there are more than 3 occurrences of the @qa tag:
@@ -49,6 +49,9 @@ you have to use logical AND::
 
 
 def main():
+    # pylint: disable=R0912,R0915
+    #   R0912   Too many branches (17/12)
+    #   R0915   Too many statements (57/50)
     config = Configuration()
 
     if config.version:

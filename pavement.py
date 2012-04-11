@@ -23,6 +23,7 @@ from paver.easy import *
 # import paver.doctools
 # -- USE EXTENSIONS: tasks, utility functions
 from paver_ext.pip_download import download_depends, localpi
+from paver_ext.python_checker import pychecker, pylint
 
 # -- REQUIRED-FOR: setup, sdist, ...
 # NOTE: Adds a lot more python-project related tasks.
@@ -50,10 +51,10 @@ options(
         default_args=[ "tools/test-features/" ]
     ),
     pychecker = Bunch(
-        default_dirs=[ "behave" ]
+        default_args=NAME
     ),
     pylint = Bunch(
-        default_dirs=[ "behave" ]
+        default_args=NAME
     ),
     develop=Bunch(
         requirements_files=[
@@ -81,7 +82,6 @@ def docs(args):
 def linkcheck():
     """Check hyperlinks in documentation."""
     sphinx_build("linkcheck")
-
 
 
 # ----------------------------------------------------------------------------
@@ -164,32 +164,6 @@ def coverage(args):
 
 
 # ----------------------------------------------------------------------------
-# TASK: pychecker, pylint
-# ----------------------------------------------------------------------------
-@task
-@consume_args
-def pylint(args):
-    """Run pylint on sources."""
-    if not args:
-        args = []
-        for dir_ in options.pylint.default_dirs:
-            args.extend(path(dir_).walkfiles("*.py"))
-    cmdline = " ".join(args)
-    sh("pylint --rcfile=.pylintrc %s" % cmdline, ignore_error=True)
-
-@task
-@consume_args
-def pychecker(args):
-    """Run pychecker on sources."""
-    if not args:
-        args = []
-        for dir_ in options.pylint.default_dirs:
-            args.extend(path(dir_).walkfiles("*.py"))
-    for file_ in args:
-        cmdline = file_
-        sh("pychecker --config=.pycheckrc %s" % cmdline, ignore_error=True)
-
-# ----------------------------------------------------------------------------
 # TASK: bump_version
 # ----------------------------------------------------------------------------
 @task
@@ -235,6 +209,7 @@ def clean():
     patterns = [
         "*.pyc", "*.pyo", "*.bak", "*.log", "*.tmp",
         ".coverage", ".coverage.*",
+        "pylint_*.txt", "pychecker_*.txt",
         ".DS_Store", "*.~*~",   #< MACOSX
     ]
     for pattern in patterns:

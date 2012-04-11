@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=W0603
+#   W0603   Using the global statement
 
 from __future__ import with_statement
 

@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=C0103,C0301,R0201,W0401,W0614
+#   C0103   Invalid name (setUp(), ...)
+#   C0301   Line too long
+#   R0201   Method could be a function
+#   W0401   Wildcard import
+#   W0614   Unused import ... from wildcard import
 
 import struct
 import sys
@@ -35,6 +41,7 @@ class TestGetTerminalSize(unittest.TestCase):
 
     def test_termios_fallback(self):
         try:
+            __pychecker__ = "unusednames=termios"
             import termios
             return
         except ImportError:
@@ -48,7 +55,10 @@ class TestGetTerminalSize(unittest.TestCase):
         except ImportError:
             return
 
+        __pychecker__ = "unusednames=args,kwargs"
         def raiser(*args, **kwargs):
+            # pylint: disable=W0613
+            #   W0613   Unused argument (args, kwargs)
             raise Exception('yeehar!')
 
         self.ioctl.side_effect = raiser
@@ -81,6 +91,7 @@ class TestGetTerminalSize(unittest.TestCase):
 
 def _tf():
     '''Open a temp file that looks a bunch like stdout.
+    NOTE: TemporaryFile is deleted when it is closed or deleted.
     '''
     if sys.version_info[0] == 3:
         # in python3 it's got an encoding and accepts new-style strings
@@ -105,7 +116,11 @@ class FormatterTests(unittest.TestCase):
         self._line += 1
         return self._line
 
-    def _formatter(self, file, config):
+    def _formatter(self, file, config, counts=None):
+        # pylint: disable=W0613,W0622
+        #   W0613   Unused argumnet (counts, needed by derived class)
+        #   W0622   Redefining built-in file
+        __pychecker__ = "unusednames=counts"
         f = formatters.get_formatter(config, file)
         f.uri('<string>')
         return f
@@ -113,6 +128,10 @@ class FormatterTests(unittest.TestCase):
     def _feature(self, keyword=u'k\xe9yword', name=u'name', tags=[u'spam', u'ham'],
             location=u'location', description=[u'description'], scenarios=[],
             background=None):
+        # pylint: disable=W0102,W0613
+        #   W0102   Dangerous default value [...]
+        #   W0613   Unused argument (args, kwargs)
+        __pychecker__ = "unusednames=location"
         line = self.line
         tags = [Tag(name, line) for name in tags]
         return Feature('<string>', line, keyword, name, tags=tags,
@@ -120,6 +139,8 @@ class FormatterTests(unittest.TestCase):
             background=background)
 
     def _scenario(self, keyword=u'k\xe9yword', name=u'name', tags=[], steps=[]):
+        # pylint: disable=W0102
+        #   W0102   Dangerous default value [...]
         line = self.line
         tags = [Tag(name, line) for name in tags]
         return Scenario('<string>', line, keyword, name, tags=tags, steps=steps)
@@ -171,7 +192,8 @@ class TestTagCount(FormatterTests):
     formatter_name = 'plain'
 
     def _formatter(self, stream, config, tag_counts=None):
-        if tag_counts is None: tag_counts = {}
+        if tag_counts is None:
+            tag_counts = {}
         f = formatters.get_formatter(config, stream)
         f.uri('<string>')
         f = tag_count.TagCountFormatter(f, tag_counts)

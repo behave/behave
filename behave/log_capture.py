@@ -57,6 +57,9 @@ class LoggingCapture(BufferingHandler):
     .. __: behave.html#command-line-arguments
 
     '''
+    # pylint: disable=R0904
+    #   R0904   Too many public methods
+
     def __init__(self, config, level=None):
         BufferingHandler.__init__(self, 1000)
 
@@ -103,7 +106,8 @@ class LoggingCapture(BufferingHandler):
     def getvalue(self):
         return '\n'.join(self.formatter.format(r) for r in self.buffer)
 
-    def findEvent(self, pattern):
+    # XXX-JE-ORIG: NON-PEP8 name: findEvent(), currently unused !?!
+    def find_event(self, pattern):
         '''Search through the buffer for a message that matches the given
         regular expression.
 

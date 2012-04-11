@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import with_statement
 
 import contextlib
@@ -247,8 +249,9 @@ class Context(object):
         '''
         assert type(steps) is unicode, "Steps must be unicode."
         try:
+            __pychecker__ = "missingattrs=feature"
             assert self.feature
-        except AttributeError, AssertionError:
+        except (AttributeError, AssertionError):
             raise ValueError('execute_steps() called outside of a '
                 'feature context')
 
@@ -263,7 +266,13 @@ class Context(object):
         return True
 
 
-def exec_file(filename, globals={}, locals=None):
+def exec_file(filename, globals=None, locals=None):
+    # pylint: disable=W0122,W0622
+    #   W0122   Use of exec statement
+    #   W0622   Redefining built-in ... (globals, locals)
+    __pychecker__ = "no-shadowbuiltin"
+    if globals is None:
+        globals = {}
     if locals is None:
         locals = globals
     locals['__file__'] = filename
@@ -275,12 +284,14 @@ def exec_file(filename, globals={}, locals=None):
 
 
 class PathManager(object):
+    __pychecker__ = "no-special"    #< SKIP-CHECK: __enter__(), __exit__()
     paths = None
 
     def __enter__(self):
         self.paths = []
 
     def __exit__(self, *crap):
+        __pychecker__ = "unusednames=crap"
         for path in self.paths:
             sys.path.remove(path)
 
@@ -292,6 +303,9 @@ class PathManager(object):
 
 
 class Runner(object):
+    # pylint: disable=R0902
+    #   R0902   Too many instance attributes (15/10)
+
     def __init__(self, config):
         self.config = config
 
@@ -309,9 +323,15 @@ class Runner(object):
 
         self.stdout_capture = None
         self.log_capture = None
-        self.out_stdout = None
+        self.old_stdout = None
+
+        self.base_dir   = None
+        self.context    = None
+        self.formatter  = None
 
     def setup_paths(self):
+        # pylint: disable=R0912
+        #   R0912   Too many branches (23/20)
         if self.config.paths:
             if self.config.verbose:
                 print 'Supplied path:', ', '.join('"%s"' % path
@@ -381,7 +401,9 @@ class Runner(object):
         if os.path.exists(hooks_path):
             exec_file(hooks_path, self.hooks)
 
-    def load_step_definitions(self, extra_step_paths=[]):
+    def load_step_definitions(self, extra_step_paths=None):
+        if extra_step_paths is None:
+            extra_step_paths = []
         steps_dir = os.path.join(self.base_dir, 'steps')
 
         # allow steps to import other stuff from the steps dir
@@ -457,19 +479,22 @@ class Runner(object):
 
             self.formatter.eof()
             stream.write('\n')
-
-            [reporter.feature(feature) for reporter in self.config.reporters]
+            for reporter in self.config.reporters:
+                reporter.feature(feature)
 
             if failed and self.config.stop:
                 break
 
         self.run_hook('after_all', context)
-
-        [reporter.end() for reporter in self.config.reporters]
+        for reporter in self.config.reporters:
+            reporter.end()
 
         return failed
 
     def setup_capture(self):
+        # pylint: disable=W0201
+        #   W0201   Attribute ... defined outside __init__
+        #           => stdout_capture, log_capture (BUT WRONG)
         if self.config.stdout_capture:
             self.stdout_capture = StringIO.StringIO()
             self.context.stdout_capture = self.stdout_capture

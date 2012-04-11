@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 # JE-NOTE: status=DEAD, cannot be imported due to: gherkin.formatter
+# pylint: disable=C0111,W0621,R0201,R0902
+#   C0111   missing docstrings
+#   W0621   Redefining from outer scope
+#   R0201   Method could be a function
+#   R0902   Too many instance attributes
 
 import re
 

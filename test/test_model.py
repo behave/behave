@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=C0103,C0301,R0201,W0212,W0401,W0614
+#   C0103   Invalid name (setUp(), ...)
+#   C0301   Line too long
+#   R0201   Method could be a function
+#   W0212   Access of protected member by client class => _push(), _pop()
+#   W0401   Wildcard import
+#   W0613   Unused argument names
+#   W0614   Unused import ... from wildcard import
 
 from __future__ import with_statement
 
@@ -86,7 +94,8 @@ class TestScenarioRun(unittest.TestCase):
         scenario.run(self.runner)
 
         self.formatter.scenario.assert_called_with(scenario)
-        [step.run.assert_called_with(self.runner) for step in steps]
+        for step in steps:
+            step.run.assert_called_with(self.runner)
 
     if sys.version_info[0] == 3:
         stringio_target = 'io.StringIO'
@@ -168,11 +177,12 @@ class TestScenarioOutline(unittest.TestCase):
             scenario.run.return_value = False
 
         runner = Mock()
-        context = runner.context = Mock()
+        runner.context = Mock()
 
         outline.run(runner)
 
-        [s.run.assert_called_with(runner) for s in outline._scenarios]
+        for s in outline._scenarios:
+            s.run.assert_called_with(runner)
 
     def test_run_stops_on_first_failure_if_requested(self):
         outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
@@ -181,7 +191,7 @@ class TestScenarioOutline(unittest.TestCase):
         outline._scenarios[0].run.return_value = True
 
         runner = Mock()
-        context = runner.context = Mock()
+        runner.context = Mock()
         config = runner.config = Mock()
         config.stop = True
 
@@ -213,12 +223,18 @@ class TestScenarioOutline(unittest.TestCase):
 
 
 def raiser(exception):
+    # pylint: disable=W0613
+    #   W0613   Unused arguments (args, kwargs)
+    __pychecker__ = "unusednames=args,kwargs"
     def func(*args, **kwargs):
         raise exception
     return func
 
 
 class TestStepRun(unittest.TestCase):
+    # pylint: disable=R0904
+    #   R0904   Too many public methods (31/30)
+
     def setUp(self):
         self.runner = Mock()
         self.config = self.runner.config = Mock()
@@ -288,6 +304,7 @@ class TestStepRun(unittest.TestCase):
             assert not self.formatter.result.called
 
     def test_run_runs_before_hook_then_match_then_after_hook(self):
+        __pychecker__ = "unusednames=args,kwargs"
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
         match = Mock()
         self.step_registry.find_match.return_value = match
@@ -299,6 +316,9 @@ class TestStepRun(unittest.TestCase):
             self.runner.run_hook = match.run = Mock()
 
             def effect(thing):
+                # pylint: disable=W0613,W0621
+                #   W0613   Unused arguments (args, kwargs)
+                #   W0621   Redefining name from outer scope (raiser)
                 def raiser(*args, **kwargs):
                     match.run.side_effect = None
                     if thing:
@@ -454,7 +474,6 @@ class TestTableModel(unittest.TestCase):
         eq_(t1, self.table)
 
     def test_table_iteration(self):
-        last = None
         for i, row in enumerate(self.table):
             for j, cell in enumerate(row):
                 eq_(cell, self.DATA[i][j])
@@ -475,6 +494,8 @@ class TestTableModel(unittest.TestCase):
 
     @raises(KeyError)
     def test_table_row_keyerror(self):
+        # pylint: disable=W0104
+        #   W0104   Statement does not seem to have any effect.
         self.table[0]['spam']
 
     def test_table_row_items(self):

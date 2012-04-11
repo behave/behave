@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=C0111,W0511
+#   C0111   missing docstrings
 
 from behave.formatter.base import Formatter
 

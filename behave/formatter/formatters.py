@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=C0111,W0511
+#   C0111   missing docstrings
+#   W0511   Show TODO statements
 
 import sys
 import codecs

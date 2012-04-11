@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=C0111
+#   C0111   missing docstrings
 
 from __future__ import absolute_import
 

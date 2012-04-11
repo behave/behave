@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 # JE-NOTE: status=DEAD, cannot be imported due to: gherkin.tag_expression
+# pylint: disable=C0111,W0613,W0622,R0201
+#   C0111   missing docstrings
+#   W0613   Unused vars (names, tags, ranges)
+#   W0622   Redefining built-in 'format'
+#   R0201   Method could be a function
 
 from gherkin.tag_expression import TagExpression
 

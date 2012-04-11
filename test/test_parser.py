@@ -1,4 +1,12 @@
 # -*- encoding: utf-8 -*-
+# pylint: disable=C0103,C0301,R0201,W0212,W0401,W0614
+#   C0103   Invalid name (setUp(), ...)
+#   C0301   Line too long
+#   R0201   Method could be a function
+#   W0212   Access of protected member by client class => _push(), _pop()
+#   W0401   Wildcard import
+#   W0613   Unused argument names
+#   W0614   Unused import ... from wildcard import
 
 from nose.tools import *
 from behave import i18n, model, parser
@@ -10,6 +18,9 @@ class Common(unittest.TestCase):
         eq_(have, expected)
 
 class TestParser(Common):
+    # pylint: disable=R0904
+    #   R0904   Too many public methods (42/30)
+
     def test_parses_feature_name(self):
         feature = parser.parse_feature(u"Feature: Stuff\n")
         eq_(feature.name, "Stuff")
@@ -710,6 +721,8 @@ Feature: Stuff
 
 
     def test_fails_to_parse_when_and_is_out_of_order(self):
+        # pylint: disable=E0602
+        #   E0602   Undefined variable "assert_raises"
         doc = u"""
 Feature: Stuff
 
@@ -719,6 +732,8 @@ Feature: Stuff
         assert_raises(parser.ParserError, parser.parse_feature, doc)
 
     def test_fails_to_parse_when_but_is_out_of_order(self):
+        # pylint: disable=E0602
+        #   E0602   Undefined variable "assert_raises"
         doc = u"""
 Feature: Stuff
 
@@ -728,6 +743,8 @@ Feature: Stuff
         assert_raises(parser.ParserError, parser.parse_feature, doc)
 
     def test_fails_to_parse_when_examples_is_in_the_wrong_place(self):
+        # pylint: disable=E0602
+        #   E0602   Undefined variable "assert_raises"
         doc = u"""
 Feature: Stuff
 
@@ -765,6 +782,8 @@ Po\u017eadavek: testing stuff
         eq_(feature.description, ["Oh my god, it's full of stuff..."])
 
     def test_anything_before_language_comment_makes_it_not_count(self):
+        # pylint: disable=E0602
+        #   E0602   Undefined variable "assert_raises"
         doc = u"""
 
 @wombles
@@ -883,7 +902,7 @@ Fonctionnalit\xe9: testing stuff
             ('given', u'Etant donn\xe9', 'I am testing stuff', None, None),
             ('then', 'Alors', 'it should work', None, None),
         ])
-    test_parses_french_multi_word.go=1
+    test_parses_french_multi_word.go = 1
 
     def test_properly_handles_whitespace_on_keywords_that_do_not_want_it(self):
         doc = u"""

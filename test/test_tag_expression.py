@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=C0103,R0201,W0401,W0614,W0621
+#   C0103   Invalid name (setUp(), ...)
+#   R0201   Method could be a function
+#   W0401   Wildcard import
+#   W0614   Unused import ... from wildcard import
+#   W0621   Redefining name ... from outer scope
 
 from nose import tools
 from behave.tag_expression import TagExpression
@@ -87,6 +93,9 @@ class TestTagExpressionTagLimits(unittest.TestCase):
         tools.eq_(e.limits, {'todo': 3})
 
     def test_should_raise_an_error_for_inconsistent_limits(self):
+        # pylint: disable=E1101
+        #   E1101   Module nose.tools has no assert_raises member
+        #           => But it works.
         tools.assert_raises(Exception, TagExpression, ['todo:3', '-todo:4'])
 
     def test_should_allow_duplicate_consistent_limits(self):
