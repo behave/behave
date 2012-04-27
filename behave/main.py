@@ -61,9 +61,6 @@ def main():
     if config.tags_help:
         print TAG_HELP
         sys.exit(0)
-    if config.version:
-        print __version__
-        sys.exit(0)
 
     if config.lang_list:
         iso_codes = languages.keys()
@@ -95,6 +92,14 @@ def main():
         print "Available formatters:"
         formatters.list_formatters(sys.stdout)
         sys.exit(0)
+    # -- SANITY: Use at most one formatter, more cause various problems.
+    # PROBLEM DESCRIPTION:
+    #   1. APPEND MODE: configfile.format + --format
+    #   2. Daisy chaining of formatters does not work
+    #     => behave.formatter.formatters.get_formatter()
+    #     => Stream methods, stream.write(), stream.flush are missing
+    #        in Formatter interface
+    config.format = config.format[-1:]
 
     stream = config.output
     runner = Runner(config)
