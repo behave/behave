@@ -29,7 +29,11 @@ def named_temporary_file(delete_on_close=False, encoding="UTF-8"):
         #   => in Python 2.x
         file_object = NamedTemporaryFile(mode='w',
                                 delete=delete_on_close, encoding=encoding)
+    elif python_version[:2] <= (2, 5):
+        # -- Python2.5: Has not delete=... keyword.
+        file_object = NamedTemporaryFile(mode='w')
     else:
+        # -- Python2.6, Python2.7
         file_object = NamedTemporaryFile(mode='w', delete=delete_on_close)
     yield file_object
     file_object.close()
