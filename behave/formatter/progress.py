@@ -36,7 +36,7 @@ class ProgressFormatter(Formatter):
         self.current_scenario = scenario
 
     def scenario_outline(self, outline):
-        self.current_scenario = scenario
+        self.current_scenario = outline
 
     def step(self, step):
         self.steps.append(step)
