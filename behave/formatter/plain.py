@@ -13,16 +13,22 @@ class PlainFormatter(Formatter):
         super(PlainFormatter, self).__init__(stream, config)
         self.steps = []
 
+    def reset_steps(self):
+        self.steps = []
+
     def feature(self, feature):
+        self.reset_steps()
         self.stream.write(u'%s: %s\n' % (feature.keyword, feature.name))
 
     def background(self, background):
         self.stream.write(u'%s: %s\n' % (background.keyword, background.name))
 
     def scenario(self, scenario):
+        self.reset_steps()
         self.stream.write(u'%11s: %s\n' % (scenario.keyword, scenario.name))
 
     def scenario_outline(self, outline):
+        self.reset_steps()
         self.stream.write(u' %s: %s\n' % (outline.keyword, outline.name))
 
     def step(self, step):
