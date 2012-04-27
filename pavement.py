@@ -207,7 +207,8 @@ def clean():
 
     # -- STEP: Remove temporary files.
     patterns = [
-        "*.pyc", "*.pyo", "*.bak", "*.log", "*.tmp",
+        "*.pyc", "*.pyo", "*$py.class",
+        "*.bak", "*.log", "*.tmp",
         ".coverage", ".coverage.*",
         "pylint_*.txt", "pychecker_*.txt",
         ".DS_Store", "*.~*~",   #< MACOSX
