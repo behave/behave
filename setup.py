@@ -24,7 +24,13 @@ setup(
     author_email='behave-users@googlegroups.com',
     url='http://github.com/jeamland/behave',
     packages=find_packages(),
-    scripts=['bin/behave'],
+    # -- DISABLED: Use console_scripts for platform independence (Windows, ...)
+    # scripts=['bin/behave'],
+    entry_points={
+        'console_scripts': [
+            'behave = behave.main:main',
+        ]
+    },
     install_requires=requirements,
     use_2to3=True,
     license="BSD",
