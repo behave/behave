@@ -3,6 +3,7 @@
 *.log
 *.pyc
 *.pyo
+*$py.class
 *.tmp
 build/
 dist/
