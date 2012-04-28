@@ -6,9 +6,9 @@ from __future__ import absolute_import
 
 import base64
 try:
-    import json
+    import json as json_module
 except ImportError:
-    import simplejson as json
+    import simplejson as json_module
 
 from behave.formatter.base import Formatter
 
@@ -72,7 +72,7 @@ class JSONFormatter(Formatter):
     def eof(self):
         if not self.stream:
             return
-        self.stream.write(json.dumps(self._gherkin_object))
+        self.stream.write(json_module.dumps(self._gherkin_object))
 
     def _add_feature_element(self, element):
         if 'elements' not in self._gherkin_object:
