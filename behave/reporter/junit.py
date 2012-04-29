@@ -31,7 +31,8 @@ class JUnitReporter(Reporter):
             case = ElementTree.Element('testcase')
             case.set('class', classname)
             case.set('name', scenario.name or '')
-            case.set('time', str(round(scenario.duration, 3)))
+            # -- ORIG: case.set('time', str(round(scenario.duration, 3)))
+            case.set('time', str(round(scenario.duration, 6)))
 
             if scenario.status == 'failed':
                 failed += 1
@@ -61,7 +62,8 @@ class JUnitReporter(Reporter):
         suite.set('tests', str(tests))
         suite.set('failures', str(failed))
         suite.set('skip', str(skipped))
-        suite.set('time', str(round(feature.duration, 3)))
+        # -- ORIG: suite.set('time', str(round(feature.duration, 3)))
+        suite.set('time', str(round(feature.duration, 6)))
 
         if not os.path.exists(self.config.junit_directory):
             # -- ENSURE: Create multiple directory levels at once.

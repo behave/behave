@@ -43,8 +43,8 @@ from behave.formatter import plain
 register(plain.PlainFormatter)
 from behave.formatter import pretty
 register(pretty.PrettyFormatter)
-from behave.formatter import json
-register(json.JSONFormatter)
+from behave.formatter import as_json
+register(as_json.JSONFormatter)
 
 from behave.formatter import progress
 register(progress.ProgressFormatter)

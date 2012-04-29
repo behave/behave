@@ -213,10 +213,13 @@ class Feature(TagStatement, Replayable):
 
     @property
     def duration(self):
-        if self.background:
-            duration = self.background.duration or 0.0
-        else:
-            duration = 0.0
+        # -- ORIG:
+        # if self.background:
+        #     duration = self.background.duration or 0.0
+        # else:
+        #     duration = 0.0
+        # -- NEW: Background is executed N times, now part of scenarios.
+        duration = 0.0
         for scenario in self.scenarios:
             duration += scenario.duration
         return duration
@@ -406,6 +409,11 @@ class Scenario(TagStatement, Replayable):
             return iter(self.steps)
 
     @property
+    def all_steps(self):
+        """Returns iterator to all steps, including background steps if any."""
+        return self.__iter__()
+
+    @property
     def status(self):
         for step in self.steps:
             if step.status == 'failed':
@@ -418,8 +426,9 @@ class Scenario(TagStatement, Replayable):
 
     @property
     def duration(self):
+        # -- ORIG: for step in self.steps:  Background steps were excluded.
         duration = 0
-        for step in self.steps:
+        for step in self.all_steps:
             duration += step.duration
         return duration
 
@@ -449,13 +458,13 @@ class Scenario(TagStatement, Replayable):
         runner.setup_capture()
 
         if run_scenario or runner.config.show_skipped:
-            for step in self:
+            for step in self.all_steps:
                 runner.formatter.step(step)
 
         # BAD: Better provide a public method.
         # pylint: disable=W0212
         #   W0212   Access to a protected member: _set_root_attribute()
-        for step in self:
+        for step in self.all_steps:
             if run_steps:
                 if not step.run(runner):
                     run_steps = False
@@ -476,7 +485,6 @@ class Scenario(TagStatement, Replayable):
                 runner.run_hook('after_tag', runner.context, tag)
 
         runner.context._pop()
-
         return failed
 
 
