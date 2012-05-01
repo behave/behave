@@ -226,7 +226,7 @@ class Feature(TagStatement, Replayable):
         # current tags as a set
         runner.context.tags = set(self.tags)
 
-        if run_feature:
+        if not runner.config.dry_run and run_feature:
             for tag in self.tags:
                 runner.run_hook('before_tag', runner.context, tag)
             runner.run_hook('before_feature', runner.context, self)
@@ -419,7 +419,7 @@ class Scenario(TagStatement, Replayable):
         # current tags as a set
         runner.context.tags = set(tags)
 
-        if run_scenario:
+        if not runner.config.dry_run and run_scenario:
             for tag in self.tags:
                 runner.run_hook('before_tag', runner.context, tag)
             runner.run_hook('before_scenario', runner.context, self)
@@ -443,7 +443,7 @@ class Scenario(TagStatement, Replayable):
 
         runner.teardown_capture()
 
-        if run_scenario:
+        if not runner.config.dry_run and run_scenario:
             runner.run_hook('after_scenario', runner.context, self)
             for tag in self.tags:
                 runner.run_hook('after_tag', runner.context, tag)
