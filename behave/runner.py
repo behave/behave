@@ -405,7 +405,7 @@ class Runner(object):
         sys.path.pop(0)
 
     def run_hook(self, name, context, *args):
-        if name in self.hooks:
+        if not self.config.dry_run and (name in self.hooks):
             with context.user_mode():
                 self.hooks[name](context, *args)
 
