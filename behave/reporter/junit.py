@@ -18,7 +18,7 @@ class JUnitReporter(Reporter):
         filename = 'TESTS-%s.xml' % filename
 
         suite = ElementTree.Element('testsuite')
-		suite.set('name', '%s.%s' % (classname, feature.name or feature.filename))
+        suite.set('name', '%s.%s' % (classname, feature.name or feature.filename))
 
         tests = 0
         failed = 0
@@ -46,20 +46,20 @@ class JUnitReporter(Reporter):
 
                 case.append(failure)
             elif scenario.status in ('skipped', 'untested'):
-				skipped += 1
-				undefined = False
+                skipped += 1
+                undefined = False
                 for step in scenario:
                     if step.status == 'undefined':
-						undefined = True
+                        undefined = True
                         failed += 1
                         failure = ElementTree.Element('failure')
                         failure.set('type', 'undefined')
                         failure.set('message', '')
                         case.append(failure)
                         break
-			if not undefined:
-				skip = ElementTree.Element('skipped')
-				case.append(skip)
+                    if not undefined:
+                        skip = ElementTree.Element('skipped')
+                        case.append(skip)
 				
             suite.append(case)
 
@@ -73,4 +73,4 @@ class JUnitReporter(Reporter):
 
         tree = ElementTree.ElementTree(suite)
         report_filename = os.path.join(self.config.junit_directory, filename)
-		tree.write(report_filename, pretty_print=True, encoding='UTF-8')
+        tree.write(report_filename, pretty_print=True, encoding='UTF-8')
