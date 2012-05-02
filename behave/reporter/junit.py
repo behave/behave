@@ -57,9 +57,9 @@ class JUnitReporter(Reporter):
                         failure.set('message', '')
                         case.append(failure)
                         break
-                    if not undefined:
-                        skip = ElementTree.Element('skipped')
-                        case.append(skip)
+                if not undefined:
+                    skip = ElementTree.Element('skipped')
+                    case.append(skip)
 				
             suite.append(case)
 
