@@ -61,6 +61,18 @@ class JUnitReporter(Reporter):
                     skip = ElementTree.Element('skipped')
                     case.append(skip)
 				
+            # Create stdout section for each test case
+            stdout = ElementTree.Element('system-out')
+            text = u'Steps:\n'
+            for step in scenario:
+                text += u'%12s %s ... ' % (step.keyword, step.name)
+                text += u'%s\n' % step.status
+            # Append the captured standard output
+            if scenario.stdout_capture:
+                text += '\nCaptured stdout:\n%s' % scenario.stdout_capture
+            stdout.text = ElementTree.CDATA(text)
+            case.append(stdout) 
+            
             suite.append(case)
 
         suite.set('tests', str(tests))
