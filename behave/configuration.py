@@ -78,6 +78,14 @@ options = [
                  printed if there is a failure.)
                  This is the default behaviour. This switch is used to override
                  a configuration file setting.""")),
+    (('--no-capture-stderr',), dict(action='store_false', dest='stderr_capture',
+         help="""Don't capture stderr (any stderr output will be
+                 printed immediately.)""")),
+    (('--capture-stderr',), dict(action='store_true', dest='stderr_capture',
+         help="""Capture stderr (any stderr output will be
+                 printed if there is a failure.)
+                 This is the default behaviour. This switch is used to override
+                 a configuration file setting.""")),
     (('--no-logcapture',), dict(action='store_false', dest='log_capture',
          help="""Don't capture logging. Logging configuration will
                  be left intact.""")),
@@ -238,6 +246,7 @@ class Configuration(object):
         defaults = dict(
             color=True,
             stdout_capture=True,
+            stderr_capture=True,
             show_snippets=True,
             show_skipped=True,
             log_capture=True,
@@ -286,6 +295,7 @@ class Configuration(object):
         if self.junit:
             # Buffer the output (it will be put into Junit report)
             self.stdout_capture = True
+            self.stderr_capture = True
             self.log_capture = True
             self.reporters.append(JUnitReporter(self))
         if self.summary:

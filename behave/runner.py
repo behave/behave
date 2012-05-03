@@ -308,6 +308,7 @@ class Runner(object):
         self.feature = None
 
         self.stdout_capture = None
+        self.stderr_capture = None
         self.log_capture = None
         self.out_stdout = None
 
@@ -473,6 +474,10 @@ class Runner(object):
         if self.config.stdout_capture:
             self.stdout_capture = StringIO.StringIO()
             self.context.stdout_capture = self.stdout_capture
+        
+        if self.config.stderr_capture:
+            self.stderr_capture = StringIO.StringIO()
+            self.context.stderr_capture = self.stderr_capture
 
         if self.config.log_capture:
             self.log_capture = LoggingCapture(self.config)
@@ -483,10 +488,17 @@ class Runner(object):
         if self.config.stdout_capture:
             self.old_stdout = sys.stdout
             sys.stdout = self.stdout_capture
+            
+        if self.config.stderr_capture:
+            self.old_stderr = sys.stderr
+            sys.stderr = self.stderr_capture
 
     def stop_capture(self):
         if self.config.stdout_capture:
             sys.stdout = self.old_stdout
+
+        if self.config.stderr_capture:
+            sys.stderr = self.old_stderr
 
     def teardown_capture(self):
         if self.config.log_capture:
