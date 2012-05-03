@@ -1094,5 +1094,5 @@ class NoMatch(Match):
     def __init__(self):
         Match.__init__(self, func=None)
         self.func = None
-        self.arguments = None
+        self.arguments = []
         self.location = None
