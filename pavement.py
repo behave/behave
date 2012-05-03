@@ -221,10 +221,7 @@ def clean():
 @task
 def clean_all():
     """Clean everything.."""
-    # -- ORDERING: Is important
-    path(".packages").rmtree()
-
-    # -- MORE: Use normal cleanings, too.
+    path("downloads").rmtree()
     call_task("clean")
 
 # ----------------------------------------------------------------------------
