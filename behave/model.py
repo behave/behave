@@ -441,6 +441,10 @@ class Scenario(TagStatement, Replayable):
                 if self.status is None:
                     self.status = 'skipped'
 
+        # Attach the stdout and stderr if generate Junit report
+        if runner.config.junit:
+            self.stdout = runner.context.stdout_capture.getvalue()
+            self.stderr = runner.context.stderr_capture.getvalue()
         runner.teardown_capture()
 
         if not runner.config.dry_run and run_scenario:
@@ -767,6 +771,10 @@ class Step(BasicStatement, Replayable):
                 output = runner.stdout_capture.getvalue()
                 if output:
                     error += '\nCaptured stdout:\n' + output
+            if runner.config.stderr_capture:
+                output = runner.stderr_capture.getvalue()
+                if output:
+                    error += '\nCaptured stderr:\n' + output           
             if runner.config.log_capture:
                 output = runner.log_capture.getvalue()
                 if output:
