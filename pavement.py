@@ -112,6 +112,9 @@ def feature_test(args):
         args = options.behave_test.default_args
     excluded_tags = "--tags=-xfail"
     cmdopts = excluded_tags
+    if sys.platform.startswith("win"):
+        # -- SPECIAL-CASE OS=Windows: No ANSI coloring
+        cmdopts += " -c --format=pretty"
     for arg in args:
         behave(arg, cmdopts)
 
