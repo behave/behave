@@ -349,6 +349,9 @@ class Runner(object):
             base_dir = os.path.abspath('features')
 
         new_base_dir = base_dir
+        filesystem_rootdir = os.path.split(base_dir)[0] #< "/" or "C:\\" or ...
+        # -- ENSURE: ISA_DIR, but conflicts with monkey-patching in tests.
+        # assert os.path.isdir(filesystem_rootdir)
 
         while True:
             if self.config.verbose:
@@ -358,12 +361,12 @@ class Runner(object):
                 break
             if os.path.isfile(os.path.join(new_base_dir, 'environment.py')):
                 break
-            if new_base_dir == '/':
+            if new_base_dir == filesystem_rootdir:
                 break
 
             new_base_dir = os.path.dirname(new_base_dir)
 
-        if new_base_dir == '/':
+        if new_base_dir == filesystem_rootdir:
             if self.config.verbose:
                 if not self.config.paths:
                     print 'ERROR: Could not find "steps" directory. Please '\

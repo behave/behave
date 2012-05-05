@@ -415,9 +415,15 @@ class FsMock(object):
         self.files = set()
         self.dirs = defaultdict(list)
         for path in paths:
-            if path[-1] == '/':
-                self.dirs[path[:-1]] = []
-                d, p = os.path.split(path[:-1])
+            isa_dir = path.endswith('/')
+            path    = os.path.normpath(path)
+            if isa_dir:
+                # if path.endswith('/') or path.endswith("\\"):
+                #    path = path[:-1]
+                assert not path.endswith("/")
+                assert not path.endswith("\\")
+                self.dirs[path] = []
+                d, p = os.path.split(path)
                 while d and p:
                     self.dirs[d].append(p)
                     d, p = os.path.split(d)
@@ -433,12 +439,15 @@ class FsMock(object):
         return self.dirs.get(dir, [])
     def isfile(self, path):
         self.calls.append(('isfile', path))
+        path = os.path.normpath(path)
         return path in self.files
     def isdir(self, path):
         self.calls.append(('isdir', path))
+        path = os.path.normpath(path)
         return path in self.dirs
     def exists(self, path):
         self.calls.append(('exists', path))
+        path = os.path.normpath(path)
         return path in self.dirs or path in self.files
     def walk(self, path, l=None):
         if l is None:
@@ -462,6 +471,11 @@ class FsMock(object):
         return orig(path)
     def join(self, a, b, orig=os.path.join):
         return orig(a, b)
+    # -- MORE: Needed for tests when monkey-patching os.path, etc.
+    def normpath(self, path, orig=os.path.normpath):
+        return orig(path)
+    def split(self, path, orig=os.path.split):
+        return orig(path)
 
 
 
@@ -480,7 +494,7 @@ class TestFeatureDirectory(unittest.TestCase):
             #   E0602   Undefined variable "assert_raises"
             assert_raises(ConfigError, r.setup_paths)
 
-        ok_(('isdir', os.path.join(fs.base, 'features/steps')) in fs.calls)
+        ok_(('isdir', os.path.join(fs.base, "features", "steps")) in fs.calls)
 
     def test_default_path_no_features(self):
         config = Mock()
