@@ -102,3 +102,32 @@ class TestTagExpressionTagLimits(unittest.TestCase):
         e = TagExpression(['todo:3', '-todo:3'])
         tools.eq_(e.limits, {'todo': 3})
 
+# ----------------------------------------------------------------------------
+# TAG EXPRESSIONS WITH TILDE:
+# ----------------------------------------------------------------------------
+# Tag expressions with tilde instead of minus are documented and returned
+# by --tag-help option, but where not implemented (or tested).
+# ----------------------------------------------------------------------------
+class TestTagExpressionNotFooWithTilde(unittest.TestCase):
+    def setUp(self):
+        self.e = TagExpression(['~foo'])
+
+    def test_should_match_bar(self):
+        assert self.e.check(['bar'])
+
+    def test_should_not_match_foo(self):
+        assert not self.e.check(['foo'])
+
+class TestTagExpressionFooOrBarAndNotZapWithTilde(unittest.TestCase):
+    def setUp(self):
+        self.e = TagExpression(['foo,bar', '~zap'])
+
+    def test_should_match_foo(self):
+        assert self.e.check(['foo'])
+
+    def test_should_not_match_zap(self):
+        assert not self.e.check(['zap'])
+
+    def test_should_not_match_foo_zap(self):
+        assert not self.e.check(['foo', 'zap'])
+
