@@ -27,7 +27,7 @@ aliases = {
 
 escapes = {
     'reset':        u'\x1b[0m',
-    'up':           u'\x1b[#1A',
+    'up':           u'\x1b[1A',
 }
 
 if 'GHERKIN_COLORS' in os.environ:
@@ -42,4 +42,4 @@ for alias in aliases:
 
 
 def up(n):
-    return u"\x1b[#%dA" % n
+    return u"\x1b[%dA" % n
