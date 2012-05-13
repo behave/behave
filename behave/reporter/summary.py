@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from behave.reporter.base import Reporter
+from behave.model import ScenarioOutline
 
 
 def format_summary(statement_type, summary):
@@ -24,9 +25,7 @@ def format_summary(statement_type, summary):
 class SummaryReporter(Reporter):
     def __init__(self, config):
         super(SummaryReporter, self).__init__(config)
-
         self.stream = self.config.output
-
         self.feature_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
                                 'untested': 0}
         self.scenario_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
@@ -35,13 +34,23 @@ class SummaryReporter(Reporter):
                              'undefined': 0, 'untested': 0}
         self.duration = 0.0
 
+    def _process_scenario(self, scenario):
+        self.scenario_summary[scenario.status or 'skipped'] += 1
+        for step in scenario:
+            self.step_summary[step.status or 'skipped'] += 1
+
+    def _process_scenario_outline(self, scenario_outline):
+        for scenario in scenario_outline.scenarios:
+            self._process_scenario(scenario)
+
     def feature(self, feature):
         self.feature_summary[feature.status or 'skipped'] += 1
         self.duration += feature.duration
         for scenario in feature:
-            self.scenario_summary[scenario.status or 'skipped'] += 1
-            for step in scenario:
-                self.step_summary[step.status or 'skipped'] += 1
+            if isinstance(scenario, ScenarioOutline):
+                self._process_scenario_outline(scenario)
+            else:
+                self._process_scenario(scenario)
 
     def end(self):
         self.stream.write(format_summary('feature', self.feature_summary))
