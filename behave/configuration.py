@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import argparse
+import StringIO
 import ConfigParser
 
 from behave.reporter.junit import JUnitReporter
@@ -29,7 +30,11 @@ options = [
     (('--no-junit',), dict(action='store_false', dest='junit',
          help="Don't output JUnit-compatible reports.")),
     (('--junit',), dict(action='store_true',
-         help="""Output JUnit-compatible reports.""")),
+         help="""Output JUnit-compatible reports.
+                 When junit is enabled, all stdout and stderr 
+                 will be redirected and dumped to the junit report,
+                 regardless of the '--capture' and '--no-capture' options.
+                 """)),
     (('--junit-directory',), dict(metavar='PATH', dest='junit_directory',
          default='reports',
          help="""Directory in which to store JUnit reports.""")),
@@ -70,6 +75,14 @@ options = [
                  printed immediately.)""")),
     (('--capture',), dict(action='store_true', dest='stdout_capture',
          help="""Capture stdout (any stdout output will be
+                 printed if there is a failure.)
+                 This is the default behaviour. This switch is used to override
+                 a configuration file setting.""")),
+    (('--no-capture-stderr',), dict(action='store_false', dest='stderr_capture',
+         help="""Don't capture stderr (any stderr output will be
+                 printed immediately.)""")),
+    (('--capture-stderr',), dict(action='store_true', dest='stderr_capture',
+         help="""Capture stderr (any stderr output will be
                  printed if there is a failure.)
                  This is the default behaviour. This switch is used to override
                  a configuration file setting.""")),
@@ -233,6 +246,7 @@ class Configuration(object):
         defaults = dict(
             color=True,
             stdout_capture=True,
+            stderr_capture=True,
             show_snippets=True,
             show_skipped=True,
             log_capture=True,
@@ -279,6 +293,10 @@ class Configuration(object):
             self.include_re = re.compile(self.include_re)
 
         if self.junit:
+            # Buffer the output (it will be put into Junit report)
+            self.stdout_capture = True
+            self.stderr_capture = True
+            self.log_capture = True
             self.reporters.append(JUnitReporter(self))
         if self.summary:
             self.reporters.append(SummaryReporter(self))

@@ -226,7 +226,7 @@ class Feature(TagStatement, Replayable):
         # current tags as a set
         runner.context.tags = set(self.tags)
 
-        if run_feature:
+        if not runner.config.dry_run and run_feature:
             for tag in self.tags:
                 runner.run_hook('before_tag', runner.context, tag)
             runner.run_hook('before_feature', runner.context, self)
@@ -419,7 +419,7 @@ class Scenario(TagStatement, Replayable):
         # current tags as a set
         runner.context.tags = set(tags)
 
-        if run_scenario:
+        if not runner.config.dry_run and run_scenario:
             for tag in self.tags:
                 runner.run_hook('before_tag', runner.context, tag)
             runner.run_hook('before_scenario', runner.context, self)
@@ -441,9 +441,13 @@ class Scenario(TagStatement, Replayable):
                 if self.status is None:
                     self.status = 'skipped'
 
+        # Attach the stdout and stderr if generate Junit report
+        if runner.config.junit:
+            self.stdout = runner.context.stdout_capture.getvalue()
+            self.stderr = runner.context.stderr_capture.getvalue()
         runner.teardown_capture()
 
-        if run_scenario:
+        if not runner.config.dry_run and run_scenario:
             runner.run_hook('after_scenario', runner.context, self)
             for tag in self.tags:
                 runner.run_hook('after_tag', runner.context, tag)
@@ -767,6 +771,10 @@ class Step(BasicStatement, Replayable):
                 output = runner.stdout_capture.getvalue()
                 if output:
                     error += '\nCaptured stdout:\n' + output
+            if runner.config.stderr_capture:
+                output = runner.stderr_capture.getvalue()
+                if output:
+                    error += '\nCaptured stderr:\n' + output           
             if runner.config.log_capture:
                 output = runner.log_capture.getvalue()
                 if output:
