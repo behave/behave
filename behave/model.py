@@ -778,7 +778,8 @@ class Step(BasicStatement, Replayable):
 
         try:
             start = time.time()
-            if self.text:
+            # -- ENSURE: Even EMPTY multiline text is available in context.
+            if self.text is not None:
                 runner.context.text = self.text
             if self.table:
                 runner.context.table = self.table
