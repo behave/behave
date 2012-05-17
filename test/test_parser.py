@@ -400,6 +400,36 @@ Feature: Stuff
             ('then', 'Then', 'stuff happens', None, None),
         ])
 
+    def test_parses_string_argument_without_stripping_comments(self):
+        # -- ISSUE 44: Parser removes comments in multiline text string.
+        doc = u'''
+Feature: Multiline
+
+  Scenario: Multiline Text with Comments
+    Given a multiline argument with:
+      """
+      # -- COMMENT1
+      """
+    And a multiline argument with:
+      """
+      Alpha.
+      # -- COMMENT2
+      Omega.
+      """
+    Then no shell comments are stripped
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Multiline")
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, "Multiline Text with Comments")
+        text1 = "# -- COMMENT1"
+        text2 = "Alpha.\n# -- COMMENT2\nOmega."
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Given', 'a multiline argument with', text1, None),
+            ('given', 'And',   'a multiline argument with', text2, None),
+            ('then', 'Then', 'no shell comments are stripped', None, None),
+        ])
+
     def test_parses_feature_with_a_step_with_a_table_argument(self):
         doc = u'''
 Feature: Stuff
