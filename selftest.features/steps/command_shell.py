@@ -51,6 +51,30 @@ class Command(object):
         "behave": os.path.normpath("{0}/bin/behave".format(TOP))
     }
 
+    @staticmethod
+    def subprocess_check_output(args, **kwargs):
+        """
+        Reimplement subprocess.check_output() for Python versions
+        that do not support it yet (Python2.6, ...).
+        """
+        # print("RUN: {0}".format(" ".join(args)))
+        kwargs["stdout"] = subprocess.PIPE
+        kwargs["stderr"] = subprocess.STDOUT
+        command_process = subprocess.Popen(args, **kwargs)
+        output = command_process.communicate()[0]
+        command_process.poll()
+        assert command_process.returncode is not None
+        print("result={0}, OUTPUT:\n{1}\n".format(command_process.returncode, output))
+        if command_process.returncode == 0:
+            # -- SUCCESSFUL EXECUTION:
+            return output
+        # -- COMMAND-FAILED: Raise exception
+        cmd = " ".join(args)
+        e = subprocess.CalledProcessError(command_process.returncode, cmd)
+        e.output = output
+        raise e
+
+
     @classmethod
     def run(cls, command, cwd=".", **kwargs):
         """
@@ -73,8 +97,10 @@ class Command(object):
 
         # -- RUN COMMAND:
         try:
+            subprocess_check_output = getattr(subprocess, "check_output",
+                                            cls.subprocess_check_output)
             stderr = kwargs.pop("stderr", subprocess.STDOUT)
-            command_result.output = subprocess.check_output(cmdargs,
+            command_result.output = subprocess_check_output(cmdargs,
                 stderr=stderr, cwd=cwd, **kwargs)
             command_result.returncode = 0
             command_result.failed = False
@@ -110,6 +136,6 @@ def behave(cmdline, cwd=".", **kwargs):
 # TEST MAIN:
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
-    cmdline = " ".join(sys.argv[1:])
-    proc = behave(cmdline)
-    print("RESULT:\n%s\n" % proc.output)
+    command = " ".join(sys.argv[1:])
+    Command.subprocess_check_output(sys.argv[1:])
+    print("command: {0}\n{1}\n".format(command, output))
