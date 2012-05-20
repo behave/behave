@@ -79,7 +79,8 @@ class Parser(object):
 
         for line in data.split('\n'):
             self.line += 1
-            if not line.strip():
+            if not line.strip() and self.state != "multiline":
+                # -- SKIP EMPTY LINES, except in multiline string args.
                 continue
             self.action(line)
 
