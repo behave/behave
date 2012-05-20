@@ -118,6 +118,17 @@ def feature_test(args):
     for arg in args:
         behave(arg, cmdopts)
 
+@task
+@consume_args
+def selftest(args):
+    """
+    Run behave selftests.
+    """
+    if not args:
+        # args = [ "features" ]
+        args = [ "selftest.features" ]
+    cmdline = " ".join(args)
+    behave(cmdline, cmdopts="--format=progress")
 
 # ----------------------------------------------------------------------------
 # TASK: test coverage
@@ -137,6 +148,7 @@ def coverage(args):
     """Run unittests and collect coverage, then generate report."""
     unittests = []
     feature_tests = []
+    selftests = []
 
     # -- STEP: Select unittests and feature-tests (if any).
     for arg in args:
@@ -144,14 +156,17 @@ def coverage(args):
             unittests.append(arg)
         elif arg.startswith("tools"):
             feature_tests.append(arg)
+        elif arg.startswith("selftest.features"):
+            feature_tests.append(arg)
         else:
             unittests.append(arg)
             feature_tests.append(arg)
 
     # -- STEP: Check if all tests should be run (normally: no args provided).
-    should_always_run = not unittests and not feature_tests
+    should_always_run = not unittests and not feature_tests and not selftests
     if should_always_run:
         feature_tests = list(options.behave_test.default_args)
+        selftests = [ "selftest.features/" ]
 
     # -- STEP: Run unittests.
     if unittests or should_always_run:
@@ -161,10 +176,19 @@ def coverage(args):
     if feature_tests or should_always_run:
         feature_tests.insert(0, "--tags=-xfail")
         behave = path("bin/behave").normpath()
-        coverage_run("{behave} {args}".format(
+        coverage_run("{behave} --format=progress {args}".format(
                 behave=behave, args=" ".join(feature_tests)))
-        call_task("coverage_report")
+        # XXX call_task("coverage_report")
 
+    # -- STEP: Run feature-tests.
+    # selftests = [ "selftest.features" ]
+    if selftests or should_always_run:
+        selftests.insert(0, "--tags=-xfail")
+        behave = path("bin/behave").normpath()
+        coverage_run("{behave} --format=progress {args}".format(
+            behave=behave, args=" ".join(selftests)))
+
+    call_task("coverage_report")
 
 # ----------------------------------------------------------------------------
 # TASK: bump_version
@@ -193,6 +217,8 @@ def clean():
     path("build").rmtree()
     path("dist").rmtree()
     path(".tox").rmtree()
+    path("tmp").rmtree()
+    path("__WORKDIR__").rmtree()
 
     # -- STEP: Remove temporary directory subtrees.
     patterns = [
