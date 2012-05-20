@@ -48,7 +48,7 @@ options(
         extra_files=[ 'doctools', 'virtual' ]
     ),
     behave_test=Bunch(
-        default_args=[ "tools/test-features/" ]
+        default_args=[ "tools/test-features/", "selftest.features/" ]
     ),
     pychecker = Bunch(
         default_args=NAME
@@ -111,25 +111,25 @@ def feature_test(args):
     if not args:
         # args = [ "features" ]
         args = options.behave_test.default_args
-    excluded_tags = "--tags=-xfail"
-    cmdopts = excluded_tags
-    if sys.platform.startswith("win"):
-        # -- SPECIAL-CASE OS=Windows: No ANSI coloring
-        cmdopts += " -c --format=pretty"
+
+    args2   = []
+    cmdopts = []
+    for arg in args:
+        if arg.startswith("-"):
+            cmdopts.append(arg)
+        else:
+            args2.append(arg)
+
+    cmdopts = " ".join(cmdopts)
+    args = args2
+    if not cmdopts:
+        excluded_tags = "--tags=-xfail"
+        cmdopts = "--format=progress {0}".format(excluded_tags)
+
+    # -- RUN TESTS:
     for arg in args:
         behave(arg, cmdopts)
 
-@task
-@consume_args
-def selftest(args):
-    """
-    Run behave selftests.
-    """
-    if not args:
-        # args = [ "features" ]
-        args = [ "selftest.features" ]
-    cmdline = " ".join(args)
-    behave(cmdline, cmdopts="--format=progress")
 
 # ----------------------------------------------------------------------------
 # TASK: test coverage
@@ -149,7 +149,6 @@ def coverage(args):
     """Run unittests and collect coverage, then generate report."""
     unittests = []
     feature_tests = []
-    selftests = []
 
     # -- STEP: Select unittests and feature-tests (if any).
     for arg in args:
@@ -164,10 +163,9 @@ def coverage(args):
             feature_tests.append(arg)
 
     # -- STEP: Check if all tests should be run (normally: no args provided).
-    should_always_run = not unittests and not feature_tests and not selftests
+    should_always_run = not unittests and not feature_tests
     if should_always_run:
         feature_tests = list(options.behave_test.default_args)
-        selftests = [ "selftest.features/" ]
 
     # -- STEP: Run unittests.
     if unittests or should_always_run:
@@ -175,20 +173,13 @@ def coverage(args):
 
     # -- STEP: Run feature-tests.
     if feature_tests or should_always_run:
-        feature_tests.insert(0, "--tags=-xfail")
-        behave = path("bin/behave").normpath()
-        coverage_run("{behave} --format=progress {args}".format(
-                behave=behave, args=" ".join(feature_tests)))
-        # XXX call_task("coverage_report")
+        cmdopts = "--tags=-xfail"
+        behave  = path("bin/behave").normpath()
+        for feature_test_ in feature_tests:
+            coverage_run("{behave} --format=progress {cmdopts} {args}".format(
+                        behave=behave, args=feature_test_, cmdopts=cmdopts))
 
-    # -- STEP: Run feature-tests.
-    # selftests = [ "selftest.features" ]
-    if selftests or should_always_run:
-        selftests.insert(0, "--tags=-xfail")
-        behave = path("bin/behave").normpath()
-        coverage_run("{behave} --format=progress {args}".format(
-            behave=behave, args=" ".join(selftests)))
-
+    # -- FINALLY:
     call_task("coverage_report")
 
 # ----------------------------------------------------------------------------
