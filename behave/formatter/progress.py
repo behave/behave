@@ -53,14 +53,21 @@ class ProgressFormatter(Formatter):
         # self.stream.flush()
 
     def eof(self):
+        """
+        Called at end of a feature.
+        It would be better to have a hook that is called after all features.
+        """
         self.report_failures()
         self.reset()
 
     # -- SPECIFIC PART:
     def report_failures(self):
-        for result in self.failures:
-            self.stream.write(u"\nFAILURE in step '%s':\n" % result.name)
-            self.stream.write(u"  Feature:  %s\n" % result.feature.name)
-            self.stream.write(u"  Scenario: %s\n" % result.scenario.name)
-            self.stream.write(u"%s\n" % result.error_message)
+        if self.failures:
+            self.stream.write(u"\n{seperator}\n".format(seperator="-"*80))
+            for result in self.failures:
+                self.stream.write(u"FAILURE in step '%s':\n" % result.name)
+                self.stream.write(u"  Feature:  %s\n" % result.feature.name)
+                self.stream.write(u"  Scenario: %s\n" % result.scenario.name)
+                self.stream.write(u"%s\n" % result.error_message)
+            self.stream.write(u"{seperator}\n".format(seperator="-"*80))
 
