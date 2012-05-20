@@ -93,6 +93,7 @@ def test(args):
     """Execute all tests (unittests, feature tests)."""
     call_task("unittest")
     call_task("feature_test")
+    call_task("selftest")
 
 @task
 @consume_args
