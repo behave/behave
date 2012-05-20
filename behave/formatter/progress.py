@@ -3,7 +3,7 @@
 #   C0111   missing docstrings
 
 from behave.formatter.base import Formatter
-
+import os.path
 
 class ProgressFormatter(Formatter):
     name = "progress"
@@ -11,7 +11,6 @@ class ProgressFormatter(Formatter):
 
     def __init__(self, stream, config):
         super(ProgressFormatter, self).__init__(stream, config)
-        self.verbose_feature  = False
         self.steps = []
         self.failures = []
         self.current_feature  = None
@@ -26,8 +25,8 @@ class ProgressFormatter(Formatter):
     # -- FORMATTER API:
     def feature(self, feature):
         self.current_feature = feature
-        if self.verbose_feature:
-            self.stream.write("Feature: %s  " % feature.name)
+        short_filename = os.path.relpath(feature.filename, os.getcwd())
+        self.stream.write("%s  " % short_filename)
 
     def background(self, background):
         pass
@@ -54,14 +53,21 @@ class ProgressFormatter(Formatter):
         # self.stream.flush()
 
     def eof(self):
+        """
+        Called at end of a feature.
+        It would be better to have a hook that is called after all features.
+        """
         self.report_failures()
         self.reset()
 
     # -- SPECIFIC PART:
     def report_failures(self):
-        for result in self.failures:
-            self.stream.write(u"\nFAILURE in step '%s':\n" % result.name)
-            self.stream.write(u"  Feature:  %s\n" % result.feature.name)
-            self.stream.write(u"  Scenario: %s\n" % result.scenario.name)
-            self.stream.write(u"%s\n" % result.error_message)
+        if self.failures:
+            self.stream.write(u"\n{seperator}\n".format(seperator="-"*80))
+            for result in self.failures:
+                self.stream.write(u"FAILURE in step '%s':\n" % result.name)
+                self.stream.write(u"  Feature:  %s\n" % result.feature.name)
+                self.stream.write(u"  Scenario: %s\n" % result.scenario.name)
+                self.stream.write(u"%s\n" % result.error_message)
+            self.stream.write(u"{seperator}\n".format(seperator="-"*80))
 

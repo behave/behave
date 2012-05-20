@@ -12,6 +12,7 @@ _/
 _WORKSPACE/
 _build/
 __pycache__/
+__WORKDIR__/
 .idea/
 .DS_Store
 .coverage

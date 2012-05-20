@@ -11,6 +11,7 @@
 # -- TESTS:
 nose  >= 1.1
 mock  >= 0.8
+PyHamcrest >= 1.6
 
 # -- DEVELOPMENT SUPPORT:
 paver >= 1.0.5
