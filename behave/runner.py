@@ -236,6 +236,22 @@ class Context(object):
                 return True
         return False
 
+    def __str__(self):
+        """
+        Provide tostring() conversion for better diagnostics.
+        :returns: String, as representation of Context object.
+        """
+        # -- COLLECT: Attribute names
+        attribute_names = set()
+        for frame in self._stack:
+            attribute_names.update(frame.keys())
+
+        # -- BUILD STRING REPRESENTATION:
+        lines = [ "Context(id:{0}):".format(id(self)) ]
+        for name in sorted(attribute_names):
+            lines.append("  {0} = {1}".format(name, getattr(self, name)))
+        return "\n".join(lines)
+
     def execute_steps(self, steps):
         '''The steps identified in the "steps" text string will be parsed and
         executed in turn just as though they were defined in a feature file.
@@ -453,7 +469,7 @@ class Runner(object):
     def run(self):
         with self.path_manager:
             self.setup_paths()
-            self.run_with_paths()
+            return self.run_with_paths()
 
     def run_with_paths(self):
         self.load_hooks()
