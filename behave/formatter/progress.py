@@ -3,7 +3,7 @@
 #   C0111   missing docstrings
 
 from behave.formatter.base import Formatter
-
+import os.path
 
 class ProgressFormatter(Formatter):
     name = "progress"
@@ -11,7 +11,6 @@ class ProgressFormatter(Formatter):
 
     def __init__(self, stream, config):
         super(ProgressFormatter, self).__init__(stream, config)
-        self.verbose_feature  = False
         self.steps = []
         self.failures = []
         self.current_feature  = None
@@ -26,8 +25,8 @@ class ProgressFormatter(Formatter):
     # -- FORMATTER API:
     def feature(self, feature):
         self.current_feature = feature
-        if self.verbose_feature:
-            self.stream.write("Feature: %s  " % feature.name)
+        short_filename = os.path.relpath(feature.filename, os.getcwd())
+        self.stream.write("%s  " % short_filename)
 
     def background(self, background):
         pass
