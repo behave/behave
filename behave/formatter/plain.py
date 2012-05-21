@@ -29,6 +29,6 @@ class PlainFormatter(Formatter):
         # TODO right-align the keyword to maximum keyword width?
         self.stream.write(u'%12s %s ... ' % (step.keyword, step.name))
         if result.error_message:
-            self.stream.write(u'%s: %s\n' % (result.status, result.error_message))
+            self.stream.write(u'%s\n%s\n' % (result.status, result.error_message))
         else:
             self.stream.write(u'%s\n' % result.status)

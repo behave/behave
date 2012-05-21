@@ -4,7 +4,7 @@ import sys
 
 from setuptools import find_packages, setup
 
-requirements = ['parse>=1.3.3']
+requirements = ['parse>=1.3.3', 'lxml>=2.3']
 major, minor = sys.version_info[:2]
 if major == 2 and minor < 7:
     requirements.append('argparse')
@@ -15,12 +15,12 @@ description = ''.join(open('README.rst').readlines()[6:])
 
 setup(
     name='behave',
-    version='1.2.0',
+    version='1.2.1',
     description='behave is behaviour-driven development, Python style',
     long_description=description,
     author='Benno Rice and Richard Jones',
     author_email='behave-users@googlegroups.com',
-    url='http://github.com/jeamland/behave',
+    url='http://github.com/Katherinesun/behave',
     packages=find_packages(),
     scripts=['bin/behave'],
     install_requires=requirements,
