@@ -215,6 +215,16 @@ class TestRunner(object):
 
         hook.assert_called_with(*args)
 
+    def test_run_hook_does_not_runs_a_hook_that_exists_if_dry_run(self):
+        r = runner.Runner(None)
+        r.config = Mock()
+        r.config.dry_run = True
+        r.hooks['before_lunch'] = hook = Mock()
+        args = (runner.Context(Mock()), Mock(), Mock())
+        r.run_hook('before_lunch', *args)
+
+        assert len(hook.call_args_list) == 0
+
     def test_setup_capture_creates_stringio_for_stdout(self):
         r = runner.Runner(Mock())
         r.config.stdout_capture = True
