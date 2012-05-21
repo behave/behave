@@ -1,5 +1,5 @@
 import os.path
-import lxml.etree as ElementTree
+from xml.etree import ElementTree
 
 from behave.reporter.base import Reporter
 
@@ -92,4 +92,4 @@ class JUnitReporter(Reporter):
 
         tree = ElementTree.ElementTree(suite)
         report_filename = os.path.join(self.config.junit_directory, filename)
-        tree.write(report_filename, pretty_print=True, encoding='UTF-8')
+        tree.write(open(report_filename, 'w'), 'utf8')
