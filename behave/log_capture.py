@@ -174,6 +174,7 @@ class LoggingCapture(BufferingHandler):
 # pre-1.2 backwards compatibility
 MemoryHandler = LoggingCapture
 
+
 def capture(*args, **kw):
     '''Decorator to wrap an *environment file function* in log file capture.
 
@@ -228,5 +229,3 @@ def capture(*args, **kw):
         return functools.partial(create_decorator, level=kw.get('level'))
     else:
         return create_decorator(args[0])
-
-

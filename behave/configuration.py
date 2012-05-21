@@ -2,7 +2,6 @@ import os
 import re
 import sys
 import argparse
-import StringIO
 import ConfigParser
 
 from behave.reporter.junit import JUnitReporter
@@ -31,7 +30,7 @@ options = [
          help="Don't output JUnit-compatible reports.")),
     (('--junit',), dict(action='store_true',
          help="""Output JUnit-compatible reports.
-                 When junit is enabled, all stdout and stderr 
+                 When junit is enabled, all stdout and stderr
                  will be redirected and dumped to the junit report,
                  regardless of the '--capture' and '--no-capture' options.
                  """)),
@@ -78,7 +77,8 @@ options = [
                  printed if there is a failure.)
                  This is the default behaviour. This switch is used to override
                  a configuration file setting.""")),
-    (('--no-capture-stderr',), dict(action='store_false', dest='stderr_capture',
+    (('--no-capture-stderr',), dict(action='store_false',
+         dest='stderr_capture',
          help="""Don't capture stderr (any stderr output will be
                  printed immediately.)""")),
     (('--capture-stderr',), dict(action='store_true', dest='stderr_capture',
