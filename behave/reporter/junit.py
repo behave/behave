@@ -60,7 +60,7 @@ class JUnitReporter(Reporter):
                 if not undefined:
                     skip = ElementTree.Element('skipped')
                     case.append(skip)
-				
+
             # Create stdout section for each test case
             stdout = ElementTree.Element('system-out')
             text = u'Steps:\n'
@@ -71,15 +71,15 @@ class JUnitReporter(Reporter):
             if scenario.stdout:
                 text += '\nCaptured stdout:\n%s\n' % scenario.stdout
             stdout.text = ElementTree.CDATA(text)
-            case.append(stdout) 
-            
+            case.append(stdout)
+
             # Create stderr section for each test case
             if scenario.stderr:
                 stderr = ElementTree.Element('system-err')
                 text = u'\nCaptured stderr:\n%s\n' % scenario.stderr
                 stderr.text = ElementTree.CDATA(text)
                 case.append(stderr)
-            
+
             suite.append(case)
 
         suite.set('tests', str(tests))
