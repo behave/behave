@@ -774,7 +774,7 @@ class Step(BasicStatement, Replayable):
             if runner.config.stderr_capture:
                 output = runner.stderr_capture.getvalue()
                 if output:
-                    error += '\nCaptured stderr:\n' + output           
+                    error += '\nCaptured stderr:\n' + output
             if runner.config.log_capture:
                 output = runner.log_capture.getvalue()
                 if output:

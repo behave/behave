@@ -228,6 +228,8 @@ class TestStepRun(object):
         self.step_registry = Mock()
         self.stdout_capture = self.runner.stdout_capture = Mock()
         self.stdout_capture.getvalue.return_value = ''
+        self.stderr_capture = self.runner.stderr_capture = Mock()
+        self.stderr_capture.getvalue.return_value = ''
         self.log_capture = self.runner.log_capture = Mock()
         self.log_capture.getvalue.return_value = ''
         self.run_hook = self.runner.run_hook = Mock()

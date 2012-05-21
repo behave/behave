@@ -207,6 +207,8 @@ class TestRunner(object):
 
     def test_run_hook_runs_a_hook_that_exists(self):
         r = runner.Runner(None)
+        r.config = Mock()
+        r.config.dry_run = False
         r.hooks['before_lunch'] = hook = Mock()
         args = (runner.Context(Mock()), Mock(), Mock())
         r.run_hook('before_lunch', *args)
@@ -227,6 +229,7 @@ class TestRunner(object):
     def test_setup_capture_does_not_create_stringio_if_not_wanted(self):
         r = runner.Runner(Mock())
         r.config.stdout_capture = False
+        r.config.stderr_capture = False
         r.config.log_capture = False
 
         r.setup_capture()
@@ -249,6 +252,7 @@ class TestRunner(object):
     def test_setup_capture_does_not_create_memory_handler_if_not_wanted(self):
         r = runner.Runner(Mock())
         r.config.stdout_capture = False
+        r.config.stderr_capture = False
         r.config.log_capture = False
 
         r.setup_capture()
