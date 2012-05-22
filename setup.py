@@ -20,7 +20,7 @@ setup(
     long_description=description,
     author='Benno Rice and Richard Jones',
     author_email='behave-users@googlegroups.com',
-    url='http://github.com/Katherinesun/behave',
+    url='http://github.com/jeamland/behave',
     packages=find_packages(),
     scripts=['bin/behave'],
     install_requires=requirements,
