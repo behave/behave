@@ -244,7 +244,7 @@ class Configuration(object):
         self.reporters = []
 
         defaults = dict(
-            color=True,
+            color=sys.platform != 'win32',
             stdout_capture=True,
             stderr_capture=True,
             show_snippets=True,
