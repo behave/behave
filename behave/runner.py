@@ -329,6 +329,9 @@ class Runner(object):
                 print 'Using default path "./features"'
             base_dir = os.path.abspath('features')
 
+        # Get the root. This is not guaranteed to be '/' because Windows.
+        root_dir = os.path.split(base_dir)[0]
+
         new_base_dir = base_dir
 
         while True:
@@ -339,12 +342,12 @@ class Runner(object):
                 break
             if os.path.isfile(os.path.join(new_base_dir, 'environment.py')):
                 break
-            if new_base_dir == '/':
+            if new_base_dir == root_dir:
                 break
 
             new_base_dir = os.path.dirname(new_base_dir)
 
-        if new_base_dir == '/':
+        if new_base_dir == root_dir:
             if self.config.verbose:
                 if not self.config.paths:
                     print 'ERROR: Could not find "steps" directory. Please '\

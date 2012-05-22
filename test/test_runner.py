@@ -397,12 +397,28 @@ class TestRunWithPaths(object):
 class FsMock(object):
     def __init__(self, *paths):
         self.base = os.path.abspath('.')
-        paths = [os.path.join(self.base, path) for path in paths]
+
+        # This bit of gymnastics is to support Windows. We feed in a bunch of
+        # paths in places using FsMock that assume that POSIX-style paths
+        # work. This is faster than fixing all of those but at some point we
+        # should totally do it properly with os.path.join() and all that.
+        def full_split(path):
+            bits = []
+
+            while path:
+                path, bit = os.path.split(path)
+                bits.insert(0, bit)
+
+            return bits
+
+        paths = [os.path.join(self.base, *full_split(path)) for path in paths]
+        print repr(paths)
         self.paths = paths
         self.files = set()
         self.dirs = defaultdict(list)
+        separators = [sep for sep in (os.path.sep, os.path.altsep) if sep]
         for path in paths:
-            if path[-1] == '/':
+            if path[-1] in separators:
                 self.dirs[path[:-1]] = []
                 d, p = os.path.split(path[:-1])
                 while d and p:
@@ -413,18 +429,23 @@ class FsMock(object):
                 d, f = os.path.split(path)
                 self.dirs[d].append(f)
         self.calls = []
+
     def listdir(self, dir):
         self.calls.append(('listdir', dir))
         return self.dirs.get(dir, [])
+
     def isfile(self, path):
         self.calls.append(('isfile', path))
         return path in self.files
+
     def isdir(self, path):
         self.calls.append(('isdir', path))
         return path in self.dirs
+
     def exists(self, path):
         self.calls.append(('exists', path))
         return path in self.dirs or path in self.files
+
     def walk(self, path, l=None):
         if l is None:
             assert path in self.dirs, '%s not in %s' % (path, self.dirs)
@@ -443,10 +464,15 @@ class FsMock(object):
     # utilities that we need
     def dirname(self, path, orig=os.path.dirname):
         return orig(path)
+
     def abspath(self, path, orig=os.path.abspath):
         return orig(path)
+
     def join(self, a, b, orig=os.path.join):
         return orig(a, b)
+
+    def split(self, path, orig=os.path.split):
+        return orig(path)
 
 
 
@@ -463,7 +489,7 @@ class TestFeatureDirectory(object):
         with patch('os.path', fs):
             assert_raises(ConfigError, r.setup_paths)
 
-        ok_(('isdir', os.path.join(fs.base, 'features/steps')) in fs.calls)
+        ok_(('isdir', os.path.join(fs.base, 'features', 'steps')) in fs.calls)
 
     def test_default_path_no_features(self):
         config = Mock()
