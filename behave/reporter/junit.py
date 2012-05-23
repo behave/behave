@@ -4,6 +4,36 @@ from xml.etree import ElementTree
 from behave.reporter.base import Reporter
 
 
+def CDATA(text=None):
+    element = ElementTree.Element('![CDATA[')
+    element.text = text
+    return element
+
+
+class ElementTreeWithCDATA(ElementTree.ElementTree):
+    def _write(self, file, node, encoding, namespaces):
+        """This method is for ElementTree <= 1.2.6"""
+
+        if node.tag == '![CDATA[':
+            text = node.text.encode(encoding)
+            file.write("\n<![CDATA[%s]]>\n" % text)
+        else:
+            ElementTree.ElementTree._write(self, file, node, encoding,
+                namespaces)
+
+
+if hasattr(ElementTree, '_serialize'):
+    def _serialize_xml(write, elem, encoding, qnames, namespaces,
+        orig=ElementTree._serialize_xml):
+        if elem.tag == '![CDATA[':
+            write("\n<%s%s]]>\n" % (
+                    elem.tag, elem.text))
+            return
+        return orig(write, elem, encoding, qnames, namespaces)
+
+    ElementTree._serialize_xml = ElementTree._serialize['xml'] = _serialize_xml
+
+
 class JUnitReporter(Reporter):
     def feature(self, feature):
         filename = None
@@ -70,14 +100,14 @@ class JUnitReporter(Reporter):
             # Append the captured standard output
             if scenario.stdout:
                 text += '\nCaptured stdout:\n%s\n' % scenario.stdout
-            stdout.text = ElementTree.CDATA(text)
+            stdout.append(CDATA(text))
             case.append(stdout)
 
             # Create stderr section for each test case
             if scenario.stderr:
                 stderr = ElementTree.Element('system-err')
                 text = u'\nCaptured stderr:\n%s\n' % scenario.stderr
-                stderr.text = ElementTree.CDATA(text)
+                stderr.append(CDATA(text))
                 case.append(stderr)
 
             suite.append(case)
@@ -90,6 +120,6 @@ class JUnitReporter(Reporter):
         if not os.path.exists(self.config.junit_directory):
             os.mkdir(self.config.junit_directory)
 
-        tree = ElementTree.ElementTree(suite)
+        tree = ElementTreeWithCDATA(suite)
         report_filename = os.path.join(self.config.junit_directory, filename)
         tree.write(open(report_filename, 'w'), 'utf8')
