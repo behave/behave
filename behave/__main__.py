@@ -83,7 +83,7 @@ def main():
 
     if not config.format:
         config.format = ['pretty']
-    elif config.format == ['help']:
+    elif 'help' in config.format:
         print "Available formatters:"
         formatters.list_formatters(sys.stdout)
         sys.exit(0)
