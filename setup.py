@@ -7,6 +7,7 @@ from setuptools import find_packages, setup
 VERSION = open("VERSION.txt").read().strip()
 
 requirements = ['parse>=1.3.3', "distribute" ]
+zip_safe = True
 major, minor = sys.version_info[:2]
 if major == 2 and minor < 7:
     requirements.append('argparse')
@@ -24,12 +25,8 @@ setup(
     author_email='behave-users@googlegroups.com',
     url='http://github.com/jeamland/behave',
     packages=find_packages(),
-    # -- DISABLED: Use console_scripts for platform independence (Windows, ...)
-    # scripts=['bin/behave'],
     entry_points={
-        'console_scripts': [
-            'behave = behave.main:main',
-        ]
+        'console_scripts': ['behave = behave.__main__:main'],
     },
     install_requires=requirements,
     use_2to3=True,
@@ -43,6 +40,7 @@ setup(
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.2",
+        "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: Jython",
         "Programming Language :: Python :: Implementation :: PyPy",

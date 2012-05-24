@@ -2,7 +2,38 @@
 
 import os.path
 from xml.etree import ElementTree
+
 from behave.reporter.base import Reporter
+
+
+def CDATA(text=None):
+    element = ElementTree.Element('![CDATA[')
+    element.text = text
+    return element
+
+
+class ElementTreeWithCDATA(ElementTree.ElementTree):
+    def _write(self, file, node, encoding, namespaces):
+        """This method is for ElementTree <= 1.2.6"""
+
+        if node.tag == '![CDATA[':
+            text = node.text.encode(encoding)
+            file.write("\n<![CDATA[%s]]>\n" % text)
+        else:
+            ElementTree.ElementTree._write(self, file, node, encoding,
+                namespaces)
+
+
+if hasattr(ElementTree, '_serialize'):
+    def _serialize_xml(write, elem, encoding, qnames, namespaces,
+        orig=ElementTree._serialize_xml):
+        if elem.tag == '![CDATA[':
+            write("\n<%s%s]]>\n" % (
+                    elem.tag, elem.text))
+            return
+        return orig(write, elem, encoding, qnames, namespaces)
+
+    ElementTree._serialize_xml = ElementTree._serialize['xml'] = _serialize_xml
 
 
 class JUnitReporter(Reporter):
@@ -19,7 +50,7 @@ class JUnitReporter(Reporter):
         filename = 'TESTS-%s.xml' % filename
 
         suite = ElementTree.Element('testsuite')
-        suite.set('name', feature.name or feature.filename)
+        suite.set('name', '%s.%s' % (classname, feature.name or feature.filename))
 
         tests = 0
         failed = 0
@@ -29,7 +60,7 @@ class JUnitReporter(Reporter):
             tests += 1
 
             case = ElementTree.Element('testcase')
-            case.set('class', classname)
+            case.set('classname', '%s.%s' % (classname, feature.name or feature.filename))
             case.set('name', scenario.name or '')
             # -- ORIG: case.set('time', str(round(scenario.duration, 3)))
             case.set('time', str(round(scenario.duration, 6)))
@@ -48,20 +79,45 @@ class JUnitReporter(Reporter):
 
                 case.append(failure)
             elif scenario.status in ('skipped', 'untested'):
+                skipped += 1
+                undefined = False
                 for step in scenario:
                     if step.status == 'undefined':
+                        undefined = True
                         failed += 1
                         failure = ElementTree.Element('failure')
                         failure.set('type', 'undefined')
                         failure.set('message', '')
                         case.append(failure)
                         break
+                if not undefined:
+                    skip = ElementTree.Element('skipped')
+                    case.append(skip)
+
+            # Create stdout section for each test case
+            stdout = ElementTree.Element('system-out')
+            text = u'Steps:\n'
+            for step in scenario:
+                text += u'%12s %s ... ' % (step.keyword, step.name)
+                text += u'%s\n' % step.status
+            # Append the captured standard output
+            if scenario.stdout:
+                text += '\nCaptured stdout:\n%s\n' % scenario.stdout
+            stdout.append(CDATA(text))
+            case.append(stdout)
+
+            # Create stderr section for each test case
+            if scenario.stderr:
+                stderr = ElementTree.Element('system-err')
+                text = u'\nCaptured stderr:\n%s\n' % scenario.stderr
+                stderr.append(CDATA(text))
+                case.append(stderr)
 
             suite.append(case)
 
         suite.set('tests', str(tests))
         suite.set('failures', str(failed))
-        suite.set('skip', str(skipped))
+        suite.set('skips', str(skipped))
         # -- ORIG: suite.set('time', str(round(feature.duration, 3)))
         suite.set('time', str(round(feature.duration, 6)))
 
@@ -69,6 +125,6 @@ class JUnitReporter(Reporter):
             # -- ENSURE: Create multiple directory levels at once.
             os.makedirs(self.config.junit_directory)
 
-        tree = ElementTree.ElementTree(suite)
+        tree = ElementTreeWithCDATA(suite)
         report_filename = os.path.join(self.config.junit_directory, filename)
         tree.write(open(report_filename, 'w'), 'utf8')

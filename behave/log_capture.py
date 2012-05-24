@@ -106,8 +106,7 @@ class LoggingCapture(BufferingHandler):
     def getvalue(self):
         return '\n'.join(self.formatter.format(r) for r in self.buffer)
 
-    # XXX-JE-ORIG: NON-PEP8 name: findEvent(), currently unused !?!
-    def find_event(self, pattern):
+    def findEvent(self, pattern):
         '''Search through the buffer for a message that matches the given
         regular expression.
 
@@ -180,6 +179,7 @@ class LoggingCapture(BufferingHandler):
 # pre-1.2 backwards compatibility
 MemoryHandler = LoggingCapture
 
+
 def capture(*args, **kw):
     '''Decorator to wrap an *environment file function* in log file capture.
 
@@ -234,5 +234,3 @@ def capture(*args, **kw):
         return functools.partial(create_decorator, level=kw.get('level'))
     else:
         return create_decorator(args[0])
-
-

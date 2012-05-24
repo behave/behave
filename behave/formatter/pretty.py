@@ -56,7 +56,7 @@ def get_terminal_size():
         h, w, hp, wp = struct.unpack('HHHH', result)    # pylint: disable=C0103
 
         return w or DEFAULT_WIDTH, h or DEFAULT_HEIGHT
-    except Exception:   #< Due to test_formatter, normally IOError, ...
+    except Exception:
         return (DEFAULT_WIDTH, DEFAULT_HEIGHT)
 
 
