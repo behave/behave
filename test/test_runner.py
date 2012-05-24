@@ -229,11 +229,23 @@ class TestRunner(unittest.TestCase):
         # pylint: disable=W0142
         #   W0142   Used * or ** magic
         r = runner.Runner(None)
+        r.config = Mock()
+        r.config.dry_run = False
         r.hooks['before_lunch'] = hook = Mock()
         args = (runner.Context(Mock()), Mock(), Mock())
         r.run_hook('before_lunch', *args)
 
         hook.assert_called_with(*args)
+
+    def test_run_hook_does_not_runs_a_hook_that_exists_if_dry_run(self):
+        r = runner.Runner(None)
+        r.config = Mock()
+        r.config.dry_run = True
+        r.hooks['before_lunch'] = hook = Mock()
+        args = (runner.Context(Mock()), Mock(), Mock())
+        r.run_hook('before_lunch', *args)
+
+        assert len(hook.call_args_list) == 0
 
     def test_setup_capture_creates_stringio_for_stdout(self):
         r = runner.Runner(Mock())
@@ -249,6 +261,7 @@ class TestRunner(unittest.TestCase):
     def test_setup_capture_does_not_create_stringio_if_not_wanted(self):
         r = runner.Runner(Mock())
         r.config.stdout_capture = False
+        r.config.stderr_capture = False
         r.config.log_capture = False
 
         r.setup_capture()
@@ -271,6 +284,7 @@ class TestRunner(unittest.TestCase):
     def test_setup_capture_does_not_create_memory_handler_if_not_wanted(self):
         r = runner.Runner(Mock())
         r.config.stdout_capture = False
+        r.config.stderr_capture = False
         r.config.log_capture = False
 
         r.setup_capture()
@@ -410,20 +424,30 @@ class TestRunWithPaths(unittest.TestCase):
 class FsMock(object):
     def __init__(self, *paths):
         self.base = os.path.abspath('.')
-        paths = [os.path.join(self.base, path) for path in paths]
+
+        # This bit of gymnastics is to support Windows. We feed in a bunch of
+        # paths in places using FsMock that assume that POSIX-style paths
+        # work. This is faster than fixing all of those but at some point we
+        # should totally do it properly with os.path.join() and all that.
+        def full_split(path):
+            bits = []
+
+            while path:
+                path, bit = os.path.split(path)
+                bits.insert(0, bit)
+
+            return bits
+
+        paths = [os.path.join(self.base, *full_split(path)) for path in paths]
+        print repr(paths)
         self.paths = paths
         self.files = set()
         self.dirs = defaultdict(list)
+        separators = [sep for sep in (os.path.sep, os.path.altsep) if sep]
         for path in paths:
-            isa_dir = path.endswith('/')
-            path    = os.path.normpath(path)
-            if isa_dir:
-                # if path.endswith('/') or path.endswith("\\"):
-                #    path = path[:-1]
-                assert not path.endswith("/")
-                assert not path.endswith("\\")
-                self.dirs[path] = []
-                d, p = os.path.split(path)
+            if path[-1] in separators:
+                self.dirs[path[:-1]] = []
+                d, p = os.path.split(path[:-1])
                 while d and p:
                     self.dirs[d].append(p)
                     d, p = os.path.split(d)
@@ -432,23 +456,25 @@ class FsMock(object):
                 d, f = os.path.split(path)
                 self.dirs[d].append(f)
         self.calls = []
+
     def listdir(self, dir):
         # pylint: disable=W0622
         #   W0622   Redefining built-in dir
         self.calls.append(('listdir', dir))
         return self.dirs.get(dir, [])
+
     def isfile(self, path):
         self.calls.append(('isfile', path))
-        path = os.path.normpath(path)
         return path in self.files
+
     def isdir(self, path):
         self.calls.append(('isdir', path))
-        path = os.path.normpath(path)
         return path in self.dirs
+
     def exists(self, path):
         self.calls.append(('exists', path))
-        path = os.path.normpath(path)
         return path in self.dirs or path in self.files
+
     def walk(self, path, l=None):
         if l is None:
             assert path in self.dirs, '%s not in %s' % (path, self.dirs)
@@ -467,13 +493,15 @@ class FsMock(object):
     # utilities that we need
     def dirname(self, path, orig=os.path.dirname):
         return orig(path)
+
     def abspath(self, path, orig=os.path.abspath):
         return orig(path)
+
     def join(self, a, b, orig=os.path.join):
         return orig(a, b)
     # -- MORE: Needed for tests when monkey-patching os.path, etc.
-    def normpath(self, path, orig=os.path.normpath):
-        return orig(path)
+    # XXX-JE-OLD: def normpath(self, path, orig=os.path.normpath):
+    # XXX-JE-OLD:    return orig(path)
     def split(self, path, orig=os.path.split):
         return orig(path)
 
@@ -494,7 +522,7 @@ class TestFeatureDirectory(unittest.TestCase):
             #   E0602   Undefined variable "assert_raises"
             assert_raises(ConfigError, r.setup_paths)
 
-        ok_(('isdir', os.path.join(fs.base, "features", "steps")) in fs.calls)
+        ok_(('isdir', os.path.join(fs.base, 'features', 'steps')) in fs.calls)
 
     def test_default_path_no_features(self):
         config = Mock()

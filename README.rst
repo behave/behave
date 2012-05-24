@@ -66,9 +66,37 @@ Version History
 
 Version UNRELEASED
 
-* FIX issue #34: "behave --version" runs features, but shows no version
-* FIX issue #32: "behave ... --junit-directory=xxx" fails for more than 1 level
-* FIX issue #32: "behave --format help" raises an error
+NEW:
+
+  * "progress" formatter added.
+  * Add "selftest.features/" to increase quality, based on cucumber idea.
+    Simplifies specifying acceptance tests by building a temporary workdir
+    and running behave against it.
+
+IMPROVED:
+
+  * Better support for Windows.
+  * Use tox to improve quality w/ testruns in clean sandbox.
+  * Add paver for better support project-specific tasks.
+  * Add coverage support to improve quality (better detect missing test areas).
+  * Add "DEVELOP.txt" to describe common developer tasks/usecases.
+
+FIXES:
+
+  * FIX issue #46: behave returns 0 (SUCCESS) even in case of test failures
+  * FIX issue #45: Parser removes empty lines in multiline text argument
+  * FIX issue #43: Enhance the format of Junit report
+  * FIX issue #44: Parser removes shell-like comments in multiline text before multiline is parsed
+  * FIX issue #40: Test summary reports incorrect passed/failed scenarios and steps when Scenario Outline is used
+  * FIX issue #39: make "up" escape sequence work right (provided by Noel Bush)
+  * FIX issue #38: escape sequences don't work on terminal output (provided by Noel Bush)
+  * FIX issue #37: Strange behaviour when no steps directory is present / path specified
+  * FIX issue #35: "behave --format=plain --tags @one" seems to execute right scenario w/ wrong steps
+  * FIX issue #34: "behave --version" runs features, but shows no version
+  * FIX issue #33: behave 1.1.0: Install fails under Windows
+  * FIX issue #32: "behave ... --junit-directory=xxx" fails for more than 1 level
+  * FIX issue #31: "behave --format help" raises an error
+  * FIX issue #30: behave --version runs tests/features
 
 
 Version 1.1.0 - January 23, 2012

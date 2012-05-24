@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 Convenience module to use:
 
@@ -8,7 +9,7 @@ Convenience module to use:
 
 from __future__ import absolute_import
 import sys
+from .main import main
 
 if __name__ == "__main__":
-    from .main import main
     sys.exit(main())

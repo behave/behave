@@ -338,6 +338,7 @@ class Runner(object):
         self.feature = None
 
         self.stdout_capture = None
+        self.stderr_capture = None
         self.log_capture = None
         self.old_stdout = None
 
@@ -364,10 +365,10 @@ class Runner(object):
                 print 'Using default path "./features"'
             base_dir = os.path.abspath('features')
 
+        # Get the root. This is not guaranteed to be '/' because Windows.
+        root_dir = os.path.split(base_dir)[0]
+
         new_base_dir = base_dir
-        filesystem_rootdir = os.path.split(base_dir)[0] #< "/" or "C:\\" or ...
-        # -- ENSURE: ISA_DIR, but conflicts with monkey-patching in tests.
-        # assert os.path.isdir(filesystem_rootdir)
 
         while True:
             if self.config.verbose:
@@ -377,12 +378,12 @@ class Runner(object):
                 break
             if os.path.isfile(os.path.join(new_base_dir, 'environment.py')):
                 break
-            if new_base_dir == filesystem_rootdir:
+            if new_base_dir == root_dir:
                 break
 
             new_base_dir = os.path.dirname(new_base_dir)
 
-        if new_base_dir == filesystem_rootdir:
+        if new_base_dir == root_dir:
             if self.config.verbose:
                 if not self.config.paths:
                     print 'ERROR: Could not find "steps" directory. Please '\
@@ -446,7 +447,7 @@ class Runner(object):
         sys.path.pop(0)
 
     def run_hook(self, name, context, *args):
-        if name in self.hooks:
+        if not self.config.dry_run and (name in self.hooks):
             with context.user_mode():
                 self.hooks[name](context, *args)
 
@@ -518,6 +519,10 @@ class Runner(object):
             self.stdout_capture = StringIO.StringIO()
             self.context.stdout_capture = self.stdout_capture
 
+        if self.config.stderr_capture:
+            self.stderr_capture = StringIO.StringIO()
+            self.context.stderr_capture = self.stderr_capture
+
         if self.config.log_capture:
             self.log_capture = LoggingCapture(self.config)
             self.log_capture.inveigle()
@@ -528,9 +533,16 @@ class Runner(object):
             self.old_stdout = sys.stdout
             sys.stdout = self.stdout_capture
 
+        if self.config.stderr_capture:
+            self.old_stderr = sys.stderr
+            sys.stderr = self.stderr_capture
+
     def stop_capture(self):
         if self.config.stdout_capture:
             sys.stdout = self.old_stdout
+
+        if self.config.stderr_capture:
+            sys.stderr = self.old_stderr
 
     def teardown_capture(self):
         if self.config.log_capture:
