@@ -114,8 +114,9 @@ def main():
         stream.write(escapes['undefined'] + msg + escapes['reset'])
         stream.flush()
 
-    if failed:
-        sys.exit(1)
+    sys.exit(sum([s['failed'] + s['undefined']
+                  for s in [r.step_summary for r in runner.config.reporters]]))
+
 
 if __name__ == '__main__':
     main()
