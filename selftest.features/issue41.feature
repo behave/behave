@@ -32,13 +32,16 @@ Feature: Issue #41 Missing Steps are duplicated in a Scenario Outline
           When  I enter a "<name>"
           Then  the name is "<name>".
 
-        Examples: Persons
-            |Name |
+        Examples:
+            |name |
             |Alice|
             |Bob  |
       """
     When I run "behave -c -f plain features/issue41_missing1.feature"
-    Then it should fail
+    Then it should fail with:
+      """
+      0 steps passed, 0 failed, 4 skipped, 2 undefined
+      """
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
@@ -66,13 +69,16 @@ Feature: Issue #41 Missing Steps are duplicated in a Scenario Outline
           When  I use an unknown step
           Then  the name is "<name>".
 
-        Examples: Persons
-            |Name |
+        Examples:
+            |name |
             |Alice|
             |Bob  |
       """
     When I run "behave -c -f plain features/issue41_missing2.feature"
-    Then it should fail
+    Then it should fail with:
+      """
+      2 steps passed, 0 failed, 2 skipped, 2 undefined
+      """
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
@@ -100,13 +106,16 @@ Feature: Issue #41 Missing Steps are duplicated in a Scenario Outline
           When  I enter a "<name>"
           Then  I use an unknown step
 
-        Examples: Persons
-            |Name |
+        Examples:
+            |name |
             |Alice|
             |Bob  |
       """
     When I run "behave -c -f plain features/issue41_missing3.feature"
-    Then it should fail
+    Then it should fail with:
+      """
+      4 steps passed, 0 failed, 0 skipped, 2 undefined
+      """
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
