@@ -115,9 +115,10 @@ def main():
         msg += "these snippets:\n\n"
         printed = set()
         for step in runner.undefined:
-            if step in printed:
+            step_id = "%s:%s" % (step.step_type, step.name)
+            if step_id in printed:
                 continue
-            printed.add(step)
+            printed.add(step_id)
 
             msg += "@" + step.step_type + "(" + repr(step.name) + ")\n"
             msg += "def step(context):\n"
