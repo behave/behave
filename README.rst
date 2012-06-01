@@ -87,6 +87,7 @@ FIXES:
   * FIX issue #45: Parser removes empty lines in multiline text argument
   * FIX issue #43: Enhance the format of Junit report
   * FIX issue #44: Parser removes shell-like comments in multiline text before multiline is parsed
+  * FIX issue #41: Show missing steps in ScenarioOutline only once.
   * FIX issue #40: Test summary reports incorrect passed/failed scenarios and steps when Scenario Outline is used
   * FIX issue #39: make "up" escape sequence work right (provided by Noel Bush)
   * FIX issue #38: escape sequences don't work on terminal output (provided by Noel Bush)
