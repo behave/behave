@@ -93,7 +93,7 @@ FIXES:
   * FIX issue #38: escape sequences don't work on terminal output (provided by Noel Bush)
   * FIX issue #37: Strange behaviour when no steps directory is present / path specified
   * FIX issue #35: "behave --format=plain --tags @one" seems to execute right scenario w/ wrong steps
-  * FIX issue #34: "behave --version" runs features, but shows no version
+  * FIX issue #34: "behave --version" runs features, but shows no version (DUPLICATES: #31)
   * FIX issue #33: behave 1.1.0: Install fails under Windows
   * FIX issue #32: "behave ... --junit-directory=xxx" fails for more than 1 level
   * FIX issue #31: "behave --format help" raises an error
