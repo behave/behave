@@ -168,3 +168,16 @@ def step_command_output_should_not_contain(context):
         print("actual:\n{0}".format(actual_output))
     assert_that(actual_output, is_not(contains_string(expected_output)))
 
+@then(u'the directory "{directory}" should exist')
+def step_the_directory_should_exist(context, directory):
+    path_ = directory
+    if not os.path.isabs(directory):
+        path_ = os.path.join(context.workdir, os.path.normpath(directory))
+    assert_that(os.path.isdir(path_))
+
+@then(u'the directory "{directory}" should not exist')
+def step_the_directory_should_not_exist(context, directory):
+    path_ = directory
+    if not os.path.isabs(directory):
+        path_ = os.path.join(context.workdir, os.path.normpath(directory))
+    assert_that(not os.path.isdir(path_))
