@@ -81,10 +81,13 @@ IMPROVED:
   * Add coverage support to improve quality (better detect missing test areas).
   * Add "DEVELOP.txt" to describe common developer tasks/usecases.
 
+OPEN:
+  * issue #45: Parser removes empty lines in multiline text argument
+
 FIXES:
 
   * FIX issue #46: behave returns 0 (SUCCESS) even in case of test failures
-  * FIX issue #45: Parser removes empty lines in multiline text argument
+  * FIX issue #44: Parser removes shell-like comment lines in multiline text argument
   * FIX issue #43: Enhance the format of Junit report
   * FIX issue #44: Parser removes shell-like comments in multiline text before multiline is parsed
   * FIX issue #41: Show missing steps in ScenarioOutline only once.
