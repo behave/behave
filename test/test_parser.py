@@ -414,6 +414,29 @@ Feature: Stuff
             ('then', 'Then', 'stuff happens', None, None),
         ])
 
+    def test_parses_feature_with_a_step_with_a_string_with_comments(self):
+        doc = u'''
+Feature: Stuff
+
+  Scenario: Doing stuff
+    Given there is stuff:
+      """
+      So
+      Much
+      # Derp
+      """
+    Then stuff happens
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Stuff")
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, 'Doing stuff')
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Given', 'there is stuff', "So\nMuch\n# Derp",
+                None),
+            ('then', 'Then', 'stuff happens', None, None),
+        ])
+
     def test_parses_feature_with_a_step_with_a_table_argument(self):
         doc = u'''
 Feature: Stuff
