@@ -73,7 +73,7 @@ class Parser(object):
 
         for line in data.split('\n'):
             self.line += 1
-            if not line.strip():
+            if not line.strip() and not self.state == 'multiline':
                 continue
             self.action(line)
 
