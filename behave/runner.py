@@ -432,7 +432,7 @@ class Runner(object):
     def run(self):
         with self.path_manager:
             self.setup_paths()
-            self.run_with_paths()
+            return self.run_with_paths()
 
     def run_with_paths(self):
         self.load_hooks()
