@@ -93,8 +93,7 @@ class Parser(object):
         return feature
 
     def action(self, line):
-        if line.strip().startswith('#') and self.state != "multiline":
-            # ISSUE 44: Do not strip shell-comments in multiline text.
+        if line.strip().startswith('#') and not self.state == 'multiline':
             if self.keywords or self.state != 'init' or self.tags:
                 return
 

@@ -8,6 +8,15 @@ import os.path
 class ProgressFormatter(Formatter):
     name = "progress"
     description = "Provides dotted progress bar on successful execution"
+    # -- MAP: step.status to short dot_status representation.
+    dot_status = {
+        "passed":    ".",
+        "failed":    "F",
+        "error":     "E",   #< Caught exception, but not an AssertionError
+        "skipped":   "S",
+        "untested":  "_",
+        "undefined": "U",
+    }
 
     def __init__(self, stream, config):
         super(ProgressFormatter, self).__init__(stream, config)
@@ -42,14 +51,16 @@ class ProgressFormatter(Formatter):
 
     def result(self, result):
         self.steps.pop(0)
-        # print "XXX result.status=%s" % result
-        if result.error_message:
-            self.stream.write(u"F")
+        dot_status = self.dot_status[result.status]
+        if result.status == "failed":
+            if (result.exception and
+                not isinstance(result.exception, AssertionError)):
+                # -- ISA-ERROR: Some Exception
+                dot_status = self.dot_status["error"]
             result.feature  = self.current_feature
             result.scenario = self.current_scenario
             self.failures.append(result)
-        else:
-            self.stream.write(u".")
+        self.stream.write(dot_status)
         # self.stream.flush()
 
     def eof(self):
@@ -69,5 +80,7 @@ class ProgressFormatter(Formatter):
                 self.stream.write(u"  Feature:  %s\n" % result.feature.name)
                 self.stream.write(u"  Scenario: %s\n" % result.scenario.name)
                 self.stream.write(u"%s\n" % result.error_message)
+                if result.exception:
+                    self.stream.write(u"exception: %s\n" % result.exception)
             self.stream.write(u"{seperator}\n".format(seperator="-"*80))
 

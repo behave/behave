@@ -353,6 +353,20 @@ class TestRunner(unittest.TestCase):
             assert 'spam' in l, '"spam" variable not set in locals (%r)' % l
             eq_(l['spam'], f.name)
 
+    def test_run_returns_true_if_everything_passed(self):
+        r = runner.Runner(Mock())
+        r.setup_paths = Mock()
+        r.run_with_paths = Mock()
+        r.run_with_paths.return_value = True
+        assert r.run()
+
+    def test_run_returns_false_if_anything_failed(self):
+        r = runner.Runner(Mock())
+        r.setup_paths = Mock()
+        r.run_with_paths = Mock()
+        r.run_with_paths.return_value = False
+        assert not r.run()
+
 
 class TestRunWithPaths(unittest.TestCase):
     def setUp(self):
