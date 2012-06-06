@@ -400,6 +400,86 @@ Feature: Stuff
             ('then', 'Then', 'stuff happens', None, None),
         ])
 
+    def test_parses_feature_with_a_step_with_a_string_with_blank_lines(self):
+        doc = u'''
+Feature: Stuff
+
+  Scenario: Doing stuff
+    Given there is stuff:
+      """
+      So
+
+      Much
+
+
+      Stuff
+      """
+    Then stuff happens
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Stuff")
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, 'Doing stuff')
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Given', 'there is stuff', "So\n\nMuch\n\n\nStuff", None),
+            ('then', 'Then', 'stuff happens', None, None),
+        ])
+
+    # MORE-JE-ADDED:
+    def test_parses_string_argument_without_stripping_empty_lines(self):
+        # -- ISSUE 44: Parser removes comments in multiline text string.
+        doc = u'''
+Feature: Multiline
+
+  Scenario: Multiline Text with Comments
+    Given a multiline argument with:
+      """
+
+      """
+    And a multiline argument with:
+      """
+      Alpha.
+
+      Omega.
+      """
+    Then empty middle lines are not stripped
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Multiline")
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, "Multiline Text with Comments")
+        text1 = ""
+        text2 = "Alpha.\n\nOmega."
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Given', 'a multiline argument with', text1, None),
+            ('given', 'And',   'a multiline argument with', text2, None),
+            ('then', 'Then', 'empty middle lines are not stripped', None, None),
+        ])
+
+    def test_parses_feature_with_a_step_with_a_string_with_comments(self):
+        doc = u'''
+Feature: Stuff
+
+  Scenario: Doing stuff
+    Given there is stuff:
+      """
+      So
+      Much
+      # Derp
+      """
+    Then stuff happens
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Stuff")
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, 'Doing stuff')
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Given', 'there is stuff', "So\nMuch\n# Derp",
+                None),
+            ('then', 'Then', 'stuff happens', None, None),
+        ])
+
+    # MORE-JE-ADDED:
     def test_parses_string_argument_without_stripping_comments(self):
         # -- ISSUE 44: Parser removes comments in multiline text string.
         doc = u'''
@@ -430,35 +510,6 @@ Feature: Multiline
             ('then', 'Then', 'no shell comments are stripped', None, None),
         ])
 
-    def test_parses_string_argument_without_stripping_empty_lines(self):
-        # -- ISSUE 44: Parser removes comments in multiline text string.
-        doc = u'''
-Feature: Multiline
-
-  Scenario: Multiline Text with Comments
-    Given a multiline argument with:
-      """
-
-      """
-    And a multiline argument with:
-      """
-      Alpha.
-
-      Omega.
-      """
-    Then empty middle lines are not stripped
-'''.lstrip()
-        feature = parser.parse_feature(doc)
-        eq_(feature.name, "Multiline")
-        assert(len(feature.scenarios) == 1)
-        eq_(feature.scenarios[0].name, "Multiline Text with Comments")
-        text1 = ""
-        text2 = "Alpha.\n\nOmega."
-        self.compare_steps(feature.scenarios[0].steps, [
-            ('given', 'Given', 'a multiline argument with', text1, None),
-            ('given', 'And',   'a multiline argument with', text2, None),
-            ('then', 'Then', 'empty middle lines are not stripped', None, None),
-        ])
 
     def test_parses_feature_with_a_step_with_a_table_argument(self):
         doc = u'''
