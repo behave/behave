@@ -5,19 +5,19 @@ from behave import model, i18n
 DEFAULT_LANGUAGE = 'en'
 
 
-def parse_file(filename, language=None):
+def parse_file(filename, context, language=None):
     with open(filename, 'rb') as f:
         # file encoding is assumed to be utf8. Oh, yes.
         data = f.read().decode('utf8')
-    return parse_feature(data, language, filename)
+    return parse_feature(data, context, language, filename)
 
 
-def parse_feature(data, language=None, filename=None):
+def parse_feature(data, context, language=None, filename=None):
     # ALL data operated on by the parser MUST be unicode
     assert isinstance(data, unicode)
 
     try:
-        result = Parser(language).parse(data, filename)
+        result = Parser(language).parse(data, context, filename)
     except ParserError, e:
         e.filename = filename
         raise
@@ -66,7 +66,7 @@ class Parser(object):
         self.table = None
         self.examples = None
 
-    def parse(self, data, filename=None):
+    def parse(self, data, context, filename=None):
         self.reset()
 
         self.filename = filename
@@ -75,7 +75,7 @@ class Parser(object):
             self.line += 1
             if not line.strip() and not self.state == 'multiline':
                 continue
-            self.action(line)
+            self.action(line, context)
 
         if self.table:
             self.action_table('')
@@ -85,7 +85,10 @@ class Parser(object):
         self.reset()
         return feature
 
-    def action(self, line):
+    def action(self, line, context):
+        for name, value in context.items():
+            line = line.replace("<%%%s%%>" % name, str(value))
+
         if line.strip().startswith('#') and not self.state == 'multiline':
             if self.keywords or self.state != 'init' or self.tags:
                 return
