@@ -9,3 +9,4 @@ _build
 .ropeproject
 tools/virtualenvs
 build.log
+.tox
