@@ -454,7 +454,7 @@ class Runner(object):
 
             self.run_hook('before_file', context, filename)
 
-            feature = parser.parse_file(os.path.abspath(filename), context,
+            feature = parser.parse_file(os.path.abspath(filename),
                 language=self.config.lang)
 
             self.features.append(feature)
