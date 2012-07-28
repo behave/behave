@@ -1,9 +1,9 @@
 @issue
-Feature: Issue #52 Behave counts are wrong with option --tags
+Feature: Issue #52 Summary counts are wrong with option --tags
 
-  As I behave user
-  I want to detect test success or test failures
-  By using the process return value, 0 (SUCCESS) and non-zero for failure.
+  Wrong summary counts are shown for skipped and failed scenarios
+  when option --tags=done is used (and some scenarios are skipped).
+
 
   Background: Test Setup
     Given a new working directory
@@ -25,7 +25,7 @@ Feature: Issue #52 Behave counts are wrong with option --tags
       """
       Feature: Passing tagged Scenario
         @done
-        Scenario: 1
+        Scenario: P1
           Given passing
 
         @unimplemented
@@ -47,7 +47,7 @@ Feature: Issue #52 Behave counts are wrong with option --tags
       """
       Feature: Failing tagged Scenario
         @done
-        Scenario: 1
+        Scenario: F1
           Given failing
 
         @unimplemented
