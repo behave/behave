@@ -58,9 +58,9 @@ Feature: Issue #52 Behave counts are wrong with option --tags
           Given passing
       """
     When I run "behave --junit -c --tags @done features/tagged_scenario2.feature"
-    Then the command output should contain:
+    Then it should fail
+    And  the command output should contain:
       """
       0 features passed, 1 failed, 0 skipped
       0 scenarios passed, 1 failed, 2 skipped
       """
-    And it should fail
