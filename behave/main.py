@@ -106,9 +106,11 @@ def main():
     try:
         failed = runner.run()
     except ParserError, e:
-        sys.exit(str(e))
+        sys.stderr.write("PARSE-ERROR: {0}".format(e))
+        sys.exit(2)
     except ConfigError, e:
-        sys.exit(str(e))
+        sys.stderr.write("CONFIG-ERROR: {0}".format(e))
+        sys.exit(3)
 
     if config.show_snippets and runner.undefined:
         msg = "\nYou can implement step definitions for undefined steps with "

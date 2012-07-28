@@ -210,6 +210,7 @@ class Feature(TagStatement, Replayable):
                         return 'untested'
                     if scenario.status != 'skipped':
                         skipped = False
+        # -- NOTE: Returns 'skipped' if skipped=True. Otherwise, 'passed'.
         return skipped and 'skipped' or 'passed'
 
     @property
@@ -253,8 +254,11 @@ class Feature(TagStatement, Replayable):
         if self.background and (run_feature or runner.config.show_skipped):
             runner.formatter.background(self.background)
 
+        failed_count = 0
         for scenario in self:
             failed = scenario.run(runner)
+            if failed:
+                failed_count += 1
 
             # do we want to stop on the first failure?
             if failed and runner.config.stop:
@@ -273,6 +277,7 @@ class Feature(TagStatement, Replayable):
             # runner.formatter.stream.write('\n')
             pass
 
+        failed = (failed_count > 0)
         return failed
 
 
