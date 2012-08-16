@@ -23,39 +23,102 @@ class JSONFormatter(Formatter):
         pass
 
     def feature(self, feature):
-        self._gherkin_object = feature.to_dict()
+        self._gherkin_object = {
+            'keyword': feature.keyword,
+            'tags': list(feature.tags),
+            'description': feature.description,
+            'location': feature.location,
+        }
 
     def background(self, background):
-        self._add_feature_element(background.to_dict())
+        self._add_feature_element({
+            'keyword': background.keyword,
+            'location': background.location,
+            'steps': [],
+        })
         self._step_index = 0
 
     def scenario(self, scenario):
-        self._add_feature_element(scenario.to_dict())
+        self._add_feature_element({
+            'keyword': scenario.keyword,
+            'name': scenario.name,
+            'tags': scenario.tags,
+            'location': scenario.location,
+            'steps': [],
+        })
         self._step_index = 0
 
     def scenario_outline(self, scenario_outline):
-        self._add_feature_element(scenario_outline.to_dict())
+        self._add_feature_element({
+            'keyword': scenario.keyword,
+            'name': scenario.name,
+            'tags': scenario.tags,
+            'location': scenario.location,
+            'steps': [],
+            'examples': [],
+        })
         self._step_index = 0
 
     def examples(self, examples):
+        e = {
+            'keyword': examples.keyword,
+            'name': examples.name,
+            'location': examples.location,
+        }
+
+        if examples.table:
+            e['table'] = {
+                'headings': examples.table.headings,
+                'rows': examples.table.rows,
+            }
+
         element = self._feature_element()
-        if 'examples' not in element:
-            element['examples'] = []
-        element['examples'].append(examples.to_dict())
+        element['examples'].append(e)
 
     def step(self, step):
+        s = {
+            'keyword': step.keyword,
+            'step_type': step.step_type,
+            'name': step.name,
+            'location': step.location,
+        }
+
+        if step.text:
+            s['text'] = step.text
+        if step.table:
+            s['table'] = {
+                'headings': step.table.headings,
+                'rows': step.table.rows,
+            }
+
         element = self._feature_element()
-        if 'steps' not in element:
-            element['steps'] = []
-        element['steps'].append(step.to_dict())
+        element['steps'].append(s)
 
     def match(self, match):
+        args = []
+        for argument in match.arguments:
+            arg = {
+                'original': argument.original,
+                'value': argument.value,
+            }
+            if argument.name:
+                arg['name'] = argument.name
+            args.append(arg)
+
+        match = {
+            'location': match.location,
+            'arguments': args,
+        }
+
         steps = self._feature_element()['steps']
-        steps[self._step_index]['match'] = match.to_dict()
+        steps[self._step_index]['match'] = match
 
     def result(self, result):
         steps = self._feature_element()['steps']
-        steps[self._step_index]['result'] = result.to_dict()
+        steps[self._step_index]['result'] = {
+            'status': result.status,
+            'duration': result.duration,
+        }
         self._step_index += 1
 
     def embedding(self, mime_type, data):

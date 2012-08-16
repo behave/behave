@@ -69,9 +69,6 @@ class BasicStatement(object):
         p = relpath(self.filename, os.getcwd())
         return '%s:%d' % (p, self.line)
 
-    def to_dict(self):
-        return dict((k, v) for k, v in self.__dict__.items() if k[0] != '_')
-
 
 class TagStatement(BasicStatement):
     def __init__(self, filename, line, keyword, name, tags):
