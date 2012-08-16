@@ -108,7 +108,7 @@ def main():
             printed.add(step)
 
             msg += "@" + step.step_type + "(" + repr(step.name) + ")\n"
-            msg += "def step(context):\n"
+            msg += "def impl(context):\n"
             msg += "    assert False\n\n"
 
         stream.write(escapes['undefined'] + msg + escapes['reset'])

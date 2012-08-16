@@ -489,7 +489,7 @@ for the example above could be accessed like so:
 .. code-block:: python
 
   @given('a set of specific users')
-  def step(context):
+  def impl(context):
       for row in context.table:
           model.add_user(name=row['name'], department=row['department'])
 
