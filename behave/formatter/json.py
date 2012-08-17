@@ -50,10 +50,10 @@ class JSONFormatter(Formatter):
 
     def scenario_outline(self, scenario_outline):
         self._add_feature_element({
-            'keyword': scenario.keyword,
-            'name': scenario.name,
-            'tags': scenario.tags,
-            'location': scenario.location,
+            'keyword': scenario_outline.keyword,
+            'name': scenario_outline.name,
+            'tags': scenario_outline.tags,
+            'location': scenario_outline.location,
             'steps': [],
             'examples': [],
         })
