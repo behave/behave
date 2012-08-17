@@ -1,3 +1,4 @@
+from behave.model import ScenarioOutline
 from behave.reporter.base import Reporter
 
 
@@ -37,9 +38,10 @@ class SummaryReporter(Reporter):
         self.feature_summary[feature.status or 'skipped'] += 1
         self.duration += feature.duration
         for scenario in feature:
-            self.scenario_summary[scenario.status or 'skipped'] += 1
-            for step in scenario:
-                self.step_summary[step.status or 'skipped'] += 1
+            if isinstance(scenario, ScenarioOutline):
+                self.process_scenario_outline(scenario)
+            else:
+                self.process_scenario(scenario)
 
     def end(self):
         self.stream.write(format_summary('feature', self.feature_summary))
@@ -47,3 +49,12 @@ class SummaryReporter(Reporter):
         self.stream.write(format_summary('step', self.step_summary))
         timings = int(self.duration / 60), self.duration % 60
         self.stream.write('Took %dm%02.1fs\n' % timings)
+
+    def process_scenario(self, scenario):
+        self.scenario_summary[scenario.status or 'skipped'] += 1
+        for step in scenario:
+            self.step_summary[step.status or 'skipped'] += 1
+
+    def process_scenario_outline(self, scenario_outline):
+        for scenario in scenario_outline.scenarios:
+            self.process_scenario(scenario)
