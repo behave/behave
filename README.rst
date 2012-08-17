@@ -64,6 +64,19 @@ Download from http://pypi.python.org/pypi/behave
 Version History
 ---------------
 
+Version 1.2.0 - August 18, 2012
+
+* Changed step name provided in snippets to avoid issues with the @step
+  decorator.
+* Use setup to create console scripts.
+* Fixed installation on Windows.
+* Fix ANSI escape sequences for cursor movement and text colourisation.
+* Fixes for various command-line argument issues.
+* Only print snippets once per unique step.
+* Reworked logging capture.
+* Fixes for dry-run mode.
+* General fixes.
+
 Version 1.1.0 - January 23, 2012
 
 * Context variable now contains current configuration.
