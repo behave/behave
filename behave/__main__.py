@@ -102,7 +102,8 @@ def main():
         msg = "\nYou can implement step definitions for undefined steps with "
         msg += "these snippets:\n\n"
         printed = set()
-        for step in runner.undefined:
+        for step in set(runner.undefined):
+            print repr(step)
             if step in printed:
                 continue
             printed.add(step)
