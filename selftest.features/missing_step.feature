@@ -40,13 +40,13 @@ Feature: Show missing Step Definitions
         """
         You can implement step definitions for undefined steps with these snippets:
         @given(u'I use an unknown step')
-        def step(context):
+        def impl(context):
             assert False
         @when(u'I use an unknown step')
-        def step(context):
+        def impl(context):
             assert False
         @then(u'I use an unknown step')
-        def step(context):
+        def impl(context):
             assert False
         """
 
@@ -65,13 +65,13 @@ Feature: Show missing Step Definitions
         """
         You can implement step definitions for undefined steps with these snippets:
         @given(u'I use an unknown step')
-        def step(context):
+        def impl(context):
             assert False
         """
     But the command output should not contain:
         """
         @when(u'I use an unknown step')
-        def step(context):
+        def impl(context):
             assert False
         """
 
@@ -91,12 +91,12 @@ Feature: Show missing Step Definitions
         """
         You can implement step definitions for undefined steps with these snippets:
         @when(u'I use an unknown step')
-        def step(context):
+        def impl(context):
             assert False
         """
     But the command output should not contain:
         """
         @then(u'I use an unknown step')
-        def step(context):
+        def impl(context):
             assert False
         """

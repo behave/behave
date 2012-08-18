@@ -21,7 +21,7 @@ setup(
     version=VERSION,
     description='behave is behaviour-driven development, Python style',
     long_description=description,
-    author='Benno Rice and Richard Jones, patched by JE',
+    author='Benno Rice and Richard Jones, corrected/extended by JE',
     author_email='behave-users@googlegroups.com',
     url='http://github.com/jeamland/behave',
     packages=find_packages(),

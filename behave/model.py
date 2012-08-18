@@ -5,6 +5,10 @@
 #
 # E0202:397,4:Scenario.status: An attribute affected in behave.model line 446 hide this method
 # E0202:569,4:ScenarioOutline.status: An attribute affected in behave.model line 446 hide this method
+#
+# XXX-JE-FIXES:
+#  * Avoid using mutable datatypes as default values (sequence=[], ...)
+#  * Ctor: Explicitly init/call baseclass
 
 from __future__ import with_statement
 
@@ -754,6 +758,12 @@ class Step(BasicStatement, Replayable):
 
     def __repr__(self):
         return '<%s "%s">' % (self.step_type, self.name)
+
+    def __eq__(self, other):
+        return (self.step_type, self.name) == (other.step_type, other.name)
+
+    def __hash__(self):
+        return hash(self.step_type) + hash(self.name)
 
     def set_values(self, table_row):
         result = copy.deepcopy(self)

@@ -17,8 +17,9 @@ import sys
 import warnings
 from mock import Mock, patch
 from nose.tools import *
-from behave import runner
+from behave import model, runner, step_registry
 from behave.configuration import ConfigError
+from behave.log_capture import LoggingCapture
 import unittest
 from test.testutil_tempfile import named_temporary_file
 

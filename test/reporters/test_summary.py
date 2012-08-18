@@ -5,10 +5,10 @@
 #   W0401   Wildcard import
 #   W0614   Unused import ... from wildcard import
 
-from mock import Mock, MagicMock, patch
+from mock import Mock, patch
 from nose.tools import *
-from behave.reporter.summary import SummaryReporter, format_summary
 from behave.model import ScenarioOutline, Scenario
+from behave.reporter.summary import SummaryReporter, format_summary
 import unittest
 
 class TestFormatStatus(unittest.TestCase):
@@ -159,6 +159,8 @@ class TestSummaryReporter(unittest.TestCase):
             'skipped': 2,
             'untested': 0,
         }
+
+        eq_(format_summary.call_args_list[1][0], ('scenario', expected))
 
     @patch('behave.reporter.summary.format_summary')
     def test_scenario_outline_status_is_collected_and_reported(self, format_summary):

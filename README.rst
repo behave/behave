@@ -29,15 +29,15 @@ file called "example.py" containing::
   from behave import *
 
   @given('we have behave installed')
-  def step(context):
+  def impl(context):
       pass
 
   @when('we implement a test')
-  def step(context):
+  def impl(context):
       assert True is not False
 
   @then('behave will test it for us!')
-  def step(context):
+  def impl(context):
       assert context.failed is False
 
 Run behave::
@@ -81,7 +81,15 @@ IMPROVED:
   * Add coverage support to improve quality (better detect missing test areas).
   * Add "DEVELOP.txt" to describe common developer tasks/usecases.
 
+CHANGES:
+
+  * Selective merge of latest changes/fixes from master repository (2012-08-17).
+
 FIXES:
+
+  * FIX issue #59: Fatal error when using --format=json
+  * FIX issue #56: Use function names other than 'step(...)' in tutorial
+  * FIX issue #53: Conflict with @step decorator (similar tp #56)
 
   * FIX issue #46: behave returns 0 (SUCCESS) even in case of test failures
   * FIX issue #45: Parser removes empty lines in multiline text argument

@@ -116,14 +116,14 @@ def main():
         msg = "\nYou can implement step definitions for undefined steps with "
         msg += "these snippets:\n\n"
         printed = set()
-        for step in runner.undefined:
-            step_id = "%s:%s" % (step.step_type, step.name)
-            if step_id in printed:
+        for step in set(runner.undefined):
+            print repr(step)
+            if step in printed:
                 continue
-            printed.add(step_id)
+            printed.add(step)
 
             msg += "@" + step.step_type + "(" + repr(step.name) + ")\n"
-            msg += "def step(context):\n"
+            msg += "def impl(context):\n"
             msg += "    assert False\n\n"
 
         stream.write(escapes['undefined'] + msg + escapes['reset'])
