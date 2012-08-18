@@ -89,7 +89,7 @@ FIXES:
 
   * FIX issue #59: Fatal error when using --format=json
   * FIX issue #56: Use function names other than 'step(...)' in tutorial
-  * FIX issue #53: Conflict with @step decorator (similar tp #56)
+  * FIX issue #53: Conflict with @step decorator (similar to #56)
 
   * FIX issue #46: behave returns 0 (SUCCESS) even in case of test failures
   * FIX issue #45: Parser removes empty lines in multiline text argument
