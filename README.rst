@@ -64,6 +64,11 @@ Download from http://pypi.python.org/pypi/behave
 Version History
 ---------------
 
+Version 1.2.1 - August 19, 2012
+
+* Fixes for JSON output.
+* Move summary reporter and snippet output to stderr.
+
 Version 1.2.0 - August 18, 2012
 
 * Changed step name provided in snippets to avoid issues with the @step
