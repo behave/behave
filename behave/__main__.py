@@ -111,8 +111,8 @@ def main():
             msg += "def impl(context):\n"
             msg += "    assert False\n\n"
 
-        stream.write(escapes['undefined'] + msg + escapes['reset'])
-        stream.flush()
+        sys.stderr.write(escapes['undefined'] + msg + escapes['reset'])
+        sys.stderr.flush()
 
     if failed:
         sys.exit(1)
