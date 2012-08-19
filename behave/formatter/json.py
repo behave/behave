@@ -18,6 +18,7 @@ class JSONFormatter(Formatter):
 
         self._gherkin_object = None
         self._step_index = 0
+        self._features = []
 
     def uri(self, uri):
         pass
@@ -131,7 +132,10 @@ class JSONFormatter(Formatter):
     def eof(self):
         if not self.stream:
             return
-        self.stream.write(json.dumps(self._gherkin_object))
+        self._features.append(self._gherkin_object)
+
+    def close(self):
+        self.stream.write(json.dumps({'features': self._features}))
 
     def _add_feature_element(self, element):
         if 'elements' not in self._gherkin_object:
