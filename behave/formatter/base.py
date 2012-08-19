@@ -38,4 +38,3 @@ class Formatter(object):
 
     def close(self):
         pass
-
