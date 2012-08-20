@@ -107,7 +107,7 @@ def main():
                 continue
             printed.add(step)
 
-            msg += "@" + step.step_type + "(" + repr(step.name) + ")\n"
+            msg += "@" + step.step_type + "(u'" + step.name + "')\n"
             msg += "def impl(context):\n"
             msg += "    assert False\n\n"
 
