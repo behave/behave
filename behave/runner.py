@@ -497,7 +497,7 @@ class Runner(object):
 
             failed = feature.run(self)
 
-            self.formatter.eof()
+            self.formatter.close()
             stream.write('\n')
             for reporter in self.config.reporters:
                 reporter.feature(feature)

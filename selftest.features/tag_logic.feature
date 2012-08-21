@@ -40,20 +40,29 @@ Feature: Tag logic
     When I run "behave -c -f plain -t @one -t @three features/tagulicious.feature"
     Then it should pass with:
       """
+      1 feature passed, 0 failed, 0 skipped
+      1 scenario passed, 0 failed, 3 skipped
+      1 step passed, 0 failed, 3 skipped, 0 undefined
+      """
+    And the command output should contain:
+      """
       Feature: Sample
          Scenario: Example
              Given passing ... passed
          Scenario: Another Example
          Scenario: Yet another Example
          Scenario: And yet another Example
-      1 feature passed, 0 failed, 0 skipped
-      1 scenario passed, 0 failed, 3 skipped
-      1 step passed, 0 failed, 3 skipped, 0 undefined
       """
 
   Scenario: ORing tags
     When I run "behave -c -f plain -t @one,@three features/tagulicious.feature"
     Then it should pass with:
+        """
+        1 feature passed, 0 failed, 0 skipped
+        3 scenarios passed, 0 failed, 1 skipped
+        3 steps passed, 0 failed, 1 skipped, 0 undefined
+        """
+    And the command output should contain:
         """
         Feature: Sample
            Scenario: Example
@@ -63,7 +72,4 @@ Feature: Tag logic
            Scenario: Yet another Example
                Given passing ... passed
            Scenario: And yet another Example
-        1 feature passed, 0 failed, 0 skipped
-        3 scenarios passed, 0 failed, 1 skipped
-        3 steps passed, 0 failed, 1 skipped, 0 undefined
         """

@@ -20,12 +20,14 @@ from behave.formatter.base import Formatter
 class JSONFormatter(Formatter):
     name = 'json'
     description = 'JSON dump of test run'
+    dumps_kwargs = {}
 
     def __init__(self, stream, config):
         super(JSONFormatter, self).__init__(stream, config)
 
         self._gherkin_object = None
         self._step_index = 0
+        self._features = []
 
     def uri(self, uri):
         pass
@@ -139,7 +141,11 @@ class JSONFormatter(Formatter):
     def eof(self):
         if not self.stream:
             return
-        self.stream.write(json_module.dumps(self._gherkin_object, indent=4))
+        self._features.append(self._gherkin_object)
+
+    def close(self):
+        obj = {'features': self._features}
+        self.stream.write(json_module.dumps(obj, **self.dumps_kwargs))
 
     def _add_feature_element(self, element):
         if 'elements' not in self._gherkin_object:
@@ -148,3 +154,9 @@ class JSONFormatter(Formatter):
 
     def _feature_element(self):
         return self._gherkin_object['elements'][-1]
+
+
+class PrettyJSONFormatter(JSONFormatter):
+    name = 'json-pretty'
+    description = 'JSON dump of test run (human readable)'
+    dumps_kwargs = {'indent': 2}

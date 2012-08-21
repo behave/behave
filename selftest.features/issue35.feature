@@ -40,21 +40,29 @@ Feature: Issue #35 Plain Formatter shows wrong steps when tag-selection is used
     When I run "behave -c -f plain --tags=@one features/issue35_1.feature"
     Then it should pass with:
       """
+      1 feature passed, 0 failed, 0 skipped
+      1 scenario passed, 0 failed, 1 skipped
+      3 steps passed, 0 failed, 3 skipped, 0 undefined
+      """
+    And the command output should contain:
+      """
       Feature: Using Tags with Features and Scenarios
          Scenario: Weaker opponent
              Given the ninja has a third level black-belt ... passed
               When attacked by a samurai ... passed
               Then the ninja should engage the opponent ... passed
          Scenario: Stronger opponent
-
-      1 feature passed, 0 failed, 0 skipped
-      1 scenario passed, 0 failed, 1 skipped
-      3 steps passed, 0 failed, 3 skipped, 0 undefined
       """
 
   Scenario: Select Second Scenario with Tag
     When I run "behave -c -f plain --tags=@two features/issue35_1.feature"
     Then it should pass with:
+      """
+      1 feature passed, 0 failed, 0 skipped
+      1 scenario passed, 0 failed, 1 skipped
+      3 steps passed, 0 failed, 3 skipped, 0 undefined
+      """
+    And the command output should contain:
       """
       Feature: Using Tags with Features and Scenarios
          Scenario: Weaker opponent
@@ -62,9 +70,5 @@ Feature: Issue #35 Plain Formatter shows wrong steps when tag-selection is used
              Given the ninja has a third level black-belt ... passed
               When attacked by Chuck Norris ... passed
               Then the ninja should run for his life ... passed
-
-      1 feature passed, 0 failed, 0 skipped
-      1 scenario passed, 0 failed, 1 skipped
-      3 steps passed, 0 failed, 3 skipped, 0 undefined
       """
 

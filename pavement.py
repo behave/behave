@@ -205,9 +205,10 @@ def clean():
     """Cleanup the project workspace."""
 
     # -- STEP: Remove build directories.
-    path("build").rmtree()
-    path("dist").rmtree()
-    path(".tox").rmtree()
+    path("build").rmtree()      #< python setup temporary build dir.
+    path("dist").rmtree()       #< python setup temporary distribution dir.
+    path(".tox").rmtree()       #< tox build subtree.
+    path(".cache").rmtree()     #< py.test cache (failed tests).
     path("tmp").rmtree()
     path("__WORKDIR__").rmtree()
 
