@@ -102,12 +102,18 @@ def main():
         msg = u"\nYou can implement step definitions for undefined steps with "
         msg += u"these snippets:\n\n"
         printed = set()
+
+        if sys.version_info[0] == 3:
+            string_prefix = "('"
+        else:
+            string_prefix = u"(u'"
+
         for step in set(runner.undefined):
             if step in printed:
                 continue
             printed.add(step)
 
-            msg += u"@" + step.step_type + "(u'" + step.name + u"')\n"
+            msg += u"@" + step.step_type + string_prefix + step.name + u"')\n"
             msg += u"def impl(context):\n"
             msg += u"    assert False\n\n"
 
