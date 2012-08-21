@@ -60,7 +60,8 @@ class TestFormatStatus(unittest.TestCase):
         assert 'undefined' not in output
 
 class TestSummaryReporter(unittest.TestCase):
-    def test_duration_is_totalled_up_and_outputted(self):
+    @patch('sys.stderr')
+    def test_duration_is_totalled_up_and_outputted(self, stderr):
         features = [Mock(), Mock(), Mock(), Mock()]
         features[0].duration = 1.9
         features[0].status = 'passed'
@@ -83,15 +84,17 @@ class TestSummaryReporter(unittest.TestCase):
         eq_(round(reporter.duration, 3), 12.400)
 
         reporter.end()
-        output = config.output.write.call_args_list[-1][0][0]
+        output = stderr.write.call_args_list[-1][0][0]
         minutes = int(reporter.duration / 60)
         seconds = reporter.duration % 60
 
         assert '%dm' % (minutes,) in output
         assert '%02.1f' % (seconds,) in output
 
+    @patch('sys.stderr')
     @patch('behave.reporter.summary.format_summary')
-    def test_feature_status_is_collected_and_reported(self, format_summary):
+    def test_feature_status_is_collected_and_reported(self, format_summary, 
+                                                      stderr):
         # pylint: disable=W0621
         #   W0621   Redefining name ... from outer scope (format_summary)
         features = [Mock(), Mock(), Mock(), Mock(), Mock()]
@@ -127,8 +130,10 @@ class TestSummaryReporter(unittest.TestCase):
 
         eq_(format_summary.call_args_list[0][0], ('feature', expected))
 
+    @patch('sys.stderr')
     @patch('behave.reporter.summary.format_summary')
-    def test_scenario_status_is_collected_and_reported(self, format_summary):
+    def test_scenario_status_is_collected_and_reported(self, format_summary, 
+												       stderr):
         # pylint: disable=W0621
         #   W0621   Redefining name ... from outer scope (format_summary)
         feature = Mock()
@@ -163,7 +168,9 @@ class TestSummaryReporter(unittest.TestCase):
         eq_(format_summary.call_args_list[1][0], ('scenario', expected))
 
     @patch('behave.reporter.summary.format_summary')
-    def test_scenario_outline_status_is_collected_and_reported(self, format_summary):
+    @patch('sys.stderr')
+    def test_scenario_outline_status_is_collected_and_reported(self, stderr, 
+                                                              format_summary):
         # FIX: issue40
         # ENSURE: ScenarioOutline's scenarios are walked and collected.
         feature = Mock()
@@ -204,8 +211,10 @@ class TestSummaryReporter(unittest.TestCase):
 
         eq_(format_summary.call_args_list[1][0], ('scenario', expected))
 
+    @patch('sys.stderr')
     @patch('behave.reporter.summary.format_summary')
-    def test_step_status_is_collected_and_reported(self, format_summary):
+    def test_step_status_is_collected_and_reported(self, format_summary,
+                                                   stderr):
         # pylint: disable=W0621
         #   W0621   Redefining name ... from outer scope (format_summary)
         feature = Mock()

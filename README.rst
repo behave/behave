@@ -64,11 +64,12 @@ Download from http://pypi.python.org/pypi/behave
 Version History
 ---------------
 
-Version UNRELEASED
+Version 1.2.2 - August 21, 2012
 
 NEW:
 
   * "progress" formatter added.
+  * "json-pretty" formatter added (master-repo).
   * Add "selftest.features/" to increase quality, based on cucumber idea.
     Simplifies specifying acceptance tests by building a temporary workdir
     and running behave against it.
@@ -83,14 +84,18 @@ IMPROVED:
 
 CHANGES:
 
+  * Selective merge of release-1.2.2 from master repository (2012-08-20).
   * Selective merge of latest changes/fixes from master repository (2012-08-17).
+
+OPEN:
+
+  * issue #60: JSONFormatter has several problems.
 
 FIXES:
 
   * FIX issue #59: Fatal error when using --format=json
   * FIX issue #56: Use function names other than 'step(...)' in tutorial
   * FIX issue #53: Conflict with @step decorator (similar to #56)
-
   * FIX issue #46: behave returns 0 (SUCCESS) even in case of test failures
   * FIX issue #45: Parser removes empty lines in multiline text argument
   * FIX issue #44: Parser removes shell-like comment lines in multiline text argument

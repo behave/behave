@@ -29,6 +29,7 @@ class TestConfiguration(unittest.TestCase):
         with named_temporary_file() as f:
             f.write(TEST_CONFIG)
             f.close()
+
             d = configuration.read_configuration(f.name)
             eq_(d['outfile'], '/tmp/spam')
             eq_(d['format'], ['pretty', 'tag-counter'])

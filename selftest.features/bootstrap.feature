@@ -61,10 +61,13 @@ Feature: Bootstrapping a new project
     When I run "behave -c -f plain"
     Then it should fail with:
       """
-      Feature: Simplistic2
-         Scenario: One
-             Given I have an unknown step ... undefined
       1 feature passed, 0 failed, 0 skipped
       1 scenario passed, 0 failed, 0 skipped
       0 steps passed, 0 failed, 0 skipped, 1 undefined
+      """
+    And the command output should contain:
+      """
+      Feature: Simplistic2
+         Scenario: One
+             Given I have an unknown step ... undefined
       """

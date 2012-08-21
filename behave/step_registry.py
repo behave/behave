@@ -27,7 +27,7 @@ class StepRegistry(object):
 
     def find_match(self, step):
         candidates = self.steps[step.step_type]
-        if step.step_type != 'step':
+        if step.step_type is not 'step':
             candidates += self.steps['step']
 
         for matcher in candidates:

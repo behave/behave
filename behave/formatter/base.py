@@ -39,3 +39,6 @@ class Formatter(object):
 
     def eof(self):
         pass
+
+    def close(self):
+        pass

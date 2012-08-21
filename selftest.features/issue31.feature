@@ -10,5 +10,6 @@ Feature: Issue #31 "behave --format help" raises an error
       Available formatters:
       plain: Very basic formatter with maximum compatibility
       json: JSON dump of test run
+      json-pretty: JSON dump of test run (human readable)
       pretty: Standard colourised pretty formatter
       """

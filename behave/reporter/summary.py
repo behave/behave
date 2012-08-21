@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import sys
+
 from behave.model import ScenarioOutline
 from behave.reporter.base import Reporter
 
@@ -25,7 +27,9 @@ def format_summary(statement_type, summary):
 class SummaryReporter(Reporter):
     def __init__(self, config):
         super(SummaryReporter, self).__init__(config)
-        self.stream = self.config.output
+
+        self.stream = sys.stderr
+
         self.feature_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
                                 'untested': 0}
         self.scenario_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
