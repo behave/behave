@@ -64,6 +64,12 @@ Download from http://pypi.python.org/pypi/behave
 Version History
 ---------------
 
+Version 1.2.2 - August 21, 2012
+
+* Fix for an error when an assertion message contains Unicode characters.
+* Don't repr() the step text in snippets to avoid turning Unicode text into
+  backslash hell.
+
 Version 1.2.1 - August 19, 2012
 
 * Fixes for JSON output.
