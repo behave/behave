@@ -99,17 +99,17 @@ def main():
         sys.exit(str(e))
 
     if config.show_snippets and runner.undefined:
-        msg = "\nYou can implement step definitions for undefined steps with "
-        msg += "these snippets:\n\n"
+        msg = u"\nYou can implement step definitions for undefined steps with "
+        msg += u"these snippets:\n\n"
         printed = set()
         for step in set(runner.undefined):
             if step in printed:
                 continue
             printed.add(step)
 
-            msg += "@" + step.step_type + "(u'" + step.name + "')\n"
-            msg += "def impl(context):\n"
-            msg += "    assert False\n\n"
+            msg += u"@" + step.step_type + "(u'" + step.name + u"')\n"
+            msg += u"def impl(context):\n"
+            msg += u"    assert False\n\n"
 
         sys.stderr.write(escapes['undefined'] + msg + escapes['reset'])
         sys.stderr.flush()
