@@ -48,6 +48,10 @@ class JSONFormatter(Formatter):
         })
         self._step_index = 0
 
+        # -- ADD BACKGROUND STEPS: Support *.feature file regeneration.
+        for step_ in background.steps:
+            self.step(step_)
+
     def scenario(self, scenario):
         self._add_feature_element({
             'keyword': scenario.keyword,
@@ -146,6 +150,7 @@ class JSONFormatter(Formatter):
     def close(self):
         obj = {'features': self._features}
         self.stream.write(json_module.dumps(obj, **self.dumps_kwargs))
+        return
 
     def _add_feature_element(self, element):
         if 'elements' not in self._gherkin_object:
@@ -159,4 +164,4 @@ class JSONFormatter(Formatter):
 class PrettyJSONFormatter(JSONFormatter):
     name = 'json-pretty'
     description = 'JSON dump of test run (human readable)'
-    dumps_kwargs = {'indent': 2}
+    dumps_kwargs = {'indent': 2, 'sort_keys': True }
