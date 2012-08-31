@@ -64,6 +64,23 @@ Download from http://pypi.python.org/pypi/behave
 Version History
 ---------------
 
+Next Version 1.2.2 - UNRELEASED
+
+FIX:
+
+  * FIX issue #67: JSON formatter cannot serialize tables.
+  * FIX issue #65: unrecognized --tag-help argument.
+  * FIX issue #64: Exit status not set to 1 even there are failures in certain cases (related to: #52)
+  * FIX issue #63: 'ScenarioOutline' object has no attribute 'stdout'.
+  * FIX issue #62: --format=json: Background steps are missing.
+
+OPEN:
+
+  * issue #66: context.table and context.text are not cleared.
+  * issue #60: JSONFormatter has several problems (invalid JSON format).
+  * issue #54: Include step in JUnit/XML <failure> tag.
+  * issue #47: Formatter processing chain is broken.
+
 Version 1.2.2 - August 21, 2012
 
 NEW:
