@@ -151,7 +151,6 @@ class JSONFormatter(Formatter):
     def close(self):
         obj = {'features': self._features}
         self.stream.write(json_module.dumps(obj, **self.dumps_kwargs))
-        return
 
     def _add_feature_element(self, element):
         if 'elements' not in self._gherkin_object:
@@ -165,4 +164,4 @@ class JSONFormatter(Formatter):
 class PrettyJSONFormatter(JSONFormatter):
     name = 'json-pretty'
     description = 'JSON dump of test run (human readable)'
-    dumps_kwargs = {'indent': 2, 'sort_keys': True }
+    dumps_kwargs = { 'indent': 2, 'sort_keys': True }
