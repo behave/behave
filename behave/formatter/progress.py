@@ -5,7 +5,15 @@
 from behave.formatter.base import Formatter
 import os.path
 
-class ProgressFormatter(Formatter):
+# -----------------------------------------------------------------------------
+# CLASS: ProgressFormatterBase
+# -----------------------------------------------------------------------------
+class ProgressFormatterBase(Formatter):
+    """
+    Provides formatter base class for different variants of progress formatters.
+    A progress formatter show an abbreviated, compact dotted progress bar,
+    similar to unittest output (in terse mode).
+    """
     # -- MAP: step.status to short dot_status representation.
     dot_status = {
         "passed":    ".",
@@ -17,7 +25,7 @@ class ProgressFormatter(Formatter):
     }
 
     def __init__(self, stream, config):
-        super(ProgressFormatter, self).__init__(stream, config)
+        super(ProgressFormatterBase, self).__init__(stream, config)
         self.steps = []
         self.failures = []
         self.current_feature  = None
@@ -94,7 +102,10 @@ class ProgressFormatter(Formatter):
                     self.stream.write(u"exception: %s\n" % result.exception)
             self.stream.write(u"{seperator}\n".format(seperator="-"*80))
 
-class ScenarioProgressFormatter(ProgressFormatter):
+# -----------------------------------------------------------------------------
+# CLASS: ScenarioProgressFormatter
+# -----------------------------------------------------------------------------
+class ScenarioProgressFormatter(ProgressFormatterBase):
     """
     Report dotted progress for each scenario similar to unittest.
     """
@@ -117,7 +128,10 @@ class ScenarioProgressFormatter(ProgressFormatter):
         self.stream.write(dot_status)
 
 
-class StepProgressFormatter(ProgressFormatter):
+# -----------------------------------------------------------------------------
+# CLASS: StepProgressFormatter
+# -----------------------------------------------------------------------------
+class StepProgressFormatter(ProgressFormatterBase):
     """
     Report dotted progress for each step similar to unittest.
     """
