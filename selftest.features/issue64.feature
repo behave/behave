@@ -77,3 +77,21 @@ Feature: Issue #64 Exit status not set to 1 even there are failures in certain c
       0 features passed, 1 failed, 0 skipped
       2 scenarios passed, 1 failed, 0 skipped
       """
+
+  Scenario: Failing in First and Last Scenario
+    Given a file named "features/issue64_case4.feature" with:
+      """
+      Feature: Failing in First and Last Scenario
+        Scenario:
+          Given failing
+        Scenario:
+          Given passing
+        Scenario:
+          Given failing
+      """
+    When I run "behave --format=plain features/issue64_case4.feature"
+    Then it should fail with:
+      """
+      0 features passed, 1 failed, 0 skipped
+      1 scenario passed, 2 failed, 0 skipped
+      """
