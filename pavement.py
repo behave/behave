@@ -211,6 +211,7 @@ def clean():
     path(".cache").rmtree()     #< py.test cache (failed tests).
     path("tmp").rmtree()
     path("__WORKDIR__").rmtree()
+    path("test_results").rmtree()
 
     # -- STEP: Remove temporary directory subtrees.
     patterns = [
