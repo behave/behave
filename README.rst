@@ -68,16 +68,13 @@ Next Version 1.2.2 - UNRELEASED
 
 FIX:
 
+  * FIX issue #69: JUnitReporter: Fault when processing ScenarioOutlines with failing steps
   * FIX issue #67: JSON formatter cannot serialize tables.
   * FIX issue #66: context.table and context.text are not cleared.
   * FIX issue #65: unrecognized --tag-help argument.
   * FIX issue #64: Exit status not set to 1 even there are failures in certain cases (related to: #52)
   * FIX issue #63: 'ScenarioOutline' object has no attribute 'stdout'.
   * FIX issue #62: --format=json: Background steps are missing.
-
-PENDING:
-
-  * FIX issue #69: JUnitReporter: Fault when processing ScenarioOutlines with failing steps
 
 OPEN:
 

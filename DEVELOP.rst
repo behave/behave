@@ -1,11 +1,6 @@
 DEVELOPMENT
 ==============================================================================
 
-SEE ALSO:
-  * http://www.blueskyonmars.com/projects/paver/
-  * http://nedbatchelder.com/code/coverage/
-  * http://tox.testrun.org/
-
 
 Installation
 ------------------------------------------------------------------------------
@@ -42,6 +37,9 @@ RELATED FILES:
   * pavement.py
   * paver_ext/*.py
 
+SEE ALSO:
+  * http://www.blueskyonmars.com/projects/paver/
+
 
 Running Tests
 ------------------------------------------------------------------------------
@@ -66,15 +64,23 @@ If you want to run the feature tests, use::
 
     paver feature_test
 
-or::
+To run all tests (unittests and feature tests) use::
 
     paver test
 
-to run all tests (unittests and feature tests).
+To run the selftests use::
+
+    bin/behave selftest.features/
+
 
 RELATED FILES:
   * test/test_*.py                  -- Unit tests.
   * tools/test-features/*.feature   -- Feature tests.
+  * selftest.features/*.feature     -- Selftests by using behave.
+
+SEE ALSO:
+  * http://nose.readthedocs.org/en/latest/
+  * http://pytest.org/
 
 
 Code Coverage
@@ -92,16 +98,24 @@ RELATED FILES:
   * .coveragerc             -- Coverage configuration file.
   * build/coverage.html/    -- HTML-based coverage report.
 
+SEE ALSO:
+  * http://nedbatchelder.com/code/coverage/
+
 
 Build the Documentation
 ------------------------------------------------------------------------------
 
-::
+To build the sphinx-based documentation, run the following command::
+
     paver docs
 
 
 RELATED FILES:
+  * docs/*.rst              -- Documentation sources.
   * build/docs/html/        -- HTML-based documentation.
+
+SEE ALSO:
+  * http://sphinx.pocoo.org/
 
 
 Running tox
@@ -147,3 +161,6 @@ RELATED FILES:
   * downloads/simple/   -- Local python package index.
   * tox.ini             -- Tox configuration file.
   * .tox/               -- Tox workspace and virtual environments.
+
+SEE ALSO:
+  * http://tox.testrun.org/
