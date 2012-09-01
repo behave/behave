@@ -139,8 +139,10 @@ def step_command_output_should_contain(context):
     expected_output = context.text.format(__WORKDIR__=context.workdir,
                                           __CWD__=os.getcwd())
     command_output  = context.command_result.output
-    expected_output = command_util.text_remove_empty_lines(expected_output.strip())
-    actual_output   = command_util.text_remove_empty_lines(command_output.strip())
+    # XXX expected_output = command_util.text_remove_empty_lines(expected_output.strip())
+    # XXX actual_output   = command_util.text_remove_empty_lines(command_output.strip())
+    expected_output = command_util.text_normalize(expected_output.strip())
+    actual_output   = command_util.text_normalize(command_output.strip())
     if DEBUG:
         print("expected:\n{0}".format(expected_output))
         print("actual:\n{0}".format(actual_output))
@@ -161,8 +163,10 @@ def step_command_output_should_not_contain(context):
     expected_output = context.text.format(__WORKDIR__=context.workdir,
                                           __CWD__=os.getcwd())
     command_output  = context.command_result.output
-    expected_output = command_util.text_remove_empty_lines(expected_output.strip())
-    actual_output   = command_util.text_remove_empty_lines(command_output.strip())
+    # XXX expected_output = command_util.text_remove_empty_lines(expected_output.strip())
+    # XXX actual_output   = command_util.text_remove_empty_lines(command_output.strip())
+    expected_output = command_util.text_normalize(expected_output.strip())
+    actual_output   = command_util.text_normalize(command_output.strip())
     if DEBUG:
         print("expected:\n{0}".format(expected_output))
         print("actual:\n{0}".format(actual_output))
