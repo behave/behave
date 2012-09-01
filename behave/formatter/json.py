@@ -48,6 +48,10 @@ class JSONFormatter(Formatter):
         })
         self._step_index = 0
 
+        # -- ADD BACKGROUND STEPS: Support *.feature file regeneration.
+        for step_ in background.steps:
+            self.step(step_)
+
     def scenario(self, scenario):
         self._add_feature_element({
             'keyword': scenario.keyword,
@@ -69,6 +73,14 @@ class JSONFormatter(Formatter):
         })
         self._step_index = 0
 
+    @classmethod
+    def make_table(cls, table):
+        table_data = {
+            'headings': table.headings,
+            'rows': [ list(row) for row in table.rows ]
+        }
+        return table_data
+
     def examples(self, examples):
         e = {
             'keyword': examples.keyword,
@@ -77,10 +89,7 @@ class JSONFormatter(Formatter):
         }
 
         if examples.table:
-            e['table'] = {
-                'headings': examples.table.headings,
-                'rows': examples.table.rows,
-            }
+            e['table'] = self.make_table(examples.table)
 
         element = self._feature_element()
         element['examples'].append(e)
@@ -96,11 +105,7 @@ class JSONFormatter(Formatter):
         if step.text:
             s['text'] = step.text
         if step.table:
-            s['table'] = {
-                'headings': step.table.headings,
-                'rows': step.table.rows,
-            }
-
+            s['table'] = self.make_table(step.table)
         element = self._feature_element()
         element['steps'].append(s)
 
@@ -159,4 +164,4 @@ class JSONFormatter(Formatter):
 class PrettyJSONFormatter(JSONFormatter):
     name = 'json-pretty'
     description = 'JSON dump of test run (human readable)'
-    dumps_kwargs = {'indent': 2}
+    dumps_kwargs = { 'indent': 2, 'sort_keys': True }

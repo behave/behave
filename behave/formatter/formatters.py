@@ -14,7 +14,7 @@ def register(formatter):
 
 
 def list_formatters(stream):
-    for name in formatters:
+    for name in sorted(formatters):
         stream.write(u'%s: %s\n' % (name, formatters[name].description))
 
 
@@ -48,4 +48,5 @@ register(json.JSONFormatter)
 register(json.PrettyJSONFormatter)
 
 from behave.formatter import progress
-register(progress.ProgressFormatter)
+register(progress.ScenarioProgressFormatter)
+register(progress.StepProgressFormatter)

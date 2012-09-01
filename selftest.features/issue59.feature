@@ -20,7 +20,7 @@ Feature: Issue #59 Fatal error when using --format=json
           Given passing
       """
 
-  Scenario: Use option --format=json
+  Scenario: Use the JSONFormatter
     When I run "behave --format=json features/issue59_test.feature"
     Then it should pass with:
       """
