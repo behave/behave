@@ -32,9 +32,9 @@ Feature: Backtraces
         Scenario: Example  # features/failing_hard.feature:2
           Given failing    # features/steps/steps.py:3
             Traceback (most recent call last):
-              File "{__CWD__}/behave/model.py", line 805, in run
+              File "{__CWD__}/behave/model.py", line 804, in run
                 match.run(runner.context)
-              File "{__CWD__}/behave/model.py", line 1114, in run
+              File "{__CWD__}/behave/model.py", line 1113, in run
                 self.func(context, *args, **kwargs)
               File "{__WORKDIR__}/features/steps/steps.py", line 5, in step
                 raise RuntimeError("failing")
