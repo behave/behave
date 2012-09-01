@@ -190,6 +190,9 @@ class TestJson(FormatterTests):
 class TestProgress(FormatterTests):
     formatter_name = "progress"
 
+class TestProgress(FormatterTests):
+    formatter_name = "progress2"
+
 class TestTagCount(FormatterTests):
     formatter_name = 'plain'
 
