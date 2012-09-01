@@ -74,6 +74,10 @@ FIX:
   * FIX issue #63: 'ScenarioOutline' object has no attribute 'stdout'.
   * FIX issue #62: --format=json: Background steps are missing.
 
+PENDING:
+
+  * FIX issue #69: JUnitReporter: Fault when processing ScenarioOutlines with failing steps
+
 OPEN:
 
   * issue #66: context.table and context.text are not cleared.
