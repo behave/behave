@@ -21,4 +21,5 @@ __WORKDIR__/
 .ropeproject
 .tox/
 nosetests.xml
+test_results/
 tools/virtualenvs

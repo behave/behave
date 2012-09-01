@@ -405,6 +405,8 @@ class Scenario(TagStatement, Replayable):
         self.background = None
         self.feature    = None  #< REFER-TO: owner=Feature
         self._row       = None
+        self.stderr = None
+        self.stdout = None
 
     def __repr__(self):
         return '<Scenario "%s">' % self.name

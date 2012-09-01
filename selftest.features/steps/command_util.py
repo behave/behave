@@ -71,3 +71,13 @@ def text_remove_empty_lines(text):
     """
     lines = [ line.rstrip()  for line in text.splitlines()  if line.strip() ]
     return "\n".join(lines)
+
+def text_normalize(text):
+    """
+    Whitespace normalization:
+      - Strip empty lines
+      - Strip leading whitespace  in a line
+      - Strip trailing whitespace in a line
+    """
+    lines = [ line.strip()  for line in text.splitlines()  if line.strip() ]
+    return "\n".join(lines)
