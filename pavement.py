@@ -122,12 +122,14 @@ def feature_test(args):
     cmdopts = " ".join(cmdopts)
     args = args2
     if not cmdopts:
-        excluded_tags = "--tags=-xfail"
+        excluded_tags = "--tags=-xfail --tags=-not_supported"
         cmdopts = "--format=progress {0}".format(excluded_tags)
 
-    # -- RUN TESTS:
-    for arg in args:
-        behave(arg, cmdopts)
+    # -- RUN TESTS: All tests at once.
+    # for arg in args:
+    # behave(arg, cmdopts)
+    arg = " ".join(args)
+    behave(arg, cmdopts)
 
 
 # ----------------------------------------------------------------------------
@@ -211,6 +213,7 @@ def clean():
     path(".cache").rmtree()     #< py.test cache (failed tests).
     path("tmp").rmtree()
     path("__WORKDIR__").rmtree()
+    path("reports").rmtree()    #< JUnit TESTS-*.xml (default directory).
     path("test_results").rmtree()
 
     # -- STEP: Remove temporary directory subtrees.
@@ -247,6 +250,45 @@ def clean_all():
     call_task("clean")
 
 # ----------------------------------------------------------------------------
+# XML TASKS:
+# ----------------------------------------------------------------------------
+@task
+@consume_args
+def junit_validate(args):
+    """Validate JUnit report *.xml files with xmllint."""
+    if not args:
+        args = [ "reports" ]
+
+    # -- PREPROCESS ARGS:
+    files = []
+    for arg in args:
+        path_ = path(arg)
+        if "*" in arg:
+            files.extend(path(".").glob(arg))
+        elif path_.isdir():
+            files.extend(path_.glob("*.xml"))
+        else:
+            files.append(arg)
+
+    # -- VALIDATE XML FILES:
+    xml_schema = "contrib/junit.xml/behave_junit.xsd"
+    problematic = []
+    for arg in files:
+        try:
+            xmllint(arg, schema=xml_schema, options="")
+        except BuildFailure:
+            # -- KEEP-GOING: Collect failure and continue. Report errors later.
+            problematic.append(arg)
+
+    # -- SUMMARY:
+    if problematic:
+        message  = "{0} file(s) with XML validation errors.\n".format(len(problematic))
+        message += "PROBLEMATIC FILES:\n  {0}".format("\n  ".join(problematic))
+        raise BuildFailure(message)
+    else:
+        info("SUMMARY: {0} XML file(s) validated.".format(len(files)))
+
+# ----------------------------------------------------------------------------
 # PLATFORM-SPECIFIC TASKS: win32
 # ----------------------------------------------------------------------------
 #if sys.platform == "win32":
@@ -261,6 +303,7 @@ def clean_all():
 # UTILS:
 # ----------------------------------------------------------------------------
 BEHAVE   = path("bin/behave").normpath()
+XMLLINT  = "xmllint"
 
 def python(cmdline, cwd="."):
     """Execute a python script by using the current python interpreter."""
@@ -297,3 +340,12 @@ def sphinx_build(builder="html", cmdopts=""):
             .format(builder=builder, sourcedir=sourcedir,
                     destdir=destdir, opts=cmdopts)
     sh(cmd, cwd=options.sphinx.docroot)
+
+def xmllint(cmdline, options=None, schema=None):
+    if not options:
+        options = ""
+    if schema:
+        options = " --schema {0} {1}".format(schema, options)
+    cmd = "{xmllint} {options} {cmdline}".format(
+            xmllint=XMLLINT, options=options, cmdline=cmdline)
+    sh(cmd, capture=True) #< SILENT: Output only in case of BuildError
