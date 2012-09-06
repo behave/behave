@@ -457,6 +457,9 @@ class Runner(object):
             feature = parser.parse_file(os.path.abspath(filename),
                 language=self.config.lang)
 
+            if not feature:
+                continue
+
             self.features.append(feature)
             self.feature = feature
 
@@ -466,7 +469,6 @@ class Runner(object):
             failed = feature.run(self)
 
             self.formatter.eof()
-            stream.write('\n')
 
             [reporter.feature(feature) for reporter in self.config.reporters]
 
