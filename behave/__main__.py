@@ -99,20 +99,26 @@ def main():
         sys.exit(str(e))
 
     if config.show_snippets and runner.undefined:
-        msg = "\nYou can implement step definitions for undefined steps with "
-        msg += "these snippets:\n\n"
+        msg = u"\nYou can implement step definitions for undefined steps with "
+        msg += u"these snippets:\n\n"
         printed = set()
-        for step in runner.undefined:
+
+        if sys.version_info[0] == 3:
+            string_prefix = "('"
+        else:
+            string_prefix = u"(u'"
+
+        for step in set(runner.undefined):
             if step in printed:
                 continue
             printed.add(step)
 
-            msg += "@" + step.step_type + "(" + repr(step.name) + ")\n"
-            msg += "def step(context):\n"
-            msg += "    assert False\n\n"
+            msg += u"@" + step.step_type + string_prefix + step.name + u"')\n"
+            msg += u"def impl(context):\n"
+            msg += u"    assert False\n\n"
 
-        stream.write(escapes['undefined'] + msg + escapes['reset'])
-        stream.flush()
+        sys.stderr.write(escapes['undefined'] + msg + escapes['reset'])
+        sys.stderr.flush()
 
     if failed:
         sys.exit(1)

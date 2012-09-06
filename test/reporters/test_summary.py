@@ -1,6 +1,7 @@
 from mock import Mock, patch
 from nose.tools import *
 
+from behave.model import ScenarioOutline, Scenario
 from behave.reporter.summary import SummaryReporter, format_summary
 
 class TestFormatStatus(object):
@@ -52,7 +53,8 @@ class TestFormatStatus(object):
         assert 'undefined' not in output
 
 class TestSummaryReporter(object):
-    def test_duration_is_totalled_up_and_outputted(self):
+    @patch('sys.stderr')
+    def test_duration_is_totalled_up_and_outputted(self, stderr):
         features = [Mock(), Mock(), Mock(), Mock()]
         features[0].duration = 1.9
         features[0].status = 'passed'
@@ -74,15 +76,17 @@ class TestSummaryReporter(object):
         eq_(round(reporter.duration, 3), 12.400)
 
         reporter.end()
-        output = config.output.write.call_args_list[-1][0][0]
+        output = stderr.write.call_args_list[-1][0][0]
         minutes = int(reporter.duration / 60)
         seconds = reporter.duration % 60
 
         assert '%dm' % (minutes,) in output
         assert '%02.1f' % (seconds,) in output
 
+    @patch('sys.stderr')
     @patch('behave.reporter.summary.format_summary')
-    def test_feature_status_is_collected_and_reported(self, format_summary):
+    def test_feature_status_is_collected_and_reported(self, format_summary,
+                                                      stderr):
         features = [Mock(), Mock(), Mock(), Mock(), Mock()]
         features[0].duration = 1.9
         features[0].status = 'passed'
@@ -115,8 +119,10 @@ class TestSummaryReporter(object):
 
         eq_(format_summary.call_args_list[0][0], ('feature', expected))
 
+    @patch('sys.stderr')
     @patch('behave.reporter.summary.format_summary')
-    def test_scenario_status_is_collected_and_reported(self, format_summary):
+    def test_scenario_status_is_collected_and_reported(self, format_summary,
+                                                       stderr):
         feature = Mock()
         scenarios = [Mock(), Mock(), Mock(), Mock(), Mock()]
         scenarios[0].status = 'failed'
@@ -149,7 +155,51 @@ class TestSummaryReporter(object):
         eq_(format_summary.call_args_list[1][0], ('scenario', expected))
 
     @patch('behave.reporter.summary.format_summary')
-    def test_step_status_is_collected_and_reported(self, format_summary):
+    @patch('sys.stderr')
+    def test_scenario_outline_status_is_collected_and_reported(self, stderr,
+                                                               format_summary):
+        feature = Mock()
+        scenarios = [ ScenarioOutline(u"<string>", 0, u"scenario_outline", u"name"),
+                      Mock(), Mock(), Mock() ]
+        subscenarios = [ Mock(), Mock(), Mock(), Mock() ]
+        subscenarios[0].status = 'passed'
+        subscenarios[0].__iter__ = Mock(return_value=iter([]))
+        subscenarios[1].status = 'failed'
+        subscenarios[1].__iter__ = Mock(return_value=iter([]))
+        subscenarios[2].status = 'failed'
+        subscenarios[2].__iter__ = Mock(return_value=iter([]))
+        subscenarios[3].status = 'skipped'
+        subscenarios[3].__iter__ = Mock(return_value=iter([]))
+        scenarios[0]._scenarios = subscenarios
+        scenarios[1].status = 'failed'
+        scenarios[1].__iter__ = Mock(return_value=iter([]))
+        scenarios[2].status = 'skipped'
+        scenarios[2].__iter__ = Mock(return_value=iter([]))
+        scenarios[3].status = 'passed'
+        scenarios[3].__iter__ = Mock(return_value=iter([]))
+        feature.status = 'failed'
+        feature.duration = 12.4
+        feature.__iter__ = Mock(return_value=iter(scenarios))
+
+        config = Mock()
+        reporter = SummaryReporter(config)
+
+        reporter.feature(feature)
+        reporter.end()
+
+        expected = {
+            'passed': 2,
+            'failed': 3,
+            'skipped': 2,
+            'untested': 0,
+            }
+
+        eq_(format_summary.call_args_list[1][0], ('scenario', expected))
+
+    @patch('sys.stderr')
+    @patch('behave.reporter.summary.format_summary')
+    def test_step_status_is_collected_and_reported(self, format_summary,
+                                                   stderr):
         feature = Mock()
         scenario = Mock()
         steps = [Mock(), Mock(), Mock(), Mock(), Mock()]

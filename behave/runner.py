@@ -468,7 +468,7 @@ class Runner(object):
 
             failed = feature.run(self)
 
-            self.formatter.eof()
+            self.formatter.close()
 
             [reporter.feature(feature) for reporter in self.config.reporters]
 

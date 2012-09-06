@@ -29,15 +29,15 @@ file called "example.py" containing::
   from behave import *
 
   @given('we have behave installed')
-  def step(context):
+  def impl(context):
       pass
 
   @when('we implement a test')
-  def step(context):
+  def impl(context):
       assert True is not False
 
   @then('behave will test it for us!')
-  def step(context):
+  def impl(context):
       assert context.failed is False
 
 Run behave::
@@ -63,6 +63,30 @@ Download from http://pypi.python.org/pypi/behave
 ---------------
 Version History
 ---------------
+
+Version 1.2.2 - August 21, 2012
+
+* Fix for an error when an assertion message contains Unicode characters.
+* Don't repr() the step text in snippets to avoid turning Unicode text into
+  backslash hell.
+
+Version 1.2.1 - August 19, 2012
+
+* Fixes for JSON output.
+* Move summary reporter and snippet output to stderr.
+
+Version 1.2.0 - August 18, 2012
+
+* Changed step name provided in snippets to avoid issues with the @step
+  decorator.
+* Use setup to create console scripts.
+* Fixed installation on Windows.
+* Fix ANSI escape sequences for cursor movement and text colourisation.
+* Fixes for various command-line argument issues.
+* Only print snippets once per unique step.
+* Reworked logging capture.
+* Fixes for dry-run mode.
+* General fixes.
 
 Version 1.1.0 - January 23, 2012
 

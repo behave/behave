@@ -12,50 +12,115 @@ from behave.formatter.base import Formatter
 class JSONFormatter(Formatter):
     name = 'json'
     description = 'JSON dump of test run'
+    dumps_kwargs = {}
 
     def __init__(self, stream, config):
         super(JSONFormatter, self).__init__(stream, config)
 
         self._gherkin_object = None
         self._step_index = 0
+        self._features = []
 
     def uri(self, uri):
         pass
 
     def feature(self, feature):
-        self._gherkin_object = feature.to_dict()
+        self._gherkin_object = {
+            'keyword': feature.keyword,
+            'tags': list(feature.tags),
+            'description': feature.description,
+            'location': feature.location,
+        }
 
     def background(self, background):
-        self._add_feature_element(background.to_dict())
+        self._add_feature_element({
+            'keyword': background.keyword,
+            'location': background.location,
+            'steps': [],
+        })
         self._step_index = 0
 
     def scenario(self, scenario):
-        self._add_feature_element(scenario.to_dict())
+        self._add_feature_element({
+            'keyword': scenario.keyword,
+            'name': scenario.name,
+            'tags': scenario.tags,
+            'location': scenario.location,
+            'steps': [],
+        })
         self._step_index = 0
 
     def scenario_outline(self, scenario_outline):
-        self._add_feature_element(scenario_outline.to_dict())
+        self._add_feature_element({
+            'keyword': scenario_outline.keyword,
+            'name': scenario_outline.name,
+            'tags': scenario_outline.tags,
+            'location': scenario_outline.location,
+            'steps': [],
+            'examples': [],
+        })
         self._step_index = 0
 
     def examples(self, examples):
+        e = {
+            'keyword': examples.keyword,
+            'name': examples.name,
+            'location': examples.location,
+        }
+
+        if examples.table:
+            e['table'] = {
+                'headings': examples.table.headings,
+                'rows': examples.table.rows,
+            }
+
         element = self._feature_element()
-        if 'examples' not in element:
-            element['examples'] = []
-        element['examples'].append(examples.to_dict())
+        element['examples'].append(e)
 
     def step(self, step):
+        s = {
+            'keyword': step.keyword,
+            'step_type': step.step_type,
+            'name': step.name,
+            'location': step.location,
+        }
+
+        if step.text:
+            s['text'] = step.text
+        if step.table:
+            s['table'] = {
+                'headings': step.table.headings,
+                'rows': step.table.rows,
+            }
+
         element = self._feature_element()
-        if 'steps' not in element:
-            element['steps'] = []
-        element['steps'].append(step.to_dict())
+        element['steps'].append(s)
 
     def match(self, match):
+        args = []
+        for argument in match.arguments:
+            arg = {
+                'original': argument.original,
+                'value': argument.value,
+            }
+            if argument.name:
+                arg['name'] = argument.name
+            args.append(arg)
+
+        match = {
+            'location': match.location,
+            'arguments': args,
+        }
+
         steps = self._feature_element()['steps']
-        steps[self._step_index]['match'] = match.to_dict()
+        steps[self._step_index]['match'] = match
 
     def result(self, result):
         steps = self._feature_element()['steps']
-        steps[self._step_index]['result'] = result.to_dict()
+        steps[self._step_index]['result'] = {
+            'status': result.status,
+            'duration': result.duration,
+        }
         self._step_index += 1
 
     def embedding(self, mime_type, data):
@@ -68,7 +133,11 @@ class JSONFormatter(Formatter):
     def eof(self):
         if not self.stream:
             return
-        self.stream.write(json.dumps(self._gherkin_object))
+        self._features.append(self._gherkin_object)
+
+    def close(self):
+        obj = {'features': self._features}
+        self.stream.write(json.dumps(obj, **self.dumps_kwargs))
 
     def _add_feature_element(self, element):
         if 'elements' not in self._gherkin_object:
@@ -77,3 +146,9 @@ class JSONFormatter(Formatter):
 
     def _feature_element(self):
         return self._gherkin_object['elements'][-1]
+
+
+class PrettyJSONFormatter(JSONFormatter):
+    name = 'json-pretty'
+    description = 'JSON dump of test run (human readable)'
+    dumps_kwargs = {'indent': 2}

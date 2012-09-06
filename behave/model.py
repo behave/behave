@@ -69,9 +69,6 @@ class BasicStatement(object):
         p = relpath(self.filename, os.getcwd())
         return '%s:%d' % (p, self.line)
 
-    def to_dict(self):
-        return dict((k, v) for k, v in self.__dict__.items() if k[0] != '_')
-
 
 class TagStatement(BasicStatement):
     def __init__(self, filename, line, keyword, name, tags):
@@ -710,6 +707,12 @@ class Step(BasicStatement, Replayable):
     def __repr__(self):
         return '<%s "%s">' % (self.step_type, self.name)
 
+    def __eq__(self, other):
+        return (self.step_type, self.name) == (other.step_type, other.name)
+
+    def __hash__(self):
+        return hash(self.step_type) + hash(self.name)
+
     def set_values(self, table_row):
         result = copy.deepcopy(self)
         for name, value in table_row.items():
@@ -757,7 +760,7 @@ class Step(BasicStatement, Replayable):
         except AssertionError, e:
             self.status = 'failed'
             if e.args:
-                error = u'Assertion Failed: %s' % (str(e),)
+                error = u'Assertion Failed: %s' % (e,)
             else:
                 # no assertion text; format the exception
                 error = traceback.format_exc()
