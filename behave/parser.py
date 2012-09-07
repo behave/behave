@@ -8,7 +8,10 @@ DEFAULT_LANGUAGE = 'en'
 def parse_file(filename, language=None):
     with open(filename, 'rb') as f:
         # file encoding is assumed to be utf8. Oh, yes.
-        data = f.read().decode('utf8')
+        try:
+            data = f.read().decode('utf8')
+        except Exception, e:
+            raise ParserError(e, 0, filename)
     return parse_feature(data, language, filename)
 
 
@@ -79,6 +82,9 @@ class Parser(object):
 
         if self.table:
             self.action_table('')
+
+        if not self.feature:
+            return None
 
         feature = self.feature
         feature.parser = self

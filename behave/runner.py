@@ -234,6 +234,13 @@ class Context(object):
                 return True
         return False
 
+    def items(self):
+        items = {}
+        for frame in reversed(self._stack):
+            items.update(frame)
+
+        return items.items()
+
     def execute_steps(self, steps):
         '''The steps identified in the "steps" text string will be parsed and
         executed in turn just as though they were defined in a feature file.
@@ -329,9 +336,6 @@ class Runner(object):
                 print 'Using default path "./features"'
             base_dir = os.path.abspath('features')
 
-        # Get the root. This is not guaranteed to be '/' because Windows.
-        root_dir = os.path.split(base_dir)[0]
-
         new_base_dir = base_dir
 
         while True:
@@ -342,12 +346,12 @@ class Runner(object):
                 break
             if os.path.isfile(os.path.join(new_base_dir, 'environment.py')):
                 break
-            if new_base_dir == root_dir:
+            if new_base_dir == os.path.split(new_base_dir)[0]:
                 break
 
-            new_base_dir = os.path.dirname(new_base_dir)
+            new_base_dir = os.path.split(new_base_dir)[0]
 
-        if new_base_dir == root_dir:
+        if new_base_dir == os.path.split(new_base_dir)[0]:
             if self.config.verbose:
                 if not self.config.paths:
                     print 'ERROR: Could not find "steps" directory. Please '\
@@ -448,8 +452,13 @@ class Runner(object):
             if self.config.exclude(filename):
                 continue
 
+            self.run_hook('before_file', context, filename)
+
             feature = parser.parse_file(os.path.abspath(filename),
                 language=self.config.lang)
+
+            if not feature:
+                continue
 
             self.features.append(feature)
             self.feature = feature
@@ -460,7 +469,6 @@ class Runner(object):
             failed = feature.run(self)
 
             self.formatter.close()
-            stream.write('\n')
 
             [reporter.feature(feature) for reporter in self.config.reporters]
 
