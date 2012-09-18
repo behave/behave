@@ -43,7 +43,7 @@ file called "tutorial.py" containing:
 Run behave::
 
     % behave
-    Feature: showin off behave # tutorial/tutorial.feature:1
+    Feature: showing off behave # tutorial/tutorial.feature:1
 
       Scenario: run a simple test        # tutorial/tutorial.feature:3
         Given we have behave installed   # tutorial/steps/tutorial.py:3
