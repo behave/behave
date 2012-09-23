@@ -126,10 +126,10 @@ def feature_test(args):
         cmdopts = "--format=progress {0}".format(excluded_tags)
 
     # -- RUN TESTS: All tests at once.
-    # for arg in args:
+    for arg in args:
+        behave(arg, cmdopts)
+    # arg = " ".join(args)
     # behave(arg, cmdopts)
-    arg = " ".join(args)
-    behave(arg, cmdopts)
 
 
 # ----------------------------------------------------------------------------
