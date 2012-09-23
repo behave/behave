@@ -68,6 +68,7 @@ Next Version 1.2.2 - UNRELEASED
 
 FIX:
 
+  * FIX issue #72: Using GHERKIN_COLORS caused an TypeError.
   * FIX issue #69: JUnitReporter: Fault when processing ScenarioOutlines with failing steps
   * FIX issue #67: JSON formatter cannot serialize tables.
   * FIX issue #66: context.table and context.text are not cleared.
@@ -107,6 +108,7 @@ CHANGES:
 
 OPEN:
 
+  * issue #70: JUnitReporter: Generates invalid UTF-8 in CDATA sections (stdout/stderr output) when ANSI escapes are used.
   * issue #60: JSONFormatter has several problems.
 
 FIXES:
