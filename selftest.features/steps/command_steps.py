@@ -10,9 +10,10 @@ TODO:
 """
 
 from __future__ import print_function
-from behave import given, when, then, matchers
+from behave import given, when, then, step, matchers
 import command_shell
 import command_util
+import os
 import os.path
 import shutil
 from hamcrest import assert_that, equal_to, is_not, contains_string
@@ -185,3 +186,23 @@ def step_the_directory_should_not_exist(context, directory):
     if not os.path.isabs(directory):
         path_ = os.path.join(context.workdir, os.path.normpath(directory))
     assert_that(not os.path.isdir(path_))
+
+# -----------------------------------------------------------------------------
+# ENVIRONMENT VARIABLES
+# -----------------------------------------------------------------------------
+@step(u'I set the environment variable "{env_name}" to "{env_value}"')
+def step_I_set_the_environment_variable_to(context, env_name, env_value):
+    if not hasattr(context, "environ"):
+        context.environ = {}
+    context.environ[env_name] = env_value
+    os.environ[env_name] = env_value
+
+@step(u'I remove the environment variable {env_name}')
+def step_I_remove_the_environment_variable(context, env_name):
+    if not hasattr(context, "environ"):
+        context.environ = {}
+    context.environ[env_name] = ""
+    os.environ[env_name] = ""
+    del context.environ[env_name]
+    del os.environ[env_name]
+
