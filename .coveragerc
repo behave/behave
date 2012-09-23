@@ -10,7 +10,7 @@
 [run]
 append  = .coverage
 include = behave*
-branch  = False
+branch  = True
 parallel = True
 
 [report]
