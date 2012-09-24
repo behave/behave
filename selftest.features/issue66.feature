@@ -21,7 +21,7 @@ Feature: Issue #66: context.text and context.table are not cleared
       def step(context):
           assert context.table is not None
 
-      @when(u'I check check the "context.{name}" attribute')
+      @when(u'I check the "context.{name}" attribute')
       def step(context, name):
           context.name  = name
           context.value = getattr(context, name, None)
@@ -48,7 +48,7 @@ Feature: Issue #66: context.text and context.table are not cleared
             '''
             Alice, Bob and Charly
             '''
-          When I check check the "context.text" attribute
+          When I check the "context.text" attribute
           Then its value is not "Alice, Bob and Charly"
           But  its value is None
       """
@@ -68,7 +68,7 @@ Feature: Issue #66: context.text and context.table are not cleared
             | name  | gender |
             | Alice | female |
             | Bob   | male   |
-          When I check check the "context.table" attribute
+          When I check the "context.table" attribute
           Then its value is None
       """
     When I run "behave -f plain features/issue66_case2.feature"
