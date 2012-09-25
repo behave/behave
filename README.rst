@@ -64,9 +64,9 @@ Download from http://pypi.python.org/pypi/behave
 Version History
 ---------------
 
-Next Version 1.2.2 - UNRELEASED
+Next Version 1.2.2.x - UNRELEASED
 
-FIX:
+FIXES:
 
   * FIX issue #72: Using GHERKIN_COLORS caused an TypeError.
   * FIX issue #69: JUnitReporter: Fault when processing ScenarioOutlines with failing steps
@@ -79,6 +79,7 @@ FIX:
 
 OPEN:
 
+  * issue #73: current_matcher is not predictable.
   * issue #60: JSONFormatter has several problems (invalid JSON format).
   * issue #54: Include step in JUnit/XML <failure> tag.
   * issue #47: Formatter processing chain is broken.
