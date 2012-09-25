@@ -110,17 +110,32 @@ def feature_test(args):
     if not args:
         # args = [ "features" ]
         args = options.behave_test.default_args
-
-    args2   = []
-    cmdopts = []
-    for arg in args:
-        if arg.startswith("-"):
-            cmdopts.append(arg)
-        else:
-            args2.append(arg)
+        cmdopts = []
+    else:
+        # -- INSPECT and REORGANIZE:
+        args2   = []
+        cmdopts = []
+        tests1  = []
+        tests2  = []
+        for arg in args:
+            if arg.startswith("-"):
+                cmdopts.append(arg)
+            elif arg.startswith("tools"):
+                tests1.append(arg)
+            elif arg.startswith("selftest.features"):
+                tests2.append(arg)
+            else:
+                args2.append(arg)
+        args = []
+        if tests1:
+            args.append(" ".join(tests1))
+        if tests2:
+            args.append(" ".join(tests2))
+        if args2:
+            args.append(" ".join(args2))
 
     cmdopts = " ".join(cmdopts)
-    args = args2
+    # XXX args = args2
     if not cmdopts:
         excluded_tags = "--tags=-xfail --tags=-not_supported"
         cmdopts = "--format=progress {0}".format(excluded_tags)
