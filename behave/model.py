@@ -805,6 +805,7 @@ class Step(BasicStatement, Replayable):
             self.status = 'passed'
         except AssertionError, e:
             self.status = 'failed'
+            self.exception = e
             if e.args:
                 error = u'Assertion Failed: %s' % e
             else:
