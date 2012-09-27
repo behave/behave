@@ -35,8 +35,8 @@ escapes = {
 }
 
 if 'GHERKIN_COLORS' in os.environ:
-    aliases_ = [p.split('=') for p in os.environ['GHERKIN_COLORS'].split(':')]
-    aliases.update(dict(aliases_))
+    new_aliases = [p.split('=') for p in os.environ['GHERKIN_COLORS'].split(':')]
+    aliases.update(dict(new_aliases))
 
 for alias in aliases:
     escapes[alias] = ''.join([colors[c] for c in aliases[alias].split(',')])
