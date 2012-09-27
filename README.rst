@@ -66,8 +66,9 @@ Version History
 
 Next Version 1.2.2 - UNRELEASED
 
-FIX:
+FIXES:
 
+  * FIX issue #75: behave @list_of_features.txt is broken.
   * FIX issue #72: Using GHERKIN_COLORS caused an TypeError.
   * FIX issue #69: JUnitReporter: Fault when processing ScenarioOutlines with failing steps
   * FIX issue #67: JSON formatter cannot serialize tables.

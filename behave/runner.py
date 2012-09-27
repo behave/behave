@@ -353,7 +353,14 @@ class Runner(object):
             if self.config.verbose:
                 print 'Supplied path:', ', '.join('"%s"' % path
                     for path in self.config.paths)
-            base_dir = os.path.abspath(self.config.paths[0])
+            base_dir = self.config.paths[0]
+            if base_dir.startswith('@'):
+                # -- USE: behave @features.txt
+                base_dir = base_dir[1:]
+                files = self.feature_files()
+                if files:
+                    base_dir = os.path.dirname(files[0])
+            base_dir = os.path.abspath(base_dir)
 
             # supplied path might be to a feature file
             if os.path.isfile(base_dir):
@@ -451,6 +458,24 @@ class Runner(object):
             with context.user_mode():
                 self.hooks[name](context, *args)
 
+    @staticmethod
+    def parse_features_file(features_filename):
+        """
+        Read textual file, ala '@features.txt'
+        :param features_filename:  Name of features file.
+        :return: List of feature names.
+        """
+        if features_filename.startswith('@'):
+            features_filename = features_filename[1:]
+        here  = os.path.dirname(features_filename) or "."
+        files = []
+        for line in open(features_filename).readlines():
+            line = line.strip()
+            if line.startswith('#'):
+                continue
+            files.append(os.path.normpath(os.path.join(here, line)))
+        return files
+
     def feature_files(self):
         files = []
         for path in self.config.paths:
@@ -460,7 +485,8 @@ class Runner(object):
                         if filename.endswith('.feature'):
                             files.append(os.path.join(dirpath, filename))
             elif path.startswith('@'):
-                files.extend([filename.strip() for filename in open(path)])
+                # -- USE: behave @list_of_features.txt
+                files.extend(self.parse_features_file(path[1:]))
             elif os.path.exists(path):
                 files.append(path)
             else:
