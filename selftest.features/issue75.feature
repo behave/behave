@@ -83,23 +83,23 @@ Feature: Issue #75: behave @features_from_text_file does not work
       """
 
   Scenario: Use @feature_list_file with unknown feature file (Case 1)
-    Given a file named "with_unknown_feature2.txt" with:
+    Given a file named "with_unknown_feature.txt" with:
       """
       features/alice.feature
       features/UNKNOWN.feature
       """
-    When I run "behave @with_unknown_feature2.txt"
+    When I run "behave @with_unknown_feature.txt"
     Then it should fail with:
       """
       IOError: [Errno 2] No such file or directory: '{__WORKDIR__}/features/UNKNOWN.feature'
       """
 
   Scenario: Use @feature_list_file with unknown feature file (Case 2)
-    Given a file named "features/with_unknown_feature.txt" with:
+    Given a file named "features/with_unknown_feature2.txt" with:
       """
       UNKNOWN.feature
       """
-    When I run "behave @features/with_unknown_feature.txt"
+    When I run "behave @features/with_unknown_feature2.txt"
     Then it should fail with:
       """
       IOError: [Errno 2] No such file or directory: '{__WORKDIR__}/features/UNKNOWN.feature'
