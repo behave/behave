@@ -62,6 +62,37 @@ Feature: Issue #75: behave @features_from_text_file does not work
       2 steps passed, 0 failed, 0 skipped, 0 undefined
       """
 
+  Scenario: Use @feature_list_file with some empty lines
+    Given a file named "features/alice_and_bob_with_empty_lines.txt" with:
+      """
+      alice.feature
+
+      bob.feature
+      
+      """
+    When I run "behave @features/alice_and_bob_with_empty_lines.txt"
+    Then it should pass with:
+      """
+      2 features passed, 0 failed, 0 skipped
+      2 scenarios passed, 0 failed, 0 skipped
+      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      """
+
+  Scenario: Use @feature_list_file with some comment lines
+    Given a file named "features/alice_and_bob_with_comment_lines.txt" with:
+      """
+      alice.feature
+      # -- USE: bob (comment line)
+      bob.feature
+      """
+    When I run "behave @features/alice_and_bob_with_comment_lines.txt"
+    Then it should pass with:
+      """
+      2 features passed, 0 failed, 0 skipped
+      2 scenarios passed, 0 failed, 0 skipped
+      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      """
+
   Scenario: Use empty @feature_list_file (Case 1)
     Given a file named "empty.txt" with:
       """
@@ -77,9 +108,9 @@ Feature: Issue #75: behave @features_from_text_file does not work
       """
       """
     When I run "behave @features/empty.txt"
-    Then it should fail with:
+    Then it should pass with:
       """
-      No steps directory in "{__WORKDIR__}"
+      0 features passed, 0 failed, 0 skipped
       """
 
   Scenario: Use @feature_list_file with unknown feature file (Case 1)
