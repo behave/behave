@@ -471,8 +471,10 @@ class Runner(object):
         files = []
         for line in open(features_filename).readlines():
             line = line.strip()
-            if line.startswith('#'):
-                continue
+            if not line:
+                continue    #< SKIP: Over empty line(s).
+            elif line.startswith('#'):
+                continue    #< SKIP: Over comment line(s).
             files.append(os.path.normpath(os.path.join(here, line)))
         return files
 
