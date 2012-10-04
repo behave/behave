@@ -68,6 +68,7 @@ Next Version 1.2.2.x - UNRELEASED
 
 FIXES:
 
+  * ADD issue #78: Added references to django-behave (pull-request).
   * FIX issue #75: behave @list_of_features.txt is broken.
   * FIX issue #72: Using GHERKIN_COLORS caused an TypeError.
   * FIX issue #69: JUnitReporter: Fault when processing ScenarioOutlines with failing steps
