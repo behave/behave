@@ -18,6 +18,11 @@ and was developed by David Eyk in a `public gist`__.
 __ https://github.com/nathforge/django-mechanize/
 __ https://gist.github.com/1637965
 
+Alternative Option
+==================
+
+There is a module under development which provides a Django-specific
+TestRunner for Behave. Please take a look at https://github.com/rwillmer/django-behave
 
 Implementation
 ==============
