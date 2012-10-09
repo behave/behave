@@ -9,7 +9,7 @@ from behave.formatter import formatters
 from behave.formatter import pretty
 from behave.formatter import tag_count
 
-from behave.model import Tag, Feature, Scenario, Step
+from behave.model import Tag, Feature, Match, Scenario, Step
 
 
 class TestGetTerminalSize(object):
@@ -123,9 +123,17 @@ class FormatterTests(object):
         tags = [Tag(name, line) for name in tags]
         return Scenario('<string>', line, keyword, name, tags=tags, steps=steps)
 
-    def _step(self, keyword=u'k\xe9yword', step_type='given', name=u'name', text=None, table=None):
+    def _step(self, keyword=u'k\xe9yword', step_type='given', name=u'name',
+              text=None, table=None):
         line = self.line
-        return Step('<string>', line, keyword, step_type, name, text=text, table=table)
+        return Step('<string>', line, keyword, step_type, name, text=text,
+                    table=table)
+
+    def _match(self, arguments=None):
+        def dummy():
+            pass
+
+        return Match(dummy, arguments)
 
     def test_feature(self):
         # this test does not actually check the result of the formatting; it
@@ -150,6 +158,7 @@ class FormatterTests(object):
         p.scenario(s)
         s = self._step()
         p.step(s)
+        p.match(self._match([]))
         s.status = u'passed'
         p.result(s)
 

@@ -60,6 +60,7 @@ class PrettyFormatter(Formatter):
 
         self.monochrome = not config.color
         self.show_source = config.show_source
+        self.show_timings = config.show_timings
         self.show_multiline = config.show_multiline
 
         self.tag_statement = None
@@ -216,8 +217,8 @@ class PrettyFormatter(Formatter):
     def escape_triple_quotes(self, string):
         return string.replace(u'"""', u'\\"\\"\\"')
 
-    def indented_location(self, location, proceed):
-        if not location:
+    def indented_text(self, text, proceed):
+        if not text:
             return u''
 
         if proceed:
@@ -226,7 +227,7 @@ class PrettyFormatter(Formatter):
             indentation = self.indentations[0]
 
         indentation = u' ' * indentation
-        return u'%s # %s' % (indentation, location)
+        return u'%s # %s' % (indentation, text)
 
     def calculate_location_indentations(self):
         line_widths = []
@@ -248,7 +249,7 @@ class PrettyFormatter(Formatter):
         self.stream.write(u"  %s: %s " % (self.statement.keyword,
                                          self.statement.name))
 
-        location = self.indented_location(self.statement.location, True)
+        location = self.indented_text(self.statement.location, True)
         if self.show_source:
             self.stream.write(self.format('comments').text(location))
         self.stream.write("\n")
@@ -289,10 +290,17 @@ class PrettyFormatter(Formatter):
             self.stream.write(text_format.text(text))
             line_length += (len(text))
 
-        location = self.indented_location(location, proceed)
         if self.show_source:
+            if self.show_timings and status in ('passed', 'failed'):
+                location += ' %0.2fs' % step.duration
+            location = self.indented_text(location, proceed)
             self.stream.write(self.format('comments').text(location))
             line_length += len(location)
+        elif self.show_timings and status in ('passed', 'failed'):
+            timing = '%0.2fs' % step.duration
+            timing = self.indented_text(timing, proceed)
+            self.stream.write(self.format('comments').text(timing))
+            line_length += len(timing)
         self.stream.write("\n")
 
         self.step_lines = int((line_length - 1) / self.display_width)

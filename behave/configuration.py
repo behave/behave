@@ -143,6 +143,12 @@ options = [
                  definition with the steps. This is the default
                  behaviour. This switch is used to override a
                  configuration file setting.""")),
+    (('-T', '--no-timings'), dict(action='store_false', dest='show_timings',
+         help="""Don't print the time taken for each step.""")),
+    (('--show-timings',), dict(action='store_true', dest='show_timings',
+         help="""Print the time taken, in seconds, of each step after the
+                 step has completed. This is the default behaviour. This
+                 switch is used to override a configuration file setting.""")),
     (('--stop',), dict(action='store_true',
          help='Stop running tests at the first failure.')),
     (('-S', '--strict'), dict(action='store_true',
@@ -252,6 +258,7 @@ class Configuration(object):
             log_capture=True,
             dry_run=False,
             show_source=True,
+            show_timings=True,
             logging_format='%(levelname)s:%(name)s:%(message)s',
             summary=True,
             junit=False,
