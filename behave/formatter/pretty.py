@@ -143,7 +143,7 @@ class PrettyFormatter(Formatter):
             self.print_step(result.status, arguments, location, True)
         if result.error_message:
             self.stream.write(self.indent(result.error_message.strip(),
-                                          '      '))
+                                          u'      '))
             self.stream.write('\n\n')
         self.stream.flush()
 
@@ -212,7 +212,7 @@ class PrettyFormatter(Formatter):
     def indent(self, strings, indentation):
         if type(strings) is not list:
             strings = strings.split('\n')
-        return '\n'.join([indentation + s for s in strings])
+        return u'\n'.join([indentation + s for s in strings])
 
     def escape_triple_quotes(self, string):
         return string.replace(u'"""', u'\\"\\"\\"')
