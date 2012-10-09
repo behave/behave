@@ -176,7 +176,7 @@ class Context(object):
                     "'%(attr)s'; see the tutorial for what this means"
         if msg:
             msg = msg % params
-            warnings.warn(msg, ContextMaskWarning, stacklevel=2)
+            warnings.warn(msg, ContextMaskWarning, stacklevel=3)
 
     def _dump(self):
         for level, frame in enumerate(self._stack):
