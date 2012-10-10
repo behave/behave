@@ -70,15 +70,15 @@ def main():
     if config.lang_help:
         if config.lang_help not in languages:
             sys.exit('%s is not a recognised language: try --lang-list' %
-                config.lang_help)
+                     config.lang_help)
         trans = languages[config.lang_help]
         print u"Translations for %s / %s" % (trans['name'][0],
-            trans['native'][0])
+              trans['native'][0])
         for kw in trans:
             if kw in 'name native'.split():
                 continue
             print u'%16s: %s' % (kw.title().replace('_', ' '),
-                u', '.join(w for w in trans[kw] if w != '*'))
+                  u', '.join(w for w in trans[kw] if w != '*'))
         sys.exit(0)
 
     if not config.format:
@@ -87,8 +87,6 @@ def main():
         print "Available formatters:"
         formatters.list_formatters(sys.stdout)
         sys.exit(0)
-
-    stream = config.output
 
     runner = Runner(config)
     try:

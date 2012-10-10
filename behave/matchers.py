@@ -115,8 +115,8 @@ def step_matcher(name):
 
     **parse** (the default)
        This is a `simple parser`_ that uses a format very much like the Python
-       builtin ``format()``. You must use named fields which are then matched to
-       your ``step()`` function arguments.
+       builtin ``format()``. You must use named fields which are then matched
+       to your ``step()`` function arguments.
     **re**
        This uses full regular expressions to parse the clause text. You will
        need to use named groups "(?P<name>...)" to define the variables pulled

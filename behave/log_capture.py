@@ -36,7 +36,8 @@ class LoggingCapture(BufferingHandler):
 
        This is a list of captured logging events as `logging.LogRecords`_.
 
-    .. _`logging.LogRecords`: http://docs.python.org/library/logging.html#logrecord-objects
+    .. _`logging.LogRecords`:
+       http://docs.python.org/library/logging.html#logrecord-objects
 
     By default the format of the messages will be::
 
@@ -77,11 +78,10 @@ class LoggingCapture(BufferingHandler):
         if level is not None:
             self.level = level
         elif config.logging_level:
-            self.level = getattr(logging, config.logging_level.upper(),
-                None)
+            self.level = getattr(logging, config.logging_level.upper(), None)
             if self.level is None:
                 raise ConfigError('Invalid log level: "%s"' %
-                    config.logging_level)
+                                  config.logging_level)
         else:
             self.level = logging.NOTSET
 
@@ -119,14 +119,14 @@ class LoggingCapture(BufferingHandler):
         Returns boolean indicating whether a match was found.
         '''
         return any(record for record in self.buffer
-            if record.levelname in ('ERROR', 'CRITICAL'))
+                   if record.levelname in ('ERROR', 'CRITICAL'))
 
     def inveigle(self):
-        '''Turn on logging capture by replacing all existing handlers configured
-        in the logging module.
+        '''Turn on logging capture by replacing all existing handlers
+        configured in the logging module.
 
-        If the config var logging_clear_handlers is set then we also remove all
-        existing handlers.
+        If the config var logging_clear_handlers is set then we also remove
+        all existing handlers.
 
         We also set the level of the root logger.
 
@@ -191,8 +191,8 @@ def capture(*args, **kw):
             ...
 
     The function prints any captured logging (at the level determined by the
-    ``log_level`` configuration setting) directly to stdout, regardless of error
-    conditions.
+    ``log_level`` configuration setting) directly to stdout, regardless of
+    error conditions.
 
     It is mostly useful for debugging in situations where you are seeing a
     message like::
@@ -208,8 +208,8 @@ def capture(*args, **kw):
         def after_scenario(context, scenario):
             ...
 
-    This would limit the logging captured to just ERROR and above, and thus only
-    display logged events if they are interesting.
+    This would limit the logging captured to just ERROR and above, and thus
+    only display logged events if they are interesting.
     '''
     def create_decorator(func, level=None):
         def f(context, *args):

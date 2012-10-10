@@ -193,7 +193,8 @@ class PrettyFormatter(Formatter):
     def doc_string(self, doc_string):
         #self.stream.write('      """' + doc_string.content_type + '\n')
         self.stream.write('      """\n')
-        doc_string = self.escape_triple_quotes(self.indent(doc_string, '      '))
+        doc_string = self.escape_triple_quotes(self.indent(doc_string,
+                                                           '      '))
         self.stream.write(doc_string)
         self.stream.write('\n      """\n')
         self.stream.flush()
@@ -247,7 +248,7 @@ class PrettyFormatter(Formatter):
         if hasattr(self.statement, 'tags'):
             self.print_tags(self.statement.tags, u'  ')
         self.stream.write(u"  %s: %s " % (self.statement.keyword,
-                                         self.statement.name))
+                                          self.statement.name))
 
         location = self.indented_text(self.statement.location, True)
         if self.show_source:

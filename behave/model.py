@@ -138,8 +138,8 @@ class Feature(TagStatement, Replayable):
 
     .. attribute:: filename
 
-       The file name (or "<string>") of the *feature file* where the feature was
-       found.
+       The file name (or "<string>") of the *feature file* where the feature
+       was found.
 
     .. attribute:: line
 
@@ -215,7 +215,8 @@ class Feature(TagStatement, Replayable):
         # scenarios
         run_feature = runner.config.tags.check(self.tags)
         for scenario in self:
-            run_feature = run_feature or runner.config.tags.check(scenario.tags)
+            tags = scenario.tags
+            run_feature = run_feature or runner.config.tags.check(tags)
 
         if run_feature or runner.config.show_skipped:
             runner.formatter.feature(self)
@@ -272,13 +273,13 @@ class Background(BasicStatement, Replayable):
 
     .. attribute:: duration
 
-       The time, in seconds, that it took to run this background. If read before
-       the background is run it will return 0.0.
+       The time, in seconds, that it took to run this background. If read
+       before the background is run it will return 0.0.
 
     .. attribute:: filename
 
-       The file name (or "<string>") of the *feature file* where the scenario was
-       found.
+       The file name (or "<string>") of the *feature file* where the scenario
+       was found.
 
     .. attribute:: line
 
@@ -356,8 +357,8 @@ class Scenario(TagStatement, Replayable):
 
     .. attribute:: filename
 
-       The file name (or "<string>") of the *feature file* where the scenario was
-       found.
+       The file name (or "<string>") of the *feature file* where the scenario
+       was found.
 
     .. attribute:: line
 
@@ -507,13 +508,13 @@ class ScenarioOutline(Scenario):
 
     .. attribute:: duration
 
-       The time, in seconds, that it took to test the scenarios of this outline.
-       If read before the scenarios are tested it will return 0.0.
+       The time, in seconds, that it took to test the scenarios of this
+       outline. If read before the scenarios are tested it will return 0.0.
 
     .. attribute:: filename
 
-       The file name (or "<string>") of the *feature file* where the scenario was
-       found.
+       The file name (or "<string>") of the *feature file* where the scenario
+       was found.
 
     .. attribute:: line
 
@@ -544,7 +545,7 @@ class ScenarioOutline(Scenario):
                 for step in self.steps:
                     new_steps.append(step.set_values(row))
                 scenario = Scenario(self.filename, self.line, self.keyword,
-                    self.name, self.tags, new_steps)
+                                    self.name, self.tags, new_steps)
                 scenario.feature = self.feature
                 scenario.background = self.background
                 scenario._row = row
@@ -610,8 +611,8 @@ class Examples(BasicStatement, Replayable):
 
     .. attribute:: filename
 
-       The file name (or "<string>") of the *feature file* where the scenario was
-       found.
+       The file name (or "<string>") of the *feature file* where the scenario
+       was found.
 
     .. attribute:: line
 
@@ -676,8 +677,8 @@ class Step(BasicStatement, Replayable):
 
     .. attribute:: error_message
 
-       If the step failed then this will hold any error information, as a single
-       string. It will otherwise be None.
+       If the step failed then this will hold any error information, as a
+       single string. It will otherwise be None.
 
     .. attribute:: filename
 
@@ -803,7 +804,8 @@ class Table(Replayable):
 
     **indexed access**
       Individual rows may be accessed directly by index on the Table instance;
-      table[0] gives the first non-heading row and table[-1] gives the last row.
+      table[0] gives the first non-heading row and table[-1] gives the last
+      row.
 
     The attributes are:
 
@@ -816,8 +818,8 @@ class Table(Replayable):
        An list of instances of :class:`~behave.model.Row` that make up the body
        of the table in the *feature file*.
 
-    Tables are also comparable, for what that's worth. Headings and row data are
-    compared.
+    Tables are also comparable, for what that's worth. Headings and row data
+    are compared.
 
     .. _`table`: gherkin.html#table
     '''
@@ -975,7 +977,8 @@ class Text(unicode):
         return (self.line, self.line + line_count + 1)
 
     def replace(self, old, new):
-        return Text(super(Text, self).replace(old, new), self.content_type, self.line)
+        return Text(super(Text, self).replace(old, new), self.content_type,
+                    self.line)
 
     def assert_equals(self, expected):
         '''Assert that my text is identical to the "expected" text.
@@ -986,7 +989,7 @@ class Text(unicode):
             return True
         diff = []
         for line in difflib.unified_diff(self.splitlines(),
-                expected.splitlines()):
+                                         expected.splitlines()):
             diff.append(line)
         # strip unnecessary diff prefix
         diff = ['Text does not match:'] + diff[3:]
@@ -1003,8 +1006,8 @@ class Match(Replayable):
 
     .. attribute:: arguments
 
-       A list of :class:`behave.model.Argument` instances containing the matched
-       parameters from the step name.
+       A list of :class:`behave.model.Argument` instances containing the
+       matched parameters from the step name.
     '''
     type = "match"
 

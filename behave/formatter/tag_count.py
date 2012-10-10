@@ -43,6 +43,6 @@ class TagCountFormatter(Formatter):
 
     def __getattr__(self, name):
         attr = getattr(self.formatter, name)
-        if type(attr) is not types.MethodType:
+        if not isinstance(attr, types.MethodType):
             raise AttributeError
         return attr

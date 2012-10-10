@@ -19,15 +19,14 @@ class ElementTreeWithCDATA(ElementTree.ElementTree):
             file.write("\n<![CDATA[%s]]>\n" % text)
         else:
             ElementTree.ElementTree._write(self, file, node, encoding,
-                namespaces)
+                                           namespaces)
 
 
 if hasattr(ElementTree, '_serialize'):
     def _serialize_xml(write, elem, encoding, qnames, namespaces,
-        orig=ElementTree._serialize_xml):
+                       orig=ElementTree._serialize_xml):
         if elem.tag == '![CDATA[':
-            write("\n<%s%s]]>\n" % (
-                    elem.tag, elem.text))
+            write("\n<%s%s]]>\n" % (elem.tag, elem.text))
             return
         return orig(write, elem, encoding, qnames, namespaces)
 
@@ -48,7 +47,8 @@ class JUnitReporter(Reporter):
         filename = 'TESTS-%s.xml' % filename
 
         suite = ElementTree.Element('testsuite')
-        suite.set('name', '%s.%s' % (classname, feature.name or feature.filename))
+        suite.set('name', '%s.%s' % (classname,
+                                     feature.name or feature.filename))
 
         tests = 0
         failed = 0
@@ -58,7 +58,8 @@ class JUnitReporter(Reporter):
             tests += 1
 
             case = ElementTree.Element('testcase')
-            case.set('classname', '%s.%s' % (classname, feature.name or feature.filename))
+            case.set('classname', '%s.%s' % (classname,
+                                             feature.name or feature.filename))
             case.set('name', scenario.name or '')
             case.set('time', str(round(scenario.duration, 3)))
 
