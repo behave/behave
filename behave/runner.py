@@ -301,7 +301,7 @@ def exec_file(filename, globals=None, locals=None):
 
 
 class PathManager(object):
-    __pychecker__ = "no-special"    #< SKIP-CHECK: __enter__(), __exit__()
+    __pychecker__ = "no-special"    # SKIP-CHECK: __enter__(), __exit__()
     paths = None
 
     def __enter__(self):
@@ -473,9 +473,9 @@ class Runner(object):
         for line in open(features_filename).readlines():
             line = line.strip()
             if not line:
-                continue    #< SKIP: Over empty line(s).
+                continue    # SKIP: Over empty line(s).
             elif line.startswith('#'):
-                continue    #< SKIP: Over comment line(s).
+                continue    # SKIP: Over comment line(s).
             files.append(os.path.normpath(os.path.join(here, line)))
         return files
 

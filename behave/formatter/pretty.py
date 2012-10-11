@@ -63,7 +63,7 @@ def get_terminal_size():
 class PrettyFormatter(Formatter):
     name = 'pretty'
     description = 'Standard colourised pretty formatter'
-    __pychecker__ = "no-shadowbuiltin" #< format
+    __pychecker__ = "no-shadowbuiltin"  # format
 
     def __init__(self, stream, config):
         super(PrettyFormatter, self).__init__(stream, config)
@@ -148,7 +148,7 @@ class PrettyFormatter(Formatter):
                     lines += len(result.text.splitlines()) + 2
             self.stream.write(up(lines))
             arguments = []
-            location = '' #< XXX None
+            location = ''  # XXX-WAS: None
             if self._match:
                 arguments = self._match.arguments
                 location = self._match.location

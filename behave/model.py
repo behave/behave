@@ -404,8 +404,8 @@ class Scenario(TagStatement, Replayable):
         super(Scenario, self).__init__(filename, line, keyword, name, tags)
         self.steps = steps or []
         self.background = None
-        self.feature    = None  #< REFER-TO: owner=Feature
-        self._row       = None
+        self.feature = None  # REFER-TO: owner=Feature
+        self._row = None
         self.stderr = None
         self.stdout = None
 

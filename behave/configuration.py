@@ -347,7 +347,7 @@ class Configuration(object):
         self.formatters = []
         self.reporters = []
         # -- MORE ATTRIBUTES:
-        self.wip   = None
+        self.wip = None
         self.quiet = None
         self.junit = None
         self.summary = None
