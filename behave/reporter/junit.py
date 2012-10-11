@@ -23,15 +23,14 @@ class ElementTreeWithCDATA(ElementTree.ElementTree):
             file.write("\n<![CDATA[%s]]>\n" % text)
         else:
             ElementTree.ElementTree._write(self, file, node, encoding,
-                namespaces)
+                                           namespaces)
 
 
 if hasattr(ElementTree, '_serialize'):
     def _serialize_xml(write, elem, encoding, qnames, namespaces,
-        orig=ElementTree._serialize_xml):
+                       orig=ElementTree._serialize_xml):
         if elem.tag == '![CDATA[':
-            write("\n<%s%s]]>\n" % (
-                    elem.tag, elem.text))
+            write("\n<%s%s]]>\n" % (elem.tag, elem.text))
             return
         return orig(write, elem, encoding, qnames, namespaces)
 
