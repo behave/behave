@@ -6,6 +6,7 @@ from xml.etree import ElementTree
 from behave.reporter.base import Reporter
 from behave.model import Scenario, ScenarioOutline, Step
 
+
 def CDATA(text=None):         # pylint: disable=C0103
     element = ElementTree.Element('![CDATA[')
     element.text = text
@@ -23,20 +24,18 @@ class ElementTreeWithCDATA(ElementTree.ElementTree):
             file.write("\n<![CDATA[%s]]>\n" % text)
         else:
             ElementTree.ElementTree._write(self, file, node, encoding,
-                namespaces)
+                                           namespaces)
 
 
 if hasattr(ElementTree, '_serialize'):
     def _serialize_xml(write, elem, encoding, qnames, namespaces,
-        orig=ElementTree._serialize_xml):
+                       orig=ElementTree._serialize_xml):
         if elem.tag == '![CDATA[':
-            write("\n<%s%s]]>\n" % (
-                    elem.tag, elem.text))
+            write("\n<%s%s]]>\n" % (elem.tag, elem.text))
             return
         return orig(write, elem, encoding, qnames, namespaces)
 
     ElementTree._serialize_xml = ElementTree._serialize['xml'] = _serialize_xml
-
 
 
 class FeatureReportData(object):
@@ -59,7 +58,6 @@ class FeatureReportData(object):
         self.counts_tests = 0
         self.counts_failed = 0
         self.counts_skipped = 0
-
 
 
 class JUnitReporter(Reporter):
@@ -121,7 +119,7 @@ class JUnitReporter(Reporter):
         :returns: None, otherwise.
         """
         for step in steps:
-            assert isinstance(step, Step), "TYPE-MISMATCH: "+\
+            assert isinstance(step, Step), "TYPE-MISMATCH: " + \
                     "step.class={0}".format(step.__class__.__name__)
             if step.status == status:
                 return step
@@ -195,4 +193,3 @@ class JUnitReporter(Reporter):
         for scenario in scenario_outline:
             assert isinstance(scenario, Scenario)
             self._process_scenario(report, scenario)
-

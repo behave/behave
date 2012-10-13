@@ -79,7 +79,7 @@ class Parser(object):
 
         for line in data.split('\n'):
             self.line += 1
-            if not line.strip() and self.state != 'multiline':
+            if not line.strip() and not self.state == 'multiline':
                 # -- SKIP EMPTY LINES, except in multiline string args.
                 continue
             self.action(line)
@@ -117,7 +117,7 @@ class Parser(object):
 
         if line.startswith('@'):
             self.tags.extend([model.Tag(tag.strip(), self.line)
-                for tag in line[1:].split('@')])
+                              for tag in line[1:].split('@')])
             return True
         feature_kwd = self.match_keyword('feature', line)
         if feature_kwd:
@@ -134,7 +134,7 @@ class Parser(object):
 
         if line.startswith('@'):
             self.tags.extend([model.Tag(tag.strip(), self.line)
-                for tag in line[1:].split('@')])
+                              for tag in line[1:].split('@')])
             return True
 
         background_kwd = self.match_keyword('background', line)
@@ -190,7 +190,7 @@ class Parser(object):
 
         if line.startswith('@'):
             self.tags.extend([model.Tag(tag.strip(), self.line)
-                for tag in line[1:].split('@')])
+                              for tag in line[1:].split('@')])
             return True
 
         scenario_kwd = self.match_keyword('scenario', line)
@@ -237,7 +237,7 @@ class Parser(object):
         if line.strip().startswith(self.multiline_terminator):
             step = self.statement.steps[-1]
             step.text = model.Text(u'\n'.join(self.lines), u'text/plain',
-                self.multiline_start)
+                                   self.multiline_start)
             if step.name.endswith(':'):
                 step.name = step.name[:-1]
             self.lines = []

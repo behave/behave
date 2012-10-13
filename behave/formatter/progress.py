@@ -5,6 +5,7 @@
 from behave.formatter.base import Formatter
 import os.path
 
+
 # -----------------------------------------------------------------------------
 # CLASS: ProgressFormatterBase
 # -----------------------------------------------------------------------------
@@ -18,7 +19,7 @@ class ProgressFormatterBase(Formatter):
     dot_status = {
         "passed":    ".",
         "failed":    "F",
-        "error":     "E",   #< Caught exception, but not an AssertionError
+        "error":     "E",   # Caught exception, but not an AssertionError
         "skipped":   "S",
         "untested":  "_",
         "undefined": "U",
@@ -92,7 +93,7 @@ class ProgressFormatterBase(Formatter):
 
     def report_failures(self):
         if self.failures:
-            self.stream.write(u"\n{seperator}\n".format(seperator="-"*80))
+            self.stream.write(u"\n{seperator}\n".format(seperator="-" * 80))
             for result in self.failures:
                 self.stream.write(u"FAILURE in step '%s':\n" % result.name)
                 self.stream.write(u"  Feature:  %s\n" % result.feature.name)
@@ -100,7 +101,8 @@ class ProgressFormatterBase(Formatter):
                 self.stream.write(u"%s\n" % result.error_message)
                 if result.exception:
                     self.stream.write(u"exception: %s\n" % result.exception)
-            self.stream.write(u"{seperator}\n".format(seperator="-"*80))
+            self.stream.write(u"{seperator}\n".format(seperator="-" * 80))
+
 
 # -----------------------------------------------------------------------------
 # CLASS: ScenarioProgressFormatter
@@ -117,7 +119,7 @@ class ScenarioProgressFormatter(ProgressFormatterBase):
         Report the progress for the current/last scenario.
         """
         if not self.current_scenario:
-            return  #< SKIP: No results to report for first scenario.
+            return  # SKIP: No results to report for first scenario.
             # -- NORMAL-CASE:
         # XXX-JE-TODO
         status = self.current_scenario.status

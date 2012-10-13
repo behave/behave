@@ -75,15 +75,15 @@ def main():
     if config.lang_help:
         if config.lang_help not in languages:
             sys.exit('%s is not a recognised language: try --lang-list' %
-                config.lang_help)
+                     config.lang_help)
         trans = languages[config.lang_help]
         print u"Translations for %s / %s" % (trans['name'][0],
-            trans['native'][0])
+              trans['native'][0])
         for kw in trans:
             if kw in 'name native'.split():
                 continue
             print u'%16s: %s' % (kw.title().replace('_', ' '),
-                u', '.join(w for w in trans[kw] if w != '*'))
+                  u', '.join(w for w in trans[kw] if w != '*'))
         sys.exit(0)
 
     if not config.format:
@@ -113,16 +113,21 @@ def main():
         sys.exit(3)
 
     if config.show_snippets and runner.undefined:
-        msg  = u"\nYou can implement step definitions for undefined steps with "
+        msg = u"\nYou can implement step definitions for undefined steps with "
         msg += u"these snippets:\n\n"
         printed = set()
+
+        if sys.version_info[0] == 3:
+            string_prefix = "('"
+        else:
+            string_prefix = u"(u'"
+
         for step in set(runner.undefined):
-            # XXX print repr(step)
             if step in printed:
                 continue
             printed.add(step)
 
-            msg += u"@" + step.step_type + u"(" + repr(step.name) + u")\n"
+            msg += u"@" + step.step_type + string_prefix + step.name + u"')\n"
             msg += u"def impl(context):\n"
             msg += u"    assert False\n\n"
 

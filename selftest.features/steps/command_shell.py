@@ -137,5 +137,5 @@ def behave(cmdline, cwd=".", **kwargs):
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
     command = " ".join(sys.argv[1:])
-    Command.subprocess_check_output(sys.argv[1:])
+    output = Command.subprocess_check_output(sys.argv[1:])
     print("command: {0}\n{1}\n".format(command, output))

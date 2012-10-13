@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 class TagExpression(object):
     def __init__(self, tag_expressions):
         self.ands = []
@@ -19,8 +20,7 @@ class TagExpression(object):
                 return tag[1:] not in params
             return tag in params
 
-        return all(any(test_tag(tag) for tag in ors)
-            for ors in self.ands)
+        return all(any(test_tag(tag) for tag in ors) for ors in self.ands)
 
     def add(self, tags):
         negatives = []
@@ -57,8 +57,8 @@ class TagExpression(object):
                     tag_without_negation = tag_with_negation[1:]
                 else:
                     tag_without_negation = tag_with_negation
-                if tag_without_negation in self.limits and \
-                    self.limits[tag_without_negation] != limit:
+                limited = tag_without_negation in self.limits
+                if limited and self.limits[tag_without_negation] != limit:
                     msg = "Inconsistent tag limits for {0}: {1:d} and {2:d}"
                     msg = msg.format(tag_without_negation,
                                      self.limits[tag_without_negation], limit)

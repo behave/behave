@@ -52,16 +52,17 @@ class Context(object):
 
     .. attribute:: scenario
 
-      This is set when we start testing a new scenario (including the individual
-      scenarios of a scenario outline) and holds a :class:`~behave.model.Scenario`.
-      It will not be present outside of the scope of a scenario.
+      This is set when we start testing a new scenario (including the
+      individual scenarios of a scenario outline) and holds a
+      :class:`~behave.model.Scenario`. It will not be present outside of the
+      scope of a scenario.
 
     .. attribute:: tags
 
       The current set of active tags (as a Python set containing instances of
       :class:`~behave.model.Tag` which are basically just glorified strings)
-      combined from the feature and scenario. This attribute will not be present
-      outside of a feature scope.
+      combined from the feature and scenario. This attribute will not be
+      present outside of a feature scope.
 
     .. attribute:: failed
 
@@ -74,8 +75,8 @@ class Context(object):
 
     .. attribute:: text
 
-      This is set at the step level and holds any multiline text associated with
-      the step.
+      This is set at the step level and holds any multiline text associated
+      with the step.
 
     .. attribute:: config
 
@@ -178,7 +179,7 @@ class Context(object):
                     "'%(attr)s'; see the tutorial for what this means"
         if msg:
             msg = msg % params
-            warnings.warn(msg, ContextMaskWarning, stacklevel=2)
+            warnings.warn(msg, ContextMaskWarning, stacklevel=3)
 
     def _dump(self):
         for level, frame in enumerate(self._stack):
@@ -268,8 +269,8 @@ class Context(object):
             __pychecker__ = "missingattrs=feature"
             assert self.feature
         except (AttributeError, AssertionError):
-            raise ValueError('execute_steps() called outside of a '
-                'feature context')
+            raise ValueError('execute_steps() called outside of a feature '
+                             'context')
 
         for step in steps.strip().split('\n'):
             step = step.strip()
@@ -300,7 +301,7 @@ def exec_file(filename, globals=None, locals=None):
 
 
 class PathManager(object):
-    __pychecker__ = "no-special"    #< SKIP-CHECK: __enter__(), __exit__()
+    __pychecker__ = "no-special"    # SKIP-CHECK: __enter__(), __exit__()
     paths = None
 
     def __enter__(self):
@@ -471,8 +472,10 @@ class Runner(object):
         files = []
         for line in open(features_filename).readlines():
             line = line.strip()
-            if line.startswith('#'):
-                continue
+            if not line:
+                continue    # SKIP: Over empty line(s).
+            elif line.startswith('#'):
+                continue    # SKIP: Over comment line(s).
             files.append(os.path.normpath(os.path.join(here, line)))
         return files
 
@@ -513,7 +516,7 @@ class Runner(object):
                 continue
 
             feature = parser.parse_file(os.path.abspath(filename),
-                language=self.config.lang)
+                                        language=self.config.lang)
 
             self.features.append(feature)
             self.feature = feature

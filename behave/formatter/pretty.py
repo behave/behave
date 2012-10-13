@@ -63,13 +63,14 @@ def get_terminal_size():
 class PrettyFormatter(Formatter):
     name = 'pretty'
     description = 'Standard colourised pretty formatter'
-    __pychecker__ = "no-shadowbuiltin" #< format
+    __pychecker__ = "no-shadowbuiltin"  # format
 
     def __init__(self, stream, config):
         super(PrettyFormatter, self).__init__(stream, config)
 
         self.monochrome = not config.color
         self.show_source = config.show_source
+        self.show_timings = config.show_timings
         self.show_multiline = config.show_multiline
 
         self.tag_statement = None
@@ -147,14 +148,14 @@ class PrettyFormatter(Formatter):
                     lines += len(result.text.splitlines()) + 2
             self.stream.write(up(lines))
             arguments = []
-            location = None
+            location = ''  # XXX-WAS: None
             if self._match:
                 arguments = self._match.arguments
                 location = self._match.location
             self.print_step(result.status, arguments, location, True)
         if result.error_message:
             self.stream.write(self.indent(result.error_message.strip(),
-                                          '      '))
+                                          u'      '))
             self.stream.write('\n\n')
         self.stream.flush()
 
@@ -204,7 +205,8 @@ class PrettyFormatter(Formatter):
     def doc_string(self, doc_string):
         #self.stream.write('      """' + doc_string.content_type + '\n')
         self.stream.write('      """\n')
-        doc_string = self.escape_triple_quotes(self.indent(doc_string, '      '))
+        doc_string = self.escape_triple_quotes(self.indent(doc_string,
+                                                           '      '))
         self.stream.write(doc_string)
         self.stream.write('\n      """\n')
         self.stream.flush()
@@ -228,22 +230,26 @@ class PrettyFormatter(Formatter):
     def indent(self, strings, indentation):
         if type(strings) is not list:
             strings = strings.split('\n')
-        return '\n'.join([indentation + s for s in strings])
+        return u'\n'.join([indentation + s for s in strings])
 
     def escape_triple_quotes(self, string):
         return string.replace(u'"""', u'\\"\\"\\"')
 
-    def indented_location(self, location, proceed):
-        if not location:
+    def indented_text(self, text, proceed):
+        if not text:
             return u''
 
         if proceed:
-            indentation = self.indentations.pop(0)
+            # XXX-JE-ORIG: indentation = self.indentations.pop(0)
+            # assert self.indentations
+            indentation = 1
+            if self.indentations:
+                indentation = self.indentations.pop(0)
         else:
             indentation = self.indentations[0]
 
         indentation = u' ' * indentation
-        return u'%s # %s' % (indentation, location)
+        return u'%s # %s' % (indentation, text)
 
     def calculate_location_indentations(self):
         line_widths = []
@@ -263,9 +269,9 @@ class PrettyFormatter(Formatter):
         if hasattr(self.statement, 'tags'):
             self.print_tags(self.statement.tags, u'  ')
         self.stream.write(u"  %s: %s " % (self.statement.keyword,
-                                         self.statement.name))
+                                          self.statement.name))
 
-        location = self.indented_location(self.statement.location, True)
+        location = self.indented_text(self.statement.location, True)
         if self.show_source:
             self.stream.write(self.format('comments').text(location))
         self.stream.write("\n")
@@ -306,10 +312,18 @@ class PrettyFormatter(Formatter):
             self.stream.write(text_format.text(text))
             line_length += (len(text))
 
-        location = self.indented_location(location, proceed)
         if self.show_source:
+            if self.show_timings and status in ('passed', 'failed'):
+                assert isinstance(location, str)
+                location += ' %0.2fs' % step.duration
+            location = self.indented_text(location, proceed)
             self.stream.write(self.format('comments').text(location))
             line_length += len(location)
+        elif self.show_timings and status in ('passed', 'failed'):
+            timing = '%0.2fs' % step.duration
+            timing = self.indented_text(timing, proceed)
+            self.stream.write(self.format('comments').text(timing))
+            line_length += len(timing)
         self.stream.write("\n")
 
         self.step_lines = int((line_length - 1) / self.display_width)

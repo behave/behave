@@ -2,6 +2,7 @@
 # pylint: disable=C0111
 #   C0111   missing docstrings
 
+
 class Formatter(object):
     name = None
     description = None
