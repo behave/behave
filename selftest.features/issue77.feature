@@ -56,8 +56,8 @@ Feature: Issue #77: Does not capture stdout from sub-processes
     Given a file named "features/issue77_hello_OK.feature" with:
         """
         Feature:
-        Scenario:
-          When I make a subprocess call "hello world."
+          Scenario:
+            When I make a subprocess call "hello world."
         """
     When I run "behave -f plain features/issue77_hello_OK.feature"
     Then it should pass with:
@@ -74,8 +74,8 @@ Feature: Issue #77: Does not capture stdout from sub-processes
     Given a file named "features/issue77_hello_FAIL.feature" with:
         """
         Feature:
-        Scenario:
-          When I make a subprocess call "hello --fail FAIL."
+          Scenario:
+            When I make a subprocess call "hello --fail FAIL."
         """
     When I run "behave -f plain features/issue77_hello_FAIL.feature"
     Then it should fail with:
