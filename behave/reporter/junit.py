@@ -5,6 +5,7 @@ from xml.etree import ElementTree
 from behave.reporter.base import Reporter
 from behave.model import Scenario, ScenarioOutline, Step
 from behave.formatter import ansi_escapes
+from exceptions import AssertionError
 
 
 def CDATA(text=None):         # pylint: disable=C0103
@@ -198,7 +199,7 @@ class JUnitReporter(Reporter):
             assert step, "OOPS: No failed step found"
             assert step.status == 'failed'
             element_name = 'failure'
-            if isinstance(step.exception, (AssertionError, None)):
+            if isinstance(step.exception, (AssertionError, type(None))):
                 # -- FAILURE: AssertionError
                 report.counts_failed += 1
             else:
