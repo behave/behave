@@ -71,6 +71,8 @@ FIXES:
   * ADD issue #78: Added references to django-behave (pull-request).
   * FIX issue #75: behave @list_of_features.txt is broken.
   * FIX issue #72: Using GHERKIN_COLORS caused an TypeError.
+  * issue #70: JUnitReporter: Generates invalid UTF-8 in CDATA sections
+               (stdout/stderr output) when ANSI escapes are used.
   * FIX issue #69: JUnitReporter: Fault when processing ScenarioOutlines with failing steps
   * FIX issue #67: JSON formatter cannot serialize tables.
   * FIX issue #66: context.table and context.text are not cleared.
@@ -84,8 +86,6 @@ OPEN:
   * issue #77: Does not capture stdout from sub-processes
   * issue #76: environment.py is loaded twice
   * issue #73: current_matcher is not predictable.
-  * issue #70: JUnitReporter: Generates invalid UTF-8 in CDATA sections
-               (stdout/stderr output) when ANSI escapes are used.
   * issue #60: JSONFormatter has several problems (invalid JSON format).
   * issue #54: Include step in JUnit/XML <failure> tag.
   * issue #47: Formatter processing chain is broken.

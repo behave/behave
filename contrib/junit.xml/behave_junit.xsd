@@ -70,10 +70,10 @@
             <xs:attribute name="errors" type="xs:string" use="optional"/>
             <xs:attribute name="time" type="xs:string" use="optional"/>
             <xs:attribute name="disabled" type="xs:string" use="optional"/>
+            <!-- XXX-JE-REMOVE: Old attribute, better use official one.
             <xs:attribute name="skips" type="xs:string" use="optional"/>
-            <!-- XXX-JE-REMOVE:
-            <xs:attribute name="skipped" type="xs:string" use="optional"/>
             -->
+            <xs:attribute name="skipped" type="xs:string" use="optional"/>
             <xs:attribute name="timestamp" type="xs:string" use="optional"/>
             <xs:attribute name="hostname" type="xs:string" use="optional"/>
             <xs:attribute name="id" type="xs:string" use="optional"/>
