@@ -3,6 +3,7 @@
 #   C0111   missing docstrings
 
 import os
+import re
 
 colors = {
     'black':        u"\x1b[30m",
@@ -47,3 +48,13 @@ for alias in aliases:
 
 def up(n):
     return u"\x1b[%dA" % n
+
+_ANSI_ESCAPE_PATTERN = re.compile(u"\x1b\[\d+[mA]", re.UNICODE)
+def strip_escapes(text):
+    """
+    Removes ANSI escape sequences from text (if any are contained).
+
+    :param text: Text that may or may not contain ANSI escape sequences.
+    :return: Text without ANSI escape sequences.
+    """
+    return _ANSI_ESCAPE_PATTERN.sub("", text)

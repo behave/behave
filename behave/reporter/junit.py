@@ -5,7 +5,7 @@ from xml.etree import ElementTree
 
 from behave.reporter.base import Reporter
 from behave.model import Scenario, ScenarioOutline, Step
-
+from behave.formatter import ansi_escapes
 
 def CDATA(text=None):         # pylint: disable=C0103
     element = ElementTree.Element('![CDATA[')
@@ -97,7 +97,7 @@ class JUnitReporter(Reporter):
 
         suite.set('tests', str(report.counts_tests))
         suite.set('failures', str(report.counts_failed))
-        suite.set('skips', str(report.counts_skipped))
+        suite.set('skipped', str(report.counts_skipped))
         # -- ORIG: suite.set('time', str(round(feature.duration, 3)))
         suite.set('time', str(round(feature.duration, 6)))
 
@@ -176,14 +176,14 @@ class JUnitReporter(Reporter):
             # Append the captured standard output
         if scenario.stdout:
             text += '\nCaptured stdout:\n%s\n' % scenario.stdout
-        stdout.append(CDATA(text))
+        stdout.append(CDATA(ansi_escapes.strip_escapes(text)))
         case.append(stdout)
 
         # Create stderr section for each test case
         if scenario.stderr:
             stderr = ElementTree.Element('system-err')
             text = u'\nCaptured stderr:\n%s\n' % scenario.stderr
-            stderr.append(CDATA(text))
+            stderr.append(CDATA(ansi_escapes.strip_escapes(text)))
             case.append(stderr)
 
         report.testcases.append(case)
