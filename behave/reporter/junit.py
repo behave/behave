@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# from exceptions import AssertionError
 import os.path
 from xml.etree import ElementTree
-# XXX from __builtin__ import isinstance, open, str, round, len, object, hasattr
-
 from behave.reporter.base import Reporter
 from behave.model import Scenario, ScenarioOutline, Step
 from behave.formatter import ansi_escapes
