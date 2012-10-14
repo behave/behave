@@ -2,6 +2,7 @@
 # PYCHECKER CONFIGURATION
 # ========================================================================================
 # .pycheckrc file created by PyChecker v0.8.18 
+# .pycheckrc file created by PyChecker v0.8.19
 #
 # It should be placed in your home directory (value of $HOME).
 # If $HOME is not set, it will look in the current directory.
@@ -15,7 +16,7 @@
 only = 0
 
 # the maximum number of warnings to be displayed
-limit = 200
+limit = 100
 
 # list of evil C extensions that crash the interpreter
 evil = []
@@ -186,7 +187,7 @@ usesExec = 0
 ignoreStandardLibrary = 1
 
 # ignore warnings from the list of modules
-blacklist = ['Tkinter', 'wxPython', 'gtk', 'GTK', 'GDK', "ssl" ]
+blacklist = ['Tkinter', 'wxPython', 'gtk', 'GTK', 'GDK']
 
 # ignore global variables not used if name is one of these values
 variablesToIgnore = ['__version__', '__warningregistry__', '__all__', '__credits__', '__test__', '__author__', '__email__', '__revision__', '__id__', '__copyright__', '__license__', '__date__']
@@ -237,5 +238,5 @@ debug = 0
 findEvil = 0
 
 # turn off all output except warnings
-quiet = 1
+quiet = 0
 
