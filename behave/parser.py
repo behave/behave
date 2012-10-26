@@ -202,6 +202,7 @@ class Parser(object):
                                             scenario_kwd, name, tags=self.tags)
             self.tags = []
             self.feature.add_scenario(self.statement)
+            self.state = 'scenario'
             return True
 
         scenario_outline_kwd = self.match_keyword('scenario_outline', line)
@@ -212,7 +213,7 @@ class Parser(object):
                                                    tags=self.tags)
             self.tags = []
             self.feature.add_scenario(self.statement)
-            self.state = 'steps'
+            self.state = 'scenario'
             return True
 
         examples_kwd = self.match_keyword('examples', line)
