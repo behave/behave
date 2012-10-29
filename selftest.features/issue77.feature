@@ -11,6 +11,7 @@ Feature: Issue #77: Does not capture stdout from sub-processes
 
 
   Background: Test Setup
+    Given a new working directory
     Given a file named "hello.py" with:
         """
         import sys
@@ -52,8 +53,7 @@ Feature: Issue #77: Does not capture stdout from sub-processes
         """
 
   Scenario: Subprocess call shows generated output
-    Given a new working directory
-    And   a file named "features/issue77_hello_OK.feature" with:
+    Given a file named "features/issue77_hello_OK.feature" with:
         """
         Feature:
           Scenario:
