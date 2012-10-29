@@ -1,4 +1,5 @@
 from __future__ import with_statement
+import os
 
 from behave import model, i18n
 
@@ -6,13 +7,16 @@ DEFAULT_LANGUAGE = 'en'
 
 
 def parse_file(filename, language=None):
+    return parse_feature(read_file(filename), language, filename)
+
+def read_file(filename):
     with open(filename, 'rb') as f:
+
         # file encoding is assumed to be utf8. Oh, yes.
         try:
-            data = f.read().decode('utf8')
+            return f.read().decode('utf8')
         except Exception, e:
             raise ParserError(e, 0, filename)
-    return parse_feature(data, language, filename)
 
 
 def parse_feature(data, language=None, filename=None):
@@ -186,8 +190,34 @@ class Parser(object):
             return True
 
         if line.startswith('@'):
-            self.tags.extend([model.Tag(tag.strip(), self.line)
-                for tag in line[1:].split('@')])
+            for tag in line[1:].split('@'):
+                self.tags.append(model.Tag(tag.strip(), self.line))
+
+                if tag.startswith("import "):
+                    filename = tag[7:]
+
+                    filename = os.path.join(os.path.dirname(self.filename), filename)
+
+                    if not os.path.exists(filename):
+                        raise ParserError("Partial %s not found" % filename, self.line)
+
+                    orig_line = self.line
+                    orig_file = self.filename
+
+                    self.line = 0
+                    self.filename = filename
+                    for line in read_file(filename).split('\n'):
+                        self.line += 1
+                        if not line.strip() and not self.state == 'multiline':
+                            continue
+                        self.filename
+                        self.action(line)
+
+                    self.line = orig_line
+                    self.filename = orig_file
+
+
+
             return True
 
         scenario_kwd = self.match_keyword('scenario', line)
