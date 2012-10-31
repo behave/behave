@@ -51,6 +51,15 @@ def step_a_file_named_filename_with(context, filename):
         command_util.ensure_context_resource_exists(context, "features", [])
         context.features.append(filename)
 
+@given(u'an empty file named "{filename}"')
+def step_an_empty_file_named_filename(context, filename):
+    """
+    Creates an empty file.
+    """
+    assert not os.path.isabs(filename)
+    command_util.ensure_workdir_exists(context)
+    filename2 = os.path.join(context.workdir, filename)
+    command_util.create_textfile_with_contents(filename2, "")
 
 @when(u'I run "{command}"')
 def step_i_run_command(context, command):
