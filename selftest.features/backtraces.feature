@@ -28,19 +28,22 @@ Feature: Backtraces
     When I run "behave -c features/failing_hard.feature"
     Then it should fail with:
       """
+      0 features passed, 1 failed, 0 skipped
+      0 scenarios passed, 1 failed, 0 skipped
+      0 steps passed, 1 failed, 0 skipped, 0 undefined
+      """
+    And the command output should contain:
+      """
       Feature: Sample # features/failing_hard.feature:1
         Scenario: Example  # features/failing_hard.feature:2
           Given failing    # features/steps/steps.py:3
             Traceback (most recent call last):
-              File "{__CWD__}/behave/model.py", line 806, in run
-                match.run(runner.context)
-              File "{__CWD__}/behave/model.py", line 1119, in run
-                self.func(context, *args, **kwargs)
-              File "{__WORKDIR__}/features/steps/steps.py", line 5, in step
-                raise RuntimeError("failing")
-            RuntimeError: failing
-      0 features passed, 1 failed, 0 skipped
-      0 scenarios passed, 1 failed, 0 skipped
-      0 steps passed, 1 failed, 0 skipped, 0 undefined
+      """
+    # -- TRACEBACK CONTINUED:
+    And the command output should contain:
+      """
+          File "{__WORKDIR__}/features/steps/steps.py", line 5, in step
+            raise RuntimeError("failing")
+        RuntimeError: failing
       """
 

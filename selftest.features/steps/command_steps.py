@@ -76,6 +76,20 @@ def step_i_run_command(context, command):
 @then(u'it should fail with result "{result:int}"')
 def step_it_should_fail_with_result(context, result):
     assert_that(context.command_result.returncode, equal_to(result))
+    assert_that(result, is_not(equal_to(0)))
+
+@then(u'the command should fail with returncode="{result:int}"')
+def step_it_should_fail_with_result(context, result):
+    assert_that(context.command_result.returncode, equal_to(result))
+    assert_that(result, is_not(equal_to(0)))
+
+@then(u'the command returncode is "{result:int}"')
+def step_the_command_returncode_is(context, result):
+    assert_that(context.command_result.returncode, equal_to(result))
+
+@then(u'the command returncode is non-zero')
+def step_the_command_returncode_is(context):
+    assert_that(context.command_result.returncode, is_not(equal_to(0)))
 
 @then(u'it should pass')
 def step_it_should_pass(context):
@@ -176,6 +190,21 @@ def step_command_output_should_not_contain(context):
     # XXX expected_output = command_util.text_remove_empty_lines(expected_output.strip())
     # XXX actual_output   = command_util.text_remove_empty_lines(command_output.strip())
     expected_output = command_util.text_normalize(expected_output.strip())
+    actual_output   = command_util.text_normalize(command_output.strip())
+    if DEBUG:
+        print("expected:\n{0}".format(expected_output))
+        print("actual:\n{0}".format(actual_output))
+    assert_that(actual_output, is_not(contains_string(expected_output)))
+
+@then(u'the command output should not contain "{text}"')
+def step_command_output_should_not_contain(context, text):
+    '''
+    EXAMPLE:
+        ...
+        then the command output should not contain "TEXT"
+    '''
+    command_output  = context.command_result.output
+    expected_output = command_util.text_normalize(text)
     actual_output   = command_util.text_normalize(command_output.strip())
     if DEBUG:
         print("expected:\n{0}".format(expected_output))

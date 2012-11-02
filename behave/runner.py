@@ -511,6 +511,7 @@ class Runner(object):
         context = self.context = Context(self)
         stream = self.config.output
         failed = False
+        failed_count = 0
 
         self.run_hook('before_all', context)
 
@@ -528,6 +529,8 @@ class Runner(object):
             self.formatter.uri(filename)
 
             failed = feature.run(self)
+            if failed:
+                failed_count += 1
 
             self.formatter.close()
             stream.write('\n')
@@ -541,6 +544,7 @@ class Runner(object):
         for reporter in self.config.reporters:
             reporter.end()
 
+        failed = (failed_count > 0)
         return failed
 
     def setup_capture(self):
