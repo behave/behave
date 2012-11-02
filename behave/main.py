@@ -137,6 +137,8 @@ def main():
 
     if failed:
         sys.exit(1)
+    # -- OTHERWISE: Successful run.
+    sys.exit(0)
 
 if __name__ == '__main__':
     main()
