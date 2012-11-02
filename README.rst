@@ -68,6 +68,7 @@ Next Version 1.2.2.x - UNRELEASED
 
 FIXES:
 
+  * FIX issue #85: AssertionError with nested regex and pretty formatter
   * FIX issue #84: behave.runner behave does not reliably detected failed test runs
   * FIX issue #83: behave.__main__:main() Various sys.exit issues
   * FIX issue #80: source file names not properly printed with python 3.3.0
@@ -86,7 +87,6 @@ FIXES:
 
 OPEN:
 
-  * issue #85: AssertionError with nested regex and pretty formatter
   * issue #82: JUnitReporter fails with Python 3.x
   * issue #79: support for scenario descriptions
   * issue #77: Does not capture stdout from sub-processes

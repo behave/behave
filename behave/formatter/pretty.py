@@ -303,6 +303,12 @@ class PrettyFormatter(Formatter):
             text = step_name[text_start:arg.start]
             self.stream.write(text_format.text(text))
             line_length += len(text)
+            if arg.end <= text_start:
+                # -- SKIP-OVER: Optional and nested regexp args
+                #    - Optional regexp args (None).
+                #    - Nested regexp args that are already processed.
+                continue
+            assert arg.original is not None
             self.stream.write(arg_format.text(arg.original))
             line_length += len(arg.original)
             text_start = arg.end
