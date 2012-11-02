@@ -76,6 +76,20 @@ def step_i_run_command(context, command):
 @then(u'it should fail with result "{result:int}"')
 def step_it_should_fail_with_result(context, result):
     assert_that(context.command_result.returncode, equal_to(result))
+    assert_that(result, is_not(equal_to(0)))
+
+@then(u'the command should fail with returncode="{result:int}"')
+def step_it_should_fail_with_result(context, result):
+    assert_that(context.command_result.returncode, equal_to(result))
+    assert_that(result, is_not(equal_to(0)))
+
+@then(u'the command returncode is "{result:int}"')
+def step_the_command_returncode_is(context, result):
+    assert_that(context.command_result.returncode, equal_to(result))
+
+@then(u'the command returncode is non-zero')
+def step_the_command_returncode_is(context):
+    assert_that(context.command_result.returncode, is_not(equal_to(0)))
 
 @then(u'it should pass')
 def step_it_should_pass(context):

@@ -68,6 +68,8 @@ Next Version 1.2.2.x - UNRELEASED
 
 FIXES:
 
+  * FIX issue #84: behave.runner behave does not reliably detected failed test runs
+  * FIX issue #83: behave.__main__:main() Various sys.exit issues
   * FIX issue #80: source file names not properly printed with python 3.3.0
   * ADD issue #78: Added references to django-behave (pull-request).
   * FIX issue #75: behave @list_of_features.txt is broken.
