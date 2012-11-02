@@ -110,7 +110,7 @@ You may see the same information presented below at any time using ``behave
    Fail if there are any undefined or pending steps.
 **-t, --tags**
    Only execute features or scenarios with tags matching
-   TAG_EXPRESSION. Pass '--tag-help' for more information.
+   TAG_EXPRESSION. Pass '--tags-help' for more information.
 **-v, --verbose**
    Show the files and features loaded.
 **-w, --wip**
