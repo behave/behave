@@ -86,6 +86,7 @@ FIXES:
 
 OPEN:
 
+  * issue #85: AssertionError with nested regex and pretty formatter
   * issue #82: JUnitReporter fails with Python 3.x
   * issue #79: support for scenario descriptions
   * issue #77: Does not capture stdout from sub-processes

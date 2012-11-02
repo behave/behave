@@ -196,6 +196,21 @@ def step_command_output_should_not_contain(context):
         print("actual:\n{0}".format(actual_output))
     assert_that(actual_output, is_not(contains_string(expected_output)))
 
+@then(u'the command output should not contain "{text}"')
+def step_command_output_should_not_contain(context, text):
+    '''
+    EXAMPLE:
+        ...
+        then the command output should not contain "TEXT"
+    '''
+    command_output  = context.command_result.output
+    expected_output = command_util.text_normalize(text)
+    actual_output   = command_util.text_normalize(command_output.strip())
+    if DEBUG:
+        print("expected:\n{0}".format(expected_output))
+        print("actual:\n{0}".format(actual_output))
+    assert_that(actual_output, is_not(contains_string(expected_output)))
+
 @then(u'the directory "{directory}" should exist')
 def step_the_directory_should_exist(context, directory):
     path_ = directory
