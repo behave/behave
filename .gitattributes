@@ -1,1 +1,1 @@
-*.cmd -crlf
+*.cmd eol=crlf
