@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+#!/Users/jens/se/INCUBATOR/behave/.tox/xxx/bin/python
+# EASY-INSTALL-ENTRY-SCRIPT: 'behave','console_scripts','behave'
+__requires__ = 'behave'
+import sys
+from pkg_resources import load_entry_point
+
+def main():
+    return load_entry_point(__requires__, 'console_scripts', 'behave')()
+
+def main2():
+    from behave.main import main as behave_main
+    return behave_main()
+
+if __name__ == '__main__':
+    returncode = main2()
+    sys.stdout.write("behave.result=%s\n" % returncode)
+    sys.exit(returncode)
