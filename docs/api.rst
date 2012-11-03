@@ -177,7 +177,7 @@ is written to introduce a restricted set of variables into your code:
 **Given**, **When**, **Then**, **Step**
   See above.
 
-**stop_matcher**
+**step_matcher**
   This is described in `step parameters`_.
 
 
