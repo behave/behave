@@ -15,7 +15,7 @@ PyHamcrest >= 1.6
 
 # -- DEVELOPMENT SUPPORT:
 paver >= 1.0.5
-tox   >= 1.3
+tox   >= 1.4
 nose-cov >= 1.4
 coverage >= 3.5
 
