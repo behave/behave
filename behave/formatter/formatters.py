@@ -41,3 +41,5 @@ register(pretty.PrettyFormatter)
 from behave.formatter import json
 register(json.JSONFormatter)
 register(json.PrettyJSONFormatter)
+from behave.formatter import html
+register(html.HTMLFormatter)
