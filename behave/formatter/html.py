@@ -278,7 +278,7 @@ class HTMLFormatter(Formatter):
         h2 = ET.SubElement(self.feature, 'h2')
         span = ET.SubElement(h2, 'span')
         span.set('class', 'val')
-        span.text = u'%s: %s\n' % (feature.keyword, feature.name)
+        span.text = u'%s: %s' % (feature.keyword, feature.name)
 
     def background(self, background):
         self.background = ET.SubElement(self.suite, 'div')
@@ -287,42 +287,46 @@ class HTMLFormatter(Formatter):
         h3 = ET.SubElement(self.background, 'h3')
         span = ET.SubElement(h3, 'span')
         span.set('class', 'val')
-        span.text = u'%s: %s\n' % (background.keyword, background.name)
+        span.text = u'%s: %s' % (background.keyword, background.name)
 
-        self.steps = ET.SubElement(self.scenario, 'ol')
+        self.steps = ET.SubElement(self.background, 'ol')
 
     def scenario(self, scenario):
-        self.scenario = ET.SubElement(self.suite, 'div')
-        self.scenario.set('class', 'scenario')
+        self.scenario_el = ET.SubElement(self.suite, 'div')
+        self.scenario_el.set('class', 'scenario')
 
-        scenario_file = ET.SubElement(self.scenario, 'span')
+        scenario_file = ET.SubElement(self.scenario_el, 'span')
         scenario_file.set('class', 'scenario_file')
         scenario_file.text = scenario.location
 
-        tags = ET.SubElement(self.scenario, 'span')
-        tags.set('class', 'tag')
-        tags.text = '@' + reduce(lambda d, x: "%s, @%s" % (d, x), scenario.tags)
+        if scenario.tags:
+            tags = ET.SubElement(self.scenario_el, 'span')
+            tags.set('class', 'tag')
+            tags.text = '@' + reduce(lambda d, x: "%s, @%s" % (d, x), scenario.tags)
 
-        h3 = ET.SubElement(self.scenario, 'h3')
+        h3 = ET.SubElement(self.scenario_el, 'h3')
         span = ET.SubElement(h3, 'span')
         span.set('class', 'val')
-        span.text = u'%s: %s\n' % (scenario.keyword, scenario.name)
+        span.text = u'%s: %s' % (scenario.keyword, scenario.name)
 
-        self.steps = ET.SubElement(self.scenario, 'ol')
+        self.steps = ET.SubElement(self.scenario_el, 'ol')
 
     def scenario_outline(self, outline):
-        self.scenario_outline = ET.SubElement(self.suite, 'div')
-        self.scenario_outline.set('class', 'scenario outline')
+        self.scenario_el_outline = ET.SubElement(self.suite, 'div')
+        self.scenario_el_outline.set('class', 'scenario outline')
 
-        h3 = ET.SubElement(self.scenario_outline, 'h3')
+        h3 = ET.SubElement(self.scenario_el_outline, 'h3')
         span = ET.SubElement(h3, 'span')
         span.set('class', 'val')
-        span.text = u'%s: %s\n' % (outline.keyword, outline.name)
+        span.text = u'%s: %s' % (outline.keyword, outline.name)
 
-        self.steps = ET.SubElement(self.scenario, 'ol')
+        self.steps = ET.SubElement(self.scenario_el, 'ol')
+
+    def match(self, match):
+        self.arguments = match.arguments
 
     def step(self, step):
-        pass
+        self.arguments = None
 
     def result(self, result):
         step = ET.SubElement(self.steps, 'li')
@@ -337,19 +341,61 @@ class HTMLFormatter(Formatter):
 
         keyword = ET.SubElement(step_name, 'span')
         keyword.set('class', 'step val')
-        keyword.text = result.name
+        if self.arguments:
+            for argument in self.arguments:
+                keyword.text = result.name.split(argument.value)[0]
+                bold = ET.SubElement(keyword, 'b')
+                bold.text = argument.value
+                bold.tail = result.name.split(argument.value)[1]
+        else:
+            keyword.text = result.name
 
         step_file = ET.SubElement(step, 'div')
         step_file.set('class', 'step_file')
         span = ET.SubElement(step_file, 'span')
         span.text = result.location
 
+        if result.text:
+            message = ET.SubElement(step, 'div')
+            message.set('class', 'message')
+            pre = ET.SubElement(message, 'pre')
+            pre.set('style', 'white-space: pre-wrap;')
+            pre.text = result.text
+
+        if result.table:
+            table = ET.SubElement(step, 'table')
+            tr = ET.SubElement(table, 'tr')
+            for heading in result.table.headings:
+                ET.SubElement(tr, 'th').text = heading
+
+            for row in result.table.rows:
+                tr = ET.SubElement(table, 'tr')
+                for cell in row.cells:
+                    ET.SubElement(tr, 'td').text = cell
+
         if result.error_message:
             message = ET.SubElement(step, 'div')
             message.set('class', 'message')
 
             pre = ET.SubElement(message, 'pre')
-            pre.text = result.error_message
+            pre.set('style', 'white-space: pre-wrap;')
+            pre.text = result.error_message.split('Captured stdout')[0]
+
+            stdout_step = ET.SubElement(self.steps, 'li')
+            stdout_step.set('class', 'step skipped')
+
+            step_name_div = ET.SubElement(stdout_step, 'div')
+            step_name_div.set('class', 'step_name')
+
+            step_name = ET.SubElement(step_name_div, 'span')
+            step_name.set('class', 'step val')
+            step_name.text = "Captured stdout:"
+
+            stdout_span = ET.SubElement(stdout_step, 'div')
+            stdout_span.set('class', 'message')
+
+            stdout = ET.SubElement(stdout_step, 'pre')
+            stdout.text = result.error_message.split('Captured stdout:\n')[1]
 
     def close(self):
         self.stream.write(unicode(ET.tostring(self.html, encoding='utf-8')))
