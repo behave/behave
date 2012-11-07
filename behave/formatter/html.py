@@ -1,6 +1,6 @@
-from __future__ import absolute_import
 from behave.formatter.base import Formatter
 from xml.etree import ElementTree as ET
+import base64
 
 
 class HTMLFormatter(Formatter):
@@ -10,8 +10,7 @@ class HTMLFormatter(Formatter):
     def __init__(self, stream, config):
         super(HTMLFormatter, self).__init__(stream, config)
 
-        self.steps = []
-        self.show_timings = config.show_timings
+        self.embed_object = None
 
         self.html = ET.Element('html')
 
@@ -271,6 +270,8 @@ class HTMLFormatter(Formatter):
         collapser.set('id', 'collapser')
         collapser.text = 'Collapse All'
 
+        self.image_id = 0
+
     def feature(self, feature):
         self.feature = ET.SubElement(self.suite, 'div')
         self.feature.set('class', 'feature')
@@ -327,6 +328,7 @@ class HTMLFormatter(Formatter):
 
     def step(self, step):
         self.arguments = None
+        self.last_step = step
 
     def result(self, result):
         step = ET.SubElement(self.steps, 'li')
@@ -379,7 +381,6 @@ class HTMLFormatter(Formatter):
 
             pre = ET.SubElement(message, 'pre')
             pre.set('style', 'white-space: pre-wrap;')
-            pre.text = result.error_message.split('Captured stdout')[0]
 
             stdout_step = ET.SubElement(self.steps, 'li')
             stdout_step.set('class', 'step skipped')
@@ -387,15 +388,54 @@ class HTMLFormatter(Formatter):
             step_name_div = ET.SubElement(stdout_step, 'div')
             step_name_div.set('class', 'step_name')
 
-            step_name = ET.SubElement(step_name_div, 'span')
-            step_name.set('class', 'step val')
-            step_name.text = "Captured stdout:"
+            if 'Captured stdout:' in result.error_message:
+                pre.text = result.error_message.split('Captured stdout')[0]
 
-            stdout_span = ET.SubElement(stdout_step, 'div')
-            stdout_span.set('class', 'message')
+                step_name = ET.SubElement(step_name_div, 'span')
+                step_name.set('class', 'step val')
 
-            stdout = ET.SubElement(stdout_step, 'pre')
-            stdout.text = result.error_message.split('Captured stdout:\n')[1]
+                stdout_span = ET.SubElement(stdout_step, 'div')
+                stdout_span.set('class', 'message')
+
+                stdout = ET.SubElement(stdout_step, 'pre')
+                stdout.set('style', 'white-space: pre-wrap;')
+                stdout.text = "Captured stdout:\n" +\
+                    result.error_message.split('Captured stdout:\n')[1]
+            else:
+                pre.text = result.error_message
+
+        if hasattr(self, 'embed_in_this_step') and self.embed_in_this_step:
+            span = ET.SubElement(step, 'span')
+            self._doEmbed(span, self.embed_mime_type, self.embed_data)
+            self.embed_in_this_step = None
+
+    def _doEmbed(self, span, mime_type, data):
+        span.set('class', 'embed')
+
+        link = ET.SubElement(span, 'a')
+        link.set('onclick', \
+            "img=document.getElementById('%s');" % self.image_id +
+            "img.style.display =" +
+            "(img.style.display == 'none' ? 'block' : 'none');" +
+            "return false")
+        link.text = 'Screenshot'
+
+        image = ET.SubElement(span, 'img')
+        image.set('id', str(self.image_id))
+        image.set('style', 'display: none')
+        image.set('src',
+                  'data:%s;base64,%s' % (mime_type, base64.b64encode(data)))
+
+        self.image_id += 1
+
+    def embedding(self, mime_type, data):
+        if self.last_step.status == 'untested':
+            self.embed_in_this_step = True
+            self.embed_mime_type = mime_type
+            self.embed_data = data
+        else:
+            span = ET.SubElement(self.steps, 'div')
+            self._doEmbed(span, mime_type, data)
 
     def close(self):
         self.stream.write(unicode(ET.tostring(self.html, encoding='utf-8')))
