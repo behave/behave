@@ -60,7 +60,6 @@ class HTMLFormatter(Formatter):
         self.embed_id = 0
         self.embed_in_this_step = None
         self.embed_data = None
-        self.embed_description = None
         self.embed_mime_type = None
 
         self.scenario_id = 0
@@ -176,11 +175,12 @@ class HTMLFormatter(Formatter):
             self.header.set('style', style)
 
         if hasattr(self, 'embed_in_this_step') and self.embed_in_this_step:
-            self._doEmbed(self.last_step_embed_span, self.embed_mime_type,
-                          self.embed_data, self.embed_description)
+            self._doEmbed(self.last_step_embed_span,
+                          self.embed_mime_type,
+                          self.embed_data)
             self.embed_in_this_step = None
 
-    def _doEmbed(self, span, mime_type, data, description):
+    def _doEmbed(self, span, mime_type, data):
         self.embed_id += 1
 
         link = ET.SubElement(span, 'a')
@@ -189,12 +189,9 @@ class HTMLFormatter(Formatter):
                  "embd.style.display =" +
                  "(embd.style.display == 'none' ? 'block' : 'none');" +
                  "return false")
-        if self.embed_description:
-            link.text = self.embed_description
 
         if 'image/' in mime_type:
-            if self.embed_description is None:
-                link.text = 'Screenshot'
+            link.text = 'Screenshot'
 
             embed = ET.SubElement(span, 'img',
                 {'id': 'embed_%s' % self.embed_id,
@@ -204,8 +201,7 @@ class HTMLFormatter(Formatter):
             embed.tail = '    '
 
         if 'text/' in mime_type:
-            if self.embed_description is None:
-                link.text = 'Data'
+            link.text = 'Data'
 
             embed = ET.SubElement(span, 'pre',
                 {'id': "text_%s" % self.embed_id,
@@ -213,16 +209,15 @@ class HTMLFormatter(Formatter):
             embed.text = data
             embed.tail = '    '
 
-    def embedding(self, mime_type, data, description=None):
+    def embedding(self, mime_type, data):
         if self.last_step.status == 'untested':
             # Embed called during step execution
             self.embed_in_this_step = True
             self.embed_mime_type = mime_type
             self.embed_data = data
-            self.embed_description = description
         else:
             # Embed called in after_*
-            self._doEmbed(self.last_step_embed_span, mime_type, data, description)
+            self._doEmbed(self.last_step_embed_span, mime_type, data)
 
     def close(self):
         self.duration.text =\

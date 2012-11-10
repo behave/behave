@@ -235,9 +235,9 @@ class Context(object):
                 return True
         return False
 
-    def embed(self, mime_type, data, description=None):
+    def embed(self, mime_type, data):
         if hasattr(self._runner.formatter, 'embedding'):
-            self._runner.formatter.embedding(mime_type, data, description)
+            self._runner.formatter.embedding(mime_type, data)
 
     def execute_steps(self, steps):
         '''The steps identified in the "steps" text string will be parsed and
