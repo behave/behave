@@ -1,5 +1,5 @@
 from behave.formatter.base import Formatter
-from xml.etree import ElementTree as ET
+from xml.etree import cElementTree as ET
 import base64
 
 
