@@ -300,15 +300,16 @@ class PrettyFormatter(Formatter):
 
         text_start = 0
         for arg in arguments:
+            if arg.end <= text_start:
+                # -- SKIP-OVER: Optional and nested regexp args
+                #    - Optional regexp args (unmatched: None).
+                #    - Nested regexp args that are already processed.
+                continue
+                # -- VALID, MATCHED ARGUMENT:
+            assert arg.original is not None
             text = step_name[text_start:arg.start]
             self.stream.write(text_format.text(text))
             line_length += len(text)
-            if arg.end <= text_start:
-                # -- SKIP-OVER: Optional and nested regexp args
-                #    - Optional regexp args (None).
-                #    - Nested regexp args that are already processed.
-                continue
-            assert arg.original is not None
             self.stream.write(arg_format.text(arg.original))
             line_length += len(arg.original)
             text_start = arg.end
