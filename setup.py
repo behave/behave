@@ -26,6 +26,9 @@ setup(
     entry_points={
         'console_scripts': ['behave = behave.__main__:main'],
     },
+    package_data={
+        'behave': ['formatter/*.css'],
+    },
     install_requires=requirements,
     use_2to3=True,
     classifiers=[
