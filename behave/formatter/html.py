@@ -10,18 +10,12 @@ class HTMLFormatter(Formatter):
     def __init__(self, stream, config):
         super(HTMLFormatter, self).__init__(stream, config)
 
-        self.embed_object = None
-
         self.html = ET.Element('html')
 
         head = ET.SubElement(self.html, 'head')
-
         ET.SubElement(head, 'title').text = 'Behave steps'
-
-        ET.SubElement(head, 'meta').set('content', 'text/html;charset=utf-8')
-
-        style = ET.SubElement(head, 'style')
-        style.text = """
+        ET.SubElement(head, 'meta', {'content': 'text/html;charset=utf-8'})
+        ET.SubElement(head, 'style').text = """
             body {
               font-size: 0px;
               color: white;
@@ -237,42 +231,25 @@ class HTMLFormatter(Formatter):
         """
 
         body = ET.SubElement(self.html, 'body')
-
-        self.suite = ET.SubElement(body, 'div')
-        self.suite.set('class', 'behave')
+        self.suite = ET.SubElement(body, 'div', {'class': 'behave'})
 
         #Summary
-        self.header = ET.SubElement(self.suite, 'div')
-        self.header.set('id', 'behave-header')
-
-        label = ET.SubElement(self.header, 'div')
-        label.set('id', 'label')
-
+        self.header = ET.SubElement(self.suite, 'div', id='behave-header')
+        label = ET.SubElement(self.header, 'div', id='label')
         ET.SubElement(label, 'h1').text = 'Behave features'
 
-        summary = ET.SubElement(self.header, 'div')
-        summary.set('id', 'summary')
+        summary = ET.SubElement(self.header, 'div', id='summary')
 
-        totals = ET.SubElement(summary, 'p')
-        totals.set('id', 'totals')
+        totals = ET.SubElement(summary, 'p', id='totals')
 
-        self.feature_totals = ET.SubElement(totals, 'p')
-        self.feature_totals.set('id', 'feature_totals')
+        self.feature_totals = ET.SubElement(totals, 'p', id='feature_totals')
+        self.scenario_totals = ET.SubElement(totals, 'p', id='scenario_totals')
+        self.step_totals = ET.SubElement(totals, 'p', id='step_totals')
+        self.duration = ET.SubElement(summary, 'p', id='duration')
 
-        self.scenario_totals = ET.SubElement(totals, 'p')
-        self.scenario_totals.set('id', 'scenario_totals')
+        expand_collapse = ET.SubElement(summary, 'div', id='expand-collapse')
 
-        self.step_totals = ET.SubElement(totals, 'p')
-        self.step_totals.set('id', 'step_totals')
-
-        self.duration = ET.SubElement(summary, 'p')
-        self.duration.set('id', 'duration')
-
-        expand_collapse = ET.SubElement(summary, 'div')
-        expand_collapse.set('id', 'expand-collapse')
-
-        expander = ET.SubElement(expand_collapse, 'div')
-        expander.set('id', 'expander')
+        expander = ET.SubElement(expand_collapse, 'div', id='expander')
         expander.set('onclick', \
                      "var ols=document.getElementsByClassName('scenario_steps');" +
                      "for (var i=0; i< ols.length; i++) {" +
@@ -281,8 +258,7 @@ class HTMLFormatter(Formatter):
                      "return false")
         expander.text = 'Expand All'
 
-        collapser = ET.SubElement(expand_collapse, 'div')
-        collapser.set('id', 'collapser')
+        collapser = ET.SubElement(expand_collapse, 'div', id='collapser')
         collapser.set('onclick', \
                      "var ols=document.getElementsByClassName('scenario_steps');" +
                      "for (var i=0; i< ols.length; i++) {" +
@@ -291,53 +267,49 @@ class HTMLFormatter(Formatter):
                      "return false")
         collapser.text = 'Collapse All'
 
-        self.image_id = 0
+        self.embed_id = 0
+        self.embed_in_this_step = None
+        self.embed_data = None
+        self.embed_description = None
+        self.embed_mime_type = None
+
         self.scenario_id = 0
         self.all_features = []
 
     def feature(self, feature):
-        self.feature = ET.SubElement(self.suite, 'div')
-        self.feature.set('class', 'feature')
-
-        h2 = ET.SubElement(self.feature, 'h2')
-        span = ET.SubElement(h2, 'span')
-        span.set('class', 'val')
-        span.text = u'%s: %s' % (feature.keyword, feature.name)
-
         self.all_features.append(feature)
 
+        self.feature = ET.SubElement(self.suite, 'div', {'class': 'feature'})
+        h2 = ET.SubElement(self.feature, 'h2')
+        ET.SubElement(h2, 'span', {'class': 'val'}).text = \
+            u'%s: %s' % (feature.keyword, feature.name)
+
     def background(self, background):
-        self.background = ET.SubElement(self.suite, 'div')
-        self.background.set('class', 'background')
+        self.background = ET.SubElement(self.suite, 'div', {'class': 'background'})
 
         h3 = ET.SubElement(self.background, 'h3')
-        span = ET.SubElement(h3, 'span')
-        span.set('class', 'val')
-        span.text = u'%s: %s' % (background.keyword, background.name)
+        ET.SubElement(h3, 'span', {'class': 'val'}).text = \
+            u'%s: %s' % (background.keyword, background.name)
 
         self.steps = ET.SubElement(self.background, 'ol')
 
     def scenario(self, scenario):
-        self.scenario_el = ET.SubElement(self.suite, 'div')
-        self.scenario_el.set('class', 'scenario')
+        self.scenario_el = ET.SubElement(self.suite, 'div', {'class': 'scenario'})
 
-        scenario_file = ET.SubElement(self.scenario_el, 'span')
-        scenario_file.set('class', 'scenario_file')
+        scenario_file = ET.SubElement(self.scenario_el, 'span', {'class': 'scenario_file'})
         scenario_file.text = scenario.location
 
         if scenario.tags:
-            tags = ET.SubElement(self.scenario_el, 'span')
-            tags.set('class', 'tag')
+            tags = ET.SubElement(self.scenario_el, 'span', {'class': 'tag'})
             tags.text = '@' + reduce(lambda d, x: "%s, @%s" % (d, x), scenario.tags)
 
         self.scenario_name = ET.SubElement(self.scenario_el, 'h3')
-        span = ET.SubElement(self.scenario_name, 'span')
-        span.set('class', 'val')
+        span = ET.SubElement(self.scenario_name, 'span', {'class': 'val'})
         span.text = u'%s: %s' % (scenario.keyword, scenario.name)
 
-        self.steps = ET.SubElement(self.scenario_el, 'ol')
-        self.steps.set('class', 'scenario_steps')
-        self.steps.set('id', 'scenario_%s' % self.scenario_id)
+        self.steps = ET.SubElement(self.scenario_el, 'ol',
+            {'class': 'scenario_steps',
+             'id': 'scenario_%s' % self.scenario_id})
 
         self.scenario_name.set('onclick', \
                      "ol=document.getElementById('scenario_%s');" % self.scenario_id +
@@ -355,40 +327,36 @@ class HTMLFormatter(Formatter):
 
     def step(self, step):
         self.arguments = None
+        self.embed_in_this_step = None
         self.last_step = step
 
     def result(self, result):
-        step = ET.SubElement(self.steps, 'li')
-        step.set('class', 'step %s' % result.status)
+        self.last_step = result
+        step = ET.SubElement(self.steps, 'li', {'class': 'step %s' % result.status})
+        step_name = ET.SubElement(step, 'div', {'class': 'step_name'})
 
-        step_name = ET.SubElement(step, 'div')
-        step_name.set('class', 'step_name')
-
-        keyword = ET.SubElement(step_name, 'span')
-        keyword.set('class', 'keyword')
+        keyword = ET.SubElement(step_name, 'span', {'class': 'keyword'})
         keyword.text = result.keyword + ' '
 
-        keyword = ET.SubElement(step_name, 'span')
-        keyword.set('class', 'step val')
+        step_text = ET.SubElement(step_name, 'span', {'class': 'step val'})
         if self.arguments:
             for argument in self.arguments:
-                keyword.text = result.name.split(argument.value)[0]
-                bold = ET.SubElement(keyword, 'b')
+                step_text.text = result.name.split(argument.value)[0]
+                bold = ET.SubElement(step_text, 'b')
                 bold.text = argument.value
                 bold.tail = result.name.split(argument.value)[1]
         else:
-            keyword.text = result.name
+            step_text.text = result.name
 
-        step_file = ET.SubElement(step, 'div')
-        step_file.set('class', 'step_file')
-        span = ET.SubElement(step_file, 'span')
-        span.text = result.location
+        step_file = ET.SubElement(step, 'div', {'class': 'step_file'})
+        ET.SubElement(step_file, 'span').text = result.location
+
+        self.last_step_embed_span = ET.SubElement(step, 'span')
+        self.last_step_embed_span.set('class', 'embed')
 
         if result.text:
-            message = ET.SubElement(step, 'div')
-            message.set('class', 'message')
-            pre = ET.SubElement(message, 'pre')
-            pre.set('style', 'white-space: pre-wrap;')
+            message = ET.SubElement(step, 'div', {'class': 'message'})
+            pre = ET.SubElement(message, 'pre', {'style': 'white-space: pre-wrap;'})
             pre.text = result.text
 
         if result.table:
@@ -403,39 +371,9 @@ class HTMLFormatter(Formatter):
                     ET.SubElement(tr, 'td').text = cell
 
         if result.error_message:
-            message = ET.SubElement(step, 'div')
-            message.set('class', 'message')
-
-            pre = ET.SubElement(message, 'pre')
-            pre.set('style', 'white-space: pre-wrap;')
-
-            stdout_step = ET.SubElement(self.steps, 'li')
-            stdout_step.set('class', 'step skipped')
-
-            step_name_div = ET.SubElement(stdout_step, 'div')
-            step_name_div.set('class', 'step_name')
-
-            if 'Captured stdout:' in result.error_message:
-                pre.text = result.error_message.split('Captured stdout')[0]
-
-                step_name = ET.SubElement(step_name_div, 'span')
-                step_name.set('class', 'step val')
-
-                stdout_span = ET.SubElement(stdout_step, 'div')
-                stdout_span.set('class', 'message')
-
-                stdout = ET.SubElement(stdout_step, 'pre')
-                stdout.set('style', 'white-space: pre-wrap;')
-                stdout.text = "Captured stdout:\n" +\
-                    result.error_message.split('Captured stdout:\n')[1]
-            else:
-                pre.text = result.error_message
-
-        if hasattr(self, 'embed_in_this_step') and self.embed_in_this_step:
-            span = ET.SubElement(step, 'span')
-            self._doEmbed(span, self.embed_mime_type,
-                          self.embed_data, self.embed_description)
-            self.embed_in_this_step = None
+            message = ET.SubElement(step, 'div', {'class': 'message'})
+            pre = ET.SubElement(message, 'pre', {'style': 'white-space: pre-wrap;'})
+            pre.text = result.error_message
 
         if result.status == 'failed':
             style = 'background: #C40D0D; color: #FFFFFF'
@@ -447,63 +385,61 @@ class HTMLFormatter(Formatter):
             self.scenario_name.set('style', style)
             self.header.set('style', style)
 
+        if hasattr(self, 'embed_in_this_step') and self.embed_in_this_step:
+            self._doEmbed(self.last_step_embed_span, self.embed_mime_type,
+                          self.embed_data, self.embed_description)
+            self.embed_in_this_step = None
+
     def _doEmbed(self, span, mime_type, data, description):
-        span.set('class', 'embed')
+        self.embed_id += 1
+
+        link = ET.SubElement(span, 'a')
+        link.set("onclick", \
+                 "embd=document.getElementById('embed_%s');" % self.embed_id +
+                 "embd.style.display =" +
+                 "(embd.style.display == 'none' ? 'block' : 'none');" +
+                 "return false")
+        if self.embed_description:
+            link.text = self.embed_description
 
         if 'image/' in mime_type:
-            link = ET.SubElement(span, 'a')
-            link.set('onclick', \
-                     "img=document.getElementById('%s');" % self.image_id +
-                     "img.style.display =" +
-                     "(img.style.display == 'none' ? 'block' : 'none');" +
-                     "return false")
-            if self.embed_description:
-                link.text = self.embed_description
-            else:
+            if self.embed_description is None:
                 link.text = 'Screenshot'
 
-            image = ET.SubElement(span, 'img')
-            image.set('id', str(self.image_id))
-            image.set('style', 'display: none')
-            image.set('src',
-                      'data:%s;base64,%s' % (mime_type, base64.b64encode(data)))
-
-            self.image_id += 1
+            embed = ET.SubElement(span, 'img',
+                {'id': 'embed_%s' % self.embed_id,
+                 'style': 'display: none',
+                 'src': 'data:%s;base64,%s' % (mime_type, base64.b64encode(data))
+                })
+            embed.tail = '    '
 
         if 'text/' in mime_type:
-            link = ET.SubElement(span, 'a')
-            link.set('onclick', \
-                     "pre=document.getElementById('%s');" % self.image_id +
-                     "pre.style.display =" +
-                     "(pre.style.display == 'none' ? 'block' : 'none');" +
-                     "return false")
-            if self.embed_description:
-                link.text = self.embed_description
-            else:
+            if self.embed_description is None:
                 link.text = 'Data'
 
-            pre = ET.SubElement(span, 'pre')
-            pre.set('id', str(self.image_id))
-            pre.set('style', 'display: none')
-            pre.text = data
-
-            self.image_id += 1
+            embed = ET.SubElement(span, 'pre',
+                {'id': "text_%s" % self.embed_id,
+                 'style': 'display: none'})
+            embed.text = data
+            embed.tail = '    '
 
     def embedding(self, mime_type, data, description=None):
         if self.last_step.status == 'untested':
+            # Embed called during step execution
             self.embed_in_this_step = True
             self.embed_mime_type = mime_type
             self.embed_data = data
             self.embed_description = description
         else:
-            span = ET.SubElement(self.steps, 'div')
-            self._doEmbed(span, mime_type, data, description)
+            # Embed called in after_*
+            self._doEmbed(self.last_step_embed_span, mime_type, data, description)
 
     def close(self):
         self.duration.text =\
             "Finished in %0.1f seconds" %\
                 sum(map(lambda x: x.duration, self.all_features))
 
+        # Filling in summary details
         result = []
         statuses = map(lambda x: x.status, self.all_features)
         from collections import Counter
@@ -532,4 +468,5 @@ class HTMLFormatter(Formatter):
             result.append('%s: %s' % (k, status_counter[k]))
         self.step_totals.text = 'Steps: ' + ', '.join(result)
 
+        # Sending the report to stream
         self.stream.write(unicode(ET.tostring(self.html, encoding='utf-8')))
