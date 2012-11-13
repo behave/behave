@@ -223,7 +223,7 @@ class TestStepRun(object):
         self.runner = Mock()
         self.config = self.runner.config = Mock()
         self.context = self.runner.context = Mock()
-        print ('context is', self.context)
+        print('context is', self.context)
         self.formatter = self.runner.formatter = Mock()
         self.step_registry = Mock()
         self.stdout_capture = self.runner.stdout_capture = Mock()

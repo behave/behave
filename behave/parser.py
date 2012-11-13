@@ -18,7 +18,7 @@ def parse_feature(data, language=None, filename=None):
 
     try:
         result = Parser(language).parse(data, filename)
-    except ParserError, e:
+    except ParserError as e:
         e.filename = filename
         raise
 

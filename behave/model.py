@@ -753,7 +753,7 @@ class Step(BasicStatement, Replayable):
                 runner.context.table = self.table
             match.run(runner.context)
             self.status = 'passed'
-        except AssertionError, e:
+        except AssertionError as e:
             self.status = 'failed'
             if e.args:
                 error = u'Assertion Failed: %s' % (e,)

@@ -181,8 +181,8 @@ class Context(object):
 
     def _dump(self):
         for level, frame in enumerate(self._stack):
-            print 'Level %d' % level
-            print repr(frame)
+            print('Level %d' % level)
+            print(repr(frame))
 
     def __getattr__(self, attr):
         if attr[0] == '_':
@@ -316,18 +316,18 @@ class Runner(object):
     def setup_paths(self):
         if self.config.paths:
             if self.config.verbose:
-                print 'Supplied path:', ', '.join('"%s"' % path for path
-                                                  in self.config.paths)
+                print('Supplied path:', ', '.join('"%s"' % path for path
+                                                  in self.config.paths))
             base_dir = os.path.abspath(self.config.paths[0])
 
             # supplied path might be to a feature file
             if os.path.isfile(base_dir):
                 if self.config.verbose:
-                    print 'Primary path is to a file so using its directory'
+                    print('Primary path is to a file so using its directory')
                 base_dir = os.path.dirname(base_dir)
         else:
             if self.config.verbose:
-                print 'Using default path "./features"'
+                print('Using default path "./features"')
             base_dir = os.path.abspath('features')
 
         # Get the root. This is not guaranteed to be '/' because Windows.
@@ -337,7 +337,7 @@ class Runner(object):
 
         while True:
             if self.config.verbose:
-                print 'Trying base directory:', new_base_dir
+                print('Trying base directory:', new_base_dir)
 
             if os.path.isdir(os.path.join(new_base_dir, 'steps')):
                 break
@@ -351,11 +351,11 @@ class Runner(object):
         if new_base_dir == root_dir:
             if self.config.verbose:
                 if not self.config.paths:
-                    print 'ERROR: Could not find "steps" directory. Please '\
-                        'specify where to find your features.'
+                    print('ERROR: Could not find "steps" directory. Please '\
+                        'specify where to find your features.')
                 else:
-                    print 'ERROR: Could not find "steps" directory in your '\
-                        'specified path "%s"' % base_dir
+                    print('ERROR: Could not find "steps" directory in your '\
+                        'specified path "%s"' % base_dir)
             raise ConfigError('No steps directory in "%s"' % base_dir)
 
         base_dir = new_base_dir
@@ -366,11 +366,11 @@ class Runner(object):
         else:
             if self.config.verbose:
                 if not self.config.paths:
-                    print 'ERROR: Could not find any "<name>.feature" files. '\
-                        'Please specify where to find your features.'
+                    print('ERROR: Could not find any "<name>.feature" files. '\
+                        'Please specify where to find your features.')
                 else:
-                    print 'ERROR: Could not find any "<name>.feature" files '\
-                        'in your specified path "%s"' % base_dir
+                    print('ERROR: Could not find any "<name>.feature" files '\
+                        'in your specified path "%s"' % base_dir)
             raise ConfigError('No feature files in "%s"' % base_dir)
 
         self.base_dir = base_dir

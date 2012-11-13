@@ -221,8 +221,8 @@ def capture(*args, **kw):
                 h.abandon()
             v = h.getvalue()
             if v:
-                print 'Captured Logging:'
-                print v
+                print('Captured Logging:')
+                print(v)
         return f
 
     if not args:
