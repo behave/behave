@@ -246,7 +246,7 @@ class Context(object):
 
         Returns boolean False if the steps are not parseable, True otherwise.
         '''
-        assert type(steps) is unicode, "Steps must be unicode."
+        assert type(steps) is str, "Steps must be unicode."
         try:
             assert self.feature
         except (AttributeError, AssertionError):

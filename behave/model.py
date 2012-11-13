@@ -56,8 +56,8 @@ class BasicStatement(object):
     def __init__(self, filename, line, keyword, name):
         self.filename = filename or '<string>'
         self.line = line
-        assert isinstance(keyword, unicode)
-        assert isinstance(name, unicode)
+        assert isinstance(keyword, str)
+        assert isinstance(name, str)
         self.keyword = keyword
         self.name = name
 
@@ -906,7 +906,7 @@ class Row(object):
         self.headings = headings
         self.comments = comments
         for c in cells:
-            assert isinstance(c, unicode)
+            assert isinstance(c, str)
         self.cells = cells
         self.line = line
 
@@ -936,22 +936,22 @@ class Row(object):
         return zip(self.headings, self.cells)
 
 
-class Tag(unicode):
+class Tag(str):
     '''Tags appear may be associated with Features or Scenarios.
 
-    They're a subclass of regular strings (unicode pre-Python 3) with an
+    They're a subclass of regular strings (str pre-Python 3) with an
     additional ``line`` number attribute (where the tag was seen in the source
     feature file.
 
     See `controlling things with tags`_.
     '''
     def __new__(cls, name, line):
-        o = unicode.__new__(cls, name)
+        o = str.__new__(cls, name)
         o.line = line
         return o
 
 
-class Text(unicode):
+class Text(str):
     '''Store multiline text from a Step definition.
 
     The attributes are:
@@ -965,9 +965,9 @@ class Text(unicode):
        Currently only 'text/plain'.
     '''
     def __new__(cls, value, content_type=u'text/plain', line=0):
-        assert isinstance(value, unicode)
-        assert isinstance(content_type, unicode)
-        o = unicode.__new__(cls, value)
+        assert isinstance(value, str)
+        assert isinstance(content_type, str)
+        o = str.__new__(cls, value)
         o.content_type = content_type
         o.line = line
         return o

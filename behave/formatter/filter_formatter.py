@@ -92,7 +92,7 @@ class FilterFormatter(object):
 
     def detect_filters(self, filter_list):
         filter_classes = set([type(f) for f in filter_list])
-        if len(filter_classes) > 1 and filter_classes != set([str, unicode]):
+        if len(filter_classes) > 1 and filter_classes != set([str, str]):
             message = "Inconsistent filters: %r" % (filter_list, )
             raise FilterError(message)
 

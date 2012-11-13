@@ -18,7 +18,7 @@ def escape_cell(cell):
 
 class MonochromeFormat(object):
     def text(self, text):
-        assert isinstance(text, unicode)
+        assert isinstance(text, str)
         return text
 
 
@@ -27,7 +27,7 @@ class ColorFormat(object):
         self.status = status
 
     def text(self, text):
-        assert isinstance(text, unicode)
+        assert isinstance(text, str)
         return escapes[self.status] + text + escapes['reset']
 
 
@@ -275,7 +275,7 @@ class PrettyFormatter(Formatter):
         self.stream.write(text_format.text(step.keyword + ' '))
         line_length = 5 + len(step.keyword)
 
-        step_name = unicode(step.name)
+        step_name = str(step.name)
 
         text_start = 0
         for arg in arguments:

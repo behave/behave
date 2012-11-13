@@ -13,8 +13,8 @@ def parse_file(filename, language=None):
 
 
 def parse_feature(data, language=None, filename=None):
-    # ALL data operated on by the parser MUST be unicode
-    assert isinstance(data, unicode)
+    # ALL data operated on by the parser MUST be str
+    assert isinstance(data, str)
 
     try:
         result = Parser(language).parse(data, filename)
