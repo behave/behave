@@ -233,6 +233,12 @@ class Feature(TagStatement, Replayable):
             runner.formatter.background(self.background)
 
         for scenario in self:
+            # limit to scenario names?
+            if (runner.config.name and
+                not any(map(lambda n: n in scenario.name,
+                            runner.config.name))):
+                continue
+
             failed = scenario.run(runner)
 
             # do we want to stop on the first failure?
