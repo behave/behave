@@ -55,6 +55,25 @@ class TestFeatureRun(object):
         for scenario in scenarios:
             scenario.run.assert_called_with(self.runner)
 
+    def test_run_runs_named_scenarios(self):
+        scenarios = [Mock(), Mock()]
+        scenarios[0].name = 'first scenario'
+        scenarios[1].name = 'second scenario'
+
+        for scenario in scenarios:
+            scenario.run.return_value = False
+
+        self.config.tags.check.return_value = True
+        self.config.name = ['first', 'third']
+
+        feature = model.Feature('foo.feature', 1, u'Feature', u'foo',
+                                scenarios=scenarios)
+
+        feature.run(self.runner)
+
+        scenarios[0].run.assert_called_with(self.runner)
+        assert not scenarios[1].run.called
+
     def test_feature_hooks_not_run_if_feature_not_being_run(self):
         self.config.tags.check.return_value = False
 
