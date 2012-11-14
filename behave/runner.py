@@ -444,7 +444,7 @@ class Runner(object):
         self.load_step_definitions()
 
         context = self.context = Context(self)
-        stream = self.config.output
+        streams = self.config.outputs
         failed = False
 
         self.run_hook('before_all', context)
@@ -459,13 +459,16 @@ class Runner(object):
             self.features.append(feature)
             self.feature = feature
 
-            self.formatter = formatters.get_formatter(self.config, stream)
-            self.formatter.uri(filename)
+            self.formatters = formatters.get_formatter(self.config, streams)
+            for formatter in self.formatters:
+                formatter.uri(filename)
 
             failed = feature.run(self)
 
-            self.formatter.close()
-            stream.write('\n')
+            for formatter in self.formatters:
+                formatter.close()
+            for stream in streams:
+                stream.write('\n')
 
             [reporter.feature(feature) for reporter in self.config.reporters]
 
