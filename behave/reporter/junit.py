@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import os.path
+import codecs
 from xml.etree import ElementTree
 from behave.reporter.base import Reporter
 from behave.model import Scenario, ScenarioOutline, Step
 from behave.formatter import ansi_escapes
-from exceptions import AssertionError
 
 
 def CDATA(text=None):         # pylint: disable=C0103
@@ -115,7 +115,7 @@ class JUnitReporter(Reporter):
 
         tree = ElementTreeWithCDATA(suite)
         report_filename = os.path.join(self.config.junit_directory, filename)
-        tree.write(open(report_filename, 'w'), 'UTF-8')
+        tree.write(codecs.open(report_filename, 'w'), 'UTF-8')
 
     # -- MORE:
     @staticmethod
