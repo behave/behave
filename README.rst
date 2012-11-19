@@ -68,6 +68,7 @@ Next Version 1.2.2.x - UNRELEASED
 
 FIXES:
 
+  * FIX issue #92: Output from --format=plain shows skipped steps in next scenario (same as #35)
   * FIX issue #85: AssertionError with nested regex and pretty formatter
   * FIX issue #84: behave.runner behave does not reliably detected failed test runs
   * FIX issue #83: behave.__main__:main() Various sys.exit issues
@@ -87,6 +88,8 @@ FIXES:
 
 OPEN:
 
+  * issue #93: Generic code adds format-specific text to failed scenarios
+  * issue #91: Jenkins confused by null package on classnames in JUnit XML report
   * issue #82: JUnitReporter fails with Python 3.x
   * issue #79: support for scenario descriptions
   * issue #76: environment.py is loaded twice
@@ -99,6 +102,11 @@ RESOLVED:
   * issue #81: Allow defining steps in a separate library.
   * issue #78: Added references to django-behave (pull-request).
   * issue #77: Does not capture stdout from sub-processes
+
+DUPLICATED:
+
+  * issue #94: JUnit format does not handle ScenarioOutlines (same as #69).
+
 
 Version 1.2.2 - August 21, 2012
 
