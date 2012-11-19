@@ -1,5 +1,5 @@
 @issue
-Feature: Issue #92: AssertionError with nested regex and pretty formatter
+Feature: Issue #92: Output from --format=plain shows skipped steps in next scenario
 
     | DUPLICATED, FIXED-BY: issue #35 solution.
     |
