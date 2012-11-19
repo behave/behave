@@ -731,6 +731,11 @@ class Step(BasicStatement, Replayable):
             if self.text:
                 self.text = self.text.replace("<%%%s%%>" % name, unicode(value))
 
+            if self.table:
+                for row in self.table:
+                    for i, cell in enumerate(row.cells):
+                        row.cells[i] = cell.replace("<%%%s%%>" % name, unicode(value))
+
         # access module var here to allow test mocking to work
         match = step_registry.registry.find_match(self)
         if match is None:

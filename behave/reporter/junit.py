@@ -1,5 +1,6 @@
 import os.path
 from xml.etree import ElementTree
+from behave.model import ScenarioOutline
 
 from behave.reporter.base import Reporter
 
@@ -54,7 +55,14 @@ class JUnitReporter(Reporter):
         failed = 0
         skipped = 0
 
+        scenarios = []
         for scenario in feature:
+            if isinstance(scenario, ScenarioOutline):
+                scenarios += scenario.scenarios
+            else:
+                scenarios.append(scenario)
+
+        for scenario in scenarios:
             tests += 1
 
             case = ElementTree.Element('testcase')
