@@ -289,7 +289,7 @@ class PrettyFormatter(Formatter):
             self.stream.write(text_format.text(text))
             line_length += (len(text))
 
-        location = self.indented_location(location, proceed)
+        location = self.indented_location(step.location + " # " + location, proceed)
         if self.show_source:
             self.stream.write(self.format('comments').text(location))
             line_length += len(location)
