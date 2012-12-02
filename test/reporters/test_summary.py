@@ -1,17 +1,10 @@
-# -*- coding: utf-8 -*-
-# pylint: disable=C0103,R0201,W0401,W0614
-#   C0103   Invalid name (setUp(), ...)
-#   R0201   Method could be a function
-#   W0401   Wildcard import
-#   W0614   Unused import ... from wildcard import
-
 from mock import Mock, patch
 from nose.tools import *
+
 from behave.model import ScenarioOutline, Scenario
 from behave.reporter.summary import SummaryReporter, format_summary
-import unittest
 
-class TestFormatStatus(unittest.TestCase):
+class TestFormatStatus(object):
     def test_passed_entry_contains_label(self):
         summary = {
             'passed': 1,
@@ -59,7 +52,7 @@ class TestFormatStatus(unittest.TestCase):
         assert '2 failed' in output
         assert 'undefined' not in output
 
-class TestSummaryReporter(unittest.TestCase):
+class TestSummaryReporter(object):
     @patch('sys.stderr')
     def test_duration_is_totalled_up_and_outputted(self, stderr):
         features = [Mock(), Mock(), Mock(), Mock()]
@@ -79,8 +72,7 @@ class TestSummaryReporter(unittest.TestCase):
         config = Mock()
         reporter = SummaryReporter(config)
 
-        for f in features:
-            reporter.feature(f)
+        [reporter.feature(f) for f in features]
         eq_(round(reporter.duration, 3), 12.400)
 
         reporter.end()
@@ -93,10 +85,8 @@ class TestSummaryReporter(unittest.TestCase):
 
     @patch('sys.stderr')
     @patch('behave.reporter.summary.format_summary')
-    def test_feature_status_is_collected_and_reported(self, format_summary, 
+    def test_feature_status_is_collected_and_reported(self, format_summary,
                                                       stderr):
-        # pylint: disable=W0621
-        #   W0621   Redefining name ... from outer scope (format_summary)
         features = [Mock(), Mock(), Mock(), Mock(), Mock()]
         features[0].duration = 1.9
         features[0].status = 'passed'
@@ -117,8 +107,7 @@ class TestSummaryReporter(unittest.TestCase):
         config = Mock()
         reporter = SummaryReporter(config)
 
-        for f in features:
-            reporter.feature(f)
+        [reporter.feature(f) for f in features]
         reporter.end()
 
         expected = {
@@ -132,10 +121,8 @@ class TestSummaryReporter(unittest.TestCase):
 
     @patch('sys.stderr')
     @patch('behave.reporter.summary.format_summary')
-    def test_scenario_status_is_collected_and_reported(self, format_summary, 
-												       stderr):
-        # pylint: disable=W0621
-        #   W0621   Redefining name ... from outer scope (format_summary)
+    def test_scenario_status_is_collected_and_reported(self, format_summary,
+                                                       stderr):
         feature = Mock()
         scenarios = [Mock(), Mock(), Mock(), Mock(), Mock()]
         scenarios[0].status = 'failed'
@@ -169,10 +156,8 @@ class TestSummaryReporter(unittest.TestCase):
 
     @patch('behave.reporter.summary.format_summary')
     @patch('sys.stderr')
-    def test_scenario_outline_status_is_collected_and_reported(self, stderr, 
-                                                              format_summary):
-        # FIX: issue40
-        # ENSURE: ScenarioOutline's scenarios are walked and collected.
+    def test_scenario_outline_status_is_collected_and_reported(self, stderr,
+                                                               format_summary):
         feature = Mock()
         scenarios = [ ScenarioOutline(u"<string>", 0, u"scenario_outline", u"name"),
                       Mock(), Mock(), Mock() ]
@@ -215,8 +200,6 @@ class TestSummaryReporter(unittest.TestCase):
     @patch('behave.reporter.summary.format_summary')
     def test_step_status_is_collected_and_reported(self, format_summary,
                                                    stderr):
-        # pylint: disable=W0621
-        #   W0621   Redefining name ... from outer scope (format_summary)
         feature = Mock()
         scenario = Mock()
         steps = [Mock(), Mock(), Mock(), Mock(), Mock()]

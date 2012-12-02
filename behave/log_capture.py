@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import logging
 import functools
 from logging.handlers import BufferingHandler
@@ -58,9 +56,6 @@ class LoggingCapture(BufferingHandler):
     .. __: behave.html#command-line-arguments
 
     '''
-    # pylint: disable=R0904
-    #   R0904   Too many public methods
-
     def __init__(self, config, level=None):
         BufferingHandler.__init__(self, 1000)
 

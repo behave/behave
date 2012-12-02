@@ -1,10 +1,4 @@
 # -*- coding: utf8 -*-
-# pylint: disable=C0111,R0201,R0902,R0903,R0904
-#   C0111   missing docstrings
-#   R0201   Method could be a function
-#   R0902   Too many instance attributes
-#   R0903   Too few  public methods => MonochromeFormat
-#   R0904   Too many public methods
 
 import sys
 
@@ -38,9 +32,6 @@ class ColorFormat(object):
 
 
 def get_terminal_size():
-    # pylint: disable=W0703
-    #   W0703   Catching too general exception (but required by test).
-    #   C0103   Invalid name (hp, wp)
     if sys.platform == 'windows':
         # Autodetecting the size of a Windows command window is left as an
         # exercise for the reader. Prizes may be awarded for the best answer.
@@ -53,17 +44,16 @@ def get_terminal_size():
 
         zero_struct = struct.pack('HHHH', 0, 0, 0, 0)
         result = fcntl.ioctl(0, termios.TIOCGWINSZ, zero_struct)
-        h, w, hp, wp = struct.unpack('HHHH', result)    # pylint: disable=C0103
+        h, w, hp, wp = struct.unpack('HHHH', result)
 
         return w or DEFAULT_WIDTH, h or DEFAULT_HEIGHT
-    except Exception:
+    except:
         return (DEFAULT_WIDTH, DEFAULT_HEIGHT)
 
 
 class PrettyFormatter(Formatter):
     name = 'pretty'
     description = 'Standard colourised pretty formatter'
-    __pychecker__ = "no-shadowbuiltin"  # format
 
     def __init__(self, stream, config):
         super(PrettyFormatter, self).__init__(stream, config)
@@ -93,8 +83,6 @@ class PrettyFormatter(Formatter):
         self.print_tags(feature.tags, '')
         self.stream.write(u"%s: %s" % (feature.keyword, feature.name))
         if self.show_source:
-            # pylint: disable=W0622
-            #   W0622   Redefining built-in 'format'
             format = self.format('comments')
             self.stream.write(format.text(u" # %s" % feature.location))
         self.stream.write("\n")
@@ -148,7 +136,7 @@ class PrettyFormatter(Formatter):
                     lines += len(result.text.splitlines()) + 2
             self.stream.write(up(lines))
             arguments = []
-            location = ''  # XXX-WAS: None
+            location = None
             if self._match:
                 arguments = self._match.arguments
                 location = self._match.location
@@ -169,11 +157,11 @@ class PrettyFormatter(Formatter):
             return self.formats
         if self.formats is None:
             self.formats = {}
-        format_ = self.formats.get(key, None)
-        if format_ is not None:
-            return format_
-        format_ = self.formats[key] = ColorFormat(key)
-        return format_
+        format = self.formats.get(key, None)
+        if format is not None:
+            return format
+        format = self.formats[key] = ColorFormat(key)
+        return format
 
     def eof(self):
         self.replay()
@@ -212,15 +200,14 @@ class PrettyFormatter(Formatter):
         self.stream.flush()
 
     def exception(self, exception):
-        # XXX-JE-ORIG: exception_text = HERP
-        exception_text = str(exception)
         # XXX-JE-OOPS: Unknown method self.failed()
+        # XXX-JE-ORIG: exception_text = HERP
         # XXX-JE-ORIG: self.stream.write(self.failed(exception_text) + '\n')
+        exception_text = str(exception)
         self.stream.write(self.format("failed").text(exception_text) + "\n")
         self.stream.flush()
 
     def color(self, cell, statuses, color):
-        __pychecker__ = "unusednames=color"
         if statuses:
             # XXX-JE-OOPS: Coloring without textual content ?!?
             return escapes[color] + escapes['reset']
@@ -240,11 +227,7 @@ class PrettyFormatter(Formatter):
             return u''
 
         if proceed:
-            # XXX-JE-ORIG: indentation = self.indentations.pop(0)
-            # assert self.indentations
-            indentation = 1
-            if self.indentations:
-                indentation = self.indentations.pop(0)
+            indentation = self.indentations.pop(0)
         else:
             indentation = self.indentations[0]
 
@@ -300,13 +283,6 @@ class PrettyFormatter(Formatter):
 
         text_start = 0
         for arg in arguments:
-            if arg.end <= text_start:
-                # -- SKIP-OVER: Optional and nested regexp args
-                #    - Optional regexp args (unmatched: None).
-                #    - Nested regexp args that are already processed.
-                continue
-                # -- VALID, MATCHED ARGUMENT:
-            assert arg.original is not None
             text = step_name[text_start:arg.start]
             self.stream.write(text_format.text(text))
             line_length += len(text)

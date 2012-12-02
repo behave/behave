@@ -3,10 +3,8 @@ import os.path
 import sys
 
 from setuptools import find_packages, setup
-# DISABLED, use VERSION.txt now: from behave.version import VERSION
-VERSION = open("VERSION.txt").read().strip()
 
-requirements = ['parse>=1.3.3', "distribute" ]
+requirements = ['parse>=1.3.3']
 zip_safe = True
 major, minor = sys.version_info[:2]
 if major == 2 and minor < 7:
@@ -18,10 +16,10 @@ description = ''.join(open('README.rst').readlines()[6:])
 
 setup(
     name='behave',
-    version=VERSION,
+    version='1.2.2',
     description='behave is behaviour-driven development, Python style',
     long_description=description,
-    author='Benno Rice and Richard Jones, corrected/extended by JE',
+    author='Benno Rice and Richard Jones',
     author_email='behave-users@googlegroups.com',
     url='http://github.com/jeamland/behave',
     packages=find_packages(),

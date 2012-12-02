@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-# pylint: disable=C0302,C0301
-#   C0301:  Line too long
-#   C0302:  Too many lines in module (1047)
-#
-# E0202:397,4:Scenario.status: An attribute affected in behave.model line 446 hide this method
-# E0202:569,4:ScenarioOutline.status: An attribute affected in behave.model line 446 hide this method
-#
-# XXX-JE-FIXES:
-#  * Avoid using mutable datatypes as default values (sequence=[], ...)
-#  * Ctor: Explicitly init/call baseclass
-
 from __future__ import with_statement
 
 import copy
@@ -85,8 +73,6 @@ class BasicStatement(object):
 class TagStatement(BasicStatement):
     def __init__(self, filename, line, keyword, name, tags):
         super(TagStatement, self).__init__(filename, line, keyword, name)
-        if tags is None:
-            tags = []
         self.tags = tags
 
 
@@ -164,17 +150,13 @@ class Feature(TagStatement, Replayable):
 
     type = "feature"
 
-    # XXX-JE-ORIG: def __init__(self, filename, line, keyword, name, tags=[], description=[],
-    # XXX-JE-ORIG:              scenarios=[], background=None):
-    def __init__(self, filename, line, keyword, name, tags=None, description=None,
-                 scenarios=None, background=None):
+    def __init__(self, filename, line, keyword, name, tags=[], description=[],
+                 scenarios=[], background=None):
         super(Feature, self).__init__(filename, line, keyword, name, tags)
         self.description = description or []
         self.scenarios = []
         self.background = background
         self.parser = None
-        if scenarios is None:
-            scenarios = []
 
         for scenario in scenarios:
             self.add_scenario(scenario)
@@ -211,25 +193,19 @@ class Feature(TagStatement, Replayable):
                         return 'untested'
                     if scenario.status != 'skipped':
                         skipped = False
-        # -- NOTE: Returns 'skipped' if skipped=True. Otherwise, 'passed'.
         return skipped and 'skipped' or 'passed'
 
     @property
     def duration(self):
-        # -- ORIG:
-        # if self.background:
-        #     duration = self.background.duration or 0.0
-        # else:
-        #     duration = 0.0
-        # -- NEW: Background is executed N times, now part of scenarios.
-        duration = 0.0
+        if self.background:
+            duration = self.background.duration or 0.0
+        else:
+            duration = 0.0
         for scenario in self.scenarios:
             duration += scenario.duration
         return duration
 
     def run(self, runner):
-        # pylint: disable=W0212
-        #   W0212   Access to a protected member: runner.context._push()(._pop()
         failed = False
 
         runner.context._push()
@@ -256,11 +232,8 @@ class Feature(TagStatement, Replayable):
         if self.background and (run_feature or runner.config.show_skipped):
             runner.formatter.background(self.background)
 
-        failed_count = 0
         for scenario in self:
             failed = scenario.run(runner)
-            if failed:
-                failed_count += 1
 
             # do we want to stop on the first failure?
             if failed and runner.config.stop:
@@ -275,11 +248,8 @@ class Feature(TagStatement, Replayable):
 
         runner.formatter.eof()
         if run_feature or runner.config.show_skipped:
-            # -- DISABLED: Not needed, bad for ProgressFormatter.
-            # runner.formatter.stream.write('\n')
-            pass
+            runner.formatter.stream.write('\n')
 
-        failed = (failed_count > 0)
         return failed
 
 
@@ -319,8 +289,7 @@ class Background(BasicStatement, Replayable):
     '''
     type = "background"
 
-    # XXX-JE-ORIG: def __init__(self, filename, line, keyword, name, steps=[]):
-    def __init__(self, filename, line, keyword, name, steps=None):
+    def __init__(self, filename, line, keyword, name, steps=[]):
         super(Background, self).__init__(filename, line, keyword, name)
         self.steps = steps or []
 
@@ -399,15 +368,11 @@ class Scenario(TagStatement, Replayable):
     '''
     type = "scenario"
 
-    # XXX-JE-ORIG: def __init__(self, filename, line, keyword, name, tags=[], steps=[]):
-    def __init__(self, filename, line, keyword, name, tags=None, steps=None):
+    def __init__(self, filename, line, keyword, name, tags=[], steps=[]):
         super(Scenario, self).__init__(filename, line, keyword, name, tags)
         self.steps = steps or []
+
         self.background = None
-        self.feature = None  # REFER-TO: owner=Feature
-        self._row = None
-        self.stderr = None
-        self.stdout = None
 
     def __repr__(self):
         return '<Scenario "%s">' % self.name
@@ -418,12 +383,6 @@ class Scenario(TagStatement, Replayable):
         else:
             return iter(self.steps)
 
-    @property
-    def all_steps(self):
-        """Returns iterator to all steps, including background steps if any."""
-        return self.__iter__()
-
-    # XXX-JE-NEEDED:
     @property
     def status(self):
         for step in self.steps:
@@ -437,15 +396,12 @@ class Scenario(TagStatement, Replayable):
 
     @property
     def duration(self):
-        # -- ORIG: for step in self.steps:  Background steps were excluded.
         duration = 0
-        for step in self.all_steps:
+        for step in self.steps:
             duration += step.duration
         return duration
 
     def run(self, runner):
-        # pylint: disable=W0212
-        #   W0212   Access to a protected member: runner.context._push()/._pop()
         failed = False
 
         tags = runner.feature.tags + self.tags
@@ -469,13 +425,10 @@ class Scenario(TagStatement, Replayable):
         runner.setup_capture()
 
         if run_scenario or runner.config.show_skipped:
-            for step in self.all_steps:
+            for step in self:
                 runner.formatter.step(step)
 
-        # BAD: Better provide a public method.
-        # pylint: disable=W0212
-        #   W0212   Access to a protected member: _set_root_attribute()
-        for step in self.all_steps:
+        for step in self:
             if run_steps:
                 if not step.run(runner):
                     run_steps = False
@@ -483,10 +436,8 @@ class Scenario(TagStatement, Replayable):
                     runner.context._set_root_attribute('failed', True)
             else:
                 step.status = 'skipped'
-                # XXX-JE-PROBLEMATIC: self.status is a property, cannot assign to it.
-                # XXX-JE-DISABLE:
-                # if self.status is None:
-                #    self.status = 'skipped'
+                if self.status is None:
+                    self.status = 'skipped'
 
         # Attach the stdout and stderr if generate Junit report
         if runner.config.junit:
@@ -500,6 +451,7 @@ class Scenario(TagStatement, Replayable):
                 runner.run_hook('after_tag', runner.context, tag)
 
         runner.context._pop()
+
         return failed
 
 
@@ -572,9 +524,8 @@ class ScenarioOutline(Scenario):
     '''
     type = "scenario_outline"
 
-    # XXX-JE-ORIG: def __init__(self, filename, line, keyword, name, tags=[], steps=[],
-    def __init__(self, filename, line, keyword, name, tags=None, steps=None,
-                 examples=None):
+    def __init__(self, filename, line, keyword, name, tags=[], steps=[],
+                 examples=[]):
         super(ScenarioOutline, self).__init__(filename, line, keyword, name,
                                               tags, steps)
         self.examples = examples or []
@@ -627,9 +578,6 @@ class ScenarioOutline(Scenario):
         return duration
 
     def run(self, runner):
-        # BAD: Better provide a public method and attribute.
-        # pylint: disable=W0212
-        #   W0212   Access to a protected member: _set_root_attribute(), _row
         failed = False
 
         for sub in self.scenarios:
@@ -799,17 +747,16 @@ class Step(BasicStatement, Replayable):
 
         try:
             start = time.time()
-            # -- ENSURE: Even EMPTY multiline text is available in context.
-            # -- ENSURE: runner.context.text/.table attributes are reset (#66).
-            runner.context.text  = self.text
-            runner.context.table = self.table
+            if self.text:
+                runner.context.text = self.text
+            if self.table:
+                runner.context.table = self.table
             match.run(runner.context)
             self.status = 'passed'
         except AssertionError, e:
             self.status = 'failed'
-            self.exception = e
             if e.args:
-                error = u'Assertion Failed: %s' % e
+                error = u'Assertion Failed: %s' % (e,)
             else:
                 # no assertion text; format the exception
                 error = traceback.format_exc()
@@ -876,17 +823,13 @@ class Table(Replayable):
 
     .. _`table`: gherkin.html#table
     '''
-    # pylint: disable=R0921
-    #   R0921   Abstract class is not referenced.
     type = "table"
 
-    def __init__(self, headings, line, rows=None):
+    def __init__(self, headings, line, rows=[]):
         Replayable.__init__(self)
         self.headings = headings
         self.line = line
         self.rows = []
-        if rows is None:
-            rows = []
         for row in rows:
             self.add_row(row, line)
 
@@ -1003,9 +946,6 @@ class Tag(unicode):
 
     See `controlling things with tags`_.
     '''
-    # pylint: disable=R0904
-    #   R0904   Too many public methods (from baseclass)
-
     def __new__(cls, name, line):
         o = unicode.__new__(cls, name)
         o.line = line
@@ -1025,10 +965,6 @@ class Text(unicode):
 
        Currently only 'text/plain'.
     '''
-    # pylint: disable=R0904
-    #   R0904   Too many public methods (from baseclass)
-    __pychecker__ = "missingattrs=line,content_type"
-
     def __new__(cls, value, content_type=u'text/plain', line=0):
         assert isinstance(value, unicode)
         assert isinstance(content_type, unicode)
@@ -1080,12 +1016,9 @@ class Match(Replayable):
         super(Match, self).__init__()
         self.func = func
         self.arguments = arguments
-        # XXX self.location  = None
-        self.locarion  = ''
 
-        if func:
-            filename = relpath(func.func_code.co_filename, os.getcwd())
-            self.location = '%s:%d' % (filename, func.func_code.co_firstlineno)
+        filename = relpath(func.func_code.co_filename, os.getcwd())
+        self.location = '%s:%d' % (filename, func.func_code.co_firstlineno)
 
     def __repr__(self):
         if self.func:
@@ -1113,15 +1046,13 @@ class Match(Replayable):
             else:
                 args.append(arg.value)
 
-        # pylint: disable=W0142
-        #   W0142   Used * or ** magic
         with context.user_mode():
             self.func(context, *args, **kwargs)
 
 
 class NoMatch(Match):
     def __init__(self):
-        Match.__init__(self, func=None)
+        # -- ACTUALLY-NEEDED: Match.__init__(self, func=None)
         self.func = None
         self.arguments = []
         self.location = None

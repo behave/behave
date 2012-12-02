@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-# pylint: disable=C0111,W0511
-#   C0111   missing docstrings
-#   W0511   Show TODO statements
-
 import sys
 import codecs
 
@@ -14,7 +9,7 @@ def register(formatter):
 
 
 def list_formatters(stream):
-    for name in sorted(formatters):
+    for name in formatters:
         stream.write(u'%s: %s\n' % (name, formatters[name].description))
 
 
@@ -46,7 +41,3 @@ register(pretty.PrettyFormatter)
 from behave.formatter import json
 register(json.JSONFormatter)
 register(json.PrettyJSONFormatter)
-
-from behave.formatter import progress
-register(progress.ScenarioProgressFormatter)
-register(progress.StepProgressFormatter)

@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-# pylint: disable=C0111,R0902,R0903,W0142
-#   C0111   missing docstrings
-#   R0902   Too many instance attributes (20/7) => Configuration class.
-#   R0903   Too few public methods (1/2)        => Configuration class.
-#   W0142   Used * or ** magic
-
 import os
 import re
 import sys
@@ -225,7 +218,7 @@ options = [
     (('-t', '--tags'),
      dict(action='append', metavar='TAG_EXPRESSION',
           help="""Only execute features or scenarios with tags
-                  matching TAG_EXPRESSION. Pass '--tags-help' for
+                  matching TAG_EXPRESSION. Pass '--tag-help' for
                   more information.""",
           config_help="""Only execute certain features or scenarios based
                          on the tag expression given. See below for how to code
@@ -278,11 +271,10 @@ options = [
 
 
 def read_configuration(path):
-    __pychecker__ = "no-shadow"
     cfg = ConfigParser.ConfigParser()
     cfg.read(path)
     result = {}
-    for fixed, keywords in options:     # pylint: disable=W0621
+    for fixed, keywords in options:
         if 'dest' in keywords:
             dest = keywords['dest']
         else:
@@ -346,20 +338,9 @@ class Configuration(object):
     def __init__(self):
         self.formatters = []
         self.reporters = []
-        # -- MORE ATTRIBUTES:
-        self.wip = None
-        self.quiet = None
-        self.junit = None
-        self.summary = None
-        self.version = None
-        self.tags_help = None
-        self.lang_help = None
-        self.lang_list = None
-        self.include_re = None
-        self.exclude_re = None
 
         defaults = dict(
-            color=True,
+            color=sys.platform != 'win32',
             stdout_capture=True,
             stderr_capture=True,
             show_snippets=True,
@@ -367,7 +348,7 @@ class Configuration(object):
             log_capture=True,
             dry_run=False,
             show_source=True,
-            show_timings=False,
+            show_timings=True,
             logging_format='%(levelname)s:%(name)s:%(message)s',
             summary=True,
             junit=False,

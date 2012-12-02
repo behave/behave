@@ -1,22 +1,14 @@
-# -*- coding: utf-8 -*-
-# pylint: disable=C0103,C0301,R0201,W0212,W0401,W0614
-#   C0103   Invalid name (setUp(), ...)
-#   C0301   Line too long
-#   R0201   Method could be a function
-#   W0212   Access of protected member by client class => _push(), _pop()
-#   W0401   Wildcard import
-#   W0613   Unused argument names
-#   W0614   Unused import ... from wildcard import
-
 from __future__ import with_statement
 
 import sys
+
 from mock import Mock, patch
 from nose.tools import *
-from behave import model
-import unittest
 
-class TestFeatureRun(unittest.TestCase):
+from behave import model
+
+
+class TestFeatureRun(object):
     def setUp(self):
         self.runner = Mock()
         self.runner.feature.tags = []
@@ -73,7 +65,7 @@ class TestFeatureRun(unittest.TestCase):
         assert not self.run_hook.called
 
 
-class TestScenarioRun(unittest.TestCase):
+class TestScenarioRun(object):
     def setUp(self):
         self.runner = Mock()
         self.runner.feature.tags = []
@@ -94,8 +86,7 @@ class TestScenarioRun(unittest.TestCase):
         scenario.run(self.runner)
 
         self.formatter.scenario.assert_called_with(scenario)
-        for step in steps:
-            step.run.assert_called_with(self.runner)
+        [step.run.assert_called_with(self.runner) for step in steps]
 
     if sys.version_info[0] == 3:
         stringio_target = 'io.StringIO'
@@ -168,7 +159,7 @@ class TestScenarioRun(unittest.TestCase):
         assert not self.run_hook.called
 
 
-class TestScenarioOutline(unittest.TestCase):
+class TestScenarioOutline(object):
     def test_run_calls_run_on_each_generated_scenario(self):
         outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
                                         u'foo')
@@ -177,12 +168,11 @@ class TestScenarioOutline(unittest.TestCase):
             scenario.run.return_value = False
 
         runner = Mock()
-        runner.context = Mock()
+        context = runner.context = Mock()
 
         outline.run(runner)
 
-        for s in outline._scenarios:
-            s.run.assert_called_with(runner)
+        [s.run.assert_called_with(runner) for s in outline._scenarios]
 
     def test_run_stops_on_first_failure_if_requested(self):
         outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
@@ -223,18 +213,12 @@ class TestScenarioOutline(unittest.TestCase):
 
 
 def raiser(exception):
-    # pylint: disable=W0613
-    #   W0613   Unused arguments (args, kwargs)
-    __pychecker__ = "unusednames=args,kwargs"
     def func(*args, **kwargs):
         raise exception
     return func
 
 
-class TestStepRun(unittest.TestCase):
-    # pylint: disable=R0904
-    #   R0904   Too many public methods (31/30)
-
+class TestStepRun(object):
     def setUp(self):
         self.runner = Mock()
         self.config = self.runner.config = Mock()
@@ -306,7 +290,6 @@ class TestStepRun(unittest.TestCase):
             assert not self.formatter.result.called
 
     def test_run_runs_before_hook_then_match_then_after_hook(self):
-        __pychecker__ = "unusednames=args,kwargs"
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
         match = Mock()
         self.step_registry.find_match.return_value = match
@@ -318,9 +301,6 @@ class TestStepRun(unittest.TestCase):
             self.runner.run_hook = match.run = Mock()
 
             def effect(thing):
-                # pylint: disable=W0613,W0621
-                #   W0613   Unused arguments (args, kwargs)
-                #   W0621   Redefining name from outer scope (raiser)
                 def raiser(*args, **kwargs):
                     match.run.side_effect = None
                     if thing:
@@ -460,7 +440,7 @@ class TestStepRun(unittest.TestCase):
         assert 'toads' in step.error_message
 
 
-class TestTableModel(unittest.TestCase):
+class TestTableModel(object):
     HEAD = [u'type of stuff', u'awesomeness', u'ridiculousness']
     DATA = [
         [u'fluffy', u'large', u'frequent'],
@@ -496,8 +476,6 @@ class TestTableModel(unittest.TestCase):
 
     @raises(KeyError)
     def test_table_row_keyerror(self):
-        # pylint: disable=W0104
-        #   W0104   Statement does not seem to have any effect.
         self.table[0]['spam']
 
     def test_table_row_items(self):

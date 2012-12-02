@@ -1,13 +1,3 @@
-# -*- coding: utf-8 -*-
-# pylint: disable=C0103,C0301,R0201,W0212,W0401,W0614
-#   C0103   Invalid name (setUp(), ...)
-#   C0301   Line too long
-#   R0201   Method could be a function
-#   W0212   Access of protected member by client class => _push(), _pop()
-#   W0401   Wildcard import
-#   W0613   Unused argument names
-#   W0614   Unused import ... from wildcard import
-
 from __future__ import with_statement
 
 from collections import defaultdict
@@ -15,18 +5,16 @@ import os.path
 import StringIO
 import sys
 import warnings
+import tempfile
+
 from mock import Mock, patch
 from nose.tools import *
+
 from behave import model, runner, step_registry
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
-import unittest
-from test.testutil_tempfile import named_temporary_file
 
-class TestContext(unittest.TestCase):
-    # pylint: disable=W0212
-    #   W0212   Access of protected member by client class => _push(), _pop()
-
+class TestContext(object):
     def setUp(self):
         r = Mock()
         self.config = r.config = Mock()
@@ -88,7 +76,6 @@ class TestContext(unittest.TestCase):
         assert getattr(self.context, 'third_thing', None) is None, '%s is not None' % self.context.third_thing
 
     def test_masking_existing_user_attribute_when_verbose_causes_warning(self):
-        __pychecker__ = "unusednames=kwargs"
         warns = []
 
         def catch_warning(*args, **kwargs):
@@ -115,7 +102,6 @@ class TestContext(unittest.TestCase):
         assert 'tutorial' in info, '"tutorial" not in %r' % (info, )
 
     def test_masking_existing_user_attribute_when_not_verbose_causes_no_warning(self):
-        __pychecker__ = "unusednames=kwargs"
         warns = []
 
         def catch_warning(*args, **kwargs):
@@ -136,9 +122,6 @@ class TestContext(unittest.TestCase):
         assert not warns
 
     def test_behave_masking_user_attribute_causes_warning(self):
-        # pylint: disable=W0622
-        #   W0622   Redefining built-in (file)
-        __pychecker__ = "no-shadowbuiltin unusednames=kwargs"
         warns = []
 
         def catch_warning(*args, **kwargs):
@@ -165,9 +148,6 @@ class TestContext(unittest.TestCase):
         assert file in info, '%r not in %r' % (file, info)
 
     def test_setting_root_attribute_that_masks_existing_causes_warning(self):
-        # pylint: disable=W0622
-        #   W0622   Redefining built-in (file)
-        __pychecker__ = "no-shadowbuiltin unusednames=kwargs"
         warns = []
 
         def catch_warning(*args, **kwargs):
@@ -200,9 +180,8 @@ class TestContext(unittest.TestCase):
         del self.context.thing
         eq_('thing' in self.context, False)
 
-    # XXX-JE-NOTE: method name was duplicated, renamed to: ...2()
     @raises(AttributeError)
-    def test_context_deletable2(self):
+    def test_context_deletable(self):
         eq_('thing' in self.context, False)
         self.context.thing = 'stuff'
         eq_('thing' in self.context, True)
@@ -211,7 +190,7 @@ class TestContext(unittest.TestCase):
         del self.context.thing
 
 
-class TestRunner(unittest.TestCase):
+class TestRunner(object):
     def test_load_hooks_execfiles_hook_file(self):
         with patch('behave.runner.exec_file') as ef:
             with patch('os.path.exists') as exists:
@@ -227,8 +206,6 @@ class TestRunner(unittest.TestCase):
                 ef.assert_called_with(hooks_path, r.hooks)
 
     def test_run_hook_runs_a_hook_that_exists(self):
-        # pylint: disable=W0142
-        #   W0142   Used * or ** magic
         r = runner.Runner(None)
         r.config = Mock()
         r.config.dry_run = False
@@ -339,20 +316,15 @@ class TestRunner(unittest.TestCase):
         r.log_capture.abandon.assert_called_with()
 
     def test_exec_file(self):
-        # XXX-JE-ORIG, DEPRECATED: fn = tempfile.mktemp()
-        # with open(fn, 'w') as f:
-        #   f.write('spam = __file__\n')
-        with named_temporary_file() as f:
+        fn = tempfile.mktemp()
+        with open(fn, 'w') as f:
             f.write('spam = __file__\n')
-            f.close()
-            g = {}
-            l = {}
-            runner.exec_file(f.name, g, l)
-            assert '__file__' in l
-            # XXX-JE-ORIG: assert 'spam' in l, '"spam" variable not set in locals (%r)' % (g, l)
-            # XXX-JE-NOTE: Formatting mismatch: Too many args.
-            assert 'spam' in l, '"spam" variable not set in locals (%r)' % l
-            eq_(l['spam'], f.name)
+        g = {}
+        l = {}
+        runner.exec_file(fn, g, l)
+        assert '__file__' in l
+        assert 'spam' in l, '"spam" variable not set in locals (%r)' % (g, l)
+        eq_(l['spam'], fn)
 
     def test_run_returns_true_if_everything_passed(self):
         r = runner.Runner(Mock())
@@ -369,7 +341,7 @@ class TestRunner(unittest.TestCase):
         assert not r.run()
 
 
-class TestRunWithPaths(unittest.TestCase):
+class TestRunWithPaths(object):
     def setUp(self):
         self.config = Mock()
         self.config.reporters = []
@@ -473,8 +445,6 @@ class FsMock(object):
         self.calls = []
 
     def listdir(self, dir):
-        # pylint: disable=W0622
-        #   W0622   Redefining built-in dir
         self.calls.append(('listdir', dir))
         return self.dirs.get(dir, [])
 
@@ -514,15 +484,13 @@ class FsMock(object):
 
     def join(self, a, b, orig=os.path.join):
         return orig(a, b)
-    # -- MORE: Needed for tests when monkey-patching os.path, etc.
-    # XXX-JE-OLD: def normpath(self, path, orig=os.path.normpath):
-    # XXX-JE-OLD:    return orig(path)
+
     def split(self, path, orig=os.path.split):
         return orig(path)
 
 
 
-class TestFeatureDirectory(unittest.TestCase):
+class TestFeatureDirectory(object):
     def test_default_path_no_steps(self):
         config = Mock()
         config.paths = []
@@ -533,8 +501,6 @@ class TestFeatureDirectory(unittest.TestCase):
 
         # will look for a "features" directory and not find one
         with patch('os.path', fs):
-            # pylint: disable=E0602
-            #   E0602   Undefined variable "assert_raises"
             assert_raises(ConfigError, r.setup_paths)
 
         ok_(('isdir', os.path.join(fs.base, 'features', 'steps')) in fs.calls)
@@ -548,8 +514,6 @@ class TestFeatureDirectory(unittest.TestCase):
         fs = FsMock('features/steps/')
         with patch('os.path', fs):
             with patch('os.walk', fs.walk):
-                # pylint: disable=E0602
-                #   E0602   Undefined variable "assert_raises"
                 assert_raises(ConfigError, r.setup_paths)
 
     def test_default_path(self):
@@ -596,8 +560,6 @@ class TestFeatureDirectory(unittest.TestCase):
         with patch('os.path', fs):
             with patch('os.walk', fs.walk):
                 with r.path_manager:
-                    # pylint: disable=E0602
-                    #   E0602   Undefined variable "assert_raises"
                     assert_raises(ConfigError, r.setup_paths)
 
     def test_supplied_feature_directory(self):
@@ -627,8 +589,6 @@ class TestFeatureDirectory(unittest.TestCase):
 
         with patch('os.path', fs):
             with patch('os.walk', fs.walk):
-                # pylint: disable=E0602
-                #   E0602   Undefined variable "assert_raises"
                 assert_raises(ConfigError, r.setup_paths)
 
         ok_(('isdir', os.path.join(fs.base, 'spam', 'steps')) in fs.calls)
@@ -643,8 +603,6 @@ class TestFeatureDirectory(unittest.TestCase):
 
         with patch('os.path', fs):
             with patch('os.walk', fs.walk):
-                # pylint: disable=E0602
-                #   E0602   Undefined variable "assert_raises"
                 assert_raises(ConfigError, r.setup_paths)
 
 

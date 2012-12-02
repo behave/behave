@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from __future__ import with_statement
 
 import contextlib
@@ -237,22 +235,6 @@ class Context(object):
                 return True
         return False
 
-    def __str__(self):
-        """
-        Provide tostring() conversion for better diagnostics.
-        :returns: String, as representation of Context object.
-        """
-        # -- COLLECT: Attribute names
-        attribute_names = set()
-        for frame in self._stack:
-            attribute_names.update(frame.keys())
-
-        # -- BUILD STRING REPRESENTATION:
-        lines = [ "Context(id:{0}):".format(id(self)) ]
-        for name in sorted(attribute_names):
-            lines.append("  {0} = {1}".format(name, getattr(self, name)))
-        return "\n".join(lines)
-
     def execute_steps(self, steps):
         '''The steps identified in the "steps" text string will be parsed and
         executed in turn just as though they were defined in a feature file.
@@ -266,7 +248,6 @@ class Context(object):
         '''
         assert type(steps) is unicode, "Steps must be unicode."
         try:
-            __pychecker__ = "missingattrs=feature"
             assert self.feature
         except (AttributeError, AssertionError):
             raise ValueError('execute_steps() called outside of a feature '
@@ -283,35 +264,24 @@ class Context(object):
         return True
 
 
-def exec_file(filename, globals=None, locals=None):
-    # pylint: disable=W0122,W0622
-    #   W0122   Use of exec statement
-    #   W0622   Redefining built-in ... (globals, locals)
-    __pychecker__ = "no-shadowbuiltin"
-    if globals is None:
-        globals = {}
+def exec_file(filename, globals={}, locals=None):
     if locals is None:
         locals = globals
     locals['__file__'] = filename
     if sys.version_info[0] == 3:
         with open(filename) as f:
-            # -- FIX issue #80: exec(f.read(), globals, locals)
-            filename2 = os.path.relpath(filename, os.getcwd())
-            code = compile(f.read(), filename2, 'exec')
-            exec(code, globals, locals)
+            exec(f.read(), globals, locals)
     else:
         execfile(filename, globals, locals)
 
 
 class PathManager(object):
-    __pychecker__ = "no-special"    # SKIP-CHECK: __enter__(), __exit__()
     paths = None
 
     def __enter__(self):
         self.paths = []
 
     def __exit__(self, *crap):
-        __pychecker__ = "unusednames=crap"
         for path in self.paths:
             sys.path.remove(path)
 
@@ -323,9 +293,6 @@ class PathManager(object):
 
 
 class Runner(object):
-    # pylint: disable=R0902
-    #   R0902   Too many instance attributes (15/10)
-
     def __init__(self, config):
         self.config = config
 
@@ -344,27 +311,14 @@ class Runner(object):
         self.stdout_capture = None
         self.stderr_capture = None
         self.log_capture = None
-        self.old_stdout = None
-
-        self.base_dir   = None
-        self.context    = None
-        self.formatter  = None
+        self.out_stdout = None
 
     def setup_paths(self):
-        # pylint: disable=R0912
-        #   R0912   Too many branches (23/20)
         if self.config.paths:
             if self.config.verbose:
-                print 'Supplied path:', ', '.join('"%s"' % path
-                    for path in self.config.paths)
-            base_dir = self.config.paths[0]
-            if base_dir.startswith('@'):
-                # -- USE: behave @features.txt
-                base_dir = base_dir[1:]
-                files = self.feature_files()
-                if files:
-                    base_dir = os.path.dirname(files[0])
-            base_dir = os.path.abspath(base_dir)
+                print 'Supplied path:', ', '.join('"%s"' % path for path
+                                                  in self.config.paths)
+            base_dir = os.path.abspath(self.config.paths[0])
 
             # supplied path might be to a feature file
             if os.path.isfile(base_dir):
@@ -432,9 +386,7 @@ class Runner(object):
         if os.path.exists(hooks_path):
             exec_file(hooks_path, self.hooks)
 
-    def load_step_definitions(self, extra_step_paths=None):
-        if extra_step_paths is None:
-            extra_step_paths = []
+    def load_step_definitions(self, extra_step_paths=[]):
         steps_dir = os.path.join(self.base_dir, 'steps')
 
         # allow steps to import other stuff from the steps dir
@@ -443,8 +395,6 @@ class Runner(object):
         step_globals = {
             'step_matcher': matchers.step_matcher,
         }
-        # -- Default matcher can be overridden in "environment.py" hook.
-        default_matcher = matchers.current_matcher
 
         for step_type in ('given', 'when', 'then', 'step'):
             decorator = getattr(step_registry, step_type)
@@ -454,39 +404,15 @@ class Runner(object):
         for path in [steps_dir] + list(extra_step_paths):
             for name in os.listdir(path):
                 if name.endswith('.py'):
-                    # -- LOAD STEP DEFINITION:
-                    # Reset to default matcher after each step-definition.
-                    # A step-definition may change the matcher 0..N times.
                     exec_file(os.path.join(path, name), step_globals)
-                    matchers.current_matcher = default_matcher
 
-        # -- CLEANUP: Clean up the path.
+        # clean up the path
         sys.path.pop(0)
 
     def run_hook(self, name, context, *args):
         if not self.config.dry_run and (name in self.hooks):
             with context.user_mode():
                 self.hooks[name](context, *args)
-
-    @staticmethod
-    def parse_features_file(features_filename):
-        """
-        Read textual file, ala '@features.txt'
-        :param features_filename:  Name of features file.
-        :return: List of feature names.
-        """
-        if features_filename.startswith('@'):
-            features_filename = features_filename[1:]
-        here  = os.path.dirname(features_filename) or "."
-        files = []
-        for line in open(features_filename).readlines():
-            line = line.strip()
-            if not line:
-                continue    # SKIP: Over empty line(s).
-            elif line.startswith('#'):
-                continue    # SKIP: Over comment line(s).
-            files.append(os.path.normpath(os.path.join(here, line)))
-        return files
 
     def feature_files(self):
         files = []
@@ -497,8 +423,7 @@ class Runner(object):
                         if filename.endswith('.feature'):
                             files.append(os.path.join(dirpath, filename))
             elif path.startswith('@'):
-                # -- USE: behave @list_of_features.txt
-                files.extend(self.parse_features_file(path[1:]))
+                files.extend([filename.strip() for filename in open(path)])
             elif os.path.exists(path):
                 files.append(path)
             else:
@@ -517,7 +442,6 @@ class Runner(object):
         context = self.context = Context(self)
         stream = self.config.output
         failed = False
-        failed_count = 0
 
         self.run_hook('before_all', context)
 
@@ -535,28 +459,22 @@ class Runner(object):
             self.formatter.uri(filename)
 
             failed = feature.run(self)
-            if failed:
-                failed_count += 1
 
             self.formatter.close()
             stream.write('\n')
-            for reporter in self.config.reporters:
-                reporter.feature(feature)
+
+            [reporter.feature(feature) for reporter in self.config.reporters]
 
             if failed and self.config.stop:
                 break
 
         self.run_hook('after_all', context)
-        for reporter in self.config.reporters:
-            reporter.end()
 
-        failed = (failed_count > 0)
+        [reporter.end() for reporter in self.config.reporters]
+
         return failed
 
     def setup_capture(self):
-        # pylint: disable=W0201
-        #   W0201   Attribute ... defined outside __init__
-        #           => stdout_capture, log_capture (BUT WRONG)
         if self.config.stdout_capture:
             self.stdout_capture = StringIO.StringIO()
             self.context.stdout_capture = self.stdout_capture

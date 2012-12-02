@@ -1,18 +1,10 @@
-# -*- coding: utf-8 -*-
-# pylint: disable=C0111
-#   C0111   missing docstrings
-#
-# XXX-JE-SPECIFIC:
-# json_module: Avoid recursion w/ some lint tools and in some real cases !?!
-#
-
 from __future__ import absolute_import
 
 import base64
 try:
-    import json as json_module
+    import json
 except ImportError:
-    import simplejson as json_module
+    import simplejson as json
 
 from behave.formatter.base import Formatter
 
@@ -48,10 +40,6 @@ class JSONFormatter(Formatter):
         })
         self._step_index = 0
 
-        # -- ADD BACKGROUND STEPS: Support *.feature file regeneration.
-        for step_ in background.steps:
-            self.step(step_)
-
     def scenario(self, scenario):
         self._add_feature_element({
             'keyword': scenario.keyword,
@@ -73,14 +61,6 @@ class JSONFormatter(Formatter):
         })
         self._step_index = 0
 
-    @classmethod
-    def make_table(cls, table):
-        table_data = {
-            'headings': table.headings,
-            'rows': [ list(row) for row in table.rows ]
-        }
-        return table_data
-
     def examples(self, examples):
         e = {
             'keyword': examples.keyword,
@@ -89,7 +69,10 @@ class JSONFormatter(Formatter):
         }
 
         if examples.table:
-            e['table'] = self.make_table(examples.table)
+            e['table'] = {
+                'headings': examples.table.headings,
+                'rows': examples.table.rows,
+            }
 
         element = self._feature_element()
         element['examples'].append(e)
@@ -105,7 +88,11 @@ class JSONFormatter(Formatter):
         if step.text:
             s['text'] = step.text
         if step.table:
-            s['table'] = self.make_table(step.table)
+            s['table'] = {
+                'headings': step.table.headings,
+                'rows': step.table.rows,
+            }
+
         element = self._feature_element()
         element['steps'].append(s)
 
@@ -150,7 +137,7 @@ class JSONFormatter(Formatter):
 
     def close(self):
         obj = {'features': self._features}
-        self.stream.write(json_module.dumps(obj, **self.dumps_kwargs))
+        self.stream.write(json.dumps(obj, **self.dumps_kwargs))
 
     def _add_feature_element(self, element):
         if 'elements' not in self._gherkin_object:
@@ -164,4 +151,4 @@ class JSONFormatter(Formatter):
 class PrettyJSONFormatter(JSONFormatter):
     name = 'json-pretty'
     description = 'JSON dump of test run (human readable)'
-    dumps_kwargs = { 'indent': 2, 'sort_keys': True }
+    dumps_kwargs = {'indent': 2}

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from __future__ import with_statement
 
 from behave import model, i18n
@@ -42,10 +40,6 @@ class ParserError(Exception):
 
 
 class Parser(object):
-    # pylint: disable=W0201,R0902
-    #   W0201   Attribute ... defined outside __init__() method.
-    #   R0902   Too many instance attributes (15/10)
-
     def __init__(self, language=None):
         self.language = language
         self.reset()
@@ -80,7 +74,6 @@ class Parser(object):
         for line in data.split('\n'):
             self.line += 1
             if not line.strip() and not self.state == 'multiline':
-                # -- SKIP EMPTY LINES, except in multiline string args.
                 continue
             self.action(line)
 
@@ -171,8 +164,6 @@ class Parser(object):
         return True
 
     def action_steps(self, line):
-        # pylint: disable=R0911
-        #   R0911   Too many return statements (8/6)
         stripped = line.lstrip()
         if stripped.startswith('"""') or stripped.startswith("'''"):
             self.state = 'multiline'
@@ -213,8 +204,6 @@ class Parser(object):
             self.state = 'steps'
             return True
 
-        # pylint: disable=E1103
-        #   E1103   Instance of Background has no examples member (but ...)
         examples_kwd = self.match_keyword('examples', line)
         if examples_kwd:
             if not isinstance(self.statement, model.ScenarioOutline):

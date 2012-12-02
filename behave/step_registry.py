@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-# TODO: Cyclic import dependency
-#   behave.matchers -> behave.model -> behave.step_registry (HERE)
-# pylint: disable=W0621
-#   W0621   Redefining name from outer scope (step_type, lines:38,52)
 
 
 class AmbiguousStep(ValueError):
