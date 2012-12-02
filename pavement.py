@@ -48,7 +48,11 @@ options(
         extra_files=[ 'doctools', 'virtual' ]
     ),
     behave_test=Bunch(
-        default_args=[ "tools/test-features/", "selftest.features/" ]
+        default_args=[
+            "tools/test-features/",
+            "selftest.features/",
+            "issue.features/",
+        ]
     ),
     pychecker = Bunch(
         default_args=NAME
@@ -117,6 +121,7 @@ def feature_test(args):
         cmdopts = []
         tests1  = []
         tests2  = []
+        tests3  = []
         for arg in args:
             if arg.startswith("-"):
                 cmdopts.append(arg)
@@ -124,6 +129,8 @@ def feature_test(args):
                 tests1.append(arg)
             elif arg.startswith("selftest.features"):
                 tests2.append(arg)
+            elif arg.startswith("issue.features"):
+                tests3.append(arg)
             else:
                 args2.append(arg)
         args = []
@@ -131,6 +138,8 @@ def feature_test(args):
             args.append(" ".join(tests1))
         if tests2:
             args.append(" ".join(tests2))
+        if tests3:
+            args.append(" ".join(tests3))
         if args2:
             args.append(" ".join(args2))
 
