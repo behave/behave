@@ -66,8 +66,27 @@ Version History
 
 Next Version 1.2.2.x - UNRELEASED
 
-FIXES:
+OPEN:
 
+  * issue #93: Generic code adds format-specific text to failed scenarios
+  * issue #91: Jenkins confused by null package on classnames in JUnit XML report
+  * issue #87: Add name option support
+  * issue #82: JUnitReporter fails with Python 3.x
+  * issue #79: support for scenario descriptions
+  * issue #76: environment.py is loaded twice
+  * issue #60: JSONFormatter has several problems (invalid JSON format).
+  * issue #54: Include step in JUnit/XML <failure> tag.
+  * issue #47: Formatter processing chain is broken.
+
+OPEN ENHANCEMENTS:
+
+  * issue #90: Allow using multiple formatters
+  * issue #86: Html formatter
+  * issue #79: support for scenario descriptions
+
+FIXED:
+
+  * FIX issue #96: Sub-steps failed without any error info to help debug issue
   * FIX issue #92: Output from --format=plain shows skipped steps in next scenario (same as #35)
   * FIX issue #85: AssertionError with nested regex and pretty formatter
   * FIX issue #84: behave.runner behave does not reliably detected failed test runs
@@ -86,26 +105,21 @@ FIXES:
   * FIX issue #63: 'ScenarioOutline' object has no attribute 'stdout'.
   * FIX issue #62: --format=json: Background steps are missing.
 
-OPEN:
-
-  * issue #93: Generic code adds format-specific text to failed scenarios
-  * issue #91: Jenkins confused by null package on classnames in JUnit XML report
-  * issue #82: JUnitReporter fails with Python 3.x
-  * issue #79: support for scenario descriptions
-  * issue #76: environment.py is loaded twice
-  * issue #60: JSONFormatter has several problems (invalid JSON format).
-  * issue #54: Include step in JUnit/XML <failure> tag.
-  * issue #47: Formatter processing chain is broken.
-
 RESOLVED:
 
   * issue #81: Allow defining steps in a separate library.
   * issue #78: Added references to django-behave (pull-request).
   * issue #77: Does not capture stdout from sub-processes
 
+REJECTED:
+
+  * issue #88: Python 3 compatibility changes (=> use 2to3 tool instead).
+
 DUPLICATED:
 
+  * issue #95: Failed test run still returns exit code 0 (same as #84, #64).
   * issue #94: JUnit format does not handle ScenarioOutlines (same as #69).
+  * issue #92: Output from --format=plain shows skipped steps in next scenario (same as #35).
 
 
 Version 1.2.2 - August 21, 2012

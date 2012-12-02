@@ -279,7 +279,10 @@ class Context(object):
                 return False
             passed = step_obj.run(self._runner, quiet=True)
             if not passed:
-                assert False, "Sub-step failed: %s" % step
+                # -- ISSUE #96: Provide more substep info to diagnose problem.
+                more = step_obj.error_message
+                assert False, \
+                       "Sub-step failed: %s\nSubstep info: %s" % (step, more)
         return True
 
 
@@ -515,6 +518,8 @@ class Runner(object):
         self.load_step_definitions()
 
         context = self.context = Context(self)
+        # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
+        self.setup_capture()
         stream = self.config.output
         failed = False
         failed_count = 0

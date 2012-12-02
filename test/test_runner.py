@@ -373,6 +373,8 @@ class TestRunWithPaths(unittest.TestCase):
     def setUp(self):
         self.config = Mock()
         self.config.reporters = []
+        self.config.logging_level = None
+        self.config.logging_filter = None
         self.runner = runner.Runner(self.config)
         self.load_hooks = self.runner.load_hooks = Mock()
         self.load_step_definitions = self.runner.load_step_definitions = Mock()
