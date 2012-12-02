@@ -41,6 +41,7 @@ def step_a_file_named_filename_with(context, filename):
     """
     Creates a textual file with the content provided as docstring.
     """
+    assert context.text is not None, "ENSURE: multiline text is provided."
     assert not os.path.isabs(filename)
     command_util.ensure_workdir_exists(context)
     filename2 = os.path.join(context.workdir, filename)
@@ -110,16 +111,8 @@ def step_it_should_pass_with(context):
             TEXT
             """
     '''
-    # assert context.command_result.returncode == 0
-    # eq_(context.command_result.output, context.text)
-    command_output  = context.command_result.output
-    actual_output   = command_util.text_remove_empty_lines(command_output.strip())
-    expected_output = command_util.text_remove_empty_lines(context.text.strip())
-    if DEBUG:
-        print("expected:\n{0}".format(expected_output))
-        print("actual:\n{0}".format(actual_output))
-
-    assert_that(actual_output, contains_string(expected_output))
+    assert context.text is not None, "ENSURE: multiline text is provided."
+    step_command_output_should_contain(context)
     assert_that(context.command_result.returncode, equal_to(0))
 
 
@@ -134,17 +127,8 @@ def step_it_should_fail_with(context):
             TEXT
             """
     '''
-    # assert context.command_result.returncode != 0
-    # eq_(context.command_result.output, context.text)
-    command_output  = context.command_result.output
-    expected_output = context.text.format(__WORKDIR__=context.workdir,
-                                          __CWD__=os.getcwd())
-    expected_output = command_util.text_remove_empty_lines(expected_output.strip())
-    actual_output   = command_util.text_remove_empty_lines(command_output.strip())
-    if DEBUG:
-        print("expected:\n{0}".format(expected_output))
-        print("actual:\n{0}".format(actual_output))
-    assert_that(actual_output, contains_string(expected_output))
+    assert context.text is not None, "ENSURE: multiline text is provided."
+    step_command_output_should_contain(context)
     assert_that(context.command_result.returncode, is_not(equal_to(0)))
 
 
@@ -160,11 +144,12 @@ def step_command_output_should_contain(context):
             TEXT
             """
     '''
-    expected_output = context.text.format(__WORKDIR__=context.workdir,
-                                          __CWD__=os.getcwd())
+    assert context.text is not None, "ENSURE: multiline text is provided."
+    expected_output = context.text.format(
+        __WORKDIR__ = command_util.posixpath_normpath(context.workdir),
+        __CWD__     = command_util.posixpath_normpath(os.getcwd())
+    )
     command_output  = context.command_result.output
-    # XXX expected_output = command_util.text_remove_empty_lines(expected_output.strip())
-    # XXX actual_output   = command_util.text_remove_empty_lines(command_output.strip())
     expected_output = command_util.text_normalize(expected_output.strip())
     actual_output   = command_util.text_normalize(command_output.strip())
     if DEBUG:
@@ -184,25 +169,31 @@ def step_command_output_should_not_contain(context):
             TEXT
             """
     '''
-    expected_output = context.text.format(__WORKDIR__=context.workdir,
-                                          __CWD__=os.getcwd())
-    command_output  = context.command_result.output
-    # XXX expected_output = command_util.text_remove_empty_lines(expected_output.strip())
-    # XXX actual_output   = command_util.text_remove_empty_lines(command_output.strip())
-    expected_output = command_util.text_normalize(expected_output.strip())
-    actual_output   = command_util.text_normalize(command_output.strip())
-    if DEBUG:
-        print("expected:\n{0}".format(expected_output))
-        print("actual:\n{0}".format(actual_output))
-    assert_that(actual_output, is_not(contains_string(expected_output)))
+    #    expected_output = context.text.format(
+    #        __WORKDIR__ = command_util.posixpath_normpath(context.workdir),
+    #        __CWD__     = command_util.posixpath_normpath(os.getcwd())
+    #    )
+    #    command_output  = context.command_result.output
+    #    expected_output = command_util.text_normalize(expected_output.strip())
+    #    actual_output   = command_util.text_normalize(command_output.strip())
+    #    if DEBUG:
+    #        print("expected:\n{0}".format(expected_output))
+    #        print("actual:\n{0}".format(actual_output))
+    #    assert_that(actual_output, is_not(contains_string(expected_output)))
+    assert context.text is not None, "ENSURE: multiline text is provided."
+    step_command_output_should_not_contain_text(context, context.text.strip())
 
 @then(u'the command output should not contain "{text}"')
-def step_command_output_should_not_contain(context, text):
+def step_command_output_should_not_contain_text(context, text):
     '''
     EXAMPLE:
         ...
         then the command output should not contain "TEXT"
     '''
+    text = text.format(
+        __WORKDIR__ = command_util.posixpath_normpath(context.workdir),
+        __CWD__     = command_util.posixpath_normpath(os.getcwd())
+    )
     command_output  = context.command_result.output
     expected_output = command_util.text_normalize(text)
     actual_output   = command_util.text_normalize(command_output.strip())

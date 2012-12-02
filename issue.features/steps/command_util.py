@@ -78,6 +78,19 @@ def text_normalize(text):
       - Strip empty lines
       - Strip leading whitespace  in a line
       - Strip trailing whitespace in a line
+      - Normalize line endings
     """
     lines = [ line.strip()  for line in text.splitlines()  if line.strip() ]
     return "\n".join(lines)
+
+def posixpath_normpath(pathname):
+    """
+    Convert path into POSIX path:
+      - Normalize path
+      - Replace backslash with slash
+    """
+    backslash = '\\'
+    pathname = os.path.normpath(pathname)
+    if backslash in pathname:
+        pathname = pathname.replace(backslash, '/')
+    return pathname
