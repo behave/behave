@@ -68,7 +68,7 @@ class PrettyFormatter(Formatter):
         self._uri = None
         self._match = None
         self.statement = None
-        self.indentations = []
+        self.max_line_width = 0
         self.display_width = get_terminal_size()[0]
         self.step_lines = 0
 
@@ -216,31 +216,29 @@ class PrettyFormatter(Formatter):
     def escape_triple_quotes(self, string):
         return string.replace(u'"""', u'\\"\\"\\"')
 
-    def indented_location(self, location, proceed):
-        if not location:
+    def indented_location(self, line_length, *args):
+        if not args:
             return u''
 
-        if proceed:
-            indentation = self.indentations.pop(0)
-        else:
-            indentation = self.indentations[0]
 
-        indentation = u' ' * indentation
-        return u'%s # %s' % (indentation, location)
+        indentation = u' ' * (self.max_line_width - line_length)
+        for location in args:
+            if location:
+                indentation += " # %s" % location
 
-    def calculate_location_indentations(self):
-        line_widths = []
+        return unicode(indentation)
+
+    def calculate_location_indentation(self):
         for s in [self.statement] + self.steps:
             string = s.keyword + ' ' + s.name
-            line_widths.append(len(string))
-        max_line_width = max(line_widths)
-        self.indentations = [max_line_width - width for width in line_widths]
+            if len(string) > self.max_line_width:
+                self.max_line_width = len(string)
 
     def print_statement(self):
         if self.statement is None:
             return
 
-        self.calculate_location_indentations()
+        self.calculate_location_indentation()
         self.stream.write(u"\n")
         #self.print_comments(self.statement.comments, '  ')
         if hasattr(self.statement, 'tags'):
@@ -248,7 +246,7 @@ class PrettyFormatter(Formatter):
         self.stream.write(u"  %s: %s " % (self.statement.keyword,
                                          self.statement.name))
 
-        location = self.indented_location(self.statement.location, True)
+        location = self.indented_location((len(self.statement.keyword) + len(self.statement.name)), self.statement.location)
         if self.show_source:
             self.stream.write(self.format('comments').text(location))
         self.stream.write("\n")
@@ -289,12 +287,7 @@ class PrettyFormatter(Formatter):
             self.stream.write(text_format.text(text))
             line_length += (len(text))
 
-        if location :
-            location = step.location + " # " + location
-        else:
-            location = step.location
-
-        location = self.indented_location(step.location + " # " + location, proceed)
+        location = self.indented_location(line_length - 5, step.location, location)
         if self.show_source:
             self.stream.write(self.format('comments').text(location))
             line_length += len(location)
