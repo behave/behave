@@ -143,7 +143,7 @@ class PrettyFormatter(Formatter):
         if result.error_message:
             error = result.error_message.strip()
             if isinstance(error, str):
-                error = unicode(str, "utf8")
+                error = unicode(error, "utf8")
 
             self.stream.write(self.indent(error,
                                           '      '))
