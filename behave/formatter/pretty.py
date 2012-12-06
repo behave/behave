@@ -141,7 +141,11 @@ class PrettyFormatter(Formatter):
                 location = self._match.location
             self.print_step(result.status, arguments, location, True)
         if result.error_message:
-            self.stream.write(self.indent(unicode(result.error_message.strip(), "utf8"),
+            error = result.error_message.strip()
+            if isinstance(error, str):
+                error = unicode(str, "utf8")
+
+            self.stream.write(self.indent(error,
                                           '      '))
             self.stream.write('\n\n')
         self.stream.flush()
