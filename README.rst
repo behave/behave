@@ -80,12 +80,14 @@ OPEN:
 
 OPEN ENHANCEMENTS:
 
+  * issue #98: Summary should include the names of the first X tests that failed
   * issue #90: Allow using multiple formatters
   * issue #86: Html formatter
   * issue #79: support for scenario descriptions
 
 FIXED:
 
+  * FXI issue #99: Layout variation "a directory containing your feature files" is broken for running single features
   * FIX issue #96: Sub-steps failed without any error info to help debug issue
   * FIX issue #92: Output from --format=plain shows skipped steps in next scenario (same as #35)
   * FIX issue #85: AssertionError with nested regex and pretty formatter
@@ -96,7 +98,7 @@ FIXED:
   * FIX issue #73: current_matcher is not predictable.
   * FIX issue #72: Using GHERKIN_COLORS caused an TypeError.
   * FIX issue #70: JUnitReporter: Generates invalid UTF-8 in CDATA sections
-               (stdout/stderr output) when ANSI escapes are used.
+                   (stdout/stderr output) when ANSI escapes are used.
   * FIX issue #69: JUnitReporter: Fault when processing ScenarioOutlines with failing steps
   * FIX issue #67: JSON formatter cannot serialize tables.
   * FIX issue #66: context.table and context.text are not cleared.
