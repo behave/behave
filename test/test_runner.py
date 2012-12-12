@@ -441,6 +441,7 @@ class TestRunWithPaths(unittest.TestCase):
 class FsMock(object):
     def __init__(self, *paths):
         self.base = os.path.abspath('.')
+        self.sep  = os.path.sep
 
         # This bit of gymnastics is to support Windows. We feed in a bunch of
         # paths in places using FsMock that assume that POSIX-style paths
@@ -522,6 +523,8 @@ class FsMock(object):
     def split(self, path, orig=os.path.split):
         return orig(path)
 
+    def splitdrive(self, path, orig=os.path.splitdrive):
+        return orig(path)
 
 
 class TestFeatureDirectory(unittest.TestCase):
@@ -649,4 +652,147 @@ class TestFeatureDirectory(unittest.TestCase):
                 #   E0602   Undefined variable "assert_raises"
                 assert_raises(ConfigError, r.setup_paths)
 
+
+class TestFeatureDirectoryLayout2(object):
+    def test_default_path(self):
+        config = Mock()
+        config.paths = []
+        config.verbose = True
+        r = runner.Runner(config)
+
+        fs = FsMock(
+            'features/',
+            'features/steps/',
+            'features/group1/',
+            'features/group1/foo.feature',
+        )
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    r.setup_paths()
+
+        eq_(r.base_dir, os.path.abspath('features'))
+
+    def test_supplied_root_directory(self):
+        config = Mock()
+        config.paths = [ 'features' ]
+        config.verbose = True
+        r = runner.Runner(config)
+
+        fs = FsMock(
+            'features/',
+            'features/group1/',
+            'features/group1/foo.feature',
+            'features/steps/',
+        )
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    r.setup_paths()
+
+        ok_(('isdir',  os.path.join(fs.base, 'features', 'steps')) in fs.calls)
+        eq_(r.base_dir, os.path.join(fs.base, 'features'))
+
+    def test_supplied_root_directory_no_steps(self):
+        config = Mock()
+        config.paths = [ 'features' ]
+        config.verbose = True
+        r = runner.Runner(config)
+
+        fs = FsMock(
+            'features/',
+            'features/group1/',
+            'features/group1/foo.feature',
+        )
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    assert_raises(ConfigError, r.setup_paths)
+
+        ok_(('isdir',  os.path.join(fs.base, 'features', 'steps')) in fs.calls)
+        eq_(r.base_dir, None)
+
+
+    def test_supplied_feature_file(self):
+        config = Mock()
+        config.paths = [ 'features/group1/foo.feature' ]
+        config.verbose = True
+        r = runner.Runner(config)
+        r.context = Mock()
+
+        fs = FsMock(
+            'features/',
+            'features/group1/',
+            'features/group1/foo.feature',
+            'features/steps/',
+        )
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    r.setup_paths()
+
+        ok_(('isdir',  os.path.join(fs.base, 'features', 'steps'))  in fs.calls)
+        ok_(('isfile', os.path.join(fs.base, 'features', 'group1', 'foo.feature')) in fs.calls)
+        eq_(r.base_dir, fs.join(fs.base, "features"))
+
+    def test_supplied_feature_file_no_steps(self):
+        config = Mock()
+        config.paths = [ 'features/group1/foo.feature' ]
+        config.verbose = True
+        r = runner.Runner(config)
+
+        fs = FsMock(
+            'features/',
+            'features/group1/',
+            'features/group1/foo.feature',
+        )
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    assert_raises(ConfigError, r.setup_paths)
+
+    def test_supplied_feature_directory(self):
+        config = Mock()
+        config.paths = [ 'features/group1' ]
+        config.verbose = True
+        r = runner.Runner(config)
+
+        fs = FsMock(
+            'features/',
+            'features/group1/',
+            'features/group1/foo.feature',
+            'features/steps/',
+        )
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    r.setup_paths()
+
+        ok_(('isdir',  os.path.join(fs.base, 'features', 'steps')) in fs.calls)
+        eq_(r.base_dir, os.path.join(fs.base, 'features'))
+
+
+    def test_supplied_feature_directory_no_steps(self):
+        config = Mock()
+        config.paths = [ 'features/group1' ]
+        config.verbose = True
+        r = runner.Runner(config)
+
+        fs = FsMock(
+            'features/',
+            'features/group1/',
+            'features/group1/foo.feature',
+        )
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                assert_raises(ConfigError, r.setup_paths)
+
+        ok_(('isdir',  os.path.join(fs.base, 'features', 'steps')) in fs.calls)
 
