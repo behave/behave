@@ -191,6 +191,10 @@ options = [
      dict(metavar='FILE',
           help="Write to specified file instead of stdout.")),
 
+    ((),  # Config only
+     dict(action='append', dest='paths',
+          help="Specify paths to be searched for features.")),
+
     (('-q', '--quiet'),
      dict(action='store_true',
           help="Alias for --no-snippets --no-source.")),
@@ -273,6 +277,7 @@ options = [
 def read_configuration(path):
     cfg = ConfigParser.ConfigParser()
     cfg.read(path)
+    cfgdir = os.path.dirname(path)
     result = {}
     for fixed, keywords in options:
         if 'dest' in keywords:
@@ -298,6 +303,13 @@ def read_configuration(path):
                 [s.strip() for s in cfg.get('behave', dest).splitlines()]
         else:
             raise ValueError('action "%s" not implemented' % action)
+
+    if 'paths' in result:
+        # Normalized relative paths to the configuration file.
+        paths = result['paths']
+        result['paths'] = \
+            [os.path.normpath(os.path.join(cfgdir, p)) for p in paths]
+
     return result
 
 
@@ -327,6 +339,8 @@ def load_configuration(defaults):
 usage = "%(prog)s [options] [ [FILE|DIR] ]+"
 parser = argparse.ArgumentParser(usage=usage)
 for fixed, keywords in options:
+    if not fixed:
+        continue
     if 'config_help' in keywords:
         keywords = dict(keywords)
         del keywords['config_help']
