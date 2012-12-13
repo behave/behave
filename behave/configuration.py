@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import os
 import re
 import sys
@@ -26,10 +24,6 @@ options = [
                   behaviour. This switch is used to override a
                   configuration file setting.""")),
 
-    (('-d', '--dry-run'),
-     dict(action='store_true',
-          help="Invokes formatters without executing the steps.")),
-
     (('--processes',),
      dict(metavar="NUMBER", dest='proc_count',
           help="""Use multiple pids to do the work faster.
@@ -42,6 +36,10 @@ options = [
 		Valid values are 'feature' or 'scenario'. Anything else will error. See readme for more
 		info on how this works.
 		""")),
+
+    (('-d', '--dry-run'),
+     dict(action='store_true',
+          help="Invokes formatters without executing the steps.")),
 
     (('-e', '--exclude'),
      dict(metavar="PATTERN", dest='exclude_re',
@@ -93,13 +91,14 @@ options = [
      dict(action='store_false', dest='show_snippets',
           help="Don't print snippets for unimplemented steps.")),
     (('--snippets',),
-     dict(action='store_true', dest='show_snippets',
+     dict(action='store_true',
           help="""Print snippets for unimplemented steps.
                   This is the default behaviour. This switch is used to
                   override a configuration file setting.""")),
 
     (('-m', '--no-multiline'),
-     dict(action='store_false', dest='show_multiline',
+     dict(action='store_false',
+          dest='show_multiline',
           help="""Don't print multiline strings and tables under
                   steps.""")),
 
@@ -129,7 +128,8 @@ options = [
                   override a configuration file setting.""")),
 
     (('--no-capture-stderr',),
-     dict(action='store_false', dest='stderr_capture',
+     dict(action='store_false',
+          dest='stderr_capture',
           help="""Don't capture stderr (any stderr output will be
                   printed immediately.)""")),
 
@@ -204,6 +204,10 @@ options = [
      dict(metavar='FILE',
           help="Write to specified file instead of stdout.")),
 
+    ((),  # Config only
+     dict(action='append', dest='paths',
+          help="Specify paths to be searched for features.")),
+
     (('-q', '--quiet'),
      dict(action='store_true',
           help="Alias for --no-snippets --no-source.")),
@@ -224,15 +228,14 @@ options = [
      dict(action='store_true',
           help='Stop running tests at the first failure.')),
 
-     # -- DISABLE-UNUSED-OPTION: Not used anywhere.
-     # (('-S', '--strict'),
-     # dict(action='store_true',
-     #    help='Fail if there are any undefined or pending steps.')),
+    (('-S', '--strict'),
+     dict(action='store_true',
+          help='Fail if there are any undefined or pending steps.')),
 
     (('-t', '--tags'),
      dict(action='append', metavar='TAG_EXPRESSION',
           help="""Only execute features or scenarios with tags
-                  matching TAG_EXPRESSION. Pass '--tags-help' for
+                  matching TAG_EXPRESSION. Pass '--tag-help' for
                   more information.""",
           config_help="""Only execute certain features or scenarios based
                          on the tag expression given. See below for how to code
@@ -287,6 +290,7 @@ options = [
 def read_configuration(path):
     cfg = ConfigParser.ConfigParser()
     cfg.read(path)
+    cfgdir = os.path.dirname(path)
     result = {}
     for fixed, keywords in options:
         if 'dest' in keywords:
@@ -312,6 +316,13 @@ def read_configuration(path):
                 [s.strip() for s in cfg.get('behave', dest).splitlines()]
         else:
             raise ValueError('action "%s" not implemented' % action)
+
+    if 'paths' in result:
+        # Normalized relative paths to the configuration file.
+        paths = result['paths']
+        result['paths'] = \
+            [os.path.normpath(os.path.join(cfgdir, p)) for p in paths]
+
     return result
 
 
@@ -341,6 +352,8 @@ def load_configuration(defaults):
 usage = "%(prog)s [options] [ [FILE|DIR] ]+"
 parser = argparse.ArgumentParser(usage=usage)
 for fixed, keywords in options:
+    if not fixed:
+        continue
     if 'config_help' in keywords:
         keywords = dict(keywords)
         del keywords['config_help']
@@ -349,28 +362,26 @@ parser.add_argument('paths', nargs='*')
 
 
 class Configuration(object):
-    defaults = dict(
-        color=sys.platform != 'win32',
-        stdout_capture=True,
-        stderr_capture=True,
-        show_snippets=True,
-        show_skipped=True,
-        log_capture=True,
-        dry_run=False,
-        show_source=True,
-        show_timings=True,
-        logging_format='%(levelname)s:%(name)s:%(message)s',
-        summary=True,
-        junit=False,
-        # -- SPECIAL:
-        format0="pretty",   #< Used when no formatters are configured.
-    )
-
     def __init__(self):
         self.formatters = []
         self.reporters = []
-        load_configuration(self.defaults)
-        parser.set_defaults(**self.defaults)
+
+        defaults = dict(
+            color=sys.platform != 'win32',
+            stdout_capture=True,
+            stderr_capture=True,
+            show_snippets=True,
+            show_skipped=True,
+            log_capture=True,
+            dry_run=False,
+            show_source=True,
+            show_timings=True,
+            logging_format='%(levelname)s:%(name)s:%(message)s',
+            summary=True,
+            junit=False,
+        )
+        load_configuration(defaults)
+        parser.set_defaults(**defaults)
 
         args = parser.parse_args()
         for key, value in args.__dict__.items():
