@@ -233,7 +233,7 @@ class Feature(TagStatement, Replayable):
             runner.formatter.background(self.background)
 
         for scenario in self:
-            failed = scenario.run(runner)
+            failed |= scenario.run(runner)
 
             # do we want to stop on the first failure?
             if failed and runner.config.stop:
@@ -582,9 +582,9 @@ class ScenarioOutline(Scenario):
 
         for sub in self.scenarios:
             runner.context._set_root_attribute('active_outline', sub._row)
-            failed = sub.run(runner)
+            failed |= sub.run(runner)
             if failed and runner.config.stop:
-                return False
+                break
         runner.context._set_root_attribute('active_outline', None)
 
         return failed
