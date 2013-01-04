@@ -99,13 +99,13 @@ class JUnitReporter(Reporter):
                 text += u'%12s %s ... ' % (step.keyword, step.name)
                 text += u'%s\n' % step.status
             # Append the captured standard output
-            if scenario.stdout:
+            if hasattr(scenario, 'stdout') and scenario.stdout is not None:
                 text += '\nCaptured stdout:\n%s\n' % scenario.stdout
             stdout.append(CDATA(text))
             case.append(stdout)
 
             # Create stderr section for each test case
-            if scenario.stderr:
+            if hasattr(scenario, 'stderr') and scenario.stderr is not None:
                 stderr = ElementTree.Element('system-err')
                 text = u'\nCaptured stderr:\n%s\n' % scenario.stderr
                 stderr.append(CDATA(text))

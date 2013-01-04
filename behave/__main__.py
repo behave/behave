@@ -5,6 +5,7 @@ from behave.configuration import Configuration, ConfigError
 from behave.formatter.ansi_escapes import escapes
 from behave.i18n import languages
 from behave.formatter import formatters
+from behave.reporter.summary import SummaryReporter
 from behave.runner import Runner
 from behave.parser import ParserError
 
@@ -118,8 +119,10 @@ def main():
         sys.stderr.write(escapes['undefined'] + msg + escapes['reset'])
         sys.stderr.flush()
 
-    if failed:
-        sys.exit(1)
+    reporters = [r for r in runner.config.reporters if isinstance(r, SummaryReporter)]
+    step_summary = reporters[0].step_summary
+    sys.exit(step_summary['failed'] + step_summary['undefined'])
+
 
 if __name__ == '__main__':
     main()
