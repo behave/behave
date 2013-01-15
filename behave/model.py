@@ -727,14 +727,19 @@ class Step(BasicStatement, Replayable):
 
     def run(self, runner, quiet=False):
         for name, value in runner.context.items():
-            self.name = self.name.replace("<%%%s%%>" % name, unicode(value))
+            if isinstance(value, str):
+                value = unicode(value, "utf8", errors='replace')
+            elif not isinstance(value, unicode):
+                value = unicode(str(value), 'utf8', errors='replace')
+
+            self.name = self.name.replace("<%%%s%%>" % name, value)
             if self.text:
-                self.text = self.text.replace("<%%%s%%>" % name, unicode(value))
+                self.text = self.text.replace("<%%%s%%>" % name, value)
 
             if self.table:
                 for row in self.table:
                     for i, cell in enumerate(row.cells):
-                        row.cells[i] = cell.replace("<%%%s%%>" % name, unicode(value))
+                        row.cells[i] = cell.replace("<%%%s%%>" % name, value)
 
         # access module var here to allow test mocking to work
         match = step_registry.registry.find_match(self)

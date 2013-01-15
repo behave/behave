@@ -28,7 +28,7 @@ if hasattr(ElementTree, '_serialize'):
         orig=ElementTree._serialize_xml):
         if elem.tag == '![CDATA[':
             write("\n<%s%s]]>\n" % (
-                    elem.tag, elem.text))
+                elem.tag, elem.text.encode('utf8')))
             return
         return orig(write, elem, encoding, qnames, namespaces)
 
@@ -107,6 +107,8 @@ class JUnitReporter(Reporter):
                 text += u'%s\n' % step.status
             # Append the captured standard output
             if scenario.stdout:
+                if isinstance(scenario.stdout, str):
+                    scenario.stdout = unicode(scenario.stdout, "utf8")
                 text += '\nCaptured stdout:\n%s\n' % scenario.stdout
             stdout.append(CDATA(text))
             case.append(stdout)
@@ -114,6 +116,8 @@ class JUnitReporter(Reporter):
             # Create stderr section for each test case
             if scenario.stderr:
                 stderr = ElementTree.Element('system-err')
+                if isinstance(scenario.stderr, str):
+                    scenario.stderr = unicode(scenario.stderr, "utf8")
                 text = u'\nCaptured stderr:\n%s\n' % scenario.stderr
                 stderr.append(CDATA(text))
                 case.append(stderr)
