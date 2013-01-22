@@ -21,7 +21,7 @@ setup(
     long_description=description,
     author='Benno Rice and Richard Jones',
     author_email='behave-users@googlegroups.com',
-    url='http://github.com/jeamland/behave',
+    url='http://github.com/behave/behave',
     packages=find_packages(),
     entry_points={
         'console_scripts': ['behave = behave.__main__:main'],
