@@ -87,7 +87,8 @@ OPEN ENHANCEMENTS:
 
 FIXED:
 
-  * FXI issue #99: Layout variation "a directory containing your feature files" is broken for running single features
+  * FIX issue #107: test/ directory gets installed into site-packages
+  * FIX issue #99: Layout variation "a directory containing your feature files" is broken for running single features
   * FIX issue #96: Sub-steps failed without any error info to help debug issue
   * FIX issue #92: Output from --format=plain shows skipped steps in next scenario (same as #35)
   * FIX issue #85: AssertionError with nested regex and pretty formatter
