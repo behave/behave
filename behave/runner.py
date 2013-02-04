@@ -458,7 +458,7 @@ class Runner(object):
             self.formatter = formatters.get_formatter(self.config, stream)
             self.formatter.uri(filename)
 
-            failed = feature.run(self)
+            failed |= feature.run(self)
 
             self.formatter.close()
             stream.write('\n')
