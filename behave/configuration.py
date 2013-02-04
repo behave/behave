@@ -335,7 +335,7 @@ parser.add_argument('paths', nargs='*')
 
 
 class Configuration(object):
-    def __init__(self):
+    def __init__(self, args):
         self.formatters = []
         self.reporters = []
 
@@ -356,7 +356,7 @@ class Configuration(object):
         load_configuration(defaults)
         parser.set_defaults(**defaults)
 
-        args = parser.parse_args()
+        args = parser.parse_args(args)
         for key, value in args.__dict__.items():
             if key.startswith('_'):
                 continue

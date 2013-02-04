@@ -43,8 +43,8 @@ you have to use logical AND::
 # """.strip()
 
 
-def main():
-    config = Configuration()
+def main(args=sys.argv[1:]):
+    config = Configuration(args)
     help_and_exit(config)
 
     runner = Runner(config)
