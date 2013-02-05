@@ -826,6 +826,7 @@ class Table(Replayable):
     type = "table"
 
     def __init__(self, headings, line, rows=[]):
+        Replayable.__init__(self)
         self.headings = headings
         self.line = line
         self.rows = []
@@ -1012,6 +1013,7 @@ class Match(Replayable):
     type = "match"
 
     def __init__(self, func, arguments=None):
+        super(Match, self).__init__()
         self.func = func
         self.arguments = arguments
 
@@ -1050,6 +1052,7 @@ class Match(Replayable):
 
 class NoMatch(Match):
     def __init__(self):
+        # -- ACTUALLY-NEEDED: Match.__init__(self, func=None)
         self.func = None
         self.arguments = []
         self.location = None

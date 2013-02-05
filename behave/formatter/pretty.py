@@ -200,13 +200,17 @@ class PrettyFormatter(Formatter):
         self.stream.flush()
 
     def exception(self, exception):
-        exception_text = HERP
-        self.stream.write(self.failed(exception_text) + '\n')
+        # XXX-JE-OOPS: Unknown method self.failed()
+        # XXX-JE-ORIG: exception_text = HERP
+        # XXX-JE-ORIG: self.stream.write(self.failed(exception_text) + '\n')
+        exception_text = str(exception)
+        self.stream.write(self.format("failed").text(exception_text) + "\n")
         self.stream.flush()
 
     def color(self, cell, statuses, color):
         if statuses:
-            return escapes['color'] + escapes['reset']
+            # XXX-JE-OOPS: Coloring without textual content ?!?
+            return escapes[color] + escapes['reset']
         else:
             return escape_cell(cell)
 
@@ -293,6 +297,7 @@ class PrettyFormatter(Formatter):
 
         if self.show_source:
             if self.show_timings and status in ('passed', 'failed'):
+                assert isinstance(location, str)
                 location += ' %0.2fs' % step.duration
             location = self.indented_text(location, proceed)
             self.stream.write(self.format('comments').text(location))

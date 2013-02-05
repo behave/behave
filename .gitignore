@@ -3,6 +3,7 @@
 build
 dist
 __pycache__
+__WORKDIR__/
 .coverage
 nosetests.xml
 _build
