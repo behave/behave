@@ -92,7 +92,7 @@ class TestContext(object):
 
         warnings.showwarning = old_showwarning
 
-        print repr(warns)
+        print(repr(warns))
         assert warns, 'warns is empty!'
         warning = warns[0]
         assert isinstance(warning, runner.ContextMaskWarning), 'warning is not a ContextMaskWarning'

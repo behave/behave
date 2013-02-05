@@ -14,8 +14,8 @@ for language in languages:
     keywords = languages[language]
     for k in keywords:
         v = keywords[k]
-        # bloody YAML parser returns a mixture of unicode and str
-        if not isinstance(v, unicode):
+        # bloody YAML parser returns a mixture of str and str
+        if not isinstance(v, str):
             v = v.decode('utf8')
         keywords[k] = v.split('|')
 

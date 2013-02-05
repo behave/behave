@@ -313,13 +313,13 @@ def load_configuration(defaults):
             filename = os.path.join(path, filename)
             if os.path.isfile(filename):
                 if verbose:
-                    print 'Loading config defaults from "%s"' % filename
+                    print('Loading config defaults from "%s"' % filename)
                 defaults.update(read_configuration(filename))
 
     if verbose:
-        print 'Using defaults:'
+        print('Using defaults:')
         for k, v in defaults.items():
-            print '%15s %s' % (k, v)
+            print('%15s %s' % (k, v))
 
 
 # construct the parser

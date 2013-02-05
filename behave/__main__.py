@@ -50,21 +50,21 @@ def main():
     config = Configuration()
 
     if config.version:
-        print "behave " + __version__
+        print("behave " + __version__)
         sys.exit(0)
 
     if config.tags_help:
-        print TAG_HELP
+        print(TAG_HELP)
         sys.exit(0)
 
     if config.lang_list:
         iso_codes = languages.keys()
         iso_codes.sort()
-        print "Languages available:"
+        print("Languages available:")
         for iso_code in iso_codes:
             native = languages[iso_code]['native'][0]
             name = languages[iso_code]['name'][0]
-            print u'%s: %s / %s' % (iso_code, native, name)
+            print(u'%s: %s / %s' % (iso_code, native, name))
         sys.exit(0)
 
     if config.lang_help:
@@ -72,19 +72,19 @@ def main():
             sys.exit('%s is not a recognised language: try --lang-list' %
                      config.lang_help)
         trans = languages[config.lang_help]
-        print u"Translations for %s / %s" % (trans['name'][0],
-              trans['native'][0])
+        print(u"Translations for %s / %s" % (trans['name'][0],
+              trans['native'][0]))
         for kw in trans:
             if kw in 'name native'.split():
                 continue
-            print u'%16s: %s' % (kw.title().replace('_', ' '),
-                  u', '.join(w for w in trans[kw] if w != '*'))
+            print(u'%16s: %s' % (kw.title().replace('_', ' '),
+                  u', '.join(w for w in trans[kw] if w != '*')))
         sys.exit(0)
 
     if not config.format:
         config.format = ['pretty']
     elif 'help' in config.format:
-        print "Available formatters:"
+        print("Available formatters:")
         formatters.list_formatters(sys.stdout)
         sys.exit(0)
 
