@@ -5,6 +5,7 @@ from behave.formatter.base import Formatter
 
 class TagCountFormatter(Formatter):
     def __init__(self, formatter, tag_counts):
+        Formatter.__init__(self, formatter.stream, formatter.config)
         self.formatter = formatter
         self.tag_counts = tag_counts
 

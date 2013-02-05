@@ -28,6 +28,7 @@ setup(
     },
     install_requires=requirements,
     use_2to3=True,
+    license="BSD",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",
