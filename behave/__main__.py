@@ -1,10 +1,7 @@
 import sys
 
-from behave import __version__
 from behave.configuration import Configuration, ConfigError
 from behave.formatter.ansi_escapes import escapes
-from behave.i18n import languages
-from behave.formatter import formatters
 from behave.runner import Runner
 from behave.parser import ParserError
 
@@ -48,8 +45,47 @@ you have to use logical AND::
 
 def main():
     config = Configuration()
+    help_and_exit(config)
 
+    runner = Runner(config)
+    try:
+        failed = runner.run()
+    except ParserError, e:
+        sys.exit(str(e))
+    except ConfigError, e:
+        sys.exit(str(e))
+
+    if config.show_snippets and runner.undefined:
+        print_snippets(runner.undefined)
+
+    if failed:
+        sys.exit(1)
+
+def print_snippets(steps):
+    msg = u"\nYou can implement step definitions for undefined steps with "
+    msg += u"these snippets:\n\n"
+    printed = set()
+
+    if sys.version_info[0] == 3:
+        string_prefix = "('"
+    else:
+        string_prefix = u"(u'"
+
+    for step in set(steps):
+        if step in printed:
+            continue
+        printed.add(step)
+
+        msg += u"@" + step.step_type + string_prefix + step.name + u"')\n"
+        msg += u"def impl(context):\n"
+        msg += u"    assert False\n\n"
+
+    sys.stderr.write(escapes['undefined'] + msg + escapes['reset'])
+    sys.stderr.flush()
+
+def help_and_exit(config):
     if config.version:
+        from behave import __version__
         print "behave " + __version__
         sys.exit(0)
 
@@ -58,6 +94,7 @@ def main():
         sys.exit(0)
 
     if config.lang_list:
+        from behave.i18n import languages
         iso_codes = languages.keys()
         iso_codes.sort()
         print "Languages available:"
@@ -68,6 +105,7 @@ def main():
         sys.exit(0)
 
     if config.lang_help:
+        from behave.i18n import languages
         if config.lang_help not in languages:
             sys.exit('%s is not a recognised language: try --lang-list' %
                      config.lang_help)
@@ -81,45 +119,11 @@ def main():
                   u', '.join(w for w in trans[kw] if w != '*'))
         sys.exit(0)
 
-    if not config.format:
-        config.format = ['pretty']
     elif 'help' in config.format:
+        from behave.formatter import formatters
         print "Available formatters:"
         formatters.list_formatters(sys.stdout)
         sys.exit(0)
-
-    runner = Runner(config)
-    try:
-        failed = runner.run()
-    except ParserError, e:
-        sys.exit(str(e))
-    except ConfigError, e:
-        sys.exit(str(e))
-
-    if config.show_snippets and runner.undefined:
-        msg = u"\nYou can implement step definitions for undefined steps with "
-        msg += u"these snippets:\n\n"
-        printed = set()
-
-        if sys.version_info[0] == 3:
-            string_prefix = "('"
-        else:
-            string_prefix = u"(u'"
-
-        for step in set(runner.undefined):
-            if step in printed:
-                continue
-            printed.add(step)
-
-            msg += u"@" + step.step_type + string_prefix + step.name + u"')\n"
-            msg += u"def impl(context):\n"
-            msg += u"    assert False\n\n"
-
-        sys.stderr.write(escapes['undefined'] + msg + escapes['reset'])
-        sys.stderr.flush()
-
-    if failed:
-        sys.exit(1)
 
 if __name__ == '__main__':
     main()

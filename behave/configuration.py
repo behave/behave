@@ -58,7 +58,7 @@ options = [
      dict(action='append',
           help="""Specify a formatter. By default the 'pretty'
                   formatter is used. Pass '--format help' to get a
-                  list of available formatters.""")),
+                  list of available formatters.""", default=["pretty"])),
 
 #    (('-g', '--guess'),
 #     dict(action='store_true',
