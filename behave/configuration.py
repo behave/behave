@@ -362,6 +362,8 @@ class Configuration(object):
                 continue
             setattr(self, key, value)
 
+        self.paths = [os.path.normpath(path) for path in self.paths]
+
         if args.outfile and args.outfile != '-':
             self.output = open(args.outfile, 'w')
         else:
