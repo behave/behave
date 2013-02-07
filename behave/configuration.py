@@ -414,6 +414,7 @@ class Configuration(object):
                 continue
             setattr(self, key, value)
 
+        self.paths = [os.path.normpath(path) for path in self.paths]
         if not args.outfiles:
             self.outputs.append(StreamOpener(stream=sys.stdout))
         else:
