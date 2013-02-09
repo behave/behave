@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import with_statement
 
 import contextlib
@@ -311,7 +313,11 @@ class Runner(object):
         self.stdout_capture = None
         self.stderr_capture = None
         self.log_capture = None
-        self.out_stdout = None
+        self.old_stdout = None
+
+        self.base_dir   = None
+        self.context    = None
+        self.formatter  = None
 
     def setup_paths(self):
         if self.config.paths:
@@ -440,8 +446,11 @@ class Runner(object):
         self.load_step_definitions()
 
         context = self.context = Context(self)
+        # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
+        # XXX-JE-PREPARED: self.setup_capture()
         stream = self.config.output
         failed = False
+        failed_count = 0
 
         self.run_hook('before_all', context)
 
@@ -459,19 +468,22 @@ class Runner(object):
             self.formatter.uri(filename)
 
             failed = feature.run(self)
+            if failed:
+                failed_count += 1
 
             self.formatter.close()
             stream.write('\n')
-
-            [reporter.feature(feature) for reporter in self.config.reporters]
+            for reporter in self.config.reporters:
+                reporter.feature(feature)
 
             if failed and self.config.stop:
                 break
 
         self.run_hook('after_all', context)
+        for reporter in self.config.reporters:
+            reporter.end()
 
-        [reporter.end() for reporter in self.config.reporters]
-
+        failed = (failed_count > 0)
         return failed
 
     def setup_capture(self):
