@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+"""
+Provides ANSI escape sequences for coloring/formatting output in ANSI terminals.
+"""
+
 import os
 
 colors = {
@@ -31,8 +36,8 @@ escapes = {
 }
 
 if 'GHERKIN_COLORS' in os.environ:
-    colors = [p.split('=') for p in os.environ['GHERKIN_COLORS'].split(':')]
-    aliases.update(dict(colors))
+    new_aliases = [p.split('=') for p in os.environ['GHERKIN_COLORS'].split(':')]
+    aliases.update(dict(new_aliases))
 
 for alias in aliases:
     escapes[alias] = ''.join([colors[c] for c in aliases[alias].split(',')])
