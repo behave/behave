@@ -378,8 +378,11 @@ class Scenario(TagStatement, Replayable):
     def __init__(self, filename, line, keyword, name, tags=[], steps=[]):
         super(Scenario, self).__init__(filename, line, keyword, name, tags)
         self.steps = steps or []
-
         self.background = None
+        self.feature = None  # REFER-TO: owner=Feature
+        self._row = None
+        self.stderr = None
+        self.stdout = None
 
     def __repr__(self):
         return '<Scenario "%s">' % self.name
@@ -444,8 +447,9 @@ class Scenario(TagStatement, Replayable):
             else:
                 step.status = 'skipped'
                 # XXX-JE-PROBLEMATIC: self.status is a property, cannot assign to it.
-                if self.status is None:
-                    self.status = 'skipped'
+                # XXX-JE-DISABLE:
+                # if self.status is None:
+                #    self.status = 'skipped'
 
         # Attach the stdout and stderr if generate Junit report
         if runner.config.junit:
@@ -763,8 +767,9 @@ class Step(BasicStatement, Replayable):
             self.status = 'passed'
         except AssertionError, e:
             self.status = 'failed'
+            self.exception = e
             if e.args:
-                error = u'Assertion Failed: %s' % (e,)
+                error = u'Assertion Failed: %s' % e
             else:
                 # no assertion text; format the exception
                 error = traceback.format_exc()
@@ -834,6 +839,7 @@ class Table(Replayable):
     type = "table"
 
     def __init__(self, headings, line, rows=[]):
+        Replayable.__init__(self)
         self.headings = headings
         self.line = line
         self.rows = []
