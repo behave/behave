@@ -4,6 +4,7 @@ Provides ANSI escape sequences for coloring/formatting output in ANSI terminals.
 """
 
 import os
+import re
 
 colors = {
     'black':        u"\x1b[30m",
@@ -48,3 +49,39 @@ for alias in aliases:
 
 def up(n):
     return u"\x1b[%dA" % n
+
+_ANSI_ESCAPE_PATTERN = re.compile(u"\x1b\[\d+[mA]", re.UNICODE)
+def strip_escapes(text):
+    """
+    Removes ANSI escape sequences from text (if any are contained).
+
+    :param text: Text that may or may not contain ANSI escape sequences.
+    :return: Text without ANSI escape sequences.
+    """
+    return _ANSI_ESCAPE_PATTERN.sub("", text)
+
+def use_ansi_escape_colorbold_composites():
+    """
+    Patch for "sphinxcontrib-ansi" to process the following ANSI escapes
+    correctly (set-color set-bold sequences):
+
+        ESC[{color}mESC[1m  => ESC[{color};1m
+
+    Reapply aliases to ANSI escapes mapping.
+    """
+    global escapes
+    color_codes = {}
+    for color_name, color_escape in colors.items():
+        color_code = color_escape.replace(u"\x1b[", u"").replace(u"m", u"")
+        color_codes[color_name] = color_code
+
+    for alias in aliases:
+        parts = [ color_codes[c] for c in aliases[alias].split(',') ]
+        composite_escape = u"\x1b[{0}m".format(u";".join(parts))
+        escapes[alias] = composite_escape
+
+        arg_alias = alias + '_arg'
+        arg_seq = aliases.get(arg_alias, aliases[alias] + ',bold')
+        parts = [ color_codes[c] for c in arg_seq.split(',') ]
+        composite_escape = u"\x1b[{0}m".format(u";".join(parts))
+        escapes[arg_alias] = composite_escape

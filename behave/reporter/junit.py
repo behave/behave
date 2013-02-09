@@ -1,12 +1,16 @@
+# -*- coding: utf-8 -*-
+
 import os.path
 from xml.etree import ElementTree
 
 from behave.reporter.base import Reporter
+from behave.formatter import ansi_escapes
 
 
 def CDATA(text=None):
+    # -- issue #70: remove_ansi_escapes(text)
     element = ElementTree.Element('![CDATA[')
-    element.text = text
+    element.text = ansi_escapes.strip_escapes(text)
     return element
 
 
