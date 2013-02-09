@@ -276,6 +276,25 @@ def exec_file(filename, globals={}, locals=None):
     else:
         execfile(filename, globals, locals)
 
+def path_getrootdir(path):
+    """
+    Extract rootdir from in a platform independent way.
+
+    POSIX-PATH EXAMPLE:
+        rootdir = path_getrootdir("/foo/bar/one.feature")
+        assert rootdir == "/"
+
+    WINDOWS-PATH EXAMPLE:
+        rootdir = path_getrootdir(r"D:\foo\bar\one.feature")
+        assert rootdir == r"D:\"
+    """
+    drive, _ = os.path.splitdrive(path)
+    if drive:
+        # -- WINDOWS:
+        return drive + os.path.sep
+    # -- POSIX:
+    return os.path.sep
+
 
 class PathManager(object):
     paths = None
@@ -337,8 +356,7 @@ class Runner(object):
             base_dir = os.path.abspath('features')
 
         # Get the root. This is not guaranteed to be '/' because Windows.
-        root_dir = os.path.split(base_dir)[0]
-
+        root_dir = path_getrootdir(base_dir)
         new_base_dir = base_dir
 
         while True:
