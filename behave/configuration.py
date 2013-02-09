@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import re
 import sys
@@ -218,7 +220,7 @@ options = [
     (('-t', '--tags'),
      dict(action='append', metavar='TAG_EXPRESSION',
           help="""Only execute features or scenarios with tags
-                  matching TAG_EXPRESSION. Pass '--tag-help' for
+                  matching TAG_EXPRESSION. Pass '--tags-help' for
                   more information.""",
           config_help="""Only execute certain features or scenarios based
                          on the tag expression given. See below for how to code
