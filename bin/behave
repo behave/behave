@@ -4,13 +4,33 @@
 import sys
 import os.path
 
+# ----------------------------------------------------------------------------
+# SETUP PATHS:
+# ----------------------------------------------------------------------------
 NAME = "behave"
 HERE = os.path.dirname(__file__)
 TOP  = os.path.join(HERE, "..")
 if os.path.isdir(os.path.join(TOP, NAME)):
     sys.path.insert(0, os.path.abspath(TOP))
 
+# ----------------------------------------------------------------------------
+# BEHAVE-TWEAKS:
+# ----------------------------------------------------------------------------
+from behave.configuration import Configuration
 
+def setup_behave():
+    """
+    Apply tweaks, extensions and patches to "behave".
+    """
+    # -- DISABLE: Timings to simplify issue.features/ tests.
+    Configuration.defaults["show_timings"] = False
+    Configuration.defaults["format0"] = "progress"
+
+
+# ----------------------------------------------------------------------------
+# MAIN:
+# ----------------------------------------------------------------------------
 if __name__ == "__main__":
     from behave.__main__ import main
+    setup_behave()
     main()

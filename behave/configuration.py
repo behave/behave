@@ -335,26 +335,28 @@ parser.add_argument('paths', nargs='*')
 
 
 class Configuration(object):
+    defaults = dict(
+        color=sys.platform != 'win32',
+        stdout_capture=True,
+        stderr_capture=True,
+        show_snippets=True,
+        show_skipped=True,
+        log_capture=True,
+        dry_run=False,
+        show_source=True,
+        show_timings=True,
+        logging_format='%(levelname)s:%(name)s:%(message)s',
+        summary=True,
+        junit=False,
+        # -- SPECIAL:
+        format0="pretty",   #< Used when no formatters are configured.
+    )
+
     def __init__(self):
         self.formatters = []
         self.reporters = []
-
-        defaults = dict(
-            color=sys.platform != 'win32',
-            stdout_capture=True,
-            stderr_capture=True,
-            show_snippets=True,
-            show_skipped=True,
-            log_capture=True,
-            dry_run=False,
-            show_source=True,
-            show_timings=True,
-            logging_format='%(levelname)s:%(name)s:%(message)s',
-            summary=True,
-            junit=False,
-        )
-        load_configuration(defaults)
-        parser.set_defaults(**defaults)
+        load_configuration(self.defaults)
+        parser.set_defaults(**self.defaults)
 
         args = parser.parse_args()
         for key, value in args.__dict__.items():

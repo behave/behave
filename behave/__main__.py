@@ -82,7 +82,8 @@ def main():
         sys.exit(0)
 
     if not config.format:
-        config.format = ['pretty']
+        format0 = config.defaults["format0"]
+        config.format = [ format0 ]
     elif 'help' in config.format:
         print "Available formatters:"
         formatters.list_formatters(sys.stdout)
