@@ -419,6 +419,8 @@ class Runner(object):
         step_globals = {
             'step_matcher': matchers.step_matcher,
         }
+        # -- Default matcher can be overridden in "environment.py" hook.
+        default_matcher = matchers.current_matcher
 
         for step_type in ('given', 'when', 'then', 'step'):
             decorator = getattr(step_registry, step_type)
@@ -428,9 +430,13 @@ class Runner(object):
         for path in [steps_dir] + list(extra_step_paths):
             for name in os.listdir(path):
                 if name.endswith('.py'):
+                    # -- LOAD STEP DEFINITION:
+                    # Reset to default matcher after each step-definition.
+                    # A step-definition may change the matcher 0..N times.
                     exec_file(os.path.join(path, name), step_globals)
+                    matchers.current_matcher = default_matcher
 
-        # clean up the path
+        # -- CLEANUP: Clean up the path.
         sys.path.pop(0)
 
     def run_hook(self, name, context, *args):
