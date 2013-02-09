@@ -262,7 +262,10 @@ class Context(object):
                 return False
             passed = step_obj.run(self._runner, quiet=True)
             if not passed:
-                assert False, "Sub-step failed: %s" % step
+                # -- ISSUE #96: Provide more substep info to diagnose problem.
+                more = step_obj.error_message
+                assert False, \
+                       "Sub-step failed: %s\nSubstep info: %s" % (step, more)
         return True
 
 
@@ -341,8 +344,8 @@ class Runner(object):
     def setup_paths(self):
         if self.config.paths:
             if self.config.verbose:
-                print 'Supplied path:', ', '.join('"%s"' % path for path
-                                                  in self.config.paths)
+                print 'Supplied path:', ', '.join('"%s"' % path 
+                       for path in self.config.paths)
             base_dir = self.config.paths[0]
             if base_dir.startswith('@'):
                 # -- USE: behave @features.txt
@@ -499,7 +502,7 @@ class Runner(object):
 
         context = self.context = Context(self)
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
-        # XXX-JE-PREPARED: self.setup_capture()
+        self.setup_capture()
         stream = self.config.output
         failed = False
         failed_count = 0
