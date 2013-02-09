@@ -17,14 +17,16 @@ if os.path.isdir(os.path.join(TOP, NAME)):
 # BEHAVE-TWEAKS:
 # ----------------------------------------------------------------------------
 from behave.configuration import Configuration
+from behave.reporter.summary import SummaryReporter
 
 def setup_behave():
     """
     Apply tweaks, extensions and patches to "behave".
     """
     # -- DISABLE: Timings to simplify issue.features/ tests.
+    # Configuration.defaults["format0"] = "pretty"
+    # Configuration.defaults["format0"] = "progress"
     Configuration.defaults["show_timings"] = False
-    Configuration.defaults["format0"] = "progress"
 
 
 # ----------------------------------------------------------------------------
