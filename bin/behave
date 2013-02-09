@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+
+# -- ENSURE: Use local path during development.
+import sys
+import os.path
+
+NAME = "behave"
+HERE = os.path.dirname(__file__)
+TOP  = os.path.join(HERE, "..")
+if os.path.isdir(os.path.join(TOP, NAME)):
+    sys.path.insert(0, os.path.abspath(TOP))
+
+
+if __name__ == "__main__":
+    from behave.__main__ import main
+    main()
