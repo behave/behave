@@ -11,7 +11,7 @@ def register(formatter):
 
 
 def list_formatters(stream):
-    for name in formatters:
+    for name in sorted(formatters):
         stream.write(u'%s: %s\n' % (name, formatters[name].description))
 
 
