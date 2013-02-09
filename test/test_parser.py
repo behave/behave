@@ -931,7 +931,7 @@ Fonctionnalit\xe9: testing stuff
             ('given', u'Etant donn\xe9', 'I am testing stuff', None, None),
             ('then', 'Alors', 'it should work', None, None),
         ])
-    test_parses_french_multi_word.go=1
+    test_parses_french_multi_word.go = 1
 
     def test_properly_handles_whitespace_on_keywords_that_do_not_want_it(self):
         doc = u"""

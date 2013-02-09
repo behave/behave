@@ -168,7 +168,7 @@ class TestScenarioOutline(object):
             scenario.run.return_value = False
 
         runner = Mock()
-        context = runner.context = Mock()
+        runner.context = Mock()
 
         outline.run(runner)
 
@@ -181,7 +181,7 @@ class TestScenarioOutline(object):
         outline._scenarios[0].run.return_value = True
 
         runner = Mock()
-        context = runner.context = Mock()
+        runner.context = Mock()
         config = runner.config = Mock()
         config.stop = True
 
@@ -456,7 +456,6 @@ class TestTableModel(object):
         eq_(t1, self.table)
 
     def test_table_iteration(self):
-        last = None
         for i, row in enumerate(self.table):
             for j, cell in enumerate(row):
                 eq_(cell, self.DATA[i][j])
