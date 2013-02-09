@@ -119,7 +119,8 @@ class JUnitReporter(Reporter):
         suite.set('time', str(round(feature.duration, 3)))
 
         if not os.path.exists(self.config.junit_directory):
-            os.mkdir(self.config.junit_directory)
+            # -- ENSURE: Create multiple directory levels at once.
+            os.makedirs(self.config.junit_directory)
 
         tree = ElementTreeWithCDATA(suite)
         report_filename = os.path.join(self.config.junit_directory, filename)
