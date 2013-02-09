@@ -754,10 +754,11 @@ class Step(BasicStatement, Replayable):
 
         try:
             start = time.time()
-            if self.text:
-                runner.context.text = self.text
-            if self.table:
-                runner.context.table = self.table
+            # -- ENSURE:
+            #  * runner.context.text/.table attributes are reset (#66).
+            #  * Even EMPTY multiline text is available in context.
+            runner.context.text  = self.text
+            runner.context.table = self.table
             match.run(runner.context)
             self.status = 'passed'
         except AssertionError, e:
