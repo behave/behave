@@ -1,8 +1,10 @@
 import sys
 import codecs
 
+# -----------------------------------------------------------------------------
+# FORMATTER REGISTRY:
+# -----------------------------------------------------------------------------
 formatters = {}
-
 
 def register(formatter):
     formatters[formatter.name] = formatter
@@ -34,6 +36,9 @@ def get_formatter(config, stream):
             formatter = formatters[name](formatter, config)
     return formatter
 
+# -----------------------------------------------------------------------------
+# REGISTER KNOWN FORMATTERS:
+# -----------------------------------------------------------------------------
 from behave.formatter import plain
 register(plain.PlainFormatter)
 from behave.formatter import pretty
@@ -41,3 +46,7 @@ register(pretty.PrettyFormatter)
 from behave.formatter import json
 register(json.JSONFormatter)
 register(json.PrettyJSONFormatter)
+
+from behave.formatter import progress
+register(progress.ScenarioProgressFormatter)
+register(progress.StepProgressFormatter)

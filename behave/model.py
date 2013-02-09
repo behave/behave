@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import with_statement
 
 import copy
@@ -248,7 +249,9 @@ class Feature(TagStatement, Replayable):
 
         runner.formatter.eof()
         if run_feature or runner.config.show_skipped:
-            runner.formatter.stream.write('\n')
+            # -- DISABLED: Not needed, bad for ProgressFormatter.
+            # runner.formatter.stream.write('\n')
+            pass
 
         return failed
 
