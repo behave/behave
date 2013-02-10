@@ -15,6 +15,15 @@ from behave.formatter import ansi_escapes
 class Pretty1Formatter(pretty.PrettyFormatter):
     """
     Provides a pretty formatter class without using cursor-ups.
+
+    The normal pretty formatter prints the the currently executed step
+    and then executes the current step. After step execution, the step result
+    is known. Therefore, it repositions the cursor with ANSI cursor-ups
+    and overwrites the current step with the step result color (green/red).
+    This behaviour is useful when step execution takes long(er).
+    The user knows which step is currently executed before the result is known.
+
+
     """
     name = "pretty1"
 

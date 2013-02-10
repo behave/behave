@@ -94,8 +94,7 @@ class TestScenarioRun(unittest.TestCase):
         scenario.run(self.runner)
 
         self.formatter.scenario.assert_called_with(scenario)
-        for step in steps:
-            step.run.assert_called_with(self.runner)
+        [step.run.assert_called_with(self.runner) for step in steps]
 
     if sys.version_info[0] == 3:
         stringio_target = 'io.StringIO'
@@ -181,8 +180,7 @@ class TestScenarioOutline(unittest.TestCase):
 
         outline.run(runner)
 
-        for s in outline._scenarios:
-            s.run.assert_called_with(runner)
+        [s.run.assert_called_with(runner) for s in outline._scenarios]
 
     def test_run_stops_on_first_failure_if_requested(self):
         outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',

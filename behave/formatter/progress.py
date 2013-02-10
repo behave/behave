@@ -1,9 +1,20 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=C0111,W0511
 #   C0111   missing docstrings
+"""
+Provides 2 dotted progress formatters:
+
+  * ScenarioProgressFormatter (scope: scenario)
+  * StepProgressFormatter (scope: step)
+
+A "dot" character that represents the result status is printed after
+executing a scope item.
+"""
 
 from behave.formatter.base import Formatter
 import os.path
+# -- BACKWARD-COMPATIBILITY: Python2.5
+from behave.model import relpath as path_relpath
 
 
 # -----------------------------------------------------------------------------
@@ -41,7 +52,7 @@ class ProgressFormatterBase(Formatter):
     # -- FORMATTER API:
     def feature(self, feature):
         self.current_feature = feature
-        short_filename = os.path.relpath(feature.filename, os.getcwd())
+        short_filename = path_relpath(feature.filename, os.getcwd())
         self.stream.write("%s  " % short_filename)
 
     def background(self, background):
@@ -120,7 +131,7 @@ class ScenarioProgressFormatter(ProgressFormatterBase):
         """
         if not self.current_scenario:
             return  # SKIP: No results to report for first scenario.
-            # -- NORMAL-CASE:
+        # -- NORMAL-CASE:
         # XXX-JE-TODO
         status = self.current_scenario.status
         dot_status = self.dot_status[status]

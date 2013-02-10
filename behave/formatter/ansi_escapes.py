@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=C0111
 #   C0111   missing docstrings
+"""
+Provides ANSI escape sequences for coloring/formatting output in ANSI terminals.
+"""
 
 import os
 import re

@@ -200,9 +200,8 @@ class TestContext(unittest.TestCase):
         del self.context.thing
         eq_('thing' in self.context, False)
 
-    # XXX-JE-NOTE: method name was duplicated, renamed to: ...2()
     @raises(AttributeError)
-    def test_context_deletable2(self):
+    def test_context_deletable_raises(self):
         eq_('thing' in self.context, False)
         self.context.thing = 'stuff'
         eq_('thing' in self.context, True)

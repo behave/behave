@@ -6,6 +6,10 @@ from behave.formatter.base import Formatter
 
 
 class PlainFormatter(Formatter):
+    """
+    Provides a simple plain formatter without coloring/formatting.
+    In addition, multi-line text and tables are not shown in output (SAD).
+    """
     name = 'plain'
     description = 'Very basic formatter with maximum compatibility'
 

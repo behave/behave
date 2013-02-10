@@ -142,7 +142,7 @@ class JUnitReporter(Reporter):
                 "TYPE-MISMATCH: step.class={0}".format(step.__class__.__name__)
             if step.status == status:
                 return step
-            # -- OTHERWISE: No step with the given status found.
+        # -- OTHERWISE: No step with the given status found.
         # KeyError("Step with status={0} not found".format(status))
         return None
 

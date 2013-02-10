@@ -145,9 +145,17 @@ class FormatterTests(unittest.TestCase):
         tags = [Tag(name, line) for name in tags]
         return Scenario('<string>', line, keyword, name, tags=tags, steps=steps)
 
-    def _step(self, keyword=u'k\xe9yword', step_type='given', name=u'name', text=None, table=None):
+    def _step(self, keyword=u'k\xe9yword', step_type='given', name=u'name',
+              text=None, table=None):
         line = self.line
-        return Step('<string>', line, keyword, step_type, name, text=text, table=table)
+        return Step('<string>', line, keyword, step_type, name, text=text,
+                    table=table)
+
+    def _match(self, arguments=None):
+        def dummy():
+            pass
+
+        return Match(dummy, arguments)
 
     def test_feature(self):
         # this test does not actually check the result of the formatting; it
@@ -172,27 +180,28 @@ class FormatterTests(unittest.TestCase):
         p.scenario(s)
         s = self._step()
         p.step(s)
+        p.match(self._match([]))
         s.status = u'passed'
         p.result(s)
 
 
-class TestsPretty(FormatterTests):
+class TestPretty(FormatterTests):
     formatter_name = 'pretty'
 
 
-class TestsPlain(FormatterTests):
+class TestPlain(FormatterTests):
     formatter_name = 'plain'
 
 
-class TestsJson(FormatterTests):
+class TestJson(FormatterTests):
     formatter_name = 'json'
 
-class TestsTagCount(FormatterTests):
+
+class TestTagCount(FormatterTests):
     formatter_name = 'plain'
 
     def _formatter(self, stream, config, tag_counts=None):
-        if tag_counts is None:
-            tag_counts = {}
+        if tag_counts is None: tag_counts = {}
         f = formatters.get_formatter(config, stream)
         f.uri('<string>')
         f = tag_count.TagCountFormatter(f, tag_counts)

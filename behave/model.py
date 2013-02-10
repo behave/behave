@@ -799,8 +799,9 @@ class Step(BasicStatement, Replayable):
 
         try:
             start = time.time()
-            # -- ENSURE: Even EMPTY multiline text is available in context.
-            # -- ENSURE: runner.context.text/.table attributes are reset (#66).
+            # -- ENSURE:
+            #  * runner.context.text/.table attributes are reset (#66).
+            #  * Even EMPTY multiline text is available in context.
             runner.context.text  = self.text
             runner.context.table = self.table
             match.run(runner.context)

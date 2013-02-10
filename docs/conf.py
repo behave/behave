@@ -113,7 +113,7 @@ html_theme = 'kr'
 
 html_theme_options = {
  #'bodyfont': '"Ubuntu", sans-serif', # (CSS font family): Font for normal text.
-  #'github_fork': 'jeamland/behave'
+  #'github_fork': 'behave/behave'
 }
 
 # Add any paths that contain custom themes here, relative to this directory.

@@ -62,13 +62,16 @@ Feature: Issue #46 Behave returns 0 (SUCCESS) even in case of test failures
     When I run "behave -c -q features/passing_and_failing.feature"
     Then it should fail with:
       """
+      0 features passed, 1 failed, 0 skipped
+      1 scenario passed, 1 failed, 0 skipped
+      1 step passed, 1 failed, 0 skipped, 0 undefined
+      """
+    And the command output should contain:
+      """
       Feature: Passing and Failing
         Scenario: Passing Scenario Example
           Given passing
         Scenario: Failing Scenario Example
           Given failing
             Assertion Failed: failing
-      0 features passed, 1 failed, 0 skipped
-      1 scenario passed, 1 failed, 0 skipped
-      1 step passed, 1 failed, 0 skipped, 0 undefined
       """

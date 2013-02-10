@@ -79,8 +79,7 @@ class TestSummaryReporter(unittest.TestCase):
         config = Mock()
         reporter = SummaryReporter(config)
 
-        for f in features:
-            reporter.feature(f)
+        [reporter.feature(f) for f in features]
         eq_(round(reporter.duration, 3), 12.400)
 
         reporter.end()
@@ -117,8 +116,7 @@ class TestSummaryReporter(unittest.TestCase):
         config = Mock()
         reporter = SummaryReporter(config)
 
-        for f in features:
-            reporter.feature(f)
+        [reporter.feature(f) for f in features]
         reporter.end()
 
         expected = {

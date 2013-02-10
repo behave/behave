@@ -18,8 +18,8 @@ To get started, we recommend the `tutorial`_ and then the `test language`_ and
 .. _`api`: api.html
 '''
 
-__version__ = '1.2.2'  # MASTER-REPO
-__version__ = '1.2.2.15'
+__version__ = '1.2.2.16'  # MASTER-REPO
+__version__ = '1.2.2.17'
 
 from behave.step_registry import *
 from behave.matchers import step_matcher

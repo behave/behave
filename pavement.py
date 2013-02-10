@@ -295,7 +295,7 @@ def junit_validate(args):
             files.append(arg)
 
     # -- VALIDATE XML FILES:
-    xml_schema = "contrib/junit.xml/behave_junit.xsd"
+    xml_schema = "etc/junit.xml/behave_junit.xsd"
     problematic = []
     for arg in files:
         try:
