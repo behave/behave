@@ -352,7 +352,7 @@ class Configuration(object):
         log_capture=True,
         dry_run=False,
         show_source=True,
-        show_timings=True,
+        show_timings=False,
         logging_format='%(levelname)s:%(name)s:%(message)s',
         summary=True,
         junit=False,
