@@ -65,7 +65,8 @@ options(
             "requirements.txt",
             "requirements-develop.txt",
         ],
-        download_dir="downloads",
+        # download_dir="downloads",
+        download_dir= path("$HOME/.pip/downloads").expandvars(),
     ),
 )
 
@@ -144,7 +145,6 @@ def feature_test(args):
             args.append(" ".join(args2))
 
     cmdopts = " ".join(cmdopts)
-    # XXX args = args2
     if not cmdopts:
         excluded_tags = "--tags=-xfail --tags=-not_supported"
         cmdopts = "--format=progress {0}".format(excluded_tags)

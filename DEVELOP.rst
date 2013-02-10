@@ -72,11 +72,15 @@ To run the selftests use::
 
     bin/behave selftest.features/
 
+To ensure if all issues are fixed::
+
+    bin/behave --format=progress issue.features/
 
 RELATED FILES:
   * test/test_*.py                  -- Unit tests.
   * tools/test-features/*.feature   -- Feature tests.
   * selftest.features/*.feature     -- Selftests by using behave.
+  * issue.features/*.feature        -- Selftests for behave issues.
 
 SEE ALSO:
   * http://nose.readthedocs.org/en/latest/
@@ -142,7 +146,20 @@ All packages are downloaded by using the following commands::
     paver download_depends
 
 This downloads all required python packages described in the
-``requirements*.txt`` files and stores them in the ``downloads/`` subdirectory.
+``requirements*.txt`` files and stores them in the
+
+  * ``$HOME/.pip/downloads/`` subdirectory (default)
+  * ``downloads/`` subdirectory (alternative).
+
+
+.. hint::
+
+    If you want to switch between these 2 local alternatives pypi-server,
+    you need to adapt the ``pavement.py`` (options: download_dir)
+    and ``tox.ini`` (indexserver = default = ...).
+
+    If you want to use an remote pypi-server, you only need to adapt ``tox.in``.
+
 
 The local python package index is build via::
 
@@ -157,10 +174,12 @@ or::
     tox -e py26
 
 RELATED FILES:
-  * downloads/          -- Downloaded packages.
-  * downloads/simple/   -- Local python package index.
-  * tox.ini             -- Tox configuration file.
-  * .tox/               -- Tox workspace and virtual environments.
+  * $HOME/.pip/downloads/           -- Downloaded packages (local1 default).
+  * $HOME/.pip/downloads/simple/    -- Local python package index (local1).
+  * downloads/              -- Downloaded packages (local2 alternative).
+  * downloads/simple/       -- Local python package index (local2).
+  * tox.ini                 -- Tox configuration file.
+  * .tox/                   -- Tox workspace and virtual environments.
 
 SEE ALSO:
   * http://tox.testrun.org/
