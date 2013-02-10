@@ -60,53 +60,6 @@ we recommend the `tutorial`_ and then the `feature testing language`_ and
 
 Download from http://pypi.python.org/pypi/behave
 
----------------
-Version History
----------------
-
-Version 1.2.2 - August 21, 2012
-
-* Fix for an error when an assertion message contains Unicode characters.
-* Don't repr() the step text in snippets to avoid turning Unicode text into
-  backslash hell.
-
-Version 1.2.1 - August 19, 2012
-
-* Fixes for JSON output.
-* Move summary reporter and snippet output to stderr.
-
-Version 1.2.0 - August 18, 2012
-
-* Changed step name provided in snippets to avoid issues with the @step
-  decorator.
-* Use setup to create console scripts.
-* Fixed installation on Windows.
-* Fix ANSI escape sequences for cursor movement and text colourisation.
-* Fixes for various command-line argument issues.
-* Only print snippets once per unique step.
-* Reworked logging capture.
-* Fixes for dry-run mode.
-* General fixes.
-
-Version 1.1.0 - January 23, 2012
-
-* Context variable now contains current configuration.
-* Context values can now be tested for (``name in context``) and deleted.
-* ``__file__`` now available inside step definition files.
-* Fixes for various formatting issues.
-* Add support for configuration files.
-* Add finer-grained controls for various things like log capture, coloured
-  output, etc.
-* Fixes for tag handling.
-* Various documentation enhancements, including an example of full-stack
-  testing with Django thanks to David Eyk.
-* Split reports into a set of modules, add junit output.
-* Added work-in-progress ("wip") mode which is useful when developing new code
-  or new tests. See documentation for more details.
-
-Version 1.0.0 - December 5, 2011
-
-* Initial release
 
 .. _`Install *behave*.`: http://packages.python.org/behave/install.html
 .. _`tutorial`: http://packages.python.org/behave/tutorial.html#features
