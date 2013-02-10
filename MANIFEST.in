@@ -1,1 +1,18 @@
-include README.rst MANIFEST.in
+include README.rst
+include CHANGES.rst
+include MANIFEST.in
+include LICENSE
+include .coveragerc
+include *.cfg
+include *.ini
+include *.rst
+include *.txt
+include bin/behave*
+recursive-include bin           *.py *.cmd *.zip
+recursive-include etc           *.xsd *.txt
+recursive-include docs          *.rst *.txt *.css *.py *.html *.rst-* Makefile
+recursive-include docs/_themes  *.html *.conf *.css *.css_t LICENSE*
+recursive-include test          *.py
+recursive-include tools         *.feature *.py *.yml *.sh
+recursive-include issue.features  *.feature *.py *.txt
+prune .tox
