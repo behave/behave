@@ -14,7 +14,7 @@ from nose.tools import *
 from behave.formatter import formatters
 from behave.formatter import pretty
 from behave.formatter import tag_count
-from behave.model import Tag, Feature, Scenario, Step
+from behave.model import Tag, Feature, Match, Scenario, Step
 import unittest
 
 class TestGetTerminalSize(unittest.TestCase):
