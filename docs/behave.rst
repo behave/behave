@@ -29,7 +29,9 @@ You may see the same information presented below at any time using ``behave
 **--no-junit**
    Don't output JUnit-compatible reports.
 **--junit**
-   Output JUnit-compatible reports.
+   Output JUnit-compatible reports. When junit is enabled, all stdout
+   and stderr will be redirected and dumped to the junit report,
+   regardless of the '--capture' and '--no-capture' options.
 **--junit-directory**
    Directory in which to store JUnit reports.
 **-f, --format**
@@ -61,6 +63,13 @@ You may see the same information presented below at any time using ``behave
    immediately.)
 **--capture**
    Capture stdout (any stdout output will be printed if there is a
+   failure.) This is the default behaviour. This switch is used to
+   override a configuration file setting.
+**--no-capture-stderr**
+   Don't capture stderr (any stderr output will be printed
+   immediately.)
+**--capture-stderr**
+   Capture stderr (any stderr output will be printed if there is a
    failure.) This is the default behaviour. This switch is used to
    override a configuration file setting.
 **--no-logcapture**
@@ -111,6 +120,12 @@ You may see the same information presented below at any time using ``behave
 **-t, --tags**
    Only execute features or scenarios with tags matching
    TAG_EXPRESSION. Pass '--tag-help' for more information.
+**-T, --no-timings**
+   Don't print the time taken for each step.
+**--show-timings**
+   Print the time taken, in seconds, of each step after the step has
+   completed. This is the default behaviour. This switch is used to
+   override a configuration file setting.
 **-v, --verbose**
    Show the files and features loaded.
 **-w, --wip**
@@ -226,7 +241,9 @@ Recognised Settings
 **junit** -- boolean
    Don't output JUnit-compatible reports.
 **junit** -- boolean
-   Output JUnit-compatible reports.
+   Output JUnit-compatible reports. When junit is enabled, all stdout
+   and stderr will be redirected and dumped to the junit report,
+   regardless of the '--capture' and '--no-capture' options.
 **junit_directory** -- text
    Directory in which to store JUnit reports.
 **format** -- text (multiple allowed)
@@ -258,6 +275,13 @@ Recognised Settings
    immediately.)
 **stdout_capture** -- boolean
    Capture stdout (any stdout output will be printed if there is a
+   failure.) This is the default behaviour. This switch is used to
+   override a configuration file setting.
+**stderr_capture** -- boolean
+   Don't capture stderr (any stderr output will be printed
+   immediately.)
+**stderr_capture** -- boolean
+   Capture stderr (any stderr output will be printed if there is a
    failure.) This is the default behaviour. This switch is used to
    override a configuration file setting.
 **log_capture** -- boolean
@@ -293,6 +317,8 @@ Recognised Settings
    Display the summary at the end of the run.
 **outfile** -- text
    Write to specified file instead of stdout.
+**paths** -- text (multiple allowed)
+   Specify paths to be searched for features.
 **quiet** -- boolean
    Alias for --no-snippets --no-source.
 **show_source** -- boolean
@@ -310,6 +336,12 @@ Recognised Settings
    Only execute certain features or scenarios based on the tag
    expression given. See below for how to code tag expressions in
    configuration files.
+**show_timings** -- boolean
+   Don't print the time taken for each step.
+**show_timings** -- boolean
+   Print the time taken, in seconds, of each step after the step has
+   completed. This is the default behaviour. This switch is used to
+   override a configuration file setting.
 **verbose** -- boolean
    Show the files and features loaded.
 **wip** -- boolean
