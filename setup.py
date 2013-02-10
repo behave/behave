@@ -4,7 +4,7 @@ import sys
 
 from setuptools import find_packages, setup
 
-requirements = ['parse>=1.3.3']
+requirements = ['parse>=1.6']
 zip_safe = True
 major, minor = sys.version_info[:2]
 if major == 2 and minor < 7:
@@ -16,7 +16,7 @@ description = ''.join(open('README.rst').readlines()[6:])
 
 setup(
     name='behave',
-    version='1.2.2',
+    version='1.2.2.16',
     description='behave is behaviour-driven development, Python style',
     long_description=description,
     author='Benno Rice and Richard Jones',
