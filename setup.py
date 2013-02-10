@@ -22,7 +22,7 @@ setup(
     author='Benno Rice and Richard Jones',
     author_email='behave-users@googlegroups.com',
     url='http://github.com/behave/behave',
-    packages=find_packages(),
+    packages=find_packages(exclude=["test", "test.*"]),
     entry_points={
         'console_scripts': ['behave = behave.__main__:main'],
     },
