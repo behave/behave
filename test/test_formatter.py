@@ -176,24 +176,18 @@ class FormatterTests(unittest.TestCase):
         p.result(s)
 
 
-class TestPretty(FormatterTests):
+class TestsPretty(FormatterTests):
     formatter_name = 'pretty'
 
 
-class TestPlain(FormatterTests):
+class TestsPlain(FormatterTests):
     formatter_name = 'plain'
 
 
-class TestJson(FormatterTests):
+class TestsJson(FormatterTests):
     formatter_name = 'json'
 
-class TestProgress(FormatterTests):
-    formatter_name = "progress"
-
-class TestProgress(FormatterTests):
-    formatter_name = "progress2"
-
-class TestTagCount(FormatterTests):
+class TestsTagCount(FormatterTests):
     formatter_name = 'plain'
 
     def _formatter(self, stream, config, tag_counts=None):
