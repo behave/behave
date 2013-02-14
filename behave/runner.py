@@ -344,8 +344,8 @@ class Runner(object):
     def setup_paths(self):
         if self.config.paths:
             if self.config.verbose:
-                print 'Supplied path:', ', '.join('"%s"' % path 
-                       for path in self.config.paths)
+                paths = ', '.join('"%s"' % path for path in self.config.paths)
+                print 'Supplied path:', paths
             base_dir = self.config.paths[0]
             if base_dir.startswith('@'):
                 # -- USE: behave @features.txt
