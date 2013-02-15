@@ -167,7 +167,7 @@ class PrettyFormatter(Formatter):
         self.replay()
         self.stream.flush()
 
-    def table(self, table):
+    def table(self, table, strformat):
         cell_lengths = []
         all_rows = [table.headings] + table.rows
         for row in all_rows:
@@ -184,19 +184,17 @@ class PrettyFormatter(Formatter):
             self.stream.write('      |')
             for j, (cell, max_length) in enumerate(zip(row, max_lengths)):
                 self.stream.write(' ')
-                self.stream.write(self.color(cell, None, j))
+                self.stream.write(strformat(cell))
                 self.stream.write(' ' * (max_length - cell_lengths[i][j]))
                 self.stream.write(' |')
             self.stream.write('\n')
         self.stream.flush()
 
-    def doc_string(self, doc_string):
-        #self.stream.write('      """' + doc_string.content_type + '\n')
-        self.stream.write('      """\n')
-        doc_string = self.escape_triple_quotes(self.indent(doc_string,
-                                                           '      '))
-        self.stream.write(doc_string)
-        self.stream.write('\n      """\n')
+    def doc_string(self, doc_string, strformat):
+        triplequotes = self.format('comments').text(u'"""')
+        doc_string = strformat(self.escape_triple_quotes(doc_string))
+        self.stream.write(self.indent('\n'.join(
+            [triplequotes, doc_string, triplequotes]), '      ') + '\n')
         self.stream.flush()
 
     def exception(self, exception):
@@ -315,9 +313,9 @@ class PrettyFormatter(Formatter):
 
         if self.show_multiline:
             if step.text:
-                self.doc_string(step.text)
+                self.doc_string(step.text, strformat=text_format.text)
             if step.table:
-                self.table(step.table)
+                self.table(step.table, strformat=text_format.text)
 
     def print_tags(self, tags, indent):
         if not tags:
