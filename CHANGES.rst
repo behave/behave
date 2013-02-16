@@ -10,6 +10,10 @@ IMPROVEMENT:
   * issue #116: SummaryReporter shows list of failing scenarios (provided by: roignac).
   * issue #112: Improvement to AmbiguousStep error diagnostics
 
+FIXED:
+
+  * issue #114: No blank lines when option --no-skipped is used (provided by: florentx).
+
 RESOLVED:
 
  * issue #98: Summary should include the names of the first X tests that failed (solved by: #116).
