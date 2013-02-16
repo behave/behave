@@ -1,5 +1,3 @@
-import os
-import os.path
 import sys
 
 from setuptools import find_packages, setup
