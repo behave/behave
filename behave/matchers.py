@@ -1,9 +1,7 @@
 from __future__ import with_statement
 
 import re
-
 import parse
-
 from behave import model
 
 
@@ -21,6 +19,16 @@ class Matcher(object):
     def __init__(self, func, string):
         self.func = func
         self.string = string
+
+    @property
+    def location(self):
+        return model.Match.make_location(self.func)
+
+    def describe(self):
+        '''
+        Provide a textual description of the step function/matcher object.
+        '''
+        return 'step: "%s" (%s)' % (self.string, self.location)
 
     def check_match(self, step):
         '''Match me against the "step" name supplied.
