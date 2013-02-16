@@ -1028,9 +1028,7 @@ class Match(Replayable):
     def __init__(self, func, arguments=None):
         self.func = func
         self.arguments = arguments
-
-        filename = relpath(func.func_code.co_filename, os.getcwd())
-        self.location = '%s:%d' % (filename, func.func_code.co_firstlineno)
+        self.location = self.make_location(func)
 
     def __repr__(self):
         if self.func:
@@ -1061,6 +1059,18 @@ class Match(Replayable):
         with context.user_mode():
             self.func(context, *args, **kwargs)
 
+    @staticmethod
+    def make_location(step_function):
+        '''
+        Extracts the location information from the step function and builds
+        the location string (schema: "{source_filename}:{line_number}").
+
+        :param step_function: Function whose location should be determined.
+        :return: Step function location as string.
+        '''
+        filename = relpath(step_function.func_code.co_filename, os.getcwd())
+        location = '%s:%d' % (filename, step_function.func_code.co_firstlineno)
+        return location
 
 class NoMatch(Match):
     def __init__(self):

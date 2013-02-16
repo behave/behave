@@ -145,10 +145,12 @@ def step_command_output_should_contain(context):
             """
     '''
     assert context.text is not None, "ENSURE: multiline text is provided."
-    expected_output = context.text.format(
-        __WORKDIR__ = command_util.posixpath_normpath(context.workdir),
-        __CWD__     = command_util.posixpath_normpath(os.getcwd())
-    )
+    expected_output = context.text
+    if "{__WORKDIR__}" in expected_output or "{__CWD__}" in expected_output:
+        expected_output = context.text.format(
+            __WORKDIR__ = command_util.posixpath_normpath(context.workdir),
+            __CWD__     = command_util.posixpath_normpath(os.getcwd())
+        )
     command_output  = context.command_result.output
     expected_output = command_util.text_normalize(expected_output.strip())
     actual_output   = command_util.text_normalize(command_output.strip())
