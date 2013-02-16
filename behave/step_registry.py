@@ -19,7 +19,8 @@ class StepRegistry(object):
         keyword = self.steps[keyword.lower()]
         for existing in keyword:
             if existing.match(string):
-                raise AmbiguousStep('"%s" has already been defined' % string)
+                message = '"%s" has already been defined in\n  existing %s'
+                raise AmbiguousStep(message % (string, existing.describe()))
         keyword.append(matchers.get_matcher(func, string))
 
     def find_match(self, step):

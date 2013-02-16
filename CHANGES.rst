@@ -5,7 +5,12 @@ Version History
 Next Version 1.2.2.x - UNRELEASED
 -------------------------------------------------------------------------------
 
-:Current: 1.2.2.16 (2013-02-10)
+IMPROVEMENT:
+
+  * issue #112: Improvement to AmbiguousStep error diagnostics
+
+
+Version: 1.2.2.16 (2013-02-10)
 
 NEW:
 
