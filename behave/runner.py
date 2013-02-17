@@ -497,6 +497,10 @@ class Runner(object):
             return self.run_with_paths()
 
     def run_with_paths(self):
+	thread_count = getattr(self.config,'thread_count')
+	if thread_count:
+		return self.run_threads() 
+
         self.load_hooks()
         self.load_step_definitions()
 
@@ -540,6 +544,129 @@ class Runner(object):
 
         failed = (failed_count > 0)
         return failed
+
+    def run_threads(self):
+	import copy,StringIO,threading,Queue,time
+
+        self.config.format = ['plain']
+        self.load_hooks()
+        self.load_step_definitions()
+
+        context = self.context = Context(self)
+	def do_nothing(obj2,obj3):
+		pass
+	context._emit_warning = do_nothing
+
+        self.setup_capture()
+        stream = self.config.output
+        failed = False
+        failed_count = 0
+
+        self.run_hook('before_all', context)
+
+        for filename in self.feature_files():
+            if self.config.exclude(filename):
+                continue
+
+            feature = parser.parse_file(os.path.abspath(filename),
+                                        language=self.config.lang)
+
+            self.features.append(feature)
+
+        self.formatter = formatters.get_formatter(self.config, stream)
+        self.formatter.uri(filename)
+
+	scenarioqueue = Queue.Queue()
+	processedscenarios = Queue.Queue()
+        for feature in self.features:
+            for scenario in feature.scenarios:
+			if scenario.type == 'scenario':
+				scenarioqueue.put(scenario)
+			else:
+				for subscenario in scenario.scenarios:
+					scenarioqueue.put(subscenario)
+
+	def worker(thread_number):
+		while 1:
+			try:
+				s = scenarioqueue.get_nowait()
+			except Exception,e:
+				break
+			runclone = copy.copy(self)
+			runclone.feature = s.feature
+			writebuf = StringIO.StringIO()
+			runclone.formatter = formatters.get_formatter(self.config, writebuf)
+			runclone.formatter.uri(s.feature.filename)
+			beginmsg = time.strftime("%Y-%m-%d %H:%M:%S")+\
+			"|thread"+str(thread_number)+" START Scenario:"+s.name+" Feature:"+s.feature.name+"|"+s.filename
+			s.run(runclone)
+			endmsg = time.strftime("%Y-%m-%d %H:%M:%S")+\
+			"|thread"+str(thread_number)+" END Scenario:"+s.name+" Feature:"+s.feature.name+"|status:"+s.status
+			if writebuf.pos:
+				writebuf.seek(0)
+				s.custom_report = beginmsg+"\n"+writebuf.read()+endmsg+"\nDuration:"+str(s.duration)
+				processedscenarios.put(s)
+	
+	threads = []
+	for i in range(int(getattr(self.config,'thread_count'))):
+		t = threading.Thread(target=worker, args=(i,))
+		threads.append(t)
+		t.start()
+
+	[t.join() for t in threads]
+
+        self.run_hook('after_all', context)
+
+	reload(sys)#Because sys.stdout apparently got broken by the threads.
+
+	features_passed = 0
+	features_failed = 0
+	features_skipped = 0
+	
+	scenarios_passed = 0
+	scenarios_failed = 0
+	scenarios_skipped = 0
+
+	steps_passed = 0
+	steps_failed = 0
+	steps_skipped = 0
+	steps_undefined = 0
+
+	for feature in self.features:
+		if feature.status == 'passed':
+			features_passed += 1
+		if feature.status == 'failed':
+			features_failed += 1
+		if feature.status == 'skipped':
+			features_skipped += 1
+	
+	while not processedscenarios.empty():
+		s = processedscenarios.get()
+		print "\n"*3
+		print s.custom_report
+		if s.status == 'passed':
+			scenarios_passed += 1
+		if s.status == 'failed':
+			scenarios_failed += 1
+		if s.status == 'skipped':
+			scenarios_skipped += 1
+		for step in s.steps:
+			if step.status == 'passed':
+				steps_passed += 1
+			if step.status == 'failed':
+				steps_failed += 1
+			if step.status == 'skipped':
+				steps_skipped += 1
+			if step.status == 'undefined':
+				steps_undefined += 1
+			
+	print "\n"*3
+	print features_passed," features passed,",features_failed,"failed,",features_skipped,"skipped"			
+	print scenarios_passed,"scenarios passed,",scenarios_failed,"failed,",scenarios_skipped,"skipped"			
+	print steps_passed,"steps passed,",steps_failed,"failed,",steps_skipped,"skipped,",steps_undefined,"undefined"
+
+        return features_failed 
+	
 
     def setup_capture(self):
         if self.config.stdout_capture:
