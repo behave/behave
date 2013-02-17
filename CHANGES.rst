@@ -7,7 +7,12 @@ Next Version 1.2.2.x - UNRELEASED
 
 IMPROVEMENT:
 
+  * issue #116: SummaryReporter shows list of failing scenarios (provided by: roignac).
   * issue #112: Improvement to AmbiguousStep error diagnostics
+
+RESOLVED:
+
+ * issue #98: Summary should include the names of the first X tests that failed (solved by: #116).
 
 
 Version: 1.2.2.16 (2013-02-10)
