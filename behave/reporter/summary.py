@@ -49,7 +49,7 @@ class SummaryReporter(Reporter):
 
     def end(self):
         if self.failed_scenarios != []:
-            self.stream.write("Failing scenarios:\n")
+            self.stream.write("\nFailing scenarios:\n")
             for scenario in self.failed_scenarios:
                 self.stream.write(" %s # %s" % (
                     scenario.location, scenario.name))
