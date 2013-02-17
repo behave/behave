@@ -36,6 +36,8 @@ class SummaryReporter(Reporter):
                              'undefined': 0, 'untested': 0}
         self.duration = 0.0
 
+        self.failed_scenarios = []
+
     def feature(self, feature):
         self.feature_summary[feature.status or 'skipped'] += 1
         self.duration += feature.duration
@@ -46,6 +48,12 @@ class SummaryReporter(Reporter):
                 self.process_scenario(scenario)
 
     def end(self):
+        if self.failed_scenarios != []:
+            self.stream.write("\nFailing scenarios:\n")
+            for scenario in self.failed_scenarios:
+                self.stream.write(" %s # %s" % (
+                    scenario.location, scenario.name))
+            self.stream.write("\n\n")
         self.stream.write(format_summary('feature', self.feature_summary))
         self.stream.write(format_summary('scenario', self.scenario_summary))
         self.stream.write(format_summary('step', self.step_summary))
@@ -53,6 +61,8 @@ class SummaryReporter(Reporter):
         self.stream.write('Took %dm%02.1fs\n' % timings)
 
     def process_scenario(self, scenario):
+        if scenario.status == 'failed':
+            self.failed_scenarios.append(scenario)
         self.scenario_summary[scenario.status or 'skipped'] += 1
         for step in scenario:
             self.step_summary[step.status or 'skipped'] += 1
