@@ -30,6 +30,12 @@ options = [
      dict(action='store_true',
           help="Invokes formatters without executing the steps.")),
 
+    (('--threads',),
+     dict(metavar="NUMBER", dest='thread_count',
+          help="""EXPERIMENTAL: Run scenarios in parallel by creating X number of threads.
+		When threads are enabled, all the logging & format options won't work at best; at
+		worse they'll fail in some mysterious and spectacular way, so just don't use 'em.""")),
+
     (('-e', '--exclude'),
      dict(metavar="PATTERN", dest='exclude_re',
           help="""Don't run feature files matching regular expression
