@@ -9,6 +9,7 @@ IMPROVEMENT:
 
   * issue #116: SummaryReporter shows list of failing scenarios (provided by: roignac).
   * issue #112: Improvement to AmbiguousStep error diagnostics
+  * issue #74:  django-behave module now available at pypi (done: 2012-10-04).
 
 FIXED:
 
@@ -36,8 +37,7 @@ FIXED:
   * issue #75: behave @list_of_features.txt is broken.
   * issue #73: current_matcher is not predictable.
   * issue #72: Using GHERKIN_COLORS caused an TypeError.
-  * issue #70: JUnitReporter: Generates invalid UTF-8 in CDATA sections
-               (stdout/stderr output) when ANSI escapes are used.
+  * issue #70: JUnitReporter: Generates invalid UTF-8 in CDATA sections (stdout/stderr output) when ANSI escapes are used.
   * issue #69: JUnitReporter: Fault when processing ScenarioOutlines with failing steps
   * issue #67: JSON formatter cannot serialize tables.
   * issue #66: context.table and context.text are not cleared.
