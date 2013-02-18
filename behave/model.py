@@ -252,9 +252,7 @@ class Feature(TagStatement, Replayable):
 
         runner.formatter.eof()
         if run_feature or runner.config.show_skipped:
-            # -- DISABLED: Not needed, bad for ProgressFormatter.
-            # runner.formatter.stream.write('\n')
-            pass
+            runner.formatter.stream.write('\n')
 
         failed = (failed_count > 0)
         return failed

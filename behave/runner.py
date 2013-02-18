@@ -527,7 +527,6 @@ class Runner(object):
                 failed_count += 1
 
             self.formatter.close()
-            stream.write('\n')
             for reporter in self.config.reporters:
                 reporter.feature(feature)
 
