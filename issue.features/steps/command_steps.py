@@ -131,7 +131,9 @@ def step_it_should_fail_with(context):
     step_command_output_should_contain(context)
     assert_that(context.command_result.returncode, is_not(equal_to(0)))
 
-
+# -----------------------------------------------------------------------------
+# STEPS FOR: Output Comparison
+# -----------------------------------------------------------------------------
 @then(u'the command output should contain')
 def step_command_output_should_contain(context):
     '''
@@ -204,6 +206,51 @@ def step_command_output_should_not_contain_text(context, text):
         print("actual:\n{0}".format(actual_output))
     assert_that(actual_output, is_not(contains_string(expected_output)))
 
+@then(u'the command output should contain exactly "{text}"')
+def step_command_output_should_contain_exactly_text(context, text):
+    """
+    Verifies that the command output of the last command contains the
+    expected text.
+
+    .. code-block:: gherkin
+
+        When I run "echo Hello"
+        Then the command output should contain "Hello"
+    """
+    expected_text = text
+    if "{__WORKDIR__}" in text or "{__CWD__}" in text:
+        expected_text = text.format(
+            __WORKDIR__ = posixpath_normpath(context.workdir),
+            __CWD__     = posixpath_normpath(os.getcwd())
+        )
+    actual_output  = context.command_result.output
+    assert_that(actual_output, contains_string(expected_text))
+    # REAL: textutil.assert_text_should_contain_exactly(actual_output, expected_text)
+
+@then(u'the command output should contain exactly')
+def step_command_output_should_contain_exactly_with_multiline_text(context):
+    assert context.text is not None, "ENSURE: multiline text is provided."
+    step_command_output_should_contain_exactly_text(context, context.text)
+
+@then(u'the command output should not contain exactly "{text}"')
+def step_command_output_should_not_contain_exactly_text(context, text):
+    expected_text = text
+    if "{__WORKDIR__}" in text or "{__CWD__}" in text:
+        expected_text = text.format(
+            __WORKDIR__ = posixpath_normpath(context.workdir),
+            __CWD__     = posixpath_normpath(os.getcwd())
+        )
+    actual_output  = context.command_result.output
+    assert_that(actual_output, is_not(contains_string(expected_text)))
+
+@then(u'the command output should not contain exactly')
+def step_command_output_should_contain_not_exactly_with_multiline_text(context):
+    assert context.text is not None, "ENSURE: multiline text is provided."
+    step_command_output_should_not_contain_exactly_text(context, context.text)
+
+# -----------------------------------------------------------------------------
+# STEPS FOR: Directories
+# -----------------------------------------------------------------------------
 @then(u'the directory "{directory}" should exist')
 def step_the_directory_should_exist(context, directory):
     path_ = directory
