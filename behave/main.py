@@ -107,11 +107,9 @@ def main():
     try:
         failed = runner.run()
     except ParserError, e:
-        sys.stderr.write("PARSE-ERROR: {0}".format(e))
-        sys.exit(2)
+        sys.exit(str(e))
     except ConfigError, e:
-        sys.stderr.write("CONFIG-ERROR: {0}".format(e))
-        sys.exit(3)
+        sys.exit(str(e))
 
     if config.show_snippets and runner.undefined:
         msg = u"\nYou can implement step definitions for undefined steps with "
@@ -132,7 +130,7 @@ def main():
             msg += u"def impl(context):\n"
             msg += u"    assert False\n\n"
 
-        # XXX-JE-OOPS: Unclear is stream supports ANSI coloring.
+        # -- OOPS: Unclear if stream supports ANSI coloring.
         sys.stderr.write(escapes['undefined'] + msg + escapes['reset'])
         sys.stderr.flush()
 
