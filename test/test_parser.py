@@ -59,6 +59,36 @@ Feature: Stuff
         eq_(feature.tags, [model.Tag(name, 1)
             for name in (u'foo', u'bar', u'baz', u'qux', u'winkle_pickers', u'number8')])
 
+    def test_parses_feature_with_a_tag_and_comment(self):
+        doc = u"""
+@foo    # Comment: ...
+Feature: Stuff
+  In order to thing
+  As an entity
+  I want to do stuff
+""".strip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Stuff")
+        eq_(feature.description,
+            ["In order to thing", "As an entity", "I want to do stuff"])
+        eq_(feature.tags, [model.Tag(u'foo', 1)])
+
+    def test_parses_feature_with_more_tags_and_comment(self):
+        doc = u"""
+@foo @bar @baz @qux @winkle_pickers # Comment: @number8
+Feature: Stuff
+  In order to thing
+  As an entity
+  I want to do stuff
+""".strip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Stuff")
+        eq_(feature.description,
+            ["In order to thing", "As an entity", "I want to do stuff"])
+        eq_(feature.tags, [model.Tag(name, 1)
+                           for name in (u'foo', u'bar', u'baz', u'qux', u'winkle_pickers')])
+        # -- NOT A TAG: u'number8'
+
     def test_parses_feature_with_background(self):
         doc = u"""
 Feature: Stuff
@@ -412,6 +442,37 @@ Feature: Stuff
         self.compare_steps(feature.scenarios[0].steps, [
             ('given', 'Given', 'there is stuff', "So\n\nMuch\n\n\nStuff", None),
             ('then', 'Then', 'stuff happens', None, None),
+        ])
+
+    # MORE-JE-ADDED:
+    def test_parses_string_argument_without_stripping_empty_lines(self):
+        # -- ISSUE 44: Parser removes comments in multiline text string.
+        doc = u'''
+Feature: Multiline
+
+  Scenario: Multiline Text with Comments
+    Given a multiline argument with:
+      """
+
+      """
+    And a multiline argument with:
+      """
+      Alpha.
+
+      Omega.
+      """
+    Then empty middle lines are not stripped
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Multiline")
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, "Multiline Text with Comments")
+        text1 = ""
+        text2 = "Alpha.\n\nOmega."
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Given', 'a multiline argument with', text1, None),
+            ('given', 'And',   'a multiline argument with', text2, None),
+            ('then', 'Then', 'empty middle lines are not stripped', None, None),
         ])
 
     def test_parses_feature_with_a_step_with_a_string_with_comments(self):

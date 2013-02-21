@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import with_statement
 
 from behave import model, i18n
@@ -109,9 +111,9 @@ class Parser(object):
         line = line.strip()
 
         if line.startswith('@'):
-            self.tags.extend([model.Tag(tag.strip(), self.line)
-                              for tag in line[1:].split('@')])
+            self.tags.extend(self.parse_tags(line))
             return True
+
         feature_kwd = self.match_keyword('feature', line)
         if feature_kwd:
             name = line[len(feature_kwd) + 1:].strip()
@@ -126,8 +128,7 @@ class Parser(object):
         line = line.strip()
 
         if line.startswith('@'):
-            self.tags.extend([model.Tag(tag.strip(), self.line)
-                              for tag in line[1:].split('@')])
+            self.tags.extend(self.parse_tags(line))
             return True
 
         background_kwd = self.match_keyword('background', line)
@@ -180,8 +181,7 @@ class Parser(object):
             return True
 
         if line.startswith('@'):
-            self.tags.extend([model.Tag(tag.strip(), self.line)
-                              for tag in line[1:].split('@')])
+            self.tags.extend(self.parse_tags(line))
             return True
 
         scenario_kwd = self.match_keyword('scenario', line)
@@ -270,6 +270,31 @@ class Parser(object):
             if line.startswith(alias + ':'):
                 return alias
         return False
+
+    def parse_tags(self, line):
+        '''
+        Parse a line with one or more tags:
+
+          * A tag starts with the AT sign.
+          * A tag consists of one word without whitespace chars.
+          * Multiple tags are separated with whitespace chars
+          * End-of-line comment is stripped.
+
+        :param line:   Line with one/more tags to process.
+        :raise ParseError: If syntax error is detected.
+        '''
+        assert line.startswith('@')
+        tags = []
+        for word in line.split():
+            if word.startswith('@'):
+                tags.append(model.Tag(word[1:], self.line))
+            elif word.startswith('#'):
+                break   # -- COMMENT: Skip rest of line.
+            else:
+                # -- BAD-TAG: Abort here.
+                raise ParserError("tag: %s (line: %s)" % (word, line),
+                                  self.line, self.filename)
+        return tags
 
     def parse_step(self, line):
         for step_type in ('given', 'when', 'then', 'and', 'but'):
