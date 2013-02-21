@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys
 
 from behave import __version__
@@ -116,11 +118,14 @@ def main():
             msg += u"def impl(context):\n"
             msg += u"    assert False\n\n"
 
+        # -- OOPS: Unclear if stream supports ANSI coloring.
         sys.stderr.write(escapes['undefined'] + msg + escapes['reset'])
         sys.stderr.flush()
 
     if failed:
         sys.exit(1)
+    # -- OTHERWISE: Successful run.
+    sys.exit(0)
 
 if __name__ == '__main__':
     main()
