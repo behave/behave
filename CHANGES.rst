@@ -14,6 +14,7 @@ IMPROVEMENT:
 FIXED:
 
   * issue #114: No blank lines when option --no-skipped is used (provided by: florentx).
+  * issue #111: Comment following @wip tag results in scenario being ignored
 
 RESOLVED:
 
@@ -66,7 +67,7 @@ DUPLICATED:
   * issue #95: Failed test run still returns exit code 0 (same as #84, #64).
   * issue #94: JUnit format does not handle ScenarioOutlines (same as #69).
   * issue #92: Output from --format=plain shows skipped steps in next scenario (same as #35).
-  * issue #34: "behave --version" runs features, but shows no version (DUPLICATES: #30)
+  * issue #34: "behave --version" runs features, but shows no version (same as #30)
 
 
 
