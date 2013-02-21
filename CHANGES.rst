@@ -9,10 +9,12 @@ IMPROVEMENT:
 
   * issue #116: SummaryReporter shows list of failing scenarios (provided by: roignac).
   * issue #112: Improvement to AmbiguousStep error diagnostics
+  * issue #74:  django-behave module now available at pypi (done: 2012-10-04).
 
 FIXED:
 
   * issue #114: No blank lines when option --no-skipped is used (provided by: florentx).
+  * issue #111: Comment following @wip tag results in scenario being ignored
 
 RESOLVED:
 
