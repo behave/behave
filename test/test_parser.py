@@ -1020,3 +1020,36 @@ Fonctionnalit\xe9: testing stuff
             ('then', u'\u90a3\u9ebc', "People should laugh", None, None),
             ('then', u'\u4f46\u662f', "I should take it well", None, None),
         ])
+
+
+def parse_tags(line):
+    the_parser = parser.Parser()
+    return the_parser.parse_tags(line.strip())
+
+class TestParser4Tags(Common):
+
+    def test_parse_tags_with_one_tag(self):
+        tags = parse_tags('@one  ')
+        eq_(len(tags), 1)
+        eq_(tags[0], "one")
+
+    def test_parse_tags_with_more_tags(self):
+        tags = parse_tags('@one  @two.three-four  @xxx')
+        eq_(len(tags), 3)
+        eq_(tags, [model.Tag(name, 1)
+            for name in (u'one', u'two.three-four', u'xxx' )])
+
+    def test_parse_tags_with_tag_and_comment(self):
+        tags = parse_tags('@one  # @fake-tag-in-comment xxx')
+        eq_(len(tags), 1)
+        eq_(tags[0], "one")
+
+    def test_parse_tags_with_tags_and_comment(self):
+        tags = parse_tags('@one  @two.three-four  @xxx # @fake-tag-in-comment xxx')
+        eq_(len(tags), 3)
+        eq_(tags, [model.Tag(name, 1)
+                   for name in (u'one', u'two.three-four', u'xxx' )])
+
+    @raises(parser.ParserError)
+    def test_parse_tags_with_invalid_tags(self):
+        parse_tags('@one  invalid.tag boom')
