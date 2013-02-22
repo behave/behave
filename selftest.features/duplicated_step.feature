@@ -63,6 +63,6 @@ Feature: Duplicated Step Definitions
         """
     And the command output should contain:
         """
-          File "{__WORKDIR__}/features/steps/step2.py", line 3, in <module>
-            @given(u'I call Alice')
+          File "{__WORKDIR__}/features/steps/step1.py", line 3, in <module>
+          @given(u'I call Alice')
         """
