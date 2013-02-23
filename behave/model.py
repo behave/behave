@@ -7,15 +7,8 @@ import itertools
 import os.path
 import time
 import traceback
-
 from behave import step_registry
-
-
-def relpath(path, other):
-    # Python 2.5 doesn't know about relpath
-    if hasattr(os.path, 'relpath'):
-        return os.path.relpath(path, other)
-    return path
+from behave.compat.os_path import relpath
 
 
 class Argument(object):
@@ -836,7 +829,7 @@ class Table(Replayable):
     '''
     type = "table"
 
-    def __init__(self, headings, line, rows=[]):
+    def __init__(self, headings, line=None, rows=[]):
         Replayable.__init__(self)
         self.headings = headings
         self.line = line
@@ -844,8 +837,8 @@ class Table(Replayable):
         for row in rows:
             self.add_row(row, line)
 
-    def add_row(self, row, line):
-        self.rows.append(Row(self.headings, None, row, line))
+    def add_row(self, row, line=None):
+        self.rows.append(Row(self.headings, row, line))
 
     def __repr__(self):
         return "<Table: %dx%d>" % (len(self.headings), len(self.rows))
@@ -914,7 +907,7 @@ class Row(object):
 
     .. _`table`: gherkin.html#table
     '''
-    def __init__(self, headings, comments, cells, line):
+    def __init__(self, headings, cells, line=None, comments=None):
         self.headings = headings
         self.comments = comments
         for c in cells:
@@ -941,12 +934,28 @@ class Row(object):
     def __ne__(self, other):
         return not self == other
 
+    def __len__(self):
+        return len(self.cells)
+
     def __iter__(self):
         return iter(self.cells)
 
     def items(self):
         return zip(self.headings, self.cells)
 
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def as_dict(self):
+        """
+        Converts the row and its cell data into a dictionary.
+        :return: Row data as dictionary (without comments, line info).
+        """
+        from behave.compat.collections import OrderedDict
+        return OrderedDict(self.items())
 
 class Tag(unicode):
     '''Tags appear may be associated with Features or Scenarios.

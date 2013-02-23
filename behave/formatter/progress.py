@@ -10,10 +10,8 @@ executing a scope item.
 """
 
 from behave.formatter.base import Formatter
-import os.path
-# -- BACKWARD-COMPATIBILITY: Python2.5
-from behave.model import relpath as path_relpath
-
+from behave.compat.os_path import relpath
+import os
 
 # -----------------------------------------------------------------------------
 # CLASS: ProgressFormatterBase
@@ -50,7 +48,7 @@ class ProgressFormatterBase(Formatter):
     # -- FORMATTER API:
     def feature(self, feature):
         self.current_feature = feature
-        short_filename = path_relpath(feature.filename, os.getcwd())
+        short_filename = relpath(feature.filename, os.getcwd())
         self.stream.write("%s  " % short_filename)
 
     def background(self, background):
