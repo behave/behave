@@ -5,15 +5,19 @@ Version History
 Next Version 1.2.2.x - UNRELEASED
 -------------------------------------------------------------------------------
 
-NEWS:
+NEWS and CHANGES:
 
   * NullFormatter provided
-  
+  * model.Row: Changed Ctor parameter ordering, move seldom used to the end.
+  * model.Row: Add methods .get(), .as_dict() and len operator (related to: #27).
+  * Introduce ``behave.compat`` as compatibility layer for Python versions.
+
 IMPROVEMENT:
 
   * issue #116: SummaryReporter shows list of failing scenarios (provided by: roignac).
   * issue #112: Improvement to AmbiguousStep error diagnostics
   * issue #74:  django-behave module now available at pypi (done: 2012-10-04).
+  * issue #27:  Row should support .get() to be more dict-like
 
 FIXED:
 
