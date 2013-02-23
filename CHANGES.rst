@@ -5,6 +5,10 @@ Version History
 Next Version 1.2.2.x - UNRELEASED
 -------------------------------------------------------------------------------
 
+NEWS:
+
+  * NullFormatter provided
+  
 IMPROVEMENT:
 
   * issue #116: SummaryReporter shows list of failing scenarios (provided by: roignac).
