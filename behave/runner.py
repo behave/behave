@@ -740,11 +740,12 @@ class Runner(object):
 
     		endmsg = time.strftime("%Y-%m-%d %H:%M:%S")+"|WORKER"+str(proc_number)+" END|"
 		if current_job.type == 'feature':
-			endmsg += "Feature:"+current_job.name+"|"+current_job.filename+"|Duration:"+\
-			str(current_job.duration)
+			endmsg += "Feature:"+current_job.name+"|status:"+current_job.status+\
+			current_job.filename+"|Duration:"+str(current_job.duration)
 		else:
 			endmsg += "Scenario:"+current_job.name+"|Feature:"+current_job.feature.name+"|"+\
-			current_job.filename+"|Duration:"+str(current_job.duration)
+			"status:"+current_job.status+"|"+current_job.filename+\
+			"|Duration:"+str(current_job.duration)
 
 
     		sys.stderr.write("* ")
