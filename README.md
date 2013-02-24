@@ -13,7 +13,7 @@ I feel that behave is the most advanced BDD framework for python, so giving it p
 
 
 ======
-Why is this better than other python BDD testframeworks?
+Why is this better than other python BDD test frameworks?
 ======
 
 Maybe it's not, but it serves a need I have at the moment. I've looked at the other ones and while they are great - they don't exactly do what I want. Here is what I think makes behave-parallel different from the rest:
@@ -50,7 +50,7 @@ Here's how it works:
 
 * If you had 3 features, each with 3 scenarios, that's 9 scenarios total. So, if you ran _behave --processes 9 --parallel-element scenario_, first behave will find the 9 scenarios then create 9 pids to run each of them *at the same time*.
 * If you ran _behave --processes 9 --parallel-element feature_, then the 3 features will be queued for processing by 9 pids. Since there are only 3 features, 3 pids will each get a feature, the other 6 pids will exit because the workqueue will be empty. The 3 pids with features will begin their work at the same time; running all the scenarios with the features in order.
-* Now here's where things get a bit complicated. There's a tag called @sequential that you can put on a feature. If you run _behave --process 9 --parallel-element_ scenario, but one of the 3 features has the @sequential tag. That feature will not have its scenarios parallelized. What will happen is only 2 of the features will have the scenarios parallelized. The job queue will ultimately contain 6 scenarios and 1 feature, a total of 7 "tasks". So of the 9 pids created by --processes 9, 7 pids will get a "task" to work on and 2 pids will exit immediately since the queue will be empty for them. 6 of the seven pids will do the one scenario they're assigned to and exit, the 7th pid will run the entire feature that had the @sequential tag - doing each of the scenarios in the order they appear in the .feature file.
+* Now here's where things get a bit complicated. There's a tag called __@sequential__ that you can put on a feature. If you run _behave --process 9 --parallel-element_ scenario, but one of the 3 features has the @sequential tag. That feature will not have its scenarios parallelized. What will happen is only 2 of the features will have the scenarios parallelized. The job queue will ultimately contain 6 scenarios and 1 feature, a total of 7 "tasks". So of the 9 pids created by --processes 9, 7 pids will get a "task" to work on and 2 pids will exit immediately since the queue will be empty for them. 6 of the seven pids will do the one scenario they're assigned to and exit, the 7th pid will run the entire feature that had the @sequential tag - doing each of the scenarios in the order they appear in the .feature file.
 * Finally, If a feature gets its scenarios parallelized the effect also applies to its scenario outlines. So let's say you only had 1 .feature file, with 1 scenario outline that has 10 rows in the Examples table. If you run _behave --processes 10 --parallel-element scenario_, the 10 rows of data will generate 10 scenarios and all 10 will run at the same time by the 10 pids created by --processes 10.  
 
 If you don't give the --procceses option, then behave should work like it always did. 
