@@ -762,18 +762,18 @@ class Runner(object):
                         if scenario.type == 'scenario':
                             for step in scenario.steps:
                                 if step.status == 'skipped':
-                                     infomsg+="location:"+step.location+"|"+\
+                                     infomsg+="Scenario:"+scenario.name+"|"+\
                                      "step:"+step.name+"\n"
                         else:
                             for scenario in scenario.scenarios:
                                for step in scenario.steps:
                                    if step.status == 'skipped':
-                                       infomsg+="location:"+step.location+"|"+\
+                                       infomsg+="Scenario:"+scenario.name+"|"+\
                                        "step:"+step.name+"\n"
                 else:
                     for step in current_job.steps:
                         if step.status == 'skipped':
-                            infomsg+="location:"+step.location+"|"+\
+                            infomsg+="Scenario:"+current_job.name+"|"+\
                             "step:"+step.name+"\n" 
                 reportfooter = "\n"+infomsg+"\n"+reportfooter
                        
