@@ -39,10 +39,23 @@ So there you go. If you don't agree with what I said above, feel free to use the
 USAGE
 ======
 
-	behave --processes 4 --format plain
+	behave --processes 4 --parallel-element scenario --format plain
 
 
-Just like RSpec's parallel_test, and python's nosetests, it's up to you to decide a sane value for the number of pids that should be created for your parallel running tests. If you don't give the --procceses flag, then behave should work like it always did.
+Just like RSpec's parallel_test, and python's nosetests, it's up to you to decide a sane value for the number of pids that should be created for your parallel running tests. Another option, --parallel-element must go with it. The 2 valid values are 'scenario' or 'feature'. 
+
+======
+Here's how it works:
+======
+
+* If you had 3 features, each with 3 scenarios, that's 9 scenarios total. So, if you ran _behave --processes 9 --parallel-element scenario_, first behave will find the 9 scenarios then create 9 pids to run each of them *at the same time*.
+* If you ran _behave --processes 9 --parallel-element feature_, then the 3 features will be queued for processing by 9 pids. Since there are only 3 features, 3 pids will each get a feature, the other 6 pids will exit because the workqueue will be empty. The 3 pids with features will begin their work at the same time; running all the scenarios with the features in order.
+* Now here's where things get a bit complicated. There's a tag called @sequential that you can put on a feature. If you run _behave --process 9 --parallel-element_ scenario, but one of the 3 features has the @sequential tag. That feature will not have its scenarios parallelized. What will happen is only 2 of the features will have the scenarios parallelized. The job queue will ultimately contain 6 scenarios and 1 feature, a total of 7 "tasks". So of the 9 pids created by --processes 9, 7 pids will get a "task" to work on and 2 pids will exit immediately since the queue will be empty for them. 6 of the seven pids will do the one scenario they're assigned to and exit, the 7th pid will run the entire feature that had the @sequential tag.
+
+
+
+
+If you don't give the --procceses option, then behave should work like it always did. 
 
 The exitcode will be the number of failed features. So if all your scenarios pass, then all features must have passed - giving you an exitcode of 0. Makes sense, yes? :)
 
@@ -87,7 +100,7 @@ work or maybe they don't. Maybe they fail silently in mysterious & spectacular w
 
 * I don't print out the total time behave has ran. Too lazy to code it; just use linux's "time" command.
 
-		/usr/bin/time behave --processes 2
+		/usr/bin/time behave --processes 2 --parallel-element feature
 
 ======
 Advice
@@ -101,7 +114,7 @@ If you're even using this, I can most likely assume correctly the following thre
 
 If I'm correct about the above, then be sure you use "--format plain" in your automation process, like this:
 
-		behave --processes 4 --format plain
+		behave --processes 4 --format plain --parallel-element feature
 
 If you don't, the default behavior is to use the pretty(colorful) output. While that looks nice when you're running and watching it in the terminal, the control-chars that behave uses to change text color on your terminal will look _CRAZY_ in your log files. So if you're still debugging your test in the terminal, default pretty format is okay. When you're ready to schedule the job in some kinda automation(like I am with jenkins ci), add "--format plain" so your log files are readable.  
 
