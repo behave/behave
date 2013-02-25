@@ -586,7 +586,6 @@ class Runner(object):
 
         scenario_count = 0    
         feature_count = 0    
-
         for feature in self.features:
             if self.parallel_element == 'feature' or 'serial' in feature.tags:
                 self.joblist.append(feature)
@@ -633,6 +632,7 @@ class Runner(object):
         steps_undefined = 0
         
         combined_features_from_scenarios_results = {}
+
         while not self.scenarioresults.empty():
             s = self.scenarioresults.get()
             uniquekey = s['filename']+s['featurename']
@@ -660,14 +660,13 @@ class Runner(object):
                 else:
                     steps_undefined += 1
 
-            for uniquekey in combined_features_from_scenarios_results:
-                if 'failed' in combined_features_from_scenarios_results[uniquekey]:
-                    features_failed += 1
-                elif 'passed' in combined_features_from_scenarios_results[uniquekey]:
-                    features_passed += 1
-                else:
-                    features_skipped += 1
-
+        for uniquekey in combined_features_from_scenarios_results:
+            if 'failed' in combined_features_from_scenarios_results[uniquekey]:
+                features_failed += 1
+            elif 'passed' in combined_features_from_scenarios_results[uniquekey]:
+                features_passed += 1
+            else:
+                features_skipped += 1
 
         while not self.featureresults.empty():
             f = self.featureresults.get()
@@ -734,6 +733,7 @@ class Runner(object):
                 reportheader += "Feature:"+current_job.name+"|"+current_job.filename
             else:
                 reportheader += "Scenario:"+current_job.name+"|Feature:"+current_job.feature.name+"|"+current_job.filename
+
 
             current_job.run(self)
 
