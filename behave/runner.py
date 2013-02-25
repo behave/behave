@@ -749,33 +749,33 @@ class Runner(object):
 
             sys.stderr.write("* ")
 
-            if self.config.format[0] == 'plain':
+            if self.config.format[0] == 'plain' and len(current_job.tags):
                 tags = "@"
                 for tag in current_job.tags:
                     tags += tag+" "
                 reportheader += "\n"+tags
 
             if current_job.status == 'failed':
-                infomsg = "Skipped steps because previous step error(s):\n"
+                skipped_steps_text = "Skipped steps because previous step error(s):\n"
                 if current_job.type == 'feature':
                     for scenario in current_job.scenarios:
                         if scenario.type == 'scenario':
                             for step in scenario.steps:
                                 if step.status == 'skipped':
-                                     infomsg+="Scenario:"+scenario.name+"|"+\
+                                     skipped_steps_text+="Scenario:"+scenario.name+"|"+\
                                      "step:"+step.name+"\n"
                         else:
                             for scenario in scenario.scenarios:
                                for step in scenario.steps:
                                    if step.status == 'skipped':
-                                       infomsg+="Scenario:"+scenario.name+"|"+\
+                                       skipped_steps_text+="Scenario:"+scenario.name+"|"+\
                                        "step:"+step.name+"\n"
                 else:
                     for step in current_job.steps:
                         if step.status == 'skipped':
-                            infomsg+="Scenario:"+current_job.name+"|"+\
+                            skipped_steps_text+="Scenario:"+current_job.name+"|"+\
                             "step:"+step.name+"\n" 
-                reportfooter = "\n"+infomsg+"\n"+reportfooter
+                reportfooter = "\n"+skipped_steps_text+"\n"+reportfooter
                        
 
             if writebuf.pos:
