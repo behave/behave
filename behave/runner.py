@@ -19,6 +19,7 @@ from behave import step_registry
 from behave.formatter import formatters
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
+# from behave.compat.os_path import relpath
 
 multiprocessing = None
 try:
@@ -284,7 +285,10 @@ def exec_file(filename, globals={}, locals=None):
     locals['__file__'] = filename
     if sys.version_info[0] == 3:
         with open(filename) as f:
-            exec(f.read(), globals, locals)
+            # -- FIX issue #80: exec(f.read(), globals, locals)
+            filename2 = os.path.relpath(filename, os.getcwd())
+            code = compile(f.read(), filename2, 'exec')
+            exec(code, globals, locals)
     else:
         execfile(filename, globals, locals)
 
