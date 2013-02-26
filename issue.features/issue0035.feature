@@ -37,7 +37,7 @@ Feature: Issue #35 Plain Formatter shows wrong steps when tag-selection is used
       """
 
   Scenario: Select First Scenario with Tag
-    When I run "behave -c -f plain --tags=@one features/issue35_1.feature"
+    When I run "behave --no-timings -f plain --tags=@one features/issue35_1.feature"
     Then it should pass with:
       """
       1 feature passed, 0 failed, 0 skipped
@@ -55,7 +55,7 @@ Feature: Issue #35 Plain Formatter shows wrong steps when tag-selection is used
       """
 
   Scenario: Select Second Scenario with Tag
-    When I run "behave -c -f plain --tags=@two features/issue35_1.feature"
+    When I run "behave --no-timings -f plain --tags=@two features/issue35_1.feature"
     Then it should pass with:
       """
       1 feature passed, 0 failed, 0 skipped
