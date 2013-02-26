@@ -44,7 +44,7 @@ Feature: Issue #92: Output from --format=plain shows skipped steps in next scena
         def missing(context):
             pass
         """
-    When I run "behave --format=plain features/issue92_syndrome.feature"
+    When I run "behave --no-timings --format=plain features/issue92_syndrome.feature"
     Then it should fail with:
         """
         0 features passed, 1 failed, 0 skipped
