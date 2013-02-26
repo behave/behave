@@ -25,6 +25,7 @@ FIXED:
   * issue #111: Comment following @wip tag results in scenario being ignored
   * issue  #83: behave.__main__:main() Various sys.exit issues
   * issue  #80: source file names not properly printed with python 3.3.0
+  * issue  #62: --format=json: Background steps are missing (fixed: some time ago).
 
 RESOLVED:
 
