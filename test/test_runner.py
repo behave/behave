@@ -3,10 +3,13 @@ from __future__ import with_statement
 
 from collections import defaultdict
 import os.path
-import StringIO
 import sys
 import warnings
 import tempfile
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from mock import Mock, patch
 from nose.tools import *
@@ -93,7 +96,7 @@ class TestContext(object):
 
         warnings.showwarning = old_showwarning
 
-        print repr(warns)
+        print(repr(warns))
         assert warns, 'warns is empty!'
         warning = warns[0]
         assert isinstance(warning, runner.ContextMaskWarning), 'warning is not a ContextMaskWarning'
@@ -138,7 +141,7 @@ class TestContext(object):
 
         warnings.showwarning = old_showwarning
 
-        print repr(warns)
+        print(repr(warns))
         assert warns, 'warns is empty!'
         warning = warns[0]
         assert isinstance(warning, runner.ContextMaskWarning), 'warning is not a ContextMaskWarning'
@@ -164,7 +167,7 @@ class TestContext(object):
 
         warnings.showwarning = old_showwarning
 
-        print repr(warns)
+        print(repr(warns))
         assert warns
         warning = warns[0]
         assert isinstance(warning, runner.ContextMaskWarning)
@@ -235,7 +238,7 @@ class TestRunner(object):
         r.setup_capture()
 
         assert r.stdout_capture is not None
-        assert isinstance(r.stdout_capture, StringIO.StringIO)
+        assert isinstance(r.stdout_capture, StringIO)
 
     def test_setup_capture_does_not_create_stringio_if_not_wanted(self):
         r = runner.Runner(Mock())
@@ -430,7 +433,7 @@ class FsMock(object):
             return bits
 
         paths = [os.path.join(self.base, *full_split(path)) for path in paths]
-        print repr(paths)
+        print(repr(paths))
         self.paths = paths
         self.files = set()
         self.dirs = defaultdict(list)
