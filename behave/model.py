@@ -728,7 +728,7 @@ class Step(BasicStatement, Replayable):
                         row.cells[i] = cell.replace("<%s>" % name, value)
         return result
 
-    def run(self, runner, quiet=False):
+    def run(self, runner, quiet=False, skip_capture=False):
         # access module var here to allow test mocking to work
         match = step_registry.registry.find_match(self)
         if match is None:
@@ -775,15 +775,15 @@ class Step(BasicStatement, Replayable):
 
         # flesh out the failure with details
         if self.status == 'failed':
-            if runner.config.stdout_capture:
+            if runner.config.stdout_capture and not skip_capture:
                 output = runner.stdout_capture.getvalue()
                 if output:
                     error += '\nCaptured stdout:\n' + output
-            if runner.config.stderr_capture:
+            if runner.config.stderr_capture and not skip_capture:
                 output = runner.stderr_capture.getvalue()
                 if output:
                     error += '\nCaptured stderr:\n' + output
-            if runner.config.log_capture:
+            if runner.config.log_capture and not skip_capture:
                 output = runner.log_capture.getvalue()
                 if output:
                     error += '\nCaptured logging:\n' + output
