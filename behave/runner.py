@@ -261,7 +261,7 @@ class Context(object):
             step_obj = self.feature.parser.parse_step(step)
             if step_obj is None:
                 return False
-            passed = step_obj.run(self._runner, quiet=True)
+            passed = step_obj.run(self._runner, quiet=True, skip_capture = True)
             if not passed:
                 # -- ISSUE #96: Provide more substep info to diagnose problem.
                 more = step_obj.error_message
@@ -348,7 +348,7 @@ class Runner(object):
     def setup_paths(self):
         if self.config.paths:
             if self.config.verbose:
-                print 'Supplied path:', ', '.join('"%s"' % path 
+                print 'Supplied path:', ', '.join('"%s"' % path
                        for path in self.config.paths)
             base_dir = self.config.paths[0]
             if base_dir.startswith('@'):
