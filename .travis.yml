@@ -11,4 +11,4 @@ install: pip install --use-mirrors mock nose PyHamcrest .
 script:
  - nosetests
  - python setup.py -q install
- - behave issue.features/
+ - behave issue.features/ -f progress2
