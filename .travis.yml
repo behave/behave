@@ -8,4 +8,7 @@ python:
 
 install: pip install --use-mirrors mock nose .
 
-script: nosetests
+script:
+ - nosetests
+ - python setup.py install
+ - behave issue.features/
