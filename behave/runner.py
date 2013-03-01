@@ -10,6 +10,8 @@ import traceback
 import warnings
 import weakref
 
+import multiprocessing,time
+
 from behave import parser
 from behave import matchers
 from behave import step_registry
@@ -547,9 +549,8 @@ class Runner(object):
 
     def run_multiproc(self):
         """
-        TODO: I know this needs refactoring... just gimme awhile. I'll get to it.
+        TODO: I know this needs refactoring, just gimme awhile. I'll get to it.
         """
-        import StringIO,multiprocessing,time
 
         self.parallel_element = getattr(self.config,'parallel_element')
         if self.parallel_element != 'feature' and self.parallel_element != 'scenario':
@@ -633,7 +634,6 @@ class Runner(object):
         steps_failed = 0
         steps_skipped = 0
         steps_undefined = 0
-        
         combined_features_from_scenarios_results = {}
 
         while not self.scenarioresults.empty():
@@ -714,75 +714,24 @@ class Runner(object):
         """
         TODO: I know this needs refactoring... just gimme awhile. I'll get to it.
         """
-        import time
     	while 1:
     	    try:
-    		joblist_index = self.joblist_index_queue.get_nowait()
+    		    joblist_index = self.joblist_index_queue.get_nowait()
     	    except Exception,e:
-    		break
+    		    break
             current_job = self.joblist[joblist_index]
-            if current_job.type == 'feature':
-                self.feature = current_job
-            else:
-                self.feature = current_job.feature
-
             writebuf = StringIO.StringIO()
-            self.formatter = formatters.get_formatter(self.config, writebuf)
 
-            if current_job.type == 'feature':
-                self.formatter.uri(current_job.filename)
-            else:
-                self.formatter.uri(current_job.feature.filename)
+            self.setfeature(current_job)
+            self.setformatterbuffer(current_job,writebuf)
 
-            reportheader = time.strftime("%Y-%m-%d %H:%M:%S")+"|WORKER"+str(proc_number)+" START|"
-            if current_job.type == 'feature':
-                reportheader += "Feature:"+current_job.name+"|"+current_job.filename
-            else:
-                reportheader += "Scenario:"+current_job.name+"|Feature:"+current_job.feature.name+"|"+current_job.filename
-
-
+            start_time = time.strftime("%Y-%m-%d %H:%M:%S")
             current_job.run(self)
-
-
-            reportfooter = time.strftime("%Y-%m-%d %H:%M:%S")+"|WORKER"+str(proc_number)+" END|"
-            if current_job.type == 'feature':
-                reportfooter += "Feature:"+current_job.name+"|status:"+current_job.status+"|"+\
-                current_job.filename+"|Duration:"+str(current_job.duration)
-            else:
-                reportfooter += "Scenario:"+current_job.name+"|Feature:"+current_job.feature.name+"|"+\
-                "status:"+current_job.status+"|"+current_job.filename+\
-                "|Duration:"+str(current_job.duration)
+            end_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
             sys.stderr.write("* ")
 
-            if self.config.format[0] == 'plain' and len(current_job.tags):
-                tags = "@"
-                for tag in current_job.tags:
-                    tags += tag+" "
-                reportheader += "\n"+tags
-
-            if current_job.status == 'failed':
-                skipped_steps_text = "Skipped steps because previous step error(s):\n"
-                if current_job.type == 'feature':
-                    for scenario in current_job.scenarios:
-                        if scenario.type == 'scenario':
-                            for step in scenario.steps:
-                                if step.status == 'skipped':
-                                     skipped_steps_text+="Scenario:"+scenario.name+"|"+\
-                                     "step:"+step.name+"\n"
-                        else:
-                            for scenario in scenario.scenarios:
-                               for step in scenario.steps:
-                                   if step.status == 'skipped':
-                                       skipped_steps_text+="Scenario:"+scenario.name+"|"+\
-                                       "step:"+step.name+"\n"
-                else:
-                    for step in current_job.steps:
-                        if step.status == 'skipped':
-                            skipped_steps_text+="Scenario:"+current_job.name+"|"+\
-                            "step:"+step.name+"\n" 
-                reportfooter = "\n"+skipped_steps_text+"\n"+reportfooter
-                       
+            job_report_text = self.generatereport(proc_number,current_job,start_time,end_time,writebuf)
 
             if writebuf.pos:
                 writebuf.seek(0)
@@ -791,7 +740,7 @@ class Runner(object):
                     featureresult['name'] = current_job.name
                     featureresult['status'] = current_job.status
                     featureresult['jobid'] = joblist_index
-                    featureresult['data'] = reportheader+"\n"+writebuf.read()+"\n"+reportfooter
+                    featureresult['data'] = job_report_text
                     featureresult['scenarioresults'] = []
                     for scenario in current_job.scenarios:
                         if scenario.type == 'scenario':
@@ -814,7 +763,7 @@ class Runner(object):
                     self.featureresults.put(featureresult)
                 else:
                     scenarioresult = {}
-                    scenarioresult['data'] = reportheader+"\n"+writebuf.read()+"\n"+reportfooter
+                    scenarioresult['data'] = job_report_text
                     scenarioresult['jobid'] = joblist_index 
                     scenarioresult['status'] = current_job.status
                     scenarioresult['steps'] = [] 
@@ -824,7 +773,60 @@ class Runner(object):
                     for step in current_job.steps:
                         scenarioresult['steps'].append({'name':step.name,'status':step.status})
                     self.scenarioresults.put(scenarioresult)
+    
+    def setfeature(self,current_job):
+        if current_job.type == 'feature':
+            self.feature = current_job
+        else:
+            self.feature = current_job.feature
 
+    def setformatterbuffer(self,current_job,writebuf):
+        self.formatter = formatters.get_formatter(self.config, writebuf)
+        if current_job.type == 'feature':
+            self.formatter.uri(current_job.filename)
+        else:
+            self.formatter.uri(current_job.feature.filename)
+
+    def generatereport(self,proc_number,current_job,start_time,end_time,writebuf):
+        reportheader = start_time+"|WORKER"+str(proc_number)+" START|"
+
+        if current_job.type == 'feature':
+            reportheader += "Feature:"+current_job.name+"|"+current_job.filename
+        else:
+            reportheader += "Scenario:"+current_job.name+"|Feature:"+current_job.feature.name+"|"+current_job.filename
+
+        reportfooter = end_time+"|WORKER"+str(proc_number)+" END|"
+
+        if current_job.type == 'feature':
+            reportfooter += "Feature:"+current_job.name+"|status:"+current_job.status+"|"+\
+            current_job.filename+"|Duration:"+str(current_job.duration)
+        else:
+            reportfooter += "Scenario:"+current_job.name+"|Feature:"+current_job.feature.name+"|"+\
+            "status:"+current_job.status+"|"+current_job.filename+\
+            "|Duration:"+str(current_job.duration)
+
+        if self.config.format[0] == 'plain' and len(current_job.tags):
+            tags = "@"
+            for tag in current_job.tags:
+                tags += tag+" "
+            reportheader += "\n"+tags
+       
+        if current_job.status != 'failed':
+            self.getskippedsteps(current_job,writebuf)
+
+        writebuf.seek(0)
+        return reportheader+writebuf.read()+reportfooter 
+
+    def getskippedsteps(self,current_job,writebuf):
+        print current_job.status
+        if current_job.type != 'scenario':
+            [self.getskippedsteps(s,writebuf) for s in current_job.scenarios]
+        else: 
+            for step in current_job.steps:
+                print step.status
+                if step.status == 'skipped':
+                    writebuf.write("Scenario:"+current_job.name+"|"+\
+                    "step:"+step.name+"|status:skipped\n")
 
     def setup_capture(self):
         if self.config.stdout_capture:
