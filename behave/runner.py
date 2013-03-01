@@ -546,6 +546,9 @@ class Runner(object):
         return failed
 
     def run_multiproc(self):
+        """
+        TODO: I know this needs refactoring... just gimme awhile. I'll get to it.
+        """
         import StringIO,multiprocessing,time
 
         self.parallel_element = getattr(self.config,'parallel_element')
@@ -708,6 +711,9 @@ class Runner(object):
         return features_failed 
     
     def worker(self,proc_number):
+        """
+        TODO: I know this needs refactoring... just gimme awhile. I'll get to it.
+        """
         import time
     	while 1:
     	    try:
