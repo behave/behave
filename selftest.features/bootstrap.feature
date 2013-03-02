@@ -61,8 +61,8 @@ Feature: Bootstrapping a new project
     When I run "behave -c -f plain"
     Then it should fail with:
       """
-      1 feature passed, 0 failed, 0 skipped
-      1 scenario passed, 0 failed, 0 skipped
+      0 features passed, 1 failed, 0 skipped
+      0 scenarios passed, 1 failed, 0 skipped
       0 steps passed, 0 failed, 0 skipped, 1 undefined
       """
     And the command output should contain:
