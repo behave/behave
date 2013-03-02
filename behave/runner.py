@@ -348,7 +348,7 @@ class Runner(object):
     def setup_paths(self):
         if self.config.paths:
             if self.config.verbose:
-                print 'Supplied path:', ', '.join('"%s"' % path 
+                print 'Supplied path:', ', '.join('"%s"' % path
                        for path in self.config.paths)
             base_dir = self.config.paths[0]
             if base_dir.startswith('@'):
@@ -519,7 +519,9 @@ class Runner(object):
 
             feature = parser.parse_file(os.path.abspath(filename),
                                         language=self.config.lang)
-
+            if not feature:
+                # -- CORNER-CASE: Feature file without any feature(s).
+                continue
             self.features.append(feature)
             self.feature = feature
 
