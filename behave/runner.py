@@ -550,7 +550,9 @@ class Runner(object):
 
             feature = parser.parse_file(os.path.abspath(filename),
                                         language=self.config.lang)
-
+            if not feature:
+                # -- CORNER-CASE: Feature file without any feature(s).
+                continue
             self.features.append(feature)
             self.feature = feature
 

@@ -88,7 +88,8 @@ class Parser(object):
             self.action_table('')
 
         feature = self.feature
-        feature.parser = self
+        if feature:
+            feature.parser = self
         self.reset()
         return feature
 
