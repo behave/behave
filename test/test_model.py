@@ -135,6 +135,27 @@ class TestScenarioRun(object):
 
         self.context._set_root_attribute.assert_called_with('failed', True)
 
+    def test_undefined_step_causes_failed_scenario_status(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        self.config.tags.check.return_value = True
+
+        passed_step = Mock()
+        undefined_step = Mock()
+
+        steps = [passed_step, undefined_step]
+        scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
+                                  steps=steps)
+        passed_step.run.return_value = True
+        passed_step.status = 'passed'
+        undefined_step.run.return_value = False
+        undefined_step.status = 'undefined'
+
+        assert scenario.run(self.runner)
+        eq_(undefined_step.status, 'undefined')
+        eq_(scenario.status, 'failed')
+        self.context._set_root_attribute.assert_called_with('failed', True)
+
     def test_skipped_steps_set_step_status_and_scenario_status_if_not_set(self):
         self.config.stdout_capture = False
         self.config.log_capture = False
