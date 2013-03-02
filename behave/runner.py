@@ -548,9 +548,6 @@ class Runner(object):
         return failed
 
     def run_multiproc(self):
-        """
-        TODO: I know this needs refactoring, just gimme awhile. I'll get to it.
-        """
 
         self.parallel_element = getattr(self.config,'parallel_element')
         if self.parallel_element != 'feature' and self.parallel_element != 'scenario':
@@ -573,18 +570,11 @@ class Runner(object):
         for filename in self.feature_files():
             if self.config.exclude(filename):
                 continue
-
             feature = parser.parse_file(os.path.abspath(filename),
                         language=self.config.lang)
-
             self.features.append(feature)
 
-        self.formatter = formatters.get_formatter(self.config, stream)
-        self.formatter.uri(filename)
-
         self.joblist_index_queue = multiprocessing.Manager().JoinableQueue()
-        self.scenarioresults = multiprocessing.Manager().JoinableQueue()
-        self.featureresults = multiprocessing.Manager().JoinableQueue()
         self.resultsqueue = multiprocessing.Manager().JoinableQueue()
  
         self.joblist = []    
@@ -603,7 +593,7 @@ class Runner(object):
                     self.joblist_index_queue.put(feature_count+scenario_count)
                     scenario_count += 1
                 else:
-        	    for subscenario in scenario.scenarios:
+                    for subscenario in scenario.scenarios:
                         self.joblist.append(subscenario)
                         self.joblist_index_queue.put(feature_count+scenario_count)
                         scenario_count += 1
@@ -623,74 +613,8 @@ class Runner(object):
 
         self.run_hook('after_all', context)
 
-        features_passed = 0
-        features_failed = 0
-        features_skipped = 0
-        
-        scenarios_passed = 0
-        scenarios_failed = 0
-        scenarios_skipped = 0
+        return self.multiproc_fullreport() 
 
-        steps_passed = 0
-        steps_failed = 0
-        steps_skipped = 0
-        steps_undefined = 0
-
-        combined_features_from_scenarios_results = {}
-
-        while not self.resultsqueue.empty():
-            print "\n"*3
-            print "_"*75
-            jobresult = self.resultsqueue.get()
-            print jobresult['reportinginfo']
-
-            if jobresult['jobtype'] != 'feature':
-                uniquekey = jobresult['uniquekey']
-                if uniquekey in combined_features_from_scenarios_results:
-                    combined_features_from_scenarios_results[uniquekey] += '|'+jobresult['status']
-                else:
-                    combined_features_from_scenarios_results[uniquekey] = jobresult['status']
-
-                if jobresult['status'] == 'passed':
-                    scenarios_passed += 1 
-                elif jobresult['status'] == 'failed':
-                    scenarios_failed += 1 
-                elif jobresult['status'] == 'skipped':
-                    scenarios_skipped += 1
-            else:
-                if jobresult['status'] == 'passed':
-                    features_passed += 1 
-                elif jobresult['status'] == 'failed':
-                    features_failed += 1 
-                elif jobresult['status'] == 'skipped':
-                    features_skipped += 1
-            steps_passed += jobresult['steps_passed'] 
-            steps_failed += jobresult['steps_failed'] 
-            steps_skipped += jobresult['steps_skipped'] 
-            steps_undefined += jobresult['steps_undefined']
-
-            if jobresult['jobtype'] == 'feature': 
-                scenarios_passed += jobresult['scenarios_passed'] 
-                scenarios_failed += jobresult['scenarios_failed'] 
-                scenarios_skipped += jobresult['scenarios_skipped'] 
-                
-        for uniquekey in combined_features_from_scenarios_results:
-            if 'failed' in combined_features_from_scenarios_results[uniquekey]:
-                features_failed += 1
-            elif 'passed' in combined_features_from_scenarios_results[uniquekey]:
-                features_passed += 1
-            else:
-                features_skipped += 1
-
-        print "\n"*3
-        print "_"*75
-        print features_passed,"features passed,",features_failed,"failed,",features_skipped,"skipped"            
-        print scenarios_passed,"scenarios passed,",scenarios_failed,"failed,",scenarios_skipped,"skipped"            
-        print steps_passed,"steps passed,",steps_failed,"failed,",steps_skipped,"skipped,",steps_undefined,"undefined"
-        print "\n"
-
-        return features_failed 
-    
     def worker(self,proc_number):
     	while 1:
     	    try:
@@ -781,7 +705,7 @@ class Runner(object):
         else: 
             for step in current_job.steps:
                 if step.status == 'skipped':
-                    writebuf.write("Skipped because of error - Scenario:"+current_job.name+"|"+\
+                    writebuf.write("Skipped step because of previous error - Scenario:"+current_job.name+"|"+\
                     "step:"+step.name+"\n")
 
     def countscenariostatus(self,current_job,results):
@@ -809,6 +733,75 @@ class Runner(object):
                 else:
                     results['steps_undefined'] += 1
 
+    def multiproc_fullreport(self):
+        features_passed = 0
+        features_failed = 0
+        features_skipped = 0
+        
+        scenarios_passed = 0
+        scenarios_failed = 0
+        scenarios_skipped = 0
+
+        steps_passed = 0
+        steps_failed = 0
+        steps_skipped = 0
+        steps_undefined = 0
+
+        combined_features_from_scenarios_results = {}
+
+        while not self.resultsqueue.empty():
+            print "\n"*3
+            print "_"*75
+            jobresult = self.resultsqueue.get()
+            print jobresult['reportinginfo']
+
+            if jobresult['jobtype'] != 'feature':
+                uniquekey = jobresult['uniquekey']
+                if uniquekey in combined_features_from_scenarios_results:
+                    combined_features_from_scenarios_results[uniquekey] += '|'+jobresult['status']
+                else:
+                    combined_features_from_scenarios_results[uniquekey] = jobresult['status']
+
+                if jobresult['status'] == 'passed':
+                    scenarios_passed += 1 
+                elif jobresult['status'] == 'failed':
+                    scenarios_failed += 1 
+                elif jobresult['status'] == 'skipped':
+                    scenarios_skipped += 1
+            else:
+                if jobresult['status'] == 'passed':
+                    features_passed += 1 
+                elif jobresult['status'] == 'failed':
+                    features_failed += 1 
+                elif jobresult['status'] == 'skipped':
+                    features_skipped += 1
+            steps_passed += jobresult['steps_passed'] 
+            steps_failed += jobresult['steps_failed'] 
+            steps_skipped += jobresult['steps_skipped'] 
+            steps_undefined += jobresult['steps_undefined']
+
+            if jobresult['jobtype'] == 'feature': 
+                scenarios_passed += jobresult['scenarios_passed'] 
+                scenarios_failed += jobresult['scenarios_failed'] 
+                scenarios_skipped += jobresult['scenarios_skipped'] 
+                
+        for uniquekey in combined_features_from_scenarios_results:
+            if 'failed' in combined_features_from_scenarios_results[uniquekey]:
+                features_failed += 1
+            elif 'passed' in combined_features_from_scenarios_results[uniquekey]:
+                features_passed += 1
+            else:
+                features_skipped += 1
+
+        print "\n"*3
+        print "_"*75
+        print features_passed,"features passed,",features_failed,"failed,",features_skipped,"skipped"            
+        print scenarios_passed,"scenarios passed,",scenarios_failed,"failed,",scenarios_skipped,"skipped"            
+        print steps_passed,"steps passed,",steps_failed,"failed,",steps_skipped,"skipped,",steps_undefined,"undefined"
+        print "\n"
+
+        return features_failed 
+    
     def setup_capture(self):
         if self.config.stdout_capture:
             self.stdout_capture = StringIO.StringIO()
