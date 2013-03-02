@@ -429,12 +429,22 @@ class Scenario(TagStatement, Replayable):
             for step in self:
                 runner.formatter.step(step)
 
+        got_undefined = False
+
         for step in self:
             if run_steps:
                 if not step.run(runner):
-                    run_steps = False
+                    if step.status == 'undefined':
+                        got_undefined = True
+                    if not got_undefined:
+                        run_steps = False
+                    if step.status == 'failed' and got_undefined:
+                        step.status = 'skipped'
                     failed = True
                     runner.context._set_root_attribute('failed', True)
+                else:
+                    if got_undefined:
+                        step.status = 'skipped'
             else:
                 step.status = 'skipped'
                 # XXX-JE-PROBLEMATIC: self.status is a property, cannot assign to it.
