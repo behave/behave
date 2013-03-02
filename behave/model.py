@@ -387,11 +387,11 @@ class Scenario(TagStatement, Replayable):
     @property
     def status(self):
         for step in self.steps:
-            if step.status == 'failed':
+            if step.status == 'failed' or step.status == 'undefined':
                 return 'failed'
-            if step.status == 'skipped':
+            elif step.status == 'skipped':
                 return 'skipped'
-            if step.status == 'untested':
+            elif step.status == 'untested':
                 return 'untested'
         return 'passed'
 
