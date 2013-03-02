@@ -585,7 +585,8 @@ class Runner(object):
         self.joblist_index_queue = multiprocessing.Manager().JoinableQueue()
         self.scenarioresults = multiprocessing.Manager().JoinableQueue()
         self.featureresults = multiprocessing.Manager().JoinableQueue()
-
+        self.resultsqueue = multiprocessing.Manager().JoinableQueue()
+ 
         self.joblist = []    
 
         scenario_count = 0    
@@ -634,35 +635,45 @@ class Runner(object):
         steps_failed = 0
         steps_skipped = 0
         steps_undefined = 0
+
         combined_features_from_scenarios_results = {}
 
-        while not self.scenarioresults.empty():
-            s = self.scenarioresults.get()
-            uniquekey = s['filename']+s['featurename']
-            if uniquekey in combined_features_from_scenarios_results:
-                combined_features_from_scenarios_results[uniquekey] += '|'+s['status']
-            else:
-                combined_features_from_scenarios_results[uniquekey] = s['status']
-
+        while not self.resultsqueue.empty():
             print "\n"*3
             print "_"*75
-            print s['data']
-            if s['status'] == 'passed':
-                scenarios_passed += 1 
-            elif s['status'] == 'failed':
-                scenarios_failed += 1 
-            elif s['status'] == 'skipped':
-                scenarios_skipped += 1
-            for step in s['steps']:
-                if step['status'] == 'passed':
-                    steps_passed += 1
-                elif step['status'] == 'failed':
-                    steps_failed += 1
-                elif step['status'] == 'skipped':
-                    steps_skipped += 1
-                else:
-                    steps_undefined += 1
+            jobresult = self.resultsqueue.get()
+            print jobresult['reportinginfo']
 
+            if jobresult['jobtype'] != 'feature':
+                uniquekey = jobresult['uniquekey']
+                if uniquekey in combined_features_from_scenarios_results:
+                    combined_features_from_scenarios_results[uniquekey] += '|'+jobresult['status']
+                else:
+                    combined_features_from_scenarios_results[uniquekey] = jobresult['status']
+
+                if jobresult['status'] == 'passed':
+                    scenarios_passed += 1 
+                elif jobresult['status'] == 'failed':
+                    scenarios_failed += 1 
+                elif jobresult['status'] == 'skipped':
+                    scenarios_skipped += 1
+            else:
+                if jobresult['status'] == 'passed':
+                    features_passed += 1 
+                elif jobresult['status'] == 'failed':
+                    features_failed += 1 
+                elif jobresult['status'] == 'skipped':
+                    features_skipped += 1
+            steps_passed += jobresult['steps_passed'] 
+            steps_failed += jobresult['steps_failed'] 
+            steps_skipped += jobresult['steps_skipped'] 
+            steps_undefined += jobresult['steps_undefined']
+
+            if jobresult['jobtype'] == 'feature': 
+                scenarios_passed += jobresult['scenarios_passed'] 
+                scenarios_failed += jobresult['scenarios_failed'] 
+                scenarios_skipped += jobresult['scenarios_skipped'] 
+                
         for uniquekey in combined_features_from_scenarios_results:
             if 'failed' in combined_features_from_scenarios_results[uniquekey]:
                 features_failed += 1
@@ -671,36 +682,6 @@ class Runner(object):
             else:
                 features_skipped += 1
 
-        while not self.featureresults.empty():
-            f = self.featureresults.get()
-
-            print "\n"*3
-            print "_"*75
-            print f['data']
-
-            if f['status'] == 'passed':
-                features_passed += 1 
-            elif f['status'] == 'failed':
-                features_failed += 1 
-            else:
-                features_skipped += 1
-            for s in f['scenarioresults']:
-                if s['status'] == 'passed':
-                    scenarios_passed += 1 
-                elif s['status'] == 'failed':
-                    scenarios_failed += 1 
-                else: 
-                    scenarios_skipped += 1
-                for step in s['steps']:
-                    if step['status'] == 'passed':
-                        steps_passed += 1
-                    elif step['status'] == 'failed':
-                        steps_failed += 1
-                    elif step['status'] == 'skipped':
-                        steps_skipped += 1
-                    else: 
-                        steps_undefined += 1
-            
         print "\n"*3
         print "_"*75
         print features_passed,"features passed,",features_failed,"failed,",features_skipped,"skipped"            
@@ -711,9 +692,6 @@ class Runner(object):
         return features_failed 
     
     def worker(self,proc_number):
-        """
-        TODO: I know this needs refactoring... just gimme awhile. I'll get to it.
-        """
     	while 1:
     	    try:
     		    joblist_index = self.joblist_index_queue.get_nowait()
@@ -733,46 +711,24 @@ class Runner(object):
 
             job_report_text = self.generatereport(proc_number,current_job,start_time,end_time,writebuf)
 
-            if writebuf.pos:
-                writebuf.seek(0)
-                if current_job.type == 'feature':
-                    featureresult = {}
-                    featureresult['name'] = current_job.name
-                    featureresult['status'] = current_job.status
-                    featureresult['jobid'] = joblist_index
-                    featureresult['data'] = job_report_text
-                    featureresult['scenarioresults'] = []
-                    for scenario in current_job.scenarios:
-                        if scenario.type == 'scenario':
-                            scenarioresult = {}
-                            scenarioresult['status'] = scenario.status
-                            steps = []
-                            for step in scenario.steps:
-                                steps.append({'name':step.name,'status':step.status})
-                            scenarioresult['steps'] = steps
-                            featureresult['scenarioresults'].append(scenarioresult)
-                        else:
-                            for scenario in scenario.scenarios:
-                                scenarioresult = {}
-                                scenarioresult['status'] = scenario.status
-                                steps = []
-                                for step in scenario.steps:
-                                    steps.append({'name':step.name,'status':step.status})
-                                scenarioresult['steps'] = steps
-                                featureresult['scenarioresults'].append(scenarioresult)
-                    self.featureresults.put(featureresult)
+            if job_report_text:
+                results = {}
+                results['steps_passed'] = 0
+                results['steps_failed'] = 0
+                results['steps_skipped'] = 0
+                results['steps_undefined'] = 0
+                results['jobtype'] = current_job.type
+                results['reportinginfo'] = job_report_text
+                results['status'] = current_job.status
+                if current_job.type != 'feature':
+                    results['uniquekey'] = current_job.filename+current_job.feature.name
                 else:
-                    scenarioresult = {}
-                    scenarioresult['data'] = job_report_text
-                    scenarioresult['jobid'] = joblist_index 
-                    scenarioresult['status'] = current_job.status
-                    scenarioresult['steps'] = [] 
-                    scenarioresult['name'] = current_job.name
-                    scenarioresult['featurename'] = current_job.feature.name
-                    scenarioresult['filename'] = current_job.filename
-                    for step in current_job.steps:
-                        scenarioresult['steps'].append({'name':step.name,'status':step.status})
-                    self.scenarioresults.put(scenarioresult)
+                    results['scenarios_passed'] = 0
+                    results['scenarios_failed'] = 0
+                    results['scenarios_skipped'] = 0
+                    self.countscenariostatus(current_job,results)
+                self.countstepstatus(current_job,results)
+                self.resultsqueue.put(results)
     
     def setfeature(self,current_job):
         if current_job.type == 'feature':
@@ -788,6 +744,8 @@ class Runner(object):
             self.formatter.uri(current_job.feature.filename)
 
     def generatereport(self,proc_number,current_job,start_time,end_time,writebuf):
+        if not writebuf.pos:
+            return ""
         reportheader = start_time+"|WORKER"+str(proc_number)+" START|"
 
         if current_job.type == 'feature':
@@ -811,22 +769,45 @@ class Runner(object):
                 tags += tag+" "
             reportheader += "\n"+tags
        
-        if current_job.status != 'failed':
+        if current_job.status == 'failed':
             self.getskippedsteps(current_job,writebuf)
 
         writebuf.seek(0)
-        return reportheader+writebuf.read()+reportfooter 
+        return reportheader+writebuf.read()+"\n"+reportfooter 
 
     def getskippedsteps(self,current_job,writebuf):
-        print current_job.status
         if current_job.type != 'scenario':
             [self.getskippedsteps(s,writebuf) for s in current_job.scenarios]
         else: 
             for step in current_job.steps:
-                print step.status
                 if step.status == 'skipped':
-                    writebuf.write("Scenario:"+current_job.name+"|"+\
-                    "step:"+step.name+"|status:skipped\n")
+                    writebuf.write("Skipped because of error - Scenario:"+current_job.name+"|"+\
+                    "step:"+step.name+"\n")
+
+    def countscenariostatus(self,current_job,results):
+        if current_job.type != 'scenario':
+            [self.countscenariostatus(s,results) for s in current_job.scenarios]
+        else:
+            if current_job.status == 'passed':
+                results['scenarios_passed'] += 1 
+            if current_job.status == 'failed':
+                results['scenarios_failed'] += 1 
+            if current_job.status == 'skipped':
+                results['scenarios_skipped'] += 1 
+
+    def countstepstatus(self,current_job,results):
+        if current_job.type != 'scenario':
+            [self.countstepstatus(s,results) for s in current_job.scenarios]
+        else:
+            for step in current_job.steps:
+                if step.status == 'passed':
+                    results['steps_passed'] += 1
+                elif step.status == 'failed':
+                    results['steps_failed'] += 1
+                elif step.status == 'skipped':
+                    results['steps_skipped'] += 1
+                else:
+                    results['steps_undefined'] += 1
 
     def setup_capture(self):
         if self.config.stdout_capture:
