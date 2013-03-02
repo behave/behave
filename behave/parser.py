@@ -76,6 +76,7 @@ class Parser(object):
         for line in data.split('\n'):
             self.line += 1
             if not line.strip() and not self.state == 'multiline':
+                # -- SKIP EMPTY LINES, except in multiline string args.
                 continue
             self.action(line)
 
@@ -83,7 +84,8 @@ class Parser(object):
             self.action_table('')
 
         feature = self.feature
-        feature.parser = self
+        if feature:
+            feature.parser = self
         self.reset()
         return feature
 
