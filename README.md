@@ -55,7 +55,7 @@ Here's how it works:
 
 If you don't give the --procceses option, then behave should work like it always did. 
 
-Because you'd be running scenarios in parallel, it would be madness to allow all the pids to print to stdout while running. You'll just get a scrambled mess. Instead, I opted to print out one asterisk for every scenario that is completed to stderr(it's unbuffered, so it'll appear immediately) so you have at least a little idea about the progress behave is making. Note that you can give --no-capture to see all the madness if you want; I don't know how that'd be helpful to you in parallel-running tests but it's an option.
+Because you'd be running scenarios in parallel, it would be madness to allow all the pids to print to stdout while running. You'll just get a scrambled mess. Instead, I opted to print out an asterisk for every 'task'(be it a scenario or feature) that is completed to stderr(it's unbuffered, so it'll appear immediately) so you have at least a little idea about the progress behave is making. Note that you can give --no-capture to see all the madness if you want; I don't know how that'd be helpful to you in parallel-running tests but it's an option.
 
 Example output that shows up after all scenarios have been processed.
 

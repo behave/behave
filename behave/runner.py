@@ -691,7 +691,7 @@ class Runner(object):
             tags = "@"
             for tag in current_job.tags:
                 tags += tag+" "
-            reportheader += "\n"+tags
+            reportheader += "\n"+tags+"\n"
        
         if current_job.status == 'failed':
             self.getskippedsteps(current_job,writebuf)
