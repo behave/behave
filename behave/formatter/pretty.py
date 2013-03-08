@@ -131,9 +131,9 @@ class PrettyFormatter(Formatter):
             lines = self.step_lines + 1
             if self.show_multiline:
                 if result.table:
-                    lines += len(result.table.rows) + 1
+                    lines += self.table_lines
                 if result.text:
-                    lines += len(result.text.splitlines()) + 2
+                    lines += self.text_lines
             self.stream.write(up(lines))
             arguments = []
             location = None
@@ -190,8 +190,14 @@ class PrettyFormatter(Formatter):
             self.stream.write('\n')
         self.stream.flush()
 
+        table_width = 7 + 3 * len(table.headings) + sum(max_lengths)
+        self.table_lines = len(all_rows) * (1 + table_width // self.display_width)
+
     def doc_string(self, doc_string, strformat):
         triplequotes = self.format('comments').text(u'"""')
+        self.text_lines = 2 + sum([
+            (1 + len(line) // self.display_width)
+            for line in self.indent(doc_string, u'      ').splitlines()])
         doc_string = strformat(self.escape_triple_quotes(doc_string))
         self.stream.write(self.indent('\n'.join(
             [triplequotes, doc_string, triplequotes]), '      ') + '\n')
@@ -296,20 +302,26 @@ class PrettyFormatter(Formatter):
             self.stream.write(text_format.text(text))
             line_length += (len(text))
 
+        if self.show_timings:
+            if status in ('passed', 'failed'):
+                timing = '%5.2fs' % step.duration
+            else:
+                timing = ' ' * 6
+        else:
+            timing = ''
         if self.show_source:
-            if self.show_timings and status in ('passed', 'failed'):
-                location += ' %0.2fs' % step.duration
+            if timing:
+                location += ' ' + timing
             location = self.indented_text(location, proceed)
             self.stream.write(self.format('comments').text(location))
             line_length += len(location)
-        elif self.show_timings and status in ('passed', 'failed'):
-            timing = '%0.2fs' % step.duration
+        elif timing:
             timing = self.indented_text(timing, proceed)
             self.stream.write(self.format('comments').text(timing))
             line_length += len(timing)
         self.stream.write("\n")
 
-        self.step_lines = int((line_length - 1) / self.display_width)
+        self.step_lines = int((line_length - 1) // self.display_width)
 
         if self.show_multiline:
             if step.text:
