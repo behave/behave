@@ -18,21 +18,21 @@
 # ============================================================================
 
 from paver.easy import *
-# -- JE-DISABLED:
-# from paver.setuputils import setup, install_distutils_tasks
+sys.path.insert(0, ".")
+
+# -- USE PAVER EXTENSIONS: tasks, utility functions
+# from   paver.setuputils import setup, install_distutils_tasks
 # import paver.doctools
-# -- USE EXTENSIONS: tasks, utility functions
-from paver_ext.pip_download import download_depends, localpi
+from paver_ext.pip_download   import download_depends, localpi
 from paver_ext.python_checker import pychecker, pylint
+from paver_ext import paver_require, paver_patch
+
+paver_require.min_version("1.1")
+paver_patch.ensure_path_with_pmethods(path)
 
 # -- REQUIRED-FOR: setup, sdist, ...
 # NOTE: Adds a lot more python-project related tasks.
 # install_distutils_tasks()
-
-# ----------------------------------------------------------------------------
-# PROJECT CONFIGURATION (for sdist/setup mostly):
-# ----------------------------------------------------------------------------
-sys.path.insert(0, ".")
 
 # ----------------------------------------------------------------------------
 # TASK CONFIGURATION:
@@ -231,14 +231,14 @@ def clean():
     """Cleanup the project workspace."""
 
     # -- STEP: Remove build directories.
-    path("build").rmtree()      #< python setup temporary build dir.
-    path("dist").rmtree()       #< python setup temporary distribution dir.
-    path(".tox").rmtree()       #< tox build subtree.
-    path(".cache").rmtree()     #< py.test cache (failed tests).
-    path("tmp").rmtree()
-    path("__WORKDIR__").rmtree()
-    path("reports").rmtree()    #< JUnit TESTS-*.xml (default directory).
-    path("test_results").rmtree()
+    path("build").rmtree_p()      #< python setup temporary build dir.
+    path("dist").rmtree_p()       #< python setup temporary distribution dir.
+    path(".tox").rmtree_p()       #< tox build subtree.
+    path(".cache").rmtree_p()     #< py.test cache (failed tests).
+    path("tmp").rmtree_p()
+    path("__WORKDIR__").rmtree_p()
+    path("reports").rmtree_p()    #< JUnit TESTS-*.xml (default directory).
+    path("test_results").rmtree_p()
 
     # -- STEP: Remove temporary directory subtrees.
     patterns = [
@@ -248,11 +248,11 @@ def clean():
     for pattern in patterns:
         dirs = path(".").walkdirs(pattern, errors="ignore")
         for d in dirs:
-            d.rmtree()
+            d.rmtree_p()
 
     # -- STEP: Remove files.
-    path(".coverage").remove()
-    path("paver-minilib.zip").remove()
+    path(".coverage").remove_p()
+    path("paver-minilib.zip").remove_p()
 
     # -- STEP: Remove temporary files.
     patterns = [
@@ -270,7 +270,7 @@ def clean():
 @task
 def clean_all():
     """Clean everything.."""
-    path("downloads").rmtree()
+    path("downloads").rmtree_p()
     call_task("clean")
 
 # ----------------------------------------------------------------------------

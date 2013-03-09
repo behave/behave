@@ -25,7 +25,7 @@ SEE ALSO:
   * http://pypi.python.org/pypi/pychecker/
 """
 
-from paver.easy import consume_args, error, info, options, path, sh, task
+from paver.easy import consume_args, call_task, error, info, options, path, sh, task
 
 # ----------------------------------------------------------------------------
 # TASKS:
