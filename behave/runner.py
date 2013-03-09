@@ -10,7 +10,7 @@ import traceback
 import warnings
 import weakref
 
-import multiprocessing,time
+import multiprocessing,time,collections
 
 from behave import parser
 from behave import matchers
@@ -552,19 +552,16 @@ class Runner(object):
         self.parallel_element = getattr(self.config,'parallel_element')
         if self.parallel_element != 'feature' and self.parallel_element != 'scenario':
             print "ERROR: When using --processes, --parallel-element option must be set to 'feature' or 'scenario'"
-            return -1
+            return 1
         
         self.load_hooks()
         self.load_step_definitions()
-
         context = self.context = Context(self)
         def do_nothing(obj2,obj3):
             pass
         context._emit_warning = do_nothing
-
         self.setup_capture()
         stream = self.config.output
-
         self.run_hook('before_all', context)
 
         for filename in self.feature_files():
@@ -578,7 +575,6 @@ class Runner(object):
         self.resultsqueue = multiprocessing.Manager().JoinableQueue()
  
         self.joblist = []    
-
         scenario_count = 0    
         feature_count = 0    
         for feature in self.features:
@@ -608,11 +604,9 @@ class Runner(object):
             p = multiprocessing.Process(target=self.worker,args=(i,))
             procs.append(p)
             p.start()
-
         [p.join() for p in procs]
 
         self.run_hook('after_all', context)
-
         return self.multiproc_fullreport() 
 
     def worker(self,proc_number):
@@ -705,49 +699,26 @@ class Runner(object):
         else: 
             for step in current_job.steps:
                 if step.status == 'skipped':
-                    writebuf.write("Skipped step because of previous error - Scenario:"+current_job.name+"|"+\
-                    "step:"+step.name+"\n")
+                    writebuf.write("Skipped step because of previous error"
+                    " - Scenario:{0}|step:{1}\n"\
+                    .format(current_job.name,step.name))
 
     def countscenariostatus(self,current_job,results):
         if current_job.type != 'scenario':
             [self.countscenariostatus(s,results) for s in current_job.scenarios]
         else:
-            if current_job.status == 'passed':
-                results['scenarios_passed'] += 1 
-            if current_job.status == 'failed':
-                results['scenarios_failed'] += 1 
-            if current_job.status == 'skipped':
-                results['scenarios_skipped'] += 1 
+             results['scenarios_'+current_job.status] += 1
 
     def countstepstatus(self,current_job,results):
         if current_job.type != 'scenario':
             [self.countstepstatus(s,results) for s in current_job.scenarios]
         else:
             for step in current_job.steps:
-                if step.status == 'passed':
-                    results['steps_passed'] += 1
-                elif step.status == 'failed':
-                    results['steps_failed'] += 1
-                elif step.status == 'skipped':
-                    results['steps_skipped'] += 1
-                else:
-                    results['steps_undefined'] += 1
+                results['steps_'+step.status] += 1
 
     def multiproc_fullreport(self):
-        features_passed = 0
-        features_failed = 0
-        features_skipped = 0
-        
-        scenarios_passed = 0
-        scenarios_failed = 0
-        scenarios_skipped = 0
-
-        steps_passed = 0
-        steps_failed = 0
-        steps_skipped = 0
-        steps_undefined = 0
-
-        combined_features_from_scenarios_results = {}
+        metrics = collections.defaultdict(int) 
+        combined_features_from_scenarios_results = collections.defaultdict(lambda:'') 
 
         while not self.resultsqueue.empty():
             print "\n"*3
@@ -756,51 +727,41 @@ class Runner(object):
             print jobresult['reportinginfo']
 
             if jobresult['jobtype'] != 'feature':
-                uniquekey = jobresult['uniquekey']
-                if uniquekey in combined_features_from_scenarios_results:
-                    combined_features_from_scenarios_results[uniquekey] += '|'+jobresult['status']
-                else:
-                    combined_features_from_scenarios_results[uniquekey] = jobresult['status']
-
-                if jobresult['status'] == 'passed':
-                    scenarios_passed += 1 
-                elif jobresult['status'] == 'failed':
-                    scenarios_failed += 1 
-                elif jobresult['status'] == 'skipped':
-                    scenarios_skipped += 1
+                combined_features_from_scenarios_results[jobresult['uniquekey']] += '|'+jobresult['status']
+                metrics['scenarios_'+jobresult['status']] += 1
             else:
-                if jobresult['status'] == 'passed':
-                    features_passed += 1 
-                elif jobresult['status'] == 'failed':
-                    features_failed += 1 
-                elif jobresult['status'] == 'skipped':
-                    features_skipped += 1
-            steps_passed += jobresult['steps_passed'] 
-            steps_failed += jobresult['steps_failed'] 
-            steps_skipped += jobresult['steps_skipped'] 
-            steps_undefined += jobresult['steps_undefined']
+                metrics['features_'+jobresult['status']] += 1
+
+            metrics['steps_passed'] += jobresult['steps_passed'] 
+            metrics['steps_failed'] += jobresult['steps_failed'] 
+            metrics['steps_skipped'] += jobresult['steps_skipped'] 
+            metrics['steps_undefined'] += jobresult['steps_undefined']
 
             if jobresult['jobtype'] == 'feature': 
-                scenarios_passed += jobresult['scenarios_passed'] 
-                scenarios_failed += jobresult['scenarios_failed'] 
-                scenarios_skipped += jobresult['scenarios_skipped'] 
+                metrics['scenarios_passed'] += jobresult['scenarios_passed'] 
+                metrics['scenarios_failed'] += jobresult['scenarios_failed'] 
+                metrics['scenarios_skipped'] += jobresult['scenarios_skipped'] 
                 
         for uniquekey in combined_features_from_scenarios_results:
             if 'failed' in combined_features_from_scenarios_results[uniquekey]:
-                features_failed += 1
+                metrics['features_failed'] += 1
             elif 'passed' in combined_features_from_scenarios_results[uniquekey]:
-                features_passed += 1
+                metrics['features_passed'] += 1
             else:
-                features_skipped += 1
+                metrics['features_skipped'] += 1
 
         print "\n"*3
         print "_"*75
-        print features_passed,"features passed,",features_failed,"failed,",features_skipped,"skipped"            
-        print scenarios_passed,"scenarios passed,",scenarios_failed,"failed,",scenarios_skipped,"skipped"            
-        print steps_passed,"steps passed,",steps_failed,"failed,",steps_skipped,"skipped,",steps_undefined,"undefined"
-        print "\n"
+        print ("{0} features passed, {1} features failed, {2} features skipped\n"
+        "{3} scenarios passed, {4} scenarios failed, {5} scenarios skipped\n"
+        "{6} steps passed, {7} steps failed, {8} steps skipped, {9} steps undefined\n")\
+        .format(
+        metrics['features_passed'],metrics['features_failed'],metrics['features_skipped'],
+        metrics['scenarios_passed'],metrics['scenarios_failed'],metrics['scenarios_skipped'],
+        metrics['steps_passed'],metrics['steps_failed'],metrics['steps_skipped'],
+        metrics['steps_undefined'])
 
-        return features_failed 
+        return metrics['features_failed']
     
     def setup_capture(self):
         if self.config.stdout_capture:
