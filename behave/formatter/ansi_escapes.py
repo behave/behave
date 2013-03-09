@@ -60,7 +60,8 @@ def strip_escapes(text):
     """
     return _ANSI_ESCAPE_PATTERN.sub("", text)
 
-def use_ansi_escape_colorbold_composites():
+
+def use_ansi_escape_colorbold_composites():     # pragma: no cover
     """
     Patch for "sphinxcontrib-ansi" to process the following ANSI escapes
     correctly (set-color set-bold sequences):

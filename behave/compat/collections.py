@@ -9,7 +9,7 @@ import warnings
 try:
     # -- SINCE: Python2.7
     from collections import OrderedDict
-except ImportError:
+except ImportError:     # pragma: no cover
     try:
         # -- BACK-PORTED FOR: Python 2.4 .. 2.6
         from ordereddict import OrderedDict
