@@ -62,7 +62,7 @@ or run the tests via ``paver``::
 
 If you want to run the feature tests, use::
 
-    paver feature_test
+    paver behave_test
 
 To run all tests (unittests and feature tests) use::
 

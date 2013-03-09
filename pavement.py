@@ -98,7 +98,7 @@ def linkcheck():
 def test(args):
     """Execute all tests (unittests, feature tests)."""
     call_task("unittest")
-    call_task("feature_test")
+    call_task("behave_test")
 
 @task
 @consume_args
@@ -111,7 +111,7 @@ def unittest(args):
 
 @task
 @consume_args
-def feature_test(args):
+def behave_test(args):
     """Execute all feature tests w/ behave."""
     if not args:
         # args = [ "features" ]
@@ -174,36 +174,36 @@ def coverage_report():
 def coverage(args):
     """Run unittests and collect coverage, then generate report."""
     unittests = []
-    feature_tests = []
+    behave_tests = []
 
     # -- STEP: Select unittests and feature-tests (if any).
     for arg in args:
         if arg.startswith("test"):
             unittests.append(arg)
         elif arg.startswith("tools"):
-            feature_tests.append(arg)
+            behave_tests.append(arg)
         elif arg.startswith("selftest.features"):
-            feature_tests.append(arg)
+            behave_tests.append(arg)
         else:
             unittests.append(arg)
-            feature_tests.append(arg)
+            behave_tests.append(arg)
 
     # -- STEP: Check if all tests should be run (normally: no args provided).
-    should_always_run = not unittests and not feature_tests
+    should_always_run = not unittests and not behave_tests
     if should_always_run:
-        feature_tests = list(options.behave_test.default_args)
+        behave_tests = list(options.behave_test.default_args)
 
     # -- STEP: Run unittests.
     if unittests or should_always_run:
         nosetests_coverage_run2(" ".join(unittests))
 
     # -- STEP: Run feature-tests.
-    if feature_tests or should_always_run:
+    if behave_tests or should_always_run:
         cmdopts = "--tags=-xfail"
         behave  = path("bin/behave").normpath()
-        for feature_test_ in feature_tests:
+        for behave_test_ in behave_tests:
             coverage_run("{behave} --format=progress {cmdopts} {args}".format(
-                        behave=behave, args=feature_test_, cmdopts=cmdopts))
+                        behave=behave, args=behave_test_, cmdopts=cmdopts))
 
     # -- FINALLY:
     call_task("coverage_report")
