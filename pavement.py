@@ -18,6 +18,7 @@
 # ============================================================================
 
 from paver.easy import *
+import os
 sys.path.insert(0, ".")
 
 # -- USE PAVER EXTENSIONS: tasks, utility functions
@@ -195,15 +196,17 @@ def coverage(args):
 
     # -- STEP: Run unittests.
     if unittests or should_always_run:
-        nosetests_coverage_run2(" ".join(unittests))
+        nosetests_coverage_run(" ".join(unittests))
 
     # -- STEP: Run feature-tests.
+    # behave  = path("bin/behave").normpath()
     if behave_tests or should_always_run:
-        cmdopts = "--tags=-xfail"
-        behave  = path("bin/behave").normpath()
+        cmdopts = "-f progress --tags=-xfail"
         for behave_test_ in behave_tests:
-            coverage_run("{behave} --format=progress {cmdopts} {args}".format(
-                        behave=behave, args=behave_test_, cmdopts=cmdopts))
+            behave_coverage_run(behave_test_, cmdopts=cmdopts)
+            # -- ALTERNATIVE:
+            # coverage_run("{behave} --format=progress {cmdopts} {args}".format(
+            #            behave=behave, args=behave_test_, cmdopts=cmdopts))
 
     # -- FINALLY:
     call_task("coverage_report")
@@ -357,6 +360,11 @@ def behave(cmdline, cmdopts=""):
     """Run behave command"""
     return sh("{behave} {options} {args}".format(
                 behave=BEHAVE, options=cmdopts, args=cmdline))
+
+def behave_coverage_run(cmdline, cmdopts=""):
+    """Collect coverage w/ behave."""
+    os.environ["COVERAGE_PROCESS_START"] = path(".coveragerc").abspath()
+    return behave(cmdline, cmdopts)
 
 def sphinx_build(builder="html", cmdopts=""):
     sourcedir = options.sphinx.sourcedir

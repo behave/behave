@@ -10,14 +10,14 @@
 
 # -- TESTS:
 nose  >= 1.1
-mock  >= 0.8
+mock  >= 1.0
 PyHamcrest >= 1.6
 
 # -- DEVELOPMENT SUPPORT:
-paver >= 1.0.5
+# NOT-NEEDED_ nose-cov >= 1.4
+paver >= 1.1
 tox   >= 1.4
-nose-cov >= 1.4
-coverage >= 3.5
+coverage >= 3.6
 
 # -- DOCUMENTATION: Tutorials with examples.
 sphinx >= 1.1

@@ -6,7 +6,7 @@ Compatibility of :module:`os.path` between different Python versions.
 import os.path
 
 relpath = getattr(os.path, "relpath", None)
-if relpath is None:
+if relpath is None: # pragma: no cover
     # -- Python2.5 doesn't know about relpath
     def relpath(path, start=os.path.curdir):
         """
