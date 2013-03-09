@@ -29,6 +29,7 @@ from paver_ext import paver_require, paver_patch
 
 paver_require.min_version("1.1")
 paver_patch.ensure_path_with_pmethods(path)
+paver_patch.ensure_path_with_smethods(path)
 
 # -- REQUIRED-FOR: setup, sdist, ...
 # NOTE: Adds a lot more python-project related tasks.
@@ -231,14 +232,14 @@ def clean():
     """Cleanup the project workspace."""
 
     # -- STEP: Remove build directories.
-    path("build").rmtree_p()      #< python setup temporary build dir.
-    path("dist").rmtree_p()       #< python setup temporary distribution dir.
-    path(".tox").rmtree_p()       #< tox build subtree.
-    path(".cache").rmtree_p()     #< py.test cache (failed tests).
-    path("tmp").rmtree_p()
-    path("__WORKDIR__").rmtree_p()
-    path("reports").rmtree_p()    #< JUnit TESTS-*.xml (default directory).
-    path("test_results").rmtree_p()
+    path("build").rmtree_s()      #< python setup temporary build dir.
+    path("dist").rmtree_s()       #< python setup temporary distribution dir.
+    path(".tox").rmtree_s()       #< tox build subtree.
+    path(".cache").rmtree_s()     #< py.test cache (failed tests).
+    path("tmp").rmtree_s()
+    path("__WORKDIR__").rmtree_s()
+    path("reports").rmtree_s()    #< JUnit TESTS-*.xml (default directory).
+    path("test_results").rmtree_s()
 
     # -- STEP: Remove temporary directory subtrees.
     patterns = [
@@ -248,11 +249,11 @@ def clean():
     for pattern in patterns:
         dirs = path(".").walkdirs(pattern, errors="ignore")
         for d in dirs:
-            d.rmtree_p()
+            d.rmtree()
 
     # -- STEP: Remove files.
-    path(".coverage").remove_p()
-    path("paver-minilib.zip").remove_p()
+    path(".coverage").remove_s()
+    path("paver-minilib.zip").remove_s()
 
     # -- STEP: Remove temporary files.
     patterns = [
@@ -270,7 +271,7 @@ def clean():
 @task
 def clean_all():
     """Clean everything.."""
-    path("downloads").rmtree_p()
+    path("downloads").rmtree_s()
     call_task("clean")
 
 # ----------------------------------------------------------------------------

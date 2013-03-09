@@ -25,7 +25,9 @@ SEE ALSO:
   * http://pypi.python.org/pypi/pychecker/
 """
 
-from paver.easy import consume_args, call_task, error, info, options, path, sh, task
+from __future__ import with_statement
+from paver.easy import consume_args, error, info, options, path, sh, task
+from paver.easy import call_task
 
 # ----------------------------------------------------------------------------
 # TASKS:
@@ -58,7 +60,7 @@ def pychecker(args):
     for file_ in files:
         try:
             sh("pychecker {opts} {file}".format(opts=cmdopts, file=file_))
-        except Exception, e:
+        except Exception as e:
             error("FAILURE: {0}".format(e))
             problematic.append(file_)
 

@@ -2,7 +2,6 @@
 # PAVER EXTENSION/UTILITY: Read PIP requirements files
 # ============================================================================
 # REQUIRES: paver >= 1.0
-# REQUIRES: pkg_resources, fulfilled when setuptools or distribute is installed
 # DESCRIPTION:
 #   Provides some utility functions for paver.
 #
@@ -11,9 +10,14 @@
 #  * http://www.blueskyonmars.com/projects/paver/
 # ============================================================================
 
-from paver.easy import error
+# from paver.easy import error
 import os.path
 import pkg_resources
+import sys
+
+def error(text):
+    sys.stderr.write("ERROR: %s\n" % text)
+    sys.stderr.flush()
 
 # ----------------------------------------------------------------------------
 # UTILS:

@@ -24,18 +24,31 @@ SEE ALSO:
   * http://pypi.python.org/pypi/pip2pi/
 """
 
-from paver.easy import info, options, path, sh, task, call_task
+from paver.easy import info, options, path, sh, task, call_task, consume_args
 
 # ----------------------------------------------------------------------------
 # TASKS:
 # ----------------------------------------------------------------------------
 @task
-def download_depends():
+@consume_args
+def download_depends(args):
     """Download all dependencies (python packages) with pip."""
-    download_dir = options.develop.download_dir
-    info("DOWNLOAD ALL DEPENDENCIES: {0}/".format(download_dir))
-    pip_download(download_dir,
-                requirements_files=options.develop.requirements_files)
+    download_dir = options.develop.get("download_dir", "$HOME/.pip/downloads")
+    requirements_files = None
+    if args:
+        info("DOWNLOAD DEPENDENCIES: %s" % ", ".join(args))
+    else:
+        info("DOWNLOAD ALL DEPENDENCIES: %s/" % download_dir)
+        requirements_files = options.develop.requirements_files
+
+    pip_download(download_dir, args=args, requirements_files=requirements_files)
+    call_task("localpi")
+
+@task
+@consume_args
+def download_deps(args):
+    """Alias for: download_depends"""
+    call_task("download_depends")
 
 @task
 def localpi():
@@ -43,8 +56,9 @@ def localpi():
     download_dir = path(options.develop.download_dir)
     if not download_dir.exists():
         call_task("download_depends")
-    info("MAKE LOCAL PACKAGE-INDEX: {0}/".format(download_dir))
-    sh("dir2pi {download_dir}".format(download_dir=download_dir))
+    info("MAKE LOCAL PACKAGE-INDEX: %s/" % download_dir)
+    sh("dir2pi %s" % download_dir)
+    # sh("dir2pi {download_dir}".format(download_dir=download_dir))
     # -- ALTERNATIVE:
     # for reqs in requirement_files:
     #    sh("pip2pi downloads -r {requirements}".format(requirements=reqs))
@@ -52,26 +66,21 @@ def localpi():
 # ----------------------------------------------------------------------------
 # UTILS:
 # ----------------------------------------------------------------------------
-def pip_download(download_dir, cmdopts="", requirements_files=None):
+def pip_download(download_dir, cmdopts="", args=None, requirements_files=None):
     """Download all dependencies with pip by using requirement files, etc."""
-    if not cmdopts and not requirements_files:
-        assert False, "Neither requirement_files nor cmdopts provided."
+    requirements = []
+    if args:
+        requirements.extend(args)
+    if requirements_files:
+        requirements.extend([ "-r %s" % f for f in requirements_files ])
+    assert requirements, "No requirements provided."
 
     # -- NORMAL-CASE:
     # NOTE: --exists-action option requires pip >= 1.1
     download_dir = path(download_dir)
     download_dir.makedirs()
     pip_download_cmd  = "pip install --no-install --exists-action=i"
-    pip_download_cmd += " --download={0}".format(download_dir)
-
-    if requirements_files:
-        # -- WITH REQUIREMENT FILES:
-        for requirements_file in requirements_files:
-            sh("{pip_download} {cmdopts} -r {requirements_file}"\
-                .format(pip_download=pip_download_cmd, cmdopts=cmdopts,
-                        requirements_file=requirements_file))
-    else:
-        # -- NO REQUIREMENT FILES: Requirement in cmdopts, ala: argparse>=1.2
-        assert cmdopts
-        sh("{pip_download} {cmdopts}".format(
-            pip_download=pip_download_cmd, cmdopts=cmdopts))
+    pip_download_cmd += " --download=%s" % download_dir
+    for requirement in requirements:
+        # sh("{pip_download} {cmdopts} {requirement}".format(
+        sh("%s %s %s" % (pip_download_cmd, cmdopts, requirement))
