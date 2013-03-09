@@ -16,23 +16,27 @@ if os.path.isdir(os.path.join(TOP, NAME)):
 # ----------------------------------------------------------------------------
 # BEHAVE-TWEAKS:
 # ----------------------------------------------------------------------------
-from behave.configuration import Configuration
-from behave.reporter.summary import SummaryReporter
-
 def setup_behave():
     """
     Apply tweaks, extensions and patches to "behave".
     """
+    from behave.configuration import Configuration
     # -- DISABLE: Timings to simplify issue.features/ tests.
     # Configuration.defaults["format0"] = "pretty"
     # Configuration.defaults["format0"] = "progress"
     Configuration.defaults["show_timings"] = False
 
+def behave_main0():
+    # from behave.configuration import Configuration
+    from behave.__main__ import main as behave_main
+    setup_behave()
+    behave_main()
 
 # ----------------------------------------------------------------------------
 # MAIN:
 # ----------------------------------------------------------------------------
 if __name__ == "__main__":
-    from behave.__main__ import main
-    setup_behave()
-    main()
+    if os.environ.has_key("COVERAGE_PROCESS_START"):
+        import coverage
+        coverage.process_startup()
+    behave_main0()
