@@ -523,7 +523,7 @@ class TestTableModel(unittest.TestCase):
     def test_table_row_items(self):
         eq_(self.table[0].items(), zip(self.HEAD, self.DATA[0]))
 
-class TestModelRow(object):
+class TestModelRow(unittest.TestCase):
     HEAD = [u'name',  u'sex',    u'age']
     DATA = [u'Alice', u'female', u'12']
 
