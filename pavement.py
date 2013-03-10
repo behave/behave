@@ -1,7 +1,7 @@
 # ============================================================================
 # PAVER MAKEFILE (pavement.py) -- behave
 # ============================================================================
-# REQUIRES: paver >= 1.0.3
+# REQUIRES: paver >= 1.1
 # DESCRIPTION:
 #   Provides platform-neutral "Makefile" for simple, project-specific tasks.
 #   AVOID: setup support, because it is currently handled elsewhere.
@@ -62,6 +62,32 @@ options(
     pylint = Bunch(
         default_args=NAME
     ),
+    clean = Bunch(
+        dirs  = [
+            ".cache",
+            ".tox",             #< tox build subtree.
+            "__WORKDIR__",      #< behave_test tempdir.
+            "build", "dist",    #< python setup temporary build dir.
+            "tmp",
+            "reports",          #< JUnit TESTS-*.xml (default directory).
+            "test_results",
+        ],
+        files = [
+            ".coverage",
+            "paver-minilib.zip",
+        ],
+        walkdirs_patterns = [
+            "*.egg-info",
+            "__pycache__",
+        ],
+        walkfiles_patterns = [
+            "*.pyc", "*.pyo", "*$py.class",
+            "*.bak", "*.log", "*.tmp",
+            ".coverage", ".coverage.*",
+            "pylint_*.txt", "pychecker_*.txt",
+            ".DS_Store", "*.~*~",   #< MACOSX
+        ],
+    ),
     develop=Bunch(
         requirements_files=[
             "requirements.txt",
@@ -78,12 +104,18 @@ options(
 @task
 @consume_args
 def docs(args):
-    """Generate the documentation: html, pdf, ... (default: html)"""
-    builders = args
-    if not builders:
-        builders = [ "html" ]
-    for builder in builders:
-        sphinx_build(builder)
+    """
+    USAGE: paver docs [BUILDER]
+    Generate the documentation with sphinx (via sphinx-build).
+    Available builder: html, pdf, ... (default: html)
+    """
+    # -- PREPROCESS: Separate builders/args and options
+    cmdline = Cmdline.consume(args, default_args=["html"])
+    cmdopts = cmdline.join_options()
+
+    # -- STEP: Build the docs.
+    for builder in cmdline.args:
+        sphinx_build(builder, cmdopts=cmdopts)
 
 @task
 def linkcheck():
@@ -105,54 +137,22 @@ def test(args):
 @consume_args
 def unittest(args):
     """Execute all unittests w/ nosetest runner."""
-    cmdline = ""
-    if args:
-        cmdline = " ".join(args)
-    nosetests(cmdline)
+    cmdline = Cmdline.consume(args)
+    nosetests(cmdline.join_args(), cmdopts=cmdline.join_options())
 
 @task
 @consume_args
 def behave_test(args):
     """Execute all feature tests w/ behave."""
-    if not args:
-        # args = [ "features" ]
-        args = options.behave_test.default_args
-        cmdopts = []
-    else:
-        # -- INSPECT and REORGANIZE:
-        args2   = []
-        cmdopts = []
-        tests1  = []
-        tests2  = []
-        tests3  = []
-        for arg in args:
-            if arg.startswith("-"):
-                cmdopts.append(arg)
-            elif arg.startswith("tools"):
-                tests1.append(arg)
-            elif arg.startswith("selftest.features"):
-                tests2.append(arg)
-            elif arg.startswith("issue.features"):
-                tests3.append(arg)
-            else:
-                args2.append(arg)
-        args = []
-        if tests1:
-            args.append(" ".join(tests1))
-        if tests2:
-            args.append(" ".join(tests2))
-        if tests3:
-            args.append(" ".join(tests3))
-        if args2:
-            args.append(" ".join(args2))
-
-    cmdopts = " ".join(cmdopts)
-    if not cmdopts:
+    cmdline = Cmdline.consume(args, default_args=options.behave_test.default_args)
+    if not cmdline.options:
         excluded_tags = "--tags=-xfail --tags=-not_supported"
-        cmdopts = "--format=progress {0}".format(excluded_tags)
+        cmdopts = "-f progress {0}".format(excluded_tags)
+    else:
+        cmdopts = cmdline.join_options()
 
     # -- RUN TESTS: All tests at once.
-    for arg in args:
+    for arg in cmdline.args:
         behave(arg, cmdopts)
     # arg = " ".join(args)
     # behave(arg, cmdopts)
@@ -174,20 +174,9 @@ def coverage_report():
 @consume_args
 def coverage(args):
     """Run unittests and collect coverage, then generate report."""
-    unittests = []
-    behave_tests = []
-
-    # -- STEP: Select unittests and feature-tests (if any).
-    for arg in args:
-        if arg.startswith("test"):
-            unittests.append(arg)
-        elif arg.startswith("tools"):
-            behave_tests.append(arg)
-        elif arg.startswith("selftest.features"):
-            behave_tests.append(arg)
-        else:
-            unittests.append(arg)
-            behave_tests.append(arg)
+    cmdline = Cmdline.consume(args)
+    unittests    = [ arg for arg in cmdline.args if arg.startswith("test") ]
+    behave_tests = [ arg for arg in cmdline.args if not arg.startswith("test") ]
 
     # -- STEP: Check if all tests should be run (normally: no args provided).
     should_always_run = not unittests and not behave_tests
@@ -201,7 +190,7 @@ def coverage(args):
     # -- STEP: Run feature-tests.
     # behave  = path("bin/behave").normpath()
     if behave_tests or should_always_run:
-        cmdopts = "-f progress --tags=-xfail"
+        cmdopts = "-f progress --tags=-xfail "+ cmdline.join_options()
         for behave_test_ in behave_tests:
             behave_coverage_run(behave_test_, cmdopts=cmdopts)
             # -- ALTERNATIVE:
@@ -231,51 +220,24 @@ def bump_version(info, error):
 # TASK: clean
 # ----------------------------------------------------------------------------
 @task
-def clean():
+def clean(options):
     """Cleanup the project workspace."""
+    for dir_ in options.dirs:
+        path(dir_).rmtree_s()
 
-    # -- STEP: Remove build directories.
-    path("build").rmtree_s()      #< python setup temporary build dir.
-    path("dist").rmtree_s()       #< python setup temporary distribution dir.
-    path(".tox").rmtree_s()       #< tox build subtree.
-    path(".cache").rmtree_s()     #< py.test cache (failed tests).
-    path("tmp").rmtree_s()
-    path("__WORKDIR__").rmtree_s()
-    path("reports").rmtree_s()    #< JUnit TESTS-*.xml (default directory).
-    path("test_results").rmtree_s()
-
-    # -- STEP: Remove temporary directory subtrees.
-    patterns = [
-        "*.egg-info",
-        "__pycache__",
-    ]
-    for pattern in patterns:
+    for pattern in options.walkdirs_patterns:
         dirs = path(".").walkdirs(pattern, errors="ignore")
-        for d in dirs:
-            d.rmtree()
+        for dir_ in dirs:
+            dir_.rmtree()
 
-    # -- STEP: Remove files.
-    path(".coverage").remove_s()
-    path("paver-minilib.zip").remove_s()
+    for file_ in options.files:
+        path(file_).remove_s()
 
-    # -- STEP: Remove temporary files.
-    patterns = [
-        "*.pyc", "*.pyo", "*$py.class",
-        "*.bak", "*.log", "*.tmp",
-        ".coverage", ".coverage.*",
-        "pylint_*.txt", "pychecker_*.txt",
-        ".DS_Store", "*.~*~",   #< MACOSX
-    ]
-    for pattern in patterns:
+    for pattern in options.walkfiles_patterns:
         files = path(".").walkfiles(pattern)
-        for f in files:
-            f.remove()
+        for file_ in files:
+            file_.remove()
 
-@task
-def clean_all():
-    """Clean everything.."""
-    path("downloads").rmtree_s()
-    call_task("clean")
 
 # ----------------------------------------------------------------------------
 # XML TASKS:
@@ -367,6 +329,9 @@ def behave_coverage_run(cmdline, cmdopts=""):
     return behave(cmdline, cmdopts)
 
 def sphinx_build(builder="html", cmdopts=""):
+    if builder.startswith("-"):
+        cmdopts += " %s" % builder
+        builder  = ""
     sourcedir = options.sphinx.sourcedir
     destdir   = options.sphinx.builddir
     cmd = "sphinx-build {opts} -b {builder} {sourcedir} {destdir}/{builder}"\
@@ -382,3 +347,29 @@ def xmllint(cmdline, options=None, schema=None):
     cmd = "{xmllint} {options} {cmdline}".format(
             xmllint=XMLLINT, options=options, cmdline=cmdline)
     sh(cmd, capture=True) #< SILENT: Output only in case of BuildError
+
+class Cmdline(object):
+    def __init__(self, args=None, options=None):
+        self.args = args or []
+        self.options = options or []
+
+    def join_args(self, separator=" "):
+        return separator.join(self.args)
+
+    def join_options(self, separator=" "):
+        return separator.join(self.options)
+
+    @classmethod
+    def consume(cls, args, default_args=None, default_options=None):
+        args_ = []
+        options_ = []
+        for arg in args:
+            if arg.startswith("-"):
+                options_.append(arg)
+            else:
+                args_.append(arg)
+        if not args_:
+            args_ = default_args
+        if not options_:
+            options_ = default_options
+        return cls(args_, options_)
