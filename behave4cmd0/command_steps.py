@@ -32,7 +32,7 @@ def step_a_new_working_directory(context):
     """
     Creates a new, empty working directory
     """
-    command_util.ensure_context_resource_exists(context, "workdir", None)
+    command_util.ensure_context_attribute_exists(context, "workdir", None)
     command_util.ensure_workdir_exists(context)
     shutil.rmtree(context.workdir, ignore_errors=True)
 
@@ -57,7 +57,7 @@ def step_a_file_named_filename_with(context, filename):
 
     # -- SPECIAL CASE: For usage with behave steps.
     if filename.endswith(".feature"):
-        command_util.ensure_context_resource_exists(context, "features", [])
+        command_util.ensure_context_attribute_exists(context, "features", [])
         context.features.append(filename)
 
 @given(u'an empty file named "{filename}"')

@@ -70,7 +70,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
     When I run "behave -c features/issue96_case1.feature"
     Then it should fail with:
         """
-        Assertion Failed: Sub-step failed: When  a step fails
+        Assertion Failed: Sub-step failed: When a step fails
         Substep info: Assertion Failed: EXPECT: Step fails.
         """
 

@@ -14,6 +14,7 @@ NEWS and CHANGES:
 
 IMPROVEMENT:
 
+  * issue #117: context.execute_steps() should also support steps with multi-line text or table
   * issue #116: SummaryReporter shows list of failing scenarios (provided by: roignac).
   * issue #112: Improvement to AmbiguousStep error diagnostics
   * issue #74:  django-behave module now available at pypi (done: 2012-10-04).

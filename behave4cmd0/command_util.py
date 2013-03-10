@@ -45,7 +45,7 @@ def ensure_directory_exists(dirname):
     assert os.path.exists(dirname)
     assert os.path.isdir(dirname)
 
-def ensure_context_resource_exists(context, name, default_value=None):
+def ensure_context_attribute_exists(context, name, default_value=None):
     """
     Ensure a behave resource exists as attribute in the behave context.
     If this is not the case, the attribute is created by using the default_value.
@@ -59,7 +59,7 @@ def ensure_workdir_exists(context):
     In addition, the location of the workdir is stored as attribute in
     the context object.
     """
-    ensure_context_resource_exists(context, "workdir", None)
+    ensure_context_attribute_exists(context, "workdir", None)
     if not context.workdir:
         context.workdir = os.path.abspath(WORKDIR)
     ensure_directory_exists(context.workdir)
