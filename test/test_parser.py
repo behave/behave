@@ -1053,3 +1053,140 @@ class TestParser4Tags(Common):
     @raises(parser.ParserError)
     def test_parse_tags_with_invalid_tags(self):
         parse_tags('@one  invalid.tag boom')
+
+
+class TestParser4Steps(Common):
+    """
+    Tests parser.parse_steps() and parser.Parser.parse_steps() functionality.
+    """
+
+    def test_parse_steps_with_simple_steps(self):
+        doc = u'''
+Given a simple step
+When I have another simple step
+ And I have another simple step
+Then every step will be parsed without errors
+'''.lstrip()
+        steps = parser.parse_steps(doc)
+        eq_(len(steps), 4)
+        # -- EXPECTED STEP DATA:
+        #     SCHEMA: step_type, keyword, name, text, table
+        self.compare_steps(steps, [
+            ("given", "Given", "a simple step", None, None),
+            ("when",  "When",  "I have another simple step", None, None),
+            ("when",  "And",   "I have another simple step", None, None),
+            ("then",  "Then",  "every step will be parsed without errors",
+                                None, None),
+        ])
+
+    def test_parse_steps_with_multiline_text(self):
+        doc = u'''
+Given a step with multi-line text:
+    """
+    Lorem ipsum
+    Ipsum lorem
+    """
+When I have a step with multi-line text:
+    """
+    Ipsum lorem
+    Lorem ipsum
+    """
+Then every step will be parsed without errors
+'''.lstrip()
+        steps = parser.parse_steps(doc)
+        eq_(len(steps), 3)
+        # -- EXPECTED STEP DATA:
+        #     SCHEMA: step_type, keyword, name, text, table
+        text1 = "Lorem ipsum\nIpsum lorem"
+        text2 = "Ipsum lorem\nLorem ipsum"
+        self.compare_steps(steps, [
+            ("given", "Given", "a step with multi-line text", text1, None),
+            ("when",  "When",  "I have a step with multi-line text", text2, None),
+            ("then",  "Then",  "every step will be parsed without errors",
+             None, None),
+        ])
+
+    def test_parse_steps_when_last_step_has_multiline_text(self):
+        doc = u'''
+Given a simple step
+Then the last step has multi-line text:
+    """
+    Lorem ipsum
+    Ipsum lorem
+    """
+'''.lstrip()
+        steps = parser.parse_steps(doc)
+        eq_(len(steps), 2)
+        # -- EXPECTED STEP DATA:
+        #     SCHEMA: step_type, keyword, name, text, table
+        text2 = "Lorem ipsum\nIpsum lorem"
+        self.compare_steps(steps, [
+            ("given", "Given", "a simple step", None, None),
+            ("then",  "Then",  "the last step has multi-line text", text2, None),
+        ])
+
+    def test_parse_steps_with_table(self):
+        doc = u'''
+Given a step with a table:
+    | Name  | Age |
+    | Alice |  12 |
+    | Bob   |  23 |
+When I have a step with a table:
+    | Country | Capital |
+    | France  | Paris   |
+    | Germany | Berlin  |
+    | Spain   | Madrid  |
+    | USA     | Washington |
+Then every step will be parsed without errors
+'''.lstrip()
+        steps = parser.parse_steps(doc)
+        eq_(len(steps), 3)
+        # -- EXPECTED STEP DATA:
+        #     SCHEMA: step_type, keyword, name, text, table
+        table1 = model.Table([u"Name", u"Age"], 0, [
+            [ u"Alice", u"12" ],
+            [ u"Bob",   u"23" ],
+            ])
+        table2 = model.Table([u"Country", u"Capital"], 0, [
+            [ u"France",   u"Paris" ],
+            [ u"Germany",  u"Berlin" ],
+            [ u"Spain",    u"Madrid" ],
+            [ u"USA",      u"Washington" ],
+            ])
+        self.compare_steps(steps, [
+            ("given", "Given", "a step with a table", None, table1),
+            ("when",  "When",  "I have a step with a table", None, table2),
+            ("then",  "Then",  "every step will be parsed without errors",
+             None, None),
+        ])
+
+    def test_parse_steps_when_last_step_has_a_table(self):
+        doc = u'''
+Given a simple step
+Then the last step has a final table:
+    | Name   | City |
+    | Alonso | Barcelona |
+    | Bred   | London  |
+'''.lstrip()
+        steps = parser.parse_steps(doc)
+        eq_(len(steps), 2)
+        # -- EXPECTED STEP DATA:
+        #     SCHEMA: step_type, keyword, name, text, table
+        table2 = model.Table([u"Name", u"City"], 0, [
+            [ u"Alonso", u"Barcelona" ],
+            [ u"Bred",   u"London" ],
+            ])
+        self.compare_steps(steps, [
+            ("given", "Given", "a simple step", None, None),
+            ("then",  "Then",  "the last step has a final table", None, table2),
+        ])
+
+    @raises(parser.ParserError)
+    def test_parse_steps_with_malformed_table(self):
+        doc = u'''
+Given a step with a malformed table:
+    | Name   | City |
+    | Alonso | Barcelona | 2004 |
+    | Bred   | London    | 2010 |
+'''.lstrip()
+        steps = parser.parse_steps(doc)

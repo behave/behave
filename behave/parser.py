@@ -26,6 +26,24 @@ def parse_feature(data, language=None, filename=None):
 
     return result
 
+def parse_steps(text, language=None, filename=None):
+    """
+    Parse a number of steps a multi-line text from a scenario.
+    Scenario line with title and keyword is not provided.
+
+    :param text: Multi-line text with steps to parse (as unicode).
+    :param language:  i18n language identifier (optional).
+    :param filename:  Filename (optional).
+    :return: Parsed steps (if successful).
+    """
+    assert isinstance(text, unicode)
+    try:
+        result = Parser(language).parse_steps(text, filename)
+    except ParserError, e:
+        e.filename = filename
+        raise
+    return result
+
 
 class ParserError(Exception):
     def __init__(self, message, line, filename=None):
@@ -324,3 +342,34 @@ class Parser(object):
                                   name)
                 return step
         return None
+
+    def parse_steps(self, text, filename=None):
+        """
+        Parse support for execute_steps() functionality that supports step with:
+          * multiline text
+          * table
+
+        :param text:  Text that contains 0..* steps
+        :return: List of parsed steps (as model.Step objects).
+        """
+        assert isinstance(text, unicode)
+        if not self.language:
+            self.language = u"en"
+        self.reset()
+        self.filename = filename
+        self.statement = model.Scenario(filename, 0, u"scenario", u"")
+        self.state = 'steps'
+
+        for line in text.split("\n"):
+            self.line += 1
+            if not line.strip() and not self.state == 'multiline':
+                # -- SKIP EMPTY LINES, except in multiline string args.
+                continue
+            self.action(line)
+
+        # -- FINALLY:
+        if self.table:
+            self.action_table("")
+        steps = self.statement.steps
+        return steps
+

@@ -16,7 +16,6 @@ from behave import step_registry
 from behave.formatter import formatters
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
-# from behave.compat.os_path import relpath
 
 
 class ContextMaskWarning(UserWarning):
@@ -238,7 +237,7 @@ class Context(object):
                 return True
         return False
 
-    def execute_steps(self, steps):
+    def execute_steps(self, steps_text):
         '''The steps identified in the "steps" text string will be parsed and
         executed in turn just as though they were defined in a feature file.
 
@@ -249,24 +248,22 @@ class Context(object):
 
         Returns boolean False if the steps are not parseable, True otherwise.
         '''
-        assert type(steps) is unicode, "Steps must be unicode."
+        assert type(steps_text) is unicode, "Steps must be unicode."
         try:
             assert self.feature
         except (AttributeError, AssertionError):
             raise ValueError('execute_steps() called outside of a feature '
                              'context')
 
-        for step in steps.strip().split('\n'):
-            step = step.strip()
-            step_obj = self.feature.parser.parse_step(step)
-            if step_obj is None:
-                return False
-            passed = step_obj.run(self._runner, quiet=True)
+        steps = self.feature.parser.parse_steps(steps_text)
+        for step in steps:
+            passed = step.run(self._runner, quiet=True)
             if not passed:
                 # -- ISSUE #96: Provide more substep info to diagnose problem.
-                more = step_obj.error_message
+                step_line = "%s %s" % (step.keyword, step.name)
+                more = step.error_message
                 assert False, \
-                       "Sub-step failed: %s\nSubstep info: %s" % (step, more)
+                    "Sub-step failed: %s\nSubstep info: %s" % (step_line, more)
         return True
 
 
