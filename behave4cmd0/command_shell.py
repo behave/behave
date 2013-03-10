@@ -20,7 +20,7 @@ import shlex
 import codecs
 
 HERE = os.path.dirname(__file__)
-TOP  = os.path.join(HERE, "..", "..")
+TOP  = os.path.join(HERE, "..")
 
 # -----------------------------------------------------------------------------
 # CLASSES:

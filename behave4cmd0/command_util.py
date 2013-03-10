@@ -7,16 +7,34 @@ TODO:
 """
 
 import os.path
+import shutil
+from fnmatch import fnmatch
 
 # -----------------------------------------------------------------------------
 # CONSTANTS:
 # -----------------------------------------------------------------------------
 HERE    = os.path.dirname(__file__)
-WORKDIR = os.path.join(HERE, "..", "..", "__WORKDIR__")
+TOP     = os.path.join(HERE, "..")
+TOPA    = os.path.abspath(TOP)
+WORKDIR = os.path.join(TOP, "__WORKDIR__")
+
 
 # -----------------------------------------------------------------------------
 # UTILITY FUNCTIONS:
 # -----------------------------------------------------------------------------
+def workdir_save_coverage_files(workdir, destdir=None):
+    assert os.path.isdir(workdir)
+    if not destdir:
+        destdir = TOPA
+    if os.path.abspath(workdir) == os.path.abspath(destdir):
+        return  # -- SKIP: Source directory is destination directory (SAME).
+
+    for fname in os.listdir(workdir):
+        if fnmatch(fname, ".coverage.*"):
+            # -- MOVE COVERAGE FILES:
+            sourcename = os.path.join(workdir, fname)
+            shutil.move(sourcename, destdir)
+
 def ensure_directory_exists(dirname):
     """
     Ensures that a directory exits.

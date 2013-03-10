@@ -14,7 +14,6 @@ from behave import given, when, then, step, matchers
 import command_shell
 import command_util
 import os
-import os.path
 import shutil
 from hamcrest import assert_that, equal_to, is_not, contains_string
 
@@ -33,8 +32,17 @@ def step_a_new_working_directory(context):
     """
     Creates a new, empty working directory
     """
+    command_util.ensure_context_resource_exists(context, "workdir", None)
     command_util.ensure_workdir_exists(context)
     shutil.rmtree(context.workdir, ignore_errors=True)
+
+@given(u'I use the current directory as working directory')
+def step_use_curdir_as_working_directory(context):
+    """
+    Uses the current directory as working directory
+    """
+    context.workdir = os.path.abspath(".")
+    command_util.ensure_workdir_exists(context)
 
 @given(u'a file named "{filename}" with')
 def step_a_file_named_filename_with(context, filename):
@@ -69,6 +77,7 @@ def step_i_run_command(context, command):
     """
     command_util.ensure_workdir_exists(context)
     context.command_result = command_shell.run(command, cwd=context.workdir)
+    command_util.workdir_save_coverage_files(context.workdir)
     if False and DEBUG:
         print("XXX run_command: {0}".format(command))
         print("XXX run_command.outout {0}".format(context.command_result.output))
@@ -251,6 +260,20 @@ def step_command_output_should_contain_not_exactly_with_multiline_text(context):
 # -----------------------------------------------------------------------------
 # STEPS FOR: Directories
 # -----------------------------------------------------------------------------
+@step(u'I remove the directory "{directory}"')
+def step_remove_directory(context, directory):
+    path_ = directory
+    if not os.path.isabs(directory):
+        path_ = os.path.join(context.workdir, os.path.normpath(directory))
+    if os.path.isdir(path_):
+        shutil.rmtree(path_, ignore_errors=True)
+    assert_that(not os.path.isdir(path_))
+
+@given(u'I ensure that the directory "{directory}" does not exist')
+def step_given_the_directory_should_not_exist(context, directory):
+    step_remove_directory(directory)
+
+
 @then(u'the directory "{directory}" should exist')
 def step_the_directory_should_exist(context, directory):
     path_ = directory
