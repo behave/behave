@@ -442,9 +442,10 @@ class Runner(object):
             for name in os.listdir(path):
                 if name.endswith('.py'):
                     # -- LOAD STEP DEFINITION:
+                    # Copy the globals to avoid leaking vars to other steps.
                     # Reset to default matcher after each step-definition.
                     # A step-definition may change the matcher 0..N times.
-                    exec_file(os.path.join(path, name), step_globals)
+                    exec_file(os.path.join(path, name), step_globals.copy())
                     matchers.current_matcher = default_matcher
 
         # -- CLEANUP: Clean up the path.
