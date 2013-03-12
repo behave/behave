@@ -205,11 +205,13 @@ class PrettyFormatter(Formatter):
             self.stream.write('\n')
         self.stream.flush()
 
+        # Count the lines required to print the table
         table_width = 7 + 3 * len(table.headings) + sum(max_lengths)
         self.table_lines = len(all_rows) * (1 + table_width // self.display_width)
 
     def doc_string(self, doc_string, strformat):
         triplequotes = self.format('comments').text(u'"""')
+        # Count the lines required to print the docstring
         self.text_lines = 2 + sum([
             (1 + len(line) // self.display_width)
             for line in indent(doc_string, u'      ').splitlines()])
@@ -326,7 +328,7 @@ class PrettyFormatter(Formatter):
         if self.show_source:
             location = unicode(location)
             if timing:
-                location += ' ' + timing
+                location = (location or '') + ' ' + timing
             location = self.indented_text(location, proceed)
             self.stream.write(self.format('comments').text(location))
             line_length += len(location)
