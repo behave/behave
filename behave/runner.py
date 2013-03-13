@@ -134,6 +134,7 @@ class Context(object):
         self._record = {}
         self._origin = {}
         self._mode = self.BEHAVE
+        self.feature = None
 
     def _push(self):
         self._stack.insert(0, {})
@@ -264,13 +265,9 @@ class Context(object):
 
         Returns boolean False if the steps are not parseable, True otherwise.
         '''
-        assert type(steps_text) is unicode, "Steps must be unicode."
-        try:
-            __pychecker__ = "missingattrs=feature"
-            assert self.feature
-        except (AttributeError, AssertionError):
-            raise ValueError('execute_steps() called outside of a feature '
-                             'context')
+        assert isinstance(steps_text, unicode), "Steps must be unicode."
+        if not self.feature:
+            raise ValueError('execute_steps() called outside of feature context')
 
         steps = self.feature.parser.parse_steps(steps_text)
         for step in steps:
@@ -475,7 +472,9 @@ class Runner(object):
                     # -- LOAD STEP DEFINITION:
                     # Reset to default matcher after each step-definition.
                     # A step-definition may change the matcher 0..N times.
-                    exec_file(os.path.join(path, name), step_globals)
+                    # ENSURE: Each step definition has clean globals.
+                    step_module_globals = dict(step_globals)
+                    exec_file(os.path.join(path, name), step_module_globals)
                     matchers.current_matcher = default_matcher
 
         # -- CLEANUP: Clean up the path.
