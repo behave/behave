@@ -22,6 +22,7 @@ IMPROVEMENT:
 
 FIXED:
 
+  * issue #135: Avoid leaking globals between step modules.
   * issue #114: No blank lines when option --no-skipped is used (provided by: florentx).
   * issue #111: Comment following @wip tag results in scenario being ignored
   * issue  #83: behave.__main__:main() Various sys.exit issues
