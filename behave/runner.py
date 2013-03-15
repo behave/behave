@@ -10,7 +10,6 @@ import traceback
 import warnings
 import weakref
 
-import multiprocessing
 import time
 import collections
 
@@ -20,6 +19,12 @@ from behave import step_registry
 from behave.formatter import formatters
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
+
+multiprocessing = None
+try:
+    import multiprocessing
+except ImportError,e:
+    pass
 
 
 class ContextMaskWarning(UserWarning):
@@ -558,6 +563,10 @@ class Runner(object):
             print "ERROR: When using --processes, --parallel-element"
             "option must be set to 'feature' or 'scenario'"
             return 1
+
+        if not multiprocessing:
+            print ("ERROR: Cannot import multiprocessing module"
+            "If you're on python2.5, go get the backport")
 
         self.load_hooks()
         self.load_step_definitions()
