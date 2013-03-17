@@ -588,6 +588,9 @@ class Runner(object):
                 continue
             feature = parser.parse_file(os.path.abspath(filename),
                                         language=self.config.lang)
+            if not feature:
+                continue
+
             self.features.append(feature)
 
         self.joblist_index_queue = multiprocessing.Manager().JoinableQueue()
