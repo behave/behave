@@ -567,8 +567,10 @@ class Runner(object):
             return 1
 
         if not multiprocessing:
-            print ("ERROR: Cannot import multiprocessing module"
-            "If you're on python2.5, go get the backport")
+            print ("ERROR: Cannot import multiprocessing module."
+            " If you're on python2.5, go get the backport")
+            return 1
+
 
         self.load_hooks()
         self.load_step_definitions()
