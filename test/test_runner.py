@@ -10,8 +10,9 @@ import tempfile
 
 from mock import Mock, patch
 from nose.tools import *
+import unittest
 
-from behave import model, runner, step_registry
+from behave import model, parser, runner, step_registry
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
 
@@ -189,6 +190,127 @@ class TestContext(object):
         self.context._push()
         eq_('thing' in self.context, True)
         del self.context.thing
+
+class ExampleSteps(object):
+    text  = None
+    table = None
+
+    @staticmethod
+    def step_passes(context):
+        pass
+
+    @staticmethod
+    def step_fails(context):
+        assert False, "XFAIL"
+
+    @classmethod
+    def step_with_text(cls, context):
+        assert context.text is not None, "REQUIRE: multi-line text"
+        cls.text = context.text
+
+    @classmethod
+    def step_with_table(cls, context):
+        assert context.table, "REQUIRE: table"
+        cls.table = context.table
+
+    @classmethod
+    def register_steps_with(cls, step_registry):
+        STEP_DEFINITIONS = [
+            ("step", "a step passes", cls.step_passes),
+            ("step", "a step fails",  cls.step_fails),
+            ("step", "a step with text",    cls.step_with_text),
+            ("step", "a step with a table",  cls.step_with_table),
+        ]
+        for keyword, string, func in STEP_DEFINITIONS:
+            step_registry.add_definition(keyword, string, func)
+
+class TestContext_ExecuteSteps(unittest.TestCase):
+    """
+    Test the behave.runner.Context.execute_steps() functionality.
+    """
+    step_registry = None
+
+    def setUp(self):
+        runner_ = Mock()
+        self.config = runner_.config = Mock()
+        runner_.config.verbose = False
+        runner_.config.stdout_capture  = False
+        runner_.config.stderr_capture  = False
+        runner_.config.log_capture  = False
+        self.context = runner.Context(runner_)
+        runner_.context = self.context
+        self.context.feature = Mock()
+        self.context.feature.parser = parser.Parser()
+        if not self.step_registry:
+            # -- SETUP ONCE:
+            self.step_registry = step_registry.StepRegistry()
+            ExampleSteps.register_steps_with(self.step_registry)
+        ExampleSteps.text  = None
+        ExampleSteps.table = None
+
+    def test_execute_steps_with_simple_steps(self):
+        doc = u'''
+Given a step passes
+Then a step passes
+'''.lstrip()
+        with patch('behave.step_registry.registry', self.step_registry):
+            result = self.context.execute_steps(doc)
+            eq_(result, True)
+
+    def test_execute_steps_with_failing_step(self):
+        doc = u'''
+Given a step passes
+When a step fails
+Then a step passes
+'''.lstrip()
+        with patch('behave.step_registry.registry', self.step_registry):
+            try:
+                result = self.context.execute_steps(doc)
+            except AssertionError as e:
+                ok_("Sub-step failed: When a step fails" in str(e))
+
+    def test_execute_steps_with_text(self):
+        doc = u'''
+Given a step passes
+When a step with text:
+    """
+    Lorem ipsum
+    Ipsum lorem
+    """
+Then a step passes
+'''.lstrip()
+        with patch('behave.step_registry.registry', self.step_registry):
+            result = self.context.execute_steps(doc)
+            expected_text = "Lorem ipsum\nIpsum lorem"
+            eq_(result, True)
+            eq_(expected_text, ExampleSteps.text)
+
+    def test_execute_steps_with_table(self):
+        doc = u'''
+Given a step with a table:
+    | Name  | Age |
+    | Alice |  12 |
+    | Bob   |  23 |
+Then a step passes
+'''.lstrip()
+        with patch('behave.step_registry.registry', self.step_registry):
+            result = self.context.execute_steps(doc)
+            expected_table = model.Table([u"Name", u"Age"], 0, [
+                    [u"Alice", u"12"],
+                    [u"Bob",   u"23"],
+            ])
+            eq_(result, True)
+            eq_(expected_table, ExampleSteps.table)
+
+    @raises(ValueError)
+    def test_execute_steps_called_without_feature(self):
+        doc = u'''
+Given a passes
+Then a step passes
+'''.lstrip()
+        with patch('behave.step_registry.registry', self.step_registry):
+            self.context.feature = None
+            self.context.execute_steps(doc)
 
 
 class TestRunner(object):

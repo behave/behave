@@ -143,6 +143,7 @@ class Context(object):
         self._record = {}
         self._origin = {}
         self._mode = self.BEHAVE
+        self.feature = None
 
     def _push(self):
         self._stack.insert(0, {})
@@ -246,7 +247,7 @@ class Context(object):
                 return True
         return False
 
-    def execute_steps(self, steps):
+    def execute_steps(self, steps_text):
         '''The steps identified in the "steps" text string will be parsed and
         executed in turn just as though they were defined in a feature file.
 
@@ -257,24 +258,19 @@ class Context(object):
 
         Returns boolean False if the steps are not parseable, True otherwise.
         '''
-        assert type(steps) is unicode, "Steps must be unicode."
-        try:
-            assert self.feature
-        except (AttributeError, AssertionError):
-            raise ValueError('execute_steps() called outside of a feature '
-                             'context')
+        assert isinstance(steps_text, unicode), "Steps must be unicode."
+        if not self.feature:
+            raise ValueError('execute_steps() called outside of feature context')
 
-        for step in steps.strip().split('\n'):
-            step = step.strip()
-            step_obj = self.feature.parser.parse_step(step)
-            if step_obj is None:
-                return False
-            passed = step_obj.run(self._runner, quiet=True)
+        steps = self.feature.parser.parse_steps(steps_text)
+        for step in steps:
+            passed = step.run(self._runner, quiet=True)
             if not passed:
                 # -- ISSUE #96: Provide more substep info to diagnose problem.
-                more = step_obj.error_message
+                step_line = "%s %s" % (step.keyword, step.name)
+                more = step.error_message
                 assert False, \
-                    "Sub-step failed: %s\nSubstep info: %s" % (step, more)
+                    "Sub-step failed: %s\nSubstep info: %s" % (step_line, more)
         return True
 
 
@@ -284,7 +280,10 @@ def exec_file(filename, globals={}, locals=None):
     locals['__file__'] = filename
     if sys.version_info[0] == 3:
         with open(filename) as f:
-            exec(f.read(), globals, locals)
+            # -- FIX issue #80: exec(f.read(), globals, locals)
+            filename2 = os.path.relpath(filename, os.getcwd())
+            code = compile(f.read(), filename2, 'exec')
+            exec(code, globals, locals)
     else:
         execfile(filename, globals, locals)
 
@@ -355,7 +354,7 @@ class Runner(object):
         if self.config.paths:
             if self.config.verbose:
                 print 'Supplied path:', ', '.join('"%s"' % path
-                                                  for path in self.config.paths)
+                       for path in self.config.paths)
             base_dir = self.config.paths[0]
             if base_dir.startswith('@'):
                 # -- USE: behave @features.txt
@@ -453,7 +452,9 @@ class Runner(object):
                     # -- LOAD STEP DEFINITION:
                     # Reset to default matcher after each step-definition.
                     # A step-definition may change the matcher 0..N times.
-                    exec_file(os.path.join(path, name), step_globals)
+                    # ENSURE: Each step definition has clean globals.
+                    step_module_globals = dict(step_globals)
+                    exec_file(os.path.join(path, name), step_module_globals)
                     matchers.current_matcher = default_matcher
 
         # -- CLEANUP: Clean up the path.
@@ -529,7 +530,9 @@ class Runner(object):
 
             feature = parser.parse_file(os.path.abspath(filename),
                                         language=self.config.lang)
-
+            if not feature:
+                # -- CORNER-CASE: Feature file without any feature(s).
+                continue
             self.features.append(feature)
             self.feature = feature
 
@@ -541,7 +544,6 @@ class Runner(object):
                 failed_count += 1
 
             self.formatter.close()
-            stream.write('\n')
             for reporter in self.config.reporters:
                 reporter.feature(feature)
 

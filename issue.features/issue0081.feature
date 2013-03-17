@@ -42,7 +42,7 @@ Feature: Issue #81: Allow defining steps in a separate library
         """
         from step_library42.alice_steps import *
         """
-    When I run "behave -f plain features/use_step_library.feature"
+    When I run "behave --no-timings -f plain features/use_step_library.feature"
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped

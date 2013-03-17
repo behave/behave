@@ -5,9 +5,33 @@ Version History
 Next Version 1.2.2.x - UNRELEASED
 -------------------------------------------------------------------------------
 
+NEWS and CHANGES:
+
+  * NullFormatter provided
+  * model.Row: Changed Ctor parameter ordering, move seldom used to the end.
+  * model.Row: Add methods .get(), .as_dict() and len operator (related to: #27).
+  * Introduce ``behave.compat`` as compatibility layer for Python versions.
+
 IMPROVEMENT:
 
+  * issue #117: context.execute_steps() should also support steps with multi-line text or table
+  * issue #116: SummaryReporter shows list of failing scenarios (provided by: roignac).
   * issue #112: Improvement to AmbiguousStep error diagnostics
+  * issue #74:  django-behave module now available at pypi (done: 2012-10-04).
+  * issue #27:  Row should support .get() to be more dict-like
+
+FIXED:
+
+  * issue #135: Avoid leaking globals between step modules.
+  * issue #114: No blank lines when option --no-skipped is used (provided by: florentx).
+  * issue #111: Comment following @wip tag results in scenario being ignored
+  * issue  #83: behave.__main__:main() Various sys.exit issues
+  * issue  #80: source file names not properly printed with python 3.3.0
+  * issue  #62: --format=json: Background steps are missing (fixed: some time ago).
+
+RESOLVED:
+
+ * issue #98: Summary should include the names of the first X tests that failed (solved by: #116).
 
 
 Version: 1.2.2.16 (2013-02-10)
@@ -27,8 +51,7 @@ FIXED:
   * issue #75: behave @list_of_features.txt is broken.
   * issue #73: current_matcher is not predictable.
   * issue #72: Using GHERKIN_COLORS caused an TypeError.
-  * issue #70: JUnitReporter: Generates invalid UTF-8 in CDATA sections
-               (stdout/stderr output) when ANSI escapes are used.
+  * issue #70: JUnitReporter: Generates invalid UTF-8 in CDATA sections (stdout/stderr output) when ANSI escapes are used.
   * issue #69: JUnitReporter: Fault when processing ScenarioOutlines with failing steps
   * issue #67: JSON formatter cannot serialize tables.
   * issue #66: context.table and context.text are not cleared.
@@ -57,7 +80,7 @@ DUPLICATED:
   * issue #95: Failed test run still returns exit code 0 (same as #84, #64).
   * issue #94: JUnit format does not handle ScenarioOutlines (same as #69).
   * issue #92: Output from --format=plain shows skipped steps in next scenario (same as #35).
-  * issue #34: "behave --version" runs features, but shows no version (DUPLICATES: #30)
+  * issue #34: "behave --version" runs features, but shows no version (same as #30)
 
 
 
