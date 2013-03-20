@@ -266,7 +266,7 @@ Then a step passes
         with patch('behave.step_registry.registry', self.step_registry):
             try:
                 result = self.context.execute_steps(doc)
-            except AssertionError as e:
+            except AssertionError, e:  # -- PY26-CLEANUP-MARK
                 ok_("Sub-step failed: When a step fails" in str(e))
 
     def test_execute_steps_with_text(self):
