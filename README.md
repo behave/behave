@@ -117,6 +117,7 @@ If I'm correct about the above, then be sure you use "--format plain" in your au
 If you don't, the default behavior is to use the pretty(colorful) output. While that looks nice when you're running and watching it in the terminal, the control-chars that behave uses to change text color on your terminal will look _CRAZY_ in your log files. So if you're still debugging your test in the terminal, default pretty format is okay. When you're ready to schedule the job in some kinda automation(like I am with jenkins ci), add "--format plain" so your log files are readable.  
 
 Ultimately this is probably the minimal way you want to run it most of the time:
+
 		behave --processes 4 --parallel-element scenario --format plain --show-timings --logging-level INFO
 
 
