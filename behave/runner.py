@@ -620,7 +620,7 @@ class Runner(object):
 
         proc_count = int(getattr(self.config, 'proc_count'))
         print ("INFO: {0} scenario(s) and {1} feature(s) queued for consideration by"
-               "{2} workers. Some may be skipped if the -t option was given..."
+               " {2} workers. Some may be skipped if the -t option was given..."
                .format(scenario_count, feature_count, proc_count))
         time.sleep(2)
 
