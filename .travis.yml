@@ -6,6 +6,9 @@ python:
   - 2.7
   - pypy
 
-install: pip install --use-mirrors mock nose .
+install: pip install --use-mirrors -q mock nose PyHamcrest .
 
-script: nosetests
+script:
+ - nosetests
+ - python setup.py -q install
+ - behave issue.features/ -f progress2
