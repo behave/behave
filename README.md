@@ -90,7 +90,7 @@ I broke ALL THE THINGS!
 * The -t, -k, -i, -e, --no-capture, --show-timings and --format flags are the only ones I'm confident still work properly. Feel free to try other flags, maybe they
 work or maybe they don't. Maybe they fail silently in mysterious & spectacular ways. Who knows.
 
-* The "Background" element will probably run in parallel with all the scenarios, so you can't have tests that depend on the background to run first. If you _really_ need this, I will suggest moving all your Background elements into their own feature file then running behave on *only* the background.feature file, *then* run behave-parallel on the rest of your feature files that only contain scenarios and scenario outlines.
+* The "Background" element will run before each scenario runs, but in parallel. So if you have 2 workers and 2 scenarios in queue each worker will run its own instance of Background then run the scenario assigned to it.
 
 * I patched out the warnings that Context gives when user code overrides its context; it produced too much noise because of this whole parallel thing. It really shouldn't matter for parallelism. Since you've designed your scenarios to run in parallel you shouldn't even need to be writing anything to context that would be read by a different scenario. Set what you need by creating features/environment.py def before_all(context): and set whatever you need inside context(like say, URLs, usernames, passwords,etc). before_all(context) will run before any scenario so you can rely on that.
 	 
