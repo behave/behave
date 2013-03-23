@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import with_statement
 
 from behave import model, i18n
@@ -22,6 +24,24 @@ def parse_feature(data, language=None, filename=None):
         e.filename = filename
         raise
 
+    return result
+
+def parse_steps(text, language=None, filename=None):
+    """
+    Parse a number of steps a multi-line text from a scenario.
+    Scenario line with title and keyword is not provided.
+
+    :param text: Multi-line text with steps to parse (as unicode).
+    :param language:  i18n language identifier (optional).
+    :param filename:  Filename (optional).
+    :return: Parsed steps (if successful).
+    """
+    assert isinstance(text, unicode)
+    try:
+        result = Parser(language).parse_steps(text, filename)
+    except ParserError, e:
+        e.filename = filename
+        raise
     return result
 
 
@@ -74,6 +94,7 @@ class Parser(object):
         for line in data.split('\n'):
             self.line += 1
             if not line.strip() and not self.state == 'multiline':
+                # -- SKIP EMPTY LINES, except in multiline string args.
                 continue
             self.action(line)
 
@@ -81,7 +102,8 @@ class Parser(object):
             self.action_table('')
 
         feature = self.feature
-        feature.parser = self
+        if feature:
+            feature.parser = self
         self.reset()
         return feature
 
@@ -109,9 +131,9 @@ class Parser(object):
         line = line.strip()
 
         if line.startswith('@'):
-            self.tags.extend([model.Tag(tag.strip(), self.line)
-                              for tag in line[1:].split('@')])
+            self.tags.extend(self.parse_tags(line))
             return True
+
         feature_kwd = self.match_keyword('feature', line)
         if feature_kwd:
             name = line[len(feature_kwd) + 1:].strip()
@@ -126,8 +148,7 @@ class Parser(object):
         line = line.strip()
 
         if line.startswith('@'):
-            self.tags.extend([model.Tag(tag.strip(), self.line)
-                              for tag in line[1:].split('@')])
+            self.tags.extend(self.parse_tags(line))
             return True
 
         background_kwd = self.match_keyword('background', line)
@@ -180,8 +201,7 @@ class Parser(object):
             return True
 
         if line.startswith('@'):
-            self.tags.extend([model.Tag(tag.strip(), self.line)
-                              for tag in line[1:].split('@')])
+            self.tags.extend(self.parse_tags(line))
             return True
 
         scenario_kwd = self.match_keyword('scenario', line)
@@ -271,6 +291,31 @@ class Parser(object):
                 return alias
         return False
 
+    def parse_tags(self, line):
+        '''
+        Parse a line with one or more tags:
+
+          * A tag starts with the AT sign.
+          * A tag consists of one word without whitespace chars.
+          * Multiple tags are separated with whitespace chars
+          * End-of-line comment is stripped.
+
+        :param line:   Line with one/more tags to process.
+        :raise ParseError: If syntax error is detected.
+        '''
+        assert line.startswith('@')
+        tags = []
+        for word in line.split():
+            if word.startswith('@'):
+                tags.append(model.Tag(word[1:], self.line))
+            elif word.startswith('#'):
+                break   # -- COMMENT: Skip rest of line.
+            else:
+                # -- BAD-TAG: Abort here.
+                raise ParserError("tag: %s (line: %s)" % (word, line),
+                                  self.line, self.filename)
+        return tags
+
     def parse_step(self, line):
         for step_type in ('given', 'when', 'then', 'and', 'but'):
             for kw in self.keywords[step_type]:
@@ -297,3 +342,34 @@ class Parser(object):
                                   name)
                 return step
         return None
+
+    def parse_steps(self, text, filename=None):
+        """
+        Parse support for execute_steps() functionality that supports step with:
+          * multiline text
+          * table
+
+        :param text:  Text that contains 0..* steps
+        :return: List of parsed steps (as model.Step objects).
+        """
+        assert isinstance(text, unicode)
+        if not self.language:
+            self.language = u"en"
+        self.reset()
+        self.filename = filename
+        self.statement = model.Scenario(filename, 0, u"scenario", u"")
+        self.state = 'steps'
+
+        for line in text.split("\n"):
+            self.line += 1
+            if not line.strip() and not self.state == 'multiline':
+                # -- SKIP EMPTY LINES, except in multiline string args.
+                continue
+            self.action(line)
+
+        # -- FINALLY:
+        if self.table:
+            self.action_table("")
+        steps = self.statement.steps
+        return steps
+

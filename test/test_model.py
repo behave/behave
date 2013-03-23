@@ -6,7 +6,7 @@ from mock import Mock, patch
 from nose.tools import *
 
 from behave import model
-
+from behave.compat.collections import OrderedDict
 
 class TestFeatureRun(object):
     def setUp(self):
@@ -133,6 +133,27 @@ class TestScenarioRun(object):
 
         assert scenario.run(self.runner)
 
+        self.context._set_root_attribute.assert_called_with('failed', True)
+
+    def test_undefined_step_causes_failed_scenario_status(self):
+        self.config.stdout_capture = False
+        self.config.log_capture = False
+        self.config.tags.check.return_value = True
+
+        passed_step = Mock()
+        undefined_step = Mock()
+
+        steps = [passed_step, undefined_step]
+        scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
+                                  steps=steps)
+        passed_step.run.return_value = True
+        passed_step.status = 'passed'
+        undefined_step.run.return_value = False
+        undefined_step.status = 'undefined'
+
+        assert scenario.run(self.runner)
+        eq_(undefined_step.status, 'undefined')
+        eq_(scenario.status, 'failed')
         self.context._set_root_attribute.assert_called_with('failed', True)
 
     def test_skipped_steps_set_step_status_and_scenario_status_if_not_set(self):
@@ -462,7 +483,7 @@ class TestTableModel(object):
 
     def test_table_row_by_index(self):
         for i in range(3):
-            eq_(self.table[i], model.Row(self.HEAD, None, self.DATA[i], 0))
+            eq_(self.table[i], model.Row(self.HEAD, self.DATA[i], 0))
 
     def test_table_row_name(self):
         eq_(self.table[0]['type of stuff'], 'fluffy')
@@ -480,3 +501,54 @@ class TestTableModel(object):
 
     def test_table_row_items(self):
         eq_(self.table[0].items(), zip(self.HEAD, self.DATA[0]))
+
+class TestModelRow(object):
+    HEAD = [u'name',  u'sex',    u'age']
+    DATA = [u'Alice', u'female', u'12']
+
+    def setUp(self):
+        self.row = model.Row(self.HEAD, self.DATA, 0)
+
+    def test_len(self):
+        eq_(len(self.row), 3)
+
+    def test_getitem_with_valid_colname(self):
+        eq_(self.row['name'], u'Alice')
+        eq_(self.row['sex'],  u'female')
+        eq_(self.row['age'],  u'12')
+
+    @raises(KeyError)
+    def test_getitem_with_unknown_colname(self):
+        self.row['__UNKNOWN_COLUMN__']
+
+    def test_getitem_with_valid_index(self):
+        eq_(self.row[0], u'Alice')
+        eq_(self.row[1], u'female')
+        eq_(self.row[2], u'12')
+
+    @raises(IndexError)
+    def test_getitem_with_invalid_index(self):
+        colsize = len(self.row)
+        eq_(colsize, 3)
+        self.row[colsize]
+
+    def test_get_with_valid_colname(self):
+        eq_(self.row.get('name'), u'Alice')
+        eq_(self.row.get('sex'),  u'female')
+        eq_(self.row.get('age'),  u'12')
+
+    def test_getitem_with_unknown_colname_should_return_default(self):
+        eq_(self.row.get('__UNKNOWN_COLUMN__', 'XXX'), u'XXX')
+
+    def test_as_dict(self):
+        data1 = self.row.as_dict()
+        data2 = dict(self.row.as_dict())
+        assert isinstance(data1, dict)
+        assert isinstance(data2, dict)
+        assert isinstance(data1, OrderedDict)
+        # -- REQUIRES: Python2.7 or ordereddict installed.
+        # assert not isinstance(data2, OrderedDict)
+        eq_(data1, data2)
+        eq_(data1['name'], u'Alice')
+        eq_(data1['sex'],  u'female')
+        eq_(data1['age'],  u'12')
