@@ -53,14 +53,14 @@ Feature: Issue #139: Wrong steps seem to be executed when using --wip
         """
     When I run "behave -w -f plain features/issue0139_example.feature"
     Then it should pass
-    And the command output should not contain:
+    And the command output should contain:
         """
         Feature: Bug in wip/behave -w
-           Scenario: This is strange
-           Scenario: Demonstrate bug
-               Given why on earth would ... passed
-                When I see this step at all ... passed
-                Then I should not see a failure here ... passed
+          Scenario: This is strange
+          Scenario: Demonstrate bug
+            When I run a test step ... passed
+            And I run some other test step ... passed
+            Then I should not see a failure here ... passed
         """
 
 
