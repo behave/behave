@@ -208,7 +208,7 @@ class Feature(TagStatement, Replayable):
         # run this feature if the tags say to for itself or any one of its
         # scenarios
         run_feature = runner.config.tags.check(self.tags)
-        for scenario in self:
+        for scenario in sorted(self):
             tags = scenario.tags
             run_feature = run_feature or runner.config.tags.check(tags)
 

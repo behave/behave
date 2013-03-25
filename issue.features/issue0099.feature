@@ -121,10 +121,10 @@ Feature: Issue #99: Layout variation "a directory containing your feature files"
         """
     And the command output should contain:
         """
-        Feature: Charly
-          Scenario:
-            When a step passes ... passed
         Feature: Alice
           Scenario:
             Given a step passes ... passed
+        Feature: Charly
+          Scenario:
+            When a step passes ... passed
         """
