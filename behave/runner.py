@@ -480,7 +480,8 @@ class Runner(object):
         for path in self.config.paths:
             if os.path.isdir(path):
                 for dirpath, dirnames, filenames in os.walk(path):
-                    for filename in filenames:
+                    dirnames.sort()
+                    for filename in sorted(filenames):
                         if filename.endswith('.feature'):
                             files.append(os.path.join(dirpath, filename))
             elif path.startswith('@'):

@@ -4,6 +4,10 @@ Version History
 Version: 1.2.3a19 (unreleased)
 -------------------------------------------------------------------------------
 
+IMPROVEMENT:
+
+  * issue #103: sort feature file by name in a given directory (provided by: gurneyalex).
+
 FIXED:
 
   * issue #141: Don't check for full package in issue 112 (provided by: roignac).
