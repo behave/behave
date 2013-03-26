@@ -59,6 +59,6 @@ Feature: Issue #112: Improvement to AmbiguousStep error
     Then it should fail
     And the command output should contain:
         """
-        behave.step_registry.AmbiguousStep: "I buy {number:n} {items:w}" has already been defined in
+        AmbiguousStep: "I buy {number:n} {items:w}" has already been defined in
           existing step: "I buy {amount} {product}" (features/steps/bad_steps.py:4)
         """
