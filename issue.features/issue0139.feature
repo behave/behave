@@ -2,8 +2,7 @@
 @not_reproducible
 Feature: Issue #139: Wrong steps seem to be executed when using --wip
 
-  | NOT-REPRODUCIBLE:
-  | MAYBE RELATED-TO: issue #35
+  | RELATED-TO: issue #35
   | behave --format=plain --tags @one" seems to execute right scenario w/ wrong steps
   |
   | If you have a feature file with two scenarios where the second is tagged
@@ -12,7 +11,8 @@ Feature: Issue #139: Wrong steps seem to be executed when using --wip
 
 
   Scenario:
-    Given a file named "features/steps/steps.py" with:
+    Given a new working directory
+    And a file named "features/steps/steps.py" with:
         """
         from behave import given, when, then, step
 
@@ -51,7 +51,7 @@ Feature: Issue #139: Wrong steps seem to be executed when using --wip
                 And I run some other test step
                 Then I should not see a failure here
         """
-    When I run "behave -w -f plain features/issue0139_example.feature"
+    When I run "behave -w -f plain -T features/issue0139_example.feature"
     Then it should pass
     And the command output should contain:
         """
