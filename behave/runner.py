@@ -504,7 +504,7 @@ class Runner(object):
         context = self.context = Context(self)
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
         self.setup_capture()
-        stream = self.config.output
+        streams = self.config.outputs
         failed = False
         failed_count = 0
 
@@ -522,14 +522,18 @@ class Runner(object):
             self.features.append(feature)
             self.feature = feature
 
-            self.formatter = formatters.get_formatter(self.config, stream)
-            self.formatter.uri(filename)
+            self.formatters = formatters.get_formatter(self.config, streams)
+            for formatter in self.formatters:
+                formatter.uri(filename)
+
 
             failed = feature.run(self)
             if failed:
                 failed_count += 1
 
-            self.formatter.close()
+            for formatter in self.formatters:
+                formatter.close()
+
             for reporter in self.config.reporters:
                 reporter.feature(feature)
 
