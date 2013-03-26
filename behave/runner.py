@@ -619,8 +619,8 @@ class Runner(object):
                         scenario_count += 1
 
         proc_count = int(getattr(self.config, 'proc_count'))
-        print ("INFO: {0} scenario(s) and {1} feature(s) queued for consideration by"
-               " {2} workers. Some may be skipped if the -t option was given..."
+        print ("INFO: {0} scenario(s) and {1} feature(s) queued for consideration by "
+               "{2} workers. Some may be skipped if the -t option was given..."
                .format(scenario_count, feature_count, proc_count))
         time.sleep(2)
 
@@ -691,24 +691,13 @@ class Runner(object):
     def generatereport(self, proc_number, current_job, start_time, end_time, writebuf):
         if not writebuf.pos:
             return ""
-        reportheader = start_time + "|WORKER" + str(proc_number) + " START|"
 
-        if current_job.type == 'feature':
-            reportheader += "Feature:" + \
-                current_job.name + "|" + current_job.filename
-        else:
-            reportheader += "Scenario:" + current_job.name + "|Feature:" + \
-                current_job.feature.name + "|" + current_job.filename
+        reportheader = start_time + "|WORKER" + str(proc_number) + " START|" + \
+        "status:" + current_job.status + "|" + current_job.filename + "\n"
 
-        reportfooter = end_time + "|WORKER" + str(proc_number) + " END|"
-
-        if current_job.type == 'feature':
-            reportfooter += "Feature:" + current_job.name + "|status:" + current_job.status + "|" +\
-                current_job.filename + "|Duration:" + str(current_job.duration)
-        else:
-            reportfooter += "Scenario:" + current_job.name + "|Feature:" + current_job.feature.name + "|" +\
-                "status:" + current_job.status + "|" + current_job.filename +\
-                "|Duration:" + str(current_job.duration)
+        reportfooter = end_time + "|WORKER" + str(proc_number) + " END|" + \
+        "status:" + current_job.status + "|" + current_job.filename + \
+        "|Duration:" + str(current_job.duration)
 
         if self.config.format[0] == 'plain' and len(current_job.tags):
             tags = "@"
