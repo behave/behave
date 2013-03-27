@@ -1,24 +1,128 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Utility script to create a pypi-like directory structure (localpi)
+from a number of Python packages in a directory of the local filesystem.
 
-from __future__ import with_statement
+  DIRECTORY STRUCTURE (before):
+      +-- downloads/
+           +-- alice-1.0.zip
+           +-- alice-1.0.tar.gz
+           +-- bob-1.3.0.tar.gz
+           +-- bob-1.4.2.tar.gz
+           +-- charly-1.0.tar.bz2
+
+  DIRECTORY STRUCTURE (afterwards):
+      +-- downloads/
+           +-- simple/
+           |      +-- alice/index.html   --> ../../alice-*.*
+           |      +-- bob/index.html     --> ../../bob-*.*
+           |      +-- charly/index.html  --> ../../charly-*.*
+           |      +-- index.html  --> alice/, bob/, ...
+           +-- alice-1.0.zip
+           +-- alice-1.0.tar.gz
+           +-- bob-1.3.0.tar.gz
+           +-- bob-1.4.2.tar.gz
+           +-- charly-1.0.tar.bz2
+
+USAGE EXAMPLE:
+
+    mkdir -p /tmp/downloads
+    pip install --download=/tmp/downloads argparse Jinja2
+    make_localpi.py /tmp/downloads
+    pip install --index-url=file:///tmp/downloads/simple argparse Jinja2
+
+ALTERNATIVE:
+
+    pip install --download=/tmp/downloads argparse Jinja2
+    pip install --find-links=/tmp/downloads --no-index argparse Jinja2
+"""
+
+from __future__ import with_statement, print_function
 from fnmatch import fnmatch
 import os.path
 import shutil
 import sys
-import textwrap
+
 
 __author__  = "Jens Engel"
-__version__ = "0.1"
-
+__version__ = "0.2"
+__license__ = "BSD"
+__copyright__ = "(c) 2013 by Jens Engel"
 
 
 class Package(object):
     """
-    Helper class to create pypi like directory structure in local filesystem.
+    Package entity that keeps track of:
+      * one or more versions of this package
+      * one or more archive types
     """
-    PATTERNS = [ "*.zip", "*.7z", "*.tar.gz", "*.tar.bz2" ]
-    HTML_INDEX_TEMPLATE = """\
+    PATTERNS = [
+        "*.egg", "*.exe", "*.whl", "*.zip", "*.tar.gz", "*.tar.bz2", "*.7z"
+    ]
+
+    def __init__(self, filename, name=None):
+        if not name and filename:
+            name = self.get_pkgname(filename)
+        self.name  = name
+        self.files = []
+        if filename:
+            self.files.append(filename)
+
+    @property
+    def versions(self):
+        versions_info = [ self.get_pkgversion(p) for p in self.files ]
+        return versions_info
+
+    @classmethod
+    def get_pkgversion(cls, filename):
+        parts = os.path.basename(filename).rsplit("-", 1)
+        version = ""
+        if len(parts) >= 2:
+            version = parts[1]
+        for pattern in cls.PATTERNS:
+            assert pattern.startswith("*")
+            suffix = pattern[1:]
+            if version.endswith(suffix):
+                version = version[:-len(suffix)]
+                break
+        return version
+
+    @staticmethod
+    def get_pkgname(filename):
+        name = os.path.basename(filename).rsplit("-", 1)[0]
+        if name.startswith("http%3A") or name.startswith("https%3A"):
+            # -- PIP DOWNLOAD-CACHE PACKAGE FILE NAME SCHEMA:
+            pos = name.rfind("%2F")
+            name = name[pos+3:]
+        return name
+
+    @staticmethod
+    def splitext(filename):
+        fname = os.path.splitext(filename)[0]
+        if fname.endswith(".tar"):
+            fname = os.path.splitext(fname)[0]
+        return fname
+
+    @classmethod
+    def isa(cls, filename):
+        basename = os.path.basename(filename)
+        if basename.startswith("."):
+            return False
+        for pattern in cls.PATTERNS:
+            if fnmatch(filename, pattern):
+                return True
+        return False
+
+
+def make_index_for(package, index_dir, verbose=True):
+    """
+    Create an 'index.html' for one package.
+
+    :param package:   Package object to use.
+    :param index_dir: Where 'index.html' should be created.
+    """
+    index_template = """\
 <html>
 <head><title>{title}</title></head>
 <body>
@@ -29,60 +133,44 @@ class Package(object):
 </body>
 </html>
 """
-    HTML_ITEM_TEMPLATE = '<li><a href="{package_url}">{package_name}</a></li>'
+    item_template = '<li><a href="{1}">{0}</a></li>'
+    index_filename = os.path.join(index_dir, "index.html")
+    if not os.path.isdir(index_dir):
+        os.makedirs(index_dir)
 
-    def __init__(self, filename, name=None):
-        if not name and filename:
-            name = self.get_pkgname(filename)
-        self.name  = name
-        self.files = []
-        if filename:
-            self.files.append(filename)
+    parts = []
+    for pkg_filename in package.files:
+        pkg_name = os.path.basename(pkg_filename)
+        if pkg_name == "index.html":
+            # -- ROOT-INDEX:
+            pkg_name = os.path.basename(os.path.dirname(pkg_filename))
+        else:
+            pkg_name = package.splitext(pkg_name)
+        pkg_relpath_to = os.path.relpath(pkg_filename, index_dir)
+        parts.append(item_template.format(pkg_name, pkg_relpath_to))
 
-    @staticmethod
-    def get_pkgname(filename):
-        return os.path.basename(filename).rsplit("-", 1)[0]
+    if verbose:
+        root_index = not Package.isa(package.files[0])
+        if root_index:
+            info = "with %d package(s)" % len(package.files)
+        else:
+            package_versions = sorted(set(package.versions))
+            info = ", ".join(reversed(package_versions))
+        message = "%-30s  %s" % (package.name, info)
+        print(message)
 
-    @classmethod
-    def isa(cls, filename):
-        basename = os.path.basename(filename)
-        for pattern in cls.PATTERNS:
-            if basename.startswith("."):
-                return False
-            elif fnmatch(filename, pattern):
-                return True
-        return False
-
-    def make_index(self, index_dir):
-        index_filename = os.path.join(index_dir, "index.html")
-        if not os.path.isdir(index_dir):
-            os.makedirs(index_dir)
-
-        parts = []
-        for pkg_filename in self.files:
-            pkg_name = os.path.basename(pkg_filename)
-            if pkg_name == "index.html":
-                pkg_name = os.path.basename(os.path.dirname(pkg_filename))
-            else:
-                pkg_name = os.path.splitext(pkg_name)[0]
-                if pkg_name.endswith(".tar"):
-                    pkg_name = os.path.splitext(pkg_name)[0]
-            pkg_relpath  = os.path.relpath(pkg_filename, index_dir)
-            item = self.HTML_ITEM_TEMPLATE.format(
-                    package_name=pkg_name, package_url=pkg_relpath)
-            parts.append(item)
-
-        with open(index_filename, "w") as f:
-            text = self.HTML_INDEX_TEMPLATE.format(
-                            title=self.name, packages= "\n".join(parts))
-            f.write(textwrap.dedent(text).strip())
-            f.close()
+    with open(index_filename, "w") as f:
+        packages = "\n".join(parts)
+        text = index_template.format(title=package.name, packages=packages)
+        f.write(text.strip())
+        f.close()
 
 
-def make_localpi(download_dir):
+def make_package_index(download_dir):
     """
     Create a pypi server like file structure below download directory.
 
+    :param download_dir:    Download directory with packages.
 
     EXAMPLE BEFORE:
       +-- downloads/
@@ -98,6 +186,7 @@ def make_localpi(download_dir):
            |      +-- alice/index.html   --> ../../alice-*.*
            |      +-- bob/index.html     --> ../../bob-*.*
            |      +-- charly/index.html  --> ../../charly-*.*
+           |      +-- index.html  --> alice/index.html, bob/index.html, ...
            +-- alice-1.0.zip
            +-- alice-1.0.tar.gz
            +-- bob-1.3.0.tar.gz
@@ -112,39 +201,40 @@ def make_localpi(download_dir):
         shutil.rmtree(pkg_rootdir, ignore_errors=True)
     os.mkdir(pkg_rootdir)
 
-    last_package = None
+    # -- STEP: Collect all packages.
+    package_map = {}
     packages = []
     for filename in sorted(os.listdir(download_dir)):
         if not Package.isa(filename):
             continue
         pkg_filepath = os.path.join(download_dir, filename)
-        package = Package(pkg_filepath)
-        if last_package:
-            if package.name == last_package.name:
-                # -- COLLECT SAME PACKAGE (other variant/version):
-                last_package.files.append(pkg_filepath)
-                continue
-            else:
-                # -- OTHER PACKAGE DETECTED: Process last package.
-                index_dir = os.path.join(pkg_rootdir, last_package.name)
-                last_package.make_index(index_dir)
-                packages.append(last_package)
-        last_package = package
+        package_name = Package.get_pkgname(pkg_filepath)
+        package = package_map.get(package_name, None)
+        if not package:
+            # -- NEW PACKAGE DETECTED: Store/register package.
+            package = Package(pkg_filepath)
+            package_map[package.name] = package
+            packages.append(package)
+        else:
+            # -- SAME PACKAGE: Collect other variant/version.
+            package.files.append(pkg_filepath)
 
-    if last_package:
-        # -- FINALLY: Process last package.
-        index_dir = os.path.join(pkg_rootdir, last_package.name)
-        last_package.make_index(index_dir)
-        packages.append(last_package)
+    # -- STEP: Make local PYTHON PACKAGE INDEX.
+    root_package = Package(None, "Python Package Index")
+    root_package.files = [ os.path.join(pkg_rootdir, pkg.name, "index.html")
+                           for pkg in packages ]
+    make_index_for(root_package, pkg_rootdir)
+    for package in packages:
+        index_dir = os.path.join(pkg_rootdir, package.name)
+        make_index_for(package, index_dir)
 
-    # -- FINALLY:
-    package = Package(None, "Local package index (localpi)")
-    package.files = [ os.path.join(pkg_rootdir, pkg.name, "index.html")
-                      for pkg in packages ]
-    package.make_index(pkg_rootdir)
 
 # -----------------------------------------------------------------------------
 # MAIN:
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
-    make_localpi(sys.argv[1])
+    if len(sys.argv) != 2:
+        print("USAGE: %s DOWNLOAD_DIR" % os.path.basename(sys.argv[0]))
+        print(__doc__)
+        sys.exit(1)
+    make_package_index(sys.argv[1])
