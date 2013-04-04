@@ -10,6 +10,7 @@ IMPROVEMENT:
 
 FIXED:
 
+  * issue #145: before_feature/after_feature should not be skipped (provided by: florentx).
   * issue #141: Don't check for full package in issue 112 (provided by: roignac).
   
 
