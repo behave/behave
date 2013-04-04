@@ -209,7 +209,7 @@ class Feature(TagStatement, Replayable):
         # scenarios
         run_feature = runner.config.tags.check(self.tags)
         for scenario in self:
-            tags = scenario.tags
+            tags = self.tags + scenario.tags
             run_feature = run_feature or runner.config.tags.check(tags)
 
         if run_feature or runner.config.show_skipped:

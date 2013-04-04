@@ -43,6 +43,7 @@ class TestFeatureRun(object):
     def test_run_runs_scenarios(self):
         scenarios = [Mock(), Mock()]
         for scenario in scenarios:
+            scenario.tags = []
             scenario.run.return_value = False
 
         self.config.tags.check.return_value = True
