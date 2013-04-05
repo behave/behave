@@ -9,7 +9,7 @@ Feature: Issue #145: before_feature/after_feature should not be skipped
   @setup
   Scenario: Setup
     Given a new working directory
-    And a file named "features/steps/passing_steps.py" with:
+    And a file named "features/steps/steps.py" with:
         """
         from behave import step
 
@@ -47,14 +47,8 @@ Feature: Issue #145: before_feature/after_feature should not be skipped
         1 scenario passed, 0 failed, 0 skipped
         3 steps passed, 0 failed, 0 skipped, 0 undefined
         """
-    And the command output should contain:
-        """
-        hooks.before_feature: Feature-145 called.
-        """
-    And the command output should contain:
-        """
-        hooks.after_feature: Feature-145 called.
-        """
+    And the behave hook "before_feature" was called
+    And the behave hook "after_feature" was called
 
   Scenario: Select @feature tag and @scenario tag (logical-and, fails if not fixed)
     When I run "behave -f plain -T --tags=@feature --tags=@scenario features/issue0145_example.feature"
@@ -64,12 +58,6 @@ Feature: Issue #145: before_feature/after_feature should not be skipped
         1 scenario passed, 0 failed, 0 skipped
         3 steps passed, 0 failed, 0 skipped, 0 undefined
         """
-    And the command output should contain:
-        """
-        hooks.before_feature: Feature-145 called.
-        """
-    And the command output should contain:
-        """
-        hooks.after_feature: Feature-145 called.
-        """
+    And the behave hook "before_feature" was called
+    And the behave hook "after_feature" was called
 
