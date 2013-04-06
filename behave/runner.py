@@ -5,6 +5,7 @@ from __future__ import with_statement
 import contextlib
 import os.path
 import StringIO
+import types
 import sys
 import traceback
 import warnings
@@ -280,7 +281,7 @@ def exec_file(filename, globals={}, locals=None):
 
 def path_getrootdir(path):
     """
-    Extract rootdir from in a platform independent way.
+    Extract rootdir from path in a platform independent way.
 
     POSIX-PATH EXAMPLE:
         rootdir = path_getrootdir("/foo/bar/one.feature")
@@ -577,3 +578,27 @@ class Runner(object):
     def teardown_capture(self):
         if self.config.log_capture:
             self.log_capture.abandon()
+
+
+def make_undefined_step_snippet(step, language=None):
+    '''
+    Helper function to create an undefined-step snippet for a step.
+
+    :param step: Step to use (as Step object or step text).
+    :param language: i18n language, optionally needed for step text parsing.
+    :return: Undefined-step snippet (as string).
+    '''
+    if isinstance(step, types.StringTypes):
+        step_text = step
+        steps = parser.parse_steps(step_text, language=language)
+        step  = steps[0]
+        assert step, "ParseError: %s" % step_text
+    prefix = u""
+    if sys.version_info[0] == 2:
+        prefix = u"u"
+
+    # snippet  = u"@"+ step.step_type +"("+ prefix + step.name + "')"
+    # snippet += u"\ndef impl(context):\n    assert False\n\n"
+    schema = u"@%s(%s'%s')\ndef impl(context):\n    assert False\n\n"
+    snippet = schema % (step.step_type, prefix, step.name)
+    return snippet
