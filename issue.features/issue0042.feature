@@ -1,8 +1,13 @@
 @issue
 Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into account of the tags fltering
 
-  As I user
-  I want that missing steps are reported only once.
+  As a user
+  I want that all undefined steps are reported,
+  not only just the first one in a scenario.
+
+  In addition, all known steps after the first undefined step in a scenario
+  should be marked as skipped (even failing ones).
+
 
   Background: Test Setup
     Given a new working directory
@@ -23,7 +28,7 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
           assert context.name == name
       """
 
-  Scenario: Missing one step
+  Scenario: One undefined step in a scenario
     Given a file named "features/issue42_missing1.feature" with:
       """
       Feature: Missing Given-Step in a Scenario
@@ -32,7 +37,7 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
           When  I enter a "Alice"
           Then  the name is "Alice"
       """
-    When I run "behave -c -f plain features/issue42_missing1.feature"
+    When I run "behave -f plain features/issue42_missing1.feature"
     Then it should fail with:
       """
       0 steps passed, 0 failed, 2 skipped, 1 undefined
@@ -45,17 +50,17 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
           assert False
       """
 
-  Scenario: Missing two steps
+  Scenario: Two undefined steps in a scenario
     Given a file named "features/issue42_missing2.feature" with:
       """
-      Feature: Missing Given and When steps in a Scenario Outline
+      Feature: Missing Given and When steps in a Scenario
         Scenario:
           Given an unknown step
           When  another unknown step
            And  I enter a "Alice"
           Then  the name is "Alice"
       """
-    When I run "behave -c -f plain features/issue42_missing2.feature"
+    When I run "behave -f plain features/issue42_missing2.feature"
     Then it should fail with:
       """
       0 steps passed, 0 failed, 2 skipped, 2 undefined
@@ -72,7 +77,7 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
           assert False
       """
 
-  Scenario: Missing two steps with passes
+  Scenario: Two undefined steps in the middle with passing steps
     Given a file named "features/issue42_missing3.feature" with:
       """
       Feature: Missing 2 When steps after passing step
@@ -82,7 +87,7 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
           And  another unknown step
           Then the name is "Alice"
       """
-    When I run "behave -c -f plain features/issue42_missing3.feature"
+    When I run "behave -f plain features/issue42_missing3.feature"
     Then it should fail with:
       """
       1 step passed, 0 failed, 1 skipped, 2 undefined
@@ -99,7 +104,7 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
           assert False
       """
 
-  Scenario: Missing two steps after fails
+  Scenario: Undefined steps are detected if they occur after a failing step
     Given a file named "features/issue42_missing4.feature" with:
       """
       Feature: Missing 2 When steps after passing step
@@ -109,12 +114,12 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
           And  an unknown step
           And  another unknown step
       """
-    When I run "behave -c -f plain features/issue42_missing4.feature"
+    When I run "behave -f plain features/issue42_missing4.feature"
     Then it should fail with:
       """
-      1 step passed, 1 failed, 2 skipped, 0 undefined
+      1 step passed, 1 failed, 0 skipped, 2 undefined
       """
-    And the command output should not contain:
+    And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
       @then(u'an unknown step')
@@ -126,8 +131,7 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
           assert False
       """
 
-  @tag
-  Scenario: Missing two steps before fails
+  Scenario: Failing step after first undefined step should be marked as skipped
     Given a file named "features/issue42_missing4.feature" with:
       """
       Feature: Missing 2 When steps after passing step
@@ -137,7 +141,7 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
           Then the name is "Bob"
           And  another unknown step
       """
-    When I run "behave -c -f plain features/issue42_missing4.feature"
+    When I run "behave -f plain features/issue42_missing4.feature"
     Then it should fail with:
       """
       1 step passed, 0 failed, 1 skipped, 2 undefined
@@ -148,12 +152,13 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
       @when(u'an unknown step')
       def impl(context):
           assert False
+
       @then(u'another unknown step')
       def impl(context):
           assert False
       """
 
-  Scenario: Missing two steps in scenario outline
+  Scenario: Two undefined steps in scenario outline
     Given a file named "features/issue42_missing5.feature" with:
       """
       Feature: Missing Given and When Step in a Scenario Outline
@@ -168,7 +173,7 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
             |Alice|
             |Bob  |
       """
-    When I run "behave -c -S -f plain features/issue42_missing5.feature"
+    When I run "behave -f plain features/issue42_missing5.feature"
     Then it should fail with:
       """
       0 steps passed, 0 failed, 4 skipped, 4 undefined
@@ -185,7 +190,7 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
           assert False
       """
 
-  Scenario: Missing two steps and run with tags
+  Scenario: Two undefined steps and run with tags
     Given a file named "features/issue42_missing6.feature" with:
       """
       Feature: Missing steps in tagged scenarios
@@ -207,7 +212,7 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
           And   yet another unknown step
           Then  the name is "Bob"
       """
-    When I run "behave -c -f plain --tags tag1 features/issue42_missing6.feature"
+    When I run "behave -f plain --tags tag1 features/issue42_missing6.feature"
     Then it should fail with:
       """
       2 steps passed, 0 failed, 5 skipped, 2 undefined

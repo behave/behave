@@ -7,6 +7,7 @@ Version: 1.2.3a19 (unreleased)
 IMPROVEMENT:
 
   * issue #103: sort feature file by name in a given directory (provided by: gurneyalex).
+  * issue  #42: Show all undefined steps taking tags into account (provided by: roignac, jenisys)
 
 FIXED:
 
