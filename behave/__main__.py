@@ -7,7 +7,7 @@ from behave.configuration import Configuration, ConfigError
 from behave.formatter.ansi_escapes import escapes
 from behave.i18n import languages
 from behave.formatter import formatters
-from behave.runner import Runner
+from behave.runner import Runner, make_undefined_step_snippet
 from behave.parser import ParserError
 
 TAG_HELP = """
@@ -103,20 +103,11 @@ def main():
         msg = u"\nYou can implement step definitions for undefined steps with "
         msg += u"these snippets:\n\n"
         printed = set()
-
-        if sys.version_info[0] == 3:
-            string_prefix = "('"
-        else:
-            string_prefix = u"(u'"
-
-        for step in set(runner.undefined):
+        for step in runner.undefined:
             if step in printed:
                 continue
             printed.add(step)
-
-            msg += u"@" + step.step_type + string_prefix + step.name + u"')\n"
-            msg += u"def impl(context):\n"
-            msg += u"    assert False\n\n"
+            msg += make_undefined_step_snippet(step)
 
         # -- OOPS: Unclear if stream supports ANSI coloring.
         sys.stderr.write(escapes['undefined'] + msg + escapes['reset'])
