@@ -80,14 +80,13 @@ options = [
      dict(action='store_false', dest='show_snippets',
           help="Don't print snippets for unimplemented steps.")),
     (('--snippets',),
-     dict(action='store_true',
+     dict(action='store_true', dest='show_snippets',
           help="""Print snippets for unimplemented steps.
                   This is the default behaviour. This switch is used to
                   override a configuration file setting.""")),
 
     (('-m', '--no-multiline'),
-     dict(action='store_false',
-          dest='show_multiline',
+     dict(action='store_false', dest='show_multiline',
           help="""Don't print multiline strings and tables under
                   steps.""")),
 
@@ -117,8 +116,7 @@ options = [
                   override a configuration file setting.""")),
 
     (('--no-capture-stderr',),
-     dict(action='store_false',
-          dest='stderr_capture',
+     dict(action='store_false', dest='stderr_capture',
           help="""Don't capture stderr (any stderr output will be
                   printed immediately.)""")),
 
