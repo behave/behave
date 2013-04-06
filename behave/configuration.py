@@ -211,9 +211,10 @@ options = [
      dict(action='store_true',
           help='Stop running tests at the first failure.')),
 
-    (('-S', '--strict'),
-     dict(action='store_true',
-          help='Fail if there are any undefined or pending steps.')),
+     # -- DISABLE-UNUSED-OPTION: Not used anywhere.
+     # (('-S', '--strict'),
+     # dict(action='store_true',
+     #    help='Fail if there are any undefined or pending steps.')),
 
     (('-t', '--tags'),
      dict(action='append', metavar='TAG_EXPRESSION',
