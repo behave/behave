@@ -255,6 +255,13 @@ class Parser(object):
             return True
 
         self.lines.append(line[self.multiline_leading:])
+        # -- BETTER DIAGNOSTICS: May remove non-whitespace in execute_steps()
+        removed_line_prefix = line[:self.multiline_leading]
+        if removed_line_prefix.strip():
+            message  = "BAD-INDENT in multiline text: "
+            message += "Line '%s' would strip leading '%s'" % \
+                        (line, removed_line_prefix)
+            raise ParserError(message, self.line, self.filename)
         return True
 
     def action_table(self, line):
