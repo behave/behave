@@ -94,7 +94,8 @@ Testing Domains
 -------------------------------------------------------------------------------
 
 Behave and other BDD frameworks allow you to provide **step libraries**
-to reuse step definitions in a specific context.
+to reuse step definitions in similar projects that address the same 
+problem domain.
 
 Support of the following testing domains is currently known:
 
