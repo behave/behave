@@ -105,7 +105,7 @@ Command-line    `behave4cmd`_     Test command-line tools, like behave, etc. (co
 Web Apps        `django-behave`_  Test Django Web apps with behave.
 =============== ================= =========================================================
 
-.. _behave4cmd: http://jenisys.github.com/behave4cmd
+.. _behave4cmd: https://github.com/jenisys/behave4cmd
 .. _django-behave: https://github.com/rwillmer/django-behave
 
 
