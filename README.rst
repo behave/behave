@@ -2,7 +2,7 @@
 Behave
 ======
 
-behave is behaviour-driven development, Python style
+behave is behaviour-driven development, Python style.
 
 Behavior-driven development (or BDD) is an agile software development
 technique that encourages collaboration between developers, QA and
@@ -58,10 +58,56 @@ Now, continue reading to learn how to the most of *behave*. To get started,
 we recommend the `tutorial`_ and then the `feature testing language`_ and
 `api`_ references.
 
-Download from http://pypi.python.org/pypi/behave
+
+Project Info
+-------------------------------------------------------------------------------
+
+=============== ===============================================================
+Category        Hyperlink
+=============== ===============================================================
+Documentation:  http://packages.python.org/behave/
+                (or: https://behave.readthedocs.org/)
+Download:       http://pypi.python.org/pypi/behave (or: `github archive`_)
+Development:    https://github.com/behave/behave
+Issue Tracker:  https://github.com/behave/behave/issues
+Changelog:      `CHANGES.rst <CHANGES.rst>`_
+=============== ===============================================================
 
 
 .. _`Install *behave*.`: http://packages.python.org/behave/install.html
 .. _`tutorial`: http://packages.python.org/behave/tutorial.html#features
 .. _`feature testing language`: http://packages.python.org/behave/gherkin.html
 .. _`api`: http://packages.python.org/behave/api.html
+.. _`github archive`: https://github.com/behave/behave/tags
+
+
+More Information
+-------------------------------------------------------------------------------
+
+* `behave.example`_: Behave Examples and Tutorials (docs, executable examples).
+
+
+.. _behave.example: https://github.com/jenisys/behave.example
+
+
+Testing Domains
+-------------------------------------------------------------------------------
+
+Behave and other BDD frameworks allow you to provide **step libraries**
+to reuse step definitions in similar projects that address the same 
+problem domain.
+
+Support of the following testing domains is currently known:
+
+=============== ================= =========================================================
+Testing Domain   Name              Description
+=============== ================= =========================================================
+Command-line    `behave4cmd`_     Test command-line tools, like behave, etc. (coming soon).
+Web Apps        `django-behave`_  Test Django Web apps with behave.
+=============== ================= =========================================================
+
+.. _behave4cmd: https://github.com/jenisys/behave4cmd
+.. _django-behave: https://github.com/rwillmer/django-behave
+
+
+
