@@ -82,9 +82,10 @@ Issue Tracker:  https://github.com/behave/behave/issues
 More Information
 -------------------------------------------------------------------------------
 
-* `behave: Examples and Tutorials`_ (`project <https://github.com/jenisys/behave.example>`_)
+* `behave.example`_: Behave Examples and Tutorials (docs, executable examples).
 
-.. _`behave: Examples and Tutorials`: http://jenisys.github.com/behave.example
+
+.. _behave.example: https://github.com/jenisys/behave.example
 
 
 Testing Domains
