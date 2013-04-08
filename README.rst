@@ -95,12 +95,12 @@ to reuse step definition in a specific context.
 
 The following testing domains (where behave is used) are currently known:
 
-=============== ================= =================================================
+=============== ================= =========================================================
 Test Domain     Name              Description
-=============== ================= =================================================
-Command-line    behave4cmd        Test command-line tools, like behave, etc. (soon)
+=============== ================= =========================================================
+Command-line    `behave4cmd`_     Test command-line tools, like behave, etc. (coming soon).
 Web Apps        `django-behave`_  Test Django Web apps with behave.
-=============== ================= =================================================
+=============== ================= =========================================================
 
 .. _behave4cmd: http://jenisys.github.com/behave4cmd
 .. _django-behave: https://github.com/rwillmer/django-behave
