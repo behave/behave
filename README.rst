@@ -70,7 +70,7 @@ Documentation:  http://packages.python.org/behave/
 Download:       http://pypi.python.org/pypi/behave (or: `github archive`_)
 Development:    https://github.com/behave/behave
 Issue Tracker:  https://github.com/behave/behave/issues
-Changelog:      `CHANGES.rst <https://github.com/behave/behave/CHANGES.rst>`_
+Changelog:      `CHANGES.rst <CHANGES.rst>`_
 =============== ===============================================================
 
 
