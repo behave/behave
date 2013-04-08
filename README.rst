@@ -62,14 +62,16 @@ we recommend the `tutorial`_ and then the `feature testing language`_ and
 Project Info
 -------------------------------------------------------------------------------
 
-=============== =============================================================
+=============== ===============================================================
 Category        Hyperlink
-=============== =============================================================
+=============== ===============================================================
 Documentation:  http://packages.python.org/behave/
+                (or: https://behave.readthedocs.org/)
 Download:       http://pypi.python.org/pypi/behave (or: `github archive`_)
 Development:    https://github.com/behave/behave
 Issue Tracker:  https://github.com/behave/behave/issues
-=============== =============================================================
+Changelog:      `CHANGES.rst <https://github.com/behave/behave/CHANGES.rst>`_
+=============== ===============================================================
 
 
 .. _`Install *behave*.`: http://packages.python.org/behave/install.html
@@ -92,12 +94,12 @@ Testing Domains
 -------------------------------------------------------------------------------
 
 Behave and other BDD frameworks allow you to provide **step libraries**
-to reuse step definition in a specific context.
+to reuse step definitions in a specific context.
 
-The following testing domains (where behave is used) are currently known:
+Support of the following testing domains is currently known:
 
 =============== ================= =========================================================
-Test Domain     Name              Description
+Testing Domain   Name              Description
 =============== ================= =========================================================
 Command-line    `behave4cmd`_     Test command-line tools, like behave, etc. (coming soon).
 Web Apps        `django-behave`_  Test Django Web apps with behave.
