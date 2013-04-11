@@ -25,7 +25,7 @@ Feature: Issue #125: Duplicate "Captured stdout" if substep has failed
           Scenario:
               When substep fails with stdout "Hello"
       """
-    When I run "behave -f plain features/issue125_example.feature"
+    When I run "behave -f plain --no-timings features/issue125_example.feature"
     Then it should fail with:
       """
       0 scenarios passed, 1 failed, 0 skipped
