@@ -256,7 +256,7 @@ class Context(object):
 
         steps = self.feature.parser.parse_steps(steps_text)
         for step in steps:
-            passed = step.run(self._runner, quiet=True)
+            passed = step.run(self._runner, quiet=True, capture=False)
             if not passed:
                 # -- ISSUE #96: Provide more substep info to diagnose problem.
                 step_line = "%s %s" % (step.keyword, step.name)
