@@ -495,6 +495,8 @@ class Runner(object):
         return files
 
     def run(self):
+        self.context = Context(self)
+        self.setup_capture()
         with self.path_manager:
             self.setup_paths()
             return self.run_with_paths()
@@ -503,9 +505,8 @@ class Runner(object):
         self.load_hooks()
         self.load_step_definitions()
 
-        context = self.context = Context(self)
+        context = self.context
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
-        self.setup_capture()
         stream = self.config.output
         failed = False
         failed_count = 0
