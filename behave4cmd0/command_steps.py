@@ -196,6 +196,26 @@ def step_command_output_should_not_contain(context):
     assert context.text is not None, "ENSURE: multiline text is provided."
     step_command_output_should_not_contain_text(context, context.text.strip())
 
+@then(u'the command output should contain "{text}"')
+def step_command_output_should_contain_text(context, text):
+    '''
+    EXAMPLE:
+        ...
+        Then the command output should contain "TEXT"
+    '''
+    if "{__WORKDIR__}" in text or "{__CWD__}" in text:
+        text = text.format(
+            __WORKDIR__ = command_util.posixpath_normpath(context.workdir),
+            __CWD__     = command_util.posixpath_normpath(os.getcwd())
+        )
+    command_output  = context.command_result.output
+    expected_output = command_util.text_normalize(text)
+    actual_output   = command_util.text_normalize(command_output.strip())
+    if DEBUG:
+        print("expected:\n{0}".format(expected_output))
+        print("actual:\n{0}".format(actual_output))
+    assert_that(actual_output, contains_string(expected_output))
+
 @then(u'the command output should not contain "{text}"')
 def step_command_output_should_not_contain_text(context, text):
     '''
