@@ -374,6 +374,7 @@ class Scenario(TagStatement, Replayable):
         self._row = None
         self.stderr = None
         self.stdout = None
+        self.was_dry_run = False
 
     def __repr__(self):
         return '<Scenario "%s">' % self.name
@@ -387,8 +388,16 @@ class Scenario(TagStatement, Replayable):
     @property
     def status(self):
         for step in self.steps:
-            if step.status == 'failed' or step.status == 'undefined':
+            if step.status == 'failed':
                 return 'failed'
+            elif step.status == 'undefined':
+                if self.was_dry_run:
+                    # -- SPECIAL CASE: In dry-run with undefined-step discovery
+                    #    Undefined steps should not cause failed scenario.
+                    return 'untested'
+                else:
+                    # -- NORMALLY: Undefined steps cause failed scenario.
+                    return 'failed'
             elif step.status == 'skipped':
                 return 'skipped'
             elif step.status == 'untested':
@@ -408,6 +417,8 @@ class Scenario(TagStatement, Replayable):
         tags = runner.feature.tags + self.tags
         run_scenario = runner.config.tags.check(tags)
         run_steps = run_scenario and not runner.config.dry_run
+        dry_run_scenario = run_scenario and runner.config.dry_run
+        self.was_dry_run = dry_run_scenario
 
         if run_scenario or runner.config.show_skipped:
             runner.formatter.scenario(self)
@@ -429,7 +440,6 @@ class Scenario(TagStatement, Replayable):
             for step in self:
                 runner.formatter.step(step)
 
-        dry_run_scenario = run_scenario and runner.config.dry_run
         for step in self:
             if run_steps:
                 if not step.run(runner):
@@ -440,6 +450,8 @@ class Scenario(TagStatement, Replayable):
                 # -- SKIP STEPS: After failure/undefined-step occurred.
                 # BUT: Detect all remaining undefined steps.
                 step.status = 'skipped'
+                if dry_run_scenario:
+                    step.status = 'untested'
                 found_step = step_registry.registry.find_match(step)
                 if not found_step:
                     step.status = 'undefined'
@@ -759,7 +771,7 @@ class Step(BasicStatement, Replayable):
             # -- ENSURE:
             #  * runner.context.text/.table attributes are reset (#66).
             #  * Even EMPTY multiline text is available in context.
-            runner.context.text  = self.text
+            runner.context.text = self.text
             runner.context.table = self.table
             match.run(runner.context)
             self.status = 'passed'
@@ -966,6 +978,7 @@ class Row(object):
         from behave.compat.collections import OrderedDict
         return OrderedDict(self.items())
 
+
 class Tag(unicode):
     '''Tags appear may be associated with Features or Scenarios.
 
@@ -1088,9 +1101,9 @@ class Match(Replayable):
         location = '%s:%d' % (filename, step_function.func_code.co_firstlineno)
         return location
 
+
 class NoMatch(Match):
     def __init__(self):
         self.func = None
         self.arguments = []
         self.location = None
-

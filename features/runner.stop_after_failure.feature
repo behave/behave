@@ -1,9 +1,9 @@
 @sequential
-Feature: Runner should stop after first failure if --stop option is used.
+Feature: Runner should stop after first failure if --stop option is used
 
     As a tester
     To abort testing early (sometimes)
-    When the first failure occurs
+    When the first failure occurs.
 
 
     @setup
@@ -56,8 +56,7 @@ Feature: Runner should stop after first failure if --stop option is used.
             """
 
 
-    @capture
-    Scenario: Stop running when first failure occurs in one feature
+    Scenario: Stop running after first failure with one feature
         When I run "behave -f plain -T --stop features/alice_fails.feature"
         Then it should fail with:
             """
@@ -84,4 +83,40 @@ Feature: Runner should stop after first failure if --stop option is used.
         But the command output should not contain:
             """
             Scenario: A3
+            """
+
+    Scenario: Stop running after first failure with several features (CASE 1)
+        When I run "behave -f plain -T --stop features/alice_fails.feature features/bob_passes.feature "
+        Then it should fail with:
+            """
+            Failing scenarios:
+              features/alice_fails.feature:7  A2 fails
+
+            0 features passed, 1 failed, 0 skipped, 1 untested
+            1 scenario passed, 1 failed, 0 skipped, 4 untested
+            4 steps passed, 1 failed, 1 skipped, 0 undefined, 8 untested
+            """
+
+    Scenario: Stop running after first failure with several features (CASE 2: Different order)
+        When I run "behave -f plain -T --stop features/bob_passes.feature features/alice_fails.feature"
+        Then it should fail with:
+            """
+            Failing scenarios:
+              features/alice_fails.feature:7  A2 fails
+
+            1 feature passed, 1 failed, 0 skipped
+            3 scenarios passed, 1 failed, 0 skipped, 2 untested
+            10 steps passed, 1 failed, 1 skipped, 0 undefined, 2 untested
+            """
+
+    Scenario: Stop running after first failure with several features (CASE 3: Use directory)
+        When I run "behave -f plain -T --stop features/"
+        Then it should fail with:
+            """
+            Failing scenarios:
+              features/alice_fails.feature:7  A2 fails
+
+            0 features passed, 1 failed, 0 skipped, 1 untested
+            1 scenario passed, 1 failed, 0 skipped, 4 untested
+            4 steps passed, 1 failed, 1 skipped, 0 undefined, 8 untested
             """

@@ -43,7 +43,7 @@ Feature: Undefined Step
         """
 
     Scenario: An undefined step should be reported
-      When I run "behave -f plain features/undefined_last_step.feature"
+      When I run "behave -f plain -T features/undefined_last_step.feature"
       Then it should fail
       And the command output should contain:
         """
@@ -83,7 +83,7 @@ Feature: Undefined Step
             Then a step passes
             And  a step fails
         """
-      When I run "behave -f plain features/undefined_step_and_more.feature"
+      When I run "behave -f plain -T features/undefined_step_and_more.feature"
       Then it should fail with:
         """
         0 features passed, 1 failed, 0 skipped
@@ -109,7 +109,7 @@ Feature: Undefined Step
             And  a step fails
             Then another undefined step is used
         """
-      When I run "behave -f plain features/two_undefined_steps1.feature"
+      When I run "behave -f plain -T features/two_undefined_steps1.feature"
       Then it should fail with:
         """
         0 features passed, 1 failed, 0 skipped
@@ -146,7 +146,7 @@ Feature: Undefined Step
             Given another undefined step is used
             When a step passes
         """
-      When I run "behave -f plain features/two_undefined_steps2.feature"
+      When I run "behave -f plain -T features/two_undefined_steps2.feature"
       Then it should fail with:
         """
         0 features passed, 1 failed, 0 skipped
@@ -288,11 +288,11 @@ Feature: Undefined Step
 
     Scenario: Undefined steps are detected if --dry-run option is used
       When I run "behave -f plain --dry-run features/undefined_steps_with_tagged_scenario.feature"
-      Then it should pass with:
+      Then it should fail with:
         """
-        0 features passed, 1 failed, 0 skipped
-        0 scenarios passed, 1 failed, 2 skipped
-        0 steps passed, 0 failed, 4 skipped, 4 undefined
+        0 features passed, 0 failed, 0 skipped, 1 untested
+        0 scenarios passed, 0 failed, 0 skipped, 3 untested
+        0 steps passed, 0 failed, 0 skipped, 4 undefined, 4 untested
         """
       And undefined-step snippets should exist for:
         | Step |
