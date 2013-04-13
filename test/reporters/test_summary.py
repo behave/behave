@@ -92,7 +92,7 @@ class TestSummaryReporter(unittest.TestCase):
 
     @patch('sys.stderr')
     @patch('behave.reporter.summary.format_summary')
-    def test_feature_status_is_collected_and_reported(self, format_summary, 
+    def test_feature_status_is_collected_and_reported(self, format_summary,
                                                       stderr):
         # pylint: disable=W0621
         #   W0621   Redefining name ... from outer scope (format_summary)

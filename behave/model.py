@@ -232,7 +232,7 @@ class Feature(TagStatement, Replayable):
         # scenarios
         run_feature = runner.config.tags.check(self.tags)
         for scenario in self:
-            tags = scenario.tags
+            tags = self.tags + scenario.tags
             run_feature = run_feature or runner.config.tags.check(tags)
 
         if run_feature or runner.config.show_skipped:
@@ -466,18 +466,25 @@ class Scenario(TagStatement, Replayable):
         # BAD: Better provide a public method.
         # pylint: disable=W0212
         #   W0212   Access to a protected member: _set_root_attribute()
+        dry_run_scenario = run_scenario and runner.config.dry_run
         for step in self.all_steps:
             if run_steps:
                 if not step.run(runner):
                     run_steps = False
                     failed = True
                     runner.context._set_root_attribute('failed', True)
-            else:
+            elif failed or dry_run_scenario:
+                # -- SKIP STEPS: After failure/undefined-step occurred.
+                # BUT: Detect all remaining undefined steps.
                 step.status = 'skipped'
-                # XXX-JE-PROBLEMATIC: self.status is a property, cannot assign to it.
-                # XXX-JE-DISABLE:
-                # if self.status is None:
-                #    self.status = 'skipped'
+                found_step = step_registry.registry.find_match(step)
+                if not found_step:
+                    step.status = 'undefined'
+                    runner.undefined.append(step)
+            else:
+                # -- SKIP STEPS: For disabled scenario.
+                # NOTE: Undefined steps are not detected (by intention).
+                step.status = 'skipped'
 
         # Attach the stdout and stderr if generate Junit report
         if runner.config.junit:
@@ -769,7 +776,7 @@ class Step(BasicStatement, Replayable):
                         row.cells[i] = cell.replace("<%s>" % name, value)
         return result
 
-    def run(self, runner, quiet=False):
+    def run(self, runner, quiet=False, capture=True):
         # access module var here to allow test mocking to work
         match = step_registry.registry.find_match(self)
         if match is None:
@@ -816,18 +823,20 @@ class Step(BasicStatement, Replayable):
 
         # flesh out the failure with details
         if self.status == 'failed':
-            if runner.config.stdout_capture:
-                output = runner.stdout_capture.getvalue()
-                if output:
-                    error += '\nCaptured stdout:\n' + output
-            if runner.config.stderr_capture:
-                output = runner.stderr_capture.getvalue()
-                if output:
-                    error += '\nCaptured stderr:\n' + output
-            if runner.config.log_capture:
-                output = runner.log_capture.getvalue()
-                if output:
-                    error += '\nCaptured logging:\n' + output
+            if capture:
+                # -- CAPTURE-ONLY: Non-nested step failures.
+                if runner.config.stdout_capture:
+                    output = runner.stdout_capture.getvalue()
+                    if output:
+                        error += '\nCaptured stdout:\n' + output
+                if runner.config.stderr_capture:
+                    output = runner.stderr_capture.getvalue()
+                    if output:
+                        error += '\nCaptured stderr:\n' + output
+                if runner.config.log_capture:
+                    output = runner.log_capture.getvalue()
+                    if output:
+                        error += '\nCaptured logging:\n' + output
             self.error_message = error
             keep_going = False
 
@@ -1144,3 +1153,4 @@ class NoMatch(Match):
         self.func = None
         self.arguments = []
         self.location = None
+

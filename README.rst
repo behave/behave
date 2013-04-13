@@ -104,10 +104,9 @@ Testing Domain   Name              Description
 =============== ================= =========================================================
 Command-line    `behave4cmd`_     Test command-line tools, like behave, etc. (coming soon).
 Web Apps        `django-behave`_  Test Django Web apps with behave.
+Web, SMS, ...   `behaving`_       Test Web Apps, Email, SMS, Personas (step library).
 =============== ================= =========================================================
 
 .. _behave4cmd: https://github.com/jenisys/behave4cmd
 .. _django-behave: https://github.com/rwillmer/django-behave
-
-
-
+.. _behaving: https://github.com/ggozad/behaving

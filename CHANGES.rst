@@ -1,8 +1,22 @@
 Version History
 ===============================================================================
 
+Version: 1.2.3a19 (unreleased)
+-------------------------------------------------------------------------------
 
-Next Version 1.2.2.x - UNRELEASED
+IMPROVEMENT:
+
+  * issue #103: sort feature file by name in a given directory (provided by: gurneyalex).
+  * issue  #42: Show all undefined steps taking tags into account (provided by: roignac, jenisys)
+
+FIXED:
+
+  * issue #145: before_feature/after_feature should not be skipped (provided by: florentx).
+  * issue #141: Don't check for full package in issue 112 (provided by: roignac).
+  * issue #125: Duplicate "Captured stdout" if substep has failed (provided by: roignac).
+
+
+Version: 1.2.2.17 (2013-03-20)
 -------------------------------------------------------------------------------
 
 NEWS and CHANGES:

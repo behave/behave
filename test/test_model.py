@@ -16,6 +16,7 @@ from nose.tools import *
 import unittest
 from behave import model
 from behave.compat.collections import OrderedDict
+from behave import step_registry
 
 class TestFeatureRun(unittest.TestCase):
     def setUp(self):
@@ -52,6 +53,7 @@ class TestFeatureRun(unittest.TestCase):
     def test_run_runs_scenarios(self):
         scenarios = [Mock(), Mock()]
         for scenario in scenarios:
+            scenario.tags = []
             scenario.run.return_value = False
 
         self.config.tags.check.return_value = True
@@ -125,23 +127,31 @@ class TestScenarioRun(unittest.TestCase):
         scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
                                   steps=steps)
         steps[0].run.return_value = False
+        steps[1].step_type = "when"
+        steps[1].name = "step1"
+        def step1_function(context):
+            pass
+        my_step_registry = step_registry.StepRegistry()
+        my_step_registry.add_definition("when", "step1", step1_function)
 
-        assert scenario.run(self.runner)
-
-        eq_(steps[1].status, 'skipped')
+        with patch("behave.step_registry.registry", my_step_registry):
+            assert scenario.run(self.runner)
+            eq_(steps[1].status, 'skipped')
 
     def test_failed_step_causes_context_failure_to_be_set(self):
         self.config.stdout_capture = False
         self.config.log_capture = False
         self.config.tags.check.return_value = True
 
-        steps = [Mock(), Mock()]
+        steps = [
+            Mock(step_type="given", name="step0"),
+            Mock(step_type="then",  name="step1"),
+        ]
         scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
                                   steps=steps)
         steps[0].run.return_value = False
 
         assert scenario.run(self.runner)
-
         self.context._set_root_attribute.assert_called_with('failed', True)
 
     def test_undefined_step_causes_failed_scenario_status(self):
@@ -152,7 +162,7 @@ class TestScenarioRun(unittest.TestCase):
         passed_step = Mock()
         undefined_step = Mock()
 
-        steps = [passed_step, undefined_step]
+        steps = [ passed_step, undefined_step ]
         scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
                                   steps=steps)
         passed_step.run.return_value = True
