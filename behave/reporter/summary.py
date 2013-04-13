@@ -9,7 +9,8 @@ from behave.reporter.base import Reporter
 
 
 # -- DISABLED: optional_steps = ('untested', 'undefined')
-optional_steps = ('untested', )
+optional_steps = ('untested',)
+
 
 def format_summary(statement_type, summary):
     parts = []
@@ -50,7 +51,6 @@ class SummaryReporter(Reporter):
         self.duration = 0.0
         self.failed_scenarios = []
 
-
     def feature(self, feature):
         self.feature_summary[feature.status or 'skipped'] += 1
         self.duration += feature.duration
@@ -74,7 +74,7 @@ class SummaryReporter(Reporter):
         self.stream.write(format_summary('scenario', self.scenario_summary))
         self.stream.write(format_summary('step', self.step_summary))
         timings = int(self.duration / 60), self.duration % 60
-        self.stream.write('Took %dm%02.1fs\n' % timings)
+        self.stream.write('Took %dm%02.3fs\n' % timings)
 
     def process_scenario(self, scenario):
         if scenario.status == 'failed':
