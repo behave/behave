@@ -1,23 +1,34 @@
-import sys
+# -*- coding: UTF-8 -*-
+"""
+Provides a summary after each test run.
+"""
 
+import sys
 from behave.model import ScenarioOutline
 from behave.reporter.base import Reporter
 
 
+# -- DISABLED: optional_steps = ('untested', 'undefined')
+optional_steps = ('untested', )
+
 def format_summary(statement_type, summary):
-    first = True
     parts = []
-    for status in ('passed', 'failed', 'skipped', 'undefined'):
+    for status in ('passed', 'failed', 'skipped', 'undefined', 'untested'):
         if status not in summary:
             continue
-        if first:
+        counts = summary[status]
+        if status in optional_steps and counts == 0:
+            # -- SHOW-ONLY: For relevant counts, suppress: untested items, etc.
+            continue
+
+        if not parts:
+            # -- FIRST ITEM: Add statement_type to counter.
             label = statement_type
-            if summary[status] != 1:
+            if counts != 1:
                 label += 's'
-            part = '%d %s %s' % (summary[status], label, status)
-            first = False
+            part = '%d %s %s' % (counts, label, status)
         else:
-            part = '%d %s' % (summary[status], status)
+            part = '%d %s' % (counts, status)
         parts.append(part)
     return ', '.join(parts) + '\n'
 
