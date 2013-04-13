@@ -6,6 +6,7 @@ Version: 1.2.3a19 (unreleased)
 
 IMPROVEMENT:
 
+  * SummaryReporter: Summary shows untested items if one ore more exist.
   * issue #103: sort feature file by name in a given directory (provided by: gurneyalex).
   * issue  #42: Show all undefined steps taking tags into account (provided by: roignac, jenisys)
 
