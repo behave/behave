@@ -196,6 +196,10 @@ options = [
      dict(metavar='FILE',
           help="Write to specified file instead of stdout.")),
 
+    ((),  # -- CONFIGFILE only
+     dict(action='append', dest='paths',
+          help="Specify default feature paths, used when none are provided.")),
+
     (('-q', '--quiet'),
      dict(action='store_true',
           help="Alias for --no-snippets --no-source.")),
@@ -216,10 +220,10 @@ options = [
      dict(action='store_true',
           help='Stop running tests at the first failure.')),
 
-     # -- DISABLE-UNUSED-OPTION: Not used anywhere.
-     # (('-S', '--strict'),
-     # dict(action='store_true',
-     #    help='Fail if there are any undefined or pending steps.')),
+    # -- DISABLE-UNUSED-OPTION: Not used anywhere.
+    # (('-S', '--strict'),
+    # dict(action='store_true',
+    #    help='Fail if there are any undefined or pending steps.')),
 
     (('-t', '--tags'),
      dict(action='append', metavar='TAG_EXPRESSION',
@@ -280,6 +284,7 @@ def read_configuration(path):
     __pychecker__ = "no-shadow"
     cfg = ConfigParser.ConfigParser()
     cfg.read(path)
+    cfgdir = os.path.dirname(path)
     result = {}
     for fixed, keywords in options:     # pylint: disable=W0621
         if 'dest' in keywords:
@@ -305,6 +310,13 @@ def read_configuration(path):
                 [s.strip() for s in cfg.get('behave', dest).splitlines()]
         else:
             raise ValueError('action "%s" not implemented' % action)
+
+    if 'paths' in result:
+        # Normalized relative paths to the configuration file.
+        paths = result['paths']
+        result['paths'] = \
+            [os.path.normpath(os.path.join(cfgdir, p)) for p in paths]
+
     return result
 
 
@@ -334,6 +346,8 @@ def load_configuration(defaults):
 usage = "%(prog)s [options] [ [FILE|DIR] ]+"
 parser = argparse.ArgumentParser(usage=usage)
 for fixed, keywords in options:
+    if not fixed:
+        continue    # -- CONFIGFILE only.
     if 'config_help' in keywords:
         keywords = dict(keywords)
         del keywords['config_help']
@@ -409,6 +423,9 @@ class Configuration(object):
 
         if self.include_re:
             self.include_re = re.compile(self.include_re)
+        if self.name:
+            # -- SELECT: Scenario-by-name, build regular expression.
+            self.name_re = self.build_name_re(self.name)
 
         if self.junit:
             # Buffer the output (it will be put into Junit report)
@@ -418,6 +435,18 @@ class Configuration(object):
             self.reporters.append(JUnitReporter(self))
         if self.summary:
             self.reporters.append(SummaryReporter(self))
+
+    @staticmethod
+    def build_name_re(names):
+        """
+        Build regular expression for scenario selection by name
+        by using a list of name parts or name regular expressions.
+
+        :param names: List of name parts or regular expressions (as text).
+        :return: Compiled regular expression to use.
+        """
+        pattern = u"|".join(names)
+        return re.compile(pattern, flags=(re.UNICODE | re.LOCALE))
 
     def exclude(self, filename):
         if self.include_re and self.include_re.search(filename) is None:
