@@ -16,5 +16,5 @@ Feature: Issue #75: behave @features_from_text_file does not work
     When I run "behave -f plain features/runner.feature_configfile.feature"
     Then it should pass with:
       """
-      9 scenarios passed, 0 failed, 0 skipped
+      10 scenarios passed, 0 failed, 0 skipped
       """
