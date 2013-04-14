@@ -228,6 +228,12 @@ class Feature(TagStatement, Replayable):
 
         failed_count = 0
         for scenario in self:
+            # limit to scenario names?
+            if (runner.config.name and
+                not any(map(lambda n: n in scenario.name,
+                            runner.config.name))):
+                continue
+
             failed = scenario.run(runner)
             if failed:
                 failed_count += 1
