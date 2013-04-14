@@ -51,6 +51,7 @@ options(
     ),
     behave_test=Bunch(
         default_args=[
+            "features/",
             "tools/test-features/",
             "selftest.features/",
             "issue.features/",
@@ -142,21 +143,35 @@ def unittest(args):
 
 @task
 @consume_args
-def behave_test(args):
+def behave_test(args, options):
     """Execute all feature tests w/ behave."""
-    cmdline = Cmdline.consume(args, default_args=options.behave_test.default_args)
+    cmdline = Cmdline.consume(args, default_args=options.default_args)
     if not cmdline.options:
         excluded_tags = "--tags=-xfail --tags=-not_supported"
         cmdopts = "-f progress {0}".format(excluded_tags)
     else:
         cmdopts = cmdline.join_options()
 
+    # -- STEP: Collect test groups.
+    test_groups = []
+    for prefix in options.default_args:
+        test_group = []
+        for arg in cmdline.args:
+            if arg.startswith(prefix):
+                test_group.append(arg)
+        if test_group:
+            test_groups.append(test_group)
+
     # -- RUN TESTS: All tests at once.
-    for arg in cmdline.args:
-        behave(arg, cmdopts)
+    for test_group in test_groups:
+        args = " ".join(test_group)
+        behave(args, cmdopts)
+
+    # -- RUN TESTS: All tests at once.
+    # for arg in cmdline.args:
+    #    behave(arg, cmdopts)
     # arg = " ".join(args)
     # behave(arg, cmdopts)
-
 
 # ----------------------------------------------------------------------------
 # TASK: test coverage
