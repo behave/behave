@@ -7,7 +7,7 @@ Feature: Feature-Configfile (List of feature filenames/directories)
     But provide a text file that contains the list of features.
 
     | SPECIFICATION: behave file args
-    |  * Prepend an '@' char (AT) to the feature configfile name to mark it.
+    |  * Prepend an '@' char (AT) to the feature configfile name to classify it.
     |
     | SPECIFICATION: Feature configfile (text file)
     |  * Each line contains a feature filename or directory with features
@@ -49,7 +49,7 @@ Feature: Feature-Configfile (List of feature filenames/directories)
       """
 
 
-  Scenario: Use @feature_list_file in WORKDIR directory (above features/)
+  Scenario: Use @feature_configfile in WORKDIR directory (above features/)
     Given a file named "alice_and_bob2.txt" with:
       """
       features/alice.feature
@@ -64,7 +64,7 @@ Feature: Feature-Configfile (List of feature filenames/directories)
       """
 
 
-  Scenario: Use @feature_list_file in features/ subdirectory (Case 2)
+  Scenario: Use @feature_configfile in features/ subdirectory (Case 2)
     Given a file named "features/alice_and_bob.txt" with:
       """
       alice.feature
@@ -78,7 +78,7 @@ Feature: Feature-Configfile (List of feature filenames/directories)
       2 steps passed, 0 failed, 0 skipped, 0 undefined
       """
 
-  Scenario: Use @feature_list_file with some empty lines
+  Scenario: Use @feature_configfile with some empty lines
     Given a file named "features/alice_and_bob_with_empty_lines.txt" with:
       """
       alice.feature
@@ -93,7 +93,7 @@ Feature: Feature-Configfile (List of feature filenames/directories)
       2 steps passed, 0 failed, 0 skipped, 0 undefined
       """
 
-  Scenario: Use @feature_list_file with some comment lines
+  Scenario: Use @feature_configfile with some comment lines
     Given a file named "features/alice_and_bob_with_comment_lines.txt" with:
       """
       alice.feature
@@ -108,7 +108,7 @@ Feature: Feature-Configfile (List of feature filenames/directories)
       2 steps passed, 0 failed, 0 skipped, 0 undefined
       """
 
-  Scenario: Use empty @feature_list_file (Case 1)
+  Scenario: Use empty @feature_configfile (Case 1)
     Given an empty file named "empty.txt"
     When I run "behave @empty.txt"
     Then it should fail with:
@@ -116,7 +116,7 @@ Feature: Feature-Configfile (List of feature filenames/directories)
       No steps directory in "{__WORKDIR__}"
       """
 
-  Scenario: Use empty @feature_list_file in features subdirectory (Case 2)
+  Scenario: Use empty @feature_configfile in features subdirectory (Case 2)
     Given an empty file named "features/empty.txt"
     When I run "behave @features/empty.txt"
     Then it should pass with:
@@ -124,7 +124,7 @@ Feature: Feature-Configfile (List of feature filenames/directories)
       0 features passed, 0 failed, 0 skipped
       """
 
-  Scenario: Use @feature_list_file with unknown feature file (Case 1)
+  Scenario: Use @feature_configfile with unknown feature file (Case 1)
     Given a file named "with_unknown_feature.txt" with:
       """
       features/alice.feature
@@ -136,7 +136,7 @@ Feature: Feature-Configfile (List of feature filenames/directories)
       IOError: [Errno 2] No such file or directory: '{__WORKDIR__}/features/UNKNOWN.feature'
       """
 
-  Scenario: Use @feature_list_file with unknown feature file (Case 2)
+  Scenario: Use @feature_configfile with unknown feature file (Case 2)
     Given a file named "features/with_unknown_feature2.txt" with:
       """
       UNKNOWN.feature
@@ -147,3 +147,9 @@ Feature: Feature-Configfile (List of feature filenames/directories)
       IOError: [Errno 2] No such file or directory: '{__WORKDIR__}/features/UNKNOWN.feature'
       """
 
+  Scenario: Use unknown @feature_configfile
+    When I run "behave @unknown_feature_configfile.txt"
+    Then it should fail with:
+      """
+      IOError: [Errno 2] No such file or directory: 'unknown_feature_configfile.txt'
+      """
