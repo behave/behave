@@ -9,6 +9,7 @@ IMPROVEMENT:
   * Dry-run mode: Detects now undefined steps.
   * SummaryReporter: Summary shows untested items if one ore more exist.
   * issue #103: sort feature file by name in a given directory (provided by: gurneyalex).
+  * issue #102: Add configuration file setting for specifying default feature paths (provided by: lrowe).
   * issue  #42: Show all undefined steps taking tags into account (provided by: roignac, jenisys)
 
 CHANGES:
