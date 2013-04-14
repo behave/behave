@@ -47,6 +47,11 @@ you have to use logical AND::
 # --tags @qa:3
 # """.strip()
 
+# -- WORKMARK: issue #47: Formatter processing chain is broken
+# Disable multi-formatter until issue is solved.
+# Can be reenabled by local behave script for exploration/fixing the problem.
+DISABLE_MULTI_FORMATTERS = True
+
 
 def main():
     config = Configuration()
@@ -90,6 +95,15 @@ def main():
         print "Available formatters:"
         formatters.list_formatters(sys.stdout)
         sys.exit(0)
+    # -- SANITY: Use at most one formatter, more cause various problems.
+    # PROBLEM DESCRIPTION:
+    #   1. APPEND MODE: configfile.format + --format
+    #   2. Daisy chaining of formatter does not work
+    #     => behave.formatter.formatters.get_formatter()
+    #     => Stream methods, stream.write(), stream.flush are missing
+    #        in Formatter interface
+    if DISABLE_MULTI_FORMATTERS:
+        config.format = config.format[-1:]
 
     runner = Runner(config)
     try:
