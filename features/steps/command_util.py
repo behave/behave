@@ -7,16 +7,34 @@ TODO:
 """
 
 import os.path
+import shutil
+from fnmatch import fnmatch
 
 # -----------------------------------------------------------------------------
 # CONSTANTS:
 # -----------------------------------------------------------------------------
 HERE    = os.path.dirname(__file__)
-WORKDIR = os.path.join(HERE, "..", "..", "__WORKDIR__")
+TOP     = os.path.join(HERE, "..", "..")
+TOPA    = os.path.abspath(TOP)
+WORKDIR = os.path.join(TOP, "__WORKDIR__")
+
 
 # -----------------------------------------------------------------------------
 # UTILITY FUNCTIONS:
 # -----------------------------------------------------------------------------
+def workdir_save_coverage_files(workdir, destdir=None):
+    assert os.path.isdir(workdir)
+    if not destdir:
+        destdir = TOPA
+    if os.path.abspath(workdir) == os.path.abspath(destdir):
+        return  # -- SKIP: Source directory is destination directory (SAME).
+
+    for fname in os.listdir(workdir):
+        if fnmatch(fname, ".coverage.*"):
+            # -- MOVE COVERAGE FILES:
+            sourcename = os.path.join(workdir, fname)
+            shutil.move(sourcename, destdir)
+
 def ensure_directory_exists(dirname):
     """
     Ensures that a directory exits.
@@ -27,7 +45,7 @@ def ensure_directory_exists(dirname):
     assert os.path.exists(dirname)
     assert os.path.isdir(dirname)
 
-def ensure_context_resource_exists(context, name, default_value=None):
+def ensure_context_attribute_exists(context, name, default_value=None):
     """
     Ensure a behave resource exists as attribute in the behave context.
     If this is not the case, the attribute is created by using the default_value.
@@ -41,7 +59,7 @@ def ensure_workdir_exists(context):
     In addition, the location of the workdir is stored as attribute in
     the context object.
     """
-    ensure_context_resource_exists(context, "workdir", None)
+    ensure_context_attribute_exists(context, "workdir", None)
     if not context.workdir:
         context.workdir = os.path.abspath(WORKDIR)
     ensure_directory_exists(context.workdir)
