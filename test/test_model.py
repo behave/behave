@@ -1,13 +1,14 @@
 from __future__ import with_statement
 
+import re
 import sys
-
 from mock import Mock, patch
 from nose.tools import *
-
 from behave import model
 from behave.compat.collections import OrderedDict
 from behave import step_registry
+from behave.configuration import Configuration
+
 
 class TestFeatureRun(object):
     def setUp(self):
@@ -62,12 +63,15 @@ class TestFeatureRun(object):
         scenarios = [Mock(), Mock()]
         scenarios[0].name = 'first scenario'
         scenarios[1].name = 'second scenario'
+        scenarios[0].tags = []
+        scenarios[1].tags = []
 
         for scenario in scenarios:
             scenario.run.return_value = False
 
         self.config.tags.check.return_value = True
         self.config.name = ['first', 'third']
+        self.config.name_re = Configuration.build_name_re(self.config.name)
 
         feature = model.Feature('foo.feature', 1, u'Feature', u'foo',
                                 scenarios=scenarios)
@@ -76,6 +80,28 @@ class TestFeatureRun(object):
 
         scenarios[0].run.assert_called_with(self.runner)
         assert not scenarios[1].run.called
+
+    def test_run_runs_named_scenarios_with_regexp(self):
+        scenarios = [Mock(), Mock()]
+        scenarios[0].name = 'first scenario'
+        scenarios[1].name = 'second scenario'
+        scenarios[0].tags = []
+        scenarios[1].tags = []
+
+        for scenario in scenarios:
+            scenario.run.return_value = False
+
+        self.config.tags.check.return_value = True
+        self.config.name = ['third .*', 'second .*']
+        self.config.name_re = Configuration.build_name_re(self.config.name)
+
+        feature = model.Feature('foo.feature', 1, u'Feature', u'foo',
+                                scenarios=scenarios)
+
+        feature.run(self.runner)
+
+        assert not scenarios[0].run.called
+        scenarios[1].run.assert_called_with(self.runner)
 
     def test_feature_hooks_not_run_if_feature_not_being_run(self):
         self.config.tags.check.return_value = False
@@ -140,6 +166,7 @@ class TestScenarioRun(object):
         steps[0].run.return_value = False
         steps[1].step_type = "when"
         steps[1].name = "step1"
+
         def step1_function(context):
             pass
         my_step_registry = step_registry.StepRegistry()
@@ -173,7 +200,7 @@ class TestScenarioRun(object):
         passed_step = Mock()
         undefined_step = Mock()
 
-        steps = [ passed_step, undefined_step ]
+        steps = [passed_step, undefined_step]
         scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
                                   steps=steps)
         passed_step.run.return_value = True
@@ -498,6 +525,7 @@ class TestTableModel(object):
         [u'lint', u'low', u'high'],
         [u'green', u'variable', u'awkward'],
     ]
+
     def setUp(self):
         self.table = model.Table(self.HEAD, 0, self.DATA)
 
@@ -531,6 +559,7 @@ class TestTableModel(object):
 
     def test_table_row_items(self):
         eq_(self.table[0].items(), zip(self.HEAD, self.DATA[0]))
+
 
 class TestModelRow(object):
     HEAD = [u'name',  u'sex',    u'age']

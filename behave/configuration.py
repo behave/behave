@@ -228,9 +228,10 @@ options = [
      dict(action='store_true',
           help='Stop running tests at the first failure.')),
 
-    (('-S', '--strict'),
-     dict(action='store_true',
-          help='Fail if there are any undefined or pending steps.')),
+    # -- DISABLE-UNUSED-OPTION: Not used anywhere.
+    # (('-S', '--strict'),
+    # dict(action='store_true',
+    #    help='Fail if there are any undefined or pending steps.')),
 
     (('-t', '--tags'),
      dict(action='append', metavar='TAG_EXPRESSION',
@@ -353,7 +354,11 @@ usage = "%(prog)s [options] [ [FILE|DIR] ]+"
 parser = argparse.ArgumentParser(usage=usage)
 for fixed, keywords in options:
     if not fixed:
+<<<<<<< HEAD
         continue
+=======
+        continue    # -- CONFIGFILE only.
+>>>>>>> 94a81ab... Provide --name option support to select scenarios by name (pull-request #87).
     if 'config_help' in keywords:
         keywords = dict(keywords)
         del keywords['config_help']
@@ -362,6 +367,7 @@ parser.add_argument('paths', nargs='*')
 
 
 class Configuration(object):
+<<<<<<< HEAD
     def __init__(self):
         self.formatters = []
         self.reporters = []
@@ -382,6 +388,31 @@ class Configuration(object):
         )
         load_configuration(defaults)
         parser.set_defaults(**defaults)
+=======
+    defaults = dict(
+        color=sys.platform != 'win32',
+        stdout_capture=True,
+        stderr_capture=True,
+        show_snippets=True,
+        show_skipped=True,
+        log_capture=True,
+        dry_run=False,
+        show_source=True,
+        show_timings=True,
+        logging_format='%(levelname)s:%(name)s:%(message)s',
+        summary=True,
+        junit=False,
+        # -- SPECIAL:
+        format0="pretty",   # -- Used when no formatters are configured.
+    )
+
+    def __init__(self):
+        self.formatters = []
+        self.reporters = []
+        self.name_re = None
+        load_configuration(self.defaults)
+        parser.set_defaults(**self.defaults)
+>>>>>>> 94a81ab... Provide --name option support to select scenarios by name (pull-request #87).
 
         args = parser.parse_args()
         for key, value in args.__dict__.items():
@@ -415,6 +446,9 @@ class Configuration(object):
 
         if self.include_re:
             self.include_re = re.compile(self.include_re)
+        if self.name:
+            # -- SELECT: Scenario-by-name, build regular expression.
+            self.name_re = self.build_name_re(self.name)
 
         if self.junit:
             # Buffer the output (it will be put into Junit report)
@@ -424,6 +458,18 @@ class Configuration(object):
             self.reporters.append(JUnitReporter(self))
         if self.summary:
             self.reporters.append(SummaryReporter(self))
+
+    @staticmethod
+    def build_name_re(names):
+        """
+        Build regular expression for scenario selection by name
+        by using a list of name parts or name regular expressions.
+
+        :param names: List of name parts or regular expressions (as text).
+        :return: Compiled regular expression to use.
+        """
+        pattern = u"|".join(names)
+        return re.compile(pattern, flags=(re.UNICODE | re.LOCALE))
 
     def exclude(self, filename):
         if self.include_re and self.include_re.search(filename) is None:

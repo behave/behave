@@ -199,6 +199,14 @@ class Feature(TagStatement, Replayable):
             duration += scenario.duration
         return duration
 
+    def mark_skipped(self):
+        """
+        Marks this feature (and all its scenarios and steps) as skipped.
+        """
+        for scenario in self.scenarios:
+            scenario.mark_skipped()
+        assert self.status == "skipped"
+
     def run(self, runner):
         failed = False
 
@@ -228,10 +236,10 @@ class Feature(TagStatement, Replayable):
 
         failed_count = 0
         for scenario in self:
-            # limit to scenario names?
+            # -- OPTIONAL: Select scenario by name (regular expressions).
             if (runner.config.name and
-                not any(map(lambda n: n in scenario.name,
-                            runner.config.name))):
+                    not runner.config.name_re.search(scenario.name)):
+                scenario.mark_skipped()
                 continue
 
             failed = scenario.run(runner)
@@ -416,6 +424,15 @@ class Scenario(TagStatement, Replayable):
         for step in self.steps:
             duration += step.duration
         return duration
+
+    def mark_skipped(self):
+        """
+        Marks this scenario (and all its steps) as skipped.
+        """
+        for step in self:
+            assert step.status == "untested" or step.status == "skipped"
+            step.status = "skipped"
+        assert self.status == "skipped"
 
     def run(self, runner):
         failed = False
@@ -603,6 +620,14 @@ class ScenarioOutline(Scenario):
         for scenario in self.scenarios:
             duration += scenario.duration
         return duration
+
+    def mark_skipped(self):
+        """
+        Marks this scenario outline (and all its scenarios/steps) as skipped.
+        """
+        for scenario in self.scenarios:
+            scenario.mark_skipped()
+        assert self.status == "skipped"
 
     def run(self, runner):
         failed = False
