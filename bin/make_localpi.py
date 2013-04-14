@@ -233,7 +233,7 @@ def make_package_index(download_dir):
 # MAIN:
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if (len(sys.argv) != 2) or "-h" in sys.argv[1:] or "--help" in sys.argv[1:]:
         print("USAGE: %s DOWNLOAD_DIR" % os.path.basename(sys.argv[0]))
         print(__doc__)
         sys.exit(1)
