@@ -4,23 +4,26 @@ Version History
 Version: 1.2.3a19 (unreleased)
 -------------------------------------------------------------------------------
 
+NEWS and CHANGES:
+
+  * Scenarios can be now be selected by name or regular expression (#87).
+  * Dry-run mode: Detects now undefined steps.
+  * Dry-run mode: Uses untested counts now (was using: skipped counts).
+  * SummaryReporter: Summary shows now untested items if one ore more exist.
+
 IMPROVEMENT:
 
-  * Dry-run mode: Detects now undefined steps.
-  * SummaryReporter: Summary shows untested items if one ore more exist.
   * issue #103: sort feature file by name in a given directory (provided by: gurneyalex).
   * issue #102: Add configuration file setting for specifying default feature paths (provided by: lrowe).
+  * issue  #87: Add --name option support (provided by: johbo, jenisys).
   * issue  #42: Show all undefined steps taking tags into account (provided by: roignac, jenisys)
-
-CHANGES:
-
-  * Dry-run mode: Uses untested counts now (was using: skipped counts).
 
 FIXED:
 
   * issue #145: before_feature/after_feature should not be skipped (provided by: florentx).
   * issue #141: Don't check for full package in issue 112 (provided by: roignac).
   * issue #125: Duplicate "Captured stdout" if substep has failed (provided by: roignac).
+
 
 
 Version: 1.2.2.18 (2013-03-20)
