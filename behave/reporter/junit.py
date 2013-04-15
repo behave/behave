@@ -31,7 +31,7 @@ if hasattr(ElementTree, '_serialize'):
     def _serialize_xml(write, elem, encoding, qnames, namespaces,
                        orig=ElementTree._serialize_xml):
         if elem.tag == '![CDATA[':
-            write("\n<%s%s]]>\n" % (elem.tag, elem.text))
+            write("\n<%s%s]]>\n" % (elem.tag, elem.text.encode(encoding)))
             return
         return orig(write, elem, encoding, qnames, namespaces)
 
