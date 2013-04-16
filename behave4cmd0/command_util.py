@@ -14,7 +14,7 @@ from fnmatch import fnmatch
 # CONSTANTS:
 # -----------------------------------------------------------------------------
 HERE    = os.path.dirname(__file__)
-TOP     = os.path.join(HERE, "..", "..")
+TOP     = os.path.join(HERE, "..")
 TOPA    = os.path.abspath(TOP)
 WORKDIR = os.path.join(TOP, "__WORKDIR__")
 
