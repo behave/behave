@@ -27,7 +27,7 @@ class TestConfiguration(object):
         d = configuration.read_configuration(tn)
         eq_(d['outfile'], '/tmp/spam')
         eq_(d['paths'], [
-            '/absolute/path',
+            os.path.normpath('/absolute/path'),  # -- WINDOWS-REQUIRES: normpath
             os.path.normpath(os.path.join(os.path.dirname(tn), 'relative/path')),
             ])
         eq_(d['format'], ['pretty', 'tag-counter'])
