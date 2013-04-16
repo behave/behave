@@ -20,7 +20,7 @@ import shlex
 import codecs
 
 HERE = os.path.dirname(__file__)
-TOP  = os.path.join(HERE, "..", "..")
+TOP  = os.path.join(HERE, "..")
 
 # -----------------------------------------------------------------------------
 # CLASSES:
@@ -30,16 +30,36 @@ class CommandResult(object):
     ValueObject to store the results of a subprocess command call.
     """
     def __init__(self, **kwargs):
-        self.command = kwargs.get("command", None)
-        self.returncode = kwargs.get("returncode", 0)
-        self.output = kwargs.get("output", "")
-        self.failed = kwargs.get("failed", bool(self.returncode != 0))
+        self.command = kwargs.pop("command", None)
+        self.returncode = kwargs.pop("returncode", 0)
+        self.stdout = kwargs.pop("stdout", "")
+        self.stderr = kwargs.pop("stderr", "")
+        self._output = None
+        if kwargs:
+            names = ", ".join(kwargs.keys())
+            raise ValueError("Unexpected: %s" % names)
+
+    @property
+    def output(self):
+        if self._output is None:
+            output = self.stdout
+            if self.stderr:
+                output += "\n"
+                output += self.stderr
+            self._output = output
+        return self._output
+
+    @property
+    def failed(self):
+        return not self.returncode
 
     def clear(self):
         self.command = None
         self.returncode = 0
-        self.output = ""
-        self.failed = False
+        self.stdout = ""
+        self.stderr = ""
+        self._output = None
+
 
 class Command(object):
     """
@@ -50,30 +70,6 @@ class Command(object):
     COMMAND_MAP = {
         "behave": os.path.normpath("{0}/bin/behave".format(TOP))
     }
-
-    @staticmethod
-    def subprocess_check_output(args, **kwargs):
-        """
-        Reimplement subprocess.check_output() for Python versions
-        that do not support it yet (Python2.6, ...).
-        """
-        # print("RUN: {0}".format(" ".join(args)))
-        kwargs["stdout"] = subprocess.PIPE
-        kwargs["stderr"] = subprocess.STDOUT
-        command_process = subprocess.Popen(args, **kwargs)
-        output = command_process.communicate()[0]
-        command_process.poll()
-        assert command_process.returncode is not None
-        print("result={0}, OUTPUT:\n{1}\n".format(command_process.returncode, output))
-        if command_process.returncode == 0:
-            # -- SUCCESSFUL EXECUTION:
-            return output
-        # -- COMMAND-FAILED: Raise exception
-        cmd = " ".join(args)
-        e = subprocess.CalledProcessError(command_process.returncode, cmd)
-        e.output = output
-        raise e
-
 
     @classmethod
     def run(cls, command, cwd=".", **kwargs):
@@ -97,25 +93,35 @@ class Command(object):
 
         # -- RUN COMMAND:
         try:
-            subprocess_check_output = getattr(subprocess, "check_output",
-                                            cls.subprocess_check_output)
-            stderr = kwargs.pop("stderr", subprocess.STDOUT)
-            command_result.output = subprocess_check_output(cmdargs,
-                stderr=stderr, cwd=cwd, **kwargs)
-            command_result.returncode = 0
-            command_result.failed = False
+            process = subprocess.Popen(cmdargs,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            universal_newlines=True,
+                            cwd=cwd, **kwargs)
+            out, err = process.communicate()
+            if sys.version_info[0] < 3: # py3: we get unicode strings, py2 not
+                try:
+                    # jython may not have it
+                    default_encoding = sys.getdefaultencoding()
+                except AttributeError:
+                    default_encoding = sys.stdout.encoding or 'UTF-8'
+                out = unicode(out, process.stdout.encoding or default_encoding)
+                err = unicode(err, process.stderr.encoding or default_encoding)
+            process.poll()
+            assert process.returncode is not None
+            command_result.stdout = out
+            command_result.stderr = err
+            command_result.returncode = process.returncode
             if cls.DEBUG:
                 print("shell.cwd={0}".format(kwargs.get("cwd", None)))
                 print("shell.command: {0}".format(" ".join(cmdargs)))
                 print("shell.command.output:\n{0};".format(command_result.output))
-        except subprocess.CalledProcessError, e:
-            command_result.output = e.output
-            command_result.returncode = e.returncode
-            command_result.failed = True
         except OSError, e:
+            command_result.stderr = u"OSError: %s" % e
             command_result.returncode = e.errno
-            command_result.failed = True
+            assert e.errno != 0
         return command_result
+
 
 
 # -----------------------------------------------------------------------------
@@ -137,5 +143,5 @@ def behave(cmdline, cwd=".", **kwargs):
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
     command = " ".join(sys.argv[1:])
-    output = Command.subprocess_check_output(sys.argv[1:])
+    output = Command.run(sys.argv[1:])
     print("command: {0}\n{1}\n".format(command, output))
