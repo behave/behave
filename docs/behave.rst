@@ -315,7 +315,7 @@ Recognised Settings
    Don't display the summary at the end of the run.
 **summary** -- boolean
    Display the summary at the end of the run.
-**outfile** -- text
+**outfiles** -- text (multiple allowed)
    Write to specified file instead of stdout.
 **paths** -- text (multiple allowed)
    Specify paths to be searched for features.
