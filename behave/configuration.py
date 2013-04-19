@@ -188,7 +188,7 @@ options = [
           help="""Display the summary at the end of the run.""")),
 
     (('-o', '--outfile'),
-     dict(action='append', metavar='FILE',
+     dict(action='append', dest='outfiles', metavar='FILE',
           help="Write to specified file instead of stdout.")),
 
     ((),  # -- CONFIGFILE only
@@ -381,11 +381,14 @@ class Configuration(object):
                 continue
             setattr(self, key, value)
 
-        if args.outfile is None:
+        if not args.outfiles:
             self.outputs.append(sys.stdout)
         else:
-            for outfile in args.outfile:
+            for outfile in args.outfiles:
                 if outfile and outfile != '-':
+                    outdir = os.path.dirname(outfile)
+                    if not os.path.exists(outdir):
+                        os.makedirs(outdir)
                     self.outputs.append(open(outfile, 'w'))
                 else:
                     self.outputs.append(sys.stdout)

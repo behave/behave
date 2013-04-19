@@ -7,9 +7,10 @@ from behave import configuration
 
 # one entry of each kind handled
 TEST_CONFIG='''[behave]
-outfile=/tmp/spam
-paths = /absolute/path
-        relative/path
+outfiles= /absolute/path1
+          relative/path2
+paths = /absolute/path3
+        relative/path4
 tags = @foo,~@bar
        @zap
 format=pretty
@@ -25,10 +26,10 @@ class TestConfiguration(object):
         with open(tn, 'w') as f:
             f.write(TEST_CONFIG)
         d = configuration.read_configuration(tn)
-        eq_(d['outfile'], ['/tmp/spam'])
+        eq_(d['outfiles'], ['/absolute/path1', 'relative/path2'])
         eq_(d['paths'], [
-            os.path.normpath('/absolute/path'),  # -- WINDOWS-REQUIRES: normpath
-            os.path.normpath(os.path.join(os.path.dirname(tn), 'relative/path')),
+            os.path.normpath('/absolute/path3'),  # -- WINDOWS-REQUIRES: normpath
+            os.path.normpath(os.path.join(os.path.dirname(tn), 'relative/path4')),
             ])
         eq_(d['format'], ['pretty', 'tag-counter'])
         eq_(d['tags'], ['@foo,~@bar', '@zap'])
