@@ -18,22 +18,22 @@ class TestStepProgressFormatter(FormatterTest):
 
 
 class TestPrettyAndScenarioProgress(MultipleFormattersTest):
-    formattes = ['pretty', 'progress']
+    formatters = ['pretty', 'progress']
 
 class TestPlainAndScenarioProgress(MultipleFormattersTest):
-    formattes = ['plain', 'progress']
+    formatters = ['plain', 'progress']
 
 class TestJSONAndScenarioProgress(MultipleFormattersTest):
-    formattes = ['json', 'progress']
+    formatters = ['json', 'progress']
 
 class TestPrettyAndStepProgress(MultipleFormattersTest):
-    formattes = ['pretty', 'progress2']
+    formatters = ['pretty', 'progress2']
 
 class TestPlainAndStepProgress(MultipleFormattersTest):
-    formattes = ['plain', 'progress2']
+    formatters = ['plain', 'progress2']
 
 class TestJSONAndStepProgress(MultipleFormattersTest):
-    formattes = ['json', 'progress2']
+    formatters = ['json', 'progress2']
 
 class TestScenarioProgressAndStepProgress(MultipleFormattersTest):
-    formattes = ['progress', 'progress2']
+    formatters = ['progress', 'progress2']
