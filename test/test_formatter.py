@@ -246,10 +246,10 @@ class MultipleFormattersTests(FormatterTests):
 
 
 class TestPrettyAndPlain(MultipleFormattersTests):
-    formattes = ['pretty', 'plain']
+    formatters = ['pretty', 'plain']
 
 class TestPrettyAndJSON(MultipleFormattersTests):
-    formattes = ['pretty', 'json']
+    formatters = ['pretty', 'json']
 
 class TestJSONAndPlain(MultipleFormattersTests):
-    formattes = ['json', 'plain']
+    formatters = ['json', 'plain']
