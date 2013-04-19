@@ -221,7 +221,8 @@ class Feature(TagStatement, Replayable):
             run_feature = run_feature or runner.config.tags.check(tags)
 
         if run_feature or runner.config.show_skipped:
-            runner.formatter.feature(self)
+            for formatter in runner.formatters:
+                formatter.feature(self)
 
         # current tags as a set
         runner.context.tags = set(self.tags)
@@ -232,7 +233,8 @@ class Feature(TagStatement, Replayable):
             runner.run_hook('before_feature', runner.context, self)
 
         if self.background and (run_feature or runner.config.show_skipped):
-            runner.formatter.background(self.background)
+            for formatter in runner.formatters:
+                formatter.background(self.background)
 
         failed_count = 0
         for scenario in self:
@@ -257,9 +259,12 @@ class Feature(TagStatement, Replayable):
 
         runner.context._pop()
 
-        runner.formatter.eof()
+        for formatter in runner.formatters:
+            formatter.eof()
+
         if run_feature or runner.config.show_skipped:
-            runner.formatter.stream.write('\n')
+            for formatter in runner.formatters:
+                formatter.stream.write('\n')
 
         failed = (failed_count > 0)
         return failed
@@ -444,7 +449,8 @@ class Scenario(TagStatement, Replayable):
         self.was_dry_run = dry_run_scenario
 
         if run_scenario or runner.config.show_skipped:
-            runner.formatter.scenario(self)
+            for formatter in runner.formatters:
+                formatter.scenario(self)
 
         runner.context._push()
         runner.context.scenario = self
@@ -461,7 +467,8 @@ class Scenario(TagStatement, Replayable):
 
         if run_scenario or runner.config.show_skipped:
             for step in self:
-                runner.formatter.step(step)
+                for formatter in runner.formatters:
+                    formatter.step(step)
 
         for step in self:
             if run_steps:
@@ -784,16 +791,22 @@ class Step(BasicStatement, Replayable):
         if match is None:
             runner.undefined.append(self)
             if not quiet:
-                runner.formatter.match(NoMatch())
+                for formatter in runner.formatters:
+                    formatter.match(NoMatch())
+
             self.status = 'undefined'
             if not quiet:
-                runner.formatter.result(self)
+                for formatter in runner.formatters:
+                    formatter.result(self)
+
             return False
 
         keep_going = True
 
         if not quiet:
-            runner.formatter.match(match)
+            for formatter in runner.formatters:
+                formatter.match(match)
+
         runner.run_hook('before_step', runner.context, self)
         runner.start_capture()
 
@@ -843,7 +856,9 @@ class Step(BasicStatement, Replayable):
             keep_going = False
 
         if not quiet:
-            runner.formatter.result(self)
+            for formatter in runner.formatters:
+                formatter.result(self)
+
         runner.run_hook('after_step', runner.context, self)
 
         return keep_going

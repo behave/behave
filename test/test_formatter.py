@@ -96,6 +96,7 @@ class FormatterTests(object):
     def setUp(self):
         self.config = Mock()
         self.config.color = True
+        self.config.outputs = [sys.stdout]
         self.config.format = [self.formatter_name]
 
     _line = 0
@@ -105,7 +106,7 @@ class FormatterTests(object):
         return self._line
 
     def _formatter(self, file, config):
-        f = formatters.get_formatter(config, file)
+        f = formatters.get_formatter(config, [file])[0]
         f.uri('<string>')
         return f
 
@@ -180,7 +181,7 @@ class TestTagCount(FormatterTests):
 
     def _formatter(self, stream, config, tag_counts=None):
         if tag_counts is None: tag_counts = {}
-        f = formatters.get_formatter(config, stream)
+        f = formatters.get_formatter(config, [stream])[0]
         f.uri('<string>')
         f = tag_count.TagCountFormatter(f, tag_counts)
         f.uri('<string>')
@@ -197,3 +198,58 @@ class TestTagCount(FormatterTests):
 
         eq_(counts, {'ham': ['<string>:1'], 'spam': ['<string>:1']})
 
+
+class MultipleFormattersTests(FormatterTests):
+    formatters = []
+
+    def setUp(self):
+        self.config = Mock()
+        self.config.color = True
+        self.config.outputs = [sys.stdout for i in self.formatters]
+        self.config.format = self.formatters
+
+    def _formatters(self, file, config):
+        fs = formatters.get_formatter(config, [file])
+        for f in fs:
+            f.uri('<string>')
+        return fs
+
+    def test_feature(self):
+        # this test does not actually check the result of the formatting; it
+        # just exists to make sure that formatting doesn't explode in the face of
+        # unicode and stuff
+        ps = self._formatters(_tf(), self.config)
+        f = self._feature()
+        for p in ps:
+            p.feature(f)
+
+    def test_scenario(self):
+        ps = self._formatters(_tf(), self.config)
+        f = self._feature()
+        for p in ps:
+            p.feature(f)
+            s = self._scenario()
+            p.scenario(s)
+
+    def test_step(self):
+        ps = self._formatters(_tf(), self.config)
+        f = self._feature()
+        for p in ps:
+            p.feature(f)
+            s = self._scenario()
+            p.scenario(s)
+            s = self._step()
+            p.step(s)
+            p.match(self._match([]))
+            s.status = u'passed'
+            p.result(s)
+
+
+class TestPrettyAndPlain(MultipleFormattersTests):
+    formattes = ['pretty', 'plain']
+
+class TestPrettyAndJSON(MultipleFormattersTests):
+    formattes = ['pretty', 'json']
+
+class TestJSONAndPlain(MultipleFormattersTests):
+    formattes = ['json', 'plain']
