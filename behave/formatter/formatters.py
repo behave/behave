@@ -16,26 +16,30 @@ def list_formatters(stream):
         stream.write(u'%s: %s\n' % (name, formatters[name].description))
 
 
-def get_formatter(config, stream):
+def get_formatter(config, streams):
     # the stream may already handle encoding (py3k sys.stdout) - if it
     # doesn't (py2k sys.stdout) then make it do so.
     if sys.version_info[0] < 3:
         # py2 does, however, sometimes declare an encoding on sys.stdout,
         # even if it doesn't use it (or it might be explicitly None)
-        encoding = getattr(stream, 'encoding', None) or 'UTF-8'
-        stream = codecs.getwriter(encoding)(stream)
+        for i, stream in enumerate(streams):
+            encoding = getattr(stream, 'encoding', None) or 'UTF-8'
+            streams[i] = codecs.getwriter(encoding)(stream)
     elif not getattr(stream, 'encoding', None):
         # ok, so the stream doesn't have an encoding at all so add one
-        stream = codecs.getwriter('UTF-8')(stream)
+        for i, stream in enumerate(streams):
+            streams[i] = codecs.getwriter('UTF-8')(stream)
 
     # TODO complete this
-    formatter = None
-    for name in config.format:
-        if formatter is None:
-            formatter = formatters[name](stream, config)
+    formatter_list = []
+    for i in range(len(config.format)):
+        name = config.format[i]
+        if i < len(streams):
+            stream = streams[i]
         else:
-            formatter = formatters[name](formatter, config)
-    return formatter
+            stream = sys.stdout
+        formatter_list.append(formatters[name](stream, config))
+    return formatter_list
 
 # -----------------------------------------------------------------------------
 # REGISTER KNOWN FORMATTERS:

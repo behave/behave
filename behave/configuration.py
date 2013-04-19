@@ -201,7 +201,7 @@ options = [
           help="""Display the summary at the end of the run.""")),
 
     (('-o', '--outfile'),
-     dict(metavar='FILE',
+     dict(action='append', metavar='FILE',
           help="Write to specified file instead of stdout.")),
 
     ((),  # Config only
@@ -410,6 +410,7 @@ class Configuration(object):
         self.formatters = []
         self.reporters = []
         self.name_re = None
+        self.outputs = []
         load_configuration(self.defaults)
         parser.set_defaults(**self.defaults)
 >>>>>>> 94a81ab... Provide --name option support to select scenarios by name (pull-request #87).
@@ -420,10 +421,14 @@ class Configuration(object):
                 continue
             setattr(self, key, value)
 
-        if args.outfile and args.outfile != '-':
-            self.output = open(args.outfile, 'w')
+        if args.outfile is None:
+            self.outputs.append(sys.stdout)
         else:
-            self.output = sys.stdout
+            for outfile in args.outfile:
+                if outfile and outfile != '-':
+                    self.outputs.append(open(outfile, 'w'))
+                else:
+                    self.outputs.append(sys.stdout)
 
         if self.wip:
             # Only run scenarios tagged with "wip". Additionally: use the
