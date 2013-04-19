@@ -25,7 +25,7 @@ class TestConfiguration(object):
         with open(tn, 'w') as f:
             f.write(TEST_CONFIG)
         d = configuration.read_configuration(tn)
-        eq_(d['outfile'], '/tmp/spam')
+        eq_(d['outfile'], ['/tmp/spam'])
         eq_(d['paths'], [
             '/absolute/path',
             os.path.normpath(os.path.join(os.path.dirname(tn), 'relative/path')),

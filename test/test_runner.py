@@ -519,6 +519,7 @@ class TestRunWithPaths(object):
         abspath.side_effect = lambda x: x.upper()
         self.config.lang = 'fritz'
         self.config.format = ['plain']
+        self.config.outputs = [None]
         self.config.output.encoding = None
         self.config.exclude = lambda s: False
         self.config.junit = False
