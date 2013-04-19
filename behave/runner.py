@@ -335,10 +335,11 @@ class Runner(object):
         self.stderr_capture = None
         self.log_capture = None
         self.old_stdout = None
+        self.old_stderr = None
 
         self.base_dir = None
         self.context = None
-        self.formatter = None
+        self.formatters = None
 
     def setup_paths(self):
         if self.config.paths:
