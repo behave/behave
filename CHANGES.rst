@@ -13,6 +13,7 @@ NEWS and CHANGES:
 
 IMPROVEMENT:
 
+  * issue #154: Support multiple formatters (provided by: roignac, jenisys)
   * issue #103: sort feature file by name in a given directory (provided by: gurneyalex).
   * issue #102: Add configuration file setting for specifying default feature paths (provided by: lrowe).
   * issue  #87: Add --name option support (provided by: johbo, jenisys).
@@ -24,6 +25,7 @@ FIXED:
   * issue #141: Don't check for full package in issue 112 (provided by: roignac).
   * issue #125: Duplicate "Captured stdout" if substep has failed (provided by: roignac).
   * issue  #48: Docs aren't clear on how Background is to be used.
+  * issue  #47: Formatter processing chain is broken (solved by: #154).
 
 
 
