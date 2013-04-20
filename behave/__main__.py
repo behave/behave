@@ -47,6 +47,7 @@ you have to use logical AND::
 # --tags @qa:3
 # """.strip()
 
+
 def main():
     config = Configuration()
 
@@ -83,12 +84,24 @@ def main():
         sys.exit(0)
 
     if not config.format:
-        format0 = config.defaults["format0"]
-        config.format = [ format0 ]
+        default_format = config.defaults["default_format"]
+        config.format = [ default_format ]
+    elif config.format and "format" in config.defaults:
+        # -- CASE: Formatter are specified in behave configuration file.
+        #    Check if formatter are provided on command-line, too.
+        if len(config.format) == len(config.defaults["format"]):
+            # -- NO FORMATTER on command-line: Add default formatter.
+            default_format = config.defaults["default_format"]
+            config.format.append(default_format)
     elif 'help' in config.format:
         print "Available formatters:"
         formatters.list_formatters(sys.stdout)
         sys.exit(0)
+
+    if len(config.outputs) > len(config.format):
+        print 'CONFIG-ERROR: More outfiles (%d) than formatters (%d).' % \
+              (len(config.outputs), len(config.format))
+        sys.exit(1)
 
     runner = Runner(config)
     try:
