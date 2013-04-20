@@ -35,8 +35,8 @@ You may see the same information presented below at any time using ``behave
 **--junit-directory**
    Directory in which to store JUnit reports.
 **-f, --format**
-   Specify a formatter. By default the 'pretty' formatter is used.
-   Pass '--format help' to get a list of available formatters.
+   Specify a formatter. If none is specified the default formatter is
+   used. Pass '--format help' to get a list of available formatters.
 **-k, --no-skipped**
    Don't print skipped steps (due to tags).
 **--show-skipped**
@@ -244,9 +244,11 @@ Recognised Settings
    regardless of the '--capture' and '--no-capture' options.
 **junit_directory** -- text
    Directory in which to store JUnit reports.
+**default_format** -- text
+   Specify default formatter (default: pretty).
 **format** -- text (multiple allowed)
-   Specify a formatter. By default the 'pretty' formatter is used.
-   Pass '--format help' to get a list of available formatters.
+   Specify a formatter. If none is specified the default formatter is
+   used. Pass '--format help' to get a list of available formatters.
 **show_skipped** -- boolean
    Don't print skipped steps (due to tags).
 **show_skipped** -- boolean
