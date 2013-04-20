@@ -13,6 +13,7 @@ NEWS and CHANGES:
 
 IMPROVEMENT:
 
+  * issue #154: Support multiple formatters (provided by: roignac, jenisys)
   * issue #103: sort feature file by name in a given directory (provided by: gurneyalex).
 <<<<<<< HEAD
 =======
@@ -27,6 +28,7 @@ FIXED:
   * issue #141: Don't check for full package in issue 112 (provided by: roignac).
   * issue #125: Duplicate "Captured stdout" if substep has failed (provided by: roignac).
   * issue  #48: Docs aren't clear on how Background is to be used.
+  * issue  #47: Formatter processing chain is broken (solved by: #154).
 
 
 
