@@ -61,9 +61,13 @@ options = [
           default='reports',
           help="""Directory in which to store JUnit reports.""")),
 
+    ((),  # -- CONFIGFILE only
+     dict(dest='default_format',
+          help="Specify default formatter (default: pretty).")),
+
     (('-f', '--format'),
      dict(action='append',
-          help="""Specify a formatter. By default the 'pretty'
+          help="""Specify a formatter. If none is specified the default
                   formatter is used. Pass '--format help' to get a
                   list of available formatters.""")),
 
@@ -193,7 +197,7 @@ options = [
           help="""Display the summary at the end of the run.""")),
 
     (('-o', '--outfile'),
-     dict(metavar='FILE',
+     dict(action='append', dest='outfiles', metavar='FILE',
           help="Write to specified file instead of stdout.")),
 
     ((),  # -- CONFIGFILE only
@@ -311,11 +315,28 @@ def read_configuration(path):
         else:
             raise ValueError('action "%s" not implemented' % action)
 
-    if 'paths' in result:
-        # Normalized relative paths to the configuration file.
-        paths = result['paths']
-        result['paths'] = \
-            [os.path.normpath(os.path.join(cfgdir, p)) for p in paths]
+    if 'format' in result:
+        # -- OPTIONS: format/outfiles are coupled in configuration file.
+        formatters = result['format']
+        formatter_size = len(formatters)
+        outfiles = result.get('outfiles', [])
+        outfiles_size = len(outfiles)
+        if outfiles_size < formatter_size:
+            for formatter_name in formatters[outfiles_size:]:
+                outfile = "%s.output" % formatter_name
+                outfiles.append(outfile)
+            result['outfiles'] = outfiles
+        elif len(outfiles) > formatter_size:
+            print "CONFIG-ERROR: Too many outfiles (%d) provided." % outfiles_size
+            result['outfiles'] = outfiles[:formatter_size]
+
+    for paths_name in ('paths', 'outfiles'):
+        if paths_name in result:
+            # -- Evaluate relative paths relative to configfile location.
+            # NOTE: Absolute paths are preserved by os.path.join().
+            paths = result[paths_name]
+            result[paths_name] = \
+                [os.path.normpath(os.path.join(cfgdir, p)) for p in paths]
 
     return result
 
@@ -370,7 +391,7 @@ class Configuration(object):
         summary=True,
         junit=False,
         # -- SPECIAL:
-        format0="pretty",   #< Used when no formatters are configured.
+        default_format="pretty",   # -- Used when no formatters are configured.
     )
 
     def __init__(self):
@@ -387,6 +408,8 @@ class Configuration(object):
         self.lang_list = None
         self.include_re = None
         self.exclude_re = None
+        self.name_re = None
+        self.outputs = []
 
         load_configuration(self.defaults)
         parser.set_defaults(**self.defaults)
@@ -397,10 +420,17 @@ class Configuration(object):
                 continue
             setattr(self, key, value)
 
-        if args.outfile and args.outfile != '-':
-            self.output = open(args.outfile, 'w')
+        if not args.outfiles:
+            self.outputs.append(sys.stdout)
         else:
-            self.output = sys.stdout
+            for outfile in args.outfiles:
+                if outfile and outfile != '-':
+                    outdir = os.path.dirname(outfile) or '.'
+                    if not os.path.exists(outdir):
+                        os.makedirs(outdir)
+                    self.outputs.append(open(outfile, 'w'))
+                else:
+                    self.outputs.append(sys.stdout)
 
         if self.wip:
             # Only run scenarios tagged with "wip". Additionally: use the

@@ -361,10 +361,11 @@ class Runner(object):
         self.stderr_capture = None
         self.log_capture = None
         self.old_stdout = None
+        self.old_stderr = None
 
         self.base_dir = None
         self.context = None
-        self.formatter = None
+        self.formatters = None
 
     def setup_paths(self):
         # pylint: disable=R0912
@@ -563,7 +564,7 @@ class Runner(object):
         context = self.context = Context(self)
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
         self.setup_capture()
-        stream = self.config.output
+        streams = self.config.outputs
         failed_count = 0
 
         self.run_hook('before_all', context)
@@ -578,8 +579,9 @@ class Runner(object):
         for feature in features:
             if run_feature:
                 self.feature = feature
-                self.formatter = formatters.get_formatter(self.config, stream)
-                self.formatter.uri(feature.filename)
+                self.formatters = formatters.get_formatter(self.config, streams)
+                for formatter in self.formatters:
+                    formatter.uri(feature.filename)
 
                 failed = feature.run(self)
                 if failed:
@@ -588,7 +590,8 @@ class Runner(object):
                         # -- FAIL-EARLY: After first failure.
                         run_feature = False
 
-                self.formatter.close()
+                for formatter in self.formatters:
+                    formatter.close()
 
             # -- ALWAYS: Report run/not-run feature to reporters.
             # REQUIRED-FOR: Summary to keep track of untested features.

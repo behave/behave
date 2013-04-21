@@ -1,7 +1,7 @@
 # ============================================================================
 # PAVER MAKEFILE (pavement.py) -- behave
 # ============================================================================
-# REQUIRES: paver >= 1.1
+# REQUIRES: paver >= 1.2
 # DESCRIPTION:
 #   Provides platform-neutral "Makefile" for simple, project-specific tasks.
 #   AVOID: setup support, because it is currently handled elsewhere.

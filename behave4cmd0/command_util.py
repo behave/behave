@@ -6,6 +6,7 @@ TODO:
   matcher that ignores empty lines and whitespace and has contains comparison
 """
 
+from behave4cmd0 import pathutil
 import os.path
 import shutil
 from fnmatch import fnmatch
@@ -35,15 +36,15 @@ def workdir_save_coverage_files(workdir, destdir=None):
             sourcename = os.path.join(workdir, fname)
             shutil.move(sourcename, destdir)
 
-def ensure_directory_exists(dirname):
-    """
-    Ensures that a directory exits.
-    If it does not exist, it is automatically created.
-    """
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
-    assert os.path.exists(dirname)
-    assert os.path.isdir(dirname)
+# def ensure_directory_exists(dirname):
+#     """
+#     Ensures that a directory exits.
+#     If it does not exist, it is automatically created.
+#     """
+#     if not os.path.exists(dirname):
+#         os.makedirs(dirname)
+#     assert os.path.exists(dirname)
+#     assert os.path.isdir(dirname)
 
 def ensure_context_attribute_exists(context, name, default_value=None):
     """
@@ -62,53 +63,53 @@ def ensure_workdir_exists(context):
     ensure_context_attribute_exists(context, "workdir", None)
     if not context.workdir:
         context.workdir = os.path.abspath(WORKDIR)
-    ensure_directory_exists(context.workdir)
+    pathutil.ensure_directory_exists(context.workdir)
 
 
-def create_textfile_with_contents(filename, contents):
-    """
-    Creates a textual file with the provided contents in the workdir.
-    Overwrites an existing file.
-    """
-    ensure_directory_exists(os.path.dirname(filename))
-    if os.path.exists(filename):
-        os.remove(filename)
-    outstream = open(filename, "w")
-    outstream.write(contents)
-    if not contents.endswith("\n"):
-        outstream.write("\n")
-    outstream.flush()
-    outstream.close()
-    assert os.path.exists(filename)
+# def create_textfile_with_contents(filename, contents):
+#     """
+#     Creates a textual file with the provided contents in the workdir.
+#     Overwrites an existing file.
+#     """
+#     ensure_directory_exists(os.path.dirname(filename))
+#     if os.path.exists(filename):
+#         os.remove(filename)
+#     outstream = open(filename, "w")
+#     outstream.write(contents)
+#     if not contents.endswith("\n"):
+#         outstream.write("\n")
+#     outstream.flush()
+#     outstream.close()
+#     assert os.path.exists(filename)
 
-def text_remove_empty_lines(text):
-    """
-    Whitespace normalization:
-      - Strip empty lines
-      - Strip trailing whitespace
-    """
-    lines = [ line.rstrip()  for line in text.splitlines()  if line.strip() ]
-    return "\n".join(lines)
+# def text_remove_empty_lines(text):
+#     """
+#     Whitespace normalization:
+#       - Strip empty lines
+#       - Strip trailing whitespace
+#     """
+#     lines = [ line.rstrip()  for line in text.splitlines()  if line.strip() ]
+#     return "\n".join(lines)
+#
+# def text_normalize(text):
+#     """
+#     Whitespace normalization:
+#       - Strip empty lines
+#       - Strip leading whitespace  in a line
+#       - Strip trailing whitespace in a line
+#       - Normalize line endings
+#     """
+#     lines = [ line.strip()  for line in text.splitlines()  if line.strip() ]
+#     return "\n".join(lines)
 
-def text_normalize(text):
-    """
-    Whitespace normalization:
-      - Strip empty lines
-      - Strip leading whitespace  in a line
-      - Strip trailing whitespace in a line
-      - Normalize line endings
-    """
-    lines = [ line.strip()  for line in text.splitlines()  if line.strip() ]
-    return "\n".join(lines)
-
-def posixpath_normpath(pathname):
-    """
-    Convert path into POSIX path:
-      - Normalize path
-      - Replace backslash with slash
-    """
-    backslash = '\\'
-    pathname = os.path.normpath(pathname)
-    if backslash in pathname:
-        pathname = pathname.replace(backslash, '/')
-    return pathname
+# def posixpath_normpath(pathname):
+#     """
+#     Convert path into POSIX path:
+#       - Normalize path
+#       - Replace backslash with slash
+#     """
+#     backslash = '\\'
+#     pathname = os.path.normpath(pathname)
+#     if backslash in pathname:
+#         pathname = pathname.replace(backslash, '/')
+#     return pathname

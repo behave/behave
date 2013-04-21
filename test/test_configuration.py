@@ -6,14 +6,18 @@
 #   W0614   Unused import ... from wildcard import
 
 from __future__ import with_statement
+import os.path
 from test.testutil_tempfile import named_temporary_file
 from nose.tools import *
 from behave import configuration
 import unittest
 
 # one entry of each kind handled
-TEST_CONFIG = '''[behave]
-outfile=/tmp/spam
+TEST_CONFIG='''[behave]
+outfiles= /absolute/path1
+          relative/path2
+paths = /absolute/path3
+        relative/path4
 tags = @foo,~@bar
        @zap
 format=pretty
@@ -30,8 +34,17 @@ class TestConfiguration(unittest.TestCase):
             f.write(TEST_CONFIG)
             f.close()
 
+            tndir = os.path.dirname(f.name)
+
             d = configuration.read_configuration(f.name)
-            eq_(d['outfile'], '/tmp/spam')
+            eq_(d['outfiles'], [
+                os.path.normpath('/absolute/path1'),
+                os.path.normpath(os.path.join(tndir, 'relative/path2')),
+            ])
+            eq_(d['paths'], [
+                os.path.normpath('/absolute/path3'),  # -- WINDOWS-REQUIRES: normpath
+                os.path.normpath(os.path.join(tndir, 'relative/path4')),
+            ])
             eq_(d['format'], ['pretty', 'tag-counter'])
             eq_(d['tags'], ['@foo,~@bar', '@zap'])
             eq_(d['stdout_capture'], False)

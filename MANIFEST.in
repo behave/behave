@@ -12,6 +12,7 @@ include *.cfg
 include *.ini
 include *.rst
 include *.txt
+include bin/behave*
 recursive-include bin           *.py *.cmd *.zip
 recursive-include etc           *.xsd *.txt
 recursive-include docs          *.rst *.txt *.css *.py *.html *.rst-* Makefile
@@ -21,4 +22,3 @@ recursive-include tools         *.feature *.py *.yml *.sh
 recursive-include selftest.features  *.feature *.py *.txt
 recursive-include issue.features  *.feature *.py *.txt
 prune .tox
-
