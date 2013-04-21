@@ -11,8 +11,8 @@ TODO:
 
 from __future__ import print_function
 from behave import given, when, then, step, matchers
-import command_shell
-import command_util
+from behave4cmd0 import command_shell, command_util, pathutil, textutil
+from behave4cmd0.pathutil import posixpath_normpath
 import os
 import shutil
 from hamcrest import assert_that, equal_to, is_not, contains_string
@@ -25,7 +25,7 @@ DEBUG = True
 
 
 # -----------------------------------------------------------------------------
-# STEPS:
+# STEPS: WORKING DIR
 # -----------------------------------------------------------------------------
 @given(u'a new working directory')
 def step_a_new_working_directory(context):
@@ -44,6 +44,9 @@ def step_use_curdir_as_working_directory(context):
     context.workdir = os.path.abspath(".")
     command_util.ensure_workdir_exists(context)
 
+# -----------------------------------------------------------------------------
+# STEPS: Create files with contents
+# -----------------------------------------------------------------------------
 @given(u'a file named "{filename}" with')
 def step_a_file_named_filename_with(context, filename):
     """
@@ -53,7 +56,7 @@ def step_a_file_named_filename_with(context, filename):
     assert not os.path.isabs(filename)
     command_util.ensure_workdir_exists(context)
     filename2 = os.path.join(context.workdir, filename)
-    command_util.create_textfile_with_contents(filename2, context.text)
+    pathutil.create_textfile_with_contents(filename2, context.text)
 
     # -- SPECIAL CASE: For usage with behave steps.
     if filename.endswith(".feature"):
@@ -68,8 +71,12 @@ def step_an_empty_file_named_filename(context, filename):
     assert not os.path.isabs(filename)
     command_util.ensure_workdir_exists(context)
     filename2 = os.path.join(context.workdir, filename)
-    command_util.create_textfile_with_contents(filename2, "")
+    pathutil.create_textfile_with_contents(filename2, "")
 
+
+# -----------------------------------------------------------------------------
+# STEPS: Run commands
+# -----------------------------------------------------------------------------
 @when(u'I run "{command}"')
 def step_i_run_command(context, command):
     """
@@ -140,62 +147,10 @@ def step_it_should_fail_with(context):
     step_command_output_should_contain(context)
     assert_that(context.command_result.returncode, is_not(equal_to(0)))
 
+
 # -----------------------------------------------------------------------------
 # STEPS FOR: Output Comparison
 # -----------------------------------------------------------------------------
-@then(u'the command output should contain')
-def step_command_output_should_contain(context):
-    '''
-    EXAMPLE:
-        ...
-        when I run "behave ..."
-        then it should pass
-        and  the command output should contain:
-            """
-            TEXT
-            """
-    '''
-    assert context.text is not None, "ENSURE: multiline text is provided."
-    expected_output = context.text
-    if "{__WORKDIR__}" in expected_output or "{__CWD__}" in expected_output:
-        expected_output = context.text.format(
-            __WORKDIR__ = command_util.posixpath_normpath(context.workdir),
-            __CWD__     = command_util.posixpath_normpath(os.getcwd())
-        )
-    command_output  = context.command_result.output
-    expected_output = command_util.text_normalize(expected_output.strip())
-    actual_output   = command_util.text_normalize(command_output.strip())
-    if DEBUG:
-        print("expected:\n{0}".format(expected_output))
-        print("actual:\n{0}".format(actual_output))
-    assert_that(actual_output, contains_string(expected_output))
-
-@then(u'the command output should not contain')
-def step_command_output_should_not_contain(context):
-    '''
-    EXAMPLE:
-        ...
-        when I run "behave ..."
-        then it should pass
-        and  the command output should not contain:
-            """
-            TEXT
-            """
-    '''
-    #    expected_output = context.text.format(
-    #        __WORKDIR__ = command_util.posixpath_normpath(context.workdir),
-    #        __CWD__     = command_util.posixpath_normpath(os.getcwd())
-    #    )
-    #    command_output  = context.command_result.output
-    #    expected_output = command_util.text_normalize(expected_output.strip())
-    #    actual_output   = command_util.text_normalize(command_output.strip())
-    #    if DEBUG:
-    #        print("expected:\n{0}".format(expected_output))
-    #        print("actual:\n{0}".format(actual_output))
-    #    assert_that(actual_output, is_not(contains_string(expected_output)))
-    assert context.text is not None, "ENSURE: multiline text is provided."
-    step_command_output_should_not_contain_text(context, context.text.strip())
-
 @then(u'the command output should contain "{text}"')
 def step_command_output_should_contain_text(context, text):
     '''
@@ -203,18 +158,18 @@ def step_command_output_should_contain_text(context, text):
         ...
         Then the command output should contain "TEXT"
     '''
-    if "{__WORKDIR__}" in text or "{__CWD__}" in text:
-        text = text.format(
-            __WORKDIR__ = command_util.posixpath_normpath(context.workdir),
-            __CWD__     = command_util.posixpath_normpath(os.getcwd())
+    expected_text = text
+    if "{__WORKDIR__}" in expected_text or "{__CWD__}" in expected_text:
+        expected_text = textutil.template_substitute(text,
+             __WORKDIR__ = posixpath_normpath(context.workdir),
+             __CWD__     = posixpath_normpath(os.getcwd())
         )
-    command_output  = context.command_result.output
-    expected_output = command_util.text_normalize(text)
-    actual_output   = command_util.text_normalize(command_output.strip())
+    actual_output = context.command_result.output
     if DEBUG:
-        print("expected:\n{0}".format(expected_output))
+        print("expected:\n{0}".format(expected_text))
         print("actual:\n{0}".format(actual_output))
-    assert_that(actual_output, contains_string(expected_output))
+    textutil.assert_normtext_should_contain(actual_output, expected_text)
+
 
 @then(u'the command output should not contain "{text}"')
 def step_command_output_should_not_contain_text(context, text):
@@ -223,17 +178,18 @@ def step_command_output_should_not_contain_text(context, text):
         ...
         then the command output should not contain "TEXT"
     '''
-    text = text.format(
-        __WORKDIR__ = command_util.posixpath_normpath(context.workdir),
-        __CWD__     = command_util.posixpath_normpath(os.getcwd())
-    )
-    command_output  = context.command_result.output
-    expected_output = command_util.text_normalize(text)
-    actual_output   = command_util.text_normalize(command_output.strip())
+    expected_text = text
+    if "{__WORKDIR__}" in text or "{__CWD__}" in text:
+        expected_text = textutil.template_substitute(text,
+             __WORKDIR__ = posixpath_normpath(context.workdir),
+             __CWD__     = posixpath_normpath(os.getcwd())
+        )
+    actual_output  = context.command_result.output
     if DEBUG:
-        print("expected:\n{0}".format(expected_output))
+        print("expected:\n{0}".format(expected_text))
         print("actual:\n{0}".format(actual_output))
-    assert_that(actual_output, is_not(contains_string(expected_output)))
+    textutil.assert_normtext_should_not_contain(actual_output, expected_text)
+
 
 @then(u'the command output should contain exactly "{text}"')
 def step_command_output_should_contain_exactly_text(context, text):
@@ -248,34 +204,69 @@ def step_command_output_should_contain_exactly_text(context, text):
     """
     expected_text = text
     if "{__WORKDIR__}" in text or "{__CWD__}" in text:
-        expected_text = text.format(
-            __WORKDIR__ = posixpath_normpath(context.workdir),
-            __CWD__     = posixpath_normpath(os.getcwd())
+        expected_text = textutil.template_substitute(text,
+             __WORKDIR__ = posixpath_normpath(context.workdir),
+             __CWD__     = posixpath_normpath(os.getcwd())
         )
     actual_output  = context.command_result.output
-    assert_that(actual_output, contains_string(expected_text))
-    # REAL: textutil.assert_text_should_contain_exactly(actual_output, expected_text)
+    textutil.assert_text_should_contain_exactly(actual_output, expected_text)
 
-@then(u'the command output should contain exactly')
-def step_command_output_should_contain_exactly_with_multiline_text(context):
-    assert context.text is not None, "ENSURE: multiline text is provided."
-    step_command_output_should_contain_exactly_text(context, context.text)
 
 @then(u'the command output should not contain exactly "{text}"')
 def step_command_output_should_not_contain_exactly_text(context, text):
     expected_text = text
     if "{__WORKDIR__}" in text or "{__CWD__}" in text:
-        expected_text = text.format(
-            __WORKDIR__ = posixpath_normpath(context.workdir),
-            __CWD__     = posixpath_normpath(os.getcwd())
+        expected_text = textutil.template_substitute(text,
+             __WORKDIR__ = posixpath_normpath(context.workdir),
+             __CWD__     = posixpath_normpath(os.getcwd())
         )
     actual_output  = context.command_result.output
-    assert_that(actual_output, is_not(contains_string(expected_text)))
+    textutil.assert_text_should_not_contain_exactly(actual_output, expected_text)
+
+
+@then(u'the command output should contain')
+def step_command_output_should_contain(context):
+    '''
+    EXAMPLE:
+        ...
+        when I run "behave ..."
+        then it should pass
+        and  the command output should contain:
+            """
+            TEXT
+            """
+    '''
+    assert context.text is not None, "REQUIRE: multi-line text"
+    step_command_output_should_contain_text(context, context.text)
+
+
+@then(u'the command output should not contain')
+def step_command_output_should_not_contain(context):
+    '''
+    EXAMPLE:
+        ...
+        when I run "behave ..."
+        then it should pass
+        and  the command output should not contain:
+            """
+            TEXT
+            """
+    '''
+    assert context.text is not None, "REQUIRE: multi-line text"
+    step_command_output_should_not_contain_text(context, context.text.strip())
+
+
+@then(u'the command output should contain exactly')
+def step_command_output_should_contain_exactly_with_multiline_text(context):
+    assert context.text is not None, "REQUIRE: multi-line text"
+    step_command_output_should_contain_exactly_text(context, context.text)
+
 
 @then(u'the command output should not contain exactly')
 def step_command_output_should_contain_not_exactly_with_multiline_text(context):
-    assert context.text is not None, "ENSURE: multiline text is provided."
+    assert context.text is not None, "REQUIRE: multi-line text"
     step_command_output_should_not_contain_exactly_text(context, context.text)
+
 
 # -----------------------------------------------------------------------------
 # STEPS FOR: Directories
@@ -291,7 +282,7 @@ def step_remove_directory(context, directory):
 
 @given(u'I ensure that the directory "{directory}" does not exist')
 def step_given_the_directory_should_not_exist(context, directory):
-    step_remove_directory(directory)
+    step_remove_directory(context, directory)
 
 
 @then(u'the directory "{directory}" should exist')
@@ -307,6 +298,81 @@ def step_the_directory_should_not_exist(context, directory):
     if not os.path.isabs(directory):
         path_ = os.path.join(context.workdir, os.path.normpath(directory))
     assert_that(not os.path.isdir(path_))
+
+# -----------------------------------------------------------------------------
+# FILE STEPS:
+# -----------------------------------------------------------------------------
+@step(u'a file named "{filename}" exists')
+def step_file_named_filename_exists(context, filename):
+    """
+    Verifies that a file with this filename exists.
+
+    .. code-block:: gherkin
+
+        Given a file named "abc.txt" exists
+         When a file named "abc.txt" exists
+    """
+    step_file_named_filename_should_exist(context, filename)
+
+@step(u'a file named "{filename}" does not exist')
+def step_file_named_filename_does_not_exist(context, filename):
+    """
+    Verifies that a file with this filename does not exist.
+
+    .. code-block:: gherkin
+
+        Given a file named "abc.txt" does not exist
+         When a file named "abc.txt" does not exist
+    """
+    step_file_named_filename_should_not_exist(context, filename)
+
+@then(u'a file named "{filename}" should exist')
+def step_file_named_filename_should_exist(context, filename):
+    command_util.ensure_workdir_exists(context)
+    filename_ = pathutil.realpath_with_context(filename, context)
+    assert_that(os.path.exists(filename_) and os.path.isfile(filename_))
+
+@then(u'a file named "{filename}" should not exist')
+def step_file_named_filename_should_not_exist(context, filename):
+    command_util.ensure_workdir_exists(context)
+    filename_ = pathutil.realpath_with_context(filename, context)
+    assert_that(not os.path.exists(filename_))
+
+# -----------------------------------------------------------------------------
+# STEPS FOR FILE CONTENTS:
+# -----------------------------------------------------------------------------
+@then(u'the file "{filename}" should contain "{text}"')
+def step_file_should_contain_text(context, filename, text):
+    expected_text = text
+    if "{__WORKDIR__}" in text or "{__CWD__}" in text:
+        expected_text = textutil.template_substitute(text,
+            __WORKDIR__ = posixpath_normpath(context.workdir),
+            __CWD__     = posixpath_normpath(os.getcwd())
+        )
+    file_contents = pathutil.read_file_contents(filename, context=context)
+    file_contents = file_contents.rstrip()
+    textutil.assert_normtext_should_contain(file_contents, expected_text)
+
+
+@then(u'the file "{filename}" should not contain "{text}"')
+def step_file_should_not_contain_text(context, filename, text):
+    file_contents = pathutil.read_file_contents(filename, context=context)
+    file_contents = file_contents.rstrip()
+    textutil.assert_normtext_should_not_contain(file_contents, text)
+    # XXX assert_that(file_contents, is_not(contains_string(text)))
+
+
+@then(u'the file "{filename}" should contain')
+def step_file_should_contain_multiline_text(context, filename):
+    assert context.text is not None, "REQUIRE: multiline text"
+    step_file_should_contain_text(context, filename, context.text)
+
+
+@then(u'the file "{filename}" should not contain')
+def step_file_should_not_contain_multiline_text(context, filename):
+    assert context.text is not None, "REQUIRE: multiline text"
+    step_file_should_not_contain_text(context, filename, context.text)
+
 
 # -----------------------------------------------------------------------------
 # ENVIRONMENT VARIABLES

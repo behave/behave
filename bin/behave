@@ -39,7 +39,7 @@ def setup_behave():
 
 def behave_main0():
     # from behave.configuration import Configuration
-    from behave.main import main as behave_main
+    from behave.__main__ import main as behave_main
     setup_behave()
     behave_main()
 

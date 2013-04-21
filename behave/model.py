@@ -220,6 +220,14 @@ class Feature(TagStatement, Replayable):
             duration += scenario.duration
         return duration
 
+    def mark_skipped(self):
+        """
+        Marks this feature (and all its scenarios and steps) as skipped.
+        """
+        for scenario in self.scenarios:
+            scenario.mark_skipped()
+        assert self.status == "skipped"
+
     def run(self, runner):
         # pylint: disable=W0212
         #   W0212   Access to a protected member: runner.context._push()(._pop()
@@ -236,7 +244,8 @@ class Feature(TagStatement, Replayable):
             run_feature = run_feature or runner.config.tags.check(tags)
 
         if run_feature or runner.config.show_skipped:
-            runner.formatter.feature(self)
+            for formatter in runner.formatters:
+                formatter.feature(self)
 
         # current tags as a set
         runner.context.tags = set(self.tags)
@@ -247,10 +256,17 @@ class Feature(TagStatement, Replayable):
             runner.run_hook('before_feature', runner.context, self)
 
         if self.background and (run_feature or runner.config.show_skipped):
-            runner.formatter.background(self.background)
+            for formatter in runner.formatters:
+                formatter.background(self.background)
 
         failed_count = 0
         for scenario in self:
+            # -- OPTIONAL: Select scenario by name (regular expressions).
+            if (runner.config.name and
+                    not runner.config.name_re.search(scenario.name)):
+                scenario.mark_skipped()
+                continue
+
             failed = scenario.run(runner)
             if failed:
                 failed_count += 1
@@ -266,9 +282,12 @@ class Feature(TagStatement, Replayable):
 
         runner.context._pop()
 
-        runner.formatter.eof()
+        for formatter in runner.formatters:
+            formatter.eof()
+
         if run_feature or runner.config.show_skipped:
-            runner.formatter.stream.write('\n')
+            for formatter in runner.formatters:
+                formatter.stream.write('\n')
 
         failed = (failed_count > 0)
         return failed
@@ -399,6 +418,7 @@ class Scenario(TagStatement, Replayable):
         self._row = None
         self.stderr = None
         self.stdout = None
+        self.was_dry_run = False
 
     def __repr__(self):
         return '<Scenario "%s">' % self.name
@@ -418,8 +438,16 @@ class Scenario(TagStatement, Replayable):
     @property
     def status(self):
         for step in self.steps:
-            if step.status == 'failed' or step.status == 'undefined':
+            if step.status == 'failed':
                 return 'failed'
+            elif step.status == 'undefined':
+                if self.was_dry_run:
+                    # -- SPECIAL CASE: In dry-run with undefined-step discovery
+                    #    Undefined steps should not cause failed scenario.
+                    return 'untested'
+                else:
+                    # -- NORMALLY: Undefined steps cause failed scenario.
+                    return 'failed'
             elif step.status == 'skipped':
                 return 'skipped'
             elif step.status == 'untested':
@@ -434,6 +462,15 @@ class Scenario(TagStatement, Replayable):
             duration += step.duration
         return duration
 
+    def mark_skipped(self):
+        """
+        Marks this scenario (and all its steps) as skipped.
+        """
+        for step in self:
+            assert step.status == "untested" or step.status == "skipped"
+            step.status = "skipped"
+        assert self.status == "skipped"
+
     def run(self, runner):
         # pylint: disable=W0212
         #   W0212   Access to a protected member: runner.context._push()/._pop()
@@ -442,9 +479,12 @@ class Scenario(TagStatement, Replayable):
         tags = runner.feature.tags + self.tags
         run_scenario = runner.config.tags.check(tags)
         run_steps = run_scenario and not runner.config.dry_run
+        dry_run_scenario = run_scenario and runner.config.dry_run
+        self.was_dry_run = dry_run_scenario
 
         if run_scenario or runner.config.show_skipped:
-            runner.formatter.scenario(self)
+            for formatter in runner.formatters:
+                formatter.scenario(self)
 
         runner.context._push()
         runner.context.scenario = self
@@ -460,13 +500,13 @@ class Scenario(TagStatement, Replayable):
         runner.setup_capture()
 
         if run_scenario or runner.config.show_skipped:
-            for step in self.all_steps:
-                runner.formatter.step(step)
+            for step in self:
+                for formatter in runner.formatters:
+                    formatter.step(step)
 
         # BAD: Better provide a public method.
         # pylint: disable=W0212
         #   W0212   Access to a protected member: _set_root_attribute()
-        dry_run_scenario = run_scenario and runner.config.dry_run
         for step in self.all_steps:
             if run_steps:
                 if not step.run(runner):
@@ -477,6 +517,8 @@ class Scenario(TagStatement, Replayable):
                 # -- SKIP STEPS: After failure/undefined-step occurred.
                 # BUT: Detect all remaining undefined steps.
                 step.status = 'skipped'
+                if dry_run_scenario:
+                    step.status = 'untested'
                 found_step = step_registry.registry.find_match(step)
                 if not found_step:
                     step.status = 'undefined'
@@ -623,6 +665,14 @@ class ScenarioOutline(Scenario):
         for scenario in self.scenarios:
             duration += scenario.duration
         return duration
+
+    def mark_skipped(self):
+        """
+        Marks this scenario outline (and all its scenarios/steps) as skipped.
+        """
+        for scenario in self.scenarios:
+            scenario.mark_skipped()
+        assert self.status == "skipped"
 
     def run(self, runner):
         # BAD: Better provide a public method and attribute.
@@ -782,16 +832,22 @@ class Step(BasicStatement, Replayable):
         if match is None:
             runner.undefined.append(self)
             if not quiet:
-                runner.formatter.match(NoMatch())
+                for formatter in runner.formatters:
+                    formatter.match(NoMatch())
+
             self.status = 'undefined'
             if not quiet:
-                runner.formatter.result(self)
+                for formatter in runner.formatters:
+                    formatter.result(self)
+
             return False
 
         keep_going = True
 
         if not quiet:
-            runner.formatter.match(match)
+            for formatter in runner.formatters:
+                formatter.match(match)
+
         runner.run_hook('before_step', runner.context, self)
         runner.start_capture()
 
@@ -800,7 +856,7 @@ class Step(BasicStatement, Replayable):
             # -- ENSURE:
             #  * runner.context.text/.table attributes are reset (#66).
             #  * Even EMPTY multiline text is available in context.
-            runner.context.text  = self.text
+            runner.context.text = self.text
             runner.context.table = self.table
             match.run(runner.context)
             self.status = 'passed'
@@ -841,7 +897,9 @@ class Step(BasicStatement, Replayable):
             keep_going = False
 
         if not quiet:
-            runner.formatter.result(self)
+            for formatter in runner.formatters:
+                formatter.result(self)
+
         runner.run_hook('after_step', runner.context, self)
 
         return keep_going
@@ -1011,6 +1069,7 @@ class Row(object):
         from behave.compat.collections import OrderedDict
         return OrderedDict(self.items())
 
+
 class Tag(unicode):
     '''Tags appear may be associated with Features or Scenarios.
 
@@ -1146,6 +1205,7 @@ class Match(Replayable):
         filename = relpath(step_function.func_code.co_filename, os.getcwd())
         location = '%s:%d' % (filename, step_function.func_code.co_firstlineno)
         return location
+
 
 class NoMatch(Match):
     def __init__(self):

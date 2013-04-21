@@ -36,6 +36,8 @@ Feature: Duplicated Step Definitions
         @given(u'I call Alice')
         """
 
+  @wip
+  @xfail
   Scenario: Duplicated Step Definition in another File
     Given a new working directory
     And a file named "features/steps/bob1_steps.py" with:

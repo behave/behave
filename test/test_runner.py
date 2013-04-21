@@ -15,13 +15,17 @@ import os.path
 import StringIO
 import sys
 import warnings
+import tempfile
+
 from mock import Mock, patch
 from nose.tools import *
-from behave import model, runner, step_registry, parser
+import unittest
+
+from behave import model, parser, runner, step_registry
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
-import unittest
 from test.testutil_tempfile import named_temporary_file
+
 
 class TestContext(unittest.TestCase):
     # pylint: disable=W0212
@@ -32,8 +36,9 @@ class TestContext(unittest.TestCase):
         self.config = r.config = Mock()
         r.config.verbose = False
         self.context = runner.Context(r)
-        self.context.feature = Mock()
-        self.context.feature.parser = parser.Parser()
+        # XXX-JE-CHECK:
+        # self.context.feature = Mock()
+        # self.context.feature.parser = parser.Parser()
 
     def test_context_contains(self):
         eq_('thing' in self.context, False)
@@ -546,6 +551,7 @@ class TestRunWithPaths(unittest.TestCase):
         abspath.side_effect = lambda x: x.upper()
         self.config.lang = 'fritz'
         self.config.format = ['plain']
+        self.config.outputs = [None]
         self.config.output.encoding = None
         self.config.exclude = lambda s: False
         self.config.junit = False

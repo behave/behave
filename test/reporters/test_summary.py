@@ -7,6 +7,7 @@
 
 from mock import Mock, patch
 from nose.tools import *
+
 from behave.model import ScenarioOutline, Scenario
 from behave.reporter.summary import SummaryReporter, format_summary
 import unittest

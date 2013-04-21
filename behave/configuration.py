@@ -61,9 +61,13 @@ options = [
           default='reports',
           help="""Directory in which to store JUnit reports.""")),
 
+    ((),  # -- CONFIGFILE only
+     dict(dest='default_format',
+          help="Specify default formatter (default: pretty).")),
+
     (('-f', '--format'),
      dict(action='append',
-          help="""Specify a formatter. By default the 'pretty'
+          help="""Specify a formatter. If none is specified the default
                   formatter is used. Pass '--format help' to get a
                   list of available formatters.""")),
 
@@ -193,8 +197,12 @@ options = [
           help="""Display the summary at the end of the run.""")),
 
     (('-o', '--outfile'),
-     dict(metavar='FILE',
+     dict(action='append', dest='outfiles', metavar='FILE',
           help="Write to specified file instead of stdout.")),
+
+    ((),  # -- CONFIGFILE only
+     dict(action='append', dest='paths',
+          help="Specify default feature paths, used when none are provided.")),
 
     (('-q', '--quiet'),
      dict(action='store_true',
@@ -216,10 +224,10 @@ options = [
      dict(action='store_true',
           help='Stop running tests at the first failure.')),
 
-     # -- DISABLE-UNUSED-OPTION: Not used anywhere.
-     # (('-S', '--strict'),
-     # dict(action='store_true',
-     #    help='Fail if there are any undefined or pending steps.')),
+    # -- DISABLE-UNUSED-OPTION: Not used anywhere.
+    # (('-S', '--strict'),
+    # dict(action='store_true',
+    #    help='Fail if there are any undefined or pending steps.')),
 
     (('-t', '--tags'),
      dict(action='append', metavar='TAG_EXPRESSION',
@@ -280,6 +288,7 @@ def read_configuration(path):
     __pychecker__ = "no-shadow"
     cfg = ConfigParser.ConfigParser()
     cfg.read(path)
+    cfgdir = os.path.dirname(path)
     result = {}
     for fixed, keywords in options:     # pylint: disable=W0621
         if 'dest' in keywords:
@@ -305,6 +314,30 @@ def read_configuration(path):
                 [s.strip() for s in cfg.get('behave', dest).splitlines()]
         else:
             raise ValueError('action "%s" not implemented' % action)
+
+    if 'format' in result:
+        # -- OPTIONS: format/outfiles are coupled in configuration file.
+        formatters = result['format']
+        formatter_size = len(formatters)
+        outfiles = result.get('outfiles', [])
+        outfiles_size = len(outfiles)
+        if outfiles_size < formatter_size:
+            for formatter_name in formatters[outfiles_size:]:
+                outfile = "%s.output" % formatter_name
+                outfiles.append(outfile)
+            result['outfiles'] = outfiles
+        elif len(outfiles) > formatter_size:
+            print "CONFIG-ERROR: Too many outfiles (%d) provided." % outfiles_size
+            result['outfiles'] = outfiles[:formatter_size]
+
+    for paths_name in ('paths', 'outfiles'):
+        if paths_name in result:
+            # -- Evaluate relative paths relative to configfile location.
+            # NOTE: Absolute paths are preserved by os.path.join().
+            paths = result[paths_name]
+            result[paths_name] = \
+                [os.path.normpath(os.path.join(cfgdir, p)) for p in paths]
+
     return result
 
 
@@ -334,6 +367,8 @@ def load_configuration(defaults):
 usage = "%(prog)s [options] [ [FILE|DIR] ]+"
 parser = argparse.ArgumentParser(usage=usage)
 for fixed, keywords in options:
+    if not fixed:
+        continue    # -- CONFIGFILE only.
     if 'config_help' in keywords:
         keywords = dict(keywords)
         del keywords['config_help']
@@ -356,7 +391,7 @@ class Configuration(object):
         summary=True,
         junit=False,
         # -- SPECIAL:
-        format0="pretty",   #< Used when no formatters are configured.
+        default_format="pretty",   # -- Used when no formatters are configured.
     )
 
     def __init__(self):
@@ -373,6 +408,8 @@ class Configuration(object):
         self.lang_list = None
         self.include_re = None
         self.exclude_re = None
+        self.name_re = None
+        self.outputs = []
 
         load_configuration(self.defaults)
         parser.set_defaults(**self.defaults)
@@ -383,10 +420,17 @@ class Configuration(object):
                 continue
             setattr(self, key, value)
 
-        if args.outfile and args.outfile != '-':
-            self.output = open(args.outfile, 'w')
+        if not args.outfiles:
+            self.outputs.append(sys.stdout)
         else:
-            self.output = sys.stdout
+            for outfile in args.outfiles:
+                if outfile and outfile != '-':
+                    outdir = os.path.dirname(outfile) or '.'
+                    if not os.path.exists(outdir):
+                        os.makedirs(outdir)
+                    self.outputs.append(open(outfile, 'w'))
+                else:
+                    self.outputs.append(sys.stdout)
 
         if self.wip:
             # Only run scenarios tagged with "wip". Additionally: use the
@@ -409,6 +453,9 @@ class Configuration(object):
 
         if self.include_re:
             self.include_re = re.compile(self.include_re)
+        if self.name:
+            # -- SELECT: Scenario-by-name, build regular expression.
+            self.name_re = self.build_name_re(self.name)
 
         if self.junit:
             # Buffer the output (it will be put into Junit report)
@@ -418,6 +465,18 @@ class Configuration(object):
             self.reporters.append(JUnitReporter(self))
         if self.summary:
             self.reporters.append(SummaryReporter(self))
+
+    @staticmethod
+    def build_name_re(names):
+        """
+        Build regular expression for scenario selection by name
+        by using a list of name parts or name regular expressions.
+
+        :param names: List of name parts or regular expressions (as text).
+        :return: Compiled regular expression to use.
+        """
+        pattern = u"|".join(names)
+        return re.compile(pattern, flags=(re.UNICODE | re.LOCALE))
 
     def exclude(self, filename):
         if self.include_re and self.include_re.search(filename) is None:
