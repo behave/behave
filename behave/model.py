@@ -199,6 +199,24 @@ class Feature(TagStatement, Replayable):
             duration += scenario.duration
         return duration
 
+    def should_run_with(self, tag_expression):
+        '''
+        Determines if this feature should run when the tag expression is used.
+        A feature should run if:
+          * it should run according to its tags
+          * any of its scenarios should run according to its tags
+
+        :param tag_expression:  Runner/config environment tags to use.
+        :return: True, if feature should run. False, otherwise (skip it).
+        '''
+        run_feature = tag_expression.check(self.tags)
+        if not run_feature:
+            for scenario in self:
+                if scenario.should_run_with(tag_expression):
+                    run_feature = True
+                    break
+        return run_feature
+
     def mark_skipped(self):
         """
         Marks this feature (and all its scenarios and steps) as skipped.
@@ -213,13 +231,8 @@ class Feature(TagStatement, Replayable):
         runner.context._push()
         runner.context.feature = self
 
-        # run this feature if the tags say to for itself or any one of its
-        # scenarios
-        run_feature = runner.config.tags.check(self.tags)
-        for scenario in self:
-            tags = self.tags + scenario.tags
-            run_feature = run_feature or runner.config.tags.check(tags)
-
+        # run this feature if the tags say so or any one of its scenarios
+        run_feature = self.should_run_with(runner.config.tags)
         if run_feature or runner.config.show_skipped:
             for formatter in runner.formatters:
                 formatter.feature(self)
@@ -405,6 +418,10 @@ class Scenario(TagStatement, Replayable):
             return iter(self.steps)
 
     @property
+    def all_steps(self):
+        """Returns iterator to all steps, including background steps if any."""
+        return self.__iter__()
+    @property
     def status(self):
         for step in self.steps:
             if step.status == 'failed':
@@ -430,6 +447,27 @@ class Scenario(TagStatement, Replayable):
             duration += step.duration
         return duration
 
+    @property
+    def effective_tags(self):
+        """
+        Effective tags for this scenario:
+          * own tags
+          * tags inherited from its feature
+        """
+        tags = self.tags
+        if self.feature:
+            tags = self.feature.tags + self.tags
+        return tags
+
+    def should_run_with(self, tag_expression):
+        """
+        Determines if this scenario should run when the tag expression is used.
+
+        :param tag_expression:  Runner/config environment tags to use.
+        :return: True, if scenario should run. False, otherwise (skip it).
+        """
+        return tag_expression.check(self.effective_tags)
+
     def mark_skipped(self):
         """
         Marks this scenario (and all its steps) as skipped.
@@ -441,9 +479,7 @@ class Scenario(TagStatement, Replayable):
 
     def run(self, runner):
         failed = False
-
-        tags = runner.feature.tags + self.tags
-        run_scenario = runner.config.tags.check(tags)
+        run_scenario = self.should_run_with(runner.config.tags)
         run_steps = run_scenario and not runner.config.dry_run
         dry_run_scenario = run_scenario and runner.config.dry_run
         self.was_dry_run = dry_run_scenario
@@ -454,9 +490,7 @@ class Scenario(TagStatement, Replayable):
 
         runner.context._push()
         runner.context.scenario = self
-
-        # current tags as a set
-        runner.context.tags = set(tags)
+        runner.context.tags = set(self.effective_tags)
 
         if not runner.config.dry_run and run_scenario:
             for tag in self.tags:
@@ -911,11 +945,18 @@ class Table(Replayable):
         return "<Table: %dx%d>" % (len(self.headings), len(self.rows))
 
     def __eq__(self, other):
-        if self.headings != other.headings:
-            return False
-        for my_row, their_row in zip(self.rows, other.rows):
-            if my_row != their_row:
+        if isinstance(other, Table):
+            if self.headings != other.headings:
                 return False
+            for my_row, their_row in zip(self.rows, other.rows):
+                if my_row != their_row:
+                    return False
+        else:
+            # -- ASSUME: table <=> raw data comparison
+            other_rows = other
+            for my_row, their_row in zip(self.rows, other_rows):
+                if my_row != their_row:
+                    return False
         return True
 
     def __ne__(self, other):
@@ -940,6 +981,7 @@ class Table(Replayable):
 
         If the cells do not match then a useful AssertionError will be raised.
         '''
+        assert self == data
         raise NotImplementedError
 
 
@@ -1101,9 +1143,12 @@ class Match(Replayable):
     type = "match"
 
     def __init__(self, func, arguments=None):
+        super(Match, self).__init__()
         self.func = func
         self.arguments = arguments
-        self.location = self.make_location(func)
+        self.location = None
+        if func:
+            self.location = self.make_location(func)
 
     def __repr__(self):
         if self.func:
@@ -1150,6 +1195,8 @@ class Match(Replayable):
 
 class NoMatch(Match):
     def __init__(self):
+        Match.__init__(self, func=None)
         self.func = None
         self.arguments = []
         self.location = None
+
