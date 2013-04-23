@@ -100,11 +100,13 @@ class Command(object):
                             cwd=cwd, **kwargs)
             out, err = process.communicate()
             if sys.version_info[0] < 3: # py3: we get unicode strings, py2 not
-                try:
-                    # jython may not have it
-                    default_encoding = sys.getdefaultencoding()
-                except AttributeError:
-                    default_encoding = sys.stdout.encoding or 'UTF-8'
+                # XXX-DISABLED:
+                # try:
+                #    # jython may not have it
+                #     default_encoding = sys.getdefaultencoding()
+                # except AttributeError:
+                #     default_encoding = sys.stdout.encoding or 'UTF-8'
+                default_encoding = 'UTF-8'
                 out = unicode(out, process.stdout.encoding or default_encoding)
                 err = unicode(err, process.stderr.encoding or default_encoding)
             process.poll()
