@@ -9,7 +9,7 @@ NEWS and CHANGES:
   * Scenarios can be now be selected by name or regular expression (#87).
   * Dry-run mode: Detects now undefined steps.
   * Dry-run mode: Uses untested counts now (was using: skipped counts).
-  * SummaryReporter: Summary shows now untested items if one ore more exist.
+  * SummaryReporter: Summary shows now untested items if one or more exist.
 
 IMPROVEMENT:
 
