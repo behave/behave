@@ -21,6 +21,7 @@ IMPROVEMENT:
 
 FIXED:
 
+  * issue #159: output stream is wrapped twice in the codecs.StreamWriter (provided by: florentx).
   * issue #145: before_feature/after_feature should not be skipped (provided by: florentx).
   * issue #141: Don't check for full package in issue 112 (provided by: roignac).
   * issue #125: Duplicate "Captured stdout" if substep has failed (provided by: roignac).
