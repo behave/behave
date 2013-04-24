@@ -2,7 +2,8 @@
 Feature: Runner should support a --dry-run option
 
     As a tester
-    I want to ensure that all behave tests are correct (have to errors)
+    I want to check if behave tests are syntactically correct
+    And all step definitions exists
     Before I actually run tests.
 
     | Specification: Dry-run mode
