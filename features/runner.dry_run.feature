@@ -3,8 +3,8 @@ Feature: Runner should support a --dry-run option
 
     As a tester
     I want to check if behave tests are syntactically correct
-    And all step definitions exists
-    Before I actually run tests.
+    And all step definitions exist
+    Before I actually run the tests (by executing steps).
 
     | Specification: Dry-run mode
     |   * Undefined steps are detected
