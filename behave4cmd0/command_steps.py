@@ -86,8 +86,8 @@ def step_i_run_command(context, command):
     context.command_result = command_shell.run(command, cwd=context.workdir)
     command_util.workdir_save_coverage_files(context.workdir)
     if False and DEBUG:
-        print("XXX run_command: {0}".format(command))
-        print("XXX run_command.outout {0}".format(context.command_result.output))
+        print(u"XXX run_command: {0}".format(command))
+        print(u"XXX run_command.outout {0}".format(context.command_result.output))
 
 
 @then(u'it should fail with result "{result:int}"')
@@ -166,8 +166,8 @@ def step_command_output_should_contain_text(context, text):
         )
     actual_output = context.command_result.output
     if DEBUG:
-        print("expected:\n{0}".format(expected_text))
-        print("actual:\n{0}".format(actual_output))
+        print(u"expected:\n{0}".format(expected_text))
+        print(u"actual:\n{0}".format(actual_output))
     textutil.assert_normtext_should_contain(actual_output, expected_text)
 
 
@@ -186,8 +186,8 @@ def step_command_output_should_not_contain_text(context, text):
         )
     actual_output  = context.command_result.output
     if DEBUG:
-        print("expected:\n{0}".format(expected_text))
-        print("actual:\n{0}".format(actual_output))
+        print(u"expected:\n{0}".format(expected_text))
+        print(u"actual:\n{0}".format(actual_output))
     textutil.assert_normtext_should_not_contain(actual_output, expected_text)
 
 
