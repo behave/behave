@@ -260,7 +260,7 @@ class Context(object):
             if not passed:
                 # -- ISSUE #96: Provide more substep info to diagnose problem.
                 step_line = "%s %s" % (step.keyword, step.name)
-                more = step.error_message
+                more = step.error_message.decode('utf8')
                 assert False, \
                     "Sub-step failed: %s\nSubstep info: %s" % (step_line, more)
         return True
