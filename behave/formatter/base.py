@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import sys
+
 
 class Formatter(object):
     """
@@ -107,4 +109,9 @@ class Formatter(object):
         """
         Called before the formatter is no longer used (stream/io compatibility).
         """
-        pass
+        if self.stream:
+            if hasattr(self.stream, "flush"):
+                self.stream.flush()
+            if hasattr(self.stream, "close") and self.stream is not sys.stdout:
+                self.stream.close()
+            self.stream = None      # -- MARK CLOSED.

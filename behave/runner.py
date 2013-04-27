@@ -544,12 +544,12 @@ class Runner(object):
         self.features.extend(features)
 
         # -- STEP: Run all features.
+        self.formatters = formatters.get_formatter(self.config, streams)
         undefined_steps_initial_size = len(self.undefined)
         run_feature = True
         for feature in features:
             if run_feature:
                 self.feature = feature
-                self.formatters = formatters.get_formatter(self.config, streams)
                 for formatter in self.formatters:
                     formatter.uri(feature.filename)
 
@@ -560,14 +560,14 @@ class Runner(object):
                         # -- FAIL-EARLY: After first failure.
                         run_feature = False
 
-                for formatter in self.formatters:
-                    formatter.close()
-
             # -- ALWAYS: Report run/not-run feature to reporters.
             # REQUIRED-FOR: Summary to keep track of untested features.
             for reporter in self.config.reporters:
                 reporter.feature(feature)
 
+        # -- AFTER-ALL:
+        for formatter in self.formatters:
+            formatter.close()
         self.run_hook('after_all', context)
         for reporter in self.config.reporters:
             reporter.end()
