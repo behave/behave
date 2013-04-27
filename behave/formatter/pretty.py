@@ -62,20 +62,29 @@ class PrettyFormatter(Formatter):
         self.show_source = config.show_source
         self.show_timings = config.show_timings
         self.show_multiline = config.show_multiline
+        self.formats = None
+        self.display_width = get_terminal_size()[0]
 
-        self.tag_statement = None
+        # -- UNUSED: self.tag_statement = None
         self.steps = []
-
         self._uri = None
         self._match = None
         self.statement = None
         self.indentations = []
-        self.display_width = get_terminal_size()[0]
         self.step_lines = 0
 
-        self.formats = None
+
+    def reset(self):
+        # -- UNUSED: self.tag_statement = None
+        self.steps = []
+        self._uri = None
+        self._match = None
+        self.statement = None
+        self.indentations = []
+        self.step_lines = 0
 
     def uri(self, uri):
+        self.reset()
         self._uri = uri
 
     def feature(self, feature):

@@ -1,32 +1,40 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
 
+from __future__ import absolute_import
+from behave.formatter.base import Formatter
 import base64
 try:
     import json
 except ImportError:
     import simplejson as json
 
-from behave.formatter.base import Formatter
 
-
+# -----------------------------------------------------------------------------
+# CLASS: JSONFormatter
+# -----------------------------------------------------------------------------
 class JSONFormatter(Formatter):
     name = 'json'
     description = 'JSON dump of test run'
     dumps_kwargs = {}
 
+
     def __init__(self, stream, config):
         super(JSONFormatter, self).__init__(stream, config)
-
-        self._gherkin_object = None
+        self.feature_count = 0
+        self.current_feature_data = None
         self._step_index = 0
-        self._features = []
+
+    def reset(self):
+        self.current_feature_data = None
+        self._step_index = 0
+
 
     def uri(self, uri):
         pass
 
     def feature(self, feature):
-        self._gherkin_object = {
+        self.reset()
+        self.current_feature_data = {
             'keyword': feature.keyword,
             'tags': list(feature.tags),
             'description': feature.description,
@@ -34,11 +42,13 @@ class JSONFormatter(Formatter):
         }
 
     def background(self, background):
-        self._add_feature_element({
+        element = self.add_feature_element({
             'keyword': background.keyword,
             'location': background.location,
             'steps': [],
         })
+        if background.name:
+            element['name'] = background.name
         self._step_index = 0
 
         # -- ADD BACKGROUND STEPS: Support *.feature file regeneration.
@@ -46,7 +56,7 @@ class JSONFormatter(Formatter):
             self.step(step_)
 
     def scenario(self, scenario):
-        self._add_feature_element({
+        self.add_feature_element({
             'keyword': scenario.keyword,
             'name': scenario.name,
             'tags': scenario.tags,
@@ -56,7 +66,7 @@ class JSONFormatter(Formatter):
         self._step_index = 0
 
     def scenario_outline(self, scenario_outline):
-        self._add_feature_element({
+        self.add_feature_element({
             'keyword': scenario_outline.keyword,
             'name': scenario_outline.name,
             'tags': scenario_outline.tags,
@@ -84,7 +94,7 @@ class JSONFormatter(Formatter):
         if examples.table:
             e['table'] = self.make_table(examples.table)
 
-        element = self._feature_element()
+        element = self.current_feature_element
         element['examples'].append(e)
 
     def step(self, step):
@@ -99,7 +109,7 @@ class JSONFormatter(Formatter):
             s['text'] = step.text
         if step.table:
             s['table'] = self.make_table(step.table)
-        element = self._feature_element()
+        element = self.current_feature_element
         element['steps'].append(s)
 
     def match(self, match):
@@ -118,11 +128,11 @@ class JSONFormatter(Formatter):
             'arguments': args,
         }
 
-        steps = self._feature_element()['steps']
+        steps = self.current_feature_element['steps']
         steps[self._step_index]['match'] = match
 
     def result(self, result):
-        steps = self._feature_element()['steps']
+        steps = self.current_feature_element['steps']
         steps[self._step_index]['result'] = {
             'status': result.status,
             'duration': result.duration,
@@ -130,31 +140,73 @@ class JSONFormatter(Formatter):
         self._step_index += 1
 
     def embedding(self, mime_type, data):
-        step = self._feature_element()['steps'][-1]
+        step = self.current_feature_element['steps'][-1]
         step['embeddings'].append({
             'mime_type': mime_type,
             'data': base64.b64encode(data).replace('\n', ''),
         })
 
     def eof(self):
-        if not self.stream:
+        """
+        End of feature
+        """
+        if not self.current_feature_data:
             return
-        self._features.append(self._gherkin_object)
+
+        # -- NORMAL CASE: Write collected data of current feature.
+        if self.feature_count == 0:
+            # -- FIRST FEATURE:
+            self.write_json_header()
+        else:
+            # -- NEXT FEATURE:
+            self.write_json_feature_separator()
+
+        self.write_json_feature(self.current_feature_data)
+        self.current_feature_data = None
+        self.feature_count += 1
 
     def close(self):
-        obj = {'features': self._features}
-        self.stream.write(json.dumps(obj, **self.dumps_kwargs))
+        self.write_json_footer()
 
-    def _add_feature_element(self, element):
-        if 'elements' not in self._gherkin_object:
-            self._gherkin_object['elements'] = []
-        self._gherkin_object['elements'].append(element)
+        # -- VIRTUAL-CHAIN OF RESPONSIBILITY: Delegate to base class.
+        super(JSONFormatter, self).close()
 
-    def _feature_element(self):
-        return self._gherkin_object['elements'][-1]
+    # -- JSON-DATA COLLECTION:
+    def add_feature_element(self, element):
+        assert self.current_feature_data is not None
+        if 'elements' not in self.current_feature_data:
+            self.current_feature_data['elements'] = []
+        self.current_feature_data['elements'].append(element)
+        return element
+
+    @property
+    def current_feature_element(self):
+        assert self.current_feature_data is not None
+        return self.current_feature_data['elements'][-1]
 
 
+    # -- JSON-WRITER:
+    def write_json_header(self):
+        self.stream.write('{ "features": [\n')
+
+    def write_json_footer(self):
+        self.stream.write(']}\n')
+
+    def write_json_feature(self, feature):
+        self.stream.write(json.dumps(feature, **self.dumps_kwargs))
+        self.stream.flush()
+
+    def write_json_feature_separator(self):
+        self.stream.write(",\n\n")
+
+
+# -----------------------------------------------------------------------------
+# CLASS: PrettyJSONFormatter
+# -----------------------------------------------------------------------------
 class PrettyJSONFormatter(JSONFormatter):
+    """
+    Provides readable/comparable textual JSON output.
+    """
     name = 'json-pretty'
     description = 'JSON dump of test run (human readable)'
     dumps_kwargs = { 'indent': 2, 'sort_keys': True }
