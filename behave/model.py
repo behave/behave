@@ -941,6 +941,73 @@ class Table(Replayable):
     def add_row(self, row, line=None):
         self.rows.append(Row(self.headings, row, line))
 
+    def add_column(self, column_name, values=None, default_value=u""):
+        """
+        Adds a new column to this table.
+        Uses :param:`default_value` for new cells (if :param:`values` are
+        not provided). param:`values` are extended with :param:`default_value`
+        if values list is smaller than the number of table rows.
+
+        :param column_name: Name of new column (as string).
+        :param values: Optional list of cell values in new column.
+        :param default_value: Default value for cell (if values not provided).
+        :returns: Index of new column (as number).
+        """
+        # assert isinstance(column_name, unicode)
+        assert not self.has_column(column_name)
+        if values is None:
+            values = [ default_value ] * len(self.rows)
+        elif not isinstance(values, list):
+            values = list(values)
+        if len(values) < len(self.rows):
+            more_size = len(self.rows) - len(values)
+            more_values = [ default_value ] * more_size
+            values.extend(more_values)
+
+        new_column_index = len(self.headings)
+        self.headings.append(column_name)
+        for row, value in zip(self.rows, values):
+            assert len(row.cells) == new_column_index
+            row.cells.append(value)
+        return new_column_index
+
+    def has_column(self, column_name):
+        return column_name in self.headings
+
+    def get_column_index(self, column_name):
+        return self.headings.index(column_name)
+
+    def require_column(self, column_name):
+        """
+        Require that a column exists in the table.
+        Raise an AssertionError if the column does not exist.
+
+        :param column_name: Name of new column (as string).
+        :return: Index of column (as number) if it exists.
+        """
+        if not self.has_column(column_name):
+            columns = ", ".join(self.headings)
+            msg = "REQUIRE COLUMN: %s (columns: %s)" % (column_name, columns)
+            raise AssertionError(msg)
+        return self.get_column_index(column_name)
+
+    def require_columns(self, column_names):
+        for column_name in column_names:
+            self.require_column(column_name)
+
+    def ensure_column_exists(self, column_name):
+        """
+        Ensures that a column with the given name exists.
+        If the column does not exist, the column is added.
+
+        :param column_name: Name of column (as string).
+        :return: Index of column (as number).
+        """
+        if self.has_column(column_name):
+            return self.get_column_index(column_name)
+        else:
+            return self.add_column(column_name)
+
     def __repr__(self):
         return "<Table: %dx%d>" % (len(self.headings), len(self.rows))
 
