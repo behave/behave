@@ -8,6 +8,7 @@ NEWS and CHANGES:
 
   * Formatters are now created only once (was: once for each feature).
   * JSON formatter generates now valid JSON.
+  * Add utility script to show longest step durations based on JSON data.
   * Scenarios can be now be selected by name or regular expression (#87).
   * Dry-run mode: Detects now undefined steps.
   * Dry-run mode: Uses untested counts now (was using: skipped counts).
