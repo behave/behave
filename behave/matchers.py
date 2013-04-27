@@ -47,6 +47,9 @@ class Matcher(object):
             return None
         return model.Match(self.func, result)
 
+    def __repr__(self):
+        return u"<%s: %r>" % (self.__class__.__name__, self.string)
+
 
 class ParseMatcher(Matcher):
     custom_types = {}
@@ -103,6 +106,7 @@ class RegexMatcher(Matcher):
                                        group, name))
 
         return args
+
 
 matcher_mapping = {
     'parse': ParseMatcher,
