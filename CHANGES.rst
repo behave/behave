@@ -6,8 +6,10 @@ Version: 1.2.3a19 (unreleased)
 
 NEWS and CHANGES:
 
+  * JUnitReporter: Show complete scenario w/ text/tables. Improve readability.
+  * Plain formatter shows now multi-line step parts (text, table), too.
   * Formatters are now created only once (was: once for each feature).
-  * JSON formatter generates now valid JSON.
+  * JSON formatter generates now valid JSON (well-formed).
   * Add utility script to show longest step durations based on JSON data.
   * Scenarios can be now be selected by name or regular expression (#87).
   * Dry-run mode: Detects now undefined steps.
