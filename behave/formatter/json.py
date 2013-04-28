@@ -56,17 +56,19 @@ class JSONFormatter(Formatter):
             self.step(step_)
 
     def scenario(self, scenario):
-        self.add_feature_element({
+        element = self.add_feature_element({
             'keyword': scenario.keyword,
             'name': scenario.name,
             'tags': scenario.tags,
             'location': scenario.location,
             'steps': [],
         })
+        if scenario.description:
+            element['description'] = scenario.description
         self._step_index = 0
 
     def scenario_outline(self, scenario_outline):
-        self.add_feature_element({
+        element = self.add_feature_element({
             'keyword': scenario_outline.keyword,
             'name': scenario_outline.name,
             'tags': scenario_outline.tags,
@@ -74,6 +76,8 @@ class JSONFormatter(Formatter):
             'steps': [],
             'examples': [],
         })
+        if scenario_outline.description:
+            element['description'] = scenario_outline.description
         self._step_index = 0
 
     @classmethod

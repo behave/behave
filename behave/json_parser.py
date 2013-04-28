@@ -116,12 +116,14 @@ class JsonParser(object):
         """
         keyword = json_element.get("keyword", u"")
         name    = json_element.get("name", u"")
+        description = json_element.get("description", [])
         tags    = json_element.get("tags", [])
         location = json_element.get("location", u"")
         json_steps = json_element.get("steps", [])
         steps = self.parse_steps(json_steps)
         filename, line = location.split(":")
         scenario = model.Scenario(filename, line, keyword, name, tags, steps)
+        scenario.description = description
         return scenario
 
     def parse_scenario_outline(self, json_element):
@@ -137,6 +139,7 @@ class JsonParser(object):
         """
         keyword = json_element.get("keyword", u"")
         name    = json_element.get("name", u"")
+        description = json_element.get("description", [])
         tags    = json_element.get("tags", [])
         location = json_element.get("location", u"")
         json_steps = json_element.get("steps", [])
@@ -146,6 +149,7 @@ class JsonParser(object):
         filename, line = location.split(":")
         scenario_outline = model.ScenarioOutline(filename, line,
                                 keyword, name, tags, steps, examples)
+        scenario_outline.description = description
         return scenario_outline
 
     def parse_steps(self, json_steps):

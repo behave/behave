@@ -15,12 +15,11 @@ Feature: Runner should support a --dry-run option
     |   * Causes failed test-run when undefined steps are found.
 
     @setup
-    Scenario: Test Setup
+    Scenario: Feature Setup
         Given a new working directory
         And a file named "features/steps/steps.py" with:
             """
             from behave import step
-            import sys
 
             @step('a step passes')
             def step_passes(context):
