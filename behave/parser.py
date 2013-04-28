@@ -166,8 +166,7 @@ class Parser(object):
             self.statement = model.Scenario(self.filename, self.line,
                                             scenario_kwd, name, tags=self.tags)
             self.tags = []
-            self.feature.add_scenario(self.statement)
-            self.state = 'steps'
+            self.state = 'scenario'
             return True
 
         scenario_outline_kwd = self.match_keyword('scenario_outline', line)
@@ -177,11 +176,23 @@ class Parser(object):
                                                    scenario_outline_kwd, name,
                                                    tags=self.tags)
             self.tags = []
-            self.feature.add_scenario(self.statement)
-            self.state = 'steps'
+            self.state = 'scenario'
             return True
 
         self.feature.description.append(line)
+        return True
+
+    def action_scenario(self, line):
+        line = line.strip()
+
+        step = self.parse_step(line)
+        if step:
+            self.feature.add_scenario(self.statement)
+            self.state = 'steps'
+            self.statement.steps.append(step)
+            return True
+
+        self.statement.description.append(line)
         return True
 
     def action_steps(self, line):
@@ -211,6 +222,7 @@ class Parser(object):
                                             scenario_kwd, name, tags=self.tags)
             self.tags = []
             self.feature.add_scenario(self.statement)
+            self.state = 'scenario'
             return True
 
         scenario_outline_kwd = self.match_keyword('scenario_outline', line)
@@ -221,7 +233,7 @@ class Parser(object):
                                                    tags=self.tags)
             self.tags = []
             self.feature.add_scenario(self.statement)
-            self.state = 'steps'
+            self.state = 'scenario'
             return True
 
         examples_kwd = self.match_keyword('examples', line)
