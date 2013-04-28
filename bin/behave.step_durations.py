@@ -109,7 +109,7 @@ class BehaveDurationData(object):
             else:
                 ostream.write("\n")
             if ((limit and index+1 >= limit) or
-                (step.max_duration <= min_duration)):
+                (step.max_duration < min_duration)):
                 remaining = steps_size - (index+1)
                 ostream.write("...\nSkip remaining %d steps.\n" % remaining)
                 break
@@ -130,7 +130,7 @@ Read behave JSON data file and extract steps with longest duration."""
                      help="Encoding to use (default: %default).")
     parser.add_option("-l", "--limit", dest="limit", type="int",
                      help="Max. number of steps (default: %default).")
-    parser.add_option("-m", "--min", dest="min_duration", default="-1",
+    parser.add_option("-m", "--min", dest="min_duration", default="0",
                      help="Min. duration threshold (default: %default).")
     options, filenames = parser.parse_args(args)
     if not filenames:
