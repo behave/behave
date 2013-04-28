@@ -4,4 +4,4 @@ Use behave4cmd0 step library (predecessor of behave4cmd).
 """
 
 # -- REGISTER-STEPS:
-import behave4cmd0.command_steps
+import behave4cmd0.__all_steps__
