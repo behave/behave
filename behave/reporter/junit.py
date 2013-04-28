@@ -6,6 +6,7 @@ from xml.etree import ElementTree
 from behave.reporter.base import Reporter
 from behave.model import Scenario, ScenarioOutline, Step
 from behave.formatter import ansi_escapes
+from behave.model_describe import make_indentation, indent, ModelDescriptor
 
 
 def CDATA(text=None):
@@ -66,6 +67,9 @@ class JUnitReporter(Reporter):
     """
     Generates JUnit-like XML test report for behave.
     """
+    show_multiline = True
+    show_timings   = True     # -- Show step timings.
+
     def make_feature_filename(self, feature):
         filename = None
         for path in self.config.paths:
@@ -137,15 +141,30 @@ class JUnitReporter(Reporter):
         """
         for step in steps:
             assert isinstance(step, Step), \
-                "TYPE-MISMATCH: step.class={0}".format(step.__class__.__name__)
+                "TYPE-MISMATCH: step.class=%s"  % step.__class__.__name__
             if step.status == status:
                 return step
         # -- OTHERWISE: No step with the given status found.
         # KeyError("Step with status={0} not found".format(status))
         return None
 
-    @staticmethod
-    def describe_scenario(scenario):
+    @classmethod
+    def describe_step(cls, step):
+        status = str(step.status)
+        if cls.show_timings:
+            status += u" in %0.3fs" % step.duration
+        text  = u'%s %s ... ' % (step.keyword, step.name)
+        text += u'%s\n' % status
+        if cls.show_multiline:
+            prefix = make_indentation(2)
+            if step.text:
+                text += ModelDescriptor.describe_docstring(step.text, prefix)
+            elif step.table:
+                text += ModelDescriptor.describe_table(step.table, prefix)
+        return text
+
+    @classmethod
+    def describe_scenario(cls, scenario):
         """
         Describe the scenario and the test status.
         NOTE: table, multiline text is missing in description.
@@ -153,11 +172,14 @@ class JUnitReporter(Reporter):
         :param scenario:  Scenario that was tested.
         :return: Textual description of the scenario.
         """
-        text = u'Steps:\n'
+        header_line  = u'\n@scenario.begin\n'
+        header_line += '  %s: %s\n' % (scenario.keyword, scenario.name)
+        footer_line  = u'\n@scenario.end\n' + u'-' * 80 + '\n'
+        text = u''
         for step in scenario:
-            text += u'%12s %s ... ' % (step.keyword, step.name)
-            text += u'%s\n' % step.status
-        return text
+            text += cls.describe_step(step)
+        step_indentation = make_indentation(4)
+        return header_line + indent(text, step_indentation) + footer_line
 
     def _process_scenario(self, scenario, report):
         """
@@ -192,10 +214,14 @@ class JUnitReporter(Reporter):
         # -- ORIG: case.set('time', str(round(scenario.duration, 3)))
         case.set('time', str(round(scenario.duration, 6)))
 
+        step = None
         if scenario.status == 'failed':
-            step = self.select_step_with_status('failed', scenario)
-            assert step, "OOPS: No failed step found"
-            assert step.status == 'failed'
+            for status in ('failed', 'undefined'):
+                step = self.select_step_with_status(status, scenario)
+                if step:
+                    break
+            assert step, "OOPS: No failed step found in scenario: %s" % scenario.name
+            assert step.status in ('failed', 'undefined')
             element_name = 'failure'
             if isinstance(step.exception, (AssertionError, type(None))):
                 # -- FAILURE: AssertionError
@@ -206,13 +232,14 @@ class JUnitReporter(Reporter):
                 element_name = 'error'
             # -- COMMON-PART:
             failure = ElementTree.Element(element_name)
-            text = u"Step: {0}.\nLocation: {1}\n".format(step.name, step.location)
-            message = str(step.exception)
+            step_text = self.describe_step(step).rstrip()
+            text = u"\nFailing step: %s\nLocation: %s\n" % (step_text, step.location)
+            message = unicode(step.exception)
             if len(message) > 80:
                 message = message[:80] + "..."
             failure.set('type', step.exception.__class__.__name__)
             failure.set('message', message)
-            text += step.error_message
+            text += unicode(step.error_message)
             failure.append(CDATA(text))
             case.append(failure)
         elif scenario.status in ('skipped', 'untested'):
@@ -223,7 +250,7 @@ class JUnitReporter(Reporter):
                 report.counts_failed += 1
                 failure = ElementTree.Element('failure')
                 failure.set('type', 'undefined')
-                failure.set('message', 'Undefined Step: {0}'.format(step.name))
+                failure.set('message', ('Undefined Step: %s' % step.name))
                 case.append(failure)
             else:
                 skip = ElementTree.Element('skipped')
