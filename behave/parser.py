@@ -60,6 +60,10 @@ class ParserError(Exception):
 
 
 class Parser(object):
+    # pylint: disable=W0201,R0902
+    #   W0201   Attribute ... defined outside __init__() method => reset()
+    #   R0902   Too many instance attributes (15/10)
+
     def __init__(self, language=None):
         self.language = language
         self.reset()
@@ -107,6 +111,53 @@ class Parser(object):
         self.reset()
         return feature
 
+    def _build_feature(self, keyword, line):
+        name = line[len(keyword) + 1:].strip()
+        self.feature = model.Feature(self.filename, self.line, keyword,
+                                     name, tags=self.tags)
+        # -- RESET STATE:
+        self.tags = []
+
+    def _build_background_statement(self, keyword, line):
+        if self.tags:
+            msg = 'Background supports no tags: @%s' % (' @'.join(self.tags))
+            raise ParserError(msg, self.line, self.filename)
+        name = line[len(keyword) + 1:].strip()
+        statement = model.Background(self.filename, self.line, keyword, name)
+        self.statement = statement
+        self.feature.background = self.statement
+
+    def _build_scenario_statement(self, keyword, line):
+        name = line[len(keyword) + 1:].strip()
+        self.statement = model.Scenario(self.filename, self.line,
+                                        keyword, name, tags=self.tags)
+        self.feature.add_scenario(self.statement)
+        # -- RESET STATE:
+        self.tags = []
+
+    def _build_scenario_outline_statement(self, keyword, line):
+        # pylint: disable=C0103
+        #   C0103   Invalid name "build_scenario_outline_statement", too long.
+        name = line[len(keyword) + 1:].strip()
+        self.statement = model.ScenarioOutline(self.filename, self.line,
+                                               keyword, name, tags=self.tags)
+        self.feature.add_scenario(self.statement)
+        # -- RESET STATE:
+        self.tags = []
+
+    def _build_examples(self, keyword, line):
+        if not isinstance(self.statement, model.ScenarioOutline):
+            message = 'Examples must only appear inside scenario outline'
+            raise ParserError(message, self.line)
+        name = line[len(keyword) + 1:].strip()
+        self.examples = model.Examples(self.filename, self.line,
+                                       keyword, name)
+        # pylint: disable=E1103
+        #   E1103   Instance of 'Background' has no 'examples' member
+        #           (but some types could not be inferred).
+        self.statement.examples.append(self.examples)
+
+
     def action(self, line):
         if line.strip().startswith('#') and not self.state == 'multiline':
             if self.keywords or self.state != 'init' or self.tags:
@@ -121,81 +172,94 @@ class Parser(object):
 
         func = getattr(self, 'action_' + self.state, None)
         if func is None:
-            raise ParserError('Parser in unknown state ' + self.state,
-                              self.line)
+            line = line.strip()
+            msg = "Parser in unknown state %s, line:'%s';" % (self.state, line)
+            raise ParserError(msg, self.line, self.filename)
         if not func(line):
-            raise ParserError("Parser failure in state " + self.state,
-                              self.line)
+            line = line.strip()
+            msg = "Parser failure in state %s, line:'%s';" % (self.state, line)
+            raise ParserError(msg, self.line, self.filename)
+
+
+    def subaction_detect_next_scenario(self, line):
+        if line.startswith('@'):
+            self.tags.extend(self.parse_tags(line))
+            self.state = 'next_scenario'
+            return True
+
+        scenario_kwd = self.match_keyword('scenario', line)
+        if scenario_kwd:
+            self._build_scenario_statement(scenario_kwd, line)
+            self.state = 'scenario'
+            return True
+
+        scenario_outline_kwd = self.match_keyword('scenario_outline', line)
+        if scenario_outline_kwd:
+            self._build_scenario_outline_statement(scenario_outline_kwd, line)
+            self.state = 'scenario'
+            return True
+
+        # -- OTHERWISE:
+        return False
+
 
     def action_init(self, line):
         line = line.strip()
-
         if line.startswith('@'):
             self.tags.extend(self.parse_tags(line))
             return True
 
         feature_kwd = self.match_keyword('feature', line)
         if feature_kwd:
-            name = line[len(feature_kwd) + 1:].strip()
-            self.feature = model.Feature(self.filename, self.line, feature_kwd,
-                                         name, tags=self.tags)
-            self.tags = []
+            self._build_feature(feature_kwd, line)
             self.state = 'feature'
             return True
         return False
 
     def action_feature(self, line):
         line = line.strip()
-
-        if line.startswith('@'):
-            self.tags.extend(self.parse_tags(line))
+        if self.subaction_detect_next_scenario(line):
             return True
 
         background_kwd = self.match_keyword('background', line)
         if background_kwd:
-            name = line[len(background_kwd) + 1:].strip()
-            self.statement = model.Background(self.filename, self.line,
-                                              background_kwd, name)
-            self.feature.background = self.statement
+            self._build_background_statement(background_kwd, line)
             self.state = 'steps'
-            return True
-
-        scenario_kwd = self.match_keyword('scenario', line)
-        if scenario_kwd:
-            name = line[len(scenario_kwd) + 1:].strip()
-            self.statement = model.Scenario(self.filename, self.line,
-                                            scenario_kwd, name, tags=self.tags)
-            self.tags = []
-            self.state = 'scenario'
-            return True
-
-        scenario_outline_kwd = self.match_keyword('scenario_outline', line)
-        if scenario_outline_kwd:
-            name = line[len(scenario_outline_kwd) + 1:].strip()
-            self.statement = model.ScenarioOutline(self.filename, self.line,
-                                                   scenario_outline_kwd, name,
-                                                   tags=self.tags)
-            self.tags = []
-            self.state = 'scenario'
             return True
 
         self.feature.description.append(line)
         return True
 
+    def action_next_scenario(self, line):
+        line = line.strip()
+        if self.subaction_detect_next_scenario(line):
+            return True
+        return False
+
     def action_scenario(self, line):
         line = line.strip()
-
         step = self.parse_step(line)
         if step:
-            self.feature.add_scenario(self.statement)
+            # -- FIRST STEP DETECTED: End collection of scenario descriptions.
             self.state = 'steps'
             self.statement.steps.append(step)
             return True
 
+        # -- CASE: Detect next Scenario/ScenarioOutline
+        #   * Scenario with scenario description, but without steps.
+        #   * Title-only scenario without scenario description and steps.
+        if self.subaction_detect_next_scenario(line):
+            return True
+
+        # -- OTHERWISE: Add scenario description line.
+        # pylint: disable=E1103
+        #   E1103   Instance of 'Background' has no 'description' member...
         self.statement.description.append(line)
         return True
 
     def action_steps(self, line):
+        # pylint: disable=R0911
+        #   R0911   Too many return statements (8/6)
         stripped = line.lstrip()
         if stripped.startswith('"""') or stripped.startswith("'''"):
             self.state = 'multiline'
@@ -205,50 +269,22 @@ class Parser(object):
             return True
 
         line = line.strip()
-
         step = self.parse_step(line)
         if step:
             self.statement.steps.append(step)
             return True
 
-        if line.startswith('@'):
-            self.tags.extend(self.parse_tags(line))
-            return True
-
-        scenario_kwd = self.match_keyword('scenario', line)
-        if scenario_kwd:
-            name = line[len(scenario_kwd) + 1:].strip()
-            self.statement = model.Scenario(self.filename, self.line,
-                                            scenario_kwd, name, tags=self.tags)
-            self.tags = []
-            self.feature.add_scenario(self.statement)
-            self.state = 'scenario'
-            return True
-
-        scenario_outline_kwd = self.match_keyword('scenario_outline', line)
-        if scenario_outline_kwd:
-            name = line[len(scenario_outline_kwd) + 1:].strip()
-            self.statement = model.ScenarioOutline(self.filename, self.line,
-                                                   scenario_outline_kwd, name,
-                                                   tags=self.tags)
-            self.tags = []
-            self.feature.add_scenario(self.statement)
-            self.state = 'scenario'
+        if self.subaction_detect_next_scenario(line):
             return True
 
         examples_kwd = self.match_keyword('examples', line)
         if examples_kwd:
-            if not isinstance(self.statement, model.ScenarioOutline):
-                message = 'Examples must only appear inside scenario outline'
-                raise ParserError(message, self.line)
-            name = line[len(examples_kwd) + 1:].strip()
-            self.examples = model.Examples(self.filename, self.line,
-                                           examples_kwd, name)
-            self.statement.examples.append(self.examples)
+            self._build_examples(examples_kwd, line)
             self.state = 'table'
             return True
 
         if line.startswith('|'):
+            assert self.statement.steps, "TABLE-START without step detected."
             self.state = 'table'
             return self.action_table(line)
 

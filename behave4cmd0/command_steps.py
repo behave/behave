@@ -351,6 +351,9 @@ def step_file_should_contain_text(context, filename, text):
         )
     file_contents = pathutil.read_file_contents(filename, context=context)
     file_contents = file_contents.rstrip()
+    if DEBUG:
+        print(u"expected:\n{0}".format(expected_text))
+        print(u"actual:\n{0}".format(file_contents))
     textutil.assert_normtext_should_contain(file_contents, expected_text)
 
 

@@ -6,6 +6,11 @@ Version: 1.2.3a19 (unreleased)
 
 NEWS and CHANGES:
 
+  * Add support for Scenario/ScenarioOutline descriptions (related to: #79).
+  * JSONFormatter: Add support for scenario descriptions (related to: #79).
+  * json_parser: Add support for scenario descriptions (related to: #79).
+  * Parser: Refactor to simplify and avoid code duplications (related to: #79).
+  * Parser: Check that Backgrounds have no tags.
   * JUnitReporter: Show complete scenario w/ text/tables. Improve readability.
   * Plain formatter shows now multi-line step parts (text, table), too.
   * Formatters are now created only once (was: once for each feature).
@@ -22,6 +27,7 @@ IMPROVEMENT:
   * issue #103: sort feature file by name in a given directory (provided by: gurneyalex).
   * issue #102: Add configuration file setting for specifying default feature paths (provided by: lrowe).
   * issue  #87: Add --name option support (provided by: johbo, jenisys).
+  * issue  #79: Provide Support for Scenario Descriptions (provided by: caphrim007, jenisys).
   * issue  #42: Show all undefined steps taking tags into account (provided by: roignac, jenisys)
 
 FIXED:

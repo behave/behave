@@ -1,5 +1,5 @@
-@not_implemented
-@not_supported
+@corner.case
+@missing.functionality
 Feature: Parse Feature File that contains several Features
 
     | BEHARE: The parsers supports only one feature per feature file.
@@ -35,5 +35,5 @@ Feature: Parse Feature File that contains several Features
       When I run "behave -f plain features/two_features.feature"
       Then it should fail with:
         """
-        Failed to parse "{__WORKDIR__}/features/two_features.feature": Parser failure in state steps at line 7
+        Failed to parse "{__WORKDIR__}/features/two_features.feature": Parser failure in state steps, line:'Feature: F2'; at line 7
         """

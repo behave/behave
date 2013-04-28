@@ -39,6 +39,7 @@ Feature: Issue #83: behave.__main__:main() Various sys.exit issues
         """
         Feature:
           Scenario: Invalid scenario which raises ParseError
+            Given a step passes
             When2 a step passes
         """
     When I run "behave -c features/invalid_with_ParseError.feature"

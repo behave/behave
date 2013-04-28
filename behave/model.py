@@ -353,8 +353,8 @@ class Scenario(TagStatement, Replayable):
 
     .. attribute:: description
 
-       The description of the scenario as seen in the *feature file*. This is
-       stored as a list of text lines.
+       The description of the scenario as seen in the *feature file*. 
+       This is stored as a list of text lines.
 
     .. attribute:: feature
 
@@ -403,7 +403,8 @@ class Scenario(TagStatement, Replayable):
     '''
     type = "scenario"
 
-    def __init__(self, filename, line, keyword, name, tags=[], description=[], steps=[]):
+    def __init__(self, filename, line, keyword, name, tags=[], steps=[],
+                 description=None):
         super(Scenario, self).__init__(filename, line, keyword, name, tags)
         self.description = description or []
         self.steps = steps or []
@@ -564,6 +565,11 @@ class ScenarioOutline(Scenario):
 
        The name of the scenario (the text after "Scenario Outline:".)
 
+    .. attribute:: description
+
+       The description of the `scenario outline`_ as seen in the *feature file*.
+       This is stored as a list of text lines.
+
     .. attribute:: feature
 
        The :class:`~behave.model.Feature` this scenario outline belongs to.
@@ -615,10 +621,10 @@ class ScenarioOutline(Scenario):
     '''
     type = "scenario_outline"
 
-    def __init__(self, filename, line, keyword, name, tags=[], steps=[],
-                 examples=[]):
+    def __init__(self, filename, line, keyword, name, tags=[],
+                 steps=[], examples=[], description=None):
         super(ScenarioOutline, self).__init__(filename, line, keyword, name,
-                                              tags, steps)
+                                              tags, steps, description)
         self.examples = examples or []
         self._scenarios = []
 
