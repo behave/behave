@@ -8,8 +8,17 @@ import codecs
 formatters = {}
 
 
-def register(formatter):
-    formatters[formatter.name] = formatter
+def register_as(formatter_class, name):
+    """
+    Register formatter class with given name.
+
+    :param formatter_class:  Formatter class to register.
+    :param name:  Name for this formatter (as identifier).
+    """
+    formatters[name] = formatter_class
+
+def register(formatter_class):
+    register_as(formatter_class, formatter_class.name)
 
 
 def list_formatters(stream):
@@ -46,7 +55,7 @@ def get_formatter(config, streams):
 
 
 # -----------------------------------------------------------------------------
-# REGISTER KNOWN FORMATTERS:
+# REGISTER KNOWN FORMATTER:
 # -----------------------------------------------------------------------------
 from behave.formatter import plain
 register(plain.PlainFormatter)
