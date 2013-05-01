@@ -114,6 +114,38 @@ command_copy.setup_parser = setup_parser_copy
 
 
 # -----------------------------------------------------------------------------
+# SUBCOMMAND: mkdir
+# -----------------------------------------------------------------------------
+def command_mkdir(args):
+    """
+    Create a non-existing directory (or more ...).
+    If the directory exists, the step is skipped.
+    Similar to the UNIX command: 'mkdir -p dir'
+    """
+    errors = 0
+    for directory in args.dirs:
+        if os.path.exists(directory):
+            if not os.path.isdir(directory):
+                # -- SANITY CHECK: directory exists, but as file...
+                sys.stdout.write("mkdir: %s\n" % directory)
+                sys.stdout.write("ERROR: Exists already, but as file...\n")
+                errors += 1
+        else:
+            # -- NORMAL CASE: Directory does not exits yet.
+            assert not os.path.isdir(directory)
+            sys.stdout.write("mkdir: %s\n" % directory)
+            os.makedirs(directory)
+    return errors
+
+
+def setup_parser_mkdir(parser):
+    parser.add_argument("dirs", nargs="+", help="Directory(s)")
+
+command_mkdir.usage = "%(prog)s dir..."
+command_mkdir.short = "Create non-existing directory (or more...)."
+command_mkdir.setup_parser = setup_parser_mkdir
+
+# -----------------------------------------------------------------------------
 # SUBCOMMAND: py2to3
 # -----------------------------------------------------------------------------
 def command_py2to3(args):
