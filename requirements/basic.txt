@@ -1,0 +1,15 @@
+# ============================================================================
+# BEHAVE: PYTHON PACKAGE REQUIREMENTS: Normal usage/installation (minimal)
+# ============================================================================
+# DESCRIPTION:
+#    pip install -r <THIS_FILE>
+#
+# SEE ALSO:
+#  * http://www.pip-installer.org/
+# ============================================================================
+
+argparse >= 1.2
+parse >= 1.6
+
+# -- MORE:
+# Python2.5: simplejson # -- json module was introduced in python2.6
