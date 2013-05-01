@@ -6,9 +6,11 @@ Version: 1.2.3a19 (unreleased)
 
 NEWS and CHANGES:
 
+  * tox: Use tox now in off-line mode per default (use: "tox -e init"...).
   * Add support for Scenario/ScenarioOutline descriptions (related to: #79).
   * JSONFormatter: Add support for scenario descriptions (related to: #79).
   * json_parser: Add support for scenario descriptions (related to: #79).
+  * Parser: Improve diagnostics when parse errors occur.
   * Parser: Refactor to simplify and avoid code duplications (related to: #79).
   * Parser: Check that Backgrounds have no tags.
   * JUnitReporter: Show complete scenario w/ text/tables. Improve readability.

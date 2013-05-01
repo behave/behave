@@ -730,7 +730,8 @@ Feature: Stuff
         eq_(feature.name, "Stuff")
         eq_(feature.tags, [model.Tag(u'derp', 1)])
         eq_(feature.description, ['In order to test my parser',
-                                  'As a test runner', 'I want to run tests'])
+                                  'As a test runner',
+                                  'I want to run tests'])
 
         assert(feature.background)
         self.compare_steps(feature.background.steps, [
@@ -1022,6 +1023,154 @@ Fonctionnalit\xe9: testing stuff
         ])
 
 
+class TestParser4ScenarioDescription(Common):
+
+    def test_parse_scenario_description(self):
+        doc = u'''
+Feature: Scenario Description
+
+  Scenario: With scenario description
+
+    First line of scenario description.
+    Second line of scenario description.
+
+    Third line of scenario description (after an empty line).
+
+      Given we have stuff
+      When we do stuff
+      Then we have things
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Scenario Description")
+
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, "With scenario description")
+        eq_(feature.scenarios[0].tags, [])
+        eq_(feature.scenarios[0].description, [
+            "First line of scenario description.",
+            "Second line of scenario description.",
+            "Third line of scenario description (after an empty line).",
+        ])
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Given', 'we have stuff', None, None),
+            ('when', 'When', 'we do stuff', None, None),
+            ('then', 'Then', 'we have things', None, None),
+        ])
+
+
+    def test_parse_scenario_with_description_but_without_steps(self):
+        doc = u'''
+Feature: Scenario Description
+
+  Scenario: With description but without steps
+
+    First line of scenario description.
+    Second line of scenario description.
+
+  Scenario: Another one
+      Given we have stuff
+      When we do stuff
+      Then we have things
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Scenario Description")
+
+        assert(len(feature.scenarios) == 2)
+        eq_(feature.scenarios[0].name, "With description but without steps")
+        eq_(feature.scenarios[0].tags, [])
+        eq_(feature.scenarios[0].description, [
+            "First line of scenario description.",
+            "Second line of scenario description.",
+        ])
+        eq_(feature.scenarios[0].steps, [])
+
+        eq_(feature.scenarios[1].name, "Another one")
+        eq_(feature.scenarios[1].tags, [])
+        eq_(feature.scenarios[1].description, [])
+        self.compare_steps(feature.scenarios[1].steps, [
+            ('given', 'Given', 'we have stuff', None, None),
+            ('when', 'When', 'we do stuff', None, None),
+            ('then', 'Then', 'we have things', None, None),
+        ])
+
+
+    def test_parse_scenario_with_description_but_without_steps_followed_by_scenario_with_tags(self):
+        doc = u'''
+Feature: Scenario Description
+
+  Scenario: With description but without steps
+
+    First line of scenario description.
+    Second line of scenario description.
+
+  @foo @bar
+  Scenario: Another one
+      Given we have stuff
+      When we do stuff
+      Then we have things
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Scenario Description")
+
+        assert(len(feature.scenarios) == 2)
+        eq_(feature.scenarios[0].name, "With description but without steps")
+        eq_(feature.scenarios[0].tags, [])
+        eq_(feature.scenarios[0].description, [
+            "First line of scenario description.",
+            "Second line of scenario description.",
+        ])
+        eq_(feature.scenarios[0].steps, [])
+
+        eq_(feature.scenarios[1].name, "Another one")
+        eq_(feature.scenarios[1].tags, ["foo", "bar"])
+        eq_(feature.scenarios[1].description, [])
+        self.compare_steps(feature.scenarios[1].steps, [
+            ('given', 'Given', 'we have stuff', None, None),
+            ('when', 'When', 'we do stuff', None, None),
+            ('then', 'Then', 'we have things', None, None),
+        ])
+
+    def test_parse_two_scenarios_with_description(self):
+        doc = u'''
+Feature: Scenario Description
+
+  Scenario: One with description but without steps
+
+    First line of scenario description.
+    Second line of scenario description.
+
+  Scenario: Two with description and with steps
+
+    Another line of scenario description.
+
+      Given we have stuff
+      When we do stuff
+      Then we have things
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Scenario Description")
+
+        assert(len(feature.scenarios) == 2)
+        eq_(feature.scenarios[0].name, "One with description but without steps")
+        eq_(feature.scenarios[0].tags, [])
+        eq_(feature.scenarios[0].description, [
+            "First line of scenario description.",
+            "Second line of scenario description.",
+        ])
+        eq_(feature.scenarios[0].steps, [])
+
+        eq_(feature.scenarios[1].name, "Two with description and with steps")
+        eq_(feature.scenarios[1].tags, [])
+        eq_(feature.scenarios[1].description, [
+            "Another line of scenario description.",
+        ])
+        self.compare_steps(feature.scenarios[1].steps, [
+            ('given', 'Given', 'we have stuff', None, None),
+            ('when', 'When', 'we do stuff', None, None),
+            ('then', 'Then', 'we have things', None, None),
+        ])
+
+
 def parse_tags(line):
     the_parser = parser.Parser()
     return the_parser.parse_tags(line.strip())
@@ -1053,6 +1202,109 @@ class TestParser4Tags(Common):
     @raises(parser.ParserError)
     def test_parse_tags_with_invalid_tags(self):
         parse_tags('@one  invalid.tag boom')
+
+
+class TestParser4Background(Common):
+
+    def test_parse_background(self):
+        doc = u'''
+Feature: Background
+
+  A feature description line 1.
+  A feature description line 2.
+
+  Background: One
+    Given we init stuff
+    When we init more stuff
+
+  Scenario: One
+    Given we have stuff
+    When we do stuff
+    Then we have things
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Background")
+        eq_(feature.description, [
+            "A feature description line 1.",
+            "A feature description line 2.",
+        ])
+        assert feature.background is not None
+        eq_(feature.background.name, "One")
+        self.compare_steps(feature.background.steps, [
+            ('given', 'Given', 'we init stuff', None, None),
+            ('when', 'When', 'we init more stuff', None, None),
+        ])
+
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, "One")
+        eq_(feature.scenarios[0].tags, [])
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Given', 'we have stuff', None, None),
+            ('when', 'When', 'we do stuff', None, None),
+            ('then', 'Then', 'we have things', None, None),
+        ])
+
+
+    def test_parse_background_with_tags_should_fail(self):
+        doc = u'''
+Feature: Background with tags
+  Expect that a ParserError occurs
+  because Background does not support tags/tagging.
+
+  @tags_are @not_supported
+  @here
+  Background: One
+    Given we init stuff
+'''.lstrip()
+        assert_raises(parser.ParserError, parser.parse_feature, doc)
+
+
+    def test_parse_two_background_should_fail(self):
+        doc = u'''
+Feature: Two Backgrounds
+  Expect that a ParserError occurs
+  because at most one Background is supported.
+
+  Background: One
+    Given we init stuff
+
+  Background: Two
+    When we init more stuff
+'''.lstrip()
+        assert_raises(parser.ParserError, parser.parse_feature, doc)
+
+
+    def test_parse_background_after_scenario_should_fail(self):
+        doc = u'''
+Feature: Background after Scenario
+  Expect that a ParserError occurs
+  because Background is only allowed before any Scenario.
+
+  Scenario: One
+    Given we have stuff
+
+  Background: Two
+    When we init more stuff
+'''.lstrip()
+        assert_raises(parser.ParserError, parser.parse_feature, doc)
+
+
+    def test_parse_background_after_scenario_outline_should_fail(self):
+        doc = u'''
+Feature: Background after ScenarioOutline
+  Expect that a ParserError occurs
+  because Background is only allowed before any ScenarioOuline.
+  Scenario Outline: ...
+    Given there is <name>
+
+    Examples:
+      | name  |
+      | Alice |
+
+  Background: Two
+    When we init more stuff
+'''.lstrip()
+        assert_raises(parser.ParserError, parser.parse_feature, doc)
 
 
 class TestParser4Steps(Common):

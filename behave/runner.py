@@ -254,6 +254,7 @@ class Context(object):
         if not self.feature:
             raise ValueError('execute_steps() called outside of feature')
 
+        self.feature.parser.variant = 'steps'
         steps = self.feature.parser.parse_steps(steps_text)
         for step in steps:
             passed = step.run(self._runner, quiet=True, capture=False)

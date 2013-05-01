@@ -38,7 +38,7 @@ def parse_steps(text, language=None, filename=None):
     """
     assert isinstance(text, unicode)
     try:
-        result = Parser(language).parse_steps(text, filename)
+        result = Parser(language, variant='steps').parse_steps(text, filename)
     except ParserError, e:
         e.filename = filename
         raise
@@ -46,11 +46,14 @@ def parse_steps(text, language=None, filename=None):
 
 
 class ParserError(Exception):
-    def __init__(self, message, line, filename=None):
+    def __init__(self, message, line, filename=None, line_text=None):
         if line:
             message += ' at line %d' % line
+            if line_text:
+                message += ": '%s'" % line_text.strip()
         super(ParserError, self).__init__(message)
         self.line = line
+        self.line_text = line_text
         self.filename = filename
 
     def __str__(self):
@@ -64,8 +67,11 @@ class Parser(object):
     #   W0201   Attribute ... defined outside __init__() method => reset()
     #   R0902   Too many instance attributes (15/10)
 
-    def __init__(self, language=None):
+    def __init__(self, language=None, variant=None):
+        if not variant:
+            variant = 'feature'
         self.language = language
+        self.variant = variant
         self.reset()
 
     def reset(self):
@@ -121,7 +127,7 @@ class Parser(object):
     def _build_background_statement(self, keyword, line):
         if self.tags:
             msg = 'Background supports no tags: @%s' % (' @'.join(self.tags))
-            raise ParserError(msg, self.line, self.filename)
+            raise ParserError(msg, self.line, self.filename, line)
         name = line[len(keyword) + 1:].strip()
         statement = model.Background(self.filename, self.line, keyword, name)
         self.statement = statement
@@ -148,7 +154,7 @@ class Parser(object):
     def _build_examples(self, keyword, line):
         if not isinstance(self.statement, model.ScenarioOutline):
             message = 'Examples must only appear inside scenario outline'
-            raise ParserError(message, self.line)
+            raise ParserError(message, self.line, self.filename, line)
         name = line[len(keyword) + 1:].strip()
         self.examples = model.Examples(self.filename, self.line,
                                        keyword, name)
@@ -157,6 +163,61 @@ class Parser(object):
         #           (but some types could not be inferred).
         self.statement.examples.append(self.examples)
 
+
+    def diagnose_feature_usage_error(self):
+        if self.feature:
+            return "Multiple features in one file are not supported."
+        else:
+            return "Feature should not be used here."
+
+    def diagnose_background_usage_error(self):
+        if self.feature and self.feature.scenarios:
+            return "Background may not occur after Scenario/ScenarioOutline."
+        elif self.tags:
+            return "Background does not support tags."
+        else:
+            return "Background should not be used here."
+
+    def diagnose_scenario_usage_error(self):
+        if not self.feature:
+            return "Scenario may not occur before Feature."
+        else:
+            return "Scenario should not be used here."
+
+    def diagnose_scenario_outline_usage_error(self):
+        if not self.feature:
+            return "ScenarioOutline may not occur before Feature."
+        else:
+            return "ScenarioOutline should not be used here."
+
+    def ask_parse_failure_oracle(self, line):
+        """
+        Try to find the failure reason when a parse failure occurs:
+
+            Oracle, oracle, ... what went wrong?
+            Zzzz
+
+        :param line:  Text line where parse failure occured (as string).
+        :return: Reason (as string) if an explanation is found.
+                 Otherwise, empty string or None.
+        """
+        feature_kwd = self.match_keyword('feature', line)
+        if feature_kwd:
+            return self.diagnose_feature_usage_error()
+        background_kwd = self.match_keyword('background', line)
+        if background_kwd:
+            return self.diagnose_background_usage_error()
+        scenario_kwd = self.match_keyword('scenario', line)
+        if scenario_kwd:
+            return self.diagnose_scenario_usage_error()
+        scenario_outline_kwd = self.match_keyword('scenario_outline', line)
+        if scenario_outline_kwd:
+            return self.diagnose_scenario_outline_usage_error()
+        # -- OTHERWISE:
+        if self.variant == 'feature' and not self.feature:
+            return "No feature found."
+        # -- FINALLY: No glue what went wrong.
+        return None
 
     def action(self, line):
         if line.strip().startswith('#') and not self.state == 'multiline':
@@ -173,13 +234,29 @@ class Parser(object):
         func = getattr(self, 'action_' + self.state, None)
         if func is None:
             line = line.strip()
-            msg = "Parser in unknown state %s, line:'%s';" % (self.state, line)
-            raise ParserError(msg, self.line, self.filename)
+            msg = "Parser in unknown state %s;" % self.state
+            raise ParserError(msg, self.line, self.filename, line)
         if not func(line):
             line = line.strip()
-            msg = "Parser failure in state %s, line:'%s';" % (self.state, line)
-            raise ParserError(msg, self.line, self.filename)
+            msg = u"\nParser failure in state %s, at line %d: '%s'\n" % \
+                  (self.state, self.line, line)
+            reason = self.ask_parse_failure_oracle(line)
+            if reason:
+                msg += u"REASON: %s" % reason
+            raise ParserError(msg, None, self.filename)
 
+    def action_init(self, line):
+        line = line.strip()
+        if line.startswith('@'):
+            self.tags.extend(self.parse_tags(line))
+            return True
+
+        feature_kwd = self.match_keyword('feature', line)
+        if feature_kwd:
+            self._build_feature(feature_kwd, line)
+            self.state = 'feature'
+            return True
+        return False
 
     def subaction_detect_next_scenario(self, line):
         if line.startswith('@'):
@@ -202,20 +279,6 @@ class Parser(object):
         # -- OTHERWISE:
         return False
 
-
-    def action_init(self, line):
-        line = line.strip()
-        if line.startswith('@'):
-            self.tags.extend(self.parse_tags(line))
-            return True
-
-        feature_kwd = self.match_keyword('feature', line)
-        if feature_kwd:
-            self._build_feature(feature_kwd, line)
-            self.state = 'feature'
-            return True
-        return False
-
     def action_feature(self, line):
         line = line.strip()
         if self.subaction_detect_next_scenario(line):
@@ -231,12 +294,24 @@ class Parser(object):
         return True
 
     def action_next_scenario(self, line):
+        """
+        Entered after first tag for Scenario/ScenarioOutline is detected.
+        """
         line = line.strip()
         if self.subaction_detect_next_scenario(line):
             return True
+
         return False
 
     def action_scenario(self, line):
+        """
+        Entered when Scenario/ScenarioOutline keyword/line is detected.
+        Hunts/collects scenario description lines.
+
+        DETECT:
+            * first step of Scenario/ScenarioOutline
+            * next Scenario/ScenarioOutline.
+        """
         line = line.strip()
         step = self.parse_step(line)
         if step:
@@ -258,6 +333,18 @@ class Parser(object):
         return True
 
     def action_steps(self, line):
+        """
+        Entered when first step is detected (or nested step parsing).
+
+        Subcases:
+          * step
+          * multi-line text (doc-string), following a step
+          * table, following a step
+          * examples for a ScenarioOutline, after ScenarioOutline steps
+
+        DETECT:
+          * next Scenario/ScenarioOutline
+        """
         # pylint: disable=R0911
         #   R0911   Too many return statements (8/6)
         stripped = line.lstrip()
