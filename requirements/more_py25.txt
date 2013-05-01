@@ -1,0 +1,6 @@
+# ============================================================================
+# BEHAVE: PYTHON PACKAGE REQUIREMENTS: More packages for Python2.5
+# ============================================================================
+# Python2.5: json module was introduced in python2.6
+
+simplejson
