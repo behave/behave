@@ -7,7 +7,9 @@ from behave.configuration import Configuration, ConfigError
 from behave.formatter.ansi_escapes import escapes
 from behave.i18n import languages
 from behave.formatter import formatters
-from behave.runner import Runner, make_undefined_step_snippet
+from behave.runner import Runner
+from behave.runner_util import make_undefined_step_snippet
+from behave.runner_util import InvalidFileLocationError, InvalidFilenameError
 from behave.parser import ParserError
 
 TAG_HELP = """
@@ -107,9 +109,14 @@ def main():
     try:
         failed = runner.run()
     except ParserError, e:
-        sys.exit(str(e))
+        sys.exit("ParseError: %s" % e)
     except ConfigError, e:
-        sys.exit(str(e))
+        sys.exit("ConfigError: %s" % e)
+    except InvalidFileLocationError, e:
+        sys.exit("InvalidFileLocationError: %s" % e)
+    except InvalidFilenameError, e:
+        sys.exit("InvalidFilenameError: %s" % e)
+
 
     if config.show_snippets and runner.undefined:
         msg = u"\nYou can implement step definitions for undefined steps with "

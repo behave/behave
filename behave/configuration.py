@@ -358,8 +358,17 @@ def load_configuration(defaults):
 
 # construct the parser
 #usage = "%(prog)s [options] [ [FILE|DIR|URL][:LINE[:LINE]*] ]+"
-usage = "%(prog)s [options] [ [FILE|DIR] ]+"
-parser = argparse.ArgumentParser(usage=usage)
+usage = "%(prog)s [options] [ [DIR|FILE|FILE:LINE] ]+"
+description = """\
+Run a number of feature tests with behave."""
+more = """
+EXAMPLES:
+behave features/
+behave features/one.feature features/two.feature
+behave features/one.feature:10
+behave @features.txt
+"""
+parser = argparse.ArgumentParser(usage=usage, description=description)
 for fixed, keywords in options:
     if not fixed:
         continue    # -- CONFIGFILE only.
@@ -367,7 +376,8 @@ for fixed, keywords in options:
         keywords = dict(keywords)
         del keywords['config_help']
     parser.add_argument(*fixed, **keywords)
-parser.add_argument('paths', nargs='*')
+parser.add_argument('paths', nargs='*',
+                help='Feature directory, file or file location (FILE:LINE).')
 
 
 class Configuration(object):
