@@ -70,3 +70,5 @@ register(null.NullFormatter)
 from behave.formatter import progress
 register(progress.ScenarioProgressFormatter)
 register(progress.StepProgressFormatter)
+from behave.formatter.rerun import RerunFormatter
+register(RerunFormatter)

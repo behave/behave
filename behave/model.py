@@ -171,15 +171,8 @@ class Feature(TagStatement, Replayable):
     def status(self):
         skipped = True
         for scenario_or_outline in self.scenarios:
-            if isinstance(scenario_or_outline, Scenario):
-                scenario = scenario_or_outline
-                if scenario.status == 'failed':
-                    return 'failed'
-                if scenario.status == 'untested':
-                    return 'untested'
-                if scenario.status != 'skipped':
-                    skipped = False
-            else:
+            # FIXME: Check if necessary, ScenarioOutline.status computes OK.
+            if isinstance(scenario_or_outline, ScenarioOutline):
                 for scenario in scenario_or_outline:
                     if scenario.status == 'failed':
                         return 'failed'
@@ -187,6 +180,14 @@ class Feature(TagStatement, Replayable):
                         return 'untested'
                     if scenario.status != 'skipped':
                         skipped = False
+            else:
+                scenario = scenario_or_outline
+                if scenario.status == 'failed':
+                    return 'failed'
+                if scenario.status == 'untested':
+                    return 'untested'
+                if scenario.status != 'skipped':
+                    skipped = False
         return skipped and 'skipped' or 'passed'
 
     @property
@@ -199,7 +200,47 @@ class Feature(TagStatement, Replayable):
             duration += scenario.duration
         return duration
 
-    def should_run_with(self, tag_expression):
+    def walk_scenarios(self, with_outlines=False):
+        """
+        Provides a flat list of all scenarios of this feature.
+        A ScenarioOutline element adds its scenarios to this list.
+        But the ScenarioOutline element itself is only added when specified.
+
+        A flat scenario list is useful when all scenarios of a features
+        should be processed.
+
+        :param with_outlines: If ScenarioOutline items should be added, too.
+        :return: List of all scenarios of this feature.
+        """
+        all_scenarios = []
+        for scenario in self.scenarios:
+            if isinstance(scenario, ScenarioOutline):
+                scenario_outline = scenario
+                if with_outlines:
+                    all_scenarios.append(scenario_outline)
+                all_scenarios.extend(scenario_outline.scenarios)
+            else:
+                all_scenarios.append(scenario)
+        return all_scenarios
+
+    def should_run(self, config=None):
+        """
+        Determines if this Feature (and its scenarios) should run.
+        Implements the run decision logic for a feature.
+        The decision depends on:
+
+          * if the Feature is marked as skipped
+          * if the config.tags (tag expression) enable/disable this feature
+
+        :param config:  Runner configuration to use (optional).
+        :return: True, if scenario should run. False, otherwise.
+        """
+        answer = self.status != "skipped"
+        if answer and config:
+            answer = self.should_run_with_tags(config.tags)
+        return answer
+
+    def should_run_with_tags(self, tag_expression):
         '''
         Determines if this feature should run when the tag expression is used.
         A feature should run if:
@@ -212,7 +253,7 @@ class Feature(TagStatement, Replayable):
         run_feature = tag_expression.check(self.tags)
         if not run_feature:
             for scenario in self:
-                if scenario.should_run_with(tag_expression):
+                if scenario.should_run_with_tags(tag_expression):
                     run_feature = True
                     break
         return run_feature
@@ -232,7 +273,7 @@ class Feature(TagStatement, Replayable):
         runner.context.feature = self
 
         # run this feature if the tags say so or any one of its scenarios
-        run_feature = self.should_run_with(runner.config.tags)
+        run_feature = self.should_run(runner.config)
         if run_feature or runner.config.show_skipped:
             for formatter in runner.formatters:
                 formatter.feature(self)
@@ -466,7 +507,24 @@ class Scenario(TagStatement, Replayable):
             tags = self.feature.tags + self.tags
         return tags
 
-    def should_run_with(self, tag_expression):
+    def should_run(self, config=None):
+        """
+        Determines if this Scenario (or ScenarioOutline) should run.
+        Implements the run decision logic for a scenario.
+        The decision depends on:
+
+          * if the Scenario is marked as skipped
+          * if the config.tags (tag expression) enable/disable this scenario
+
+        :param config:  Runner configuration to use (optional).
+        :return: True, if scenario should run. False, otherwise.
+        """
+        answer = self.status != "skipped"
+        if answer and config:
+            answer = self.should_run_with_tags(config.tags)
+        return answer
+
+    def should_run_with_tags(self, tag_expression):
         """
         Determines if this scenario should run when the tag expression is used.
 
@@ -486,7 +544,7 @@ class Scenario(TagStatement, Replayable):
 
     def run(self, runner):
         failed = False
-        run_scenario = self.should_run_with(runner.config.tags)
+        run_scenario = self.should_run(runner.config)
         run_steps = run_scenario and not runner.config.dry_run
         dry_run_scenario = run_scenario and runner.config.dry_run
         self.was_dry_run = dry_run_scenario
