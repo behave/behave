@@ -6,6 +6,8 @@ Version: 1.2.3a19 (unreleased)
 
 NEWS and CHANGES:
 
+  * NEW: RerunFormatter to simplify to rerun last failing scenarios (related to: #160).
+  * NEW: Support scenario file locations on command-line, ala: "{filename}:{line}" (related to: #160).
   * tox: Use tox now in off-line mode per default (use: "tox -e init"...).
   * Add support for Scenario/ScenarioOutline descriptions (related to: #79).
   * JSONFormatter: Add support for scenario descriptions (related to: #79).
@@ -25,6 +27,7 @@ NEWS and CHANGES:
 
 IMPROVEMENT:
 
+  * issue #160: Support rerun file with failed features/scenarios during the last test run (provided by: jenisys)
   * issue #154: Support multiple formatters (provided by: roignac, jenisys)
   * issue #103: sort feature file by name in a given directory (provided by: gurneyalex).
   * issue #102: Add configuration file setting for specifying default feature paths (provided by: lrowe).
