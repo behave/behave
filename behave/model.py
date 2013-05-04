@@ -316,9 +316,11 @@ class Feature(TagStatement, Replayable):
         for formatter in runner.formatters:
             formatter.eof()
 
-        if run_feature or runner.config.show_skipped:
-            for formatter in runner.formatters:
-                formatter.stream.write('\n')
+        # -- FIX issue #153:
+        # if run_feature or runner.config.show_skipped:
+        #     for formatter in runner.formatters:
+        #         # formatter.stream.write('\n')
+        #         pass
 
         failed = (failed_count > 0)
         return failed
