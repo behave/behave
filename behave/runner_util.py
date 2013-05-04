@@ -311,6 +311,8 @@ def parse_features_configfile(features_configfile):
     """
     if features_configfile.startswith('@'):
         features_configfile = features_configfile[1:]
+    if not os.path.isfile(features_configfile):
+        raise FileNotFoundError(features_configfile)
     here = os.path.dirname(features_configfile) or "."
     files = []
     for line in open(features_configfile).readlines():
