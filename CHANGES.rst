@@ -6,6 +6,12 @@ Version: 1.2.3a19 (unreleased)
 
 NEWS and CHANGES:
 
+  * INCOMPATIBLE CHANGE: Formatter Ctor uses now StreamOpener instead of Stream.
+    Formatter output streams are now opened late, under control of the formatter.
+    This allows the formatter also support directory mode (if needed).
+    Needed for RerunFormatter whose file was overwritten before it was read.
+  * ProgressFormatter: Flushes now output to provide better feedback.
+  * NEW: TagCountFormatter, TagLocationFormatter (reborn and implemented),
   * NEW: RerunFormatter to simplify to rerun last failing scenarios (related to: #160).
   * NEW: Support scenario file locations on command-line, ala: "{filename}:{line}" (related to: #160).
   * tox: Use tox now in off-line mode per default (use: "tox -e init"...).
@@ -38,6 +44,7 @@ IMPROVEMENT:
 FIXED:
 
   * issue #159: output stream is wrapped twice in the codecs.StreamWriter (provided by: florentx).
+  * issue #153: The runtime should not by-pass the formatter to print line breaks minor.
   * issue #152: Fix encoding issues (provided by: devainandor)
   * issue #145: before_feature/after_feature should not be skipped (provided by: florentx).
   * issue #141: Don't check for full package in issue 112 (provided by: roignac).
