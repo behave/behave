@@ -43,8 +43,8 @@ class RerunFormatter(Formatter):
     show_timestamp = False
     show_failed_scenarios_descriptions = False
 
-    def __init__(self, stream, config):
-        super(RerunFormatter, self).__init__(stream, config)
+    def __init__(self, stream_opener, config):
+        super(RerunFormatter, self).__init__(stream_opener, config)
         self.failed_scenarios = []
         self.current_feature = None
 
@@ -67,8 +67,15 @@ class RerunFormatter(Formatter):
     def close(self):
         """Called at end of test run."""
         if self.failed_scenarios:
+            # -- ENSURE: Output stream is open.
+            self.stream = self.open()
             self.report_scenario_failures()
-        super(RerunFormatter, self).close()
+        elif os.path.exists(self.stream_opener.name):
+            # -- ON SUCCESS: Remove last rerun file with its failures.
+            os.remove(self.stream_opener.name)
+
+        # -- FINALLY:
+        self.close_stream()
 
     # -- SPECIFIC-API:
     def report_scenario_failures(self):

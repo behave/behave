@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+
 import sys
 import codecs
+from behave.formatter.base import StreamOpener
 
 # -----------------------------------------------------------------------------
 # FORMATTER REGISTRY:
@@ -26,31 +28,15 @@ def list_formatters(stream):
         stream.write(u'%s: %s\n' % (name, formatters[name].description))
 
 
-def get_formatter(config, streams):
-    # -- ONLY ONCE (issue #159):
-    # the stream may already handle encoding (py3k sys.stdout)
-    # if it doesn't (py2k sys.stdout) then make it do so.
-    default_encoding = 'UTF-8'
-    for i, stream in enumerate(streams):
-        if hasattr(stream, 'stream'):
-            continue    # Already wrapped with a codecs.StreamWriter
-        if sys.version_info[0] < 3:
-            # py2 does, however, sometimes declare an encoding on sys.stdout,
-            # even if it doesn't use it (or it might be explicitly None)
-            encoding = getattr(stream, 'encoding', None) or default_encoding
-            streams[i] = codecs.getwriter(encoding)(stream)
-        elif not getattr(stream, 'encoding', None):
-            # ok, so the stream doesn't have an encoding at all so add one
-            streams[i] = codecs.getwriter(default_encoding)(stream)
-
+def get_formatter(config, stream_openers):
     # -- BUILD: Formatter list
-    default_stream = sys.stdout
+    default_stream_opener = StreamOpener(stream=sys.stdout)
     formatter_list = []
     for i, name in enumerate(config.format):
-        stream = default_stream
-        if i < len(streams):
-            stream = streams[i]
-        formatter_list.append(formatters[name](stream, config))
+        stream_opener = default_stream_opener
+        if i < len(stream_openers):
+            stream_opener = stream_openers[i]
+        formatter_list.append(formatters[name](stream_opener, config))
     return formatter_list
 
 
@@ -72,3 +58,6 @@ register(progress.ScenarioProgressFormatter)
 register(progress.StepProgressFormatter)
 from behave.formatter.rerun import RerunFormatter
 register(RerunFormatter)
+from behave.formatter.tag_count import TagCountFormatter, TagLocationFormatter
+register(TagCountFormatter)
+register(TagLocationFormatter)

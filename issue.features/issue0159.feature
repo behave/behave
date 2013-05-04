@@ -1,8 +1,8 @@
 @issue
 Feature: Issue #159: output stream is wrapped twice in the codecs.StreamWriter
 
-
-  Background:
+  @setup
+  Scenario: Feature Setup
     Given a new working directory
     And   a file named "features/steps/steps.py" with:
       """

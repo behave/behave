@@ -9,7 +9,8 @@ from behave.i18n import languages
 from behave.formatter import formatters
 from behave.runner import Runner
 from behave.runner_util import make_undefined_step_snippet
-from behave.runner_util import InvalidFileLocationError, InvalidFilenameError
+from behave.runner_util import \
+    InvalidFileLocationError, InvalidFilenameError, FileNotFoundError
 from behave.parser import ParserError
 
 TAG_HELP = """
@@ -95,7 +96,7 @@ def main():
             # -- NO FORMATTER on command-line: Add default formatter.
             default_format = config.defaults["default_format"]
             config.format.append(default_format)
-    elif 'help' in config.format:
+    if 'help' in config.format:
         print "Available formatters:"
         formatters.list_formatters(sys.stdout)
         sys.exit(0)
@@ -112,6 +113,8 @@ def main():
         sys.exit("ParseError: %s" % e)
     except ConfigError, e:
         sys.exit("ConfigError: %s" % e)
+    except FileNotFoundError, e:
+        sys.exit("FileNotFoundError: %s" % e)
     except InvalidFileLocationError, e:
         sys.exit("InvalidFileLocationError: %s" % e)
     except InvalidFilenameError, e:

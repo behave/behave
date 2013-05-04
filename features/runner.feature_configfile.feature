@@ -151,5 +151,5 @@ Feature: Feature-Configfile (List of feature filenames/directories)
     When I run "behave @unknown_feature_configfile.txt"
     Then it should fail with:
       """
-      IOError: [Errno 2] No such file or directory: 'unknown_feature_configfile.txt'
+      FileNotFoundError: unknown_feature_configfile.txt
       """

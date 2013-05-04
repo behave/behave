@@ -1,6 +1,60 @@
 # -*- coding: utf-8 -*-
 
+import codecs
+import os.path
 import sys
+
+
+class StreamOpener(object):
+    """
+    Provides a transport vehicle to open the formatter output stream
+    when the formatter needs it.
+    In addition, it provides the formatter with more control:
+
+      * when a stream is opened
+      * if a stream is opened at all
+      * the name (filename/dirname) of the output stream
+      * let it decide if directory mode is used instead of file mode
+    """
+    default_encoding = "UTF-8"
+
+    def __init__(self, filename=None, stream=None, encoding=None):
+        if not encoding:
+            encoding = self.default_encoding
+        if stream:
+            stream = self.ensure_stream_with_encoder(stream, encoding)
+        self.name = filename
+        self.stream = stream
+        self.encoding = encoding
+
+    @staticmethod
+    def ensure_dir_exists(directory):
+        if directory and not os.path.isdir(directory):
+            os.makedirs(directory)
+
+    @classmethod
+    def ensure_stream_with_encoder(cls, stream, encoding=None):
+        if not encoding:
+            encoding = cls.default_encoding
+        if hasattr(stream, "stream"):
+            return stream    # Already wrapped with a codecs.StreamWriter
+        elif sys.version_info[0] < 3:
+            # py2 does, however, sometimes declare an encoding on sys.stdout,
+            # even if it doesn't use it (or it might be explicitly None)
+            stream = codecs.getwriter(encoding)(stream)
+        elif not getattr(stream, 'encoding', None):
+            # ok, so the stream doesn't have an encoding at all so add one
+            stream = codecs.getwriter(encoding)(stream)
+        return stream
+
+    def open(self):
+        if not self.stream or self.stream.closed:
+            self.ensure_dir_exists(os.path.dirname(self.name))
+            stream = open(self.name, "w")
+            # stream = codecs.open(self.name, "w", encoding=self.encoding)
+            stream = self.ensure_stream_with_encoder(stream, self.encoding)
+            self.stream = stream  # -- Keep stream for some corner cases.
+        return self.stream
 
 
 class Formatter(object):
@@ -26,15 +80,27 @@ class Formatter(object):
                     else:
                         step.status = "undefined"
                     formatter.result(step.status)
-            # -- FEATURE-END
-            formatter.close()
+            formatter.eof() # -- FEATURE-END
+        formatter.close()
     """
     name = None
     description = None
 
-    def __init__(self, stream, config):
-        self.stream = stream
+    def __init__(self, stream_opener, config):
+        self.stream_opener = stream_opener
+        self.stream = stream_opener.stream
         self.config = config
+
+    def open(self):
+        """
+        Ensure that the output stream is open.
+        Triggers the stream opener protocol (if necessary).
+
+        :return: Output stream to use (just opened or already open).
+        """
+        if not self.stream:
+            self.stream = self.stream_opener.open()
+        return self.stream
 
     def uri(self, uri):
         """
@@ -109,9 +175,16 @@ class Formatter(object):
         """
         Called before the formatter is no longer used (stream/io compatibility).
         """
+        self.close_stream()
+
+    def close_stream(self):
+        """
+        Close the stream, but only if this is needed.
+        This step is skipped if the stream is sys.stdout.
+        """
         if self.stream:
             if hasattr(self.stream, "flush"):
                 self.stream.flush()
             if hasattr(self.stream, "close") and self.stream is not sys.stdout:
                 self.stream.close()
-            self.stream = None      # -- MARK CLOSED.
+        self.stream = None      # -- MARK CLOSED.
