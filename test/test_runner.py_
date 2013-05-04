@@ -15,8 +15,6 @@ import unittest
 from behave import model, parser, runner, step_registry
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
-from behave.formatter.base import StreamOpener
-
 
 class TestContext(object):
     def setUp(self):
@@ -472,8 +470,10 @@ class TestRunWithPaths(object):
         self.config.reporters = []
         self.config.logging_level = None
         self.config.logging_filter = None
-        self.config.outputs = [ Mock(), StreamOpener(stream=sys.stdout) ]
+        self.config.outputs = [ Mock(), sys.stdout ]
         self.config.format = [ "plain", "progress" ]
+        self.config.paths = [ "features/foo.feature", "features/bar.feature" ]
+        # self.config.paths = [  ]
         self.runner = runner.Runner(self.config)
         self.load_hooks = self.runner.load_hooks = Mock()
         self.load_step_definitions = self.runner.load_step_definitions = Mock()
@@ -489,20 +489,39 @@ class TestRunWithPaths(object):
     def tearDown(self):
         self.formatter_class.stop()
 
-    def test_loads_hooks_and_step_definitions(self):
-        self.feature_files.return_value = []
-        self.runner.run_with_paths()
+    @patch('behave.runner_util.collect_feature_files')
+    def test_loads_hooks_and_step_definitions(self, collect_feature_files):
+        # XXX self.feature_files.return_value = []
+        # collect_feature_files = Mock()
+        collect_feature_files.return_value = [
+            'features/foo.feature', 'features/bar.feature'
+        ]
+        # with patch('behave.runner_util.collect_feature_files',
+        #           collect_feature_files):
+        #    pass
+        fs = FsMock('features/steps/',
+                    'features/foo.feature',
+                    'features/bar.feature',)
+        with patch('os.path', fs):
+            self.runner.run_with_paths()
 
         assert self.load_hooks.called
         assert self.load_step_definitions.called
 
+    # XXX @patch('os.path.exists')
     def test_runs_before_all_and_after_all_hooks(self):
         # Make runner.feature_files() and runner.run_hook() the same mock so
         # we can make sure things happen in the right order.
         self.runner.feature_files = self.run_hook
         self.runner.feature_files.return_value = []
         self.runner.context = Mock()
-        self.runner.run_with_paths()
+
+        fs = FsMock('features/steps/',
+                    'features/foo.feature',
+                    'features/bar.feature',)
+        with patch('os.path', fs):
+            # os.path.exists.return_value = True
+            self.runner.run_with_paths()
 
         eq_(self.run_hook.call_args_list, [
             (('before_all', self.runner.context), {}),
@@ -523,14 +542,18 @@ class TestRunWithPaths(object):
         abspath.side_effect = lambda x: x.upper()
         self.config.lang = 'fritz'
         self.config.format = ['plain']
-        self.config.outputs = [ StreamOpener(stream=sys.stdout) ]
+        self.config.outputs = [None]
         self.config.output.encoding = None
         self.config.exclude = lambda s: False
         self.config.junit = False
         self.config.summary = False
         parse_file.return_value = feature
 
-        self.runner.run_with_paths()
+        fs = FsMock('features/steps/',
+                    'features/foo.feature',
+                    'features/bar.feature',)
+        with patch('os.path', fs):
+            self.runner.run_with_paths()
 
         expected_parse_file_args = \
             [((x.upper(),), {'language': 'fritz'}) for x in feature_files]

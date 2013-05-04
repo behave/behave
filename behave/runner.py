@@ -5,18 +5,18 @@ from __future__ import with_statement
 import contextlib
 import os.path
 import StringIO
-import types
 import sys
 import traceback
 import warnings
 import weakref
 
-from behave import parser
 from behave import matchers
 from behave import step_registry
 from behave.formatter import formatters
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
+from behave.runner_util import \
+    collect_feature_files, parse_features
 
 
 class ContextMaskWarning(UserWarning):
@@ -457,71 +457,9 @@ class Runner(object):
             with context.user_mode():
                 self.hooks[name](context, *args)
 
-    @staticmethod
-    def parse_features_configfile(features_configfile):
-        """
-        Read textual file, ala '@features.txt'. This file contains:
-
-          * a feature filename in each line
-          * empty lines (skipped)
-          * comment lines (skipped)
-
-        Relative path names are evaluated relative to the configfile directory.
-        A leading '@' (AT) character is removed from the configfile name.
-
-        :param features_configfile:  Name of features configfile.
-        :return: List of feature filenames.
-        """
-        if features_configfile.startswith('@'):
-            features_configfile = features_configfile[1:]
-        here = os.path.dirname(features_configfile) or "."
-        files = []
-        for line in open(features_configfile).readlines():
-            line = line.strip()
-            if not line:
-                continue    # SKIP: Over empty line(s).
-            elif line.startswith('#'):
-                continue    # SKIP: Over comment line(s).
-            files.append(os.path.normpath(os.path.join(here, line)))
-        return files
-
     def feature_files(self):
-        files = []
-        for path in self.config.paths:
-            if os.path.isdir(path):
-                for dirpath, dirnames, filenames in os.walk(path):
-                    dirnames.sort()
-                    for filename in sorted(filenames):
-                        if filename.endswith('.feature'):
-                            files.append(os.path.join(dirpath, filename))
-            elif path.startswith('@'):
-                # -- USE: behave @list_of_features.txt
-                files.extend(self.parse_features_configfile(path[1:]))
-            elif os.path.exists(path):
-                files.append(path)
-            else:
-                raise Exception("Can't find path: " + path)
-        return files
+        return collect_feature_files(self.config.paths)
 
-    def parse_features(self, feature_files):
-        """
-        Parse feature files and return list of Feature model objects.
-
-        :param feature_files: List of feature files to parse.
-        :return: List of feature objects.
-        """
-        features = []
-        for filename in feature_files:
-            if self.config.exclude(filename):
-                continue
-
-            filename2 = os.path.abspath(filename)
-            feature = parser.parse_file(filename2, language=self.config.lang)
-            if not feature:
-                # -- CORNER-CASE: Feature file without any feature(s).
-                continue
-            features.append(feature)
-        return features
 
     def run(self):
         with self.path_manager:
@@ -535,17 +473,19 @@ class Runner(object):
         context = self.context = Context(self)
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
         self.setup_capture()
-        streams = self.config.outputs
+        stream_openers = self.config.outputs
         failed_count = 0
 
         self.run_hook('before_all', context)
 
         # -- STEP: Parse all feature files.
-        features = self.parse_features(self.feature_files())
+        feature_files = [ filename for filename in self.feature_files()
+                                    if not self.config.exclude(filename) ]
+        features = parse_features(feature_files, language=self.config.lang)
         self.features.extend(features)
 
         # -- STEP: Run all features.
-        self.formatters = formatters.get_formatter(self.config, streams)
+        self.formatters = formatters.get_formatter(self.config, stream_openers)
         undefined_steps_initial_size = len(self.undefined)
         run_feature = True
         for feature in features:
@@ -612,25 +552,4 @@ class Runner(object):
             self.log_capture.abandon()
 
 
-def make_undefined_step_snippet(step, language=None):
-    '''
-    Helper function to create an undefined-step snippet for a step.
 
-    :param step: Step to use (as Step object or step text).
-    :param language: i18n language, optionally needed for step text parsing.
-    :return: Undefined-step snippet (as string).
-    '''
-    if isinstance(step, types.StringTypes):
-        step_text = step
-        steps = parser.parse_steps(step_text, language=language)
-        step = steps[0]
-        assert step, "ParseError: %s" % step_text
-    prefix = u""
-    if sys.version_info[0] == 2:
-        prefix = u"u"
-
-    # snippet  = u"@"+ step.step_type +"("+ prefix + step.name + "')"
-    # snippet += u"\ndef impl(context):\n    assert False\n\n"
-    schema = u"@%s(%s'%s')\ndef impl(context):\n    assert False\n\n"
-    snippet = schema % (step.step_type, prefix, step.name)
-    return snippet

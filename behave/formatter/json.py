@@ -18,8 +18,10 @@ class JSONFormatter(Formatter):
     dumps_kwargs = {}
 
 
-    def __init__(self, stream, config):
-        super(JSONFormatter, self).__init__(stream, config)
+    def __init__(self, stream_opener, config):
+        super(JSONFormatter, self).__init__(stream_opener, config)
+        # -- ENSURE: Output stream is open.
+        self.stream = self.open()
         self.feature_count = 0
         self.current_feature_data = None
         self._step_index = 0
@@ -171,9 +173,7 @@ class JSONFormatter(Formatter):
 
     def close(self):
         self.write_json_footer()
-
-        # -- VIRTUAL-CHAIN OF RESPONSIBILITY: Delegate to base class.
-        super(JSONFormatter, self).close()
+        self.close_stream()
 
     # -- JSON-DATA COLLECTION:
     def add_feature_element(self, element):

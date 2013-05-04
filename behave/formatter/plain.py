@@ -22,14 +22,16 @@ class PlainFormatter(Formatter):
     DEFAULT_INDENT_SIZE = 2
     ENABLE_MULTI_LINE = True
 
-    def __init__(self, stream, config, **kwargs):
-        super(PlainFormatter, self).__init__(stream, config)
+    def __init__(self, stream_opener, config, **kwargs):
+        super(PlainFormatter, self).__init__(stream_opener, config)
         self.steps = []
         self.show_timings = config.show_timings
         self.show_multiline = config.show_multiline and self.ENABLE_MULTI_LINE
         self.show_aligned_keywords = self.SHOW_ALIGNED_KEYWORDS
         self.indent_size = self.DEFAULT_INDENT_SIZE
-        self.printer = ModelPrinter(stream)
+        # -- ENSURE: Output stream is open.
+        self.stream = self.open()
+        self.printer = ModelPrinter(self.stream)
         # -- LAZY-EVALUATE:
         self._multiline_indentation = None
 
@@ -102,6 +104,9 @@ class PlainFormatter(Formatter):
                 self.doc_string(step.text)
             if step.table:
                 self.table(step.table)
+
+    def eof(self):
+        self.stream.write('\n')
 
     # -- MORE: Formatter helpers
     def doc_string(self, doc_string):

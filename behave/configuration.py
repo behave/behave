@@ -9,6 +9,7 @@ import ConfigParser
 from behave.reporter.junit import JUnitReporter
 from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import TagExpression
+from behave.formatter.base import StreamOpener
 
 
 class ConfigError(Exception):
@@ -358,8 +359,17 @@ def load_configuration(defaults):
 
 # construct the parser
 #usage = "%(prog)s [options] [ [FILE|DIR|URL][:LINE[:LINE]*] ]+"
-usage = "%(prog)s [options] [ [FILE|DIR] ]+"
-parser = argparse.ArgumentParser(usage=usage)
+usage = "%(prog)s [options] [ [DIR|FILE|FILE:LINE] ]+"
+description = """\
+Run a number of feature tests with behave."""
+more = """
+EXAMPLES:
+behave features/
+behave features/one.feature features/two.feature
+behave features/one.feature:10
+behave @features.txt
+"""
+parser = argparse.ArgumentParser(usage=usage, description=description)
 for fixed, keywords in options:
     if not fixed:
         continue    # -- CONFIGFILE only.
@@ -367,7 +377,8 @@ for fixed, keywords in options:
         keywords = dict(keywords)
         del keywords['config_help']
     parser.add_argument(*fixed, **keywords)
-parser.add_argument('paths', nargs='*')
+parser.add_argument('paths', nargs='*',
+                help='Feature directory, file or file location (FILE:LINE).')
 
 
 class Configuration(object):
@@ -403,16 +414,13 @@ class Configuration(object):
             setattr(self, key, value)
 
         if not args.outfiles:
-            self.outputs.append(sys.stdout)
+            self.outputs.append(StreamOpener(stream=sys.stdout))
         else:
             for outfile in args.outfiles:
                 if outfile and outfile != '-':
-                    outdir = os.path.dirname(outfile) or '.'
-                    if not os.path.exists(outdir):
-                        os.makedirs(outdir)
-                    self.outputs.append(open(outfile, 'w'))
+                    self.outputs.append(StreamOpener(outfile))
                 else:
-                    self.outputs.append(sys.stdout)
+                    self.outputs.append(StreamOpener(stream=sys.stdout))
 
         if self.wip:
             # Only run scenarios tagged with "wip". Additionally: use the

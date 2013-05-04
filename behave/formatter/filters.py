@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+# FIXME:
+__status__ = "DEAD, BROKEN"
+
 from gherkin.tag_expression import TagExpression
 
 

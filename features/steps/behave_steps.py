@@ -6,9 +6,9 @@ REQUIRES:
   * behave4cmd.steplib.output steps (command output from behave).
 """
 
-
 from behave import given, when, then, step
-from behave.runner import make_undefined_step_snippet
+from behave.runner_util import make_undefined_step_snippet
+
 
 # -----------------------------------------------------------------------------
 # UTILITY FUNCTIONS:
