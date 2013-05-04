@@ -57,10 +57,12 @@ class PrettyFormatter(Formatter):
     name = 'pretty'
     description = 'Standard colourised pretty formatter'
 
-    def __init__(self, stream, config):
-        super(PrettyFormatter, self).__init__(stream, config)
-
-        self.monochrome = not config.color
+    def __init__(self, stream_opener, config):
+        super(PrettyFormatter, self).__init__(stream_opener, config)
+        # -- ENSURE: Output stream is open.
+        self.stream = self.open()
+        stream_supports_colors = self.stream.isatty()
+        self.monochrome = not config.color or not stream_supports_colors
         self.show_source = config.show_source
         self.show_timings = config.show_timings
         self.show_multiline = config.show_multiline
@@ -175,6 +177,7 @@ class PrettyFormatter(Formatter):
 
     def eof(self):
         self.replay()
+        self.stream.write('\n')
         self.stream.flush()
 
     def table(self, table):

@@ -9,6 +9,7 @@ import ConfigParser
 from behave.reporter.junit import JUnitReporter
 from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import TagExpression
+from behave.formatter.base import StreamOpener
 
 
 class ConfigError(Exception):
@@ -413,16 +414,13 @@ class Configuration(object):
             setattr(self, key, value)
 
         if not args.outfiles:
-            self.outputs.append(sys.stdout)
+            self.outputs.append(StreamOpener(stream=sys.stdout))
         else:
             for outfile in args.outfiles:
                 if outfile and outfile != '-':
-                    outdir = os.path.dirname(outfile) or '.'
-                    if not os.path.exists(outdir):
-                        os.makedirs(outdir)
-                    self.outputs.append(open(outfile, 'w'))
+                    self.outputs.append(StreamOpener(outfile))
                 else:
-                    self.outputs.append(sys.stdout)
+                    self.outputs.append(StreamOpener(stream=sys.stdout))
 
         if self.wip:
             # Only run scenarios tagged with "wip". Additionally: use the

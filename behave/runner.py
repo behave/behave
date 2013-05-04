@@ -473,7 +473,7 @@ class Runner(object):
         context = self.context = Context(self)
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
         self.setup_capture()
-        streams = self.config.outputs
+        stream_openers = self.config.outputs
         failed_count = 0
 
         self.run_hook('before_all', context)
@@ -485,7 +485,7 @@ class Runner(object):
         self.features.extend(features)
 
         # -- STEP: Run all features.
-        self.formatters = formatters.get_formatter(self.config, streams)
+        self.formatters = formatters.get_formatter(self.config, stream_openers)
         undefined_steps_initial_size = len(self.undefined)
         run_feature = True
         for feature in features:

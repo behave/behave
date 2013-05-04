@@ -32,8 +32,10 @@ class ProgressFormatterBase(Formatter):
         "undefined": "U",
     }
 
-    def __init__(self, stream, config):
-        super(ProgressFormatterBase, self).__init__(stream, config)
+    def __init__(self, stream_opener, config):
+        super(ProgressFormatterBase, self).__init__(stream_opener, config)
+        # -- ENSURE: Output stream is open.
+        self.stream = self.open()
         self.steps = []
         self.failures = []
         self.current_feature  = None
@@ -50,6 +52,7 @@ class ProgressFormatterBase(Formatter):
         self.current_feature = feature
         short_filename = relpath(feature.filename, os.getcwd())
         self.stream.write("%s  " % short_filename)
+        self.stream.flush()
 
     def background(self, background):
         pass
@@ -77,8 +80,13 @@ class ProgressFormatterBase(Formatter):
         Called at end of a feature.
         It would be better to have a hook that is called after all features.
         """
+        feature = self.current_feature
         self.report_scenario_progress()
+        if ( self.config.show_skipped or
+            (feature and feature.status != "skipped")):
+            self.stream.write('\n')
         self.report_failures()
+        self.stream.flush()
         self.reset()
 
     # -- SPECIFIC PART:
@@ -135,6 +143,7 @@ class ScenarioProgressFormatter(ProgressFormatterBase):
             # XXX-JE-TODO: self.failures.append(result)
             pass
         self.stream.write(dot_status)
+        self.stream.flush()
 
 
 # -----------------------------------------------------------------------------
@@ -161,4 +170,4 @@ class StepProgressFormatter(ProgressFormatterBase):
             result.scenario = self.current_scenario
             self.failures.append(result)
         self.stream.write(dot_status)
-        # self.stream.flush()
+        self.stream.flush()
