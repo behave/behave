@@ -183,8 +183,8 @@ class Formatter(object):
         This step is skipped if the stream is sys.stdout.
         """
         if self.stream:
-            if hasattr(self.stream, "flush"):
-                self.stream.flush()
-            if hasattr(self.stream, "close") and self.stream is not sys.stdout:
+            closed = getattr(self.stream, "closed", False)
+            should_close = not closed and self.stream is not sys.stdout
+            if should_close and hasattr(self.stream, "close"):
                 self.stream.close()
         self.stream = None      # -- MARK CLOSED.

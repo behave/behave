@@ -6,30 +6,52 @@ Version: 1.2.3a19 (unreleased)
 
 NEWS and CHANGES:
 
-  * INCOMPATIBLE CHANGE: Formatter Ctor uses now StreamOpener instead of Stream.
-    Formatter output streams are now opened late, under control of the formatter.
-    This allows the formatter also support directory mode (if needed).
-    Needed for RerunFormatter whose file was overwritten before it was read.
-  * ProgressFormatter: Flushes now output to provide better feedback.
-  * NEW: TagCountFormatter, TagLocationFormatter (reborn and implemented),
-  * NEW: RerunFormatter to simplify to rerun last failing scenarios (related to: #160).
-  * NEW: Support scenario file locations on command-line, ala: "{filename}:{line}" (related to: #160).
-  * tox: Use tox now in off-line mode per default (use: "tox -e init"...).
-  * Add support for Scenario/ScenarioOutline descriptions (related to: #79).
-  * JSONFormatter: Add support for scenario descriptions (related to: #79).
-  * json_parser: Add support for scenario descriptions (related to: #79).
-  * Parser: Improve diagnostics when parse errors occur.
-  * Parser: Refactor to simplify and avoid code duplications (related to: #79).
-  * Parser: Check that Backgrounds have no tags.
-  * JUnitReporter: Show complete scenario w/ text/tables. Improve readability.
-  * Plain formatter shows now multi-line step parts (text, table), too.
-  * Formatters are now created only once (was: once for each feature).
-  * JSON formatter generates now valid JSON (well-formed).
-  * Add utility script to show longest step durations based on JSON data.
-  * Scenarios can be now be selected by name or regular expression (#87).
-  * Dry-run mode: Detects now undefined steps.
-  * Dry-run mode: Uses untested counts now (was using: skipped counts).
-  * SummaryReporter: Summary shows now untested items if one or more exist.
+  - Running (and model):
+
+    * NEW: Support scenario file locations on command-line, ala: "{filename}:{line}" (related to: #160).
+    * Formatters are now created only once (was: once for each feature).
+    * Scenarios can be now be selected by name or regular expression (#87).
+    * Dry-run mode: Detects now undefined steps.
+    * Dry-run mode: Uses untested counts now (was using: skipped counts).
+    * Run decision logic: Use ModelElement.mark_skipped() to preselect what not to run.
+    * Run decision logic: Use ModelElement.should_run() to decide if element should run.
+
+  - Parsing (and model):
+
+    * Parser: Add support for Scenario/ScenarioOutline descriptions (related to: #79).
+    * Parser: Refactor to simplify and avoid code duplications (related to: #79).
+    * Parser: Improve diagnostics when parse errors occur.
+    * Parser: Check that Backgrounds have no tags.
+    * NEW: json_parser, parses JSON output and builds model.
+    * json_parser: Add support for scenario descriptions (related to: #79).
+
+  - Formatters:
+
+    * INCOMPATIBLE CHANGE:
+      Formatter Ctor uses now StreamOpener instead of opened Stream.
+      Formatter output streams are now opened late, under control of the formatter.
+      This allows the formatter to support also directory mode (if needed).
+      Needed for RerunFormatter whose file was overwritten before it was read (#160).
+
+    * NEW: RerunFormatter to simplify to rerun last failing scenarios (related to: #160).
+    * NEW: TagLocationFormatter, shows where tags are used.
+    * NEW: TagCountFormatter, shows which tags are used and how often (reborn).
+    * JSONFormatter: Add support for scenario descriptions (related to: #79).
+    * JSONFormatter: Generates now valid JSON (well-formed).
+    * PlainFormatter: Shows now multi-line step parts (text, table), too.
+    * PrettyFormatter: Enters now monochrome mode if output is piped/redirected.
+    * ProgressFormatter: Flushes now output to provide better feedback.
+
+  - Reporters:
+
+    * JUnitReporter: Show complete scenario w/ text/tables. Improve readability.
+    * SummaryReporter: Summary shows now untested items if one or more exist.
+
+  - Testing, development:
+
+    * tox: Use tox now in off-line mode per default (use: "tox -e init"...).
+    * Add utility script to show longest step durations based on JSON data.
+
 
 IMPROVEMENT:
 
