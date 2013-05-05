@@ -6,29 +6,78 @@ Version: 1.2.3a19 (unreleased)
 
 NEWS and CHANGES:
 
-  * Scenarios can be now be selected by name or regular expression (#87).
-  * Dry-run mode: Detects now undefined steps.
-  * Dry-run mode: Uses untested counts now (was using: skipped counts).
-  * SummaryReporter: Summary shows now untested items if one ore more exist.
+  - Running (and model):
+
+    * NEW: Support scenario file locations on command-line, ala: "{filename}:{line}" (related to: #160).
+    * Formatters are now created only once (was: once for each feature).
+    * Scenarios can be now be selected by name or regular expression (#87).
+    * Dry-run mode: Detects now undefined steps.
+    * Dry-run mode: Uses untested counts now (was using: skipped counts).
+    * Run decision logic: Use ModelElement.mark_skipped() to preselect what not to run.
+    * Run decision logic: Use ModelElement.should_run() to decide if element should run.
+
+  - Parsing (and model):
+
+    * Parser: Add support for Scenario/ScenarioOutline descriptions (related to: #79).
+    * Parser: Refactor to simplify and avoid code duplications (related to: #79).
+    * Parser: Improve diagnostics when parse errors occur.
+    * Parser: Check that Backgrounds have no tags.
+    * NEW: json_parser, parses JSON output and builds model.
+    * json_parser: Add support for scenario descriptions (related to: #79).
+
+  - Formatters:
+
+    * INCOMPATIBLE CHANGE:
+      Formatter Ctor uses now StreamOpener instead of opened Stream.
+      Formatter output streams are now opened late, under control of the formatter.
+      This allows the formatter to support also directory mode (if needed).
+      Needed for RerunFormatter whose file was overwritten before it was read (#160).
+
+    * NEW: RerunFormatter to simplify to rerun last failing scenarios (related to: #160).
+    * NEW: TagLocationFormatter, shows where tags are used.
+    * NEW: TagCountFormatter, shows which tags are used and how often (reborn).
+    * JSONFormatter: Add support for scenario descriptions (related to: #79).
+    * JSONFormatter: Generates now valid JSON (well-formed).
+    * PlainFormatter: Shows now multi-line step parts (text, table), too.
+    * PrettyFormatter: Enters now monochrome mode if output is piped/redirected.
+    * ProgressFormatter: Flushes now output to provide better feedback.
+
+  - Reporters:
+
+    * JUnitReporter: Show complete scenario w/ text/tables. Improve readability.
+    * SummaryReporter: Summary shows now untested items if one or more exist.
+
+  - Testing, development:
+
+    * tox: Use tox now in off-line mode per default (use: "tox -e init"...).
+    * Add utility script to show longest step durations based on JSON data.
+
 
 IMPROVEMENT:
 
+  * issue #160: Support rerun file with failed features/scenarios during the last test run (provided by: jenisys)
   * issue #154: Support multiple formatters (provided by: roignac, jenisys)
   * issue #103: sort feature file by name in a given directory (provided by: gurneyalex).
   * issue #102: Add configuration file setting for specifying default feature paths (provided by: lrowe).
   * issue  #87: Add --name option support (provided by: johbo, jenisys).
+  * issue  #79: Provide Support for Scenario Descriptions (provided by: caphrim007, jenisys).
   * issue  #42: Show all undefined steps taking tags into account (provided by: roignac, jenisys)
 
 FIXED:
 
+  * issue #159: output stream is wrapped twice in the codecs.StreamWriter (provided by: florentx).
+  * issue #153: The runtime should not by-pass the formatter to print line breaks minor.
+  * issue #152: Fix encoding issues (provided by: devainandor)
   * issue #145: before_feature/after_feature should not be skipped (provided by: florentx).
   * issue #141: Don't check for full package in issue 112 (provided by: roignac).
   * issue #125: Duplicate "Captured stdout" if substep has failed (provided by: roignac).
+  * issue  #60: JSONFormatter has several problems (last problem fixed).
   * issue  #48: Docs aren't clear on how Background is to be used.
   * issue  #47: Formatter processing chain is broken (solved by: #154).
 
 
-Version: 1.2.2.17 (2013-03-20)
+
+Version: 1.2.2.18 (2013-03-20)
 -------------------------------------------------------------------------------
 
 NEWS and CHANGES:
@@ -51,12 +100,17 @@ FIXED:
   * issue #135: Avoid leaking globals between step modules.
   * issue #114: No blank lines when option --no-skipped is used (provided by: florentx).
   * issue #111: Comment following @wip tag results in scenario being ignored
+  * issue  #83: behave.__main__:main() Various sys.exit issues
+  * issue  #80: source file names not properly printed with python 3.3.0
+  * issue  #62: --format=json: Background steps are missing (fixed: some time ago).
 
 RESOLVED:
 
  * issue #98: Summary should include the names of the first X tests that failed (solved by: #116).
 
-Version: 1.2.2.17 (2013-02-10, similar to: 1.2.2.16)
+
+Version: 1.2.2.16 (2013-02-10)
+-------------------------------------------------------------------------------
 
 NEW:
 
@@ -70,8 +124,6 @@ FIXED:
   * issue #96: Sub-steps failed without any error info to help debug issue
   * issue #85: AssertionError with nested regex and pretty formatter
   * issue #84: behave.runner behave does not reliably detected failed test runs
-  * issue #83: behave.__main__:main() Various sys.exit issues
-  * issue #80: source file names not properly printed with python 3.3.0
   * issue #75: behave @list_of_features.txt is broken.
   * issue #73: current_matcher is not predictable.
   * issue #72: Using GHERKIN_COLORS caused an TypeError.
@@ -82,7 +134,6 @@ FIXED:
   * issue #65: unrecognized --tag-help argument.
   * issue #64: Exit status not set to 1 even there are failures in certain cases (related to: #52)
   * issue #63: 'ScenarioOutline' object has no attribute 'stdout'.
-  * issue #62: --format=json: Background steps are missing.
   * issue #35: "behave --format=plain --tags @one" seems to execute right scenario w/ wrong steps
   * issue #32: "behave ... --junit-directory=xxx" fails for more than 1 level
 
@@ -115,54 +166,6 @@ Version 1.2.2 - August 21, 2012
 * Fix for an error when an assertion message contains Unicode characters.
 * Don't repr() the step text in snippets to avoid turning Unicode text into
   backslash hell.
-
-NEW (jenisys):
-
-  * "progress" formatter added.
-  * "json-pretty" formatter added (master-repo).
-  * Add "selftest.features/" to increase quality, based on cucumber idea.
-    Simplifies specifying acceptance tests by building a temporary workdir
-    and running behave against it.
-
-IMPROVED:
-
-  * Better support for Windows.
-  * Use tox to improve quality w/ testruns in clean sandbox.
-  * Add paver for better support project-specific tasks.
-  * Add coverage support to improve quality (better detect missing test areas).
-  * Add "DEVELOP.txt" to describe common developer tasks/usecases.
-
-CHANGES:
-
-  * Selective merge of release-1.2.2 from master repository (2012-08-20).
-  * Selective merge of latest changes/fixes from master repository (2012-08-17).
-
-OPEN:
-
-  * issue #70: JUnitReporter: Generates invalid UTF-8 in CDATA sections (stdout/stderr output) when ANSI escapes are used.
-  * issue #60: JSONFormatter has several problems.
-
-FIXED:
-
-  * issue #59: Fatal error when using --format=json
-  * issue #56: Use function names other than 'step(...)' in tutorial
-  * issue #53: Conflict with @step decorator (similar to #56)
-  * issue #46: behave returns 0 (SUCCESS) even in case of test failures
-  * issue #45: Parser removes empty lines in multiline text argument
-  * issue #44: Parser removes shell-like comment lines in multiline text argument
-  * issue #43: Enhance the format of Junit report
-  * issue #44: Parser removes shell-like comments in multiline text before multiline is parsed
-  * issue #41: Show missing steps in ScenarioOutline only once.
-  * issue #40: Test summary reports incorrect passed/failed scenarios and steps when Scenario Outline is used
-  * issue #39: make "up" escape sequence work right (provided by Noel Bush)
-  * issue #38: escape sequences don't work on terminal output (provided by Noel Bush)
-  * issue #37: Strange behaviour when no steps directory is present / path specified
-  * issue #35: "behave --format=plain --tags @one" seems to execute right scenario w/ wrong steps
-  * issue #34: "behave --version" runs features, but shows no version (DUPLICATES: #30)
-  * issue #33: behave 1.1.0: Install fails under Windows
-  * issue #32: "behave ... --junit-directory=xxx" fails for more than 1 level
-  * issue #31: "behave --format help" raises an error
-  * issue #30: behave --version runs tests/features
 
 
 Version 1.2.1 - August 19, 2012

@@ -5,12 +5,11 @@
 *$py.class
 build/
 dist/
-downloads/
-_/
 __pycache__/
 __WORKDIR__/
 _build/
 _WORKSPACE/
+reports/
 .cache/
 .idea/
 .tox/
@@ -18,6 +17,4 @@ _WORKSPACE/
 .coverage
 .ropeproject
 nosetests.xml
-reports/
-test_results/
 tools/virtualenvs

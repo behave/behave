@@ -60,7 +60,9 @@ class TestFormatStatus(unittest.TestCase):
         assert '2 failed' in output
         assert 'undefined' not in output
 
-class TestSummaryReporter(unittest.TestCase):
+
+class TestSummaryReporter(object):
+
     @patch('sys.stderr')
     def test_duration_is_totalled_up_and_outputted(self, stderr):
         features = [Mock(), Mock(), Mock(), Mock()]
@@ -131,10 +133,8 @@ class TestSummaryReporter(unittest.TestCase):
 
     @patch('sys.stderr')
     @patch('behave.reporter.summary.format_summary')
-    def test_scenario_status_is_collected_and_reported(self, format_summary, 
-												       stderr):
-        # pylint: disable=W0621
-        #   W0621   Redefining name ... from outer scope (format_summary)
+    def test_scenario_status_is_collected_and_reported(self, format_summary,
+                                                       stderr):
         feature = Mock()
         scenarios = [Mock(), Mock(), Mock(), Mock(), Mock()]
         scenarios[0].status = 'failed'
@@ -168,8 +168,8 @@ class TestSummaryReporter(unittest.TestCase):
 
     @patch('behave.reporter.summary.format_summary')
     @patch('sys.stderr')
-    def test_scenario_outline_status_is_collected_and_reported(self, stderr, 
-                                                              format_summary):
+    def test_scenario_outline_status_is_collected_and_reported(self, stderr,
+                                                               format_summary):
         # FIX: issue40
         # ENSURE: ScenarioOutline's scenarios are walked and collected.
         feature = Mock()
@@ -214,8 +214,6 @@ class TestSummaryReporter(unittest.TestCase):
     @patch('behave.reporter.summary.format_summary')
     def test_step_status_is_collected_and_reported(self, format_summary,
                                                    stderr):
-        # pylint: disable=W0621
-        #   W0621   Redefining name ... from outer scope (format_summary)
         feature = Mock()
         scenario = Mock()
         steps = [Mock(), Mock(), Mock(), Mock(), Mock()]

@@ -1,0 +1,15 @@
+# ============================================================================
+# PYTHON PACKAGE REQUIREMENTS FOR: behave -- For development only
+# ============================================================================
+
+# -- TESTING: Unit tests and behave self-tests.
+# PREPARED-FUTURE: behave4cmd0, behave4cmd
+nose  >= 1.1
+mock  >= 1.0
+PyHamcrest >= 1.6
+
+# -- DEVELOPMENT SUPPORT:
+# PREPARED: nose-cov >= 1.4
+# PREPARED: paver >= 1.2
+tox   >= 1.4.3
+coverage >= 3.6

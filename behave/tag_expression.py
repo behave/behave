@@ -33,9 +33,9 @@ class TagExpression(object):
 
             if tag.startswith('@'):
                 positives.append(tag[1:])
-            elif tag.startswith('-@'):
+            elif tag.startswith('-@') or tag.startswith('~@'):
                 negatives.append('-' + tag[2:])
-            elif tag.startswith('-'):
+            elif tag.startswith('-') or tag.startswith('~'):
                 negatives.append(tag)
             else:
                 positives.append(tag)

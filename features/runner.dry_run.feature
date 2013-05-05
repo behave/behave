@@ -2,8 +2,9 @@
 Feature: Runner should support a --dry-run option
 
     As a tester
-    I want to ensure that all behave tests are correct (have to errors)
-    Before I actually run tests.
+    I want to check if behave tests are syntactically correct
+    And all step definitions exist
+    Before I actually run the tests (by executing steps).
 
     | Specification: Dry-run mode
     |   * Undefined steps are detected
@@ -14,12 +15,11 @@ Feature: Runner should support a --dry-run option
     |   * Causes failed test-run when undefined steps are found.
 
     @setup
-    Scenario: Test Setup
+    Scenario: Feature Setup
         Given a new working directory
         And a file named "features/steps/steps.py" with:
             """
             from behave import step
-            import sys
 
             @step('a step passes')
             def step_passes(context):

@@ -9,15 +9,19 @@
 import struct
 import sys
 import tempfile
+
 from mock import Mock, patch
 from nose.tools import *
+import unittest
+
 from behave.formatter import formatters
 from behave.formatter import pretty
 from behave.formatter import tag_count
+from behave.formatter.base import StreamOpener
 from behave.model import Tag, Feature, Match, Scenario, Step
-import unittest
 
-class TestGetTerminalSize(unittest.TestCase):
+
+class TestGetTerminalSize(object):
     def setUp(self):
         try:
             self.ioctl_patch = patch('fcntl.ioctl')
@@ -108,7 +112,7 @@ class FormatterTests(unittest.TestCase):
     def setUp(self):
         self.config = Mock()
         self.config.color = True
-        self.config.outputs = [sys.stdout]
+        self.config.outputs = [ StreamOpener(stream=sys.stdout) ]
         self.config.format = [self.formatter_name]
 
     _line = 0
@@ -117,12 +121,9 @@ class FormatterTests(unittest.TestCase):
         self._line += 1
         return self._line
 
-    def _formatter(self, file, config, counts=None):
-        # pylint: disable=W0613,W0622
-        #   W0613   Unused argumnet (counts, needed by derived class)
-        #   W0622   Redefining built-in file
-        __pychecker__ = "unusednames=counts"
-        f = formatters.get_formatter(config, [file])[0]
+    def _formatter(self, file, config):
+        stream_opener = StreamOpener(stream=file)
+        f = formatters.get_formatter(config, [stream_opener])[0]
         f.uri('<string>')
         return f
 
@@ -199,26 +200,17 @@ class TestJson(FormatterTests):
 
 
 class TestTagCount(FormatterTests):
-    formatter_name = 'plain'
-
-    def _formatter(self, stream, config, tag_counts=None):
-        if tag_counts is None: tag_counts = {}
-        f = formatters.get_formatter(config, [stream])[0]
-        f.uri('<string>')
-        f = tag_count.TagCountFormatter(f, tag_counts)
-        f.uri('<string>')
-        return f
+    formatter_name = 'tag_count'
 
     def test_tag_count(self):
-        counts = {}
-        p = self._formatter(_tf(), self.config, counts)
+        p = self._formatter(_tf(), self.config)
 
-        s = self._scenario()
-        f = self._feature(scenarios=[s])
+        s = self._scenario(tags=[u'ham', u'foo'])
+        f = self._feature(scenarios=[s])  # feature.tags= ham, spam
         p.feature(f)
         p.scenario(s)
 
-        eq_(counts, {'ham': ['<string>:1'], 'spam': ['<string>:1']})
+        eq_(p.tag_counts, {'ham': [ f, s ], 'spam': [ f ], 'foo': [ s ]})
 
 
 class MultipleFormattersTests(FormatterTests):
@@ -227,11 +219,13 @@ class MultipleFormattersTests(FormatterTests):
     def setUp(self):
         self.config = Mock()
         self.config.color = True
-        self.config.outputs = [sys.stdout for i in self.formatters]
+        self.config.outputs = [ StreamOpener(stream=sys.stdout)
+                                for i in self.formatters ]
         self.config.format = self.formatters
 
     def _formatters(self, file, config):
-        fs = formatters.get_formatter(config, [file])
+        stream_opener = StreamOpener(stream=file)
+        fs = formatters.get_formatter(config, [stream_opener])
         for f in fs:
             f.uri('<string>')
         return fs

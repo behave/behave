@@ -1,14 +1,4 @@
 # -*- coding: utf-8 -*-
-# pylint: disable=C0302,C0301
-#   C0301:  Line too long
-#   C0302:  Too many lines in module (1047)
-#
-# E0202:397,4:Scenario.status: An attribute affected in behave.model line 446 hide this method
-# E0202:569,4:ScenarioOutline.status: An attribute affected in behave.model line 446 hide this method
-#
-# XXX-JE-FIXES:
-#  * Avoid using mutable datatypes as default values (sequence=[], ...)
-#  * Ctor: Explicitly init/call baseclass
 
 from __future__ import with_statement
 
@@ -188,15 +178,8 @@ class Feature(TagStatement, Replayable):
     def status(self):
         skipped = True
         for scenario_or_outline in self.scenarios:
-            if isinstance(scenario_or_outline, Scenario):
-                scenario = scenario_or_outline
-                if scenario.status == 'failed':
-                    return 'failed'
-                if scenario.status == 'untested':
-                    return 'untested'
-                if scenario.status != 'skipped':
-                    skipped = False
-            else:
+            # FIXME: Check if necessary, ScenarioOutline.status computes OK.
+            if isinstance(scenario_or_outline, ScenarioOutline):
                 for scenario in scenario_or_outline:
                     if scenario.status == 'failed':
                         return 'failed'
@@ -204,7 +187,14 @@ class Feature(TagStatement, Replayable):
                         return 'untested'
                     if scenario.status != 'skipped':
                         skipped = False
-        # -- NOTE: Returns 'skipped' if skipped=True. Otherwise, 'passed'.
+            else:
+                scenario = scenario_or_outline
+                if scenario.status == 'failed':
+                    return 'failed'
+                if scenario.status == 'untested':
+                    return 'untested'
+                if scenario.status != 'skipped':
+                    skipped = False
         return skipped and 'skipped' or 'passed'
 
     @property
@@ -219,6 +209,64 @@ class Feature(TagStatement, Replayable):
         for scenario in self.scenarios:
             duration += scenario.duration
         return duration
+
+    def walk_scenarios(self, with_outlines=False):
+        """
+        Provides a flat list of all scenarios of this feature.
+        A ScenarioOutline element adds its scenarios to this list.
+        But the ScenarioOutline element itself is only added when specified.
+
+        A flat scenario list is useful when all scenarios of a features
+        should be processed.
+
+        :param with_outlines: If ScenarioOutline items should be added, too.
+        :return: List of all scenarios of this feature.
+        """
+        all_scenarios = []
+        for scenario in self.scenarios:
+            if isinstance(scenario, ScenarioOutline):
+                scenario_outline = scenario
+                if with_outlines:
+                    all_scenarios.append(scenario_outline)
+                all_scenarios.extend(scenario_outline.scenarios)
+            else:
+                all_scenarios.append(scenario)
+        return all_scenarios
+
+    def should_run(self, config=None):
+        """
+        Determines if this Feature (and its scenarios) should run.
+        Implements the run decision logic for a feature.
+        The decision depends on:
+
+          * if the Feature is marked as skipped
+          * if the config.tags (tag expression) enable/disable this feature
+
+        :param config:  Runner configuration to use (optional).
+        :return: True, if scenario should run. False, otherwise.
+        """
+        answer = self.status != "skipped"
+        if answer and config:
+            answer = self.should_run_with_tags(config.tags)
+        return answer
+
+    def should_run_with_tags(self, tag_expression):
+        '''
+        Determines if this feature should run when the tag expression is used.
+        A feature should run if:
+          * it should run according to its tags
+          * any of its scenarios should run according to its tags
+
+        :param tag_expression:  Runner/config environment tags to use.
+        :return: True, if feature should run. False, otherwise (skip it).
+        '''
+        run_feature = tag_expression.check(self.tags)
+        if not run_feature:
+            for scenario in self:
+                if scenario.should_run_with_tags(tag_expression):
+                    run_feature = True
+                    break
+        return run_feature
 
     def mark_skipped(self):
         """
@@ -236,13 +284,8 @@ class Feature(TagStatement, Replayable):
         runner.context._push()
         runner.context.feature = self
 
-        # run this feature if the tags say to for itself or any one of its
-        # scenarios
-        run_feature = runner.config.tags.check(self.tags)
-        for scenario in self:
-            tags = self.tags + scenario.tags
-            run_feature = run_feature or runner.config.tags.check(tags)
-
+        # run this feature if the tags say so or any one of its scenarios
+        run_feature = self.should_run(runner.config)
         if run_feature or runner.config.show_skipped:
             for formatter in runner.formatters:
                 formatter.feature(self)
@@ -285,9 +328,11 @@ class Feature(TagStatement, Replayable):
         for formatter in runner.formatters:
             formatter.eof()
 
-        if run_feature or runner.config.show_skipped:
-            for formatter in runner.formatters:
-                formatter.stream.write('\n')
+        # -- FIX issue #153:
+        # if run_feature or runner.config.show_skipped:
+        #     for formatter in runner.formatters:
+        #         # formatter.stream.write('\n')
+        #         pass
 
         failed = (failed_count > 0)
         return failed
@@ -362,6 +407,11 @@ class Scenario(TagStatement, Replayable):
 
        The name of the scenario (the text after "Scenario:".)
 
+    .. attribute:: description
+
+       The description of the scenario as seen in the *feature file*. 
+       This is stored as a list of text lines.
+
     .. attribute:: feature
 
        The :class:`~behave.model.Feature` this scenario belongs to.
@@ -409,9 +459,10 @@ class Scenario(TagStatement, Replayable):
     '''
     type = "scenario"
 
-    # XXX-JE-ORIG: def __init__(self, filename, line, keyword, name, tags=[], steps=[]):
-    def __init__(self, filename, line, keyword, name, tags=None, steps=None):
+    def __init__(self, filename, line, keyword, name, tags=[], steps=[],
+                 description=None):
         super(Scenario, self).__init__(filename, line, keyword, name, tags)
+        self.description = description or []
         self.steps = steps or []
         self.background = None
         self.feature = None  # REFER-TO: owner=Feature
@@ -434,7 +485,6 @@ class Scenario(TagStatement, Replayable):
         """Returns iterator to all steps, including background steps if any."""
         return self.__iter__()
 
-    # XXX-JE-NEEDED:
     @property
     def status(self):
         for step in self.steps:
@@ -462,6 +512,44 @@ class Scenario(TagStatement, Replayable):
             duration += step.duration
         return duration
 
+    @property
+    def effective_tags(self):
+        """
+        Effective tags for this scenario:
+          * own tags
+          * tags inherited from its feature
+        """
+        tags = self.tags
+        if self.feature:
+            tags = self.feature.tags + self.tags
+        return tags
+
+    def should_run(self, config=None):
+        """
+        Determines if this Scenario (or ScenarioOutline) should run.
+        Implements the run decision logic for a scenario.
+        The decision depends on:
+
+          * if the Scenario is marked as skipped
+          * if the config.tags (tag expression) enable/disable this scenario
+
+        :param config:  Runner configuration to use (optional).
+        :return: True, if scenario should run. False, otherwise.
+        """
+        answer = self.status != "skipped"
+        if answer and config:
+            answer = self.should_run_with_tags(config.tags)
+        return answer
+
+    def should_run_with_tags(self, tag_expression):
+        """
+        Determines if this scenario should run when the tag expression is used.
+
+        :param tag_expression:  Runner/config environment tags to use.
+        :return: True, if scenario should run. False, otherwise (skip it).
+        """
+        return tag_expression.check(self.effective_tags)
+
     def mark_skipped(self):
         """
         Marks this scenario (and all its steps) as skipped.
@@ -475,9 +563,7 @@ class Scenario(TagStatement, Replayable):
         # pylint: disable=W0212
         #   W0212   Access to a protected member: runner.context._push()/._pop()
         failed = False
-
-        tags = runner.feature.tags + self.tags
-        run_scenario = runner.config.tags.check(tags)
+        run_scenario = self.should_run(runner.config)
         run_steps = run_scenario and not runner.config.dry_run
         dry_run_scenario = run_scenario and runner.config.dry_run
         self.was_dry_run = dry_run_scenario
@@ -488,9 +574,7 @@ class Scenario(TagStatement, Replayable):
 
         runner.context._push()
         runner.context.scenario = self
-
-        # current tags as a set
-        runner.context.tags = set(tags)
+        runner.context.tags = set(self.effective_tags)
 
         if not runner.config.dry_run and run_scenario:
             for tag in self.tags:
@@ -561,6 +645,11 @@ class ScenarioOutline(Scenario):
 
        The name of the scenario (the text after "Scenario Outline:".)
 
+    .. attribute:: description
+
+       The description of the `scenario outline`_ as seen in the *feature file*.
+       This is stored as a list of text lines.
+
     .. attribute:: feature
 
        The :class:`~behave.model.Feature` this scenario outline belongs to.
@@ -612,11 +701,11 @@ class ScenarioOutline(Scenario):
     '''
     type = "scenario_outline"
 
-    # XXX-JE-ORIG: def __init__(self, filename, line, keyword, name, tags=[], steps=[],
-    def __init__(self, filename, line, keyword, name, tags=None, steps=None,
-                 examples=None):
+
+    def __init__(self, filename, line, keyword, name, tags=[],
+                 steps=[], examples=[], description=None):
         super(ScenarioOutline, self).__init__(filename, line, keyword, name,
-                                              tags, steps)
+                                              tags, steps, description)
         self.examples = examples or []
         self._scenarios = []
 
@@ -939,7 +1028,7 @@ class Table(Replayable):
     #   R0921   Abstract class is not referenced.
     type = "table"
 
-    def __init__(self, headings, line=None, rows=None):
+    def __init__(self, headings, line=None, rows=[]):
         Replayable.__init__(self)
         self.headings = headings
         self.line = line
@@ -952,15 +1041,89 @@ class Table(Replayable):
     def add_row(self, row, line=None):
         self.rows.append(Row(self.headings, row, line))
 
+    def add_column(self, column_name, values=None, default_value=u""):
+        """
+        Adds a new column to this table.
+        Uses :param:`default_value` for new cells (if :param:`values` are
+        not provided). param:`values` are extended with :param:`default_value`
+        if values list is smaller than the number of table rows.
+
+        :param column_name: Name of new column (as string).
+        :param values: Optional list of cell values in new column.
+        :param default_value: Default value for cell (if values not provided).
+        :returns: Index of new column (as number).
+        """
+        # assert isinstance(column_name, unicode)
+        assert not self.has_column(column_name)
+        if values is None:
+            values = [ default_value ] * len(self.rows)
+        elif not isinstance(values, list):
+            values = list(values)
+        if len(values) < len(self.rows):
+            more_size = len(self.rows) - len(values)
+            more_values = [ default_value ] * more_size
+            values.extend(more_values)
+
+        new_column_index = len(self.headings)
+        self.headings.append(column_name)
+        for row, value in zip(self.rows, values):
+            assert len(row.cells) == new_column_index
+            row.cells.append(value)
+        return new_column_index
+
+    def has_column(self, column_name):
+        return column_name in self.headings
+
+    def get_column_index(self, column_name):
+        return self.headings.index(column_name)
+
+    def require_column(self, column_name):
+        """
+        Require that a column exists in the table.
+        Raise an AssertionError if the column does not exist.
+
+        :param column_name: Name of new column (as string).
+        :return: Index of column (as number) if it exists.
+        """
+        if not self.has_column(column_name):
+            columns = ", ".join(self.headings)
+            msg = "REQUIRE COLUMN: %s (columns: %s)" % (column_name, columns)
+            raise AssertionError(msg)
+        return self.get_column_index(column_name)
+
+    def require_columns(self, column_names):
+        for column_name in column_names:
+            self.require_column(column_name)
+
+    def ensure_column_exists(self, column_name):
+        """
+        Ensures that a column with the given name exists.
+        If the column does not exist, the column is added.
+
+        :param column_name: Name of column (as string).
+        :return: Index of column (as number).
+        """
+        if self.has_column(column_name):
+            return self.get_column_index(column_name)
+        else:
+            return self.add_column(column_name)
+
     def __repr__(self):
         return "<Table: %dx%d>" % (len(self.headings), len(self.rows))
 
     def __eq__(self, other):
-        if self.headings != other.headings:
-            return False
-        for my_row, their_row in zip(self.rows, other.rows):
-            if my_row != their_row:
+        if isinstance(other, Table):
+            if self.headings != other.headings:
                 return False
+            for my_row, their_row in zip(self.rows, other.rows):
+                if my_row != their_row:
+                    return False
+        else:
+            # -- ASSUME: table <=> raw data comparison
+            other_rows = other
+            for my_row, their_row in zip(self.rows, other_rows):
+                if my_row != their_row:
+                    return False
         return True
 
     def __ne__(self, other):
@@ -985,6 +1148,7 @@ class Table(Replayable):
 
         If the cells do not match then a useful AssertionError will be raised.
         '''
+        assert self == data
         raise NotImplementedError
 
 
@@ -1156,9 +1320,7 @@ class Match(Replayable):
         super(Match, self).__init__()
         self.func = func
         self.arguments = arguments
-        # XXX self.location  = None
-        self.location  = ''
-
+        self.location = None
         if func:
             self.location = self.make_location(func)
 

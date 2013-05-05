@@ -7,7 +7,7 @@
 
 from __future__ import with_statement
 import os.path
-from test.testutil_tempfile import named_temporary_file
+import tempfile
 from nose.tools import *
 from behave import configuration
 import unittest
@@ -29,24 +29,22 @@ bogus=spam
 class TestConfiguration(unittest.TestCase):
 
     def test_read_file(self):
-        # XXX-JE-ORIG, DEPRECATED: mktemp()
-        with named_temporary_file() as f:
+        tn = tempfile.mktemp()
+        tndir = os.path.dirname(tn)
+        with open(tn, 'w') as f:
             f.write(TEST_CONFIG)
-            f.close()
 
-            tndir = os.path.dirname(f.name)
-
-            d = configuration.read_configuration(f.name)
-            eq_(d['outfiles'], [
-                os.path.normpath('/absolute/path1'),
-                os.path.normpath(os.path.join(tndir, 'relative/path2')),
+        d = configuration.read_configuration(tn)
+        eq_(d['outfiles'], [
+            os.path.normpath('/absolute/path1'),
+            os.path.normpath(os.path.join(tndir, 'relative/path2')),
+        ])
+        eq_(d['paths'], [
+            os.path.normpath('/absolute/path3'),  # -- WINDOWS-REQUIRES: normpath
+            os.path.normpath(os.path.join(tndir, 'relative/path4')),
             ])
-            eq_(d['paths'], [
-                os.path.normpath('/absolute/path3'),  # -- WINDOWS-REQUIRES: normpath
-                os.path.normpath(os.path.join(tndir, 'relative/path4')),
-            ])
-            eq_(d['format'], ['pretty', 'tag-counter'])
-            eq_(d['tags'], ['@foo,~@bar', '@zap'])
-            eq_(d['stdout_capture'], False)
-            ok_('bogus' not in d)
+        eq_(d['format'], ['pretty', 'tag-counter'])
+        eq_(d['tags'], ['@foo,~@bar', '@zap'])
+        eq_(d['stdout_capture'], False)
+        ok_('bogus' not in d)
 

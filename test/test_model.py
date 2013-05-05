@@ -14,11 +14,11 @@ import re
 import sys
 from mock import Mock, patch
 from nose.tools import *
-import unittest
 from behave import model
 from behave.compat.collections import OrderedDict
 from behave import step_registry
 from behave.configuration import Configuration
+import unittest
 
 class TestFeatureRun(unittest.TestCase):
     def setUp(self):
@@ -583,7 +583,8 @@ class TestTableModel(unittest.TestCase):
     def test_table_row_items(self):
         eq_(self.table[0].items(), zip(self.HEAD, self.DATA[0]))
 
-class TestModelRow(unittest.TestCase):
+
+class TestModelRow(object):
     HEAD = [u'name',  u'sex',    u'age']
     DATA = [u'Alice', u'female', u'12']
 
