@@ -149,6 +149,10 @@ def make_index_for(package, index_dir, verbose=True):
         pkg_relpath_to = os.path.relpath(pkg_filename, index_dir)
         parts.append(item_template.format(pkg_name, pkg_relpath_to))
 
+    if not parts:
+        print("OOPS: Package %s has no files" % package.name)
+        return
+
     if verbose:
         root_index = not Package.isa(package.files[0])
         if root_index:

@@ -24,11 +24,12 @@ sys.path.insert(0, ".")
 # -- USE PAVER EXTENSIONS: tasks, utility functions
 # from   paver.setuputils import setup, install_distutils_tasks
 # import paver.doctools
-from paver_ext.pip_download   import download_depends, localpi
+from paver_ext.pip_download import download_deps, localpi
 from paver_ext.python_checker import pychecker, pylint
+from paver_ext.paver_consume_args import Cmdline
 from paver_ext import paver_require, paver_patch
 
-paver_require.min_version("1.1")
+paver_require.min_version("1.2")
 paver_patch.ensure_path_with_pmethods(path)
 paver_patch.ensure_path_with_smethods(path)
 
@@ -89,7 +90,7 @@ options(
             ".DS_Store", "*.~*~",   #< MACOSX
         ],
     ),
-    develop=Bunch(
+    pip = Bunch(
         requirements_files=[
             "requirements.txt",
             "requirements-develop.txt",

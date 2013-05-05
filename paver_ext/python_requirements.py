@@ -2,6 +2,7 @@
 # PAVER EXTENSION/UTILITY: Read PIP requirements files
 # ============================================================================
 # REQUIRES: paver >= 1.0
+# REQUIRES: pkg_resources, fulfilled when setuptools or distribute is installed
 # DESCRIPTION:
 #   Provides some utility functions for paver.
 #
@@ -35,16 +36,17 @@ def read_requirements(*filenames):
         if not os.path.exists(filename):
             error("REQUIREMENT-FILE %s not found" % filename)
             continue
+        # XXX-INSTALL-REQUIRES problem w/ setup()
+#       # -- NORMAL CASE:
+#       with open(filename, "r") as f:
+#            requirements = pkg_resources.parse_requirements(f.read())
+#            package_requirements.extend(requirements)
         # -- NORMAL CASE:
-        with open(filename, "r") as f:
-            requirements = pkg_resources.parse_requirements(f.read())
-            package_requirements.extend(requirements)
-#        # -- NORMAL CASE:
-#        requirements_file = open(filename, "r")
-#        for line in requirements_file.readlines():
-#            line = line.strip()
-#            if not line or line.startswith("#"):
-#                continue    #< SKIP: EMPTY-LINE or COMMENT-LINE
-#            package_requirements.append(line)
-#        requirements_file.close()
+        requirements_file = open(filename, "r")
+        for line in requirements_file.readlines():
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue    #< SKIP: EMPTY-LINE or COMMENT-LINE
+            package_requirements.append(line)
+        requirements_file.close()
     return package_requirements
