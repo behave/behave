@@ -25,7 +25,8 @@ def before_all(context):
         logging.basicConfig(level=logging.DEBUG)
 
 def after_all(context):
-    print "SUMMARY:"
+    # TEMPORARILY-DISABLED: print "SUMMARY:"
+    pass
 
 #def before_feature(context, feature):
 #    context.workdir = None
