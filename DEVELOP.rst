@@ -10,8 +10,7 @@ Installation
 Install the basic requirements for this python package.
 Then install all the dependencies that are needed for the development::
 
-    pip install -r requirements.txt
-    pip install -r requirements-develop.txt
+    pip install -r requirements/all.txt
 
 
 Basic Build-Support for Common Tasks
@@ -64,17 +63,14 @@ If you want to run the feature tests, use::
 
     paver behave_test
 
-To run all tests (unittests and feature tests) use::
+To run all tests (unittests and behave tests) use::
 
     paver test
 
-To run the selftests use::
+To run behave tests manualy::
 
-    bin/behave selftest.features/
-
-To ensure if all issues are fixed::
-
-    bin/behave --format=progress issue.features/
+    bin/behave -f progress features/
+    bin/behave -f progress issue.features/
 
 RELATED FILES:
   * test/test_*.py                  -- Unit tests.
@@ -143,7 +139,12 @@ PROCEDURE:
 
 All packages are downloaded by using the following commands::
 
-    paver download_depends
+    paver download_deps
+    paver localpi
+
+or use:
+
+    tox -e init
 
 This downloads all required python packages described in the
 ``requirements*.txt`` files and stores them in the
@@ -151,27 +152,14 @@ This downloads all required python packages described in the
   * ``$HOME/.pip/downloads/`` subdirectory (default)
   * ``downloads/`` subdirectory (alternative).
 
-
-.. hint::
-
-    If you want to switch between these 2 local alternatives pypi-server,
-    you need to adapt the ``pavement.py`` (options: download_dir)
-    and ``tox.ini`` (indexserver = default = ...).
-
-    If you want to use an remote pypi-server, you only need to adapt ``tox.in``.
-
-
-The local python package index is build via::
-
-    paver localpi
-
+The local python package index is also build.
 After these 2 preparation steps, ``tox`` can be run::
 
     tox
 
 or::
 
-    tox -e py26
+    tox -e py27
 
 RELATED FILES:
   * $HOME/.pip/downloads/           -- Downloaded packages (local1 default).
