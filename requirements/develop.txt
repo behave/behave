@@ -9,10 +9,7 @@ mock  >= 1.0
 PyHamcrest >= 1.6
 
 # -- DEVELOPMENT SUPPORT:
-# PREPARED: nose-cov >= 1.4
-# PREPARED: paver >= 1.2
 tox   >= 1.4.3
 coverage >= 3.6
-
-# -- MORE:
+nose-cov >= 1.4
 paver >= 1.2

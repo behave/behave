@@ -16,7 +16,7 @@ Then install all the dependencies that are needed for the development::
 Basic Build-Support for Common Tasks
 ------------------------------------------------------------------------------
 
-:Precondition: paver >= 1.0.5 is installed
+:Precondition: paver >= 1.2 is installed
 
 ``paver`` is used to support common build tasks.
 Use the following command to show all commands::
@@ -44,7 +44,7 @@ Running Tests
 ------------------------------------------------------------------------------
 
 :Precondition: nose  >= 1.1
-:Precondition: mock  >= 0.8
+:Precondition: mock  >= 1.0
 
 Run all unittests by using the nose test runner::
 
@@ -59,7 +59,7 @@ or run the tests via ``paver``::
     paver unittest
 
 
-If you want to run the feature tests, use::
+If you want to run the behave tests (feature tests), use::
 
     paver behave_test
 
@@ -67,7 +67,7 @@ To run all tests (unittests and behave tests) use::
 
     paver test
 
-To run behave tests manualy::
+To run behave tests manually::
 
     bin/behave -f progress features/
     bin/behave -f progress issue.features/
@@ -86,7 +86,7 @@ SEE ALSO:
 Code Coverage
 ------------------------------------------------------------------------------
 
-:Precondition: coverage >= 3.5
+:Precondition: coverage >= 3.6
 :Precondition: nose-cov >= 1.4
 
 The following command runs all tests (unittests, feature tests) with
@@ -122,7 +122,6 @@ Running tox
 ------------------------------------------------------------------------------
 
 :Precondition: pip >= 1.1 is installed
-:Precondition: pip2pi > 0.1.1  (for localpi)
 
 ``tox`` is used to simplify tests with various python versions in a
 clean environment. It verifies that:
@@ -137,7 +136,7 @@ PROCEDURE:
   2. Prepare tox by building a local python package index
   3. Run tox
 
-All packages are downloaded by using the following commands::
+All packages are downloaded by using the following commands (step 1 and 2)::
 
     paver download_deps
     paver localpi
@@ -155,11 +154,11 @@ This downloads all required python packages described in the
 The local python package index is also build.
 After these 2 preparation steps, ``tox`` can be run::
 
-    tox
+    tox -e py27
 
 or::
 
-    tox -e py27
+    tox
 
 RELATED FILES:
   * $HOME/.pip/downloads/           -- Downloaded packages (local1 default).
