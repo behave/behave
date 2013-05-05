@@ -3,6 +3,7 @@
 Provides textual descriptions for :mod:`behave.model` elements.
 """
 
+
 # -----------------------------------------------------------------------------
 # FUNCTIONS:
 # -----------------------------------------------------------------------------
@@ -50,6 +51,20 @@ def escape_triple_quotes(text):
     return text.replace(u'"""', u'\\"\\"\\"')
 
 
+def compute_words_maxsize(words):
+    """
+    Compute the maximum word size from a list of words (or strings).
+
+    :param words: List of words (or strings) to use.
+    :return: Maximum size of all words.
+    """
+    max_size = 0
+    for word in words:
+        if len(word) > max_size:
+            max_size = len(word)
+    return max_size
+
+
 # -----------------------------------------------------------------------------
 # CLASS:
 # -----------------------------------------------------------------------------
@@ -89,9 +104,7 @@ class ModelDescriptor(object):
         if indentation:
             return indent(lines, indentation)
         # -- OTHERWISE:
-        text = u"".join(lines)
-        return text
-
+        return u"".join(lines)
 
     @staticmethod
     def describe_docstring(doc_string, indentation=None):
@@ -104,7 +117,7 @@ class ModelDescriptor(object):
         :return: Textual table description (as unicode string).
         """
         text = escape_triple_quotes(doc_string)
-        text = u'"""\n'+ text +'\n"""\n'
+        text = u'"""\n' + text + '\n"""\n'
 
         if indentation:
             text = indent(text, indentation)

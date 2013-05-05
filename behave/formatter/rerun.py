@@ -66,11 +66,12 @@ class RerunFormatter(Formatter):
 
     def close(self):
         """Called at end of test run."""
+        stream_name = self.stream_opener.name
         if self.failed_scenarios:
             # -- ENSURE: Output stream is open.
             self.stream = self.open()
             self.report_scenario_failures()
-        elif os.path.exists(self.stream_opener.name):
+        elif stream_name and os.path.exists(stream_name):
             # -- ON SUCCESS: Remove last rerun file with its failures.
             os.remove(self.stream_opener.name)
 
