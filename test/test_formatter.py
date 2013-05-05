@@ -178,30 +178,17 @@ class TestJson(FormatterTests):
 
 
 class TestTagCount(FormatterTests):
-    # FIXME:
     formatter_name = 'tag_count'
 
-    def _formatter_XXX(self, stream, config):
-        # XXX if tag_counts is None: tag_counts = {}
-        # XXX f = formatters.get_formatter(config, [stream])[0]
-        stream_opener = StreamOpener(stream=stream)
-        # XXX f = tag_count.TagCountFormatter(f, tag_counts)
-        f = tag_count.TagCountFormatter(stream_opener, config)
-        f.uri('<string>')
-        f.uri('<string>')
-        return f
-
     def test_tag_count(self):
-        # XXX counts = {}
-        p = self._formatter(_tf(), self.config) # XXX, counts)
+        p = self._formatter(_tf(), self.config)
 
-        s = self._scenario()
-        f = self._feature(scenarios=[s])
+        s = self._scenario(tags=[u'ham', u'foo'])
+        f = self._feature(scenarios=[s])  # feature.tags= ham, spam
         p.feature(f)
         p.scenario(s)
 
-        eq_(p.tag_counts, {'ham': ['<string>:2'], 'spam': ['<string>:2']})
-        # XXX eq_(p.tag_counts, {'ham': ['<string>:1'], 'spam': ['<string>:1']})
+        eq_(p.tag_counts, {'ham': [ f, s ], 'spam': [ f ], 'foo': [ s ]})
 
 
 class MultipleFormattersTests(FormatterTests):
