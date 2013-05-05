@@ -37,7 +37,7 @@ Feature: Tag logic
       """
 
   Scenario: ANDing tags
-    When I run "behave -c -f plain -t @one -t @three features/tagulicious.feature"
+    When I run "behave -c -f plain -T -t @one -t @three features/tagulicious.feature"
     Then it should pass with:
       """
       1 feature passed, 0 failed, 0 skipped
@@ -55,7 +55,7 @@ Feature: Tag logic
       """
 
   Scenario: ORing tags
-    When I run "behave -c -f plain -t @one,@three features/tagulicious.feature"
+    When I run "behave -c -f plain -T -t @one,@three features/tagulicious.feature"
     Then it should pass with:
         """
         1 feature passed, 0 failed, 0 skipped
