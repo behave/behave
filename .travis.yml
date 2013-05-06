@@ -9,6 +9,6 @@ install:
   - python setup.py -q install
 script:
   - nosetests
-  - behave -f progress --junit features/
+  - behave -f progress --junit --tags=~@xfail features/
   - behave -f progress --junit --tags=~@xfail tools/test-features/
-  - behave -f progress --junit issue.features/
+  - behave -f progress --junit --tags=~@xfail issue.features/
