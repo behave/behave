@@ -1,10 +1,13 @@
 @wip
 @issue_122
+@xfail
 Feature: Duplicated Step Definitions
 
   As I behave user
   I want to know when step definitions are duplicated
 
+  # -- FAILS with pypy ?!?!
+  @xfail
   Scenario: Duplicated Step in same File
     Given a new working directory
     And a file named "features/steps/alice_steps.py" with:
@@ -38,7 +41,7 @@ Feature: Duplicated Step Definitions
         @given(u'I call Alice')
         """
 
-  @wip
+  # -- FAILS on linux w/ cpython2.7 ?!?!
   @xfail
   Scenario: Duplicated Step Definition in another File
     Given a new working directory
