@@ -1,5 +1,8 @@
-import re
+# -*- coding: utf-8 -*-
+# FIXME:
+__status__ = "DEAD, BROKEN"
 
+import re
 from gherkin.formatter import filters
 
 re_type = type(re.compile(''))

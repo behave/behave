@@ -30,7 +30,7 @@ Feature: Issue #41 Missing Steps are duplicated in a Scenario Outline
         Scenario Outline:
           Given an unknown step
           When  I enter a "<name>"
-          Then  the name is "<name>".
+          Then  the name is "<name>"
 
         Examples:
             |name |
@@ -67,7 +67,7 @@ Feature: Issue #41 Missing Steps are duplicated in a Scenario Outline
         Scenario Outline:
           Given I enter a "<name>"
           When  I use an unknown step
-          Then  the name is "<name>".
+          Then  the name is "<name>"
 
         Examples:
             |name |

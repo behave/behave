@@ -15,6 +15,8 @@ import unittest
 from behave import model, parser, runner, step_registry
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
+from behave.formatter.base import StreamOpener
+
 
 class TestContext(object):
     def setUp(self):
@@ -266,7 +268,7 @@ Then a step passes
         with patch('behave.step_registry.registry', self.step_registry):
             try:
                 result = self.context.execute_steps(doc)
-            except AssertionError as e:
+            except AssertionError, e:  # -- PY26-CLEANUP-MARK
                 ok_("Sub-step failed: When a step fails" in str(e))
 
     def test_execute_steps_with_text(self):
@@ -470,6 +472,8 @@ class TestRunWithPaths(object):
         self.config.reporters = []
         self.config.logging_level = None
         self.config.logging_filter = None
+        self.config.outputs = [ Mock(), StreamOpener(stream=sys.stdout) ]
+        self.config.format = [ "plain", "progress" ]
         self.runner = runner.Runner(self.config)
         self.load_hooks = self.runner.load_hooks = Mock()
         self.load_step_definitions = self.runner.load_step_definitions = Mock()
@@ -519,6 +523,7 @@ class TestRunWithPaths(object):
         abspath.side_effect = lambda x: x.upper()
         self.config.lang = 'fritz'
         self.config.format = ['plain']
+        self.config.outputs = [ StreamOpener(stream=sys.stdout) ]
         self.config.output.encoding = None
         self.config.exclude = lambda s: False
         self.config.junit = False

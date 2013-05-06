@@ -8,7 +8,7 @@ from nose.tools import *
 from behave.formatter import formatters
 from behave.formatter import pretty
 from behave.formatter import tag_count
-
+from behave.formatter.base import StreamOpener
 from behave.model import Tag, Feature, Match, Scenario, Step
 
 
@@ -96,6 +96,7 @@ class FormatterTests(object):
     def setUp(self):
         self.config = Mock()
         self.config.color = True
+        self.config.outputs = [ StreamOpener(stream=sys.stdout) ]
         self.config.format = [self.formatter_name]
 
     _line = 0
@@ -105,7 +106,8 @@ class FormatterTests(object):
         return self._line
 
     def _formatter(self, file, config):
-        f = formatters.get_formatter(config, file)
+        stream_opener = StreamOpener(stream=file)
+        f = formatters.get_formatter(config, [stream_opener])[0]
         f.uri('<string>')
         return f
 
@@ -176,24 +178,72 @@ class TestJson(FormatterTests):
 
 
 class TestTagCount(FormatterTests):
-    formatter_name = 'plain'
-
-    def _formatter(self, stream, config, tag_counts=None):
-        if tag_counts is None: tag_counts = {}
-        f = formatters.get_formatter(config, stream)
-        f.uri('<string>')
-        f = tag_count.TagCountFormatter(f, tag_counts)
-        f.uri('<string>')
-        return f
+    formatter_name = 'tag_count'
 
     def test_tag_count(self):
-        counts = {}
-        p = self._formatter(_tf(), self.config, counts)
+        p = self._formatter(_tf(), self.config)
 
-        s = self._scenario()
-        f = self._feature(scenarios=[s])
+        s = self._scenario(tags=[u'ham', u'foo'])
+        f = self._feature(scenarios=[s])  # feature.tags= ham, spam
         p.feature(f)
         p.scenario(s)
 
-        eq_(counts, {'ham': ['<string>:1'], 'spam': ['<string>:1']})
+        eq_(p.tag_counts, {'ham': [ f, s ], 'spam': [ f ], 'foo': [ s ]})
 
+
+class MultipleFormattersTests(FormatterTests):
+    formatters = []
+
+    def setUp(self):
+        self.config = Mock()
+        self.config.color = True
+        self.config.outputs = [ StreamOpener(stream=sys.stdout)
+                                for i in self.formatters ]
+        self.config.format = self.formatters
+
+    def _formatters(self, file, config):
+        stream_opener = StreamOpener(stream=file)
+        fs = formatters.get_formatter(config, [stream_opener])
+        for f in fs:
+            f.uri('<string>')
+        return fs
+
+    def test_feature(self):
+        # this test does not actually check the result of the formatting; it
+        # just exists to make sure that formatting doesn't explode in the face of
+        # unicode and stuff
+        ps = self._formatters(_tf(), self.config)
+        f = self._feature()
+        for p in ps:
+            p.feature(f)
+
+    def test_scenario(self):
+        ps = self._formatters(_tf(), self.config)
+        f = self._feature()
+        for p in ps:
+            p.feature(f)
+            s = self._scenario()
+            p.scenario(s)
+
+    def test_step(self):
+        ps = self._formatters(_tf(), self.config)
+        f = self._feature()
+        for p in ps:
+            p.feature(f)
+            s = self._scenario()
+            p.scenario(s)
+            s = self._step()
+            p.step(s)
+            p.match(self._match([]))
+            s.status = u'passed'
+            p.result(s)
+
+
+class TestPrettyAndPlain(MultipleFormattersTests):
+    formatters = ['pretty', 'plain']
+
+class TestPrettyAndJSON(MultipleFormattersTests):
+    formatters = ['pretty', 'json']
+
+class TestJSONAndPlain(MultipleFormattersTests):
+    formatters = ['json', 'plain']

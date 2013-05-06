@@ -1,8 +1,83 @@
 Version History
 ===============================================================================
 
+Version: 1.2.3a19 (unreleased)
+-------------------------------------------------------------------------------
 
-Next Version 1.2.2.x - UNRELEASED
+NEWS and CHANGES:
+
+  - Running (and model):
+
+    * NEW: Support scenario file locations on command-line, ala: "{filename}:{line}" (related to: #160).
+    * Formatters are now created only once (was: once for each feature).
+    * Scenarios can be now be selected by name or regular expression (#87).
+    * Dry-run mode: Detects now undefined steps.
+    * Dry-run mode: Uses untested counts now (was using: skipped counts).
+    * Run decision logic: Use ModelElement.mark_skipped() to preselect what not to run.
+    * Run decision logic: Use ModelElement.should_run() to decide if element should run.
+
+  - Parsing (and model):
+
+    * Parser: Add support for Scenario/ScenarioOutline descriptions (related to: #79).
+    * Parser: Refactor to simplify and avoid code duplications (related to: #79).
+    * Parser: Improve diagnostics when parse errors occur.
+    * Parser: Check that Backgrounds have no tags.
+    * NEW: json_parser, parses JSON output and builds model.
+    * json_parser: Add support for scenario descriptions (related to: #79).
+
+  - Formatters:
+
+    * INCOMPATIBLE CHANGE:
+      Formatter Ctor uses now StreamOpener instead of opened Stream.
+      Formatter output streams are now opened late, under control of the formatter.
+      This allows the formatter to support also directory mode (if needed).
+      Needed for RerunFormatter whose file was overwritten before it was read (#160).
+
+    * NEW: RerunFormatter to simplify to rerun last failing scenarios (related to: #160).
+    * NEW: TagLocationFormatter, shows where tags are used.
+    * NEW: TagCountFormatter, shows which tags are used and how often (reborn).
+    * JSONFormatter: Add support for scenario descriptions (related to: #79).
+    * JSONFormatter: Generates now valid JSON (well-formed).
+    * PlainFormatter: Shows now multi-line step parts (text, table), too.
+    * PrettyFormatter: Enters now monochrome mode if output is piped/redirected.
+    * ProgressFormatter: Flushes now output to provide better feedback.
+
+  - Reporters:
+
+    * JUnitReporter: Show complete scenario w/ text/tables. Improve readability.
+    * SummaryReporter: Summary shows now untested items if one or more exist.
+
+  - Testing, development:
+
+    * tox: Use tox now in off-line mode per default (use: "tox -e init"...).
+    * Add utility script to show longest step durations based on JSON data.
+
+
+IMPROVEMENT:
+
+  * issue #160: Support rerun file with failed features/scenarios during the last test run (provided by: jenisys)
+  * issue #154: Support multiple formatters (provided by: roignac, jenisys)
+  * issue #103: sort feature file by name in a given directory (provided by: gurneyalex).
+  * issue #102: Add configuration file setting for specifying default feature paths (provided by: lrowe).
+  * issue  #87: Add --name option support (provided by: johbo, jenisys).
+  * issue  #79: Provide Support for Scenario Descriptions (provided by: caphrim007, jenisys).
+  * issue  #42: Show all undefined steps taking tags into account (provided by: roignac, jenisys)
+
+FIXED:
+
+  * issue #159: output stream is wrapped twice in the codecs.StreamWriter (provided by: florentx).
+  * issue #153: The runtime should not by-pass the formatter to print line breaks minor.
+  * issue #152: Fix encoding issues (provided by: devainandor)
+  * issue #145: before_feature/after_feature should not be skipped (provided by: florentx).
+  * issue #141: Don't check for full package in issue 112 (provided by: roignac).
+  * issue #125: Duplicate "Captured stdout" if substep has failed (provided by: roignac).
+  * issue  #60: JSONFormatter has several problems (last problem fixed).
+  * issue  #48: Docs aren't clear on how Background is to be used.
+  * issue  #47: Formatter processing chain is broken (solved by: #154).
+
+
+
+Version: 1.2.2.18 (2013-03-20)
 -------------------------------------------------------------------------------
 
 NEWS and CHANGES:
@@ -35,6 +110,7 @@ RESOLVED:
 
 
 Version: 1.2.2.16 (2013-02-10)
+-------------------------------------------------------------------------------
 
 NEW:
 

@@ -1,35 +1,16 @@
 # -*- coding: utf8 -*-
 
-import sys
-
 from behave.formatter.ansi_escapes import escapes, up
 from behave.formatter.base import Formatter
+from behave.model_describe import escape_cell, escape_triple_quotes, indent
+import sys
 
+
+# -----------------------------------------------------------------------------
+# TERMINAL SUPPORT:
+# -----------------------------------------------------------------------------
 DEFAULT_WIDTH = 80
 DEFAULT_HEIGHT = 24
-
-
-def escape_cell(cell):
-    cell = cell.replace(u'\\', u'\\\\')
-    cell = cell.replace(u'\n', u'\\n')
-    cell = cell.replace(u'|', u'\\|')
-    return cell
-
-
-class MonochromeFormat(object):
-    def text(self, text):
-        assert isinstance(text, unicode)
-        return text
-
-
-class ColorFormat(object):
-    def __init__(self, status):
-        self.status = status
-
-    def text(self, text):
-        assert isinstance(text, unicode)
-        return escapes[self.status] + text + escapes['reset']
-
 
 def get_terminal_size():
     if sys.platform == 'windows':
@@ -51,31 +32,64 @@ def get_terminal_size():
         return (DEFAULT_WIDTH, DEFAULT_HEIGHT)
 
 
+# -----------------------------------------------------------------------------
+# COLORING SUPPORT:
+# -----------------------------------------------------------------------------
+class MonochromeFormat(object):
+    def text(self, text):
+        assert isinstance(text, unicode)
+        return text
+
+
+class ColorFormat(object):
+    def __init__(self, status):
+        self.status = status
+
+    def text(self, text):
+        assert isinstance(text, unicode)
+        return escapes[self.status] + text + escapes['reset']
+
+
+# -----------------------------------------------------------------------------
+# CLASS: PrettyFormatter
+# -----------------------------------------------------------------------------
 class PrettyFormatter(Formatter):
     name = 'pretty'
     description = 'Standard colourised pretty formatter'
 
-    def __init__(self, stream, config):
-        super(PrettyFormatter, self).__init__(stream, config)
-
-        self.monochrome = not config.color
+    def __init__(self, stream_opener, config):
+        super(PrettyFormatter, self).__init__(stream_opener, config)
+        # -- ENSURE: Output stream is open.
+        self.stream = self.open()
+        isatty = getattr(self.stream, "isatty", lambda: True)
+        stream_supports_colors = isatty()
+        self.monochrome = not config.color or not stream_supports_colors
         self.show_source = config.show_source
         self.show_timings = config.show_timings
         self.show_multiline = config.show_multiline
+        self.formats = None
+        self.display_width = get_terminal_size()[0]
 
-        self.tag_statement = None
+        # -- UNUSED: self.tag_statement = None
         self.steps = []
-
         self._uri = None
         self._match = None
         self.statement = None
         self.indentations = []
-        self.display_width = get_terminal_size()[0]
         self.step_lines = 0
 
-        self.formats = None
+
+    def reset(self):
+        # -- UNUSED: self.tag_statement = None
+        self.steps = []
+        self._uri = None
+        self._match = None
+        self.statement = None
+        self.indentations = []
+        self.step_lines = 0
 
     def uri(self, uri):
+        self.reset()
         self._uri = uri
 
     def feature(self, feature):
@@ -142,8 +156,7 @@ class PrettyFormatter(Formatter):
                 location = self._match.location
             self.print_step(result.status, arguments, location, True)
         if result.error_message:
-            self.stream.write(self.indent(result.error_message.strip(),
-                                          u'      '))
+            self.stream.write(indent(result.error_message.strip(), u'      '))
             self.stream.write('\n\n')
         self.stream.flush()
 
@@ -165,6 +178,7 @@ class PrettyFormatter(Formatter):
 
     def eof(self):
         self.replay()
+        self.stream.write('\n')
         self.stream.flush()
 
     def table(self, table):
@@ -192,12 +206,19 @@ class PrettyFormatter(Formatter):
 
     def doc_string(self, doc_string):
         #self.stream.write('      """' + doc_string.content_type + '\n')
-        self.stream.write('      """\n')
-        doc_string = self.escape_triple_quotes(self.indent(doc_string,
-                                                           '      '))
+        prefix = '      '
+        self.stream.write('%s"""\n' % prefix)
+        doc_string = escape_triple_quotes(indent(doc_string, prefix))
         self.stream.write(doc_string)
-        self.stream.write('\n      """\n')
+        self.stream.write('\n%s"""\n' % prefix)
         self.stream.flush()
+
+    # def doc_string(self, doc_string):
+    #     from behave.model_describe import ModelDescriptor
+    #     prefix = '      '
+    #     text = ModelDescriptor.describe_docstring(doc_string, prefix)
+    #     self.stream.write(text)
+    #     self.stream.flush()
 
     def exception(self, exception):
         exception_text = HERP
@@ -209,14 +230,6 @@ class PrettyFormatter(Formatter):
             return escapes['color'] + escapes['reset']
         else:
             return escape_cell(cell)
-
-    def indent(self, strings, indentation):
-        if type(strings) is not list:
-            strings = strings.split('\n')
-        return u'\n'.join([indentation + s for s in strings])
-
-    def escape_triple_quotes(self, string):
-        return string.replace(u'"""', u'\\"\\"\\"')
 
     def indented_text(self, text, proceed):
         if not text:
@@ -300,12 +313,12 @@ class PrettyFormatter(Formatter):
 
         if self.show_source:
             if self.show_timings and status in ('passed', 'failed'):
-                location += ' %0.2fs' % step.duration
+                location += ' %0.3fs' % step.duration
             location = self.indented_text(location, proceed)
             self.stream.write(self.format('comments').text(location))
             line_length += len(location)
         elif self.show_timings and status in ('passed', 'failed'):
-            timing = '%0.2fs' % step.duration
+            timing = '%0.3fs' % step.duration
             timing = self.indented_text(timing, proceed)
             self.stream.write(self.format('comments').text(timing))
             line_length += len(timing)
@@ -319,22 +332,23 @@ class PrettyFormatter(Formatter):
             if step.table:
                 self.table(step.table)
 
-    def print_tags(self, tags, indent):
+    def print_tags(self, tags, indentation):
         if not tags:
             return
-        self.stream.write(indent + ' '.join('@' + tag for tag in tags) + '\n')
+        line = ' '.join('@' + tag for tag in tags)
+        self.stream.write(indentation + line + '\n')
 
-    def print_comments(self, comments, indent):
+    def print_comments(self, comments, indentation):
         if not comments:
             return
 
-        line = ('\n' + indent).join([c.value for c in comments])
-        self.stream.write(indent + line + '\n')
+        self.stream.write(indent([c.value for c in comments], indentation))
+        self.stream.write('\n')
 
-    def print_description(self, description, indent, newline=True):
+    def print_description(self, description, indentation, newline=True):
         if not description:
             return
 
-        self.stream.write(self.indent(description, indent) + '\n')
+        self.stream.write(indent(description, indentation))
         if newline:
             self.stream.write('\n')

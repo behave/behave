@@ -9,6 +9,7 @@ import ConfigParser
 from behave.reporter.junit import JUnitReporter
 from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import TagExpression
+from behave.formatter.base import StreamOpener
 
 
 class ConfigError(Exception):
@@ -69,9 +70,13 @@ options = [
           default='reports',
           help="""Directory in which to store JUnit reports.""")),
 
+    ((),  # -- CONFIGFILE only
+     dict(dest='default_format',
+          help="Specify default formatter (default: pretty).")),
+
     (('-f', '--format'),
      dict(action='append',
-          help="""Specify a formatter. By default the 'pretty'
+          help="""Specify a formatter. If none is specified the default
                   formatter is used. Pass '--format help' to get a
                   list of available formatters.""")),
 
@@ -93,14 +98,13 @@ options = [
      dict(action='store_false', dest='show_snippets',
           help="Don't print snippets for unimplemented steps.")),
     (('--snippets',),
-     dict(action='store_true',
+     dict(action='store_true', dest='show_snippets',
           help="""Print snippets for unimplemented steps.
                   This is the default behaviour. This switch is used to
                   override a configuration file setting.""")),
 
     (('-m', '--no-multiline'),
-     dict(action='store_false',
-          dest='show_multiline',
+     dict(action='store_false', dest='show_multiline',
           help="""Don't print multiline strings and tables under
                   steps.""")),
 
@@ -130,8 +134,7 @@ options = [
                   override a configuration file setting.""")),
 
     (('--no-capture-stderr',),
-     dict(action='store_false',
-          dest='stderr_capture',
+     dict(action='store_false', dest='stderr_capture',
           help="""Don't capture stderr (any stderr output will be
                   printed immediately.)""")),
 
@@ -203,8 +206,12 @@ options = [
           help="""Display the summary at the end of the run.""")),
 
     (('-o', '--outfile'),
-     dict(metavar='FILE',
+     dict(action='append', dest='outfiles', metavar='FILE',
           help="Write to specified file instead of stdout.")),
+
+    ((),  # -- CONFIGFILE only
+     dict(action='append', dest='paths',
+          help="Specify default feature paths, used when none are provided.")),
 
     (('-q', '--quiet'),
      dict(action='store_true',
@@ -226,9 +233,10 @@ options = [
      dict(action='store_true',
           help='Stop running tests at the first failure.')),
 
-    (('-S', '--strict'),
-     dict(action='store_true',
-          help='Fail if there are any undefined or pending steps.')),
+    # -- DISABLE-UNUSED-OPTION: Not used anywhere.
+    # (('-S', '--strict'),
+    # dict(action='store_true',
+    #    help='Fail if there are any undefined or pending steps.')),
 
     (('-t', '--tags'),
      dict(action='append', metavar='TAG_EXPRESSION',
@@ -288,6 +296,7 @@ options = [
 def read_configuration(path):
     cfg = ConfigParser.ConfigParser()
     cfg.read(path)
+    cfgdir = os.path.dirname(path)
     result = {}
     for fixed, keywords in options:
         if 'dest' in keywords:
@@ -313,6 +322,30 @@ def read_configuration(path):
                 [s.strip() for s in cfg.get('behave', dest).splitlines()]
         else:
             raise ValueError('action "%s" not implemented' % action)
+
+    if 'format' in result:
+        # -- OPTIONS: format/outfiles are coupled in configuration file.
+        formatters = result['format']
+        formatter_size = len(formatters)
+        outfiles = result.get('outfiles', [])
+        outfiles_size = len(outfiles)
+        if outfiles_size < formatter_size:
+            for formatter_name in formatters[outfiles_size:]:
+                outfile = "%s.output" % formatter_name
+                outfiles.append(outfile)
+            result['outfiles'] = outfiles
+        elif len(outfiles) > formatter_size:
+            print "CONFIG-ERROR: Too many outfiles (%d) provided." % outfiles_size
+            result['outfiles'] = outfiles[:formatter_size]
+
+    for paths_name in ('paths', 'outfiles'):
+        if paths_name in result:
+            # -- Evaluate relative paths relative to configfile location.
+            # NOTE: Absolute paths are preserved by os.path.join().
+            paths = result[paths_name]
+            result[paths_name] = \
+                [os.path.normpath(os.path.join(cfgdir, p)) for p in paths]
+
     return result
 
 
@@ -339,14 +372,26 @@ def load_configuration(defaults):
 
 # construct the parser
 #usage = "%(prog)s [options] [ [FILE|DIR|URL][:LINE[:LINE]*] ]+"
-usage = "%(prog)s [options] [ [FILE|DIR] ]+"
-parser = argparse.ArgumentParser(usage=usage)
+usage = "%(prog)s [options] [ [DIR|FILE|FILE:LINE] ]+"
+description = """\
+Run a number of feature tests with behave."""
+more = """
+EXAMPLES:
+behave features/
+behave features/one.feature features/two.feature
+behave features/one.feature:10
+behave @features.txt
+"""
+parser = argparse.ArgumentParser(usage=usage, description=description)
 for fixed, keywords in options:
+    if not fixed:
+        continue    # -- CONFIGFILE only.
     if 'config_help' in keywords:
         keywords = dict(keywords)
         del keywords['config_help']
     parser.add_argument(*fixed, **keywords)
-parser.add_argument('paths', nargs='*')
+parser.add_argument('paths', nargs='*',
+                help='Feature directory, file or file location (FILE:LINE).')
 
 
 class Configuration(object):
@@ -364,12 +409,14 @@ class Configuration(object):
         summary=True,
         junit=False,
         # -- SPECIAL:
-        format0="pretty",   #< Used when no formatters are configured.
+        default_format="pretty",   # -- Used when no formatters are configured.
     )
 
     def __init__(self):
         self.formatters = []
         self.reporters = []
+        self.name_re = None
+        self.outputs = []
         load_configuration(self.defaults)
         parser.set_defaults(**self.defaults)
 
@@ -379,10 +426,14 @@ class Configuration(object):
                 continue
             setattr(self, key, value)
 
-        if args.outfile and args.outfile != '-':
-            self.output = open(args.outfile, 'w')
+        if not args.outfiles:
+            self.outputs.append(StreamOpener(stream=sys.stdout))
         else:
-            self.output = sys.stdout
+            for outfile in args.outfiles:
+                if outfile and outfile != '-':
+                    self.outputs.append(StreamOpener(outfile))
+                else:
+                    self.outputs.append(StreamOpener(stream=sys.stdout))
 
         if self.wip:
             # Only run scenarios tagged with "wip". Additionally: use the
@@ -405,6 +456,9 @@ class Configuration(object):
 
         if self.include_re:
             self.include_re = re.compile(self.include_re)
+        if self.name:
+            # -- SELECT: Scenario-by-name, build regular expression.
+            self.name_re = self.build_name_re(self.name)
 
         if self.junit:
             # Buffer the output (it will be put into Junit report)
@@ -414,6 +468,18 @@ class Configuration(object):
             self.reporters.append(JUnitReporter(self))
         if self.summary:
             self.reporters.append(SummaryReporter(self))
+
+    @staticmethod
+    def build_name_re(names):
+        """
+        Build regular expression for scenario selection by name
+        by using a list of name parts or name regular expressions.
+
+        :param names: List of name parts or regular expressions (as text).
+        :return: Compiled regular expression to use.
+        """
+        pattern = u"|".join(names)
+        return re.compile(pattern, flags=(re.UNICODE | re.LOCALE))
 
     def exclude(self, filename):
         if self.include_re and self.include_re.search(filename) is None:

@@ -1,12 +1,14 @@
 from __future__ import with_statement
 
+import re
 import sys
-
 from mock import Mock, patch
 from nose.tools import *
-
 from behave import model
 from behave.compat.collections import OrderedDict
+from behave import step_registry
+from behave.configuration import Configuration
+
 
 class TestFeatureRun(object):
     def setUp(self):
@@ -14,7 +16,7 @@ class TestFeatureRun(object):
         self.runner.feature.tags = []
         self.config = self.runner.config = Mock()
         self.context = self.runner.context = Mock()
-        self.formatter = self.runner.formatter = Mock()
+        self.formatters = self.runner.formatters = [Mock()]
         self.run_hook = self.runner.run_hook = Mock()
 
     def test_formatter_feature_called(self):
@@ -23,7 +25,7 @@ class TestFeatureRun(object):
 
         feature.run(self.runner)
 
-        self.formatter.feature.assert_called_with(feature)
+        self.formatters[0].feature.assert_called_with(feature)
 
     def test_formatter_background_called_when_feature_has_background(self):
         feature = model.Feature('foo.feature', 1, u'Feature', u'foo',
@@ -31,21 +33,23 @@ class TestFeatureRun(object):
 
         feature.run(self.runner)
 
-        self.formatter.background.assert_called_with(feature.background)
+        self.formatters[0].background.assert_called_with(feature.background)
 
     def test_formatter_background_not_called_when_feature_has_no_background(self):
         feature = model.Feature('foo.feature', 1, u'Feature', u'foo')
 
         feature.run(self.runner)
 
-        assert not self.formatter.background.called
+        assert not self.formatters[0].background.called
 
     def test_run_runs_scenarios(self):
         scenarios = [Mock(), Mock()]
         for scenario in scenarios:
+            scenario.tags = []
             scenario.run.return_value = False
 
         self.config.tags.check.return_value = True
+        self.config.name = []
 
         feature = model.Feature('foo.feature', 1, u'Feature', u'foo',
                                 scenarios=scenarios)
@@ -54,6 +58,50 @@ class TestFeatureRun(object):
 
         for scenario in scenarios:
             scenario.run.assert_called_with(self.runner)
+
+    def test_run_runs_named_scenarios(self):
+        scenarios = [Mock(), Mock()]
+        scenarios[0].name = 'first scenario'
+        scenarios[1].name = 'second scenario'
+        scenarios[0].tags = []
+        scenarios[1].tags = []
+
+        for scenario in scenarios:
+            scenario.run.return_value = False
+
+        self.config.tags.check.return_value = True
+        self.config.name = ['first', 'third']
+        self.config.name_re = Configuration.build_name_re(self.config.name)
+
+        feature = model.Feature('foo.feature', 1, u'Feature', u'foo',
+                                scenarios=scenarios)
+
+        feature.run(self.runner)
+
+        scenarios[0].run.assert_called_with(self.runner)
+        assert not scenarios[1].run.called
+
+    def test_run_runs_named_scenarios_with_regexp(self):
+        scenarios = [Mock(), Mock()]
+        scenarios[0].name = 'first scenario'
+        scenarios[1].name = 'second scenario'
+        scenarios[0].tags = []
+        scenarios[1].tags = []
+
+        for scenario in scenarios:
+            scenario.run.return_value = False
+
+        self.config.tags.check.return_value = True
+        self.config.name = ['third .*', 'second .*']
+        self.config.name_re = Configuration.build_name_re(self.config.name)
+
+        feature = model.Feature('foo.feature', 1, u'Feature', u'foo',
+                                scenarios=scenarios)
+
+        feature.run(self.runner)
+
+        assert not scenarios[0].run.called
+        scenarios[1].run.assert_called_with(self.runner)
 
     def test_feature_hooks_not_run_if_feature_not_being_run(self):
         self.config.tags.check.return_value = False
@@ -72,7 +120,7 @@ class TestScenarioRun(object):
         self.config = self.runner.config = Mock()
         self.config.dry_run = False
         self.context = self.runner.context = Mock()
-        self.formatter = self.runner.formatter = Mock()
+        self.formatters = self.runner.formatters = [Mock()]
         self.run_hook = self.runner.run_hook = Mock()
 
     def test_run_invokes_formatter_scenario_and_steps_correctly(self):
@@ -85,7 +133,7 @@ class TestScenarioRun(object):
 
         scenario.run(self.runner)
 
-        self.formatter.scenario.assert_called_with(scenario)
+        self.formatters[0].scenario.assert_called_with(scenario)
         [step.run.assert_called_with(self.runner) for step in steps]
 
     if sys.version_info[0] == 3:
@@ -116,23 +164,32 @@ class TestScenarioRun(object):
         scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
                                   steps=steps)
         steps[0].run.return_value = False
+        steps[1].step_type = "when"
+        steps[1].name = "step1"
 
-        assert scenario.run(self.runner)
+        def step1_function(context):
+            pass
+        my_step_registry = step_registry.StepRegistry()
+        my_step_registry.add_definition("when", "step1", step1_function)
 
-        eq_(steps[1].status, 'skipped')
+        with patch("behave.step_registry.registry", my_step_registry):
+            assert scenario.run(self.runner)
+            eq_(steps[1].status, 'skipped')
 
     def test_failed_step_causes_context_failure_to_be_set(self):
         self.config.stdout_capture = False
         self.config.log_capture = False
         self.config.tags.check.return_value = True
 
-        steps = [Mock(), Mock()]
+        steps = [
+            Mock(step_type="given", name="step0"),
+            Mock(step_type="then",  name="step1"),
+        ]
         scenario = model.Scenario('foo.feature', 17, u'Scenario', u'foo',
                                   steps=steps)
         steps[0].run.return_value = False
 
         assert scenario.run(self.runner)
-
         self.context._set_root_attribute.assert_called_with('failed', True)
 
     def test_undefined_step_causes_failed_scenario_status(self):
@@ -243,9 +300,10 @@ class TestStepRun(object):
     def setUp(self):
         self.runner = Mock()
         self.config = self.runner.config = Mock()
+        self.config.outputs = [None]
         self.context = self.runner.context = Mock()
         print ('context is', self.context)
-        self.formatter = self.runner.formatter = Mock()
+        self.formatters = self.runner.formatters = [Mock()]
         self.step_registry = Mock()
         self.stdout_capture = self.runner.stdout_capture = Mock()
         self.stdout_capture.getvalue.return_value = ''
@@ -271,8 +329,8 @@ class TestStepRun(object):
         with patch('behave.step_registry.registry', self.step_registry):
             assert not step.run(self.runner)
 
-        self.formatter.match.assert_called_with(model.NoMatch())
-        self.formatter.result.assert_called_with(step)
+        self.formatters[0].match.assert_called_with(model.NoMatch())
+        self.formatters[0].result.assert_called_with(step)
 
     def test_run_with_no_match_does_not_touch_formatter_when_quiet(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
@@ -280,8 +338,8 @@ class TestStepRun(object):
         with patch('behave.step_registry.registry', self.step_registry):
             assert not step.run(self.runner, quiet=True)
 
-        assert not self.formatter.match.called
-        assert not self.formatter.result.called
+        assert not self.formatters[0].match.called
+        assert not self.formatters[0].result.called
 
     def test_run_when_not_quiet_reports_match_and_result(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
@@ -294,8 +352,8 @@ class TestStepRun(object):
             match.run.side_effect = side_effect
             with patch('behave.step_registry.registry', self.step_registry):
                 step.run(self.runner)
-            self.formatter.match.assert_called_with(match)
-            self.formatter.result.assert_called_with(step)
+            self.formatters[0].match.assert_called_with(match)
+            self.formatters[0].result.assert_called_with(step)
 
     def test_run_when_quiet_reports_nothing(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
@@ -307,8 +365,8 @@ class TestStepRun(object):
         for side_effect in side_effects:
             match.run.side_effect = side_effect
             step.run(self.runner, quiet=True)
-            assert not self.formatter.match.called
-            assert not self.formatter.result.called
+            assert not self.formatters[0].match.called
+            assert not self.formatters[0].result.called
 
     def test_run_runs_before_hook_then_match_then_after_hook(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
@@ -468,6 +526,7 @@ class TestTableModel(object):
         [u'lint', u'low', u'high'],
         [u'green', u'variable', u'awkward'],
     ]
+
     def setUp(self):
         self.table = model.Table(self.HEAD, 0, self.DATA)
 
@@ -501,6 +560,7 @@ class TestTableModel(object):
 
     def test_table_row_items(self):
         eq_(self.table[0].items(), zip(self.HEAD, self.DATA[0]))
+
 
 class TestModelRow(object):
     HEAD = [u'name',  u'sex',    u'age']

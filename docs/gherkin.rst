@@ -167,17 +167,20 @@ The Background and Scenarios will be discussed in the following sections.
 Backgrounds
 -----------
 
-A background is a series of steps to be executed before the scenarios for
-the feature are tested. It is run just once, and is useful for performing
-setup operations like logging into a web browser or setting up a database
-with test data used by the scenarios. The background description is for the
-benefit of humans reading the feature text.
+A background consists of a series of steps similar to `scenarios`_.
+It allows you to add some context to the scenarios of a feature.
+A background is executed before each scenario of this feature but after any
+of the before hooks. It is useful for performing setup operations like:
 
+  * logging into a web browser or
+  * setting up a database
+
+with test data used by the scenarios.
+
+The background description is for the benefit of humans reading the feature text.
 Again the background name should just be a reasonably descriptive title
 for the background operation being performed or requirement being met.
 
-The background is not tested for failure. If it's something that can fail
-then it probably should be a scenario to be tested.
 
 It contains `steps`_ as described below.
 
@@ -204,6 +207,8 @@ Keep your scenarios short, and don’t have too many.
  about using higher-level steps, or splitting the features file in two.
 
 .. _`calling steps from other steps`: api.html#calling-steps-from-other-steps
+.. _`Cucumber Background description`: https://github.com/cucumber/cucumber/wiki/Background
+
 
 Scenarios
 ---------

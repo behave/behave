@@ -10,15 +10,20 @@ import traceback
 import warnings
 import weakref
 
+<<<<<<< HEAD
 import time
 import collections
 
 from behave import parser
+=======
+>>>>>>> upstream/master
 from behave import matchers
 from behave import step_registry
 from behave.formatter import formatters
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
+from behave.runner_util import \
+    collect_feature_files, parse_features
 
 multiprocessing = None
 try:
@@ -260,11 +265,12 @@ class Context(object):
         '''
         assert isinstance(steps_text, unicode), "Steps must be unicode."
         if not self.feature:
-            raise ValueError('execute_steps() called outside of feature context')
+            raise ValueError('execute_steps() called outside of feature')
 
+        self.feature.parser.variant = 'steps'
         steps = self.feature.parser.parse_steps(steps_text)
         for step in steps:
-            passed = step.run(self._runner, quiet=True)
+            passed = step.run(self._runner, quiet=True, capture=False)
             if not passed:
                 # -- ISSUE #96: Provide more substep info to diagnose problem.
                 step_line = "%s %s" % (step.keyword, step.name)
@@ -290,14 +296,14 @@ def exec_file(filename, globals={}, locals=None):
 
 def path_getrootdir(path):
     """
-    Extract rootdir from in a platform independent way.
+    Extract rootdir from path in a platform independent way.
 
     POSIX-PATH EXAMPLE:
         rootdir = path_getrootdir("/foo/bar/one.feature")
         assert rootdir == "/"
 
     WINDOWS-PATH EXAMPLE:
-        rootdir = path_getrootdir(r"D:\foo\bar\one.feature")
+        rootdir = path_getrootdir("D:\\foo\\bar\\one.feature")
         assert rootdir == r"D:\"
     """
     drive, _ = os.path.splitdrive(path)
@@ -328,33 +334,36 @@ class PathManager(object):
 class Runner(object):
     def __init__(self, config):
         self.config = config
-
         self.hooks = {}
-
         self.features = []
-        self.passed = []
-        self.failed = []
         self.undefined = []
-        self.skipped = []
+        # -- XXX-JE-UNUSED:
+        # self.passed = []
+        # self.failed = []
+        # self.skipped = []
 
         self.path_manager = PathManager()
-
         self.feature = None
 
         self.stdout_capture = None
         self.stderr_capture = None
         self.log_capture = None
         self.old_stdout = None
+        self.old_stderr = None
 
         self.base_dir = None
         self.context = None
+<<<<<<< HEAD
         self.formatter = None
+=======
+        self.formatters = None
+>>>>>>> upstream/master
 
     def setup_paths(self):
         if self.config.paths:
             if self.config.verbose:
-                print 'Supplied path:', ', '.join('"%s"' % path
-                       for path in self.config.paths)
+                print 'Supplied path:', \
+                      ', '.join('"%s"' % path for path in self.config.paths)
             base_dir = self.config.paths[0]
             if base_dir.startswith('@'):
                 # -- USE: behave @features.txt
@@ -465,6 +474,7 @@ class Runner(object):
             with context.user_mode():
                 self.hooks[name](context, *args)
 
+<<<<<<< HEAD
     @staticmethod
     def parse_features_file(features_filename):
         """
@@ -485,22 +495,11 @@ class Runner(object):
             files.append(os.path.normpath(os.path.join(here, line)))
         return files
 
+=======
+>>>>>>> upstream/master
     def feature_files(self):
-        files = []
-        for path in self.config.paths:
-            if os.path.isdir(path):
-                for dirpath, dirnames, filenames in os.walk(path):
-                    for filename in filenames:
-                        if filename.endswith('.feature'):
-                            files.append(os.path.join(dirpath, filename))
-            elif path.startswith('@'):
-                # -- USE: behave @list_of_features.txt
-                files.extend(self.parse_features_file(path[1:]))
-            elif os.path.exists(path):
-                files.append(path)
-            else:
-                raise Exception("Can't find path: " + path)
-        return files
+        return collect_feature_files(self.config.paths)
+
 
     def run(self):
         with self.path_manager:
@@ -518,43 +517,48 @@ class Runner(object):
         context = self.context = Context(self)
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
         self.setup_capture()
-        stream = self.config.output
-        failed = False
+        stream_openers = self.config.outputs
         failed_count = 0
 
         self.run_hook('before_all', context)
 
-        for filename in self.feature_files():
-            if self.config.exclude(filename):
-                continue
+        # -- STEP: Parse all feature files.
+        feature_files = [ filename for filename in self.feature_files()
+                                    if not self.config.exclude(filename) ]
+        features = parse_features(feature_files, language=self.config.lang)
+        self.features.extend(features)
 
-            feature = parser.parse_file(os.path.abspath(filename),
-                                        language=self.config.lang)
-            if not feature:
-                # -- CORNER-CASE: Feature file without any feature(s).
-                continue
-            self.features.append(feature)
-            self.feature = feature
+        # -- STEP: Run all features.
+        self.formatters = formatters.get_formatter(self.config, stream_openers)
+        undefined_steps_initial_size = len(self.undefined)
+        run_feature = True
+        for feature in features:
+            if run_feature:
+                self.feature = feature
+                for formatter in self.formatters:
+                    formatter.uri(feature.filename)
 
-            self.formatter = formatters.get_formatter(self.config, stream)
-            self.formatter.uri(filename)
+                failed = feature.run(self)
+                if failed:
+                    failed_count += 1
+                    if self.config.stop:
+                        # -- FAIL-EARLY: After first failure.
+                        run_feature = False
 
-            failed = feature.run(self)
-            if failed:
-                failed_count += 1
-
-            self.formatter.close()
+            # -- ALWAYS: Report run/not-run feature to reporters.
+            # REQUIRED-FOR: Summary to keep track of untested features.
             for reporter in self.config.reporters:
                 reporter.feature(feature)
 
-            if failed and self.config.stop:
-                break
-
+        # -- AFTER-ALL:
+        for formatter in self.formatters:
+            formatter.close()
         self.run_hook('after_all', context)
         for reporter in self.config.reporters:
             reporter.end()
 
-        failed = (failed_count > 0)
+        failed = ((failed_count > 0) or
+                  (len(self.undefined) > undefined_steps_initial_size))
         return failed
 
     def run_multiproc(self):
@@ -816,3 +820,6 @@ class Runner(object):
     def teardown_capture(self):
         if self.config.log_capture:
             self.log_capture.abandon()
+
+
+

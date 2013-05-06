@@ -8,6 +8,9 @@ from behave.formatter.ansi_escapes import escapes
 from behave.i18n import languages
 from behave.formatter import formatters
 from behave.runner import Runner
+from behave.runner_util import make_undefined_step_snippet
+from behave.runner_util import \
+    InvalidFileLocationError, InvalidFilenameError, FileNotFoundError
 from behave.parser import ParserError
 
 TAG_HELP = """
@@ -84,39 +87,49 @@ def main():
         sys.exit(0)
 
     if not config.format:
-        format0 = config.defaults["format0"]
-        config.format = [ format0 ]
-    elif 'help' in config.format:
+        default_format = config.defaults["default_format"]
+        config.format = [ default_format ]
+    elif config.format and "format" in config.defaults:
+        # -- CASE: Formatter are specified in behave configuration file.
+        #    Check if formatter are provided on command-line, too.
+        if len(config.format) == len(config.defaults["format"]):
+            # -- NO FORMATTER on command-line: Add default formatter.
+            default_format = config.defaults["default_format"]
+            config.format.append(default_format)
+    if 'help' in config.format:
         print "Available formatters:"
         formatters.list_formatters(sys.stdout)
         sys.exit(0)
+
+    if len(config.outputs) > len(config.format):
+        print 'CONFIG-ERROR: More outfiles (%d) than formatters (%d).' % \
+              (len(config.outputs), len(config.format))
+        sys.exit(1)
 
     runner = Runner(config)
     try:
         failed = runner.run()
     except ParserError, e:
-        sys.exit(str(e))
+        sys.exit("ParseError: %s" % e)
     except ConfigError, e:
-        sys.exit(str(e))
+        sys.exit("ConfigError: %s" % e)
+    except FileNotFoundError, e:
+        sys.exit("FileNotFoundError: %s" % e)
+    except InvalidFileLocationError, e:
+        sys.exit("InvalidFileLocationError: %s" % e)
+    except InvalidFilenameError, e:
+        sys.exit("InvalidFilenameError: %s" % e)
+
 
     if config.show_snippets and runner.undefined:
         msg = u"\nYou can implement step definitions for undefined steps with "
         msg += u"these snippets:\n\n"
         printed = set()
-
-        if sys.version_info[0] == 3:
-            string_prefix = "('"
-        else:
-            string_prefix = u"(u'"
-
-        for step in set(runner.undefined):
+        for step in runner.undefined:
             if step in printed:
                 continue
             printed.add(step)
-
-            msg += u"@" + step.step_type + string_prefix + step.name + u"')\n"
-            msg += u"def impl(context):\n"
-            msg += u"    assert False\n\n"
+            msg += make_undefined_step_snippet(step)
 
         # -- OOPS: Unclear if stream supports ANSI coloring.
         sys.stderr.write(escapes['undefined'] + msg + escapes['reset'])

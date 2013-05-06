@@ -1,14 +1,26 @@
 # -*- coding: utf-8 -*-
+
 import sys
 import codecs
+from behave.formatter.base import StreamOpener
 
 # -----------------------------------------------------------------------------
 # FORMATTER REGISTRY:
 # -----------------------------------------------------------------------------
 formatters = {}
 
-def register(formatter):
-    formatters[formatter.name] = formatter
+
+def register_as(formatter_class, name):
+    """
+    Register formatter class with given name.
+
+    :param formatter_class:  Formatter class to register.
+    :param name:  Name for this formatter (as identifier).
+    """
+    formatters[name] = formatter_class
+
+def register(formatter_class):
+    register_as(formatter_class, formatter_class.name)
 
 
 def list_formatters(stream):
@@ -16,29 +28,20 @@ def list_formatters(stream):
         stream.write(u'%s: %s\n' % (name, formatters[name].description))
 
 
-def get_formatter(config, stream):
-    # the stream may already handle encoding (py3k sys.stdout) - if it
-    # doesn't (py2k sys.stdout) then make it do so.
-    if sys.version_info[0] < 3:
-        # py2 does, however, sometimes declare an encoding on sys.stdout,
-        # even if it doesn't use it (or it might be explicitly None)
-        encoding = getattr(stream, 'encoding', None) or 'UTF-8'
-        stream = codecs.getwriter(encoding)(stream)
-    elif not getattr(stream, 'encoding', None):
-        # ok, so the stream doesn't have an encoding at all so add one
-        stream = codecs.getwriter('UTF-8')(stream)
+def get_formatter(config, stream_openers):
+    # -- BUILD: Formatter list
+    default_stream_opener = StreamOpener(stream=sys.stdout)
+    formatter_list = []
+    for i, name in enumerate(config.format):
+        stream_opener = default_stream_opener
+        if i < len(stream_openers):
+            stream_opener = stream_openers[i]
+        formatter_list.append(formatters[name](stream_opener, config))
+    return formatter_list
 
-    # TODO complete this
-    formatter = None
-    for name in config.format:
-        if formatter is None:
-            formatter = formatters[name](stream, config)
-        else:
-            formatter = formatters[name](formatter, config)
-    return formatter
 
 # -----------------------------------------------------------------------------
-# REGISTER KNOWN FORMATTERS:
+# REGISTER KNOWN FORMATTER:
 # -----------------------------------------------------------------------------
 from behave.formatter import plain
 register(plain.PlainFormatter)
@@ -53,3 +56,8 @@ register(null.NullFormatter)
 from behave.formatter import progress
 register(progress.ScenarioProgressFormatter)
 register(progress.StepProgressFormatter)
+from behave.formatter.rerun import RerunFormatter
+register(RerunFormatter)
+from behave.formatter.tag_count import TagCountFormatter, TagLocationFormatter
+register(TagCountFormatter)
+register(TagLocationFormatter)
