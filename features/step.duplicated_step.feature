@@ -1,3 +1,5 @@
+@wip
+@issue_122
 Feature: Duplicated Step Definitions
 
   As I behave user
