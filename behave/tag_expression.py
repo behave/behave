@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 class TagExpression(object):
     def __init__(self, tag_expressions):
         self.ands = []
@@ -13,7 +16,7 @@ class TagExpression(object):
         params = set(tags)
 
         def test_tag(tag):
-            if tag.startswith('-'):
+            if tag.startswith('-') or tag.startswith('~'):
                 return tag[1:] not in params
             return tag in params
 
@@ -26,9 +29,9 @@ class TagExpression(object):
         for tag in tags:
             if tag.startswith('@'):
                 positives.append(tag[1:])
-            elif tag.startswith('~@'):
+            elif tag.startswith('-@') or tag.startswith('~@'):
                 negatives.append('-' + tag[2:])
-            elif tag.startswith('-'):
+            elif tag.startswith('-') or tag.startswith('~'):
                 negatives.append(tag)
             else:
                 positives.append(tag)
