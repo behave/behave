@@ -1,3 +1,6 @@
+@xfail
+@issue122
+@wip
 Feature: Duplicated Step Definitions
 
   As I behave user
