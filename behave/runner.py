@@ -9,7 +9,6 @@ import sys
 import traceback
 import warnings
 import weakref
-
 import time
 import collections
 
@@ -478,8 +477,6 @@ class Runner(object):
 
     def run_with_paths(self):
 
-        if getattr(self.config, 'proc_count'):
-            return self.run_multiproc()
 
         self.load_hooks()
         self.load_step_definitions()
@@ -497,6 +494,9 @@ class Runner(object):
                                     if not self.config.exclude(filename) ]
         features = parse_features(feature_files, language=self.config.lang)
         self.features.extend(features)
+
+        if getattr(self.config, 'proc_count'):
+            return self.run_multiproc()
 
         # -- STEP: Run all features.
         self.formatters = formatters.get_formatter(self.config, stream_openers)
@@ -533,39 +533,22 @@ class Runner(object):
 
     def run_multiproc(self):
 
+        if not multiprocessing:
+            print ("ERROR: Cannot import multiprocessing module."
+            " If you're on python2.5, go get the backport")
+            return 1
+
         self.parallel_element = getattr(self.config, 'parallel_element')
+
         if self.parallel_element != 'feature' and \
                 self.parallel_element != 'scenario':
             print "ERROR: When using --processes, --parallel-element"
             "option must be set to 'feature' or 'scenario'"
             return 1
 
-        if not multiprocessing:
-            print ("ERROR: Cannot import multiprocessing module."
-            " If you're on python2.5, go get the backport")
-            return 1
-
-
-        self.load_hooks()
-        self.load_step_definitions()
-        context = self.context = Context(self)
-
         def do_nothing(obj2, obj3):
             pass
         context._emit_warning = do_nothing
-        self.setup_capture()
-        stream = self.config.output
-        self.run_hook('before_all', context)
-
-        for filename in self.feature_files():
-            if self.config.exclude(filename):
-                continue
-            feature = parser.parse_file(os.path.abspath(filename),
-                                        language=self.config.lang)
-            if not feature:
-                continue
-
-            self.features.append(feature)
 
         self.joblist_index_queue = multiprocessing.Manager().JoinableQueue()
         self.resultsqueue = multiprocessing.Manager().JoinableQueue()
@@ -593,8 +576,9 @@ class Runner(object):
                         scenario_count += 1
 
         proc_count = int(getattr(self.config, 'proc_count'))
-        print ("INFO: {0} scenario(s) and {1} feature(s) queued for consideration by "
-               "{2} workers. Some may be skipped if the -t option was given..."
+        print ("INFO: {0} scenario(s) and {1} feature(s) queued for"
+                " consideration by {2} workers. Some may be skipped if the"
+                " -t option was given..."
                .format(scenario_count, feature_count, proc_count))
         time.sleep(2)
 
