@@ -20,6 +20,7 @@ from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
 from behave.runner_util import \
     collect_feature_files, parse_features
+from behave.formatter.base import StreamOpener    
 
 multiprocessing = None
 try:
@@ -542,13 +543,13 @@ class Runner(object):
 
         if self.parallel_element != 'feature' and \
                 self.parallel_element != 'scenario':
-            print "ERROR: When using --processes, --parallel-element"
-            "option must be set to 'feature' or 'scenario'"
+            print ("ERROR: When using --processes, --parallel-element"
+            " option must be set to 'feature' or 'scenario'")
             return 1
 
         def do_nothing(obj2, obj3):
             pass
-        context._emit_warning = do_nothing
+        self.context._emit_warning = do_nothing
 
         self.joblist_index_queue = multiprocessing.Manager().JoinableQueue()
         self.resultsqueue = multiprocessing.Manager().JoinableQueue()
@@ -589,7 +590,7 @@ class Runner(object):
             p.start()
         [p.join() for p in procs]
 
-        self.run_hook('after_all', context)
+        self.run_hook('after_all', self.context)
         return self.multiproc_fullreport()
 
     def worker(self, proc_number):
@@ -600,9 +601,16 @@ class Runner(object):
                 break
             current_job = self.joblist[joblist_index]
             writebuf = StringIO.StringIO()
-
             self.setfeature(current_job)
-            self.setformatterbuffer(current_job, writebuf)
+            self.config.outputs = []
+            self.config.outputs.append(StreamOpener(stream=writebuf))
+
+            stream_openers = self.config.outputs
+
+            self.formatters = formatters.get_formatter(self.config, stream_openers)
+
+            for formatter in self.formatters:
+                formatter.uri(current_job.filename)
 
             start_time = time.strftime("%Y-%m-%d %H:%M:%S")
             current_job.run(self)
