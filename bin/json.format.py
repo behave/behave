@@ -44,6 +44,7 @@ def json_format(filename, indent=DEFAULT_INDENT_SIZE, **kwargs):
     """
     console  = kwargs.get("console", logging.getLogger("console"))
     encoding = kwargs.get("encoding", None)
+    dry_run  = kwargs.get("dry_run", False)
     if indent is None:
         sort_keys = False
     else:
@@ -62,14 +63,14 @@ def json_format(filename, indent=DEFAULT_INDENT_SIZE, **kwargs):
     if contents == contents2:
         console.info("%s SKIP (already pretty)", message)
         return 2 #< SKIPPED.
-    else:
+    elif not dry_run:
         outfile = open(filename, "w")
         outfile.write(contents2)
         outfile.close()
         console.warn("%s OK", message)
         return 1 #< OK
 
-def json_formatall(filenames, indent=DEFAULT_INDENT_SIZE):
+def json_formatall(filenames, indent=DEFAULT_INDENT_SIZE, dry_run=False):
     """
     Format/Beautify a JSON file.
 
@@ -81,7 +82,8 @@ def json_formatall(filenames, indent=DEFAULT_INDENT_SIZE):
     console = logging.getLogger("console")
     for filename in filenames:
         try:
-            result = json_format(filename, indent=indent, console=console)
+            result = json_format(filename, indent=indent, console=console,
+                                 dry_run=dry_run)
             if not result:
                 errors += 1
 #        except json.decoder.JSONDecodeError, e:
@@ -105,11 +107,14 @@ def main(args=None):
 Format/Beautify one or more JSON file(s)."""
     parser = OptionParser(usage=usage_, version=VERSION)
     parser.add_option("-i", "--indent", dest="indent_size",
-                    default=DEFAULT_INDENT_SIZE, type="int",
-                    help="Indent size to use (default: %default).")
+                default=DEFAULT_INDENT_SIZE, type="int",
+                help="Indent size to use (default: %default).")
     parser.add_option("-c", "--compact", dest="compact",
-                    action="store_true", default=False,
-                    help="Use compact format (default: %default).")
+                action="store_true", default=False,
+                help="Use compact format (default: %default).")
+    parser.add_option("-n", "--dry-run", dest="dry_run",
+                action="store_true", default=False,
+                help="Check only if JSON is well-formed (default: %default).")
     options, filenames = parser.parse_args(args)    #< pylint: disable=W0612
     if not filenames:
         parser.error("OOPS, no filenames provided.")
@@ -145,7 +150,8 @@ Format/Beautify one or more JSON file(s)."""
     filenames = filenames2
 
     # -- NORMAL PROCESSING:
-    errors  = json_formatall(filenames, options.indent_size)
+    errors  = json_formatall(filenames, options.indent_size,
+                             dry_run=options.dry_run)
     console.error("Processed %d files (%d with errors, skipped=%d).",
                   len(filenames), errors, skipped)
     if not filenames:
