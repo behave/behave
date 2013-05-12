@@ -25,10 +25,12 @@ before_script:
   - if [ "$JYTHON" == "true" ]; then export PYTHON=jython; jython -c "print ''"; else export PYTHON=python; fi
 
 install:
+  - $PYTHON --version
   - pip install --use-mirrors -q mock nose PyHamcrest
   - $PYTHON setup.py -q install
 
 script:
+  - $PYTHON --version
   - nosetests
   - behave -f progress --junit --tags=~@xfail features/
   - behave -f progress --junit --tags=~@xfail tools/test-features/
