@@ -13,3 +13,10 @@ script:
   - behave -f progress --junit --tags=~@xfail tools/test-features/
   - behave -f progress --junit --tags=~@xfail issue.features/
   - behave -f progress --junit --tags=~@xfail selftest.features/
+
+env:
+  - JYTHON=false
+  - JYTHON=true
+
+# -- SEE ALSO:
+# http://www.topbug.net/blog/2012/05/27/use-travis-ci-with-jython/
