@@ -9,6 +9,8 @@ env:
   - JYTHON=true
 
 matrix:
+  allow_failures:
+    - env: JYTHON=true
   exclude:
     - python: 2.6
       env: JYTHON=true
