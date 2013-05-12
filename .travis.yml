@@ -11,9 +11,9 @@ env:
 matrix:
   exclude:
     - python: "2.6"
-        env: JYTHON=true
+      env: JYTHON=true
     - python: "pypy"
-        env: JYTHON=true
+      env: JYTHON=true
 
 before_install:
   - export JYTHON_URL='http://search.maven.org/remotecontent?filepath=org/python/jython-installer/2.7-b1/jython-installer-2.7-b1.jar'
