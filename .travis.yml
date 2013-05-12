@@ -10,18 +10,17 @@ env:
 
 matrix:
   exclude:
-    - python: "2.6"
+    - python: 2.6
       env: JYTHON=true
-    - python: "pypy"
+    - python: pypy
       env: JYTHON=true
 
 before_install:
   - export JYTHON_URL='http://search.maven.org/remotecontent?filepath=org/python/jython-installer/2.7-b1/jython-installer-2.7-b1.jar'
   - if [ "$JYTHON" == "true" ]; then wget $JYTHON_URL -O jython_installer.jar; java -jar jython_installer.jar -s -d $HOME/jython; export PATH=$HOME/jython:$PATH; fi
   - if [ "$JYTHON" == "true" ]; then export PYTHON_EXE=jython; jython -c "print ''"; else export PYTHON_EXE=python; fi
-# MAYBE NOT NEEDED:
-#  - if [ "$JYTHON" == "true" ]; then curl -O http://python-distribute.org/distribute_setup.py; $PYTHON_EXE distribute_setup.py; fi
-#  - if [ "$JYTHON" == "true" ]; then curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py ; $PYTHON_EXE get-pip.py; fi
+  - if [ "$JYTHON" == "true" ]; then curl -O http://python-distribute.org/distribute_setup.py; $PYTHON_EXE distribute_setup.py; fi
+  - if [ "$JYTHON" == "true" ]; then curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py ; $PYTHON_EXE get-pip.py; fi
 
 before_script:
   - if [ "$JYTHON" == "true" ]; then export PYTHON_EXE=jython; jython -c "print ''"; else export PYTHON_EXE=python; fi
