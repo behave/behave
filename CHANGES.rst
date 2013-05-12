@@ -36,6 +36,10 @@ NEWS and CHANGES:
     * NEW: RerunFormatter to simplify to rerun last failing scenarios (related to: #160).
     * NEW: TagLocationFormatter, shows where tags are used.
     * NEW: TagCountFormatter, shows which tags are used and how often (reborn).
+    * JSONFormatter: Use JSON array mode now (related to: #161).
+    * JSONFormatter: Added "type" to Background, Scenario, ScenerioOutline (related to: #161).
+    * JSONFormatter: Added "error_message" to result (related to: #161).
+    * JSONFormatter: Use now list<lines> instead of string for multi-line text (related to: #161).
     * JSONFormatter: Add support for scenario descriptions (related to: #79).
     * JSONFormatter: Generates now valid JSON (well-formed).
     * PlainFormatter: Shows now multi-line step parts (text, table), too.
@@ -51,10 +55,13 @@ NEWS and CHANGES:
 
     * tox: Use tox now in off-line mode per default (use: "tox -e init"...).
     * Add utility script to show longest step durations based on JSON data.
+    * JSON: Add basic JSON schema to support JSON output validation (related to: #161).
+    * JSON: Add helper script to validate JSON output against its schema (related to: #161).
 
 
 IMPROVEMENT:
 
+  * issue #161: JSONFormatter: Should use a slightly different output schema (provided by: jenisys)
   * issue #160: Support rerun file with failed features/scenarios during the last test run (provided by: jenisys)
   * issue #154: Support multiple formatters (provided by: roignac, jenisys)
   * issue #103: sort feature file by name in a given directory (provided by: gurneyalex).

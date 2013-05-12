@@ -11,17 +11,9 @@ Feature: Issue #83: behave.__main__:main() Various sys.exit issues
     |    instead of using sys.exit(0)
     |    => No statement at end of function after failed case.
 
-
-  Scenario: Successful test run
+  @setup
+  Scenario: Feature Setup
     Given a new working directory
-    And   a file named "features/passing.feature" with:
-        """
-        Feature:
-          Scenario:
-            Given a step passes
-            When  a step passes
-            Then  a step passes
-        """
     And   a file named "features/steps/steps.py" with:
         """
         from behave import step
@@ -29,6 +21,16 @@ Feature: Issue #83: behave.__main__:main() Various sys.exit issues
         @step(u'a step passes')
         def step_passes(context):
             pass
+        """
+
+  Scenario: Successful test run
+    Given a file named "features/passing.feature" with:
+        """
+        Feature:
+          Scenario:
+            Given a step passes
+            When  a step passes
+            Then  a step passes
         """
     When I run "behave -c features/passing.feature"
     Then it should pass

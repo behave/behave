@@ -8,8 +8,8 @@ LICENSE:  BSD
 """
 
 __author__    = "Jens Engel"
-__copyright__ = "(c) 2011-2012 by Jens Engel"
-VERSION = "0.2.1"
+__copyright__ = "(c) 2011-2013 by Jens Engel"
+VERSION = "0.2.2"
 
 # -- IMPORTS:
 import os.path
