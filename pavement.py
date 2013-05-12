@@ -87,6 +87,7 @@ options(
             "*.bak", "*.log", "*.tmp",
             ".coverage", ".coverage.*",
             "pylint_*.txt", "pychecker_*.txt",
+            "xxx*.*", "testrun*.json",
             ".DS_Store", "*.~*~",   #< MACOSX
         ],
     ),
