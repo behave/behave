@@ -50,11 +50,13 @@ class FileLocation(unicode):
         assert isinstance(filename, basestring)
         obj = unicode.__new__(cls, filename)
         obj.line = line
+        obj.__filename = filename
         return obj
 
     @property
     def filename(self):
-        return unicode(self)
+        # -- PREVENT: Assignments via property (and avoid self-recursion).
+        return self.__filename
 
     def get(self):
         return self.filename
