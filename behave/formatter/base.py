@@ -26,6 +26,7 @@ class StreamOpener(object):
         self.name = filename
         self.stream = stream
         self.encoding = encoding
+        self.should_close_stream = not stream   # Only for not pre-opened ones.
 
     @staticmethod
     def ensure_dir_exists(directory):
@@ -53,8 +54,25 @@ class StreamOpener(object):
             stream = open(self.name, "w")
             # stream = codecs.open(self.name, "w", encoding=self.encoding)
             stream = self.ensure_stream_with_encoder(stream, self.encoding)
-            self.stream = stream  # -- Keep stream for some corner cases.
+            self.stream = stream  # -- Keep stream for house-keeping.
+            self.should_close_stream = True
+            assert self.should_close_stream
         return self.stream
+
+    def close(self):
+        """
+        Close the stream, if it was opened by this stream_opener.
+        Skip closing for sys.stdout and pre-opened streams.
+        :return: True, if stream was closed.
+        """
+        closed = False
+        if self.stream and self.should_close_stream:
+            closed = getattr(self.stream, "closed", False)
+            if not closed:
+                self.stream.close()
+                closed = True
+            self.stream = None
+        return closed
 
 
 class Formatter(object):
@@ -183,8 +201,7 @@ class Formatter(object):
         This step is skipped if the stream is sys.stdout.
         """
         if self.stream:
-            closed = getattr(self.stream, "closed", False)
-            should_close = not closed and self.stream is not sys.stdout
-            if should_close and hasattr(self.stream, "close"):
-                self.stream.close()
+            # -- DELEGATE STREAM-CLOSING: To stream_opener
+            assert self.stream is self.stream_opener.stream
+            self.stream_opener.close()
         self.stream = None      # -- MARK CLOSED.
