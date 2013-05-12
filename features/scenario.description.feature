@@ -19,10 +19,11 @@ Feature: Scenario Description
     |       Given, When, Then, And, But, etc.
     |       (including lower-case versions)
     |
+    |   * must not start with '*' (ASTERISK) due to basic step keyword ambiguity
     |   * must not start with '@' (AT) due to tag ambiguity
     |     (supporting: scenario without steps but with step description).
     |   * may start with '|' (table-cell-separator).
-    |   * does not contain only whitespace chars (empty line).
+    |   * does not contain only whitespace chars (empty line, filtered-out).
     |   * does not start with '#' (HASH) after whitespace chars (comment line).
     |
     | GRAMMAR STRUCTURE:
