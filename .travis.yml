@@ -29,7 +29,7 @@ before_script:
 install:
   - $PYTHON_EXE --version
   - pip install --use-mirrors -q mock nose PyHamcrest
-  - if [ "$JYTHON" == "true" ]; pip install parse>=1.6 ; fi
+  - if [ "$JYTHON" == "true" ]; then pip install parse ; fi
   - $PYTHON_EXE setup.py -q install
 
 script:
