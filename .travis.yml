@@ -19,7 +19,7 @@ before_install:
   - export JYTHON_URL='http://search.maven.org/remotecontent?filepath=org/python/jython-installer/2.7-b1/jython-installer-2.7-b1.jar'
   - if [ "$JYTHON" == "true" ]; then wget $JYTHON_URL -O jython_installer.jar; java -jar jython_installer.jar -s -d $HOME/jython; export PATH=$HOME/jython:$PATH; fi
   - if [ "$JYTHON" == "true" ]; then export PYTHON=jython; jython -c "print ''"; else export PYTHON=python; fi
-  - if [ "$JYTHON" == "true" ]; then curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py ; sudo $PYTHON get-pip.py; fi
+  - if [ "$JYTHON" == "true" ]; then curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py ; $PYTHON get-pip.py; fi
 
 before_script:
   - if [ "$JYTHON" == "true" ]; then export PYTHON=jython; jython -c "print ''"; else export PYTHON=python; fi
