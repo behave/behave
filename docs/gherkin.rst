@@ -258,7 +258,7 @@ Scenario Outlines
 These may be used when you have a set of expected conditions and outcomes
 to go along with your scenario `steps`_.
 
-An outline includes keywords in the step definitons which are filled in
+An outline includes keywords in the step definitions which are filled in
 using values from example tables. You may have a number of example tables
 in each scenario outline.
 
@@ -266,8 +266,8 @@ in each scenario outline.
 
   Scenario Outline: Blenders
      Given I put <thing> in a blender,
-      when I swtich the blender on
-      then it should trasform into <other thing>
+      when I switch the blender on
+      then it should transform into <other thing>
 
    Examples: Amphibians
      | thing         | other thing |
