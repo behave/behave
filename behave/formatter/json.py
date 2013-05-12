@@ -16,17 +16,19 @@ class JSONFormatter(Formatter):
     name = 'json'
     description = 'JSON dump of test run'
     dumps_kwargs = {}
-
+    split_text_into_lines = True   # EXPERIMENT for better readability.
 
     def __init__(self, stream_opener, config):
         super(JSONFormatter, self).__init__(stream_opener, config)
         # -- ENSURE: Output stream is open.
         self.stream = self.open()
         self.feature_count = 0
+        self.current_feature = None
         self.current_feature_data = None
         self._step_index = 0
 
     def reset(self):
+        self.current_feature = None
         self.current_feature_data = None
         self._step_index = 0
 
@@ -36,16 +38,23 @@ class JSONFormatter(Formatter):
 
     def feature(self, feature):
         self.reset()
+        self.current_feature = feature
         self.current_feature_data = {
             'keyword': feature.keyword,
+            'name': feature.name,
             'tags': list(feature.tags),
-            'description': feature.description,
             'location': feature.location,
+            'status': feature.status,
         }
+        element = self.current_feature_data
+        if feature.description:
+            element['description'] = feature.description
 
     def background(self, background):
         element = self.add_feature_element({
+            'type': 'background',
             'keyword': background.keyword,
+            'name': background.name,
             'location': background.location,
             'steps': [],
         })
@@ -59,6 +68,7 @@ class JSONFormatter(Formatter):
 
     def scenario(self, scenario):
         element = self.add_feature_element({
+            'type': 'scenario',
             'keyword': scenario.keyword,
             'name': scenario.name,
             'tags': scenario.tags,
@@ -71,6 +81,7 @@ class JSONFormatter(Formatter):
 
     def scenario_outline(self, scenario_outline):
         element = self.add_feature_element({
+            'type': 'scenario_outline',
             'keyword': scenario_outline.keyword,
             'name': scenario_outline.name,
             'tags': scenario_outline.tags,
@@ -92,6 +103,7 @@ class JSONFormatter(Formatter):
 
     def examples(self, examples):
         e = {
+            'type': 'examples',
             'keyword': examples.keyword,
             'name': examples.name,
             'location': examples.location,
@@ -112,7 +124,10 @@ class JSONFormatter(Formatter):
         }
 
         if step.text:
-            s['text'] = step.text
+            text = step.text
+            if self.split_text_into_lines and "\n" in text:
+                text = text.splitlines()
+            s['text'] = text
         if step.table:
             s['table'] = self.make_table(step.table)
         element = self.current_feature_element
@@ -122,20 +137,23 @@ class JSONFormatter(Formatter):
         args = []
         for argument in match.arguments:
             arg = {
-                'original': argument.original,
                 'value': argument.value,
             }
             if argument.name:
                 arg['name'] = argument.name
+            if argument.original != argument.value:
+                # -- REDUNDANT DATA COMPRESSION: Suppress for strings.
+                arg['original'] = argument.original
             args.append(arg)
 
-        match = {
-            'location': match.location,
+        match_data = {
+            'location': match.location or "",
             'arguments': args,
         }
-
-        steps = self.current_feature_element['steps']
-        steps[self._step_index]['match'] = match
+        if match.location:
+            # -- NOTE: match.location=None occurs for undefined steps.
+            steps = self.current_feature_element['steps']
+            steps[self._step_index]['match'] = match_data
 
     def result(self, result):
         steps = self.current_feature_element['steps']
@@ -143,6 +161,13 @@ class JSONFormatter(Formatter):
             'status': result.status,
             'duration': result.duration,
         }
+        if result.error_message and result.status == 'failed':
+            # -- OPTIONAL: Provided for failed steps.
+            error_message = result.error_message
+            if self.split_text_into_lines and "\n" in error_message:
+                error_message = error_message.splitlines()
+            result_element = steps[self._step_index]['result']
+            result_element['error_message'] = error_message
         self._step_index += 1
 
     def embedding(self, mime_type, data):
@@ -160,6 +185,8 @@ class JSONFormatter(Formatter):
             return
 
         # -- NORMAL CASE: Write collected data of current feature.
+        self.update_status_data()
+
         if self.feature_count == 0:
             # -- FIRST FEATURE:
             self.write_json_header()
@@ -188,13 +215,17 @@ class JSONFormatter(Formatter):
         assert self.current_feature_data is not None
         return self.current_feature_data['elements'][-1]
 
+    def update_status_data(self):
+        assert self.current_feature
+        assert self.current_feature_data
+        self.current_feature_data['status'] = self.current_feature.status
 
     # -- JSON-WRITER:
     def write_json_header(self):
-        self.stream.write('{ "features": [\n')
+        self.stream.write('[\n')
 
     def write_json_footer(self):
-        self.stream.write(']}\n')
+        self.stream.write('\n]\n')
 
     def write_json_feature(self, feature):
         self.stream.write(json.dumps(feature, **self.dumps_kwargs))

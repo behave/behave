@@ -45,8 +45,9 @@ def parse(json_filename, encoding="UTF-8"):
 class JsonParser(object):
 
     def parse_features(self, json_data):
+        assert isinstance(json_data, list)
         features = []
-        json_features = json_data.get("features", [])
+        json_features = json_data
         for json_feature in json_features:
             feature = self.parse_feature(json_feature)
             features.append(feature)
@@ -68,8 +69,8 @@ class JsonParser(object):
 
 
     def add_feature_element(self, feature, json_element):
-        keyword = json_element.get("keyword", u"")
-        category = keyword.lower()
+        datatype = json_element.get("type", u"")
+        category = datatype.lower()
         if category == "background":
             background = self.parse_background(json_element)
             feature.background = background
@@ -80,9 +81,9 @@ class JsonParser(object):
             scenario_outline = self.parse_scenario_outline(json_element)
             feature.add_scenario(scenario_outline)
             self.current_scenario_outline = scenario_outline
-        elif category == "examples":
-            examples = self.parse_examples(json_element)
-            self.current_scenario_outline.examples = examples
+        # elif category == "examples":
+        #     examples = self.parse_examples(json_element)
+        #     self.current_scenario_outline.examples = examples
         else:
             raise KeyError("Invalid feature-element keyword: %s" % keyword)
 
@@ -145,10 +146,12 @@ class JsonParser(object):
         json_steps = json_element.get("steps", [])
         json_examples = json_element.get("examples", [])
         steps = self.parse_steps(json_steps)
-        examples = self.parse_examples(json_examples)
+        examples = []
+        if json_examples:
+            examples = self.parse_examples(json_examples)
         filename, line = location.split(":")
-        scenario_outline = model.ScenarioOutline(filename, line,
-                                keyword, name, tags, steps, examples)
+        scenario_outline = model.ScenarioOutline(filename, line, keyword, name,
+                                tags=tags, steps=steps, examples=examples)
         scenario_outline.description = description
         return scenario_outline
 
@@ -178,8 +181,10 @@ class JsonParser(object):
         keyword = json_element.get("keyword", u"")
         name    = json_element.get("name", u"")
         step_type = json_element.get("step_type", u"")
-        text    = json_element.get("text", u"")
         location = json_element.get("location", u"")
+        text = json_element.get("text", None)
+        if isinstance(text, list):
+            text = "\n".join(text)
         table = None
         json_table = json_element.get("table", None)
         if json_table:
@@ -203,8 +208,12 @@ class JsonParser(object):
         """
         status   = json_result.get("status", u"")
         duration = json_result.get("duration", 0)
+        error_message = json_result.get("error_message", None)
+        if isinstance(error_message, list):
+            error_message = "\n".join(error_message)
         step.status = status
         step.duration = duration
+        step.error_message = error_message
 
     def parse_table(self, json_table):
         """

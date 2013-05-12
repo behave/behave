@@ -471,6 +471,7 @@ class Scenario(TagStatement, Replayable):
     def all_steps(self):
         """Returns iterator to all steps, including background steps if any."""
         return self.__iter__()
+
     @property
     def status(self):
         for step in self.steps:
