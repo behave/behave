@@ -58,11 +58,15 @@ class RerunFormatter(Formatter):
 
     def eof(self):
         """Called at end of a feature."""
-        if self.current_feature.status == "failed":
+        if self.current_feature and self.current_feature.status == "failed":
             # -- COLLECT SCENARIO FAILURES:
             for scenario in self.current_feature.walk_scenarios():
                 if scenario.status == "failed":
                     self.failed_scenarios.append(scenario)
+
+        # -- RESET:
+        self.current_feature = None
+        assert self.current_feature is None
 
     def close(self):
         """Called at end of test run."""
