@@ -72,6 +72,7 @@ IMPROVEMENT:
 
 FIXED:
 
+  * issue #162 Unnecessary ContextMaskWarnings when assert fails or exception is raised (provided by: jenisys).
   * issue #159: output stream is wrapped twice in the codecs.StreamWriter (provided by: florentx).
   * issue #153: The runtime should not by-pass the formatter to print line breaks minor.
   * issue #152: Fix encoding issues (provided by: devainandor)

@@ -145,9 +145,12 @@ class Context(object):
 
     @contextlib.contextmanager
     def user_mode(self):
-        self._mode = self.USER
-        yield
-        self._mode = self.BEHAVE
+        try:
+            self._mode = self.USER
+            yield
+        finally:
+            # -- NOTE: Otherwise skipped if AssertionError/Exception is raised.
+            self._mode = self.BEHAVE
 
     def _set_root_attribute(self, attr, value):
         for frame in self.__dict__['_stack']:
