@@ -25,6 +25,29 @@ class TestContext(object):
         r.config.verbose = False
         self.context = runner.Context(r)
 
+    def test_user_mode_shall_restore_behave_mode(self):
+        # -- CASE: No exception is raised.
+        with self.context.user_mode():
+            eq_(self.context._mode, runner.Context.USER)
+            self.context.thing = 'stuff'
+        eq_(self.context._mode, runner.Context.BEHAVE)
+
+    def test_user_mode_shall_restore_behave_mode_if_assert_fails(self):
+        try:
+            with self.context.user_mode():
+                eq_(self.context._mode, runner.Context.USER)
+                assert False, "XFAIL"
+        except AssertionError:
+            eq_(self.context._mode, runner.Context.BEHAVE)
+
+    def test_user_mode_shall_restore_behave_mode_if_exception_is_raised(self):
+        try:
+            with self.context.user_mode():
+                eq_(self.context._mode, runner.Context.USER)
+                raise RuntimeError("XFAIL")
+        except Exception:
+            eq_(self.context._mode, runner.Context.BEHAVE)
+
     def test_context_contains(self):
         eq_('thing' in self.context, False)
         self.context.thing = 'stuff'
