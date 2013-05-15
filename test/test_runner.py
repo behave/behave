@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=C0103,C0301,R0201,W0212,W0401,W0614
+#   C0103   Invalid name (setUp(), ...)
+#   C0301   Line too long
+#   R0201   Method could be a function
+#   W0212   Access of protected member by client class => _push(), _pop()
+#   W0401   Wildcard import
+#   W0613   Unused argument names
+#   W0614   Unused import ... from wildcard import
+
 from __future__ import with_statement
 
 from collections import defaultdict
@@ -16,6 +25,7 @@ from behave import model, parser, runner, step_registry
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
 from behave.formatter.base import StreamOpener
+# FIXME: from test.testutil_tempfile import named_temporary_file
 
 
 class TestContext(object):
@@ -103,6 +113,7 @@ class TestContext(object):
         assert getattr(self.context, 'third_thing', None) is None, '%s is not None' % self.context.third_thing
 
     def test_masking_existing_user_attribute_when_verbose_causes_warning(self):
+        __pychecker__ = "unusednames=kwargs"
         warns = []
 
         def catch_warning(*args, **kwargs):
@@ -129,6 +140,7 @@ class TestContext(object):
         assert 'tutorial' in info, '"tutorial" not in %r' % (info, )
 
     def test_masking_existing_user_attribute_when_not_verbose_causes_no_warning(self):
+        __pychecker__ = "unusednames=kwargs"
         warns = []
 
         def catch_warning(*args, **kwargs):
@@ -149,6 +161,9 @@ class TestContext(object):
         assert not warns
 
     def test_behave_masking_user_attribute_causes_warning(self):
+        # pylint: disable=W0622
+        #   W0622   Redefining built-in (file)
+        __pychecker__ = "no-shadowbuiltin unusednames=kwargs"
         warns = []
 
         def catch_warning(*args, **kwargs):
@@ -175,6 +190,9 @@ class TestContext(object):
         assert file in info, '%r not in %r' % (file, info)
 
     def test_setting_root_attribute_that_masks_existing_causes_warning(self):
+        # pylint: disable=W0622
+        #   W0622   Redefining built-in (file)
+        __pychecker__ = "no-shadowbuiltin unusednames=kwargs"
         warns = []
 
         def catch_warning(*args, **kwargs):
@@ -338,6 +356,92 @@ Then a step passes
             self.context.execute_steps(doc)
 
 
+# FIXME:
+# class JEXxxRunnerTest(unittest.TestCase):
+#
+#     def setUp(self):
+#         runner_ = Mock()
+#         self.config = runner_.config = Mock()
+#         runner_.config.verbose = False
+#         runner_.config.stdout_capture  = False
+#         runner_.config.stderr_capture  = False
+#         runner_.config.log_capture  = False
+#         self.context = runner.Context(runner_)
+#         runner_.context = self.context
+#         self.context.feature = Mock()
+#         self.context.feature.parser = parser.Parser()
+#         if not self.step_registry:
+#             # -- SETUP ONCE:
+#             self.step_registry = step_registry.StepRegistry()
+#             ExampleSteps.register_steps_with(self.step_registry)
+#         ExampleSteps.text  = None
+#         ExampleSteps.table = None
+#
+#     def test_execute_steps_with_simple_steps(self):
+#         doc = u'''
+# Given a step passes
+# Then a step passes
+# '''.lstrip()
+#         with patch('behave.step_registry.registry', self.step_registry):
+#             result = self.context.execute_steps(doc)
+#             eq_(result, True)
+#
+#     def test_execute_steps_with_failing_step(self):
+#         doc = u'''
+# Given a step passes
+# When a step fails
+# Then a step passes
+# '''.lstrip()
+#         with patch('behave.step_registry.registry', self.step_registry):
+#             try:
+#                 result = self.context.execute_steps(doc)
+#             except AssertionError, e:  # -- PY26-CLEANUP-MARK
+#                 ok_("Sub-step failed: When a step fails" in str(e))
+#
+#     def test_execute_steps_with_text(self):
+#         doc = u'''
+# Given a step passes
+# When a step with text:
+#     """
+#     Lorem ipsum
+#     Ipsum lorem
+#     """
+# Then a step passes
+# '''.lstrip()
+#         with patch('behave.step_registry.registry', self.step_registry):
+#             result = self.context.execute_steps(doc)
+#             expected_text = "Lorem ipsum\nIpsum lorem"
+#             eq_(result, True)
+#             eq_(expected_text, ExampleSteps.text)
+#
+#     def test_execute_steps_with_table(self):
+#         doc = u'''
+# Given a step with a table:
+#     | Name  | Age |
+#     | Alice |  12 |
+#     | Bob   |  23 |
+# Then a step passes
+# '''.lstrip()
+#         with patch('behave.step_registry.registry', self.step_registry):
+#             result = self.context.execute_steps(doc)
+#             expected_table = model.Table([u"Name", u"Age"], 0, [
+#                     [u"Alice", u"12"],
+#                     [u"Bob",   u"23"],
+#             ])
+#             eq_(result, True)
+#             eq_(expected_table, ExampleSteps.table)
+#
+#     @raises(ValueError)
+#     def test_execute_steps_called_without_feature(self):
+#         doc = u'''
+# Given a passes
+# Then a step passes
+# '''.lstrip()
+#         with patch('behave.step_registry.registry', self.step_registry):
+#             self.context.feature = None
+#             self.context.execute_steps(doc)
+
+
 class TestRunner(object):
     def test_load_hooks_execfiles_hook_file(self):
         with patch('behave.runner.exec_file') as ef:
@@ -354,6 +458,8 @@ class TestRunner(object):
                 ef.assert_called_with(hooks_path, r.hooks)
 
     def test_run_hook_runs_a_hook_that_exists(self):
+        # pylint: disable=W0142
+        #   W0142   Used * or ** magic
         r = runner.Runner(None)
         r.config = Mock()
         r.config.dry_run = False
@@ -473,6 +579,20 @@ class TestRunner(object):
         assert '__file__' in l
         assert 'spam' in l, '"spam" variable not set in locals (%r)' % (g, l)
         eq_(l['spam'], fn)
+
+    def test_run_returns_true_if_everything_passed(self):
+        r = runner.Runner(Mock())
+        r.setup_paths = Mock()
+        r.run_with_paths = Mock()
+        r.run_with_paths.return_value = True
+        assert r.run()
+
+    def test_run_returns_false_if_anything_failed(self):
+        r = runner.Runner(Mock())
+        r.setup_paths = Mock()
+        r.run_with_paths = Mock()
+        r.run_with_paths.return_value = False
+        assert not r.run()
 
     def test_run_returns_true_if_everything_passed(self):
         r = runner.Runner(Mock())
@@ -659,6 +779,8 @@ class TestFeatureDirectory(object):
 
         # will look for a "features" directory and not find one
         with patch('os.path', fs):
+            # pylint: disable=E0602
+            #   E0602   Undefined variable "assert_raises"
             assert_raises(ConfigError, r.setup_paths)
 
         ok_(('isdir', os.path.join(fs.base, 'features', 'steps')) in fs.calls)
@@ -672,6 +794,8 @@ class TestFeatureDirectory(object):
         fs = FsMock('features/steps/')
         with patch('os.path', fs):
             with patch('os.walk', fs.walk):
+                # pylint: disable=E0602
+                #   E0602   Undefined variable "assert_raises"
                 assert_raises(ConfigError, r.setup_paths)
 
     def test_default_path(self):
@@ -718,6 +842,8 @@ class TestFeatureDirectory(object):
         with patch('os.path', fs):
             with patch('os.walk', fs.walk):
                 with r.path_manager:
+                    # pylint: disable=E0602
+                    #   E0602   Undefined variable "assert_raises"
                     assert_raises(ConfigError, r.setup_paths)
 
     def test_supplied_feature_directory(self):
@@ -747,6 +873,8 @@ class TestFeatureDirectory(object):
 
         with patch('os.path', fs):
             with patch('os.walk', fs.walk):
+                # pylint: disable=E0602
+                #   E0602   Undefined variable "assert_raises"
                 assert_raises(ConfigError, r.setup_paths)
 
         ok_(('isdir', os.path.join(fs.base, 'spam', 'steps')) in fs.calls)
@@ -761,8 +889,153 @@ class TestFeatureDirectory(object):
 
         with patch('os.path', fs):
             with patch('os.walk', fs.walk):
+                # pylint: disable=E0602
+                #   E0602   Undefined variable "assert_raises"
                 assert_raises(ConfigError, r.setup_paths)
 
+
+class TestFeatureDirectoryLayout2(object):
+    def test_default_path(self):
+        config = Mock()
+        config.paths = []
+        config.verbose = True
+        r = runner.Runner(config)
+
+        fs = FsMock(
+            'features/',
+            'features/steps/',
+            'features/group1/',
+            'features/group1/foo.feature',
+        )
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    r.setup_paths()
+
+        eq_(r.base_dir, os.path.abspath('features'))
+
+    def test_supplied_root_directory(self):
+        config = Mock()
+        config.paths = [ 'features' ]
+        config.verbose = True
+        r = runner.Runner(config)
+
+        fs = FsMock(
+            'features/',
+            'features/group1/',
+            'features/group1/foo.feature',
+            'features/steps/',
+        )
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    r.setup_paths()
+
+        ok_(('isdir',  os.path.join(fs.base, 'features', 'steps')) in fs.calls)
+        eq_(r.base_dir, os.path.join(fs.base, 'features'))
+
+    def test_supplied_root_directory_no_steps(self):
+        config = Mock()
+        config.paths = [ 'features' ]
+        config.verbose = True
+        r = runner.Runner(config)
+
+        fs = FsMock(
+            'features/',
+            'features/group1/',
+            'features/group1/foo.feature',
+        )
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    assert_raises(ConfigError, r.setup_paths)
+
+        ok_(('isdir',  os.path.join(fs.base, 'features', 'steps')) in fs.calls)
+        eq_(r.base_dir, None)
+
+
+    def test_supplied_feature_file(self):
+        config = Mock()
+        config.paths = [ 'features/group1/foo.feature' ]
+        config.verbose = True
+        r = runner.Runner(config)
+        r.context = Mock()
+
+        fs = FsMock(
+            'features/',
+            'features/group1/',
+            'features/group1/foo.feature',
+            'features/steps/',
+        )
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    r.setup_paths()
+
+        ok_(('isdir',  os.path.join(fs.base, 'features', 'steps'))  in fs.calls)
+        ok_(('isfile', os.path.join(fs.base, 'features', 'group1', 'foo.feature')) in fs.calls)
+        eq_(r.base_dir, fs.join(fs.base, "features"))
+
+    def test_supplied_feature_file_no_steps(self):
+        config = Mock()
+        config.paths = [ 'features/group1/foo.feature' ]
+        config.verbose = True
+        r = runner.Runner(config)
+
+        fs = FsMock(
+            'features/',
+            'features/group1/',
+            'features/group1/foo.feature',
+        )
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    assert_raises(ConfigError, r.setup_paths)
+
+    def test_supplied_feature_directory(self):
+        config = Mock()
+        config.paths = [ 'features/group1' ]
+        config.verbose = True
+        r = runner.Runner(config)
+
+        fs = FsMock(
+            'features/',
+            'features/group1/',
+            'features/group1/foo.feature',
+            'features/steps/',
+        )
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                with r.path_manager:
+                    r.setup_paths()
+
+        ok_(('isdir',  os.path.join(fs.base, 'features', 'steps')) in fs.calls)
+        eq_(r.base_dir, os.path.join(fs.base, 'features'))
+
+
+    def test_supplied_feature_directory_no_steps(self):
+        config = Mock()
+        config.paths = [ 'features/group1' ]
+        config.verbose = True
+        r = runner.Runner(config)
+
+        fs = FsMock(
+            'features/',
+            'features/group1/',
+            'features/group1/foo.feature',
+        )
+
+        with patch('os.path', fs):
+            with patch('os.walk', fs.walk):
+                assert_raises(ConfigError, r.setup_paths)
+
+        ok_(('isdir',  os.path.join(fs.base, 'features', 'steps')) in fs.calls)
 
 class TestFeatureDirectoryLayout2(object):
     def test_default_path(self):

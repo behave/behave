@@ -1,10 +1,19 @@
+# -*- coding: utf-8 -*-
+# pylint: disable=C0103,C0301,R0201,W0401,W0614
+#   C0103   Invalid name (setUp(), ...)
+#   C0301   Line too long
+#   R0201   Method could be a function
+#   W0401   Wildcard import
+#   W0614   Unused import ... from wildcard import
+
 from __future__ import with_statement
 
 from mock import Mock, patch
 from nose.tools import *
 from behave import step_registry
+import unittest
 
-class TestStepRegistry(object):
+class TestStepRegistry(unittest.TestCase):
     def test_add_definition_adds_to_lowercased_keyword(self):
         registry = step_registry.StepRegistry()
         with patch('behave.matchers.get_matcher') as get_matcher:
@@ -23,6 +32,7 @@ class TestStepRegistry(object):
                 eq_(l, [magic_object])
 
     def test_find_match_with_specific_step_type_also_searches_generic(self):
+        __pychecker__ = "no-missingattrs=match"
         registry = step_registry.StepRegistry()
 
         given_mock = Mock()
@@ -43,6 +53,7 @@ class TestStepRegistry(object):
         step_mock.match.assert_called_with(step.name)
 
     def test_find_match_with_no_match_returns_none(self):
+        __pychecker__ = "unusednames=x"
         registry = step_registry.StepRegistry()
 
         step_defs = [Mock() for x in range(0, 10)]
@@ -58,6 +69,7 @@ class TestStepRegistry(object):
         assert registry.find_match(step) is None
 
     def test_find_match_with_a_match_returns_match(self):
+        __pychecker__ = "unusednames=x"
         registry = step_registry.StepRegistry()
 
         step_defs = [Mock() for x in range(0, 10)]

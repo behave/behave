@@ -3,9 +3,16 @@ Behave
 ======
 
 .. image:: https://travis-ci.org/jenisys/behave.png?branch=master
-   :name: Build Status
-   :alt: Build Status
    :target: https://travis-ci.org/jenisys/behave
+   :alt: Travis CI Build Status
+
+.. image:: https://pypip.in/v/behave/badge.png
+    :target: https://crate.io/packages/behave/
+    :alt: Latest PyPI version
+
+.. image:: https://pypip.in/d/behave/badge.png
+    :target: https://crate.io/packages/behave/
+    :alt: Number of PyPI downloads
 
 behave is behaviour-driven development, Python style.
 

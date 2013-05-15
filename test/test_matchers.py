@@ -1,18 +1,26 @@
+# -*- coding: utf-8 -*-
+# pylint: disable=C0103,R0201,W0401,W0614
+#   C0103   Invalid name (setUp(), ...)
+#   R0201   Method could be a function
+#   W0401   Wildcard import
+#   W0614   Unused import ... from wildcard import
+
 from __future__ import with_statement
 
 from mock import Mock, patch
 from nose.tools import *
 import parse
-
 from behave import matchers, model, runner
+import unittest
 
 class DummyMatcher(matchers.Matcher):
     desired_result = None
 
     def check_match(self, step):
+        __pychecker__ = "unusednames=step"
         return DummyMatcher.desired_result
 
-class TestMatcher(object):
+class TestMatcher(unittest.TestCase):
     def setUp(self):
         DummyMatcher.desired_result = None
 
@@ -32,7 +40,7 @@ class TestMatcher(object):
         assert match.func is func
         assert match.arguments == arguments
 
-class TestParseMatcher(object):
+class TestParseMatcher(unittest.TestCase):
     def setUp(self):
         self.recorded_args = None
 
@@ -40,6 +48,8 @@ class TestParseMatcher(object):
         self.recorded_args = (args, kwargs)
 
     def test_returns_none_if_parser_does_not_match(self):
+        # pylint: disable=W0621
+        #   W0621   Redefining name ... from outer scope.
         matcher = matchers.ParseMatcher(None, 'a string')
         with patch.object(matcher.parser, 'parse') as parse:
             parse.return_value = None
@@ -96,8 +106,10 @@ class TestParseMatcher(object):
         m.run(context)
         eq_(self.recorded_args, ((context, 'foo', 11, 3.14159), {}))
 
-class TestRegexMatcher(object):
+class TestRegexMatcher(unittest.TestCase):
+
     def test_returns_none_if_regex_does_not_match(self):
+        __pychecker__ = "missingattrs=regex.match"
         matcher = matchers.RegexMatcher(None, 'a string')
         regex = Mock()
         regex.match.return_value = None
@@ -105,6 +117,7 @@ class TestRegexMatcher(object):
         assert matcher.match('just a random step') is None
 
     def test_returns_arguments_based_on_groups(self):
+        __pychecker__ = "missingattrs=match,groups,start,end"
         func = lambda x: -x
         matcher = matchers.RegexMatcher(func, 'foo')
 

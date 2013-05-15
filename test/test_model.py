@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+# pylint: disable=C0103,C0301,R0201,W0212,W0401,W0614
+#   C0103   Invalid name (setUp(), ...)
+#   C0301   Line too long
+#   R0201   Method could be a function
+#   W0212   Access of protected member by client class => _push(), _pop()
+#   W0401   Wildcard import
+#   W0613   Unused argument names
+#   W0614   Unused import ... from wildcard import
+
 from __future__ import with_statement
 
 import re
@@ -8,9 +18,9 @@ from behave import model
 from behave.compat.collections import OrderedDict
 from behave import step_registry
 from behave.configuration import Configuration
+import unittest
 
-
-class TestFeatureRun(object):
+class TestFeatureRun(unittest.TestCase):
     def setUp(self):
         self.runner = Mock()
         self.runner.feature.tags = []
@@ -113,7 +123,7 @@ class TestFeatureRun(object):
         assert not self.run_hook.called
 
 
-class TestScenarioRun(object):
+class TestScenarioRun(unittest.TestCase):
     def setUp(self):
         self.runner = Mock()
         self.runner.feature.tags = []
@@ -237,7 +247,7 @@ class TestScenarioRun(object):
         assert not self.run_hook.called
 
 
-class TestScenarioOutline(object):
+class TestScenarioOutline(unittest.TestCase):
     def test_run_calls_run_on_each_generated_scenario(self):
         outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
                                         u'foo')
@@ -291,12 +301,18 @@ class TestScenarioOutline(object):
 
 
 def raiser(exception):
+    # pylint: disable=W0613
+    #   W0613   Unused arguments (args, kwargs)
+    __pychecker__ = "unusednames=args,kwargs"
     def func(*args, **kwargs):
         raise exception
     return func
 
 
-class TestStepRun(object):
+class TestStepRun(unittest.TestCase):
+    # pylint: disable=R0904
+    #   R0904   Too many public methods (31/30)
+
     def setUp(self):
         self.runner = Mock()
         self.config = self.runner.config = Mock()
@@ -369,6 +385,7 @@ class TestStepRun(object):
             assert not self.formatters[0].result.called
 
     def test_run_runs_before_hook_then_match_then_after_hook(self):
+        __pychecker__ = "unusednames=args,kwargs"
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
         match = Mock()
         self.step_registry.find_match.return_value = match
@@ -380,6 +397,9 @@ class TestStepRun(object):
             self.runner.run_hook = match.run = Mock()
 
             def effect(thing):
+                # pylint: disable=W0613,W0621
+                #   W0613   Unused arguments (args, kwargs)
+                #   W0621   Redefining name from outer scope (raiser)
                 def raiser(*args, **kwargs):
                     match.run.side_effect = None
                     if thing:
@@ -519,7 +539,7 @@ class TestStepRun(object):
         assert 'toads' in step.error_message
 
 
-class TestTableModel(object):
+class TestTableModel(unittest.TestCase):
     HEAD = [u'type of stuff', u'awesomeness', u'ridiculousness']
     DATA = [
         [u'fluffy', u'large', u'frequent'],
@@ -556,6 +576,8 @@ class TestTableModel(object):
 
     @raises(KeyError)
     def test_table_row_keyerror(self):
+        # pylint: disable=W0104
+        #   W0104   Statement does not seem to have any effect.
         self.table[0]['spam']
 
     def test_table_row_items(self):

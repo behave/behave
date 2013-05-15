@@ -1,9 +1,16 @@
+# -*- coding: utf-8 -*-
+# pylint: disable=C0103,R0201,W0401,W0614
+#   C0103   Invalid name (setUp(), ...)
+#   R0201   Method could be a function
+#   W0401   Wildcard import
+#   W0614   Unused import ... from wildcard import
+
 from __future__ import with_statement
 import os.path
 import tempfile
-
 from nose.tools import *
 from behave import configuration
+import unittest
 
 # one entry of each kind handled
 TEST_CONFIG='''[behave]
@@ -19,7 +26,7 @@ stdout_capture=no
 bogus=spam
 '''
 
-class TestConfiguration(object):
+class TestConfiguration(unittest.TestCase):
 
     def test_read_file(self):
         tn = tempfile.mktemp()

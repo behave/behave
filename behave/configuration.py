@@ -281,11 +281,12 @@ options = [
 
 
 def read_configuration(path):
+    __pychecker__ = "no-shadow"
     cfg = ConfigParser.ConfigParser()
     cfg.read(path)
     cfgdir = os.path.dirname(path)
     result = {}
-    for fixed, keywords in options:
+    for fixed, keywords in options:     # pylint: disable=W0621
         if 'dest' in keywords:
             dest = keywords['dest']
         else:
@@ -402,8 +403,20 @@ class Configuration(object):
     def __init__(self):
         self.formatters = []
         self.reporters = []
+        # -- MORE ATTRIBUTES:
+        self.wip = None
+        self.quiet = None
+        self.junit = None
+        self.summary = None
+        self.version = None
+        self.tags_help = None
+        self.lang_help = None
+        self.lang_list = None
+        self.include_re = None
+        self.exclude_re = None
         self.name_re = None
         self.outputs = []
+
         load_configuration(self.defaults)
         parser.set_defaults(**self.defaults)
 

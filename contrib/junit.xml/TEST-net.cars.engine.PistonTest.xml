@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="1" failures="3" hostname="hazelnut.osuosl.org" name="net.cars.engine.PistonTest" tests="5" time="0.048" timestamp="2007-11-02T23:13:50">
+  <properties>
+    <property name="java.vendor" value="IBM Corporation" />
+    <property name="os.name" value="Linux" />
+    <property name="sun.boot.class.path" value="/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/vm.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/core.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/charsets.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/graphics.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/security.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/ibmpkcs.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/ibmorb.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/ibmcfw.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/ibmorbapi.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/ibmjcefw.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/ibmjgssprovider.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/ibmjsseprovider2.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/ibmjaaslm.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/ibmcertpathprovider.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/server.jar:/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/xml.jar" />
+    <property name="sun.java2d.fontpath" value="" />
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="ant.home" value="/home/jancumps/project/continuus/ant/distro" />
+    <property name="java.runtime.version" value="pxp64devifx-20070806 (SR5a)" />
+    <property name="user.name" value="jancumps" />
+    <property name="java.compiler" value="j9jit23" />
+    <property name="com.ibm.util.extralibs.properties" value="" />
+    <property name="build.dir" value="build" />
+    <property name="user.language" value="en" />
+    <property name="com.ibm.oti.vm.bootstrap.library.path" value="/opt/ibm-jdk-bin-1.5.0.5a/jre/bin" />
+    <property name="sun.boot.library.path" value="/opt/ibm-jdk-bin-1.5.0.5a/jre/bin" />
+    <property name="ant.project.name" value="Engine Diagnostic Tests" />
+    <property name="java.version" value="1.5.0" />
+    <property name="user.timezone" value="" />
+    <property name="sun.arch.data.model" value="64" />
+    <property name="com.ibm.oti.vm.library.version" value="23" />
+    <property name="sun.jnu.encoding" value="ANSI_X3.4-1968" />
+    <property name="jxe.current.romimage.version" value="9" />
+    <property name="file.separator" value="/" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="java.class.version" value="49.0" />
+    <property name="user.country" value="US" />
+    <property name="java.home" value="/opt/ibm-jdk-bin-1.5.0.5a/jre" />
+    <property name="java.vm.info" value="J2RE 1.5.0 IBM J9 2.3 Linux ppc64-64 j9vmxp6423-20070426 (JIT enabled)
+J9VM - 20070420_12448_BHdSMr
+JIT  - 20070419_1806_r8
+GC   - 200704_19" />
+    <property name="ant.file" value="/home/jancumps/project/continuus/JunitExample/build.xml" />
+    <property name="os.version" value="2.6.23-hardened-power5-osl1" />
+    <property name="java.awt.fonts" value="" />
+    <property name="path.separator" value=":" />
+    <property name="java.vm.version" value="2.3" />
+    <property name="java.util.prefs.PreferencesFactory" value="java.util.prefs.FileSystemPreferencesFactory" />
+    <property name="user.variant" value="" />
+    <property name="ant.library.dir" value="/home/jancumps/project/continuus/ant/distro/lib" />
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob" />
+    <property name="sun.io.unicode.encoding" value="UnicodeBig" />
+    <property name="ibm.signalhandling.sigint" value="true" />
+    <property name="java.assistive" value="ON" />
+    <property name="user.home" value="/home/jancumps" />
+    <property name="com.ibm.cpu.endian" value="big" />
+    <property name="java.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="ant.file.Engine Diagnostic Tests" value="/home/jancumps/project/continuus/JunitExample/build.xml" />
+    <property name="ibm.signalhandling.sigchain" value="true" />
+    <property name="invokedviajava" value="" />
+    <property name="java.library.path" value="/opt/ibm-jdk-bin-1.5.0.5a/jre/bin:/opt/ibm-jdk-bin-1.5.0.5a/jre/bin:/opt/ibm-jdk-bin-1.5.0.5a/jre/bin/classic:/opt/ibm-jdk-bin-1.5.0.5a/jre/bin:/usr/lib" />
+    <property name="java.vendor.url" value="http://www.ibm.com/" />
+    <property name="java.vm.vendor" value="IBM Corporation" />
+    <property name="java.fullversion" value="J2RE 1.5.0 IBM J9 2.3 Linux ppc64-64 j9vmxp6423-20070426 (JIT enabled)
+J9VM - 20070420_12448_BHdSMr
+JIT  - 20070419_1806_r8
+GC   - 200704_19" />
+    <property name="java.runtime.name" value="Java(TM) 2 Runtime Environment, Standard Edition" />
+    <property name="java.class.path" value="/home/jancumps/project/continuus/junit/distro/junit.jar:/home/jancumps/project/continuus/JunitExample/build/src:/home/jancumps/project/continuus/JunitExample/build/tst:/home/jancumps/project/continuus/JunitExample:/home/jancumps/project/continuus/ant/distro/lib/ant-launcher.jar:/home/jancumps/project/continuus/ant/distro/lib/ant.jar:/home/jancumps/project/continuus/ant/distro/lib/ant-junit.jar" />
+    <property name="ant.version" value="Apache Ant version 1.8.0alpha compiled on November 2 2007" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="java.vm.specification.version" value="1.0" />
+    <property name="junit.jar" value="/home/jancumps/project/continuus/junit/distro/junit.jar" />
+    <property name="java.io.tmpdir" value="/tmp" />
+    <property name="java.jcl.version" value="20070725" />
+    <property name="ibm.system.encoding" value="ANSI_X3.4-1968" />
+    <property name="os.arch" value="ppc64" />
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment" />
+    <property name="ibm.signalhandling.rs" value="false" />
+    <property name="java.ext.dirs" value="/opt/ibm-jdk-bin-1.5.0.5a/jre/lib/ext" />
+    <property name="user.dir" value="/home/jancumps/project/continuus/JunitExample" />
+    <property name="line.separator" value="
+" />
+    <property name="java.vm.name" value="IBM J9 VM" />
+    <property name="com.ibm.vm.bitmode" value="64" />
+    <property name="basedir" value="/home/jancumps/project/continuus/JunitExample" />
+    <property name="ant.java.version" value="1.5" />
+    <property name="ant.core.lib" value="/home/jancumps/project/continuus/ant/distro/lib/ant.jar" />
+    <property name="jxe.lowest.romimage.version" value="9" />
+    <property name="file.encoding" value="ANSI_X3.4-1968" />
+    <property name="com.ibm.oti.configuration" value="scar" />
+    <property name="java.specification.version" value="1.5" />
+    <property name="com.ibm.oti.jcl.build" value="20070405_1655" />
+  </properties>
+  <testcase classname="net.cars.engine.PistonTest" name="moveUp" time="0.022">
+    <error message="test timed out after 1 milliseconds" type="java.lang.Exception">java.lang.Exception: test timed out after 1 milliseconds
+</error>
+  </testcase>
+  <testcase classname="net.cars.engine.PistonTest" name="moveDown" time="0.0010" />
+  <testcase classname="net.cars.engine.PistonTest" name="checkStatus" time="0.0030">
+    <failure message="Plunger status invalid to proceed driving." type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: Plunger status invalid to proceed driving.
+	at net.cars.engine.PistonTest.checkStatus(PistonTest.java:42)
+</failure>
+  </testcase>
+  <testcase classname="net.cars.engine.PistonTest" name="checkSpeed" time="0.0080">
+    <failure message="Plunger upward speed below specifications." type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: Plunger upward speed below specifications.
+	at net.cars.engine.PistonTest.checkSpeed(PistonTest.java:47)
+</failure>
+  </testcase>
+  <testcase classname="net.cars.engine.PistonTest" name="lubricate" time="0.0030">
+    <failure message="Failed to lubricate the plunger." type="junit.framework.AssertionFailedError">junit.framework.AssertionFailedError: Failed to lubricate the plunger.
+	at net.cars.engine.PistonTest.lubricate(PistonTest.java:52)
+</failure>
+  </testcase>
+  <system-out><![CDATA[Slowly moving up]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

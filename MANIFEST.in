@@ -3,6 +3,11 @@ include CHANGES.rst
 include MANIFEST.in
 include LICENSE
 include .coveragerc
+include .gitignore
+include .pycheckrc
+include pylintrc
+include setup.py
+include pavement.py
 include *.cfg
 include *.ini
 include *.rst
@@ -14,5 +19,6 @@ recursive-include docs          *.rst *.txt *.css *.py *.html *.rst-* Makefile
 recursive-include docs/_themes  *.html *.conf *.css *.css_t LICENSE*
 recursive-include test          *.py
 recursive-include tools         *.feature *.py *.yml *.sh
+recursive-include selftest.features  *.feature *.py *.txt
 recursive-include issue.features  *.feature *.py *.txt
 prune .tox

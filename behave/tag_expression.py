@@ -27,6 +27,10 @@ class TagExpression(object):
         positives = []
 
         for tag in tags:
+            # -- TILDE ALIAS: Normalize to minus prefix.
+            if tag.startswith("~"):
+                tag = "-" + tag[1:]
+
             if tag.startswith('@'):
                 positives.append(tag[1:])
             elif tag.startswith('-@') or tag.startswith('~@'):

@@ -305,12 +305,14 @@ def path_getrootdir(path):
 
 
 class PathManager(object):
+    __pychecker__ = "no-special"    # SKIP-CHECK: __enter__(), __exit__()
     paths = None
 
     def __enter__(self):
         self.paths = []
 
     def __exit__(self, *crap):
+        __pychecker__ = "unusednames=crap"
         for path in self.paths:
             sys.path.remove(path)
 
@@ -322,6 +324,9 @@ class PathManager(object):
 
 
 class Runner(object):
+    # pylint: disable=R0902
+    #   R0902   Too many instance attributes (15/10)
+
     def __init__(self, config):
         self.config = config
         self.hooks = {}
@@ -346,6 +351,8 @@ class Runner(object):
         self.formatters = None
 
     def setup_paths(self):
+        # pylint: disable=R0912
+        #   R0912   Too many branches (23/20)
         if self.config.paths:
             if self.config.verbose:
                 print 'Supplied path:', \
@@ -521,6 +528,9 @@ class Runner(object):
         return failed
 
     def setup_capture(self):
+        # pylint: disable=W0201
+        #   W0201   Attribute ... defined outside __init__
+        #           => stdout_capture, log_capture (BUT WRONG)
         if self.config.stdout_capture:
             self.stdout_capture = StringIO.StringIO()
             self.context.stdout_capture = self.stdout_capture

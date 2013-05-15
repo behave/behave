@@ -31,6 +31,7 @@ class JSONFormatter(Formatter):
         self.current_feature = None
         self.current_feature_data = None
         self._step_index = 0
+        self._features = []
 
 
     def uri(self, uri):

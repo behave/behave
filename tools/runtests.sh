@@ -1,5 +1,8 @@
 #!/bin/sh
-
+# ==========================================================================
+# RUN TESTS in virtualenvs
+# STATUS: DEPRECATED, use tox instead (JE).
+# ==========================================================================
 # Usage:
 # *in* the "behave" working directory, run "tools/runtests.sh"
 

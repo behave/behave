@@ -1,5 +1,16 @@
 #!/usr/bin/env python
+"""
+Run behave, optionally with code coverage enabled.
+This is needed because many self-tests (based on behave4cmd)
+start a behave subprocesss to verify that behave works correctly.
 
+ENVIRONMENT VARIABLES:
+    COVERAGE_PROCESS_START = coverage-config-filename
+
+SEE ALSO:
+  * http://nedbatchelder.com/code/coverage/subprocess.html#subprocess
+  * http://nedbatchelder.com/code/coverage/api.html
+"""
 # -- ENSURE: Use local path during development.
 import sys
 import os.path

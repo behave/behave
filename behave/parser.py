@@ -364,6 +364,8 @@ class Parser(object):
         if self.subaction_detect_next_scenario(line):
             return True
 
+        # pylint: disable=E1103
+        #   E1103   Instance of Background has no examples member (but ...)
         examples_kwd = self.match_keyword('examples', line)
         if examples_kwd:
             self._build_examples(examples_kwd, line)

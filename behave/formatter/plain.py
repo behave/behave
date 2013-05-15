@@ -47,6 +47,10 @@ class PlainFormatter(Formatter):
 
     def reset_steps(self):
         self.steps = []
+        self.show_timings = config.show_timings
+
+    def reset_steps(self):
+        self.steps = []
 
     # -- IMPLEMENT-INTERFACE FOR: Formatter
     def feature(self, feature):

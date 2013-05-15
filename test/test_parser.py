@@ -1,7 +1,14 @@
-#-*- encoding: UTF-8 -*-
+# -*- encoding: utf-8 -*-
+# pylint: disable=C0103,C0301,R0201,W0212,W0401,W0614
+#   C0103   Invalid name (setUp(), ...)
+#   C0301   Line too long
+#   R0201   Method could be a function
+#   W0212   Access of protected member by client class => _push(), _pop()
+#   W0401   Wildcard import
+#   W0613   Unused argument names
+#   W0614   Unused import ... from wildcard import
 
 from nose.tools import *
-
 from behave import i18n, model, parser
 
 class Common(object):
@@ -10,6 +17,9 @@ class Common(object):
         eq_(have, expected)
 
 class TestParser(Common):
+    # pylint: disable=R0904
+    #   R0904   Too many public methods (42/30)
+
     def test_parses_feature_name(self):
         feature = parser.parse_feature(u"Feature: Stuff\n")
         eq_(feature.name, "Stuff")
@@ -498,6 +508,38 @@ Feature: Stuff
             ('then', 'Then', 'stuff happens', None, None),
         ])
 
+    # MORE-JE-ADDED:
+    def test_parses_string_argument_without_stripping_comments(self):
+        # -- ISSUE 44: Parser removes comments in multiline text string.
+        doc = u'''
+Feature: Multiline
+
+  Scenario: Multiline Text with Comments
+    Given a multiline argument with:
+      """
+      # -- COMMENT1
+      """
+    And a multiline argument with:
+      """
+      Alpha.
+      # -- COMMENT2
+      Omega.
+      """
+    Then no shell comments are stripped
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Multiline")
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, "Multiline Text with Comments")
+        text1 = "# -- COMMENT1"
+        text2 = "Alpha.\n# -- COMMENT2\nOmega."
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Given', 'a multiline argument with', text1, None),
+            ('given', 'And',   'a multiline argument with', text2, None),
+            ('then', 'Then', 'no shell comments are stripped', None, None),
+        ])
+
+
     def test_parses_feature_with_a_step_with_a_table_argument(self):
         doc = u'''
 Feature: Stuff
@@ -820,6 +862,8 @@ Feature: Stuff
 
 
     def test_fails_to_parse_when_and_is_out_of_order(self):
+        # pylint: disable=E0602
+        #   E0602   Undefined variable "assert_raises"
         doc = u"""
 Feature: Stuff
 
@@ -829,6 +873,8 @@ Feature: Stuff
         assert_raises(parser.ParserError, parser.parse_feature, doc)
 
     def test_fails_to_parse_when_but_is_out_of_order(self):
+        # pylint: disable=E0602
+        #   E0602   Undefined variable "assert_raises"
         doc = u"""
 Feature: Stuff
 
@@ -838,6 +884,8 @@ Feature: Stuff
         assert_raises(parser.ParserError, parser.parse_feature, doc)
 
     def test_fails_to_parse_when_examples_is_in_the_wrong_place(self):
+        # pylint: disable=E0602
+        #   E0602   Undefined variable "assert_raises"
         doc = u"""
 Feature: Stuff
 
@@ -875,6 +923,8 @@ Po\u017eadavek: testing stuff
         eq_(feature.description, ["Oh my god, it's full of stuff..."])
 
     def test_anything_before_language_comment_makes_it_not_count(self):
+        # pylint: disable=E0602
+        #   E0602   Undefined variable "assert_raises"
         doc = u"""
 
 @wombles

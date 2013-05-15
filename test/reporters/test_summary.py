@@ -1,10 +1,18 @@
+# -*- coding: utf-8 -*-
+# pylint: disable=C0103,R0201,W0401,W0614
+#   C0103   Invalid name (setUp(), ...)
+#   R0201   Method could be a function
+#   W0401   Wildcard import
+#   W0614   Unused import ... from wildcard import
+
 from mock import Mock, patch
 from nose.tools import *
 
 from behave.model import ScenarioOutline, Scenario
 from behave.reporter.summary import SummaryReporter, format_summary
+import unittest
 
-class TestFormatStatus(object):
+class TestFormatStatus(unittest.TestCase):
     def test_passed_entry_contains_label(self):
         summary = {
             'passed': 1,
@@ -52,7 +60,9 @@ class TestFormatStatus(object):
         assert '2 failed' in output
         assert 'undefined' not in output
 
+
 class TestSummaryReporter(object):
+
     @patch('sys.stderr')
     def test_duration_is_totalled_up_and_outputted(self, stderr):
         features = [Mock(), Mock(), Mock(), Mock()]
@@ -87,6 +97,8 @@ class TestSummaryReporter(object):
     @patch('behave.reporter.summary.format_summary')
     def test_feature_status_is_collected_and_reported(self, format_summary,
                                                       stderr):
+        # pylint: disable=W0621
+        #   W0621   Redefining name ... from outer scope (format_summary)
         features = [Mock(), Mock(), Mock(), Mock(), Mock()]
         features[0].duration = 1.9
         features[0].status = 'passed'
@@ -158,6 +170,8 @@ class TestSummaryReporter(object):
     @patch('sys.stderr')
     def test_scenario_outline_status_is_collected_and_reported(self, stderr,
                                                                format_summary):
+        # FIX: issue40
+        # ENSURE: ScenarioOutline's scenarios are walked and collected.
         feature = Mock()
         scenarios = [ ScenarioOutline(u"<string>", 0, u"scenario_outline", u"name"),
                       Mock(), Mock(), Mock() ]
