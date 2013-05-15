@@ -82,7 +82,8 @@ FIXED:
   * issue  #60: JSONFormatter has several problems (last problem fixed).
   * issue  #48: Docs aren't clear on how Background is to be used.
   * issue  #47: Formatter processing chain is broken (solved by: #154).
-
+  * issue  #33: behave 1.1.0: Install fails under Windows (verified, solved already some time ago).
+  * issue  #28: Install fails on Windows (verified, solved already some time ago).
 
 
 Version: 1.2.2.18 (2013-03-20)
