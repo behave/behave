@@ -61,3 +61,6 @@ register(RerunFormatter)
 from behave.formatter.tag_count import TagCountFormatter, TagLocationFormatter
 register(TagCountFormatter)
 register(TagLocationFormatter)
+
+from behave.formatter.steps import StepsFormatter
+register(StepsFormatter)
