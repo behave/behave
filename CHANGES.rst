@@ -4,7 +4,9 @@ Version History
 Version: 1.2.3a20 (unreleased)
 -------------------------------------------------------------------------------
 
-No changes yet.
+FIXED:
+
+  * issue #164: StepRegistry.find_match() extends registered step_type lists.
 
 
 Version: 1.2.3a19 (2013-05-18)
