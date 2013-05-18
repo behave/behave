@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+Provides a step registry and step decorators.
+The step registry allows to match steps (model elements) with
+step implementations (step definitions). This is necessary to execute steps.
+"""
 
 
 class AmbiguousStep(ValueError):
@@ -25,8 +31,11 @@ class StepRegistry(object):
 
     def find_match(self, step):
         candidates = self.steps[step.step_type]
-        if step.step_type is not 'step':
-            candidates += self.steps['step']
+        more_steps = self.steps['step']
+        if step.step_type != 'step' and more_steps:
+            # -- ENSURE: self.step_type lists are not modified/extended.
+            candidates = list(candidates)
+            candidates += more_steps
 
         for matcher in candidates:
             result = matcher.match(step.name)
@@ -36,6 +45,8 @@ class StepRegistry(object):
         return None
 
     def make_decorator(self, step_type):
+        # pylint: disable=W0621
+        #   W0621: 44,29:StepRegistry.make_decorator: Redefining 'step_type' ..
         def decorator(string):
             def wrapper(func):
                 self.add_definition(step_type, string, func)
@@ -46,8 +57,7 @@ class StepRegistry(object):
 
 registry = StepRegistry()
 
-
-# create the decorators
+# -- Create the decorators
 g = globals()
 for step_type in ('given', 'when', 'then', 'step'):
     g[step_type.title()] = g[step_type] = registry.make_decorator(step_type)
