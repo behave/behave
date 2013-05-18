@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''behave is behaviour-driven development, Python style
 
 Behavior-driven development (or BDD) is an agile software development
@@ -15,7 +16,7 @@ To get started, we recommend the `tutorial`_ and then the `test language`_ and
 .. _`api`: api.html
 '''
 
-__version__ = '1.2.3a19'
+__version__ = '1.2.3a20'
 
 from behave.step_registry import *
 from behave.matchers import step_matcher
