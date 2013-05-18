@@ -4,6 +4,10 @@ Version History
 Version: 1.2.3a20 (unreleased)
 -------------------------------------------------------------------------------
 
+IMPROVEMENT:
+
+    * NEW: StepsFormatter that provides an overview of existing step implementations.
+
 FIXED:
 
   * issue #164: StepRegistry.find_match() extends registered step_type lists.
