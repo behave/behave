@@ -80,11 +80,8 @@ class ProgressFormatterBase(Formatter):
         Called at end of a feature.
         It would be better to have a hook that is called after all features.
         """
-        feature = self.current_feature
         self.report_scenario_progress()
-        if ( self.config.show_skipped or
-            (feature and feature.status != "skipped")):
-            self.stream.write('\n')
+        self.stream.write('\n')
         self.report_failures()
         self.stream.flush()
         self.reset()
