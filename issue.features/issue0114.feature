@@ -86,3 +86,33 @@ Feature: Issue #114: Avoid unnecessary blank lines w/ --no-skipped option
         """
         features/e2.feature  .
         """
+
+  Scenario: Run Features with tag, --no-skipped and plain formatter (CASE 3)
+    When I run "behave -f plain --tags=@example --no-skipped"
+    Then it should pass with:
+        """
+        2 features passed, 0 failed, 1 skipped
+        2 scenarios passed, 0 failed, 1 skipped
+        2 steps passed, 0 failed, 1 skipped, 0 undefined
+        """
+    And the command output should contain exactly:
+        """
+        Feature: E1
+
+          Scenario: S1.1
+            Given a step passes ... passed
+
+        Feature: E3
+
+        """
+    But the command output should not contain exactly:
+        """
+        Feature: E1
+
+          Scenario: S1.1
+            Given a step passes ... passed
+
+
+        Feature: E3
+
+        """
