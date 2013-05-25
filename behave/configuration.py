@@ -10,6 +10,7 @@ from behave.reporter.junit import JUnitReporter
 from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import TagExpression
 from behave.formatter.base import StreamOpener
+from behave.formatter.formatters import formatters as registered_formatters
 
 
 class ConfigError(Exception):
@@ -455,6 +456,17 @@ class Configuration(object):
             self.reporters.append(JUnitReporter(self))
         if self.summary:
             self.reporters.append(SummaryReporter(self))
+
+        unknown_formats = self.collect_unknown_formats()
+        if unknown_formats:
+            parser.error("format=%s is unknown" % ", ".join(unknown_formats))
+
+    def collect_unknown_formats(self):
+        unknown_formats = []
+        for formatter in self.format:
+            if formatter not in registered_formatters:
+                unknown_formats.append(formatter)
+        return unknown_formats
 
     @staticmethod
     def build_name_re(names):
