@@ -463,9 +463,12 @@ class Configuration(object):
 
     def collect_unknown_formats(self):
         unknown_formats = []
-        for formatter in self.format:
-            if formatter not in registered_formatters:
-                unknown_formats.append(formatter)
+        if self.format:
+            for formatter in self.format:
+                if formatter == "help":
+                    continue
+                elif formatter not in registered_formatters:
+                    unknown_formats.append(formatter)
         return unknown_formats
 
     @staticmethod
