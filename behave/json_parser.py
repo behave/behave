@@ -85,7 +85,7 @@ class JsonParser(object):
         #     examples = self.parse_examples(json_element)
         #     self.current_scenario_outline.examples = examples
         else:
-            raise KeyError("Invalid feature-element keyword: %s" % keyword)
+            raise KeyError("Invalid feature-element keyword: %s" % category)
 
 
     def parse_background(self, json_element):

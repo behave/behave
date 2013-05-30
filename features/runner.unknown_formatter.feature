@@ -8,7 +8,7 @@ Feature: When an unknown formatter is used
       behave: error: format=unknown1 is unknown
       """
 
-  Scenario: Unknown formatter is used together with other formatter
+  Scenario: Unknown formatter is used together with another formatter
     When I run "behave -f plain -f unknown1"
     Then it should fail with:
       """

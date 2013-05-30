@@ -32,8 +32,8 @@ Feature: Duplicated Step Definitions
     Then it should fail
     And the command output should contain:
         """
-        behave.step_registry.AmbiguousStep: "I call Alice" has already been defined in
-        existing step: "I call Alice" (features/steps/alice_steps.py:3)
+        AmbiguousStep: @given('I call Alice') has already been defined in
+        existing step @given('I call Alice') at features/steps/alice_steps.py:3
         """
     And the command output should contain:
         """
@@ -49,7 +49,7 @@ Feature: Duplicated Step Definitions
       """
       from behave import given
 
-      @given(u'I call Bob')
+      @given('I call Bob')
       def step_call_bob1(context):
           pass
       """
@@ -58,7 +58,7 @@ Feature: Duplicated Step Definitions
       from behave import given
       import bob1_steps     # -- ENFORCE: Step registration order.
 
-      @given(u'I call Bob')
+      @given('I call Bob')
       def step_call_bob2(context):
           pass
       """
@@ -72,8 +72,8 @@ Feature: Duplicated Step Definitions
     Then it should fail
     And the command output should contain:
         """
-        behave.step_registry.AmbiguousStep: "I call Bob" has already been defined in
-        existing step: "I call Bob" (features/steps/bob1_steps.py:3)
+        AmbiguousStep: @given('I call Bob') has already been defined in
+        existing step @given('I call Bob') at features/steps/bob1_steps.py:3
         """
     And the command output should contain:
         """

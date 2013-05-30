@@ -133,7 +133,7 @@ Feature: Feature-Configfile (List of feature filenames/directories)
     When I run "behave @with_unknown_feature.txt"
     Then it should fail with:
       """
-      IOError: [Errno 2] No such file or directory: u'{__WORKDIR__}/features/UNKNOWN.feature'
+      IOError: [Errno 2] No such file or directory: '{__WORKDIR__}/features/UNKNOWN.feature'
       """
 
   Scenario: Use @feature_configfile with unknown feature file (Case 2)
@@ -144,7 +144,7 @@ Feature: Feature-Configfile (List of feature filenames/directories)
     When I run "behave @features/with_unknown_feature2.txt"
     Then it should fail with:
       """
-      IOError: [Errno 2] No such file or directory: u'{__WORKDIR__}/features/UNKNOWN.feature'
+      IOError: [Errno 2] No such file or directory: '{__WORKDIR__}/features/UNKNOWN.feature'
       """
 
   Scenario: Use unknown @feature_configfile

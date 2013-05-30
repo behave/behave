@@ -19,15 +19,33 @@ class StepRegistry(object):
             'step': [],
         }
 
-    def add_definition(self, keyword, string, func):
+    def add_step_definition(self, keyword, string, func):
         # TODO try to fix module dependencies to avoid this
         from behave import matchers
-        keyword = self.steps[keyword.lower()]
-        for existing in keyword:
+        step_type = keyword.lower()
+        step_definitions = self.steps[step_type]
+        for existing in step_definitions:
             if existing.match(string):
-                message = '"%s" has already been defined in\n  existing %s'
-                raise AmbiguousStep(message % (string, existing.describe()))
-        keyword.append(matchers.get_matcher(func, string))
+                message = '%s has already been defined in\n  existing step %s'
+                new_step = u"@%s('%s')" % (step_type, string)
+                existing.step_type = step_type
+                existing_step = existing.describe()
+                existing_step += " at %s" % existing.location
+                raise AmbiguousStep(message % (new_step, existing_step))
+        step_definitions.append(matchers.get_matcher(func, string))
+
+    def find_step_definition(self, step):
+        candidates = self.steps[step.step_type]
+        more_steps = self.steps['step']
+        if step.step_type != 'step' and more_steps:
+            # -- ENSURE: self.step_type lists are not modified/extended.
+            candidates = list(candidates)
+            candidates += more_steps
+
+        for step_definition in candidates:
+            if step_definition.match(step.name):
+                return step_definition
+        return None
 
     def find_match(self, step):
         candidates = self.steps[step.step_type]
@@ -37,8 +55,8 @@ class StepRegistry(object):
             candidates = list(candidates)
             candidates += more_steps
 
-        for matcher in candidates:
-            result = matcher.match(step.name)
+        for step_definition in candidates:
+            result = step_definition.match(step.name)
             if result:
                 return result
 
@@ -49,7 +67,7 @@ class StepRegistry(object):
         #   W0621: 44,29:StepRegistry.make_decorator: Redefining 'step_type' ..
         def decorator(string):
             def wrapper(func):
-                self.add_definition(step_type, string, func)
+                self.add_step_definition(step_type, string, func)
                 return func
             return wrapper
         return decorator
@@ -58,12 +76,19 @@ class StepRegistry(object):
 registry = StepRegistry()
 
 # -- Create the decorators
-g = globals()
-for step_type in ('given', 'when', 'then', 'step'):
-    g[step_type.title()] = g[step_type] = registry.make_decorator(step_type)
+def setup_step_decorators(context=None, registry=registry):
+    if context is None:
+        context = globals()
+    for step_type in ('given', 'when', 'then', 'step'):
+        step_decorator = registry.make_decorator(step_type)
+        context[step_type.title()] = context[step_type] = step_decorator
 
-
+# -----------------------------------------------------------------------------
+# MODULE INIT:
+# -----------------------------------------------------------------------------
 # limit import * to just the decorators
 names = 'given when then step'
 names = names + ' ' + names.title()
 __all__ = names.split()
+
+setup_step_decorators()

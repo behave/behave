@@ -4,9 +4,24 @@ Version History
 Version: 1.2.3a20 (unreleased)
 -------------------------------------------------------------------------------
 
-IMPROVEMENT:
+NEWS and CHANGES:
 
-    * NEW: StepsFormatter that provides an overview of existing step implementations.
+  - Running:
+
+    * load_step_definitions: Are now sorted before loading (due to: Linux, ...).
+    * NEW: Use lazy-loading for formatters if possible (speed up self-tests by 20%).
+
+  - Model:
+
+    * location: Now a FileLocation object (was: string), required for ordering.
+
+  - Formatters:
+
+    * NEW: steps formatter, shows available step definitions.
+    * NEW: steps.doc formatter, shows documentation of step definitions (related to: #55).
+    * NEW: steps.usage formatter, shows where step definitions are used.
+    * RENAMED: json-pretty, tag_count, tag_location => json.pretty, tags, tags.location
+    * help: Shows now a better formatted list (improve readability).
 
 FIXED:
 

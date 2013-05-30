@@ -247,7 +247,7 @@ class ExampleSteps(object):
             ("step", "a step with a table",  cls.step_with_table),
         ]
         for keyword, string, func in STEP_DEFINITIONS:
-            step_registry.add_definition(keyword, string, func)
+            step_registry.add_step_definition(keyword, string, func)
 
 class TestContext_ExecuteSteps(unittest.TestCase):
     """
@@ -502,7 +502,7 @@ class TestRunWithPaths(object):
         self.load_step_definitions = self.runner.load_step_definitions = Mock()
         self.run_hook = self.runner.run_hook = Mock()
         self.run_step = self.runner.run_step = Mock()
-        self.feature_files = self.runner.feature_files = Mock()
+        self.feature_locations = self.runner.feature_locations = Mock()
         self.calculate_summaries = self.runner.calculate_summaries = Mock()
 
         self.formatter_class = patch('behave.formatter.pretty.PrettyFormatter')
@@ -513,17 +513,17 @@ class TestRunWithPaths(object):
         self.formatter_class.stop()
 
     def test_loads_hooks_and_step_definitions(self):
-        self.feature_files.return_value = []
+        self.feature_locations.return_value = []
         self.runner.run_with_paths()
 
         assert self.load_hooks.called
         assert self.load_step_definitions.called
 
     def test_runs_before_all_and_after_all_hooks(self):
-        # Make runner.feature_files() and runner.run_hook() the same mock so
+        # Make runner.feature_locations() and runner.run_hook() the same mock so
         # we can make sure things happen in the right order.
-        self.runner.feature_files = self.run_hook
-        self.runner.feature_files.return_value = []
+        self.runner.feature_locations = self.run_hook
+        self.runner.feature_locations.return_value = []
         self.runner.context = Mock()
         self.runner.run_with_paths()
 
@@ -537,12 +537,12 @@ class TestRunWithPaths(object):
     @patch('os.path.abspath')
     def test_parses_feature_files_and_appends_to_feature_list(self, abspath,
                                                               parse_file):
-        feature_files = ['one', 'two', 'three']
+        feature_locations = ['one', 'two', 'three']
         feature = Mock()
         feature.tags = []
         feature.__iter__ = Mock(return_value=iter([]))
         feature.run.return_value = False
-        self.runner.feature_files.return_value = feature_files
+        self.runner.feature_locations.return_value = feature_locations
         abspath.side_effect = lambda x: x.upper()
         self.config.lang = 'fritz'
         self.config.format = ['plain']
@@ -556,7 +556,7 @@ class TestRunWithPaths(object):
         self.runner.run_with_paths()
 
         expected_parse_file_args = \
-            [((x.upper(),), {'language': 'fritz'}) for x in feature_files]
+            [((x.upper(),), {'language': 'fritz'}) for x in feature_locations]
         eq_(parse_file.call_args_list, expected_parse_file_args)
         eq_(self.runner.features, [feature] * 3)
 

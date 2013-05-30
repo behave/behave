@@ -59,6 +59,6 @@ Feature: Issue #112: Improvement to AmbiguousStep error
     Then it should fail
     And the command output should contain:
         """
-        AmbiguousStep: "I buy {number:n} {items:w}" has already been defined in
-          existing step: "I buy {amount} {product}" (features/steps/bad_steps.py:4)
+        AmbiguousStep: @given('I buy {number:n} {items:w}') has already been defined in
+          existing step @given('I buy {amount} {product}') at features/steps/bad_steps.py:4
         """

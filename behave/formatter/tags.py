@@ -8,17 +8,23 @@ EXAMPLE:
 """
 
 from behave.formatter.base import Formatter
-from behave.model_describe import compute_words_maxsize
+from behave.textutil import compute_words_maxsize
 
 
 # -----------------------------------------------------------------------------
-# CLASS: AbstractTagCountFormatter
+# CLASS: AbstractTagsFormatter
 # -----------------------------------------------------------------------------
-class AbstractTagCountFormatter(Formatter):
+class AbstractTagsFormatter(Formatter):
+    """
+    Abstract base class for formatter that collect information on tags.
+
+    .. note::
+        Supports dry-run mode for faster feedback.
+    """
     with_tag_inheritance = False
 
     def __init__(self, stream_opener, config):
-        super(AbstractTagCountFormatter, self).__init__(stream_opener, config)
+        super(AbstractTagsFormatter, self).__init__(stream_opener, config)
         self.tag_counts = {}
         self._uri = None
         self._feature_tags = None
@@ -68,11 +74,21 @@ class AbstractTagCountFormatter(Formatter):
 
 
 # -----------------------------------------------------------------------------
-# CLASS: TagCountFormatter
+# CLASS: TagsFormatter
 # -----------------------------------------------------------------------------
-class TagCountFormatter(AbstractTagCountFormatter):
-    name = "tag_count"
-    description = "Collects data how often a tag is used."
+class TagsFormatter(AbstractTagsFormatter):
+    """
+    Formatter that collects information:
+
+      * which tags exist
+      * how often a tag is used (counts)
+      * usage context/category: feature, scenario, ...
+
+    .. note::
+        Supports dry-run mode for faster feedback.
+    """
+    name = "tags"
+    description = "Shows tags (and how often they are used)."
     with_tag_inheritance = False
     show_ordered_by_usage = False
 
@@ -133,11 +149,20 @@ class TagCountFormatter(AbstractTagCountFormatter):
 
 
 # -----------------------------------------------------------------------------
-# CLASS: TagLocationFormatter
+# CLASS: TagsLocationFormatter
 # -----------------------------------------------------------------------------
-class TagLocationFormatter(AbstractTagCountFormatter):
-    name = "tag_location"
-    description = "Collects data which tags are used where."
+class TagsLocationFormatter(AbstractTagsFormatter):
+    """
+    Formatter that collects information:
+
+      * which tags exist
+      * where the tags are used (location)
+
+    .. note::
+        Supports dry-run mode for faster feedback.
+    """
+    name = "tags.location"
+    description = "Shows tags and the location where they are used."
     with_tag_inheritance = False
 
     def report_tags(self):
@@ -147,9 +172,9 @@ class TagLocationFormatter(AbstractTagCountFormatter):
         # -- PREPARE REPORT:
         locations = set()
         for tag_elements in self.tag_counts.values():
-            locations.update([x.location for x in tag_elements])
-        location_maxsize = compute_words_maxsize(locations)
-        schema = u"    %-" + str(location_maxsize) + "s   %s\n"
+            locations.update([unicode(x.location) for x in tag_elements])
+        location_column_size = compute_words_maxsize(locations)
+        schema = u"    %-" + str(location_column_size) + "s   %s\n"
 
         # -- EMIT REPORT:
         self.stream.write("TAG LOCATIONS (alphabetically ordered):\n")

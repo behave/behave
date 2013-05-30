@@ -2,7 +2,8 @@
 
 from behave.formatter.ansi_escapes import escapes, up
 from behave.formatter.base import Formatter
-from behave.model_describe import escape_cell, escape_triple_quotes, indent
+from behave.model_describe import escape_cell, escape_triple_quotes
+from behave.textutil import indent
 import sys
 
 
@@ -263,7 +264,7 @@ class PrettyFormatter(Formatter):
         self.stream.write(u"  %s: %s " % (self.statement.keyword,
                                           self.statement.name))
 
-        location = self.indented_text(self.statement.location, True)
+        location = self.indented_text(unicode(self.statement.location), True)
         if self.show_source:
             self.stream.write(self.format('comments').text(location))
         self.stream.write("\n")
@@ -312,6 +313,7 @@ class PrettyFormatter(Formatter):
             line_length += (len(text))
 
         if self.show_source:
+            location = unicode(location)
             if self.show_timings and status in ('passed', 'failed'):
                 location += ' %0.3fs' % step.duration
             location = self.indented_text(location, proceed)

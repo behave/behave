@@ -4,6 +4,7 @@ Contains utility functions and classes for Runners.
 """
 
 from behave import parser
+from behave.model import FileLocation
 from bisect import bisect
 import os.path
 import re
@@ -27,65 +28,6 @@ class InvalidFilenameError(ValueError):
 
 
 # -----------------------------------------------------------------------------
-# CLASS: FileLocation
-# -----------------------------------------------------------------------------
-class FileLocation(unicode):
-    """
-    Provides a value object for file location objects.
-    A file location consists of:
-
-      * filename
-      * line (number), optional
-
-    LOCATION SCHEMA:
-      * "{filename}:{line}" or
-      * "{filename}" (if line number is not present)
-    """
-    # -- pylint: disable=R0904,R0924
-    #   R0904: 30,0:FileLocation: Too many public methods (43/30) => unicode
-    #   R0924: 30,0:FileLocation: Badly implemented Container, ...=> unicode
-    __pychecker__ = "missingattrs=line"     # -- Ignore warnings for 'line'.
-
-    def __new__(cls, filename, line=None):
-        assert isinstance(filename, basestring)
-        obj = unicode.__new__(cls, filename)
-        obj.line = line
-        obj.__filename = filename
-        return obj
-
-    @property
-    def filename(self):
-        # -- PREVENT: Assignments via property (and avoid self-recursion).
-        return self.__filename
-
-    def get(self):
-        return self.filename
-
-    def exists(self):
-        return os.path.exists(self.filename)
-
-    def __eq__(self, other):
-        if isinstance(other, FileLocation):
-            return self.filename == other.filename and self.line == other.line
-        else:
-            return self.filename == other
-
-    def __ne__(self, other):
-        return not self == other
-
-    def __repr__(self):
-        return u'<FileLocation: filename="%s", line=%s>' % \
-               (self.filename, self.line)
-
-    def __str__(self):
-        if self.line is None:
-            return self.filename
-        else:
-            assert self.line > 0
-            return u"%s:%d" % (self.filename, self.line)
-
-
-# -----------------------------------------------------------------------------
 # CLASS: FileLocationParser
 # -----------------------------------------------------------------------------
 class FileLocationParser:
@@ -104,6 +46,12 @@ class FileLocationParser:
             # -- NORMAL PATH/FILENAME:
             filename = text.strip()
             return FileLocation(filename)
+
+    # @classmethod
+    # def compare(cls, location1, location2):
+    #     loc1 = cls.parse(location1)
+    #     loc2 = cls.parse(location2)
+    #     return cmp(loc1, loc2)
 
 
 # -----------------------------------------------------------------------------
@@ -151,8 +99,8 @@ class FeatureScenarioLocationCollector(object):
     def add_location(self, location):
         if not self.filename:
             self.filename = location.filename
-            if self.feature and False:
-                self.filename = self.feature.filename
+            # if self.feature and False:
+            #     self.filename = self.feature.filename
         # -- NORMAL CASE:
         assert self.filename == location.filename, \
             "%s <=> %s" % (self.filename, location.filename)
@@ -283,7 +231,8 @@ def parse_features(feature_files, language=None):
             scenario_collector.clear()
 
         # -- NEW FEATURE:
-        filename = os.path.abspath(location)
+        assert isinstance(location, FileLocation)
+        filename = os.path.abspath(location.filename)
         feature = parser.parse_file(filename, language=language)
         if feature:
             # -- VALID FEATURE:
@@ -309,14 +258,14 @@ def parse_features_configfile(features_configfile):
     A leading '@' (AT) character is removed from the configfile name.
 
     :param features_configfile:  Name of features configfile.
-    :return: List of feature filenames.
+    :return: List of feature file locations.
     """
     if features_configfile.startswith('@'):
         features_configfile = features_configfile[1:]
     if not os.path.isfile(features_configfile):
         raise FileNotFoundError(features_configfile)
     here = os.path.dirname(features_configfile) or "."
-    files = []
+    locations = []
     for line in open(features_configfile).readlines():
         line = line.strip()
         if not line:
@@ -325,11 +274,11 @@ def parse_features_configfile(features_configfile):
             continue    # SKIP: Over comment line(s).
         filename = os.path.normpath(os.path.join(here, line))
         location = FileLocationParser.parse(filename)
-        files.append(location)
-    return files
+        locations.append(location)
+    return locations
 
 
-def collect_feature_files(paths, strict=True):
+def collect_feature_locations(paths, strict=True):
     """
     Collect feature file names by processing list of paths (from command line).
     A path can be a:
@@ -340,9 +289,9 @@ def collect_feature_files(paths, strict=True):
       * directory, to discover and collect all "*.feature" files below.
 
     :param paths:  Paths to process.
-    :return: Feature filenames to use.
+    :return: Feature file locations to use (as list of FileLocations).
     """
-    files = []
+    locations = []
     for path in paths:
         if os.path.isdir(path):
             for dirpath, dirnames, filenames in os.walk(path):
@@ -350,21 +299,20 @@ def collect_feature_files(paths, strict=True):
                 for filename in sorted(filenames):
                     if filename.endswith(".feature"):
                         location = FileLocation(os.path.join(dirpath, filename))
-                        files.append(location)
+                        locations.append(location)
         elif path.startswith('@'):
             # -- USE: behave @list_of_features.txt
-            files.extend(parse_features_configfile(path[1:]))
+            locations.extend(parse_features_configfile(path[1:]))
         else:
             # -- OTHERWISE: Normal filename or location (schema: filename:line)
             location = FileLocationParser.parse(path)
             if not location.filename.endswith(".feature"):
                 raise InvalidFilenameError(location.filename)
             elif location.exists():
-                files.append(location)
+                locations.append(location)
             elif strict:
                 raise FileNotFoundError(path)
-    return files
-
+    return locations
 
 
 def make_undefined_step_snippet(step, language=None):

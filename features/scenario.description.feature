@@ -92,7 +92,7 @@ Feature: Scenario Description
 
     Scenario: Inspect the Scenario Description by using JSON
       Given a file named "features/example_description1.feature" exists
-      When I run "behave -f json-pretty -o example1.json -f plain -T features/example_description1.feature"
+      When I run "behave -f json.pretty -o example1.json -f plain -T features/example_description1.feature"
       Then it should pass
       And the file "example1.json" should contain:
         """
@@ -133,7 +133,7 @@ Feature: Scenario Description
 
                 When a step passes with "Bob"
         """
-      When I run "behave -f json-pretty -o example2.json -f plain -T features/example_description2.feature"
+      When I run "behave -f json.pretty -o example2.json -f plain -T features/example_description2.feature"
       Then it should pass with:
         """
         1 feature passed, 0 failed, 0 skipped
