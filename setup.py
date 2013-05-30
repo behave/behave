@@ -7,10 +7,11 @@ zip_safe = True
 major, minor = sys.version_info[:2]
 if major == 2 and minor < 7:
     requirements.append('argparse')
+    requirements.append('importlib')
 if major == 2 and minor < 6:
     requirements.append('simplejson')
 
-description = ''.join(open('README.rst').readlines()[6:])
+description = ''.join(open('README.rst').readlines()[5:])
 
 setup(
     name='behave',
