@@ -27,6 +27,7 @@ FIXED:
 
   * issue #165: FIX issue #114: do not print a blank line when the feature is skipped (provided by: florentx).
   * issue #164: StepRegistry.find_match() extends registered step_type lists.
+  * issue #122: Failing selftest feature: selftest.features/duplicated_step.feature.
 
 
 Version: 1.2.3a19 (2013-05-18)
