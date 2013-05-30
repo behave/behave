@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import codecs
 from behave.formatter.base import StreamOpener
+from behave.textutil import compute_words_maxsize
+from behave.importer import LazyDict, LazyObject
+
 
 # -----------------------------------------------------------------------------
 # FORMATTER REGISTRY:
 # -----------------------------------------------------------------------------
-formatters = {}
+formatters = LazyDict()
 
 
 def register_as(formatter_class, name):
@@ -24,8 +26,16 @@ def register(formatter_class):
 
 
 def list_formatters(stream):
-    for name in sorted(formatters):
-        stream.write(u'%s: %s\n' % (name, formatters[name].description))
+    """
+    Writes a list of the available formatters and their description to stream.
+
+    :param stream:  Output stream to use.
+    """
+    formatter_names = sorted(formatters)
+    column_size = compute_words_maxsize(formatter_names)
+    schema = u"  %-"+ str(column_size) +"s  %s\n"
+    for name in formatter_names:
+        stream.write(schema % (name, formatters[name].description))
 
 
 def get_formatter(config, stream_openers):
@@ -41,26 +51,27 @@ def get_formatter(config, stream_openers):
 
 
 # -----------------------------------------------------------------------------
-# REGISTER KNOWN FORMATTER:
+# SETUP:
 # -----------------------------------------------------------------------------
-from behave.formatter import plain
-register(plain.PlainFormatter)
-from behave.formatter import pretty
-register(pretty.PrettyFormatter)
-from behave.formatter import json
-register(json.JSONFormatter)
-register(json.PrettyJSONFormatter)
-from behave.formatter import null
-register(null.NullFormatter)
+def setup_formatters():
+    # -- NOTE: Use lazy imports for formatters (to speed up start-up time).
+    _L = LazyObject
+    register_as(_L("behave.formatter.plain:PlainFormatter"), "plain")
+    register_as(_L("behave.formatter.pretty:PrettyFormatter"), "pretty")
+    register_as(_L("behave.formatter.json:JSONFormatter"), "json")
+    register_as(_L("behave.formatter.json:PrettyJSONFormatter"), "json.pretty")
+    register_as(_L("behave.formatter.null:NullFormatter"), "null")
+    register_as(_L("behave.formatter.progress:ScenarioProgressFormatter"), "progress")
+    register_as(_L("behave.formatter.progress:StepProgressFormatter"), "progress2")
+    register_as(_L("behave.formatter.rerun:RerunFormatter"), "rerun")
+    register_as(_L("behave.formatter.tags:TagsFormatter"), "tags")
+    register_as(_L("behave.formatter.tags:TagsLocationFormatter"), "tags.location")
+    register_as(_L("behave.formatter.steps:StepsFormatter"), "steps")
+    # register_as(_L("behave.formatter.steps:StepsDocFormatter"), "steps.doc")
+    # register_as(_L("behave.formatter.steps:StepsUsageFormatter"), "steps.usage")
 
-from behave.formatter import progress
-register(progress.ScenarioProgressFormatter)
-register(progress.StepProgressFormatter)
-from behave.formatter.rerun import RerunFormatter
-register(RerunFormatter)
-from behave.formatter.tag_count import TagCountFormatter, TagLocationFormatter
-register(TagCountFormatter)
-register(TagLocationFormatter)
 
-from behave.formatter.steps import StepsFormatter
-register(StepsFormatter)
+# -----------------------------------------------------------------------------
+# MODULE-INIT:
+# -----------------------------------------------------------------------------
+setup_formatters()
