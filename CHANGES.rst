@@ -25,6 +25,7 @@ NEWS and CHANGES:
 
 FIXED:
 
+  * issue #165: FIX issue #114: do not print a blank line when the feature is skipped (provided by: florentx).
   * issue #164: StepRegistry.find_match() extends registered step_type lists.
 
 
