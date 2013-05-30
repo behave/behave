@@ -54,7 +54,7 @@ Feature: TagLocation Formatter
 
 
     Scenario: Use TagLocation formatter to get an overview where tags are used
-        When I run "behave -f tag_location --dry-run features/"
+        When I run "behave -f tags.location --dry-run features/"
         Then it should pass with:
           """
           0 features passed, 0 failed, 0 skipped, 2 untested
@@ -89,7 +89,7 @@ Feature: TagLocation Formatter
 
 
     Scenario: Use TagCount formatter together with another formatter
-        When I run "behave -f tag_location -f plain -T features/"
+        When I run "behave -f tags.location -f plain -T features/"
         Then it should pass with:
           """
           2 features passed, 0 failed, 0 skipped
@@ -147,7 +147,7 @@ Feature: TagLocation Formatter
 
 
     Scenario: Use TagCount formatter when tags are selected
-        When I run "behave -f tag_location --tags=@setup,@wip features/"
+        When I run "behave -f tags.location --tags=@setup,@wip features/"
         Then it should pass with:
           """
           1 feature passed, 0 failed, 1 skipped

@@ -43,7 +43,7 @@ class JSONFormatter(Formatter):
             'keyword': feature.keyword,
             'name': feature.name,
             'tags': list(feature.tags),
-            'location': feature.location,
+            'location': unicode(feature.location),
             'status': feature.status,
         }
         element = self.current_feature_data
@@ -55,7 +55,7 @@ class JSONFormatter(Formatter):
             'type': 'background',
             'keyword': background.keyword,
             'name': background.name,
-            'location': background.location,
+            'location': unicode(background.location),
             'steps': [],
         })
         if background.name:
@@ -72,7 +72,7 @@ class JSONFormatter(Formatter):
             'keyword': scenario.keyword,
             'name': scenario.name,
             'tags': scenario.tags,
-            'location': scenario.location,
+            'location': unicode(scenario.location),
             'steps': [],
         })
         if scenario.description:
@@ -85,7 +85,7 @@ class JSONFormatter(Formatter):
             'keyword': scenario_outline.keyword,
             'name': scenario_outline.name,
             'tags': scenario_outline.tags,
-            'location': scenario_outline.location,
+            'location': unicode(scenario_outline.location),
             'steps': [],
             'examples': [],
         })
@@ -106,7 +106,7 @@ class JSONFormatter(Formatter):
             'type': 'examples',
             'keyword': examples.keyword,
             'name': examples.name,
-            'location': examples.location,
+            'location': unicode(examples.location),
         }
 
         if examples.table:
@@ -120,7 +120,7 @@ class JSONFormatter(Formatter):
             'keyword': step.keyword,
             'step_type': step.step_type,
             'name': step.name,
-            'location': step.location,
+            'location': unicode(step.location),
         }
 
         if step.text:
@@ -147,7 +147,7 @@ class JSONFormatter(Formatter):
             args.append(arg)
 
         match_data = {
-            'location': match.location or "",
+            'location': unicode(match.location) or "",
             'arguments': args,
         }
         if match.location:
@@ -242,6 +242,6 @@ class PrettyJSONFormatter(JSONFormatter):
     """
     Provides readable/comparable textual JSON output.
     """
-    name = 'json-pretty'
+    name = 'json.pretty'
     description = 'JSON dump of test run (human readable)'
     dumps_kwargs = { 'indent': 2, 'sort_keys': True }

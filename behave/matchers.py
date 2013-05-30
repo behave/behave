@@ -16,19 +16,32 @@ class Matcher(object):
 
        The step function the pattern is being attached to.
     '''
-    def __init__(self, func, string):
+    schema = u"@%s('%s')"   # Schema used to describe step definition (matcher)
+
+    def __init__(self, func, string, step_type=None):
         self.func = func
         self.string = string
+        self.step_type = step_type
+        self._location = None
 
     @property
     def location(self):
-        return model.Match.make_location(self.func)
+        if self._location is None:
+            self._location = model.Match.make_location(self.func)
+        return self._location
 
-    def describe(self):
+    def describe(self, schema=None):
         '''
         Provide a textual description of the step function/matcher object.
+
+        :param schema:  Text schema to use.
+        :return: Textual description of this step definition (matcher).
         '''
-        return 'step: "%s" (%s)' % (self.string, self.location)
+        step_type = self.step_type or 'step'
+        if not schema:
+            schema = self.schema
+        return schema % (step_type, self.string)
+
 
     def check_match(self, step):
         '''Match me against the "step" name supplied.
@@ -54,8 +67,8 @@ class Matcher(object):
 class ParseMatcher(Matcher):
     custom_types = {}
 
-    def __init__(self, func, string):
-        super(ParseMatcher, self).__init__(func, string)
+    def __init__(self, func, string, step_type=None):
+        super(ParseMatcher, self).__init__(func, string, step_type)
         self.parser = parse.compile(self.string, self.custom_types)
 
     def check_match(self, step):
@@ -88,8 +101,8 @@ def register_type(**kw):
 
 
 class RegexMatcher(Matcher):
-    def __init__(self, func, string):
-        super(RegexMatcher, self).__init__(func, string)
+    def __init__(self, func, string, step_type=None):
+        super(RegexMatcher, self).__init__(func, string, step_type)
         self.regex = re.compile(self.string)
 
     def check_match(self, step):

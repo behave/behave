@@ -1,0 +1,7 @@
+# ============================================================================
+# PYTHON PACKAGE REQUIREMENTS FOR: behave -- For development only
+# ============================================================================
+
+# -- OPTIONAL: For JSON validation
+# REQUIRES: python >= 2.6
+jsonschema >= 1.3.0

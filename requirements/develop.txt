@@ -13,6 +13,3 @@ PyHamcrest >= 1.6
 # PREPARED: paver >= 1.2
 tox   >= 1.4.3
 coverage >= 3.6
-
-# -- OPTIONAL: For JSON validation
-jsonschema >= 1.3.0

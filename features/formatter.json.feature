@@ -27,7 +27,7 @@ Feature: JSON Formatter
             """
             Feature: Simple, empty Feature
             """
-        When I run "behave -f json-pretty features/simple_feature_with_name.feature"
+        When I run "behave -f json.pretty features/simple_feature_with_name.feature"
         Then it should pass with:
             """
             0 features passed, 0 failed, 1 skipped
@@ -56,7 +56,7 @@ Feature: JSON Formatter
 
                 Third feature description line (following an empty line).
             """
-        When I run "behave -f json-pretty features/simple_feature_with_description.feature"
+        When I run "behave -f json.pretty features/simple_feature_with_description.feature"
         Then it should pass with:
             """
             0 features passed, 0 failed, 1 skipped
@@ -86,7 +86,7 @@ Feature: JSON Formatter
             @foo @bar
             Feature: Simple feature with tags
             """
-        When I run "behave -f json-pretty features/simple_feature_with_tags.feature"
+        When I run "behave -f json.pretty features/simple_feature_with_tags.feature"
         Then it should pass with:
             """
             0 features passed, 0 failed, 1 skipped
@@ -114,7 +114,7 @@ Feature: JSON Formatter
             Feature:
               Scenario: Simple scenario without steps
             """
-        When I run "behave -f json-pretty features/simple_scenario.feature"
+        When I run "behave -f json.pretty features/simple_scenario.feature"
         Then it should pass with:
             """
             1 feature passed, 0 failed, 0 skipped
@@ -154,7 +154,7 @@ Feature: JSON Formatter
 
                 Third scenario description line (after an empty line).
             """
-        When I run "behave -f json-pretty features/simple_scenario_with_description.feature"
+        When I run "behave -f json.pretty features/simple_scenario_with_description.feature"
         Then it should pass with:
             """
             1 feature passed, 0 failed, 0 skipped
@@ -197,7 +197,7 @@ Feature: JSON Formatter
               @bar
               Scenario: Simple scenario with tags but without steps
             """
-        When I run "behave -f json-pretty features/simple_scenario_with_tags.feature"
+        When I run "behave -f json.pretty features/simple_scenario_with_tags.feature"
         Then it should pass with:
             """
             1 feature passed, 0 failed, 0 skipped
@@ -242,7 +242,7 @@ Feature: JSON Formatter
                   And a step passes
                   But a step passes
             """
-        When I run "behave -f json-pretty features/scenario_with_steps.feature"
+        When I run "behave -f json.pretty features/scenario_with_steps.feature"
         Then it should pass with:
             """
             1 feature passed, 0 failed, 0 skipped

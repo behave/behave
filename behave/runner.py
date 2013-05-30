@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import with_statement
-
 import contextlib
 import os.path
 import StringIO
@@ -11,12 +10,12 @@ import warnings
 import weakref
 
 from behave import matchers
-from behave import step_registry
+from behave.step_registry import setup_step_decorators
 from behave.formatter import formatters
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
 from behave.runner_util import \
-    collect_feature_files, parse_features
+    collect_feature_locations, parse_features
 
 
 class ContextMaskWarning(UserWarning):
@@ -305,20 +304,29 @@ def path_getrootdir(path):
 
 
 class PathManager(object):
-    paths = None
+    """
+    Context manager to add paths to sys.path (python search path) within a scope
+    """
+    def __init__(self, paths=None):
+        self.initial_paths = paths or []
+        self.paths = None
 
     def __enter__(self):
-        self.paths = []
+        self.paths = list(self.initial_paths)
+        sys.path = self.paths + sys.path
 
     def __exit__(self, *crap):
         for path in self.paths:
             sys.path.remove(path)
+        self.paths = None
 
     def add(self, path):
-        assert self.paths is not None, \
-            self.__class__.__name__ + '.add called outside of context'
-        sys.path.insert(0, path)
-        self.paths.append(path)
+        if self.paths is None:
+            # -- CALLED OUTSIDE OF CONTEXT:
+            self.initial_paths.append(path)
+        else:
+            sys.path.insert(0, path)
+            self.paths.append(path)
 
 
 class Runner(object):
@@ -350,13 +358,17 @@ class Runner(object):
             if self.config.verbose:
                 print 'Supplied path:', \
                       ', '.join('"%s"' % path for path in self.config.paths)
-            base_dir = self.config.paths[0]
+            first_path = self.config.paths[0]
+            if hasattr(first_path, "filename"):
+                # -- BETTER: isinstance(first_path, FileLocation):
+                first_path = first_path.filename
+            base_dir = first_path
             if base_dir.startswith('@'):
                 # -- USE: behave @features.txt
                 base_dir = base_dir[1:]
-                files = self.feature_files()
-                if files:
-                    base_dir = os.path.dirname(files[0])
+                file_locations = self.feature_locations()
+                if file_locations:
+                    base_dir = os.path.dirname(file_locations[0].filename)
             base_dir = os.path.abspath(base_dir)
 
             # supplied path might be to a feature file
@@ -425,43 +437,35 @@ class Runner(object):
             exec_file(hooks_path, self.hooks)
 
     def load_step_definitions(self, extra_step_paths=[]):
-        steps_dir = os.path.join(self.base_dir, 'steps')
-
-        # allow steps to import other stuff from the steps dir
-        sys.path.insert(0, steps_dir)
-
         step_globals = {
             'step_matcher': matchers.step_matcher,
         }
-        # -- Default matcher can be overridden in "environment.py" hook.
-        default_matcher = matchers.current_matcher
+        setup_step_decorators(step_globals)
 
-        for step_type in ('given', 'when', 'then', 'step'):
-            decorator = getattr(step_registry, step_type)
-            step_globals[step_type] = decorator
-            step_globals[step_type.title()] = decorator
-
-        for path in [steps_dir] + list(extra_step_paths):
-            for name in os.listdir(path):
-                if name.endswith('.py'):
-                    # -- LOAD STEP DEFINITION:
-                    # Reset to default matcher after each step-definition.
-                    # A step-definition may change the matcher 0..N times.
-                    # ENSURE: Each step definition has clean globals.
-                    step_module_globals = dict(step_globals)
-                    exec_file(os.path.join(path, name), step_module_globals)
-                    matchers.current_matcher = default_matcher
-
-        # -- CLEANUP: Clean up the path.
-        sys.path.pop(0)
+        # -- Allow steps to import other stuff from the steps dir
+        # NOTE: Default matcher can be overridden in "environment.py" hook.
+        steps_dir = os.path.join(self.base_dir, 'steps')
+        paths = [steps_dir] + list(extra_step_paths)
+        with PathManager(paths):
+            default_matcher = matchers.current_matcher
+            for path in paths:
+                for name in sorted(os.listdir(path)):
+                    if name.endswith('.py'):
+                        # -- LOAD STEP DEFINITION:
+                        # Reset to default matcher after each step-definition.
+                        # A step-definition may change the matcher 0..N times.
+                        # ENSURE: Each step definition has clean globals.
+                        step_module_globals = step_globals.copy()
+                        exec_file(os.path.join(path, name), step_module_globals)
+                        matchers.current_matcher = default_matcher
 
     def run_hook(self, name, context, *args):
         if not self.config.dry_run and (name in self.hooks):
             with context.user_mode():
                 self.hooks[name](context, *args)
 
-    def feature_files(self):
-        return collect_feature_files(self.config.paths)
+    def feature_locations(self):
+        return collect_feature_locations(self.config.paths)
 
 
     def run(self):
@@ -481,10 +485,10 @@ class Runner(object):
 
         self.run_hook('before_all', context)
 
-        # -- STEP: Parse all feature files.
-        feature_files = [ filename for filename in self.feature_files()
+        # -- STEP: Parse all feature files (by using their file location).
+        feature_locations = [ filename for filename in self.feature_locations()
                                     if not self.config.exclude(filename) ]
-        features = parse_features(feature_files, language=self.config.lang)
+        features = parse_features(feature_locations, language=self.config.lang)
         self.features.extend(features)
 
         # -- STEP: Run all features.

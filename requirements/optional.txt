@@ -1,0 +1,7 @@
+# ============================================================================
+# BEHAVE: PYTHON PACKAGE REQUIREMENTS: Optional packages
+# ============================================================================
+# Python2.5: importlib module was introduced in python2.7, python3.2...
+# Python2.6: importlib module was introduced in python2.7, python3.2...
+
+importlib

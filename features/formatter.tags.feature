@@ -54,7 +54,7 @@ Feature: TagCount Formatter
 
 
     Scenario: Use TagCount formatter to get an overview of used tags
-        When I run "behave -f tag_count --dry-run features/"
+        When I run "behave -f tags --dry-run features/"
         Then it should pass with:
             """
             0 features passed, 0 failed, 0 skipped, 2 untested
@@ -74,7 +74,7 @@ Feature: TagCount Formatter
 
 
     Scenario: Use TagCount formatter together with another formatter
-        When I run "behave -f tag_count -f plain -T features/"
+        When I run "behave -f tags -f plain -T features/"
         Then it should pass with:
             """
             2 features passed, 0 failed, 0 skipped
@@ -114,7 +114,7 @@ Feature: TagCount Formatter
             """
 
     Scenario: Use TagCount formatter when tags are selected
-        When I run "behave -f tag_count --tags=@setup,@wip features/"
+        When I run "behave -f tags --tags=@setup,@wip features/"
         Then it should pass with:
             """
             1 feature passed, 0 failed, 1 skipped

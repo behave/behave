@@ -127,7 +127,7 @@ class ScenarioProgressFormatter(ProgressFormatterBase):
     Report dotted progress for each scenario similar to unittest.
     """
     name = "progress"
-    description = "Provides dotted progress for each executed scenario"
+    description = "Shows dotted progress for each executed scenario."
 
     def report_scenario_progress(self):
         """
@@ -154,7 +154,7 @@ class StepProgressFormatter(ProgressFormatterBase):
     Report dotted progress for each step similar to unittest.
     """
     name = "progress2"
-    description = "Provides dotted progress for each executed step"
+    description = "Shows dotted progress for each executed step."
 
     def report_step_progress(self, result):
         """

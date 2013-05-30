@@ -108,6 +108,5 @@ class RerunFormatter(Formatter):
 
         # -- SECTION: Scenario file locations, ala: "alice.feature:10"
         for scenario in self.failed_scenarios:
-            self.stream.write(scenario.location)
-            self.stream.write("\n")
+            self.stream.write(u"%s\n" % scenario.location)
         self.stream.write("\n")
