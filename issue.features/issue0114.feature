@@ -88,7 +88,7 @@ Feature: Issue #114: Avoid unnecessary blank lines w/ --no-skipped option
         """
 
   Scenario: Run Features with tag, --no-skipped and plain formatter (CASE 3)
-    When I run "behave -f plain --tags=@example --no-skipped"
+    When I run "behave -f plain --tags=@example --no-skipped -T"
     Then it should pass with:
         """
         2 features passed, 0 failed, 1 skipped
