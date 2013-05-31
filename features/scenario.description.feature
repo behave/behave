@@ -19,7 +19,7 @@ Feature: Scenario Description
     |       Given, When, Then, And, But, etc.
     |       (including lower-case versions)
     |
-    |   * must not start with '*' (ASTERISK) due to basic step keyword ambiguity
+    |   * must not start with '*' (ASTERISK) due to generic step keyword ambiguity
     |   * must not start with '@' (AT) due to tag ambiguity
     |     (supporting: scenario without steps but with step description).
     |   * may start with '|' (table-cell-separator).

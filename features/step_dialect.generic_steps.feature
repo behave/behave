@@ -58,7 +58,7 @@ Feature: Step Dialect for Basics Steps
 
 
   Scenario: Simple step-by-step example
-    Given a file named "features/basic_steps.feature" with:
+    Given a file named "features/generic_steps.feature" with:
         """
         Feature:
           Scenario:
@@ -67,7 +67,7 @@ Feature: Step Dialect for Basics Steps
             * a step passes with "Alice"
             * another step passes with "Bob"
         """
-    When I run "behave -f plain -T features/basic_steps.feature"
+    When I run "behave -f plain -T features/generic_steps.feature"
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
@@ -84,7 +84,7 @@ Feature: Step Dialect for Basics Steps
         """
 
   Scenario: Simple step-by-step example with failing steps
-    Given a file named "features/basic_steps.failing.feature" with:
+    Given a file named "features/generic_steps.failing.feature" with:
         """
         Feature:
           Scenario:
@@ -93,7 +93,7 @@ Feature: Step Dialect for Basics Steps
             * a step fails with "Bob"
             * another step passes
         """
-    When I run "behave -f plain -T features/basic_steps.failing.feature"
+    When I run "behave -f plain -T features/generic_steps.failing.feature"
     Then it should fail with:
         """
         0 scenarios passed, 1 failed, 0 skipped
@@ -112,7 +112,7 @@ Feature: Step Dialect for Basics Steps
 
     CASE: Ensure that first step is discovered after last description line.
 
-      Given a file named "features/basic_steps.with_description.feature" with:
+      Given a file named "features/generic_steps.with_description.feature" with:
         '''
         Feature:
           Scenario:
@@ -123,7 +123,7 @@ Feature: Step Dialect for Basics Steps
               * a step passes
               * another step passes
         '''
-      When I run "behave -f plain -T features/basic_steps.with_description.feature"
+      When I run "behave -f plain -T features/generic_steps.with_description.feature"
       Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
@@ -132,7 +132,7 @@ Feature: Step Dialect for Basics Steps
 
 
   Scenario: Simple step-by-step example with multi-line text
-    Given a file named "features/basic_steps.with_text.feature" with:
+    Given a file named "features/generic_steps.with_text.feature" with:
       '''
       Feature:
         Scenario:
@@ -144,7 +144,7 @@ Feature: Step Dialect for Basics Steps
               """
           * another step passes with "Charly"
       '''
-    When I run "behave -f plain -T features/basic_steps.with_text.feature"
+    When I run "behave -f plain -T features/generic_steps.with_text.feature"
     Then it should pass with:
       """
       1 scenario passed, 0 failed, 0 skipped
@@ -165,7 +165,7 @@ Feature: Step Dialect for Basics Steps
       '''
 
   Scenario: Simple step-by-step example with table
-    Given a file named "features/basic_steps.with_table.feature" with:
+    Given a file named "features/generic_steps.with_table.feature" with:
       '''
       Feature:
         Scenario:
@@ -176,7 +176,7 @@ Feature: Step Dialect for Basics Steps
               | Bob   | 12  |
           * another step passes with "Dodo"
       '''
-    When I run "behave -f plain -T features/basic_steps.with_table.feature"
+    When I run "behave -f plain -T features/generic_steps.with_table.feature"
     Then it should pass with:
       """
       1 scenario passed, 0 failed, 0 skipped
