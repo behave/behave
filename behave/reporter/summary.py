@@ -36,12 +36,11 @@ def format_summary(statement_type, summary):
 
 class SummaryReporter(Reporter):
     show_failed_scenarios = True
+    output_stream_name = "stdout"
 
     def __init__(self, config):
         super(SummaryReporter, self).__init__(config)
-
-        self.stream = sys.stderr
-
+        self.stream = getattr(sys, self.output_stream_name, sys.stderr)
         self.feature_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
                                 'untested': 0}
         self.scenario_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
