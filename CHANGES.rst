@@ -17,11 +17,16 @@ NEWS and CHANGES:
 
   - Formatters:
 
+    * NEW: sphinx.steps formatter, generate Sphinx-based docs for step definitions (related to #166).
     * NEW: steps formatter, shows available step definitions.
     * NEW: steps.doc formatter, shows documentation of step definitions (related to: #55).
     * NEW: steps.usage formatter, shows where step definitions are used.
     * RENAMED: json-pretty, tag_count, tag_location => json.pretty, tags, tags.location
     * help: Shows now a better formatted list (improve readability).
+
+IMPROVEMENT:
+
+  * issue #166: behave should have a tool (or formatter) that generates Sphinx-based documentation (basics provided).
 
 FIXED:
 
