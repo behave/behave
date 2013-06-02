@@ -109,6 +109,10 @@ class Formatter(object):
         self.stream = stream_opener.stream
         self.config = config
 
+    @property
+    def stdout_mode(self):
+        return not self.stream_opener.name
+
     def open(self):
         """
         Ensure that the output stream is open.
