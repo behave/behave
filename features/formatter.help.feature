@@ -19,6 +19,7 @@ Feature: Help Formatter
         progress       Shows dotted progress for each executed scenario.
         progress2      Shows dotted progress for each executed step.
         rerun          Emits scenario file locations of failing scenarios
+        sphinx.steps   Generate sphinx-based documentation for step definitions.
         steps          Shows step definitions (step implementations).
         steps.doc      Shows documentation for step definitions.
         steps.usage    Shows how step definitions are used by steps.
