@@ -8,19 +8,8 @@ TODO:
   * Solution for requires: table, text
   * i18n keywords
 
-DONE:
-  * Module names are truncated
-  * Step index entries: Given/When/Then => 3x + 1 for generic step
-  * Generate "index.rst" (partly, problems due to shortened module names)
-  * Add filename, module_name to step_module docs
-
-.. index::
-    single: Given step; ...
-    single: When step; ...
-    single: Then step; ...
-    single: Step; Given/When/Then ...
-
-.. seealso:: http://sphinx-doc.org/
+.. seealso::
+    http://sphinx-doc.org/
 """
 
 from behave.formatter.steps import AbstractStepsFormatter
@@ -54,8 +43,10 @@ class StepsModule(object):
             # REQUIRED: To discover complete canonical module name.
             module = self.module
             if module:
+                # -- USED-BY: Imported step libraries.
                 module_name = self.module.__name__
             else:
+                # -- USED-BY: features/steps/*.py (without __init__.py)
                 module_name = self.module_name
             self._name = module_name
         return self._name
@@ -91,7 +82,7 @@ class StepsModule(object):
 class SphinxStepsDocumentGenerator(object):
     """
     Provides document generator class that generates Sphinx-based
-    documentation for registered step definitions. The primary purpose is to:
+    documentation for step definitions. The primary purpose is to:
 
       * help the step-library provider/writer
       * simplify self-documentation of step-libraries
@@ -163,8 +154,6 @@ class SphinxStepsDocumentGenerator(object):
             step_filename = step_definition.location.filename
             step_module = step_modules_map.get(step_filename, None)
             if not step_module:
-                # module_name = inspect.getmodulename(step_definition.func)
-                # if not module_name:
                 filename = inspect.getfile(step_definition.func)
                 module_name = inspect.getmodulename(filename)
                 assert module_name, \
@@ -219,9 +208,7 @@ The following step definitions are provided here.
 
     def write_step_module(self, step_module):
         self.ensure_document_is_closed()
-        module_name = step_module.name
-        # XXX canonical_name = module_name.replace(" ", "_").replace(":", ".")
-        document_name = self.step_document_prefix + module_name
+        document_name = self.step_document_prefix + step_module.name
         self.document = self.create_document(document_name)
         self.document.write(".. _docid.steps.%s:\n" % step_module.name)
         self.document.write_heading(step_module.name, index_id=step_module.name)
