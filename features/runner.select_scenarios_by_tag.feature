@@ -7,7 +7,7 @@ Feature: Select scenarios by using tags
     So that I run only a subset of scenarios.
 
     | RELATED:
-    |   * runner.tag_logic.features
+    |   * runner.tag_logic.feature
 
 
     @setup
