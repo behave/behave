@@ -88,8 +88,8 @@ class SphinxStepsDocumentGenerator(object):
       * simplify self-documentation of step-libraries
 
     EXAMPLE:
-        step_registry = ...
-        doc_generator = SphinxStepsDocumentGenerator(step_registry, "output")
+        step_definitions = ...  # Collect from step_registry
+        doc_generator = SphinxStepsDocumentGenerator(step_definitions, "output")
         doc_generator.write_docs()
 
     .. seealso:: http://sphinx-doc.org/
