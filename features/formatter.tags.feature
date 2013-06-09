@@ -1,10 +1,11 @@
 @sequential
-Feature: TagCount Formatter
+Feature: Tags Formatter (Tag Counts)
 
-    To obtain an overview which tags are used (and how often)
     As a tester
-    I want that behave generates this information for me.
+    I want to obtain a quick overview which tags are used (and how often)
+    So that I can better use tags on command-line
 
+    NOTE: Primarily intended for dry-run mode.
 
     @setup
     Scenario: Feature Setup
@@ -53,7 +54,7 @@ Feature: TagCount Formatter
             """
 
 
-    Scenario: Use TagCount formatter to get an overview of used tags
+    Scenario: Use Tags formatter to get an overview of used tags
         When I run "behave -f tags --dry-run features/"
         Then it should pass with:
             """
@@ -73,7 +74,7 @@ Feature: TagCount Formatter
         But note that "tags inherited from its feature are (normally) not counted."
 
 
-    Scenario: Use TagCount formatter together with another formatter
+    Scenario: Use Tags formatter together with another formatter
         When I run "behave -f tags -f plain -T features/"
         Then it should pass with:
             """
@@ -113,7 +114,7 @@ Feature: TagCount Formatter
               @wip      2    (used for scenario)
             """
 
-    Scenario: Use TagCount formatter when tags are selected
+    Scenario: Use Tags formatter when tags are selected
         When I run "behave -f tags --tags=@setup,@wip features/"
         Then it should pass with:
             """
