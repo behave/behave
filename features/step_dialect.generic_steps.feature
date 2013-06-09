@@ -1,11 +1,11 @@
-Feature: Step Dialect for Basics Steps
+Feature: Step dialect for generic steps
 
-  In order to execute a sequence of steps without BDD keywords (Given/When/Then)
   As a test/story writer
-  I want to have the possibility to express myself.
+  I want to have a possibility to use generic steps
+  So that I can execute a sequence of steps without BDD keywords (Given/When/Then)
 
-  | SPECIFICATION: Basic step
-  |   * Prefix each step with a '*' (asterisk) character to mark it as step
+  | SPECIFICATION: Generic step
+  |   * Prefix each step with a '*' (asterisk/star) character to mark it as step
   |   * Provide step-functions/step definition with "@step" decorator
 
 
@@ -16,20 +16,12 @@ Feature: Step Dialect for Basics Steps
         """
         from behave import step
 
-        @step('a step passes')
-        def step_passes(context):
+        @step('{word:w} step passes')
+        def step_passes(context, word):
             pass
 
-        @step('a step passes with "{param}"')
-        def step_passes_with_param(context, param):
-            pass
-
-        @step('another step passes')
-        def step_passes(context):
-            pass
-
-        @step('another step passes with "{param}"')
-        def step_passes(context, param):
+        @step('{word:w} step passes with "{param}"')
+        def step_passes_with_param(context, word, param):
             pass
 
         @step('a multi-line text step with')
@@ -54,7 +46,7 @@ Feature: Step Dialect for Basics Steps
   Scenario: Simple step-by-step example
 
       * a step passes
-      * a step passes
+      * another step passes
 
 
   Scenario: Simple step-by-step example
