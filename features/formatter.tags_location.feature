@@ -1,9 +1,11 @@
 @sequential
-Feature: TagLocation Formatter
+Feature: TagsLocation Formatter
 
-    To obtain an overview where tags are used
     As a tester
-    I want that behave generates this information for me.
+    I want to know where and in which context tags are used
+    So that I better understand how to use tags in feature files and on command-line
+
+    NOTE: Primarily intended for dry-run mode.
 
 
     @setup
@@ -53,7 +55,7 @@ Feature: TagLocation Formatter
             """
 
 
-    Scenario: Use TagLocation formatter to get an overview where tags are used
+    Scenario: Use TagsLocation formatter to get an overview where tags are used
         When I run "behave -f tags.location --dry-run features/"
         Then it should pass with:
           """
@@ -88,7 +90,7 @@ Feature: TagLocation Formatter
         But note that "tags inherited from its feature are (normally) not counted."
 
 
-    Scenario: Use TagCount formatter together with another formatter
+    Scenario: Use TagsLocation formatter together with another formatter
         When I run "behave -f tags.location -f plain -T features/"
         Then it should pass with:
           """
@@ -146,7 +148,7 @@ Feature: TagLocation Formatter
           """
 
 
-    Scenario: Use TagCount formatter when tags are selected
+    Scenario: Use TagsLocation formatter when tags are selected
         When I run "behave -f tags.location --tags=@setup,@wip features/"
         Then it should pass with:
           """
