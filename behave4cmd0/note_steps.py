@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Provides a number of note steps to explain what occurs in this context.
-
-EXAMPLES:
-
-    Given a step passes
-    But note that "this a simple example"
+Step definitions for providing notes/hints.
+The note steps explain what was important in the last few steps of
+this scenario (for a test reader).
 """
 
 from behave import step
@@ -18,11 +15,12 @@ from behave import step
 def step_note_that(context, remark):
     """
     Used as generic step that provides an additional remark/hint
-    without performing any check.
+    and enhance the readability/understanding without performing any check.
 
-    EXAMPLE:
-        Given ...
-          But note that "Fools day is April 1st"
+    .. code-block:: gherkin
+
+        Given that today is "April 1st"
+          But note that "April 1st is Fools day (and beware)"
     """
     log = getattr(context, "log", None)
     if log:
