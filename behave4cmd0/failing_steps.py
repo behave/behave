@@ -6,7 +6,7 @@ Often needed in examples.
 EXAMPLES:
 
     Given a step fails
-    When  a step fails
+    When  another step fails
     Then  a step fails
 
     Given ...
@@ -19,8 +19,8 @@ from behave import step, then
 # -----------------------------------------------------------------------------
 # STEPS FOR: failing
 # -----------------------------------------------------------------------------
-@step(u'a step fails')
-def step_fails(context):
+@step('{word:w} step fails')
+def step_fails(context, word):
     """
     Step that always fails, mostly needed in examples.
     """
