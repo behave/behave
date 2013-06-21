@@ -2,7 +2,7 @@ import sys
 
 from setuptools import find_packages, setup
 
-requirements = ['parse>=1.6']
+requirements = ['parse>=1.6.2']
 zip_safe = True
 major, minor = sys.version_info[:2]
 if major == 2 and minor < 7:
