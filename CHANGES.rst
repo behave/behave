@@ -6,6 +6,10 @@ Version: 1.2.3a20 (unreleased)
 
 NEWS and CHANGES:
 
+  - Install:
+
+    * Require now parse>=1.6.2 to enforce log-bugfix #14 (was: parse>=1.6)
+
   - Running:
 
     * load_step_definitions: Are now sorted before loading (due to: Linux, ...).
