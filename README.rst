@@ -37,8 +37,8 @@ called "example.feature" containing::
 
    Scenario: Run a simple test
       Given we have behave installed
-       when we implement a test
-       then behave will test it for us!
+       When we implement a test
+       Then behave will test it for us!
 
 Make a new directory called "example/steps". In that directory create a
 file called "example.py" containing::
