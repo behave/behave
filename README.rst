@@ -14,7 +14,7 @@ Behave
     :target: https://crate.io/packages/behave/
     :alt: Number of PyPI downloads
 
-.. |logo| image:: https://raw.github.com/jenisys/behave/master/docs/_static/behave_logo1.png
+.. |logo| image:: https://raw.github.com/behave/behave/master/docs/_static/behave_logo1.png
 
 behave is behaviour-driven development, Python style.
 
