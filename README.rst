@@ -66,7 +66,7 @@ Run behave::
       Scenario: Run a simple test        # example/example.feature:3
         Given we have behave installed   # example/steps/example.py:3
         When we implement a test         # example/steps/example.py:7
-        Then behave will test it for us! # example/steps/example.py:11
+        Then behave will test it for us! # example/steps/example.py:12
 
     1 feature passed, 0 failed, 0 skipped
     1 scenario passed, 0 failed, 0 skipped
