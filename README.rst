@@ -64,12 +64,12 @@ In that directory create a file called "example_steps.py" containing::
 Run behave::
 
     % behave
-    Feature: Showin off behave # example/example.feature:1
+    Feature: Showin off behave # features/example.feature:1
 
-      Scenario: Run a simple test          # example/example.feature:3
-        Given we have behave installed     # example/steps/example.py:3
-        When we implement 5 tests          # example/steps/example.py:7
-        Then behave will test them for us! # example/steps/example.py:12
+      Scenario: Run a simple test          # features/example.feature:3
+        Given we have behave installed     # features/steps/example.py:3
+        When we implement 5 tests          # features/steps/example.py:7
+        Then behave will test them for us! # features/steps/example.py:12
 
     1 feature passed, 0 failed, 0 skipped
     1 scenario passed, 0 failed, 0 skipped
