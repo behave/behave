@@ -30,9 +30,10 @@ code.
 First, `install *behave*.`_
 
 
-Now make a directory called "example". In that directory create a file
-called "example.feature" containing::
+Now make a directory called "features/".
+In that directory create a file called "example.feature" containing::
 
+    # -- FILE: features/example.feature
     Feature: Showing off behave
 
       Scenario: Run a simple test
@@ -40,9 +41,10 @@ called "example.feature" containing::
          When we implement 5 tests
          Then behave will test them for us!
 
-Make a new directory called "example/steps". In that directory create a
-file called "example.py" containing::
+Make a new directory called "features/steps/".
+In that directory create a file called "example_steps.py" containing::
 
+    # -- FILE: features/steps/example_steps.py
     from behave import given, when, then, step
 
     @given('we have behave installed')
