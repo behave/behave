@@ -66,7 +66,7 @@ Run behave::
     % behave
     Feature: Showin off behave # features/example.feature:1
 
-      Scenario: Run a simple test          # features/example.feature:3
+      Scenario: Run a simple test          # features/example.feature:4
         Given we have behave installed     # features/steps/example.py:3
         When we implement 5 tests          # features/steps/example.py:7
         Then behave will test them for us! # features/steps/example.py:12
