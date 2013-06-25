@@ -33,40 +33,41 @@ First, `install *behave*.`_
 Now make a directory called "example". In that directory create a file
 called "example.feature" containing::
 
- Feature: Showing off behave
+    Feature: Showing off behave
 
-   Scenario: Run a simple test
-      Given we have behave installed
-       When we implement a test
-       Then behave will test it for us!
+      Scenario: Run a simple test
+        Given we have behave installed
+         When we implement 5 tests
+         Then behave will test them for us!
 
 Make a new directory called "example/steps". In that directory create a
 file called "example.py" containing::
 
-  from behave import given, when, then, step
+    from behave import given, when, then, step
 
-  @given('we have behave installed')
-  def step_impl(context):
-      pass
+    @given('we have behave installed')
+    def step_impl(context):
+        pass
 
-  @when('we implement a {test}')
-  def step_impl(context, test):
-      context.test = test
-      assert test == "test", "OOPS, 8-("
+    @when('we implement {number:n} tests')
+    def step_impl(context, number):
+        assert number > 1 or number == 0    # Data type n: Convert into integer
+        context.tests_count = number
 
-  @then('behave will test it for us!')
-  def step_impl(context):
-      assert context.failed is False
+    @then('behave will test them for us!')
+    def step_impl(context):
+        assert context.failed is False
+        assert context.tests_count >= 0
 
 Run behave::
 
     % behave
     Feature: Showin off behave # example/example.feature:1
 
-      Scenario: Run a simple test        # example/example.feature:3
-        Given we have behave installed   # example/steps/example.py:3
-        When we implement a test         # example/steps/example.py:7
-        Then behave will test it for us! # example/steps/example.py:12
+      Scenario: Run a simple test          # example/example.feature:3
+        Given we have behave installed     # example/steps/example.py:3
+        When we implement 5 tests          # example/steps/example.py:7
+        Then behave will test them for us! # example/steps/example.py:12
 
     1 feature passed, 0 failed, 0 skipped
     1 scenario passed, 0 failed, 0 skipped
