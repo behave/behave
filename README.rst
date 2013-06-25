@@ -64,7 +64,7 @@ In that directory create a file called "example_steps.py" containing::
 Run behave::
 
     % behave
-    Feature: Showin off behave # features/example.feature:1
+    Feature: Showin off behave # features/example.feature:2
 
       Scenario: Run a simple test          # features/example.feature:4
         Given we have behave installed     # features/steps/example.py:3
