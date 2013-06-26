@@ -168,3 +168,66 @@ class StepProgressFormatter(ProgressFormatterBase):
             self.failures.append(result)
         self.stream.write(dot_status)
         self.stream.flush()
+
+# -----------------------------------------------------------------------------
+# CLASS: ScenarioStepProgressFormatter
+# -----------------------------------------------------------------------------
+class ScenarioStepProgressFormatter(ProgressFormatterBase):
+    """
+    Report dotted progress for each step and scenario
+    """
+    name = "progress3"
+    description = "Report dotted progress for each step and scenario"
+    failure = None
+
+    def scenario(self, scenario):
+        """
+        Process the next scenario.
+        But first allow to report the status on the last scenario.
+        """
+        self.failure = None
+        self.current_scenario = scenario
+        self.report_scenario_progress()
+
+    def report_step_progress(self, result):
+        """
+        Report the progress for each step.
+        """
+        dot_status = self.dot_status[result.status]
+        if result.status == "failed":
+            if (result.exception and
+                not isinstance(result.exception, AssertionError)):
+                # -- ISA-ERROR: Some Exception
+                dot_status = self.dot_status["error"]
+            result.feature  = self.current_feature
+            result.scenario = self.current_scenario
+            self.failure = result
+        self.stream.write(dot_status)
+        self.report_failures()
+
+    def report_scenario_progress(self):
+        if self.current_scenario:
+            self.stream.write(u'\n    %s: ' % self.current_scenario.name)
+            self.stream.flush()
+
+    def report_failures(self):
+        if not self.failure:
+            return
+        self.stream.write(u"\n{seperator}\n".format(seperator="-" * 80))
+        self.stream.write(u"FAILURE in step '%s' (%s):\n" % (self.failure.name, self.failure.location))
+        self.stream.write(u"%s\n" % self.failure.error_message)
+        self.stream.write(u"{seperator}\n".format(seperator="-" * 80))
+        self.stream.flush()
+
+    def eof(self):
+        """
+        Called at end of a feature.
+        It would be better to have a hook that is called after all features.
+        """
+        self.stream.write(u"\n")
+        self.reset()
+
+    def feature(self, feature):
+        self.current_feature = feature
+        short_filename = relpath(feature.filename, os.getcwd())
+        self.stream.write(u"%s (%s):" % (feature.name, short_filename))
