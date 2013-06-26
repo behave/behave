@@ -65,6 +65,8 @@ def setup_formatters():
                 "progress")
     register_as(_L("behave.formatter.progress:StepProgressFormatter"),
                 "progress2")
+    register_as(_L("behave.formatter.progress:ScenarioStepProgressFormatter"),
+                "progress3")
     register_as(_L("behave.formatter.rerun:RerunFormatter"), "rerun")
     register_as(_L("behave.formatter.tags:TagsFormatter"), "tags")
     register_as(_L("behave.formatter.tags:TagsLocationFormatter"),
