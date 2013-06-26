@@ -90,7 +90,7 @@ Feature: Parse data types in step parameters (type transformation)
 
 
   Scenario: Float parameter values with type "%" (percentage)
-    And a file named "features/example.float_param.with_percent.feature" with:
+    Given a file named "features/example.float_param.with_percent.feature" with:
         """
         Feature: Float parameter values with type "%" (percentage)
 
