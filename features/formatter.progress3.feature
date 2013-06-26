@@ -12,12 +12,12 @@ Feature: Progress3 Formatter
             """
             from behave import step
 
-            @step('a step passes')
-            def step_passes(context):
+            @step('{word:w} step passes')
+            def step_passes(context, word):
                 pass
 
-            @step('a step fails')
-            def step_fails(context):
+            @step('{word:w} step fails')
+            def step_fails(context, word):
                 assert False, "XFAIL-STEP"
 
             @step(u'a step raises an error "{message}"')
@@ -38,7 +38,7 @@ Feature: Progress3 Formatter
             """
         And the command output should contain:
             """
-            Simple, empty Feature (features/simple_feature_with_name.feature):
+            Simple, empty Feature    # features/simple_feature_with_name.feature
             """
 
     Scenario: Use Progress3 formatter with feature and one scenario without steps
@@ -55,8 +55,8 @@ Feature: Progress3 Formatter
             """
         And the command output should contain:
             """
-            Simple feature with one scenario (features/simple_scenario.feature):
-                Simple scenario without steps: 
+            Simple feature with one scenario    # features/simple_scenario.feature
+              Simple scenario without steps
             """
 
     Scenario: Use Progress3 formatter with feature and one scenario with all passing steps
@@ -65,10 +65,10 @@ Feature: Progress3 Formatter
             Feature: Feature with scenario
               Scenario: Simple scenario with passing steps
                   Given a step passes
-                  When a step passes
-                  Then a step passes
-                  And a step passes
-                  But a step passes
+                  When another step passes
+                  Then third step passes
+                  And fourth step passes
+                  But fifth step passes
             """
         When I run "behave -f progress3 features/scenario_with_steps.feature"
         Then it should pass with:
@@ -78,8 +78,8 @@ Feature: Progress3 Formatter
             """
         And the command output should contain:
             """
-            Feature with scenario (features/scenario_with_steps.feature):
-                Simple scenario with passing steps: .....
+            Feature with scenario    # features/scenario_with_steps.feature
+              Simple scenario with passing steps  .....
             """
 
     Scenario: Use Progress3 formatter with feature and one scenario with a failing step
@@ -88,10 +88,10 @@ Feature: Progress3 Formatter
             Feature: Feature with scenario
               Scenario: Simple scenario with last failing step
                   Given a step passes
-                  When a step passes
-                  Then a step passes
-                  And a step passes
-                  But a step fails
+                  When second step passes
+                  Then third step passes
+                  And another step passes
+                  But last step fails
             """
         When I run "behave -f progress3 features/scenario_with_steps.feature"
         Then it should fail with:
@@ -101,10 +101,10 @@ Feature: Progress3 Formatter
             """
         And the command output should contain:
             """
-            Feature with scenario (features/scenario_with_steps.feature):
-                Simple scenario with last failing step: ....F
+            Feature with scenario    # features/scenario_with_steps.feature
+                Simple scenario with last failing step  ....F
             --------------------------------------------------------------------------------
-            FAILURE in step 'a step fails' (features/scenario_with_steps.feature:7):
+            FAILURE in step 'last step fails' (features/scenario_with_steps.feature:7):
             Assertion Failed: XFAIL-STEP
             --------------------------------------------------------------------------------
             """
@@ -115,9 +115,9 @@ Feature: Progress3 Formatter
             Feature: Feature with scenario
               Scenario: Simple scenario with error in the step
                   Given a step passes
-                  When a step passes
-                  Then a step passes
-                  And a step passes
+                  When second step passes
+                  Then third step passes
+                  And another step passes
                   But a step raises an error "Error message here"
             """
         When I run "behave -f progress3 features/scenario_with_steps.feature"
@@ -128,8 +128,8 @@ Feature: Progress3 Formatter
             """
         And the command output should contain:
             """
-            Feature with scenario (features/scenario_with_steps.feature):
-                Simple scenario with error in the step: ....E
+            Feature with scenario    # features/scenario_with_steps.feature
+                Simple scenario with error in the step  ....E
             --------------------------------------------------------------------------------
             FAILURE in step 'a step raises an error "Error message here"' (features/scenario_with_steps.feature:7):
             """
@@ -144,24 +144,26 @@ Feature: Progress3 Formatter
         Given a file named "features/scenario_with_steps.feature" with:
             """
             Feature: Feature with three scenarios
-              Scenario: Simple scenario with passing steps
+              Scenario: First scenario with passing steps
                   Given a step passes
-                  When a step passes
-                  Then a step passes
-                  And a step passes
-                  But a step passes
-              Scenario: Another scenario with passing steps
+                  When second step passes
+                  Then third step passes
+                  And another step passes
+                  But last step passes
+
+              Scenario: Second scenario with passing steps
                   Given a step passes
-                  When a step passes
-                  Then a step passes
-                  And a step passes
-                  But a step passes
-              Scenario: One more scenario with passing steps
+                  When second step passes
+                  Then third step passes
+                  And another step passes
+                  But last step passes
+
+              Scenario: Third scenario with passing steps
                   Given a step passes
-                  When a step passes
-                  Then a step passes
-                  And a step passes
-                  But a step passes
+                  When second step passes
+                  Then third step passes
+                  And another step passes
+                  But last step passes
             """
         When I run "behave -f progress3 features/scenario_with_steps.feature"
         Then it should pass with:
@@ -172,34 +174,36 @@ Feature: Progress3 Formatter
             """
         And the command output should contain:
             """
-            Feature with three scenarios (features/scenario_with_steps.feature):
-                Simple scenario with passing steps: .....
-                Another scenario with passing steps: .....
-                One more scenario with passing steps: .....
+            Feature with three scenarios    # features/scenario_with_steps.feature
+                First scenario with passing steps  .....
+                Second scenario with passing steps  .....
+                Third scenario with passing steps  .....
             """
 
     Scenario: Use Progress3 formatter with feature and three scenarios with a failing step
         Given a file named "features/scenario_with_steps.feature" with:
             """
             Feature: Feature with various results in scenarios
-              Scenario: Simple scenario with passing steps
+              Scenario: First scenario with passing steps
                   Given a step passes
-                  When a step passes
-                  Then a step passes
-                  And a step passes
-                  But a step passes
-              Scenario: Simple scenario with second failing step
+                  When second step passes
+                  Then third step passes
+                  And another step passes
+                  But last step passes
+
+              Scenario: Second scenario with second failing step
                   Given a step passes
-                  When a step fails
-                  Then a step passes
-                  And a step passes
-                  But a step passes
-              Scenario: Simple scenario with fourth failing step
+                  When second step fails
+                  Then third step passes
+                  And another step passes
+                  But last step passes
+
+              Scenario: Third scenario with fourth failing step
                   Given a step passes
-                  When a step passes
-                  Then a step passes
-                  And a step fails
-                  But a step passes
+                  When second step passes
+                  Then third step passes
+                  And fourth step fails
+                  But last step passes
             """
         When I run "behave -f progress3 features/scenario_with_steps.feature"
         Then it should fail with:
@@ -210,22 +214,22 @@ Feature: Progress3 Formatter
             """
         And the command output should contain:
             """
-            Feature with various results in scenarios (features/scenario_with_steps.feature):
-                Simple scenario with passing steps: .....
-                Simple scenario with second failing step: .F
+            Feature with various results in scenarios    # features/scenario_with_steps.feature
+                First scenario with passing steps  .....
+                Second scenario with second failing step  .F
             --------------------------------------------------------------------------------
-            FAILURE in step 'a step fails' (features/scenario_with_steps.feature:10):
+            FAILURE in step 'second step fails' (features/scenario_with_steps.feature:11):
             Assertion Failed: XFAIL-STEP
             --------------------------------------------------------------------------------
             
-                Simple scenario with fourth failing step: ...F
+                Third scenario with fourth failing step  ...F
             --------------------------------------------------------------------------------
-            FAILURE in step 'a step fails' (features/scenario_with_steps.feature:18):
+            FAILURE in step 'fourth step fails' (features/scenario_with_steps.feature:20):
             Assertion Failed: XFAIL-STEP
             --------------------------------------------------------------------------------
             
             
             Failing scenarios:
-              features/scenario_with_steps.feature:8  Simple scenario with second failing step
-              features/scenario_with_steps.feature:14  Simple scenario with fourth failing step
+              features/scenario_with_steps.feature:9  Second scenario with second failing step
+              features/scenario_with_steps.feature:16  Third scenario with fourth failing step
             """
