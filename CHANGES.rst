@@ -21,6 +21,7 @@ NEWS and CHANGES:
 
   - Formatters:
 
+    * NEW: progress3 formatter, ScenarioStepProgressFormatter (provided by: roignac).
     * NEW: sphinx.steps formatter, generate Sphinx-based docs for step definitions (related to #166).
     * NEW: steps formatter, shows available step definitions.
     * NEW: steps.doc formatter, shows documentation of step definitions (related to: #55).
