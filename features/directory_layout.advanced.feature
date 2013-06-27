@@ -34,6 +34,30 @@ Feature: Advanced, more complex directory layout (Variant 2)
             def step_fails(context, word):
                 assert False, "XFAIL-STEP"
             """
+        And a file named "features/steps/subfolder_1/steps.py" with:
+            """
+            from behave import step
+
+            @step('{word:w} step from subfolder 1 passes')
+            def step_from_subfolder_also_passes(context, word):
+                pass
+
+            @step('{word:w} step from subfolder 1 fails')
+            def step_from_subfolder_fails(context, word):
+                assert False, "XFAIL-STEP"
+            """
+        And a file named "features/steps/subfolder_2/steps.py" with:
+            """
+            from behave import step
+
+            @step('{word:w} step from subfolder 2 passes')
+            def step_from_subfolder_also_passes(context, word):
+                pass
+
+            @step('{word:w} step from subfolder 2 fails')
+            def step_from_subfolder_fails(context, word):
+                assert False, "XFAIL-STEP"
+            """
         And a file named "features/steps/environment_steps.py" with:
             """
             from behave import step
@@ -72,15 +96,24 @@ Feature: Advanced, more complex directory layout (Variant 2)
                   Given another step passes
                   Then a step passes
             """
+        And a file named "features/group3/dan.feature" with:
+            """
+            Feature: Dan
+                Scenario: D1
+                  Given a step from subfolder 1 passes
+                    And another step from subfolder 1 passes
+                    And some step from subfolder 2 passes
+                  Then any step from subfolder 2 passes
+            """
 
 
     Scenario: Run behave with feature directory
         When I run "behave -f progress features/"
         Then it should pass with:
             """
-            3 features passed, 0 failed, 0 skipped
-            4 scenarios passed, 0 failed, 0 skipped
-            8 steps passed, 0 failed, 0 skipped, 0 undefined
+            4 features passed, 0 failed, 0 skipped
+            5 scenarios passed, 0 failed, 0 skipped
+            12 steps passed, 0 failed, 0 skipped, 0 undefined
             """
 
     Scenario: Run behave with feature subdirectory (CASE 1)
@@ -144,4 +177,13 @@ Feature: Advanced, more complex directory layout (Variant 2)
             2 features passed, 0 failed, 0 skipped
             3 scenarios passed, 0 failed, 0 skipped
             6 steps passed, 0 failed, 0 skipped, 0 undefined
+            """
+
+    Scenario: Run behave with steps stored in subfolders
+        When I run "behave -f progress features/group3/dan.feature"
+        Then it should pass with:
+            """
+            1 feature passed, 0 failed, 0 skipped
+            1 scenario passed, 0 failed, 0 skipped
+            4 steps passed, 0 failed, 0 skipped, 0 undefined
             """
