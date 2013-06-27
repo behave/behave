@@ -451,13 +451,14 @@ class Runner(object):
             for path in paths:
                 for dirpath, dirnames, filenames in os.walk(path):
                     for name in sorted(filenames):
-                        # -- LOAD STEP DEFINITION:
-                        # Reset to default matcher after each step-definition.
-                        # A step-definition may change the matcher 0..N times.
-                        # ENSURE: Each step definition has clean globals.
-                        step_module_globals = step_globals.copy()
-                        exec_file(os.path.join(dirpath, name), step_module_globals)
-                        matchers.current_matcher = default_matcher
+                        if name.endswith('.py'):
+                            # -- LOAD STEP DEFINITION:
+                            # Reset to default matcher after each step-definition.
+                            # A step-definition may change the matcher 0..N times.
+                            # ENSURE: Each step definition has clean globals.
+                            step_module_globals = step_globals.copy()
+                            exec_file(os.path.join(dirpath, name), step_module_globals)
+                            matchers.current_matcher = default_matcher
 
     def run_hook(self, name, context, *args):
         if not self.config.dry_run and (name in self.hooks):
