@@ -2,8 +2,8 @@
 Behave
 ======
 
-.. image:: https://travis-ci.org/jenisys/behave.png?branch=master
-    :target: https://travis-ci.org/jenisys/behave
+.. image:: https://travis-ci.org/behave/behave.png?branch=master
+    :target: https://travis-ci.org/behave/behave
     :alt: Travis CI Build Status
 
 .. image:: https://pypip.in/v/behave/badge.png
