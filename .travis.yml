@@ -8,6 +8,7 @@ install:
   - pip install --use-mirrors -q mock nose PyHamcrest
   - python setup.py -q install
 script:
+  - python --version
   - nosetests
   - behave -f progress --junit --tags=~@xfail features/
   - behave -f progress --junit --tags=~@xfail tools/test-features/
