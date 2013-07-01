@@ -10,7 +10,8 @@ Feature: Ensure that a step module can import another step module
   |
   | NOTES:
   |   * In general you should avoid this case (provided as example here).
-  |   * This problem may show up only for certain orderings when loading steps.
+  |   * Use "context.execute_steps(...)" to avoid importing other step modules
+  |   * Use step-libraries; this will in general use sane imports of other step modules
 
 
   Scenario: Step module that imports another step module
@@ -37,13 +38,13 @@ Feature: Ensure that a step module can import another step module
           step_call_bob(context)
           step_call_alice(context)
       """
-    And a file named "features/lazy_import_step_module.feature" with:
+    And a file named "features/example.import_step_module.feature" with:
       """
       Feature:
         Scenario:
           Given I call Bob and Alice
       """
-    When I run "behave -f plain features/lazy_import_step_module.feature"
+    When I run "behave -f plain features/example.import_step_module.feature"
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
@@ -77,14 +78,14 @@ Feature: Ensure that a step module can import another step module
       def step_call_bob(context):
           pass
       """
-    And a file named "features/cross_imported_step_modules.feature" with:
+    And a file named "features/example.cross_imported_step_modules.feature" with:
       """
       Feature:
         Scenario:
           Given I call Alice
           And   I call Bob
       """
-    When I run "behave -f plain features/cross_imported_step_modules.feature"
+    When I run "behave -f plain features/example.cross_imported_step_modules.feature"
     Then it should pass with:
         """
         1 feature passed, 0 failed, 0 skipped
