@@ -35,6 +35,7 @@ IMPROVEMENT:
 
 FIXED:
 
+  * issue #172: JUnit report filename sometimes truncated (provided by: roignac).
   * issue #171: Importing step from other step file fails with AmbiguousStep Error.
   * issue #165: FIX issue #114: do not print a blank line when the feature is skipped (provided by: florentx).
   * issue #164: StepRegistry.find_match() extends registered step_type lists.
