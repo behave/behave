@@ -77,7 +77,7 @@ class JUnitReporter(Reporter):
             if feature.filename.startswith(path):
                 filename = feature.filename[len(path) + 1:]
                 break
-        if filename is None:
+        if not filename:
             filename = os.path.split(feature.filename)[1]
         filename = filename.rsplit('.', 1)[0]
         filename = filename.replace('\\', '/').replace('/', '.')
