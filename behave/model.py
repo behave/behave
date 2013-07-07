@@ -558,6 +558,7 @@ class Scenario(TagStatement, Replayable):
         self.background = None
         self.feature = None  # REFER-TO: owner=Feature
         self._row = None
+        self.should_skip = None
         self.stderr = None
         self.stdout = None
         self.was_dry_run = False
@@ -578,6 +579,10 @@ class Scenario(TagStatement, Replayable):
 
     @property
     def status(self):
+        if self.should_skip:
+            # -- PERFORMANCE SHORTCUT: Scenario(Outline) is marked as skipped.
+            return 'skipped'
+
         for step in self.steps:
             if step.status == 'failed':
                 return 'failed'
@@ -626,7 +631,7 @@ class Scenario(TagStatement, Replayable):
         :param config:  Runner configuration to use (optional).
         :return: True, if scenario should run. False, otherwise.
         """
-        answer = self.status != "skipped"
+        answer = not self.should_skip
         if answer and config:
             answer = self.should_run_with_tags(config.tags)
         return answer
@@ -644,10 +649,11 @@ class Scenario(TagStatement, Replayable):
         """
         Marks this scenario (and all its steps) as skipped.
         """
+        self.should_skip = True
         for step in self:
             assert step.status == "untested" or step.status == "skipped"
             step.status = "skipped"
-        assert self.status == "skipped"
+        assert self.status == "skipped", "OOPS: scenario.status=%s" % self.status
 
     def run(self, runner):
         failed = False
