@@ -20,7 +20,7 @@ Feature: Undefined Step
 
 
     @setup
-    Scenario: Test Setup
+    Scenario: Feature Setup
       Given a new working directory
       And a file named "features/steps/passing_steps.py" with:
         """
@@ -57,7 +57,7 @@ Feature: Undefined Step
         You can implement step definitions for undefined steps with these snippets:
 
         @when(u'an undefined step is used')
-        def impl(context):
+        def step_impl(context):
             assert False
         """
       And an undefined-step snippet should exist for "When an undefined step is used"

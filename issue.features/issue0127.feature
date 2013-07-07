@@ -39,7 +39,7 @@ Feature: Issue #127: Strip trailing colons
         You can implement step definitions for undefined steps with these snippets:
 
         @given(u'the following superusers exist:')
-        def impl(context):
+        def step_impl(context):
             assert False
         """
 
@@ -59,6 +59,6 @@ Feature: Issue #127: Strip trailing colons
         You can implement step definitions for undefined steps with these snippets:
 
         @given(u'the following superusers exist')
-        def impl(context):
+        def step_impl(context):
             assert False
         """
