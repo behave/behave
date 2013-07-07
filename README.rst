@@ -31,7 +31,9 @@ First, `install *behave*.`_
 
 
 Now make a directory called "features/".
-In that directory create a file called "example.feature" containing::
+In that directory create a file called "example.feature" containing:
+
+.. code-block:: gherkin
 
     # -- FILE: features/example.feature
     Feature: Showing off behave
@@ -42,7 +44,9 @@ In that directory create a file called "example.feature" containing::
          Then behave will test them for us!
 
 Make a new directory called "features/steps/".
-In that directory create a file called "example_steps.py" containing::
+In that directory create a file called "example_steps.py" containing:
+
+.. code-block:: python
 
     # -- FILE: features/steps/example_steps.py
     from behave import given, when, then, step
@@ -61,9 +65,11 @@ In that directory create a file called "example_steps.py" containing::
         assert context.failed is False
         assert context.tests_count >= 0
 
-Run behave::
+Run behave:
 
-    % behave
+.. code-block:: bash
+
+    $ behave
     Feature: Showin off behave # features/example.feature:2
 
       Scenario: Run a simple test          # features/example.feature:4
