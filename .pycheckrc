@@ -1,0 +1,242 @@
+# ========================================================================================
+# PYCHECKER CONFIGURATION
+# ========================================================================================
+# .pycheckrc file created by PyChecker v0.8.18 
+# .pycheckrc file created by PyChecker v0.8.19
+#
+# It should be placed in your home directory (value of $HOME).
+# If $HOME is not set, it will look in the current directory.
+#
+# SEE ALSO:
+#  * http://pychecker.sourceforge.net/
+#  * http://sourceforge.net/projects/pychecker
+# ========================================================================================
+
+# only warn about files passed on the command line
+only = 0
+
+# the maximum number of warnings to be displayed
+limit = 100
+
+# list of evil C extensions that crash the interpreter
+evil = []
+
+# ignore import errors
+ignoreImportErrors = 0
+
+# unused imports
+importUsed = 1
+
+# unused imports from __init__.py
+packageImportUsed = 1
+
+# module imports itself
+reimportSelf = 1
+
+# reimporting a module
+moduleImportErrors = 1
+
+# module does import and from ... import
+mixImport = 1
+
+# unused local variables, except tuples
+localVariablesUsed = 1
+
+# all unused local variables, including tuples
+unusedLocalTuple = 0
+
+# all unused class data members
+membersUsed = 0
+
+# all unused module variables
+allVariablesUsed = 0
+
+# unused private module variables
+privateVariableUsed = 1
+
+# report each occurrence of global warnings
+reportAllGlobals = 0
+
+# functions called with named arguments (like keywords)
+namedArgs = 0
+
+# Attributes (members) must be defined in __init__()
+onlyCheckInitForMembers = 0
+
+# Subclass.__init__() not defined
+initDefinedInSubclass = 0
+
+# Baseclass.__init__() not called
+baseClassInitted = 1
+
+# Subclass needs to override methods that only throw exceptions
+abstractClasses = 1
+
+# Return None from __init__()
+returnNoneFromInit = 1
+
+# unreachable code
+unreachableCode = 0
+
+# a constant is used in a conditional statement
+constantConditions = 1
+
+# 1 is used in a conditional statement (if 1: or while 1:)
+constant1 = 0
+
+# check if iterating over a string
+stringIteration = 1
+
+# check improper use of string.find()
+stringFind = 1
+
+# Calling data members as functions
+callingAttribute = 0
+
+# class attribute does not exist
+classAttrExists = 1
+
+# First argument to methods
+methodArgName = 'self'
+
+# First argument to classmethods
+classmethodArgNames = ['cls', 'klass']
+
+# unused method/function arguments
+argumentsUsed = 1
+
+# unused method/function variable arguments
+varArgumentsUsed = 1
+
+# ignore if self is unused in methods
+ignoreSelfUnused = 0
+
+# check if overridden methods have the same signature
+checkOverridenMethods = 1
+
+# check if __special__ methods exist and have the correct signature
+checkSpecialMethods = 1
+
+# check if function/class/method names are reused
+redefiningFunction = 1
+
+# check if using unary positive (+) which is usually meaningless
+unaryPositive = 1
+
+# check if modify (call method) on a parameter that has a default value
+modifyDefaultValue = 1
+
+# check if variables are set to different types
+inconsistentTypes = 0
+
+# check if unpacking a non-sequence
+unpackNonSequence = 1
+
+# check if unpacking sequence with the wrong length
+unpackLength = 1
+
+# check if raising or catching bad exceptions
+badExceptions = 1
+
+# check if statement appears to have no effect
+noEffect = 1
+
+# check if using (expr % 1), it has no effect on integers and strings
+modulo1 = 1
+
+# check if using (expr is const-literal), doesn't always work on integers and strings
+isLiteral = 1
+
+# check if a constant string is passed to getattr()/setattr()
+constAttr = 1
+
+# check consistent return values
+checkReturnValues = 1
+
+# check if using implict and explicit return values
+checkImplicitReturns = 1
+
+# check that attributes of objects exist
+checkObjectAttrs = 1
+
+# various warnings about incorrect usage of __slots__
+slots = 1
+
+# using properties with classic classes
+classicProperties = 1
+
+# check if __slots__ is empty
+emptySlots = 1
+
+# check if using integer division
+intDivide = 1
+
+# check if local variable shadows a global
+shadows = 1
+
+# check if a variable shadows a builtin
+shadowBuiltins = 1
+
+# check if input() is used
+usesInput = 1
+
+# check if the exec statement is used
+usesExec = 0
+
+# ignore warnings from files under standard library
+ignoreStandardLibrary = 1
+
+# ignore warnings from the list of modules
+blacklist = ['Tkinter', 'wxPython', 'gtk', 'GTK', 'GDK']
+
+# ignore global variables not used if name is one of these values
+variablesToIgnore = ['__version__', '__warningregistry__', '__all__', '__credits__', '__test__', '__author__', '__email__', '__revision__', '__id__', '__copyright__', '__license__', '__date__']
+
+# ignore unused locals/arguments if name is one of these values
+unusedNames = ['_', 'empty', 'unused', 'dummy', 'crap']
+
+# ignore missing class attributes if name is one of these values
+missingAttrs = []
+
+# ignore use of deprecated modules/functions
+deprecated = 1
+
+# maximum lines in a function
+maxLines = 200
+
+# maximum branches in a function
+maxBranches = 50
+
+# maximum returns in a function
+maxReturns = 10
+
+# maximum # of arguments to a function
+maxArgs = 10
+
+# maximum # of locals in a function
+maxLocals = 40
+
+# maximum # of identifier references (Law of Demeter)
+maxReferences = 5
+
+# no module doc strings
+noDocModule = 0
+
+# no class doc strings
+noDocClass = 0
+
+# no function/method doc strings
+noDocFunc = 0
+
+# print internal checker parse structures
+printParse = 0
+
+# turn on debugging for checker
+debug = 0
+
+# print each class object to find one that crashes
+findEvil = 0
+
+# turn off all output except warnings
+quiet = 0
+
