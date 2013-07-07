@@ -46,7 +46,7 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
       """
       You can implement step definitions for undefined steps with these snippets:
       @given(u'an unknown step')
-      def impl(context):
+      def step_impl(context):
           assert False
       """
 
@@ -69,11 +69,11 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
       """
       You can implement step definitions for undefined steps with these snippets:
       @given(u'an unknown step')
-      def impl(context):
+      def step_impl(context):
           assert False
 
       @when(u'another unknown step')
-      def impl(context):
+      def step_impl(context):
           assert False
       """
 
@@ -96,11 +96,11 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
       """
       You can implement step definitions for undefined steps with these snippets:
       @when(u'an unknown step')
-      def impl(context):
+      def step_impl(context):
           assert False
 
       @when(u'another unknown step')
-      def impl(context):
+      def step_impl(context):
           assert False
       """
 
@@ -123,11 +123,11 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
       """
       You can implement step definitions for undefined steps with these snippets:
       @then(u'an unknown step')
-      def impl(context):
+      def step_impl(context):
           assert False
 
       @then(u'another unknown step')
-      def impl(context):
+      def step_impl(context):
           assert False
       """
 
@@ -150,11 +150,11 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
       """
       You can implement step definitions for undefined steps with these snippets:
       @when(u'an unknown step')
-      def impl(context):
+      def step_impl(context):
           assert False
 
       @then(u'another unknown step')
-      def impl(context):
+      def step_impl(context):
           assert False
       """
 
@@ -182,11 +182,11 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
       """
       You can implement step definitions for undefined steps with these snippets:
       @given(u'an unknown step')
-      def impl(context):
+      def step_impl(context):
           assert False
 
       @when(u'another unknown step')
-      def impl(context):
+      def step_impl(context):
           assert False
       """
 
@@ -221,10 +221,10 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
       """
       You can implement step definitions for undefined steps with these snippets:
       @when(u'an unknown step')
-      def impl(context):
+      def step_impl(context):
           assert False
 
       @when(u'another unknown step')
-      def impl(context):
+      def step_impl(context):
           assert False
       """

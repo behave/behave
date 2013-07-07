@@ -332,8 +332,6 @@ def make_undefined_step_snippet(step, language=None):
     if sys.version_info[0] == 2:
         prefix = u"u"
 
-    # snippet  = u"@"+ step.step_type +"("+ prefix + step.name + "')"
-    # snippet += u"\ndef impl(context):\n    assert False\n\n"
-    schema = u"@%s(%s'%s')\ndef impl(context):\n    assert False\n\n"
+    schema = u"@%s(%s'%s')\ndef step_impl(context):\n    assert False\n\n"
     snippet = schema % (step.step_type, prefix, step.name)
     return snippet
