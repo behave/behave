@@ -52,7 +52,7 @@ implementation code:
 .. code-block:: python
 
    @given('some known state')
-   def impl(context):
+   def step_impl(context):
        set_up(some, state)
 
 
@@ -86,7 +86,7 @@ will look for a step implementation decorated with either "given" or "step":
 .. code-block:: python
 
   @given('some other known state')
-  def impl(context):
+  def step_impl(context):
      set_up(some, other, state)
       
 and similarly the "but" would be renamed internally to "then". Multiple
@@ -122,7 +122,7 @@ An example of this in action could be, in steps.py:
     register_type(custom=lambda s: s.upper())
 
     @given('a string {param:custom} a custom type')
-    def impl(context, param):
+    def step_impl(context, param):
         assert param.isupper()
 
 You may define a new parameter matcher by subclassing
@@ -150,7 +150,7 @@ This function allows you to, for example:
 .. code-block:: python
 
     @when('I do the same thing as before')
-    def impl(context):
+    def step_impl(context):
         context.execute_steps('''
             when I press the big red button
              and I duck

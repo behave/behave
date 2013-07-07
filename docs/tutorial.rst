@@ -29,15 +29,15 @@ file called "tutorial.py" containing:
   from behave import *
 
   @given('we have behave installed')
-  def impl(context):
+  def step_impl(context):
       pass
 
   @when('we implement a test')
-  def impl(context):
+  def step_impl(context):
       assert True is not False
 
   @then('behave will test it for us!')
-  def impl(context):
+  def step_impl(context):
       assert context.failed is False
 
 Run behave::
@@ -224,7 +224,7 @@ function. The table for the example above could be accessed like so:
 .. code-block:: python
 
   @given('a set of specific users')
-  def impl(context):
+  def step_impl(context):
       for row in context.table:
           model.add_user(name=row['name'], department=row['department'])
 
@@ -265,14 +265,14 @@ webdriver and some other helpers):
 .. code-block:: python
 
  @given('I search for a valid account')
- def impl(context):
+ def step_impl(context):
     context.browser.get('http://localhost:8000/index')
     form = get_element(context.browser, tag='form')
     get_element(form, name="msisdn").send_keys('61415551234')
     form.submit()
 
  @then('I will see the account details')
- def impl(context):
+ def step_impl(context):
     elements = find_elements(context.browser, id='no-account')
     eq_(elements, [], 'account not found')
     h = get_element(context.browser, id='account-head')
@@ -293,7 +293,7 @@ This function allows you to, for example:
 .. code-block:: python
 
     @when('I do the same thing as before')
-    def impl(context):
+    def step_impl(context):
         context.execute_steps('''
             when I press the big red button
              and I duck
@@ -326,7 +326,7 @@ clauses (with a Given step that puts some text into
 .. code-block:: python
 
  @then('the result page will include "{text}"')
- def impl(context, text):
+ def step_impl(context, text):
     if text not in context.response:
         fail('%r not in %r' % (message, context.response))
 
@@ -371,13 +371,13 @@ steps you define you might have:
 .. code-block:: python
 
   @given('I request a new widget for an account via SOAP')
-  def impl(context):
+  def step_impl(context):
       client = Client("http://127.0.0.1:8000/soap/")
       context.response = client.Allocate(customer_first='Firstname',
           customer_last='Lastname', colour='red')
 
   @then('I should receive an OK SOAP response')
-  def impl(context):
+  def step_impl(context):
       eq_(context.response['ok'], 1)
 
 There's also some values added to the context by *behave* itself:
