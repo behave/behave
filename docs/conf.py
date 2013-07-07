@@ -41,7 +41,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'behave'
-copyright = u'2012, Benno Rice and Richard Jones'
+authors = u'Benno Rice, Richard Jones and Jens Engel'
+copyright = u'2012-2013, %s' % authors
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -201,8 +202,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'behave.tex', u'behave Documentation',
-   u'Benno Rice and Richard Jones', 'manual'),
+  ('index', 'behave.tex', u'behave Documentation', authors, 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -231,8 +231,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'behave', u'behave Documentation',
-     [u'Benno Rice and Richard Jones'], 1)
+    ('index', 'behave', u'behave Documentation', [authors], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -245,9 +244,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'behave', u'behave Documentation',
-   u'Benno Rice and Richard Jones', 'behave',
-   'One line description of project.', 'Miscellaneous'),
+  ('index', 'behave', u'behave Documentation', authors,
+   'behave', 'A test runner for behave (feature tests).', 'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.
