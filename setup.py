@@ -18,7 +18,7 @@ setup(
     version='1.2.3a20',
     description='behave is behaviour-driven development, Python style',
     long_description=description,
-    author='Benno Rice and Richard Jones',
+    author='Benno Rice, Richard Jones and Jens Engel',
     author_email='behave-users@googlegroups.com',
     url='http://github.com/behave/behave',
     packages=find_packages(exclude=["test", "test.*"]),
