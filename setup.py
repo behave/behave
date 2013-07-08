@@ -21,7 +21,9 @@ setup(
     author='Benno Rice, Richard Jones and Jens Engel',
     author_email='behave-users@googlegroups.com',
     url='http://github.com/behave/behave',
-    packages=find_packages(exclude=["test", "test.*"]),
+    packages=find_packages(exclude=[
+        "test", "test.*",
+        "behave4cmd0", "behave4cmd0.*"]),
     entry_points={
         'console_scripts': ['behave = behave.__main__:main'],
     },
