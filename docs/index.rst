@@ -43,8 +43,8 @@ There is also a `comparison`_ with the other tools available.
    behave
    api
    django
-   related
    comparison
+   appendix
 
 
 Indices and tables
