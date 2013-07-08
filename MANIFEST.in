@@ -11,6 +11,7 @@ include *.rst
 include *.txt
 include bin/behave*
 recursive-include bin           *.py *.cmd *.zip
+recursive-include behave4cmd0   *.py
 recursive-include etc           *.xsd *.txt *.json-schema
 recursive-include docs          *.rst *.txt *.css *.py *.html *.rst-* *.png Makefile
 recursive-include docs/_themes  *.html *.conf *.css *.css_t LICENSE*
