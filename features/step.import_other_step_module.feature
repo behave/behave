@@ -44,7 +44,7 @@ Feature: Ensure that a step module can import another step module
         Scenario:
           Given I call Bob and Alice
       """
-    When I run "behave -f plain features/example.import_step_module.feature"
+    When I run "behave -f plain --no-timings features/example.import_step_module.feature"
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
@@ -85,7 +85,7 @@ Feature: Ensure that a step module can import another step module
           Given I call Alice
           And   I call Bob
       """
-    When I run "behave -f plain features/example.cross_imported_step_modules.feature"
+    When I run "behave -f plain --no-timings features/example.cross_imported_step_modules.feature"
     Then it should pass with:
         """
         1 feature passed, 0 failed, 0 skipped
