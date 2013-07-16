@@ -6,6 +6,7 @@ Contains utility functions and classes for Runners.
 from behave import parser
 from behave.model import FileLocation
 from bisect import bisect
+import glob
 import os.path
 import re
 import sys
@@ -246,35 +247,42 @@ def parse_features(feature_files, language=None):
     return features
 
 
-def parse_features_configfile(features_configfile):
+def parse_feature_listfile(feature_listfile):
     """
     Read textual file, ala '@features.txt'. This file contains:
 
       * a feature filename in each line
       * empty lines (skipped)
       * comment lines (skipped)
+      * wildcards are expanded to select 0..N filenames or directories
 
-    Relative path names are evaluated relative to the configfile directory.
-    A leading '@' (AT) character is removed from the configfile name.
+    Relative path names are evaluated relative to the listfile directory.
+    A leading '@' (AT) character is removed from the listfile name.
 
-    :param features_configfile:  Name of features configfile.
+    :param feature_listfile:  Name of feature listfile.
     :return: List of feature file locations.
     """
-    if features_configfile.startswith('@'):
-        features_configfile = features_configfile[1:]
-    if not os.path.isfile(features_configfile):
-        raise FileNotFoundError(features_configfile)
-    here = os.path.dirname(features_configfile) or "."
+    if feature_listfile.startswith('@'):
+        feature_listfile = feature_listfile[1:]
+    if not os.path.isfile(feature_listfile):
+        raise FileNotFoundError(feature_listfile)
+    here = os.path.dirname(feature_listfile) or "."
     locations = []
-    for line in open(features_configfile).readlines():
+    for line in open(feature_listfile).readlines():
         line = line.strip()
         if not line:
             continue    # SKIP: Over empty line(s).
         elif line.startswith('#'):
             continue    # SKIP: Over comment line(s).
         filename = os.path.normpath(os.path.join(here, line))
-        location = FileLocationParser.parse(filename)
-        locations.append(location)
+        if glob.has_magic(filename):
+            # -- WITH WILDCARDS:
+            for filename2 in glob.iglob(filename):
+                location = FileLocationParser.parse(filename2)
+                locations.append(location)
+        else:
+            location = FileLocationParser.parse(filename)
+            locations.append(location)
     return locations
 
 
@@ -302,7 +310,7 @@ def collect_feature_locations(paths, strict=True):
                         locations.append(location)
         elif path.startswith('@'):
             # -- USE: behave @list_of_features.txt
-            locations.extend(parse_features_configfile(path[1:]))
+            locations.extend(parse_feature_listfile(path[1:]))
         else:
             # -- OTHERWISE: Normal filename or location (schema: filename:line)
             location = FileLocationParser.parse(path)
