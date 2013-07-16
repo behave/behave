@@ -14,8 +14,7 @@ Changelog:      `CHANGES.rst <CHANGES.rst>`_
 
 .. hint::
 
-    The PyPI version of behave has a number of problems that are fixed
-    in the github versions. Use the latest stable tag or the "bleeding edge"
-    from Github.
+    The PyPI version is the latest stable version.
+    Otherwise, use the latest stable tag or the "bleeding edge" from Github.
 
 .. _`github archive`: https://github.com/behave/behave/tags

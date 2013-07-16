@@ -1,9 +1,20 @@
 Version History
 ===============================================================================
 
+Version: 1.2.4a1 (unreleased)
+-------------------------------------------------------------------------------
+
+NEWS and CHANGES:
+
+  - Running:
+
+    * feature list files (formerly: feature configfiles) support wildcards.
+
+
 Version: 1.2.3 (2013-07-08)
 -------------------------------------------------------------------------------
 
+Latest stable version.
 Same as last development version.
 
 
