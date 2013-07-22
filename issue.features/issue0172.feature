@@ -48,4 +48,4 @@ Feature: Issue #172 Junit report file name populated incorrectly when running ag
       2 features passed, 0 failed, 0 skipped
       """
     And a file named "test_results/TESTS-feature_in_root_folder.xml" exists
-    And a file named "test_results/TESTS-feature_in_subfolder.xml" exists
+    And a file named "test_results/TESTS-subfolder.feature_in_subfolder.xml" exists
