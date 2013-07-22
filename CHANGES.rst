@@ -10,6 +10,10 @@ NEWS and CHANGES:
 
     * feature list files (formerly: feature configfiles) support wildcards.
 
+IMPROVEMENT:
+
+  * issue #172: Subfolders in junit XML filenames (provided by: roignac).
+
 
 Version: 1.2.3 (2013-07-08)
 -------------------------------------------------------------------------------

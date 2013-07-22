@@ -93,6 +93,15 @@ class FileLocation(object):
     def dirname(self):
         return os.path.dirname(self.filename)
 
+    def relpath(self, start=os.curdir):
+        """
+        Compute relative path for start to filename.
+
+        :param start: Base path or start directory (default=current dir).
+        :return: Relative path from start to filename
+        """
+        return relpath(self.filename, start)
+
     def exists(self):
         return os.path.exists(self.filename)
 
