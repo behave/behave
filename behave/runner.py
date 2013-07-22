@@ -382,6 +382,7 @@ class Runner(object):
             base_dir = os.path.abspath('features')
 
         # Get the root. This is not guaranteed to be '/' because Windows.
+        self.config.base_dir = base_dir
         root_dir = path_getrootdir(base_dir)
         new_base_dir = base_dir
 
