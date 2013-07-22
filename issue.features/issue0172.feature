@@ -39,7 +39,7 @@ Feature: Issue #172 Junit report file name populated incorrectly when running ag
       """
       1 feature passed, 0 failed, 0 skipped
       """
-    And a file named "test_results/TESTS-feature_in_subfolder.xml" exists
+    And a file named "test_results/TESTS-subfolder.feature_in_subfolder.xml" exists
 
   Scenario: Running behave for all features
     When I run "behave --junit --junit-directory=test_results"
