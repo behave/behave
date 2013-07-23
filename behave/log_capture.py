@@ -83,7 +83,7 @@ class LoggingCapture(BufferingHandler):
                 raise ConfigError('Invalid log level: "%s"' %
                                   config.logging_level)
         else:
-            self.level = logging.NOTSET
+            self.level = logging.INFO
 
         # construct my filter
         if config.logging_filter:
