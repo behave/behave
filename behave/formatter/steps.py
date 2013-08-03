@@ -309,17 +309,21 @@ class StepsUsageFormatter(AbstractStepsFormatter):
         return unused_step_definitions
 
     def update_usage_database(self, step_definition, step):
-        usage_data = self.step_usage_database.get(step_definition, None)
-        if usage_data is None:
+        matching_steps = self.step_usage_database.get(step_definition, None)
+        if matching_steps is None:
             assert step_definition.step_type is not None
-            usage_data = self.step_usage_database[step_definition] = []
-        usage_data.append(step)
+            matching_steps = self.step_usage_database[step_definition] = []
+        # -- AVOID DUPLICATES: From Scenario Outlines
+        if not steps_contain(matching_steps, step):
+            matching_steps.append(step)
 
     def update_usage_database_for_step(self, step):
         step_definition = self.step_registry.find_step_definition(step)
         if step_definition:
             self.update_usage_database(step_definition, step)
-        else:
+        # elif step not in self.undefined_steps:
+        elif not steps_contain(self.undefined_steps, step):
+            # -- AVOID DUPLICATES: From Scenario Outlines
             self.undefined_steps.append(step)
 
     def update_usage_database_for_feature(self, feature):
@@ -409,3 +413,14 @@ class StepsUsageFormatter(AbstractStepsFormatter):
         schema = u"%-" + str(max_size) + "s  # %s\n"
         for step, step_text in zip(undefined_steps, steps_text):
             self.stream.write(schema % (step_text, step.location))
+
+# -----------------------------------------------------------------------------
+# UTILITY FUNCTIONS:
+# -----------------------------------------------------------------------------
+def steps_contain(steps, step):
+    for other_step in steps:
+        if step == other_step and step.location == other_step.location:
+            # -- NOTE: Step comparison does not take location into account.
+            return True
+    # -- OTHERWISE: Not contained yet (or step in other location).
+    return False
