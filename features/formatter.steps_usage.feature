@@ -19,9 +19,13 @@ Feature: Steps Usage Formatter
             """
             from behave import step
 
-            @step('a step passes')
-            def step_passes(context):
+            @step('{word:w} step passes')
+            def step_passes(context, word):
                 pass
+
+            @step('{word:w} step fails')
+            def step_passes(context, word):
+                assert False, "XFAIL-STEP"
             """
         And a file named "features/steps/unused_steps.py" with:
             """
@@ -128,10 +132,11 @@ Feature: Steps Usage Formatter
           @then('I meet him at the {company} office')  # features/steps/charly_steps.py:11
             Then I meet him at the ACME office         # features/charly.feature:5
 
-          @step('a step passes')                    # features/steps/passing_steps.py:3
+          @step('{word:w} step passes')             # features/steps/passing_steps.py:3
             And a step passes                       # features/bob.feature:6
 
-          UNUSED STEP DEFINITIONS[2]:
+          UNUSED STEP DEFINITIONS[3]:
+            @step('{word:w} step fails')            # features/steps/passing_steps.py:7
             @step('an unused step')                 # features/steps/unused_steps.py:3
             @step('another unused step')            # features/steps/unused_steps.py:7
           """
@@ -156,11 +161,12 @@ Feature: Steps Usage Formatter
             Then I meet Alice in Paris              # features/alice.feature:5
             Then I meet Bob in Berlin               # features/alice.feature:10
 
-          UNUSED STEP DEFINITIONS[6]:
+          UNUSED STEP DEFINITIONS[7]:
             @given('{person} works for {company}')       # features/steps/charly_steps.py:3
             @when('I plan a meeting with {person}')      # features/steps/charly_steps.py:7
             @then('I meet him at the {company} office')  # features/steps/charly_steps.py:11
-            @step('a step passes')                       # features/steps/passing_steps.py:3
+            @step('{word:w} step passes')                # features/steps/passing_steps.py:3
+            @step('{word:w} step fails')                 # features/steps/passing_steps.py:7
             @step('an unused step')                      # features/steps/unused_steps.py:3
             @step('another unused step')                 # features/steps/unused_steps.py:7
           """
@@ -193,8 +199,9 @@ Feature: Steps Usage Formatter
           @then('I meet him at the {company} office')  # features/steps/charly_steps.py:11
             Then I meet him at the ACME office         # features/charly.feature:5
 
-          UNUSED STEP DEFINITIONS[3]:
-            @step('a step passes')                  # features/steps/passing_steps.py:3
+          UNUSED STEP DEFINITIONS[4]:
+            @step('{word:w} step passes')           # features/steps/passing_steps.py:3
+            @step('{word:w} step fails')            # features/steps/passing_steps.py:7
             @step('an unused step')                 # features/steps/unused_steps.py:3
             @step('another unused step')            # features/steps/unused_steps.py:7
           """
@@ -230,10 +237,11 @@ Feature: Steps Usage Formatter
           @then('I meet him at the {company} office')  # features/steps/charly_steps.py:11
             Then I meet him at the ACME office         # features/charly.feature:5
 
-          @step('a step passes')                    # features/steps/passing_steps.py:3
+          @step('{word:w} step passes')             # features/steps/passing_steps.py:3
             And a step passes                       # features/bob.feature:6
 
-          UNUSED STEP DEFINITIONS[2]:
+          UNUSED STEP DEFINITIONS[3]:
+            @step('{word:w} step fails')            # features/steps/passing_steps.py:7
             @step('an unused step')                 # features/steps/unused_steps.py:3
             @step('another unused step')            # features/steps/unused_steps.py:7
           """
@@ -268,11 +276,12 @@ Feature: Steps Usage Formatter
             Then I meet Alice in Paris              # features/alice.feature:5
             Then I meet Bob in Berlin               # features/alice.feature:10
 
-          UNUSED STEP DEFINITIONS[6]:
+          UNUSED STEP DEFINITIONS[7]:
             @given('{person} works for {company}')       # features/steps/charly_steps.py:3
             @when('I plan a meeting with {person}')      # features/steps/charly_steps.py:7
             @then('I meet him at the {company} office')  # features/steps/charly_steps.py:11
-            @step('a step passes')                       # features/steps/passing_steps.py:3
+            @step('{word:w} step passes')                # features/steps/passing_steps.py:3
+            @step('{word:w} step fails')                 # features/steps/passing_steps.py:7
             @step('an unused step')                      # features/steps/unused_steps.py:3
             @step('another unused step')                 # features/steps/unused_steps.py:7
 
@@ -281,3 +290,115 @@ Feature: Steps Usage Formatter
             Then another step is undefined          # features/undefined.feature:4
           """
 
+
+    @corner.case
+    Scenario: StepsUsageFormatter shows all locations of undefined step usage
+
+        Ensure that all location are shown where an undefined step is used
+
+        Given a file named "features/undefined_duplicates.feature" with:
+          """
+          Feature: With undefined steps
+
+            Scenario: Same undefined step used twice
+              Given a step is undefined
+              And a step is undefined
+              Then a step passes
+
+            Scenario: Same undefined step used again
+              Given a step passes
+              And a step is undefined
+          """
+        When I run "behave --dry-run -f steps.usage features/undefined_duplicates.feature"
+        Then it should fail with:
+          """
+          0 scenarios passed, 0 failed, 0 skipped, 2 untested
+          0 steps passed, 0 failed, 0 skipped, 3 undefined, 2 untested
+          """
+        And the command output should contain:
+          """
+          UNDEFINED STEPS[3]:
+            Given a step is undefined               # features/undefined_duplicates.feature:4
+            And a step is undefined                 # features/undefined_duplicates.feature:5
+            And a step is undefined                 # features/undefined_duplicates.feature:10
+          """
+
+    @use_outline
+    Scenario: Scenario Outlines should not cause duplicated step entries
+
+      Scenario Outlines generate Scenarios that use the same step multiple times.
+      This duplication should not be listed.
+
+        Given a file named "features/use_scenario_outline.feature" with:
+          """
+          Feature:
+            Scenario Outline:
+              Given a step <outcome1>
+              When another step <outcome2>
+
+            Examples:
+              | outcome1 | outcome2 |
+              |  passes  | passes   |
+              |  passes  | fails    |
+          """
+        When I run "behave --dry-run -f steps.usage features/use_scenario_outline.feature"
+        Then it should pass with:
+          """
+          0 scenarios passed, 0 failed, 0 skipped, 2 untested
+          0 steps passed, 0 failed, 0 skipped, 0 undefined, 4 untested
+          """
+        And the command output should contain:
+          """
+          @step('{word:w} step passes')             # features/steps/passing_steps.py:3
+            Given a step passes                     # features/use_scenario_outline.feature:3
+            When another step passes                # features/use_scenario_outline.feature:4
+
+          @step('{word:w} step fails')              # features/steps/passing_steps.py:7
+            When another step fails                 # features/use_scenario_outline.feature:4
+          """
+        But the command output should not contain:
+          """
+          @step('{word:w} step passes')             # features/steps/passing_steps.py:3
+            Given a step passes                     # features/use_scenario_outline.feature:3
+            When another step passes                # features/use_scenario_outline.feature:4
+            Given a step passes                     # features/use_scenario_outline.feature:3
+          """
+
+    @use_outline
+    Scenario: Scenario Outlines should not cause duplicated entries for undefined steps
+
+      Scenario Outlines generate Scenarios that use the same step multiple times.
+      This duplication should not be listed.
+
+        Given a file named "features/scenario_outline_with_undefined.feature" with:
+          """
+          Feature:
+            Scenario Outline:
+              Given a step is <status1>
+              When another step is <status2>
+
+            Examples:
+              | status1   | status2   |
+              | undefined | undefined |
+              | undefined | undefined |
+          """
+        When I run "behave --dry-run -f steps.usage features/scenario_outline_with_undefined.feature"
+        Then it should fail with:
+          """
+          0 scenarios passed, 0 failed, 0 skipped, 2 untested
+          0 steps passed, 0 failed, 0 skipped, 4 undefined
+           """
+        And the command output should contain:
+          """
+          UNDEFINED STEPS[2]:
+            Given a step is undefined               # features/scenario_outline_with_undefined.feature:3
+            When another step is undefined          # features/scenario_outline_with_undefined.feature:4
+          """
+        But the command output should not contain:
+          """
+          UNDEFINED STEPS[2]:
+            Given a step is undefined               # features/scenario_outline_with_undefined.feature:3
+            Given a step is undefined               # features/scenario_outline_with_undefined.feature:3
+            When another step is undefined          # features/scenario_outline_with_undefined.feature:4
+            When another step is undefined          # features/scenario_outline_with_undefined.feature:4
+          """

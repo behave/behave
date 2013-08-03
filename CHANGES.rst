@@ -10,6 +10,11 @@ NEWS and CHANGES:
 
     * feature list files (formerly: feature configfiles) support wildcards.
 
+  - Formatters:
+
+    * steps.usage: Avoid duplicated steps usage due to Scenario Outlines.
+
+
 IMPROVEMENT:
 
   * issue #172: Subfolders in junit XML filenames (provided by: roignac).
