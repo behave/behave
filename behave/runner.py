@@ -616,7 +616,7 @@ class Runner(object):
             current_job.run(self)
             end_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
-            sys.stderr.write("* ")
+            sys.stderr.write(current_job.status[0]+" ")
 
             job_report_text = self.generatereport(proc_number,
             current_job, start_time, end_time, writebuf)
@@ -700,6 +700,9 @@ class Runner(object):
         else:
             for step in current_job.steps:
                 results['steps_' + step.status] += 1
+            if current_job.background:
+                for step in current_job.background.steps:
+                    results['steps_' + step.status] += 1
 
     def multiproc_fullreport(self):
         metrics = collections.defaultdict(int)
@@ -746,7 +749,6 @@ class Runner(object):
                 metrics['features_passed'], metrics['features_failed'], metrics['features_skipped'],
                 metrics['scenarios_passed'], metrics['scenarios_failed'], metrics['scenarios_skipped'],
                 metrics['steps_passed'], metrics['steps_failed'], metrics['steps_skipped'], metrics['steps_undefined'])
-
         return metrics['features_failed']
 
     def setup_capture(self):
