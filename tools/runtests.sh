@@ -66,7 +66,7 @@ function check_venv {
 
     if [ ! -d $venv_dir/behave$1 ]; then
         echo "===================== $1 CREATING VIRTUALENV ====================="
-        $python `which virtualenv` --no-site-packages --distribute --python=$python $venv_dir/behave$1
+        $python `which virtualenv` --no-site-packages --python=$python $venv_dir/behave$1
     fi
 
     echo "===================== $1 CHECKING PACKAGES ====================="
