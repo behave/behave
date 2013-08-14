@@ -18,8 +18,8 @@ from behave.formatter import formatters
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
 from behave.runner_util import \
-from behave.formatter.base import StreamOpener    
     collect_feature_locations, parse_features
+from behave.formatter.base import StreamOpener    
 
 multiprocessing = None
 try:
