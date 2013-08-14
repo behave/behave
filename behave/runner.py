@@ -18,7 +18,7 @@ from behave.formatter import formatters
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
 from behave.runner_util import \
-    collect_feature_files, parse_features
+    collect_feature_locations, parse_features
 from behave.formatter.base import StreamOpener    
 
 multiprocessing = None
