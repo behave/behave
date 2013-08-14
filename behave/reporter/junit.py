@@ -6,7 +6,8 @@ from xml.etree import ElementTree
 from behave.reporter.base import Reporter
 from behave.model import Scenario, ScenarioOutline, Step
 from behave.formatter import ansi_escapes
-from behave.model_describe import make_indentation, indent, ModelDescriptor
+from behave.model_describe import ModelDescriptor
+from behave.textutil import indent, make_indentation
 
 
 def CDATA(text=None):
@@ -76,8 +77,9 @@ class JUnitReporter(Reporter):
             if feature.filename.startswith(path):
                 filename = feature.filename[len(path) + 1:]
                 break
-        if filename is None:
-            filename = os.path.split(feature.filename)[1]
+        if not filename:
+            # -- NOTE: Directory path (subdirs) are taken into account.
+            filename = feature.location.relpath(self.config.base_dir)
         filename = filename.rsplit('.', 1)[0]
         filename = filename.replace('\\', '/').replace('/', '.')
         return filename

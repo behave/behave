@@ -7,7 +7,7 @@ from nose.tools import *
 
 from behave.formatter import formatters
 from behave.formatter import pretty
-from behave.formatter import tag_count
+# from behave.formatter import tags
 from behave.formatter.base import StreamOpener
 from behave.model import Tag, Feature, Match, Scenario, Step
 
@@ -177,10 +177,10 @@ class TestJson(FormatterTests):
     formatter_name = 'json'
 
 
-class TestTagCount(FormatterTests):
-    formatter_name = 'tag_count'
+class TestTagsCount(FormatterTests):
+    formatter_name = 'tags'
 
-    def test_tag_count(self):
+    def test_tag_counts(self):
         p = self._formatter(_tf(), self.config)
 
         s = self._scenario(tags=[u'ham', u'foo'])

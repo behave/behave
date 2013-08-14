@@ -5,7 +5,7 @@ from nose.tools import *
 from behave import step_registry
 
 class TestStepRegistry(object):
-    def test_add_definition_adds_to_lowercased_keyword(self):
+    def test_add_step_definition_adds_to_lowercased_keyword(self):
         registry = step_registry.StepRegistry()
         with patch('behave.matchers.get_matcher') as get_matcher:
             func = lambda x: -x
@@ -17,7 +17,7 @@ class TestStepRegistry(object):
                 l = []
                 registry.steps[step_type] = l
 
-                registry.add_definition(step_type.upper(), string, func)
+                registry.add_step_definition(step_type.upper(), string, func)
 
                 get_matcher.assert_called_with(func, string)
                 eq_(l, [magic_object])
@@ -76,8 +76,8 @@ class TestStepRegistry(object):
         for mock in step_defs[6:]:
             eq_(mock.match.call_count, 0)
 
-    @patch.object(step_registry.registry, 'add_definition')
-    def test_make_step_decorator_ends_up_adding_a_step_definition(self, add_definition):
+    @patch.object(step_registry.registry, 'add_step_definition')
+    def test_make_step_decorator_ends_up_adding_a_step_definition(self, add_step_definition):
         step_type = object()
         string = object()
         func = object()
@@ -85,5 +85,5 @@ class TestStepRegistry(object):
         decorator = step_registry.registry.make_decorator(step_type)
         wrapper = decorator(string)
         assert wrapper(func) is func
-        add_definition.assert_called_with(step_type, string, func)
+        add_step_definition.assert_called_with(step_type, string, func)
 

@@ -13,8 +13,8 @@ Feature: Issue #75: behave @features_from_text_file does not work
 
   Scenario: Reuse relocated tests
     Given I use the current directory as working directory
-    When I run "behave -f plain features/runner.feature_configfile.feature"
+    When I run "behave -f plain features/runner.feature_listfile.feature"
     Then it should pass with:
       """
-      10 scenarios passed, 0 failed, 0 skipped
+      13 scenarios passed, 0 failed, 0 skipped
       """

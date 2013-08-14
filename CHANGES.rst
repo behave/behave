@@ -1,7 +1,75 @@
 Version History
 ===============================================================================
 
-Version: 1.2.3a19 (unreleased)
+Version: 1.2.4a1 (unreleased)
+-------------------------------------------------------------------------------
+
+NEWS and CHANGES:
+
+  - Running:
+
+    * feature list files (formerly: feature configfiles) support wildcards.
+
+  - Formatters:
+
+    * steps.usage: Avoid duplicated steps usage due to Scenario Outlines.
+
+
+IMPROVEMENT:
+
+  * issue #172: Subfolders in junit XML filenames (provided by: roignac).
+
+
+Version: 1.2.3 (2013-07-08)
+-------------------------------------------------------------------------------
+
+Latest stable version.
+Same as last development version.
+
+
+Version: 1.2.3a20 (2013-07-08)
+-------------------------------------------------------------------------------
+
+NEWS and CHANGES:
+
+  - Install:
+
+    * Require now parse>=1.6.2 to enforce log-bugfix #14 (was: parse>=1.6)
+
+  - Running:
+
+    * load_step_definitions: Are now sorted before loading (due to: Linux, ...).
+    * NEW: Use lazy-loading for formatters if possible (speed up self-tests by 20%).
+
+  - Model:
+
+    * location: Now a FileLocation object (was: string), required for ordering.
+
+  - Formatters:
+
+    * NEW: progress3 formatter, ScenarioStepProgressFormatter (provided by: roignac).
+    * NEW: sphinx.steps formatter, generate Sphinx-based docs for step definitions (related to #166).
+    * NEW: steps formatter, shows available step definitions.
+    * NEW: steps.doc formatter, shows documentation of step definitions (related to: #55).
+    * NEW: steps.usage formatter, shows where step definitions are used.
+    * RENAMED: json-pretty, tag_count, tag_location => json.pretty, tags, tags.location
+    * help: Shows now a better formatted list (improve readability).
+
+IMPROVEMENT:
+
+  * issue #166: behave should have a tool (or formatter) that generates Sphinx-based documentation (basics provided).
+
+FIXED:
+
+  * issue #172: JUnit report filename sometimes truncated (provided by: roignac).
+  * issue #171: Importing step from other step file fails with AmbiguousStep Error.
+  * issue #165: FIX issue #114: do not print a blank line when the feature is skipped (provided by: florentx).
+  * issue #164: StepRegistry.find_match() extends registered step_type lists.
+  * issue #122: Failing selftest feature: selftest.features/duplicated_step.feature.
+  * issue #110: Normalize paths provided at the command line (provided by: jesper).
+
+
+Version: 1.2.3a19 (2013-05-18)
 -------------------------------------------------------------------------------
 
 NEWS and CHANGES:
@@ -36,6 +104,10 @@ NEWS and CHANGES:
     * NEW: RerunFormatter to simplify to rerun last failing scenarios (related to: #160).
     * NEW: TagLocationFormatter, shows where tags are used.
     * NEW: TagCountFormatter, shows which tags are used and how often (reborn).
+    * JSONFormatter: Use JSON array mode now (related to: #161).
+    * JSONFormatter: Added "type" to Background, Scenario, ScenerioOutline (related to: #161).
+    * JSONFormatter: Added "error_message" to result (related to: #161).
+    * JSONFormatter: Use now list<lines> instead of string for multi-line text (related to: #161).
     * JSONFormatter: Add support for scenario descriptions (related to: #79).
     * JSONFormatter: Generates now valid JSON (well-formed).
     * PlainFormatter: Shows now multi-line step parts (text, table), too.
@@ -51,10 +123,13 @@ NEWS and CHANGES:
 
     * tox: Use tox now in off-line mode per default (use: "tox -e init"...).
     * Add utility script to show longest step durations based on JSON data.
+    * JSON: Add basic JSON schema to support JSON output validation (related to: #161).
+    * JSON: Add helper script to validate JSON output against its schema (related to: #161).
 
 
 IMPROVEMENT:
 
+  * issue #161: JSONFormatter: Should use a slightly different output schema (provided by: jenisys)
   * issue #160: Support rerun file with failed features/scenarios during the last test run (provided by: jenisys)
   * issue #154: Support multiple formatters (provided by: roignac, jenisys)
   * issue #103: sort feature file by name in a given directory (provided by: gurneyalex).
@@ -65,6 +140,7 @@ IMPROVEMENT:
 
 FIXED:
 
+  * issue #162 Unnecessary ContextMaskWarnings when assert fails or exception is raised (provided by: jenisys).
   * issue #159: output stream is wrapped twice in the codecs.StreamWriter (provided by: florentx).
   * issue #153: The runtime should not by-pass the formatter to print line breaks minor.
   * issue #152: Fix encoding issues (provided by: devainandor)
@@ -74,7 +150,8 @@ FIXED:
   * issue  #60: JSONFormatter has several problems (last problem fixed).
   * issue  #48: Docs aren't clear on how Background is to be used.
   * issue  #47: Formatter processing chain is broken (solved by: #154).
-
+  * issue  #33: behave 1.1.0: Install fails under Windows (verified, solved already some time ago).
+  * issue  #28: Install fails on Windows (verified, solved already some time ago).
 
 
 Version: 1.2.2.18 (2013-03-20)

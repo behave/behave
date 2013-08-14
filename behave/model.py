@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import with_statement
 
+from __future__ import with_statement
 import copy
 import difflib
 import itertools
@@ -46,22 +46,140 @@ class Argument(object):
         self.name = name
 
 
+# @total_ordering
+# class FileLocation(unicode):
+class FileLocation(object):
+    """
+    Provides a value object for file location objects.
+    A file location consists of:
+
+      * filename
+      * line (number), optional
+
+    LOCATION SCHEMA:
+      * "{filename}:{line}" or
+      * "{filename}" (if line number is not present)
+    """
+    # -- pylint: disable=R0904,R0924
+    #   R0904: 30,0:FileLocation: Too many public methods (43/30) => unicode
+    #   R0924: 30,0:FileLocation: Badly implemented Container, ...=> unicode
+    __pychecker__ = "missingattrs=line"     # -- Ignore warnings for 'line'.
+
+    def __init__(self, filename, line=None):
+        self.filename = filename
+        self.line = line
+
+    # def __new__(cls, filename, line=None):
+    #     assert isinstance(filename, basestring)
+    #     obj = unicode.__new__(cls, filename)
+    #     obj.line = line
+    #     obj.__filename = filename
+    #     return obj
+    #
+    # @property
+    # def filename(self):
+    #     # -- PREVENT: Assignments via property (and avoid self-recursion).
+    #     return self.__filename
+
+    def get(self):
+        return self.filename
+
+    def abspath(self):
+        return os.path.abspath(self.filename)
+
+    def basename(self):
+        return os.path.basename(self.filename)
+
+    def dirname(self):
+        return os.path.dirname(self.filename)
+
+    def relpath(self, start=os.curdir):
+        """
+        Compute relative path for start to filename.
+
+        :param start: Base path or start directory (default=current dir).
+        :return: Relative path from start to filename
+        """
+        return relpath(self.filename, start)
+
+    def exists(self):
+        return os.path.exists(self.filename)
+
+    def __eq__(self, other):
+        if isinstance(other, FileLocation):
+            return self.filename == other.filename and self.line == other.line
+        else:
+            return self.filename == other
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __lt__(self, other):
+        if isinstance(other, FileLocation):
+            if self.filename < other.filename:
+                return True
+            elif self.filename > other.filename:
+                return False
+            else:
+                assert self.filename == other.filename
+                return self.line < other.line
+        else:
+            return self.filename < other
+
+    def __le__(self, other):
+        # -- SEE ALSO: python2.7, functools.total_ordering
+        return not other < self
+
+    def __gt__(self, other):
+        # -- SEE ALSO: python2.7, functools.total_ordering
+        if isinstance(other, FileLocation):
+            return other < self
+        else:
+            return self.filename > other
+
+    def __ge__(self, other):
+        # -- SEE ALSO: python2.7, functools.total_ordering
+        return not self < other
+
+    def __repr__(self):
+        return u'<FileLocation: filename="%s", line=%s>' % \
+               (self.filename, self.line)
+
+    def __str__(self):
+        if self.line is None:
+            return self.filename
+        else:
+            assert self.line >= 0
+            return u"%s:%d" % (self.filename, self.line)
+
+
 class BasicStatement(object):
     def __init__(self, filename, line, keyword, name):
-        self.filename = filename or '<string>'
-        self.line = line
+        filename = filename or '<string>'
+        filename = relpath(filename, os.getcwd())   # -- NEEDS: abspath?
+        self.location = FileLocation(filename, line)
         assert isinstance(keyword, unicode)
         assert isinstance(name, unicode)
         self.keyword = keyword
         self.name = name
 
-    def __cmp__(self, other):
-        return cmp((self.keyword, self.name), (other.keyword, other.name))
+    @property
+    def filename(self):
+        # return os.path.abspath(self.location.filename)
+        return self.location.filename
 
     @property
-    def location(self):
-        p = relpath(self.filename, os.getcwd())
-        return '%s:%d' % (p, self.line)
+    def line(self):
+        return self.location.line
+
+    # @property
+    # def location(self):
+    #     p = relpath(self.filename, os.getcwd())
+    #     return '%s:%d' % (p, self.line)
+
+    def __cmp__(self, other):
+        # -- NOTE: Ignore potential FileLocation differences.
+        return cmp((self.keyword, self.name), (other.keyword, other.name))
 
 
 class TagStatement(BasicStatement):
@@ -313,14 +431,9 @@ class Feature(TagStatement, Replayable):
 
         runner.context._pop()
 
-        for formatter in runner.formatters:
-            formatter.eof()
-
-        # -- FIX issue #153:
-        # if run_feature or runner.config.show_skipped:
-        #     for formatter in runner.formatters:
-        #         # formatter.stream.write('\n')
-        #         pass
+        if run_feature or runner.config.show_skipped:
+            for formatter in runner.formatters:
+                formatter.eof()
 
         failed = (failed_count > 0)
         return failed
@@ -454,6 +567,7 @@ class Scenario(TagStatement, Replayable):
         self.background = None
         self.feature = None  # REFER-TO: owner=Feature
         self._row = None
+        self.should_skip = None
         self.stderr = None
         self.stdout = None
         self.was_dry_run = False
@@ -471,8 +585,13 @@ class Scenario(TagStatement, Replayable):
     def all_steps(self):
         """Returns iterator to all steps, including background steps if any."""
         return self.__iter__()
+
     @property
     def status(self):
+        if self.should_skip:
+            # -- PERFORMANCE SHORTCUT: Scenario(Outline) is marked as skipped.
+            return 'skipped'
+
         for step in self.steps:
             if step.status == 'failed':
                 return 'failed'
@@ -521,7 +640,7 @@ class Scenario(TagStatement, Replayable):
         :param config:  Runner configuration to use (optional).
         :return: True, if scenario should run. False, otherwise.
         """
-        answer = self.status != "skipped"
+        answer = not self.should_skip
         if answer and config:
             answer = self.should_run_with_tags(config.tags)
         return answer
@@ -539,10 +658,11 @@ class Scenario(TagStatement, Replayable):
         """
         Marks this scenario (and all its steps) as skipped.
         """
+        self.should_skip = True
         for step in self:
             assert step.status == "untested" or step.status == "skipped"
             step.status = "skipped"
-        assert self.status == "skipped"
+        assert self.status == "skipped", "OOPS: scenario.status=%s" % self.status
 
     def run(self, runner):
         failed = False
@@ -1028,12 +1148,12 @@ class Table(Replayable):
         # assert isinstance(column_name, unicode)
         assert not self.has_column(column_name)
         if values is None:
-            values = [ default_value ] * len(self.rows)
+            values = [default_value] * len(self.rows)
         elif not isinstance(values, list):
             values = list(values)
         if len(values) < len(self.rows):
             more_size = len(self.rows) - len(values)
-            more_values = [ default_value ] * more_size
+            more_values = [default_value] * more_size
             values.extend(more_values)
 
         new_column_index = len(self.headings)
@@ -1328,14 +1448,18 @@ class Match(Replayable):
         :return: Step function location as string.
         '''
         filename = relpath(step_function.func_code.co_filename, os.getcwd())
-        location = '%s:%d' % (filename, step_function.func_code.co_firstlineno)
-        return location
+        line_number = step_function.func_code.co_firstlineno
+        return FileLocation(filename, line_number)
 
 
 class NoMatch(Match):
+    '''
+    Used for an "undefined step" when it can not be matched with a
+    step definition.
+    '''
+
     def __init__(self):
         Match.__init__(self, func=None)
         self.func = None
         self.arguments = []
         self.location = None
-

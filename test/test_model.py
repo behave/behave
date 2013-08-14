@@ -170,7 +170,7 @@ class TestScenarioRun(object):
         def step1_function(context):
             pass
         my_step_registry = step_registry.StepRegistry()
-        my_step_registry.add_definition("when", "step1", step1_function)
+        my_step_registry.add_step_definition("when", "step1", step1_function)
 
         with patch("behave.step_registry.registry", my_step_registry):
             assert scenario.run(self.runner)
@@ -612,3 +612,108 @@ class TestModelRow(object):
         eq_(data1['name'], u'Alice')
         eq_(data1['sex'],  u'female')
         eq_(data1['age'],  u'12')
+
+
+class TestFileLocation(object):
+    ordered_locations1 = [
+        model.FileLocation("features/alice.feature",   1),
+        model.FileLocation("features/alice.feature",   5),
+        model.FileLocation("features/alice.feature",  10),
+        model.FileLocation("features/alice.feature",  11),
+        model.FileLocation("features/alice.feature", 100),
+    ]
+    ordered_locations2 = [
+        model.FileLocation("features/alice.feature",     1),
+        model.FileLocation("features/alice.feature",    10),
+        model.FileLocation("features/bob.feature",       5),
+        model.FileLocation("features/charly.feature", None),
+        model.FileLocation("features/charly.feature",    0),
+        model.FileLocation("features/charly.feature",  100),
+    ]
+    same_locations = [
+        ( model.FileLocation("alice.feature"),
+          model.FileLocation("alice.feature", None),
+        ),
+        ( model.FileLocation("alice.feature", 10),
+          model.FileLocation("alice.feature", 10),
+        ),
+        ( model.FileLocation("features/bob.feature", 11),
+          model.FileLocation("features/bob.feature", 11),
+        ),
+    ]
+
+    def test_compare_equal(self):
+        for value1, value2 in self.same_locations:
+            eq_(value1, value2)
+
+    def test_compare_equal_with_string(self):
+        for location in self.ordered_locations2:
+            eq_(location, location.filename)
+            eq_(location.filename, location)
+
+    def test_compare_not_equal(self):
+        for value1, value2 in self.same_locations:
+            assert not(value1 != value2)
+
+        for locations in [self.ordered_locations1, self.ordered_locations2]:
+            for value1, value2 in zip(locations, locations[1:]):
+                assert value1 != value2
+
+    def test_compare_less_than(self):
+        for locations in [self.ordered_locations1, self.ordered_locations2]:
+            for value1, value2 in zip(locations, locations[1:]):
+                assert value1  < value2, "FAILED: %s < %s" % (str(value1), str(value2))
+                assert value1 != value2
+
+    def test_compare_less_than_with_string(self):
+        locations = self.ordered_locations2
+        for value1, value2 in zip(locations, locations[1:]):
+            if value1.filename == value2.filename:
+                continue
+            assert value1  < value2.filename, "FAILED: %s < %s" % (str(value1), str(value2.filename))
+            assert value1.filename < value2,  "FAILED: %s < %s" % (str(value1.filename), str(value2))
+
+    def test_compare_greater_than(self):
+        for locations in [self.ordered_locations1, self.ordered_locations2]:
+            for value1, value2 in zip(locations, locations[1:]):
+                assert value2  > value1, "FAILED: %s > %s" % (str(value2), str(value1))
+                assert value2 != value1
+
+    def test_compare_less_or_equal(self):
+        for value1, value2 in self.same_locations:
+            assert value1 <= value2, "FAILED: %s <= %s" % (str(value1), str(value2))
+            assert value1 == value2
+
+        for locations in [self.ordered_locations1, self.ordered_locations2]:
+            for value1, value2 in zip(locations, locations[1:]):
+                assert value1 <= value2, "FAILED: %s <= %s" % (str(value1), str(value2))
+                assert value1 != value2
+
+    def test_compare_greater_or_equal(self):
+        for value1, value2 in self.same_locations:
+            assert value2 >= value1, "FAILED: %s >= %s" % (str(value2), str(value1))
+            assert value2 == value1
+
+        for locations in [self.ordered_locations1, self.ordered_locations2]:
+            for value1, value2 in zip(locations, locations[1:]):
+                assert value2 >= value1, "FAILED: %s >= %s" % (str(value2), str(value1))
+                assert value2 != value1
+
+    def test_filename_should_be_same_as_self(self):
+        for location in self.ordered_locations2:
+            assert location == location.filename
+            assert location.filename == location
+
+    def test_string_conversion(self):
+        for location in self.ordered_locations2:
+            expected = u"%s:%s" % (location.filename, location.line)
+            if location.line is None:
+                expected = location.filename
+            assert str(location) == expected
+
+    def test_repr_conversion(self):
+        for location in self.ordered_locations2:
+            expected = u'<FileLocation: filename="%s", line=%s>' % \
+                       (location.filename, location.line)
+            actual = repr(location)
+            assert actual == expected, "FAILED: %s == %s" % (actual, expected)

@@ -13,14 +13,15 @@ and running features, etc.
 """
 
 from __future__ import print_function, with_statement
+from behave4cmd0.__setup import TOP
 import os.path
 import subprocess
 import sys
 import shlex
 import codecs
 
-HERE = os.path.dirname(__file__)
-TOP  = os.path.join(HERE, "..")
+# HERE = os.path.dirname(__file__)
+# TOP  = os.path.join(HERE, "..")
 
 # -----------------------------------------------------------------------------
 # CLASSES:

@@ -1,0 +1,170 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "behave JSON schema",
+    "description": "behave schema for JSON formatter output",
+    "type": "array",
+    "items": {
+        "$ref": "#/definitions/Feature"
+    },
+    "definitions": {
+        "Feature": {
+            "type": "object",
+            "description": "Represents a Feature object.",
+            "properties": {
+                "name":     { "type": "string" },
+                "keyword":  { "type": "string" },
+                "location": { "type": "string" },
+                "status":   { "type": "string" },
+                "tags":     { "$ref": "#/definitions/Tags" },
+                "description": { "$ref": "#/definitions/MultiLineText" },
+                "elements": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/FeatureElement" }
+                }
+            },
+            "required": [ "name", "keyword", "location" ]
+        },
+        "FeatureElement": {
+            "type": "object",
+            "anyOf": [
+                { "$ref": "#/definitions/Background" },
+                { "$ref": "#/definitions/Scenario" },
+                { "$ref": "#/definitions/ScenarioOutline" }
+            ]
+        },
+        "Background": {
+            "type": "object",
+            "properties": {
+                "type":     { "enum": [ "background" ] },
+                "name":     { "type": "string" },
+                "keyword":  { "type": "string" },
+                "location": { "type": "string" },
+                "steps": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/Step" }
+                }
+            },
+            "required": [ "name", "keyword", "location", "steps" ]
+        },
+        "Scenario": {
+            "type": "object",
+            "properties": {
+                "type":     { "enum": [ "scenario" ] },
+                "name":     { "type": "string" },
+                "keyword":  { "type": "string" },
+                "location": { "type": "string" },
+                "tags":     { "$ref": "#/definitions/Tags" },
+                "description": { "$ref": "#/definitions/MultiLineText" },
+                "steps": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/Step" }
+                }
+            },
+            "required": [ "name", "keyword", "location", "steps" ]
+        },
+        "ScenarioOutline": {
+            "type": "object",
+            "properties": {
+                "type":     { "enum": [ "scenario_outline" ] },
+                "name":     { "type": "string" },
+                "keyword":  { "type": "string" },
+                "location": { "type": "string" },
+                "tags":     { "$ref": "#/definitions/Tags" },
+                "description": { "$ref": "#/definitions/MultiLineText" },
+                "steps": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/Step" }
+                },
+                "examples": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/Examples" }
+                }
+            },
+            "required": [ "name", "keyword", "location", "steps", "examples" ]
+        },
+        "Examples": {
+            "type": "object",
+            "description": "@wip: Must be defined."
+        },
+        "Step": {
+            "properties": {
+                "name":     { "type": "string" },
+                "keyword":  { "type": "string" },
+                "step_type":{ "type": "string" },
+                "location": { "type": "string" },
+                "text":     { "$ref": "#/definitions/MultiLineText" },
+                "table":    { "$ref": "#/definitions/Table" },
+                "match":    { "$ref": "#/definitions/Match" },
+                "result":   { "$ref": "#/definitions/TestResult" }
+            },
+            "required": [ "name", "keyword", "step_type", "location" ]
+        },
+        "MultiLineText": {
+            "anyOf": [
+                { "type": "string" },
+                { "type": "array", "items": { "type": "string" }}
+            ],
+            "description": "Type used for multi-line text in steps."
+        },
+        "Text": {
+            "type": "string",
+            "description": "Type used for multi-line text in steps."
+        },
+        "Table": {
+            "type": "object",
+            "description": "@wip: Must be defined."
+        },
+        "TestResult": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "description": "Enum: untested, undefined, skipped, passed, failed"
+                },
+                "duration": {
+                    "type": "number",
+                    "description": "Duration in seconds (as float)"
+                },
+                "error_message": { "$ref": "#/definitions/MultiLineText" }
+            },
+            "required": [ "status", "duration" ]
+        },
+        "MatchArgument": {
+            "type": "object",
+            "properties": {
+                "name": { "type": "string" },
+                "original": { "type": "string" },
+                "value": {
+                    "anyOf": [
+                        { "type": "string" },
+                        { "type": "integer" },
+                        { "type": "number" },
+                        { "type": "boolean" },
+                        { "type": "object" },
+                        { "type": "array" },
+                        { "type": "null" }
+                    ]
+                 }
+            },
+            "required": [ "value" ]
+        },
+        "Match": {
+            "type": "object",
+            "description": "Step definition (implementation), associated to a step.",
+            "properties": {
+                "location": { "type": "string" },
+                "arguments": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/MatchArgument" }
+                }
+            }
+        },
+        "Tags": {
+            "type": "array",
+            "items": { "type": "string" }
+        },
+        "SimpleTypes": {
+            "enum": [ "array", "boolean", "integer", "null", "number", "object", "string" ]
+        }
+    }
+}
