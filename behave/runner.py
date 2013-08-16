@@ -546,7 +546,7 @@ class Runner(object):
             print ("ERROR: Cannot import multiprocessing module."
             " If you're on python2.5, go get the backport")
             return 1
-
+        self.config.format = ['plain']
         self.parallel_element = getattr(self.config, 'parallel_element')
 
         if self.parallel_element != 'feature' and \
@@ -558,6 +558,7 @@ class Runner(object):
         def do_nothing(obj2, obj3):
             pass
         self.context._emit_warning = do_nothing
+
 
         self.joblist_index_queue = multiprocessing.Manager().JoinableQueue()
         self.resultsqueue = multiprocessing.Manager().JoinableQueue()
