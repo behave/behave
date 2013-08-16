@@ -636,6 +636,7 @@ class Runner(object):
                 results['steps_failed'] = 0
                 results['steps_skipped'] = 0
                 results['steps_undefined'] = 0
+                results['steps_untested'] = 0
                 results['jobtype'] = current_job.type
                 results['reportinginfo'] = job_report_text
                 results['status'] = current_job.status
