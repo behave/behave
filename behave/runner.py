@@ -549,11 +549,15 @@ class Runner(object):
         self.config.format = ['plain']
         self.parallel_element = getattr(self.config, 'parallel_element')
 
-        if self.parallel_element != 'feature' and \
+        if not self.parallel_element:
+            self.parallel_element = 'scenario'
+            print "INFO: Without giving --parallel-element, defaulting to 'scenario'..."
+        else:
+            if self.parallel_element != 'feature' and \
                 self.parallel_element != 'scenario':
-            print ("ERROR: When using --processes, --parallel-element"
-            " option must be set to 'feature' or 'scenario'")
-            return 1
+                    print ("ERROR: When using --processes, --parallel-element"
+                    " option must be set to 'feature' or 'scenario'")
+                    return 1
 
         def do_nothing(obj2, obj3):
             pass
