@@ -557,7 +557,7 @@ class Runner(object):
                 self.parallel_element != 'scenario':
                     print ("ERROR: When using --processes, --parallel-element"
                     " option must be set to 'feature' or 'scenario'. You gave '"+
-                    self.parallel_element+"', which isn't valid.")
+                    str(self.parallel_element)+"', which isn't valid.")
                     return 1
 
         def do_nothing(obj2, obj3):
