@@ -864,15 +864,17 @@ class ScenarioOutline(Scenario):
 
     def run(self, runner):
         failed = False
+        failed_count = 0
 
         for sub in self.scenarios:
             runner.context._set_root_attribute('active_outline', sub._row)
             failed = sub.run(runner)
             if failed and runner.config.stop:
-                return False
+                return failed
+            if failed: failed_count += 1
         runner.context._set_root_attribute('active_outline', None)
 
-        return failed
+        return failed_count > 0
 
 
 class Examples(BasicStatement, Replayable):
