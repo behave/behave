@@ -8,7 +8,10 @@ import sys
 import traceback
 import warnings
 import weakref
+import time
+import collections
 
+from behave import parser
 from behave import matchers
 from behave.step_registry import setup_step_decorators
 from behave.formatter import formatters
@@ -16,6 +19,13 @@ from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
 from behave.runner_util import \
     collect_feature_locations, parse_features
+from behave.formatter.base import StreamOpener    
+
+multiprocessing = None
+try:
+    import multiprocessing
+except ImportError,e:
+    pass
 
 
 class ContextMaskWarning(UserWarning):
@@ -475,6 +485,8 @@ class Runner(object):
             return self.run_with_paths()
 
     def run_with_paths(self):
+
+
         self.load_hooks()
         self.load_step_definitions()
 
@@ -491,6 +503,9 @@ class Runner(object):
                                     if not self.config.exclude(filename) ]
         features = parse_features(feature_locations, language=self.config.lang)
         self.features.extend(features)
+
+        if getattr(self.config, 'proc_count'):
+            return self.run_multiproc()
 
         # -- STEP: Run all features.
         self.formatters = formatters.get_formatter(self.config, stream_openers)
@@ -524,6 +539,232 @@ class Runner(object):
         failed = ((failed_count > 0) or
                   (len(self.undefined) > undefined_steps_initial_size))
         return failed
+
+    def run_multiproc(self):
+
+        if not multiprocessing:
+            print ("ERROR: Cannot import multiprocessing module."
+            " If you're on python2.5, go get the backport")
+            return 1
+        self.config.format = ['plain']
+        self.parallel_element = getattr(self.config, 'parallel_element')
+
+        if not self.parallel_element:
+            self.parallel_element = 'scenario'
+            print "INFO: Without giving --parallel-element, defaulting to 'scenario'..."
+        else:
+            if self.parallel_element != 'feature' and \
+                self.parallel_element != 'scenario':
+                    print ("ERROR: When using --processes, --parallel-element"
+                    " option must be set to 'feature' or 'scenario'. You gave '"+
+                    str(self.parallel_element)+"', which isn't valid.")
+                    return 1
+
+        def do_nothing(obj2, obj3):
+            pass
+        self.context._emit_warning = do_nothing
+
+
+        self.joblist_index_queue = multiprocessing.Manager().JoinableQueue()
+        self.resultsqueue = multiprocessing.Manager().JoinableQueue()
+
+        self.joblist = []
+        scenario_count = 0
+        feature_count = 0
+        for feature in self.features:
+            if self.parallel_element == 'feature' or 'serial' in feature.tags:
+                self.joblist.append(feature)
+                self.joblist_index_queue.put(feature_count + scenario_count)
+                feature_count += 1
+                continue
+            for scenario in feature.scenarios:
+                if scenario.type == 'scenario':
+                    self.joblist.append(scenario)
+                    self.joblist_index_queue.put(
+                        feature_count + scenario_count)
+                    scenario_count += 1
+                else:
+                    for subscenario in scenario.scenarios:
+                        self.joblist.append(subscenario)
+                        self.joblist_index_queue.put(
+                            feature_count + scenario_count)
+                        scenario_count += 1
+
+        proc_count = int(getattr(self.config, 'proc_count'))
+        print ("INFO: {0} scenario(s) and {1} feature(s) queued for"
+                " consideration by {2} workers. Some may be skipped if the"
+                " -t option was given..."
+               .format(scenario_count, feature_count, proc_count))
+        time.sleep(2)
+
+        procs = []
+        for i in range(proc_count):
+            p = multiprocessing.Process(target=self.worker, args=(i, ))
+            procs.append(p)
+            p.start()
+        [p.join() for p in procs]
+
+        self.run_hook('after_all', self.context)
+        return self.multiproc_fullreport()
+
+    def worker(self, proc_number):
+        while 1:
+            try:
+                joblist_index = self.joblist_index_queue.get_nowait()
+            except Exception, e:
+                break
+            current_job = self.joblist[joblist_index]
+            writebuf = StringIO.StringIO()
+            self.setfeature(current_job)
+            self.config.outputs = []
+            self.config.outputs.append(StreamOpener(stream=writebuf))
+
+            stream_openers = self.config.outputs
+
+            self.formatters = formatters.get_formatter(self.config, stream_openers)
+
+            for formatter in self.formatters:
+                formatter.uri(current_job.filename)
+
+            start_time = time.strftime("%Y-%m-%d %H:%M:%S")
+            current_job.run(self)
+            end_time = time.strftime("%Y-%m-%d %H:%M:%S")
+
+            sys.stderr.write(current_job.status[0]+" ")
+
+            job_report_text = self.generatereport(proc_number,
+            current_job, start_time, end_time, writebuf)
+
+            if job_report_text:
+                results = {}
+                results['steps_passed'] = 0
+                results['steps_failed'] = 0
+                results['steps_skipped'] = 0
+                results['steps_undefined'] = 0
+                results['steps_untested'] = 0
+                results['jobtype'] = current_job.type
+                results['reportinginfo'] = job_report_text
+                results['status'] = current_job.status
+                if current_job.type != 'feature':
+                    results[
+                        'uniquekey'] = current_job.filename + current_job.feature.name
+                else:
+                    results['scenarios_passed'] = 0
+                    results['scenarios_failed'] = 0
+                    results['scenarios_skipped'] = 0
+                    self.countscenariostatus(current_job, results)
+                self.countstepstatus(current_job, results)
+                self.resultsqueue.put(results)
+
+    def setfeature(self, current_job):
+        if current_job.type == 'feature':
+            self.feature = current_job
+        else:
+            self.feature = current_job.feature
+
+    def setformatterbuffer(self, current_job, writebuf):
+        self.formatter = formatters.get_formatter(self.config, writebuf)
+        if current_job.type == 'feature':
+            self.formatter.uri(current_job.filename)
+        else:
+            self.formatter.uri(current_job.feature.filename)
+
+    def generatereport(self, proc_number, current_job, start_time, end_time, writebuf):
+        if not writebuf.pos:
+            return ""
+
+        reportheader = start_time + "|WORKER" + str(proc_number) + " START|" + \
+        "status:" + current_job.status + "|" + current_job.filename + "\n"
+
+        reportfooter = end_time + "|WORKER" + str(proc_number) + " END|" + \
+        "status:" + current_job.status + "|" + current_job.filename + \
+        "|Duration:" + str(current_job.duration)
+
+        if self.config.format[0] == 'plain' and len(current_job.tags):
+            tags = "@"
+            for tag in current_job.tags:
+                tags += tag + " "
+            reportheader += "\n" + tags + "\n"
+
+        if current_job.status == 'failed':
+            self.getskippedsteps(current_job, writebuf)
+
+        writebuf.seek(0)
+        return reportheader + writebuf.read() + "\n" + reportfooter
+
+    def getskippedsteps(self, current_job, writebuf):
+        if current_job.type != 'scenario':
+            [self.getskippedsteps(s, writebuf) for s in current_job.scenarios]
+        else:
+            for step in current_job.steps:
+                if step.status == 'skipped':
+                    writebuf.write("Skipped step because of previous error"
+                                   " - Scenario:{0}|step:{1}\n"
+                                   .format(current_job.name, step.name))
+
+    def countscenariostatus(self, current_job, results):
+        if current_job.type != 'scenario':
+            [self.countscenariostatus(
+                s, results) for s in current_job.scenarios]
+        else:
+            results['scenarios_' + current_job.status] += 1
+
+    def countstepstatus(self, current_job, results):
+        if current_job.type != 'scenario':
+            [self.countstepstatus(s, results) for s in current_job.scenarios]
+        else:
+            for step in current_job.steps:
+                results['steps_' + step.status] += 1
+            if current_job.background:
+                for step in current_job.background.steps:
+                    results['steps_' + step.status] += 1
+
+    def multiproc_fullreport(self):
+        metrics = collections.defaultdict(int)
+        combined_features_from_scenarios_results = collections.defaultdict(
+            lambda: '')
+
+        while not self.resultsqueue.empty():
+            print "\n" * 3
+            print "_" * 75
+            jobresult = self.resultsqueue.get()
+            print jobresult['reportinginfo']
+
+            if jobresult['jobtype'] != 'feature':
+                combined_features_from_scenarios_results[
+                    jobresult['uniquekey']] += '|' + jobresult['status']
+                metrics['scenarios_' + jobresult['status']] += 1
+            else:
+                metrics['features_' + jobresult['status']] += 1
+
+            metrics['steps_passed'] += jobresult['steps_passed']
+            metrics['steps_failed'] += jobresult['steps_failed']
+            metrics['steps_skipped'] += jobresult['steps_skipped']
+            metrics['steps_undefined'] += jobresult['steps_undefined']
+
+            if jobresult['jobtype'] == 'feature':
+                metrics['scenarios_passed'] += jobresult['scenarios_passed']
+                metrics['scenarios_failed'] += jobresult['scenarios_failed']
+                metrics['scenarios_skipped'] += jobresult['scenarios_skipped']
+
+        for uniquekey in combined_features_from_scenarios_results:
+            if 'failed' in combined_features_from_scenarios_results[uniquekey]:
+                metrics['features_failed'] += 1
+            elif 'passed' in combined_features_from_scenarios_results[uniquekey]:
+                metrics['features_passed'] += 1
+            else:
+                metrics['features_skipped'] += 1
+
+        print "\n" * 3
+        print "_" * 75
+        print ("{0} features passed, {1} features failed, {2} features skipped\n"
+               "{3} scenarios passed, {4} scenarios failed, {5} scenarios skipped\n"
+               "{6} steps passed, {7} steps failed, {8} steps skipped, {9} steps undefined\n")\
+                .format(
+                metrics['features_passed'], metrics['features_failed'], metrics['features_skipped'],
+                metrics['scenarios_passed'], metrics['scenarios_failed'], metrics['scenarios_skipped'],
+                metrics['steps_passed'], metrics['steps_failed'], metrics['steps_skipped'], metrics['steps_undefined'])
+        return metrics['features_failed']
 
     def setup_capture(self):
         if self.config.stdout_capture:
