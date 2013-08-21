@@ -553,9 +553,6 @@ class Runner(object):
             self.parallel_element = 'scenario'
             print "INFO: Without giving --parallel-element, defaulting to 'scenario'..."
         else:
-            if "Mock" in str(type(self.parallel_element)):
-                print "INFO: Bypass Travis CI, return 0 now"
-                return 0
             if self.parallel_element != 'feature' and \
                 self.parallel_element != 'scenario':
                     print ("ERROR: When using --processes, --parallel-element"
