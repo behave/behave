@@ -19,6 +19,10 @@ IMPROVEMENT:
 
   * issue #172: Subfolders in junit XML filenames (provided by: roignac).
 
+FIXED:
+
+  * issue #186: ScenarioOutline uses wrong return value when if fails (provided by: mdavezac)
+
 
 Version: 1.2.3 (2013-07-08)
 -------------------------------------------------------------------------------
