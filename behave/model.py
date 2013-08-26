@@ -385,8 +385,6 @@ class Feature(TagStatement, Replayable):
         assert self.status == "skipped"
 
     def run(self, runner):
-        failed = False
-
         runner.context._push()
         runner.context.feature = self
 
@@ -419,10 +417,9 @@ class Feature(TagStatement, Replayable):
             failed = scenario.run(runner)
             if failed:
                 failed_count += 1
-
-            # do we want to stop on the first failure?
-            if failed and runner.config.stop:
-                break
+                if runner.config.stop:
+                    # -- FAIL-EARLY: Stop after first failure.
+                    break
 
         if run_feature:
             runner.run_hook('after_feature', runner.context, self)
@@ -863,17 +860,16 @@ class ScenarioOutline(Scenario):
         assert self.status == "skipped"
 
     def run(self, runner):
-        failed = False
         failed_count = 0
-
-        for sub in self.scenarios:
-            runner.context._set_root_attribute('active_outline', sub._row)
-            failed = sub.run(runner)
-            if failed and runner.config.stop:
-                return failed
-            if failed: failed_count += 1
+        for scenario in self.scenarios:
+            runner.context._set_root_attribute('active_outline', scenario._row)
+            failed = scenario.run(runner)
+            if failed:
+                failed_count += 1
+                if runner.config.stop:
+                    # -- FAIL-EARLY: Stop after first failure.
+                    break
         runner.context._set_root_attribute('active_outline', None)
-
         return failed_count > 0
 
 
