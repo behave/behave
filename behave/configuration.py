@@ -485,8 +485,8 @@ class Configuration(object):
         return re.compile(pattern, flags=(re.UNICODE | re.LOCALE))
 
     def exclude(self, filename):
-        if self.include_re and self.include_re.search(filename) is None:
+        if self.include_re and self.include_re.search(str(filename)) is None:
             return True
-        if self.exclude_re and self.exclude_re.search(filename) is not None:
+        if self.exclude_re and self.exclude_re.search(str(filename)) is not None:
             return True
         return False
