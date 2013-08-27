@@ -4,6 +4,7 @@ from __future__ import with_statement
 import contextlib
 import os.path
 import StringIO
+import re
 import sys
 import traceback
 import warnings
@@ -597,6 +598,9 @@ class Runner(object):
                .format(scenario_count, feature_count, proc_count))
         time.sleep(2)
 
+        import code
+        code.interact(local=locals())
+
         procs = []
         for i in range(proc_count):
             p = multiprocessing.Process(target=self.worker, args=(i, ))
@@ -632,6 +636,10 @@ class Runner(object):
 
             sys.stderr.write(current_job.status[0]+" ")
 
+            if current_job.type == 'feature':
+                for reporter in self.config.reporters:
+                    reporter.feature(current_job)
+
             job_report_text = self.generatereport(proc_number,
             current_job, start_time, end_time, writebuf)
 
@@ -646,14 +654,18 @@ class Runner(object):
                 results['reportinginfo'] = job_report_text
                 results['status'] = current_job.status
                 if current_job.type != 'feature':
-                    results[
-                        'uniquekey'] = current_job.filename + current_job.feature.name
+                    results['uniquekey'] = \
+                    current_job.filename + current_job.feature.name
                 else:
                     results['scenarios_passed'] = 0
                     results['scenarios_failed'] = 0
                     results['scenarios_skipped'] = 0
                     self.countscenariostatus(current_job, results)
                 self.countstepstatus(current_job, results)
+                if current_job.type != 'feature' and \
+                    getattr(self.config, 'junit'):
+                        results['junit_report'] = \
+                        self.generate_junit_report(current_job, writebuf)
                 self.resultsqueue.put(results)
 
     def setfeature(self, current_job):
@@ -765,6 +777,47 @@ class Runner(object):
                 metrics['scenarios_passed'], metrics['scenarios_failed'], metrics['scenarios_skipped'],
                 metrics['steps_passed'], metrics['steps_failed'], metrics['steps_skipped'], metrics['steps_undefined'])
         return metrics['features_failed']
+
+    def generate_junit_report(self,cj, writebuf):
+        report_string = ""
+        report_string += '<testcase classname="'
+        report_string += cj.location.basename().replace("feature","")
+        report_string += cj.feature.name+'" '
+        report_string += 'name="'+cj.name+'" '
+        report_string += 'status="'+cj.status+'" '
+        report_string += 'time="'+cj.duration+'">'
+        if cj.status == 'failed':
+            failed_step = None
+            report_string += '<error message="'
+            for step in cj.steps:
+                if step.status == 'failed':
+                    failed_step = step
+                    break
+            report_string += failed_step.exception[0]+'" '
+            report_string += 'type="'
+            report_string += re.sub(".*?\.(.*?)\'.*","\\1",\
+            str(type(failed_step.exception)))+'">\n'
+            report_string += "Failing step: "
+            report_string += failed_step.name + " ... failed in "
+            report_string += str(failed_step.duration)+"s\n"
+            report_string += "Location: " + str(failed_step.location)
+            report_string += "<![CDATA[\n"
+            report_string += failed_step.error_message 
+            report_string += "]]>\n</error>"
+        report_string += "<system-out>\n<![CDATA[\n"
+        report_string += "@scenario.begin\n"   
+        writebuf.seek(0)
+        report_string += writebuf.readlines()[1]
+        for step in cj.all_steps:
+            report_string += " "*4
+            report_string += step.keyword + " "
+            report_string += step.name + " ... "
+            report_string += step.status + " in "
+            report_string += str(s.duration) + "s\n"
+        report_string += "\n@scenario.end\n"
+        report_string += "-"*80 
+        report_string += "\n"
+
 
     def setup_capture(self):
         if self.config.stdout_capture:
