@@ -115,11 +115,9 @@ You may see the same information presented below at any time using ``behave
    configuration file setting.
 **--stop**
    Stop running tests at the first failure.
-**-S, --strict**
-   Fail if there are any undefined or pending steps.
 **-t, --tags**
    Only execute features or scenarios with tags matching
-   TAG_EXPRESSION. Pass '--tag-help' for more information.
+   TAG_EXPRESSION. Pass '--tags-help' for more information.
 **-T, --no-timings**
    Don't print the time taken for each step.
 **--show-timings**
@@ -258,7 +256,7 @@ Recognised Settings
    used to override a configuration file setting.
 **show_snippets** -- boolean
    Don't print snippets for unimplemented steps.
-**snippets** -- boolean
+**show_snippets** -- boolean
    Print snippets for unimplemented steps. This is the default
    behaviour. This switch is used to override a configuration file
    setting.
@@ -320,7 +318,7 @@ Recognised Settings
 **outfiles** -- text (multiple allowed)
    Write to specified file instead of stdout.
 **paths** -- text (multiple allowed)
-   Specify paths to be searched for features.
+   Specify default feature paths, used when none are provided.
 **quiet** -- boolean
    Alias for --no-snippets --no-source.
 **show_source** -- boolean
@@ -332,8 +330,6 @@ Recognised Settings
    configuration file setting.
 **stop** -- boolean
    Stop running tests at the first failure.
-**strict** -- boolean
-   Fail if there are any undefined or pending steps.
 **tags** -- text (multiple allowed)
    Only execute certain features or scenarios based on the tag
    expression given. See below for how to code tag expressions in

@@ -43,6 +43,19 @@ options = [
      dict(action='store_true',
           help="Invokes formatters without executing the steps.")),
 
+    (('--processes',),
+     dict(metavar="NUMBER", dest='proc_count',
+          help="""Use multiple pids to do the work faster.
+		Not all options work properly under parallel mode. See README.md 
+		""")),
+
+    (('--parallel-element',),
+     dict(metavar="STRING", dest='parallel_element',
+          help="""If you used the --processes option, then this will control how the tests get parallelized.
+		Valid values are 'feature' or 'scenario'. Anything else will error. See readme for more
+		info on how this works.
+		""")),
+
     (('-e', '--exclude'),
      dict(metavar="PATTERN", dest='exclude_re',
           help="""Don't run feature files matching regular expression
@@ -97,14 +110,13 @@ options = [
      dict(action='store_false', dest='show_snippets',
           help="Don't print snippets for unimplemented steps.")),
     (('--snippets',),
-     dict(action='store_true',
+     dict(action='store_true', dest='show_snippets',
           help="""Print snippets for unimplemented steps.
                   This is the default behaviour. This switch is used to
                   override a configuration file setting.""")),
 
     (('-m', '--no-multiline'),
-     dict(action='store_false',
-          dest='show_multiline',
+     dict(action='store_false', dest='show_multiline',
           help="""Don't print multiline strings and tables under
                   steps.""")),
 
@@ -134,8 +146,7 @@ options = [
                   override a configuration file setting.""")),
 
     (('--no-capture-stderr',),
-     dict(action='store_false',
-          dest='stderr_capture',
+     dict(action='store_false', dest='stderr_capture',
           help="""Don't capture stderr (any stderr output will be
                   printed immediately.)""")),
 
@@ -210,9 +221,9 @@ options = [
      dict(action='append', dest='outfiles', metavar='FILE',
           help="Write to specified file instead of stdout.")),
 
-    ((),  # Config only
+    ((),  # -- CONFIGFILE only
      dict(action='append', dest='paths',
-          help="Specify paths to be searched for features.")),
+          help="Specify default feature paths, used when none are provided.")),
 
     (('-q', '--quiet'),
      dict(action='store_true',

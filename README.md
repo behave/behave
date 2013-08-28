@@ -2,13 +2,17 @@
 behave-parallel
 ======
 
-
-
 The real devs are at the following https://github.com/behave/behave
 
 
 Ruby has rspec/cucumber for BDD, and Ruby has parallel_tests to run them in parallel.
 Python has pyvows and pycuracy, but they're not exactly what I'm looking for.
+=======
+The real developers, and core documentation, are at https://github.com/behave/behave
+
+
+Ruby has rspec/cucumber for BDD, and Ruby has parallel_tests to run them in parallel.
+Python has pyvows, lettuce and pycuracy, but they're not exactly what I'm looking for.
 I feel that behave is the most advanced BDD framework for python, so giving it parallel powers seemed ideal.
 
 
@@ -29,8 +33,6 @@ To that end, lettuce, pyVows, nosetest's BDD plugin and pyccuracy seem to be the
 * nosetest's BDD doesn't have a .feature file for clear reability without knowing code.
 * pyccuracy has BDD, parallelism and plain english scenarios - but, it is very one-to-one match. Exactly 1 sentence to 1 action; and a very specific structured sentence at that. This does not work for me because I am doing very custom tests against mobile devices and require flexibility in my selenium commands - even custom commands that are not part of selenium, e.g. https://gist.github.com/tokunbo/4747316 . Also, I don't want 1 sentence per command. I want to say "Delete Remote object" and have it tied to a function that does whatever it must to meet that requirement. Making the .feature file easy to read without the complexity of the exact steps needed to do it.
 * One more thing. I've just been informed of https://github.com/griddynamics/bunch/. Allowing parallelism of lettuce tests. That is very, very close to what behave-parallel brings to the table.I was a bit hopeful, but it doesn't seem maintained anymore. The links to docs gives me a 404 and trying to run the examples test error with a FileNotFound exception. So I don't know if lettuce+bunch work at all anymore or what's going on there. If the documented test-examples worked, then maybe I could evaluate it and use it.
-
-
 So there you go. If you don't agree with what I said above, feel free to use the others. I just did this as yet another option for test-developers and it meets 100% of what I, and the rest of the team, are looking for at this exact moment.
 
 
@@ -39,10 +41,10 @@ So there you go. If you don't agree with what I said above, feel free to use the
 USAGE
 ======
 
-	behave --processes 4 --parallel-element scenario --format plain
+	behave --processes 4 --parallel-element scenario
 
 
-Just like RSpec's parallel_test, and python's nosetests, it's up to you to decide a sane value for the number of pids that should be created for your parallel running tests. Another option, --parallel-element must go with it. The 2 valid values are 'scenario' or 'feature'. 
+Just like RSpec's parallel_test, and python's nosetests, it's up to you to decide a sane value for the number of pids that should be created for your parallel running tests. Another option, --parallel-element must go with it. The 2 valid values are 'scenario' or 'feature'. If you don't give --parallel-element, it'll be assumed you wanted 'scenario'.
 
 ======
 Here's how it works:
@@ -50,12 +52,14 @@ Here's how it works:
 
 * If you had 3 features, each with 3 scenarios, that's 9 scenarios total. So, if you ran _behave --processes 9 --parallel-element scenario_, first behave will find the 9 scenarios then create 9 pids to run each of them *at the same time*.
 * If you ran _behave --processes 9 --parallel-element feature_, then the 3 features will be queued for processing by 9 pids. Since there are only 3 features, 3 pids will each get a feature, the other 6 pids will exit because the workqueue will be empty. The 3 pids with features will begin their work at the same time; running all the scenarios with the features in order.
-* Now here's where things get a bit complicated. There's a tag called __@serial__ that you can put on a feature. If you run _behave --process 9 --parallel-element_ scenario, but one of the 3 features has the @serial tag. That feature will not have its scenarios parallelized. What will happen is only 2 of the features will have the scenarios parallelized. The job queue will ultimately contain 6 scenarios and 1 feature, a total of 7 "tasks". So of the 9 pids created by --processes 9, 7 pids will get a "task" to work on and 2 pids will exit immediately since the queue will be empty for them. 6 of the seven pids will do the one scenario they're assigned to and exit, the 7th pid will run the entire feature that had the @serial tag - doing each of the scenarios in the order they appear in the .feature file.
+* Now here's where things get a bit complicated. The tag called __@serial__ on a feature will alter execution flow. If you run _behave --process 9 --parallel-element scenario_, but one of the 3 features has the @serial tag. That feature will not have its scenarios parallelized. What will happen is only 2 of the features will have the scenarios parallelized. The job queue will ultimately contain 6 scenarios and 1 feature, a total of 7 "tasks". So of the 9 pids created by --processes 9, 7 pids will get a "task" to work on and 2 pids will exit immediately since the queue will be empty for them. 6 of the seven pids will do the one scenario they're assigned to and exit, the 7th pid will run the entire feature that had the @serial tag - doing each of the scenarios in the order they appear in the .feature file.
 * Finally, If a feature gets its scenarios parallelized the effect also applies to its scenario outlines. So let's say you only had 1 .feature file, with 1 scenario outline that has 10 rows in the Examples table. If you run _behave --processes 10 --parallel-element scenario_, the 10 rows of data will generate 10 scenarios and all 10 will run at the same time by the 10 pids created by --processes 10.  
+* The "Background" element will run before each scenario runs, but in parallel. So if you have 2 workers and 2 scenarios in queue each worker will run its own instance of Background then run the scenario assigned to it.
+
 
 If you don't give the --procceses option, then behave should work like it always did. 
 
-Because you'd be running scenarios in parallel, it would be madness to allow all the pids to print to stdout while running. You'll just get a scrambled mess. Instead, I opted to print out an asterisk for every 'task'(be it a scenario or feature) that is completed to stderr(it's unbuffered, so it'll appear immediately) so you have at least a little idea about the progress behave is making. Note that you can give --no-capture to see all the madness if you want; I don't know how that'd be helpful to you in parallel-running tests but it's an option.
+Because you'd be running scenarios in parallel, it would be madness to allow all the pids to print to stdout while running. You'll just get a scrambled mess. Instead, I opted to print out the first letter of the end-status for every 'task'(be it a scenario or feature) that is completed to stderr(it's unbuffered, so it'll appear immediately) so you have at least a little idea about the progress behave is making. So "p" for passed, "f" for failed, "s" for skipped. Note that you can give --no-capture to see all the madness if you want; I don't know how that'd be helpful to you in parallel-running tests but if you want to do it, go for it.
 
 Example output that shows up after all scenarios have been processed.
 
@@ -67,7 +71,7 @@ Example output that shows up after all scenarios have been processed.
 	2013-02-18 17:32:29|WORKER4 END|Scenario:Devide by num|Feature:talkingfeature_b|status:passed|Duration:2.00221419334
 
 
-You don't have to install this system-wide. Keep your normal offical-copy of behave. You can use this modified one without installing:
+You don't have to install this system-wide. Keep your normal offical-copy of behave. You can use this modified one without installing - but you really do have to do "pip install behave" to get the offical version because it'll install other dependencies that the official version, and this parallel-version, both need:
 
 	$ pwd
 	/home/toks
@@ -87,10 +91,7 @@ Known issues when using --processes flag
 ======
 I broke ALL THE THINGS!
 
-* The -t, -k, -i, -e, --no-capture, --show-timings and --format flags are the only ones I'm confident still work properly. Feel free to try other flags, maybe they
-work or maybe they don't. Maybe they fail silently in mysterious & spectacular ways. Who knows.
-
-* The "Background" element will run before each scenario runs, but in parallel. So if you have 2 workers and 2 scenarios in queue each worker will run its own instance of Background then run the scenario assigned to it.
+* The -t, -k, -i, -e, --no-capture, --show-timings and --junit flags are the only ones I'm confident still work properly. Feel free to try other flags, maybe they work or maybe they don't. Maybe they fail silently in mysterious & spectacular ways. Who knows.
 
 * I patched out the warnings that Context gives when user code overrides its context; it produced too much noise because of this whole parallel thing. It really shouldn't matter for parallelism. Since you've designed your scenarios to run in parallel you shouldn't even need to be writing anything to context that would be read by a different scenario. Set what you need by creating features/environment.py def before_all(context): and set whatever you need inside context(like say, URLs, usernames, passwords,etc). before_all(context) will run before any scenario so you can rely on that.
 	 
@@ -100,25 +101,15 @@ work or maybe they don't. Maybe they fail silently in mysterious & spectacular w
 
 		/usr/bin/time behave --processes 2 --parallel-element feature
 
+* You can't use the --format flag when using parallelization. I've noticed it tends to break stuff if it's set to anything other than "plain", so now I just hardcode it to always be "plain".
+
 ======
 Advice
 ======
 
-If you're even using this, I can most likely assume correctly the following three things:
+Ultimately this is probably the way you want to run it most of the time:
 
-* Your scenarios take too long to finish when they run one-by-one
-* You have a lot of scenarios to run
-* Since you're concerned about speed, your probably running behave in some automated batch process that logs the output to a file that you look at later.
-
-If I'm correct about the above, then be sure you use "--format plain" in your automation process, like this:
-
-		behave --processes 4 --format plain --parallel-element feature
-
-If you don't, the default behavior is to use the pretty(colorful) output. While that looks nice when you're running and watching it in the terminal, the control-chars that behave uses to change text color on your terminal will look _CRAZY_ in your log files. So if you're still debugging your test in the terminal, default pretty format is okay. When you're ready to schedule the job in some kinda automation(like I am with jenkins ci), add "--format plain" so your log files are readable.  
-
-Ultimately this is probably the minimal way you want to run it most of the time:
-
-		behave --processes 4 --parallel-element scenario --format plain --show-timings --logging-level INFO
+		behave --processes 4 --parallel-element scenario --junit --show-timings --logging-level INFO
 
 
 
