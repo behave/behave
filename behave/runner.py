@@ -599,9 +599,6 @@ class Runner(object):
                .format(scenario_count, feature_count, proc_count))
         time.sleep(2)
 
-        import code
-        code.interact(local=locals())
-
         procs = []
         for i in range(proc_count):
             p = multiprocessing.Process(target=self.worker, args=(i, ))
@@ -788,13 +785,13 @@ class Runner(object):
         report_obj['filebasename'] = cj.location.basename()[:-8]
         report_obj['feature_name'] = cj.feature.name        
         report_obj['status'] = cj.status
-        report_obj['duration'] = cj.duration 
+        report_obj['duration'] = round(cj.duration,4)
         report_string += '<testcase classname="'
         report_string += report_obj['filebasename']+'.'
         report_string += report_obj['feature_name']+'" '
         report_string += 'name="'+cj.name+'" '
         report_string += 'status="'+cj.status+'" '
-        report_string += 'time="'+str(cj.duration)+'">'
+        report_string += 'time="'+str(round(cj.duration,4))+'">'
         if cj.status == 'failed':
             report_string += self.get_junit_error(cj, writebuf)
         report_string += "<system-out>\n<![CDATA[\n"
@@ -807,36 +804,51 @@ class Runner(object):
             report_string += step.keyword + " "
             report_string += step.name + " ... "
             report_string += step.status + " in "
-            report_string += str(step.duration) + "s\n"
+            report_string += str(round(step.duration,4)) + "s\n"
         report_string += "\n@scenario.end\n"
         report_string += "-"*80 
         report_string += "\n"
+
+        report_string += self.get_junit_stdoutstderr(cj,loglines)
+        report_string += "</testcase>"
+        report_obj['report_string'] = report_string
+        return report_obj
+
+    def get_junit_stdoutstderr(self, cj, loglines):
+        substring = ""
+        if cj.status == 'passed':
+            substring += "\nCaptured stdout:\n"
+            substring += cj.stdout
+            substring += "\n]]>\n</system-out>"
+            if cj.stderr:
+                substring += "<system-err>\n<![CDATA[\n"
+                substring += "Captured stderr:\n"
+                substring += cj.stderr
+                substring += "\n]]>\n</system-err>"
+            return substring
+
         q = 0
         while q < len(loglines):
             if loglines[q] == "Captured stdout:\n":
                 while loglines[q] != "Captured stderr:\n" and \
                 q < len(loglines):
-                    report_string += loglines[q]
+                    substring += loglines[q]
                     q = q + 1
                 break       
             q = q + 1 
-        if cj.status == 'passed':
-            report_string += "\nCaptured stdout:\n"
-            report_string += cj.stdout
-        report_string += "]]>\n</system-out>"
+
+        substring += "]]>\n</system-out>"
 
         if q < len(loglines):
-            report_string += "<system-err>\n<![CDATA[\n"
+            substring += "<system-err>\n<![CDATA[\n"
             while q < len(loglines):
-                report_string += loglines[q]
+                substring += loglines[q]
                 q = q + 1
-            report_string += "]]>\n</system-err>"
+            substring += "]]>\n</system-err>"
+            
+        return substring
 
-        report_string += "</testcase>"
-        report_obj['report_string'] = report_string
-        return report_obj
-
-
+        
     def get_junit_error(self, cj, writebuf):
         failed_step = None
         error_string = ""
@@ -851,7 +863,7 @@ class Runner(object):
         str(type(failed_step.exception)))+'">\n'
         error_string += "Failing step: "
         error_string += failed_step.name + " ... failed in "
-        error_string += str(failed_step.duration)+"s\n"
+        error_string += str(round(failed_step.duration,4))+"s\n"
         error_string += "Location: " + str(failed_step.location)
         error_string += "<![CDATA[\n"
         error_string += failed_step.error_message 
@@ -892,7 +904,7 @@ class Runner(object):
             filedata += '" tests="'
             filedata += str(feature_reports[uniquekey]['total_scenarios'])
             filedata += '" time="'
-            filedata += str(feature_reports[uniquekey]['duration'])
+            filedata += str(round(feature_reports[uniquekey]['duration'],4))
             filedata += '">'
             filedata += "\n\n"
             filedata += feature_reports[uniquekey]['data']
