@@ -5,6 +5,7 @@ import contextlib
 import os.path
 import StringIO
 import re
+import os
 import sys
 import traceback
 import warnings
@@ -735,13 +736,14 @@ class Runner(object):
         metrics = collections.defaultdict(int)
         combined_features_from_scenarios_results = collections.defaultdict(
             lambda: '')
-
+        junit_report_objs = [] 
         while not self.resultsqueue.empty():
             print "\n" * 3
             print "_" * 75
             jobresult = self.resultsqueue.get()
             print jobresult['reportinginfo']
-
+            if 'junit_report' in jobresult:
+                junit_report_objs.append(jobresult['junit_report'])
             if jobresult['jobtype'] != 'feature':
                 combined_features_from_scenarios_results[
                     jobresult['uniquekey']] += '|' + jobresult['status']
@@ -776,38 +778,30 @@ class Runner(object):
                 metrics['features_passed'], metrics['features_failed'], metrics['features_skipped'],
                 metrics['scenarios_passed'], metrics['scenarios_failed'], metrics['scenarios_skipped'],
                 metrics['steps_passed'], metrics['steps_failed'], metrics['steps_skipped'], metrics['steps_undefined'])
+        if getattr(self.config,'junit'):
+            write_paralleltests_to_junitfile(junit_report_objs)
         return metrics['features_failed']
 
-    def generate_junit_report(self,cj, writebuf):
+    def generate_junit_report(self, cj, writebuf):
+        report_obj = {} 
         report_string = ""
+        report_obj['filebasename'] = cj.location.basename()[:-8]
+        report_obj['feature_name'] = cj.feature.name        
+        report_obj['status'] = cj.status
+        report_obj['duration'] = cj.duration 
         report_string += '<testcase classname="'
-        report_string += cj.location.basename().replace("feature","")
-        report_string += cj.feature.name+'" '
+        report_string += report_obj['filebasename']+'.'
+        report_string += report_obj['feature_name']+'" '
         report_string += 'name="'+cj.name+'" '
         report_string += 'status="'+cj.status+'" '
         report_string += 'time="'+cj.duration+'">'
         if cj.status == 'failed':
-            failed_step = None
-            report_string += '<error message="'
-            for step in cj.steps:
-                if step.status == 'failed':
-                    failed_step = step
-                    break
-            report_string += failed_step.exception[0]+'" '
-            report_string += 'type="'
-            report_string += re.sub(".*?\.(.*?)\'.*","\\1",\
-            str(type(failed_step.exception)))+'">\n'
-            report_string += "Failing step: "
-            report_string += failed_step.name + " ... failed in "
-            report_string += str(failed_step.duration)+"s\n"
-            report_string += "Location: " + str(failed_step.location)
-            report_string += "<![CDATA[\n"
-            report_string += failed_step.error_message 
-            report_string += "]]>\n</error>"
+            report_string += get_junit_error(cj, writebuf)
         report_string += "<system-out>\n<![CDATA[\n"
         report_string += "@scenario.begin\n"   
         writebuf.seek(0)
-        report_string += writebuf.readlines()[1]
+        loglines = writebuf.readlines()
+        report_string += loglines[1]
         for step in cj.all_steps:
             report_string += " "*4
             report_string += step.keyword + " "
@@ -817,7 +811,49 @@ class Runner(object):
         report_string += "\n@scenario.end\n"
         report_string += "-"*80 
         report_string += "\n"
+        q = 0
+        while q < len(loglines):
+            if loglines[q] == "Captured stdout:\n":
+                while loglines[q] != "Captured stderr:\n" and \
+                q < len(loglines):
+                    report_string += loglines[q]
+                    q = q + 1
+                break        
 
+        report_string += "]]>\n</system-out>"
+
+        if q < len(loglines):
+            report_string += "<system-err>\n<![CDATA[\n"
+            while q < len(loglines):
+                report_string += loglines[q]
+                q = q + 1
+            report_string += "]]>\n</system-err>"
+
+        report_string += "</testcase>"
+        report_obj['report_string'] = report_string
+        return report_obj
+
+
+    def get_junit_error(self, cj, writebuf):
+        failed_step = None
+        error_string = ""
+        error_string += '<error message="'
+        for step in cj.steps:
+            if step.status == 'failed':
+                failed_step = step
+                break
+        error_string += failed_step.exception[0]+'" '
+        error_string += 'type="'
+        error_string += re.sub(".*?\.(.*?)\'.*","\\1",\
+        str(type(failed_step.exception)))+'">\n'
+        error_string += "Failing step: "
+        error_string += failed_step.name + " ... failed in "
+        error_string += str(failed_step.duration)+"s\n"
+        error_string += "Location: " + str(failed_step.location)
+        error_string += "<![CDATA[\n"
+        error_string += failed_step.error_message 
+        error_string += "]]>\n</error>"
+        return error_string
 
     def setup_capture(self):
         if self.config.stdout_capture:
