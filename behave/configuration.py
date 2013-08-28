@@ -386,11 +386,7 @@ behave @features.txt
 parser = argparse.ArgumentParser(usage=usage, description=description)
 for fixed, keywords in options:
     if not fixed:
-<<<<<<< HEAD
-        continue
-=======
         continue    # -- CONFIGFILE only.
->>>>>>> 94a81ab... Provide --name option support to select scenarios by name (pull-request #87).
     if 'config_help' in keywords:
         keywords = dict(keywords)
         del keywords['config_help']
@@ -400,28 +396,6 @@ parser.add_argument('paths', nargs='*',
 
 
 class Configuration(object):
-<<<<<<< HEAD
-    def __init__(self):
-        self.formatters = []
-        self.reporters = []
-
-        defaults = dict(
-            color=sys.platform != 'win32',
-            stdout_capture=True,
-            stderr_capture=True,
-            show_snippets=True,
-            show_skipped=True,
-            log_capture=True,
-            dry_run=False,
-            show_source=True,
-            show_timings=True,
-            logging_format='%(levelname)s:%(name)s:%(message)s',
-            summary=True,
-            junit=False,
-        )
-        load_configuration(defaults)
-        parser.set_defaults(**defaults)
-=======
     defaults = dict(
         color=sys.platform != 'win32',
         stdout_capture=True,
@@ -446,7 +420,6 @@ class Configuration(object):
         self.outputs = []
         load_configuration(self.defaults)
         parser.set_defaults(**self.defaults)
->>>>>>> 94a81ab... Provide --name option support to select scenarios by name (pull-request #87).
 
         args = parser.parse_args()
         for key, value in args.__dict__.items():
