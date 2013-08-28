@@ -779,7 +779,7 @@ class Runner(object):
                 metrics['scenarios_passed'], metrics['scenarios_failed'], metrics['scenarios_skipped'],
                 metrics['steps_passed'], metrics['steps_failed'], metrics['steps_skipped'], metrics['steps_undefined'])
         if getattr(self.config,'junit'):
-            write_paralleltests_to_junitfile(junit_report_objs)
+            self.write_paralleltestresults_to_junitfile(junit_report_objs)
         return metrics['features_failed']
 
     def generate_junit_report(self, cj, writebuf):
@@ -794,9 +794,9 @@ class Runner(object):
         report_string += report_obj['feature_name']+'" '
         report_string += 'name="'+cj.name+'" '
         report_string += 'status="'+cj.status+'" '
-        report_string += 'time="'+cj.duration+'">'
+        report_string += 'time="'+str(cj.duration)+'">'
         if cj.status == 'failed':
-            report_string += get_junit_error(cj, writebuf)
+            report_string += self.get_junit_error(cj, writebuf)
         report_string += "<system-out>\n<![CDATA[\n"
         report_string += "@scenario.begin\n"   
         writebuf.seek(0)
@@ -807,7 +807,7 @@ class Runner(object):
             report_string += step.keyword + " "
             report_string += step.name + " ... "
             report_string += step.status + " in "
-            report_string += str(s.duration) + "s\n"
+            report_string += str(step.duration) + "s\n"
         report_string += "\n@scenario.end\n"
         report_string += "-"*80 
         report_string += "\n"
@@ -818,8 +818,11 @@ class Runner(object):
                 q < len(loglines):
                     report_string += loglines[q]
                     q = q + 1
-                break        
-
+                break       
+            q = q + 1 
+        if cj.status == 'passed':
+            report_string += "\nCaptured stdout:\n"
+            report_string += cj.stdout
         report_string += "]]>\n</system-out>"
 
         if q < len(loglines):
@@ -854,6 +857,63 @@ class Runner(object):
         error_string += failed_step.error_message 
         error_string += "]]>\n</error>"
         return error_string
+
+    def write_paralleltestresults_to_junitfile(self,junit_report_objs): 
+        feature_reports = {}
+        for jro in junit_report_objs:
+            #NOTE: There's an edge-case where this key would not be unique
+            #Where a feature has the same filename and feature name but
+            #different directory.
+            uniquekey = jro['filebasename']+"."+jro['feature_name']
+            if uniquekey not in feature_reports:
+                newfeature = {}
+                newfeature['duration'] = float(jro['duration'])
+                newfeature['statuses'] = jro['status']
+                newfeature['filebasename'] = jro['filebasename']
+                newfeature['total_scenarios'] = 1
+                newfeature['data'] = jro['report_string']
+                feature_reports[uniquekey] = newfeature 
+            else:
+                feature_reports[uniquekey]['duration'] += float(jro['duration'])
+                feature_reports[uniquekey]['statuses'] += jro['status']
+                feature_reports[uniquekey]['total_scenarios'] += 1
+                feature_reports[uniquekey]['data'] += jro['report_string']
+
+        for uniquekey in feature_reports.keys(): 
+            filedata = "<?xml version='1.0' encoding='UTF-8'?>\n"
+            filedata += '<testsuite errors="'
+            filedata += str(len(re.findall\
+            ("failed",feature_reports[uniquekey]['statuses'])))
+            filedata += '" failures="0" name="'
+            filedata += uniquekey+'" '
+            filedata += 'skipped="'
+            filedata += str(len(re.findall\
+            ("skipped",feature_reports[uniquekey]['statuses'])))
+            filedata += '" tests="'
+            filedata += str(feature_reports[uniquekey]['total_scenarios'])
+            filedata += '" time="'
+            filedata += str(feature_reports[uniquekey]['duration'])
+            filedata += '">'
+            filedata += "\n\n"
+            filedata += feature_reports[uniquekey]['data']
+            filedata += "</testsuite>"
+            outputdir = "reports"
+            custdir = getattr(self.config,'junit_directory')
+            if custdir:
+                outputdir = custdir
+            if not os.path.exists(outputdir):
+                os.makedirs(outputdir)
+            filename = outputdir+"/"+"TESTS-"
+            filename += feature_reports[uniquekey]['filebasename']
+            filename += ".xml"
+            fd = open(filename,"w")
+            fd.write(filedata)
+            fd.close() 
+
+            
+             
+
+             
 
     def setup_capture(self):
         if self.config.stdout_capture:
