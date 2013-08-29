@@ -6,12 +6,6 @@ The real devs are at the following https://github.com/behave/behave
 
 
 Ruby has rspec/cucumber for BDD, and Ruby has parallel_tests to run them in parallel.
-Python has pyvows and pycuracy, but they're not exactly what I'm looking for.
-=======
-The real developers, and core documentation, are at https://github.com/behave/behave
-
-
-Ruby has rspec/cucumber for BDD, and Ruby has parallel_tests to run them in parallel.
 Python has pyvows, lettuce and pycuracy, but they're not exactly what I'm looking for.
 I feel that behave is the most advanced BDD framework for python, so giving it parallel powers seemed ideal.
 
