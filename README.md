@@ -27,6 +27,9 @@ To that end, lettuce, pyVows, nosetest's BDD plugin and pyccuracy seem to be the
 * nosetest's BDD doesn't have a .feature file for clear reability without knowing code.
 * pyccuracy has BDD, parallelism and plain english scenarios - but, it is very one-to-one match. Exactly 1 sentence to 1 action; and a very specific structured sentence at that. This does not work for me because I am doing very custom tests against mobile devices and require flexibility in my selenium commands - even custom commands that are not part of selenium, e.g. https://gist.github.com/tokunbo/4747316 . Also, I don't want 1 sentence per command. I want to say "Delete Remote object" and have it tied to a function that does whatever it must to meet that requirement. Making the .feature file easy to read without the complexity of the exact steps needed to do it.
 * One more thing. I've just been informed of https://github.com/griddynamics/bunch/. Allowing parallelism of lettuce tests. That is very, very close to what behave-parallel brings to the table.I was a bit hopeful, but it doesn't seem maintained anymore. The links to docs gives me a 404 and trying to run the examples test error with a FileNotFound exception. So I don't know if lettuce+bunch work at all anymore or what's going on there. If the documented test-examples worked, then maybe I could evaluate it and use it.
+
+
+
 So there you go. If you don't agree with what I said above, feel free to use the others. I just did this as yet another option for test-developers and it meets 100% of what I, and the rest of the team, are looking for at this exact moment.
 
 
