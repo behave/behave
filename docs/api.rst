@@ -320,19 +320,31 @@ be:
 
 .. parsed-literal::
 
-    :class:`~behave.model.Feature` 
-        :class:`~behave.model.Tag` 
-        :class:`~behave.model.Background` 
-        :class:`~behave.model.Scenario` 
-           :class:`~behave.model.Tag` 
-           :class:`~behave.model.Step` 
-              :class:`~behave.model.Table` 
-        :class:`~behave.model.ScenarioOutline` 
-           :class:`~behave.model.Tag` 
-           :class:`~behave.model.Examples` 
-              :class:`~behave.model.Table` 
-           :class:`~behave.model.Step` 
-              :class:`~behave.model.Table` 
+    :class:`~behave.model.Tag` (as :py:attr:`Feature.tags`)
+    :class:`~behave.model.Feature` : TaggableModelElement
+        Description (as :py:attr:`Feature.description`)
+
+        :class:`~behave.model.Background`
+            :class:`~behave.model.Step`
+                :class:`~behave.model.Table` (as :py:attr:`Step.table`)
+                MultiLineText (as :py:attr:`Step.text`)
+
+        :class:`~behave.model.Tag` (as :py:attr:`Scenario.tags`)
+        :class:`~behave.model.Scenario` : TaggableModelElement
+            Description (as :py:attr:`Scenario.description`)
+            :class:`~behave.model.Step`
+                :class:`~behave.model.Table` (as :py:attr:`Step.table`)
+                MultiLineText (as :py:attr:`Step.text`)
+
+        :class:`~behave.model.Tag` (as :py:attr:`ScenarioOutline.tags`)
+        :class:`~behave.model.ScenarioOutline` : TaggableModelElement
+            Description (as :py:attr:`ScenarioOutline.description`)
+            :class:`~behave.model.Step`
+                :class:`~behave.model.Table` (as :py:attr:`Step.table`)
+                MultiLineText (as :py:attr:`Step.text`)
+            :class:`~behave.model.Examples`
+                :class:`~behave.model.Table`
+
 
 .. autoclass:: behave.model.Feature
 
