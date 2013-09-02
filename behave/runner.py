@@ -262,10 +262,11 @@ class Context(object):
             passed = step.run(self._runner, quiet=True, capture=False)
             if not passed:
                 # -- ISSUE #96: Provide more substep info to diagnose problem.
-                step_line = "%s %s" % (step.keyword, step.name)
-                more = step.error_message
-                assert False, \
-                    "Sub-step failed: %s\nSubstep info: %s" % (step_line, more)
+                step_line = u"%s %s" % (step.keyword, step.name)
+                message = "%s SUB-STEP: %s" % (step.status.upper(), step_line)
+                if step.error_message:
+                    message += "\nSubstep info: %s" % step.error_message
+                assert False, message
         return True
 
 

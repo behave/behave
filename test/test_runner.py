@@ -292,7 +292,19 @@ Then a step passes
             try:
                 result = self.context.execute_steps(doc)
             except AssertionError, e:  # -- PY26-CLEANUP-MARK
-                ok_("Sub-step failed: When a step fails" in str(e))
+                ok_("FAILED SUB-STEP: When a step fails" in str(e))
+
+    def test_execute_steps_with_undefined_step(self):
+        doc = u'''
+Given a step passes
+When a step is undefined
+Then a step passes
+'''.lstrip()
+        with patch('behave.step_registry.registry', self.step_registry):
+            try:
+                result = self.context.execute_steps(doc)
+            except AssertionError, e:  # -- PY26-CLEANUP-MARK
+                ok_("UNDEFINED SUB-STEP: When a step is undefined" in str(e))
 
     def test_execute_steps_with_text(self):
         doc = u'''

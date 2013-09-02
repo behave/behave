@@ -22,6 +22,7 @@ IMPROVEMENT:
 FIXED:
 
   * issue #186: ScenarioOutline uses wrong return value when if fails (provided by: mdavezac)
+  * issue #188: Better diagnostics if nested step is undefined
 
 
 Version: 1.2.3 (2013-07-08)
