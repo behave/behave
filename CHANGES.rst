@@ -8,6 +8,7 @@ NEWS and CHANGES:
 
   - Running:
 
+    * ABORT-BY-USER: Better handle KeyboardInterrupt to abort a test run.
     * feature list files (formerly: feature configfiles) support wildcards.
 
   - Formatters:

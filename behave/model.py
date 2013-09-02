@@ -288,6 +288,7 @@ class Feature(TagStatement, Replayable):
     @property
     def status(self):
         skipped = True
+        passed_count = 0
         for scenario_or_outline in self.scenarios:
             # FIXME: Check if necessary, ScenarioOutline.status computes OK.
             if isinstance(scenario_or_outline, ScenarioOutline):
@@ -295,6 +296,8 @@ class Feature(TagStatement, Replayable):
                     if scenario.status == 'failed':
                         return 'failed'
                     if scenario.status == 'untested':
+                        if passed_count > 0:
+                            return 'failed'  # ABORTED: Some passed, ...
                         return 'untested'
                     if scenario.status != 'skipped':
                         skipped = False
@@ -303,9 +306,13 @@ class Feature(TagStatement, Replayable):
                 if scenario.status == 'failed':
                     return 'failed'
                 if scenario.status == 'untested':
+                    if passed_count > 0:
+                        return 'failed'  # ABORTED: Some passed, now untested.
                     return 'untested'
                 if scenario.status != 'skipped':
                     skipped = False
+            if scenario_or_outline.status == 'passed':
+                passed_count += 1
         return skipped and 'skipped' or 'passed'
 
     @property
@@ -417,7 +424,7 @@ class Feature(TagStatement, Replayable):
             failed = scenario.run(runner)
             if failed:
                 failed_count += 1
-                if runner.config.stop:
+                if runner.config.stop or runner.aborted:
                     # -- FAIL-EARLY: Stop after first failure.
                     break
 
@@ -866,7 +873,7 @@ class ScenarioOutline(Scenario):
             failed = scenario.run(runner)
             if failed:
                 failed_count += 1
-                if runner.config.stop:
+                if runner.config.stop or runner.aborted:
                     # -- FAIL-EARLY: Stop after first failure.
                     break
         runner.context._set_root_attribute('active_outline', None)
@@ -1010,6 +1017,10 @@ class Step(BasicStatement, Replayable):
         return result
 
     def run(self, runner, quiet=False, capture=True):
+        # -- RESET: Run information.
+        self.error_message = None
+        self.exception = None
+
         # access module var here to allow test mocking to work
         match = step_registry.registry.find_match(self)
         if match is None:
@@ -1051,6 +1062,11 @@ class Step(BasicStatement, Replayable):
             else:
                 # no assertion text; format the exception
                 error = traceback.format_exc()
+        except KeyboardInterrupt, e:
+            runner.aborted = True
+            error = u"ABORTED: By user (KeyboardInterrupt)."
+            self.status = 'failed'
+            self.exception = e
         except Exception, e:
             self.status = 'failed'
             error = traceback.format_exc()
@@ -1084,7 +1100,6 @@ class Step(BasicStatement, Replayable):
                 formatter.result(self)
 
         runner.run_hook('after_step', runner.context, self)
-
         return keep_going
 
 

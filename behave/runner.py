@@ -64,9 +64,15 @@ class Context(object):
       combined from the feature and scenario. This attribute will not be
       present outside of a feature scope.
 
+    .. attribute:: aborted
+
+      This is set to true in the root namespace when the user aborts a test run
+      (:exc:`KeyboardInterrupt` exception). Initially: False.
+
     .. attribute:: failed
 
-      This is set in the root namespace as soon as any step fails.
+      This is set to true in the root namespace as soon as a step fails.
+      Initially: False.
 
     .. attribute:: table
 
@@ -98,8 +104,14 @@ class Context(object):
 
     .. attribute:: stdout_capture
 
-      If logging capture is enabled then this attribute contains the captured
-      stdout as a StringIO instance. It is not present if stdout is not being
+      If stdout capture is enabled then this attribute contains the captured
+      output as a StringIO instance. It is not present if stdout is not being
+      captured.
+
+    .. attribute:: stderr_capture
+
+      If stderr capture is enabled then this attribute contains the captured
+      output as a StringIO instance. It is not present if stderr is not being
       captured.
 
     If an attempt made by user code to overwrite one of these variables, or
@@ -126,6 +138,7 @@ class Context(object):
         self._runner = weakref.proxy(runner)
         self._config = runner.config
         d = self._root = {
+            'aborted': False,
             'failed': False,
             'config': self._config,
             'active_outline': None,
@@ -331,6 +344,15 @@ class PathManager(object):
 
 
 class Runner(object):
+    '''
+    Test runner for behave.
+
+    .. attribute:: aborted
+
+      This is set to true when the user aborts a test run
+      (:exc:`KeyboardInterrupt` exception). Initially: False.
+      Stored as derived attribute in :attr:`Context.aborted`.
+    '''
     def __init__(self, config):
         self.config = config
         self.hooks = {}
@@ -353,6 +375,31 @@ class Runner(object):
         self.base_dir = None
         self.context = None
         self.formatters = None
+
+    @property
+    def aborted(self):
+        """
+        Indicates that a test run was aborted by the user
+        (:exc:`KeyboardInterrupt` exception).
+        Stored in :attr:`Context.aborted` attribute (as root attribute).
+
+        :return: Current aborted state, initially false.
+        :rtype: bool
+        """
+        value = False
+        if self.context:
+            value = self.context.aborted
+        return value
+
+    @aborted.setter
+    def aborted(self, value):
+        """
+        Set the aborted value.
+
+        :param value: New aborted value (as bool).
+        """
+        assert self.context
+        self.context._set_root_attribute('aborted', bool(value))
 
     def setup_paths(self):
         if self.config.paths:
@@ -463,8 +510,13 @@ class Runner(object):
 
     def run_hook(self, name, context, *args):
         if not self.config.dry_run and (name in self.hooks):
+            # try:
             with context.user_mode():
                 self.hooks[name](context, *args)
+            # except KeyboardInterrupt:
+            #     self.aborted = True
+            #     if name not in ("before_all", "after_all"):
+            #         raise
 
     def feature_locations(self):
         return collect_feature_locations(self.config.paths)
@@ -478,8 +530,8 @@ class Runner(object):
     def run_with_paths(self):
         self.load_hooks()
         self.load_step_definitions()
-
         context = self.context = Context(self)
+        assert not self.aborted
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
         self.setup_capture()
         stream_openers = self.config.outputs
@@ -499,30 +551,39 @@ class Runner(object):
         run_feature = True
         for feature in features:
             if run_feature:
-                self.feature = feature
-                for formatter in self.formatters:
-                    formatter.uri(feature.filename)
+                try:
+                    self.feature = feature
+                    for formatter in self.formatters:
+                        formatter.uri(feature.filename)
 
-                failed = feature.run(self)
-                if failed:
+                    failed = feature.run(self)
+                    if failed:
+                        failed_count += 1
+                        if self.config.stop or self.aborted:
+                            # -- FAIL-EARLY: After first failure.
+                            run_feature = False
+                except KeyboardInterrupt:
+                    self.aborted = True
                     failed_count += 1
-                    if self.config.stop:
-                        # -- FAIL-EARLY: After first failure.
-                        run_feature = False
-
+                    run_feature = False
+        
             # -- ALWAYS: Report run/not-run feature to reporters.
             # REQUIRED-FOR: Summary to keep track of untested features.
             for reporter in self.config.reporters:
                 reporter.feature(feature)
 
         # -- AFTER-ALL:
+        if self.aborted:
+            print "\nABORTED: By user."
         for formatter in self.formatters:
             formatter.close()
         self.run_hook('after_all', context)
         for reporter in self.config.reporters:
             reporter.end()
+        # if self.aborted:
+        #     print "\nABORTED: By user."
 
-        failed = ((failed_count > 0) or
+        failed = ((failed_count > 0) or self.aborted or
                   (len(self.undefined) > undefined_steps_initial_size))
         return failed
 
