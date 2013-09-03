@@ -376,8 +376,8 @@ class Runner(object):
         self.context = None
         self.formatters = None
 
-    @property
-    def aborted(self):
+    # @property
+    def _get_aborted(self):
         """
         Indicates that a test run was aborted by the user
         (:exc:`KeyboardInterrupt` exception).
@@ -391,8 +391,8 @@ class Runner(object):
             value = self.context.aborted
         return value
 
-    @aborted.setter
-    def aborted(self, value):
+    # @aborted.setter
+    def _set_aborted(self, value):
         """
         Set the aborted value.
 
@@ -400,6 +400,9 @@ class Runner(object):
         """
         assert self.context
         self.context._set_root_attribute('aborted', bool(value))
+
+    aborted = property(_get_aborted, _set_aborted,
+                       doc="Indicates that test run is aborted by the user.")
 
     def setup_paths(self):
         if self.config.paths:
