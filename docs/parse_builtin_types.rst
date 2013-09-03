@@ -7,6 +7,16 @@ Predefined Data Types in ``parse``
 under the hoods to parse parameters in step definitions.
 This leads to rather simple and readable parse expressions for step parameters.
 
+.. code:: python
+
+    # -- FILE: features/steps/type_transform_example_steps.py
+    from behave import given
+
+    @given('I have {number:d} friends')  #< Convert 'number' into int type.
+    def step_given_i_have_number_friends(context, number):
+        assert number > 0
+        ...
+
 Therefore, the following ``parse types`` are already supported
 in step definitions without registration of any *user-defined type*:
 

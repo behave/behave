@@ -11,6 +11,7 @@ Appendix
 
     test_domains
     formatters
+    context_attributes
     parse_builtin_types
     regular_expressions
     related

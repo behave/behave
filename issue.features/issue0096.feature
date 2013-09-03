@@ -13,8 +13,8 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
     |       ''')
     |
     | File ".../behave/runner.py", line 262, in execute_steps
-    |  assert False, "Sub-step failed: %s" % step
-    |  AssertionError: Sub-step failed: When "admin:admin" sends POST "/tasks/testStart"
+    |  assert False, "FAILED SUB-STEP: %s" % step
+    |  AssertionError: FAILED SUB-STEP: When "admin:admin" sends POST "/tasks/testStart"
     |
     |  All we get is the "sub-step failed" but no info whatsoever
     |  as to why it failed...
@@ -70,7 +70,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
     When I run "behave -c features/issue96_case1.feature"
     Then it should fail with:
         """
-        Assertion Failed: Sub-step failed: When a step fails
+        Assertion Failed: FAILED SUB-STEP: When a step fails
         Substep info: Assertion Failed: EXPECT: Step fails.
         """
 
@@ -93,7 +93,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
         """
     And the command output should contain:
         """
-        Assertion Failed: Sub-step failed: When a step raises an error "Alice is alive"
+        Assertion Failed: FAILED SUB-STEP: When a step raises an error "Alice is alive"
         Substep info: Traceback (most recent call last):
         """
 
@@ -112,7 +112,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
     When I run "behave -c features/issue96_case3.feature"
     Then it should fail with:
         """
-        Assertion Failed: Sub-step failed: When a step fails with stdout "STDOUT: Alice is alive"
+        Assertion Failed: FAILED SUB-STEP: When a step fails with stdout "STDOUT: Alice is alive"
         Substep info: Assertion Failed: EXPECT: Step fails with stdout.
         Captured stdout:
         STDOUT: Alice is alive
@@ -133,7 +133,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
     When I run "behave -c features/issue96_case4.feature"
     Then it should fail with:
         """
-        Assertion Failed: Sub-step failed: When a step fails with stderr "STDERR: Alice is alive"
+        Assertion Failed: FAILED SUB-STEP: When a step fails with stderr "STDERR: Alice is alive"
         Substep info: Assertion Failed: EXPECT: Step fails with stderr.
         Captured stderr:
         STDERR: Alice is alive
@@ -160,7 +160,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
     When I run "behave -c features/issue96_case5.feature"
     Then it should fail with:
         """
-        AssertionError: Sub-step failed: Then a step fails
+        AssertionError: FAILED SUB-STEP: Then a step fails
         Substep info: Assertion Failed: EXPECT: Step fails.
         """
 
