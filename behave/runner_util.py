@@ -56,7 +56,7 @@ class FileLocationParser:
 
 
 # -----------------------------------------------------------------------------
-# CLASS: FeatureScenarioLocationCollector
+# CLASSES:
 # -----------------------------------------------------------------------------
 class FeatureScenarioLocationCollector(object):
     """
@@ -200,6 +200,65 @@ class FeatureScenarioLocationCollector(object):
         return self.feature
 
 
+class FeatureListParser(object):
+    """
+    Read textual file, ala '@features.txt'. This file contains:
+
+      * a feature filename or FileLocation on each line
+      * empty lines (skipped)
+      * comment lines (skipped)
+      * wildcards are expanded to select 0..N filenames or directories
+
+    Relative path names are evaluated relative to the listfile directory.
+    A leading '@' (AT) character is removed from the listfile name.
+    """
+
+    @staticmethod
+    def parse(text, here=None):
+        """
+        Parse contents of a features list file as text.
+
+        :param text: Contents of a features list(file).
+        :param here: Current working directory to use (optional).
+        :return: List of FileLocation objects
+        """
+        locations = []
+        for line in text.splitlines():
+            filename = line.strip()
+            if not filename:
+                continue    # SKIP: Over empty line(s).
+            elif filename.startswith('#'):
+                continue    # SKIP: Over comment line(s).
+
+            if here and not os.path.isabs(filename):
+                filename = os.path.join(here, line)
+            filename = os.path.normpath(filename)
+            if glob.has_magic(filename):
+                # -- WITH WILDCARDS:
+                for filename2 in glob.iglob(filename):
+                    location = FileLocationParser.parse(filename2)
+                    locations.append(location)
+            else:
+                location = FileLocationParser.parse(filename)
+                locations.append(location)
+        return locations
+
+    @classmethod
+    def parse_file(cls, filename):
+        """
+        Read textual file, ala '@features.txt'.
+
+        :param filename:  Name of feature list file.
+        :return: List of feature file locations.
+        """
+        if filename.startswith('@'):
+            filename = filename[1:]
+        if not os.path.isfile(filename):
+            raise FileNotFoundError(filename)
+        here = os.path.dirname(filename) or "."
+        contents = open(filename).read()
+        return cls.parse(contents, here)
+
 # -----------------------------------------------------------------------------
 # FUNCTIONS:
 # -----------------------------------------------------------------------------
@@ -247,45 +306,6 @@ def parse_features(feature_files, language=None):
     return features
 
 
-def parse_feature_listfile(feature_listfile):
-    """
-    Read textual file, ala '@features.txt'. This file contains:
-
-      * a feature filename in each line
-      * empty lines (skipped)
-      * comment lines (skipped)
-      * wildcards are expanded to select 0..N filenames or directories
-
-    Relative path names are evaluated relative to the listfile directory.
-    A leading '@' (AT) character is removed from the listfile name.
-
-    :param feature_listfile:  Name of feature listfile.
-    :return: List of feature file locations.
-    """
-    if feature_listfile.startswith('@'):
-        feature_listfile = feature_listfile[1:]
-    if not os.path.isfile(feature_listfile):
-        raise FileNotFoundError(feature_listfile)
-    here = os.path.dirname(feature_listfile) or "."
-    locations = []
-    for line in open(feature_listfile).readlines():
-        line = line.strip()
-        if not line:
-            continue    # SKIP: Over empty line(s).
-        elif line.startswith('#'):
-            continue    # SKIP: Over comment line(s).
-        filename = os.path.normpath(os.path.join(here, line))
-        if glob.has_magic(filename):
-            # -- WITH WILDCARDS:
-            for filename2 in glob.iglob(filename):
-                location = FileLocationParser.parse(filename2)
-                locations.append(location)
-        else:
-            location = FileLocationParser.parse(filename)
-            locations.append(location)
-    return locations
-
-
 def collect_feature_locations(paths, strict=True):
     """
     Collect feature file names by processing list of paths (from command line).
@@ -310,7 +330,7 @@ def collect_feature_locations(paths, strict=True):
                         locations.append(location)
         elif path.startswith('@'):
             # -- USE: behave @list_of_features.txt
-            locations.extend(parse_feature_listfile(path[1:]))
+            locations.extend(FeatureListParser.parse_file(path[1:]))
         else:
             # -- OTHERWISE: Normal filename or location (schema: filename:line)
             location = FileLocationParser.parse(path)
