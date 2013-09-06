@@ -108,8 +108,11 @@ class FileLocation(object):
     def __eq__(self, other):
         if isinstance(other, FileLocation):
             return self.filename == other.filename and self.line == other.line
-        else:
+        elif isinstance(other, basestring):
             return self.filename == other
+        else:
+            raise AttributeError("Cannot compare FileLocation with %s:%s" % \
+                                 (type(other), other))
 
     def __ne__(self, other):
         return not self == other
@@ -123,8 +126,11 @@ class FileLocation(object):
             else:
                 assert self.filename == other.filename
                 return self.line < other.line
-        else:
+        elif isinstance(other, basestring):
             return self.filename < other
+        else:
+            raise AttributeError("Cannot compare FileLocation with %s:%s" % \
+                                 (type(other), other))
 
     def __le__(self, other):
         # -- SEE ALSO: python2.7, functools.total_ordering
@@ -148,9 +154,7 @@ class FileLocation(object):
     def __str__(self):
         if self.line is None:
             return self.filename
-        else:
-            assert self.line >= 0
-            return u"%s:%d" % (self.filename, self.line)
+        return u"%s:%d" % (self.filename, self.line)
 
 
 class BasicStatement(object):

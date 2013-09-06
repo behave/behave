@@ -340,7 +340,7 @@ Then a step passes
             eq_(expected_table, ExampleSteps.table)
 
     @raises(ValueError)
-    def test_execute_steps_called_without_feature(self):
+    def test_execute_steps_should_fail_when_called_without_feature(self):
         doc = u'''
 Given a passes
 Then a step passes
