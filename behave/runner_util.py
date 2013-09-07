@@ -363,3 +363,33 @@ def make_undefined_step_snippet(step, language=None):
     schema = u"@%s(%s'%s')\ndef step_impl(context):\n    assert False\n\n"
     snippet = schema % (step.step_type, prefix, step.name)
     return snippet
+
+
+def print_undefined_step_snippets(undefined_steps, stream=None, colored=True):
+    """
+    Print snippets for the undefined steps that were discovered.
+
+    :param undefined_steps:  List of undefined steps (as list<string>).
+    :param stream:      Output stream to use (default: sys.stderr).
+    :param colored:     Indicates if coloring should be used (default: True)
+    """
+    if not undefined_steps:
+        return
+    if not stream:
+        stream = sys.stderr
+
+    msg = u"\nYou can implement step definitions for undefined steps with "
+    msg += u"these snippets:\n\n"
+    printed = set()
+    for step in undefined_steps:
+        if step in printed:
+            continue
+        printed.add(step)
+        msg += make_undefined_step_snippet(step)
+
+    if colored:
+        # -- OOPS: Unclear if stream supports ANSI coloring.
+        from behave.formatter.ansi_escapes import escapes
+        msg = escapes['undefined'] + msg + escapes['reset']
+    stream.write(msg)
+    stream.flush()
