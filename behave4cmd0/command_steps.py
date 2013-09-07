@@ -284,6 +284,13 @@ def step_remove_directory(context, directory):
 def step_given_the_directory_should_not_exist(context, directory):
     step_remove_directory(context, directory)
 
+@given(u'a directory named "{path}"')
+def step_directory_named_dirname(context, path):
+    assert context.workdir, "REQUIRE: context.workdir"
+    path_ = os.path.join(context.workdir, os.path.normpath(path))
+    if not os.path.exists(path_):
+        os.makedirs(path_)
+    assert os.path.isdir(path_)
 
 @then(u'the directory "{directory}" should exist')
 def step_the_directory_should_exist(context, directory):
@@ -298,6 +305,30 @@ def step_the_directory_should_not_exist(context, directory):
     if not os.path.isabs(directory):
         path_ = os.path.join(context.workdir, os.path.normpath(directory))
     assert_that(not os.path.isdir(path_))
+
+@step(u'the directory "{directory}" exists')
+def step_directory_exists(context, directory):
+    """
+    Verifies that a directory exists.
+
+    .. code-block:: gherkin
+
+        Given the directory "abc.txt" exists
+         When the directory "abc.txt" exists
+    """
+    step_the_directory_should_exist(context, directory)
+
+@step(u'the directory "{directory}" does not exist')
+def step_directory_named_does_not_exist(context, directory):
+    """
+    Verifies that a directory does not exist.
+
+    .. code-block:: gherkin
+
+        Given the directory "abc/" does not exist
+         When the directory "abc/" does not exist
+    """
+    step_the_directory_should_not_exist(context, directory)
 
 # -----------------------------------------------------------------------------
 # FILE STEPS:

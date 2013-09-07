@@ -5,6 +5,7 @@ import re
 import sys
 import argparse
 import ConfigParser
+import shlex
 
 from behave.model import FileLocation
 from behave.reporter.junit import JUnitReporter
@@ -338,12 +339,10 @@ def read_configuration(path):
     return result
 
 
-def load_configuration(defaults):
+def load_configuration(defaults, verbose=False):
     paths = ['./', os.path.expanduser('~')]
     if sys.platform in ('cygwin', 'win32') and 'APPDATA' in os.environ:
         paths.append(os.path.join(os.environ['APPDATA']))
-
-    verbose = ('-v' in sys.argv) or ('--verbose' in sys.argv)
 
     for path in paths:
         for filename in 'behave.ini .behaverc'.split():
@@ -401,14 +400,35 @@ class Configuration(object):
         default_format="pretty",   # -- Used when no formatters are configured.
     )
 
-    def __init__(self, args=None):
+    def __init__(self, command_args=None, verbose=None):
+        """
+        Constructs a behave configuration object.
+          * loads the configuration defaults.
+          * process the command-line args
+          * store the configuration results
+
+        :param command_args: Provide command args (as sys.argv).
+            If command_args is None, sys.argv[1:] is used.
+        :type command_args: list<str>, str
+        :param verbose: Indicate if diagnostic output is enabled
+        """
+        if command_args is None:
+            command_args = sys.argv[1:]
+        elif isinstance(command_args, basestring):
+            command_args = shlex.split(command_args)
+        if verbose is None:
+            # -- AUTO-DISCOVER: Verbose mode from command-line args.
+            verbose = ('-v' in command_args) or ('--verbose' in command_args)
+
         self.formatters = []
         self.reporters = []
         self.name_re = None
         self.outputs = []
-        load_configuration(self.defaults)
+        self.include_re = None
+        self.exclude_re = None
+        load_configuration(self.defaults, verbose=verbose)
         parser.set_defaults(**self.defaults)
-        args = parser.parse_args(args)
+        args = parser.parse_args(command_args)
         for key, value in args.__dict__.items():
             if key.startswith('_'):
                 continue

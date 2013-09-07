@@ -18,6 +18,7 @@ NEWS and CHANGES:
 
 IMPROVEMENT:
 
+  * issue #108: behave.main() can be called with command-line args (provided by: medwards, jenisys)
   * issue #172: Subfolders in junit XML filenames (provided by: roignac).
 
 FIXED:
