@@ -1,5 +1,5 @@
 @issue
-Feature: Issue #186 ScenarioOutline uses wrong return value when if fails
+Feature: Issue #186: ScenarioOutline uses wrong return value when if fails
 
   ScenarioOutline returns encountered a failure only if the last scenario failed.
   Failures in earlier examples return the wrong result.
