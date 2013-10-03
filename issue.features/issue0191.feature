@@ -1,5 +1,4 @@
 @issue
-@wip
 Feature: Issue #191 Using context.execute_steps() may change context.table/.text
 
   | PROBLEM DESCRIPTION:
