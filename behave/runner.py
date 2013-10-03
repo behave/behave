@@ -269,6 +269,11 @@ class Context(object):
         if not self.feature:
             raise ValueError('execute_steps() called outside of feature')
 
+        # -- PREPARE: Save original context data for current step.
+        # Needed if step definition that called this method uses .table/.text
+        original_table = getattr(self, "table", None)
+        original_text  = getattr(self, "text", None)
+
         self.feature.parser.variant = 'steps'
         steps = self.feature.parser.parse_steps(steps_text)
         for step in steps:
@@ -280,6 +285,10 @@ class Context(object):
                 if step.error_message:
                     message += "\nSubstep info: %s" % step.error_message
                 assert False, message
+
+        # -- FINALLY: Restore original context data for current step.
+        self.table = original_table
+        self.text  = original_text
         return True
 
 
