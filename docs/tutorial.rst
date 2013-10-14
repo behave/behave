@@ -54,7 +54,7 @@ Run behave::
     1 scenario passed, 0 failed, 0 skipped
     3 steps passed, 0 failed, 0 skipped, 0 undefined
 
-Now, continue reading to learn how to the most of *behave*.
+Now, continue reading to learn how to make the most of *behave*.
 
 
 Features
