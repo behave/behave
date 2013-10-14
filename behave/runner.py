@@ -492,10 +492,20 @@ class Runner(object):
         if base_dir != os.getcwd():
             self.path_manager.add(os.getcwd())
 
+    def before_all_default_hook(self, context):
+        """
+        Default implementation for :func:`before_all()` hook.
+        Setup the logging subsystem based on the configuration data.
+        """
+        context.config.setup_logging()
+
     def load_hooks(self, filename='environment.py'):
         hooks_path = os.path.join(self.base_dir, filename)
         if os.path.exists(hooks_path):
             exec_file(hooks_path, self.hooks)
+
+        if 'before_all' not in self.hooks:
+            self.hooks['before_all'] = self.before_all_default_hook
 
     def load_step_definitions(self, extra_step_paths=[]):
         step_globals = {
@@ -540,15 +550,15 @@ class Runner(object):
             return self.run_with_paths()
 
     def run_with_paths(self):
+        context = self.context = Context(self)
         self.load_hooks()
         self.load_step_definitions()
-        context = self.context = Context(self)
         assert not self.aborted
-        # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
-        self.setup_capture()
         stream_openers = self.config.outputs
         failed_count = 0
 
+        # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
+        self.setup_capture()
         self.run_hook('before_all', context)
 
         # -- STEP: Parse all feature files (by using their file location).
@@ -578,7 +588,7 @@ class Runner(object):
                     self.aborted = True
                     failed_count += 1
                     run_feature = False
-        
+
             # -- ALWAYS: Report run/not-run feature to reporters.
             # REQUIRED-FOR: Summary to keep track of untested features.
             for reporter in self.config.reporters:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import with_statement
 
+from __future__ import with_statement
 from collections import defaultdict
 import os.path
 import StringIO
@@ -542,6 +542,7 @@ class TestRunner(object):
 
     def test_run_returns_true_if_everything_passed(self):
         r = runner.Runner(Mock())
+        r.setup_capture = Mock()
         r.setup_paths = Mock()
         r.run_with_paths = Mock()
         r.run_with_paths.return_value = True
@@ -549,6 +550,7 @@ class TestRunner(object):
 
     def test_run_returns_false_if_anything_failed(self):
         r = runner.Runner(Mock())
+        r.setup_capture = Mock()
         r.setup_paths = Mock()
         r.run_with_paths = Mock()
         r.run_with_paths.return_value = False

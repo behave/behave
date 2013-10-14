@@ -29,6 +29,7 @@ Feature: Issue #152: Fix encoding issues
       """
 
 
+  @reuse.colocated_test
   Scenario: Ensure JUnit reports can be created from a foreign language
     Given I use the current directory as working directory
     When I run "behave -f plain --junit --no-timings tools/test-features/french.feature"

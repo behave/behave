@@ -11,10 +11,8 @@ Feature: Issue #75: behave @features_from_text_file does not work
    |  * it does not search the steps/ directory in the parents of the feature files themselves
 
 
-  Scenario: Reuse relocated tests
+  @reuse.colocated_test
+  Scenario: Use feature listfile
     Given I use the current directory as working directory
     When I run "behave -f plain features/runner.feature_listfile.feature"
-    Then it should pass with:
-      """
-      13 scenarios passed, 0 failed, 0 skipped
-      """
+    Then it should pass

@@ -5,6 +5,7 @@ import re
 import sys
 import argparse
 import ConfigParser
+import logging
 import shlex
 
 from behave.model import FileLocation
@@ -13,6 +14,39 @@ from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import TagExpression
 from behave.formatter.base import StreamOpener
 from behave.formatter.formatters import formatters as registered_formatters
+
+
+class Unknown(object): pass
+
+class LogLevel(object):
+    names = [
+         "NOTSET", "CRITICAL", "FATAL", "ERROR",
+         "WARNING", "WARN", "INFO", "DEBUG",
+    ]
+
+    @staticmethod
+    def parse(levelname, unknown_level=None):
+        """
+        Convert levelname into a numeric log level.
+
+        :param levelname: Logging levelname (as string)
+        :param unknown_level: Used if levelname is unknown (optional).
+        :return: Numeric log-level or unknown_level, if levelname is unknown.
+        """
+        return getattr(logging, levelname.upper(), unknown_level)
+
+    @classmethod
+    def parse_type(cls, levelname):
+        level = cls.parse(levelname, Unknown)
+        if level is Unknown:
+            message = "%s is unknown, use: %s" % \
+                      (levelname, ", ".join(cls.names[1:]))
+            raise argparse.ArgumentTypeError(message)
+        return level
+
+    @staticmethod
+    def to_string(level):
+        return logging.getLevelName(level)
 
 
 class ConfigError(Exception):
@@ -147,14 +181,15 @@ options = [
                   This is the default behaviour. This switch is used to
                   override a configuration file setting.""")),
 
+    (('--logging-level',),
+     dict(type=LogLevel.parse_type,
+          help="""Specify a level to capture logging at. The default
+                  is INFO - capturing everything.""")),
+
     (('--logging-format',),
      dict(help="""Specify custom format to print statements. Uses the
                   same format as used by standard logging handlers. The
                   default is '%%(levelname)s:%%(name)s:%%(message)s'.""")),
-
-    (('--logging-level',),
-     dict(help="""Specify a level to capture logging at. The default
-                  is NOTSET - capturing everything.""")),
 
     (('--logging-datefmt',),
      dict(help="""Specify custom date/time format to print
@@ -282,9 +317,14 @@ options = [
      dict(action='store_true', help="Show version.")),
 ]
 
+# -- OPTIONS: With raw value access semantics in configuration file.
+raw_value_options = frozenset([
+    "logging_format",
+    "logging_datefmt"
+])
 
 def read_configuration(path):
-    cfg = ConfigParser.ConfigParser()
+    cfg = ConfigParser.SafeConfigParser()
     cfg.read(path)
     cfgdir = os.path.dirname(path)
     result = {}
@@ -304,7 +344,8 @@ def read_configuration(path):
             continue
         action = keywords.get('action', 'store')
         if action == 'store':
-            result[dest] = cfg.get('behave', dest)
+            use_raw_value = dest in raw_value_options
+            result[dest] = cfg.get('behave', dest, use_raw_value)
         elif action in ('store_true', 'store_false'):
             result[dest] = cfg.getboolean('behave', dest)
         elif action == 'append':
@@ -385,15 +426,16 @@ parser.add_argument('paths', nargs='*',
 class Configuration(object):
     defaults = dict(
         color=sys.platform != 'win32',
-        stdout_capture=True,
-        stderr_capture=True,
         show_snippets=True,
         show_skipped=True,
-        log_capture=True,
         dry_run=False,
         show_source=True,
         show_timings=True,
+        stdout_capture=True,
+        stderr_capture=True,
+        log_capture=True,
         logging_format='%(levelname)s:%(name)s:%(message)s',
+        logging_level=logging.INFO,
         summary=True,
         junit=False,
         # -- SPECIAL:
@@ -513,3 +555,37 @@ class Configuration(object):
         if self.exclude_re and self.exclude_re.search(filename) is not None:
             return True
         return False
+
+    def setup_logging(self, level=None, configfile=None, **kwargs):
+        """
+        Support simple setup of logging subsystem.
+        Ensures that the logging level is set.
+        But note that the logging setup can only occur once.
+
+        SETUP MODES:
+          * :func:`logging.config.fileConfig()`, if ``configfile` is provided.
+          * :func:`logging.basicConfig(), otherwise.
+
+        .. code-block: python
+            # -- FILE: features/environment.py
+            def before_all(context):
+                context.config.setup_logging()
+
+        :param level:       Logging level of root logger.
+                            If None, use :attr:`logging_level` value.
+        :param configfile:  Configuration filename for fileConfig() setup.
+        :param kwargs:      Passed to :func:`logging.basicConfig()`
+        """
+        if level is None:
+            level = self.logging_level
+
+        if configfile:
+            from logging.config import fileConfig
+            fileConfig(configfile)
+        else:
+            format = kwargs.pop("format", self.logging_format)
+            datefmt = kwargs.pop("datefmt", self.logging_datefmt)
+            logging.basicConfig(format=format, datefmt=datefmt, **kwargs)
+        # -- ENSURE: Default log level is set
+        #    (even if logging subsystem is already configured).
+        logging.getLogger().setLevel(level)
