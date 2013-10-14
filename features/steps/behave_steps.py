@@ -19,7 +19,7 @@ def text_indent(text, indent_size=0):
 
 
 # -----------------------------------------------------------------------------
-# STEPS:
+# STEPS FOR: Undefined step definitions
 # -----------------------------------------------------------------------------
 @then(u'an undefined-step snippets section exists')
 def step_undefined_step_snippets_section_exists(context):

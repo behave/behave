@@ -58,10 +58,9 @@ class LoggingCapture(BufferingHandler):
     '''
     def __init__(self, config, level=None):
         BufferingHandler.__init__(self, 1000)
-
         self.config = config
-
         self.old_handlers = []
+        self.old_level = None
 
         # set my formatter
         fmt = datefmt = None
@@ -78,10 +77,7 @@ class LoggingCapture(BufferingHandler):
         if level is not None:
             self.level = level
         elif config.logging_level:
-            self.level = getattr(logging, config.logging_level.upper(), None)
-            if self.level is None:
-                raise ConfigError('Invalid log level: "%s"' %
-                                  config.logging_level)
+            self.level = config.logging_level
         else:
             self.level = logging.NOTSET
 
@@ -133,7 +129,6 @@ class LoggingCapture(BufferingHandler):
         The opposite of this is :meth:`~LoggingCapture.abandon`.
         '''
         root_logger = logging.getLogger()
-
         if self.config.logging_clear_handlers:
             # kill off all the other log handlers
             for logger in logging.Logger.manager.loggerDict.values():
@@ -154,6 +149,7 @@ class LoggingCapture(BufferingHandler):
         root_logger.addHandler(self)
 
         # capture the level we're interested in
+        self.old_level = root_logger.level
         root_logger.setLevel(self.level)
 
     def abandon(self):
@@ -170,6 +166,11 @@ class LoggingCapture(BufferingHandler):
         if self.config.logging_clear_handlers:
             for logger, handler in self.old_handlers:
                 logger.addHandler(handler)
+
+        if self.old_level is not None:
+            # -- RESTORE: Old log.level before inveigle() was used.
+            root_logger.setLevel(self.old_level)
+            self.old_level = None
 
 # pre-1.2 backwards compatibility
 MemoryHandler = LoggingCapture

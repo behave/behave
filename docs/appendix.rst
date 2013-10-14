@@ -9,10 +9,11 @@ Appendix
 .. toctree::
     :maxdepth: 1
 
-    test_domains
     formatters
     context_attributes
     parse_builtin_types
     regular_expressions
+    test_domains
+    behave_ecosystem
     related
 

@@ -1,5 +1,5 @@
 @issue
-Feature: Better diagnostics if nested step is undefined
+Feature: Issue #188: Better diagnostics if nested step is undefined
 
   | Currently if nested step has no match, it's shown like this:
   |
@@ -18,7 +18,8 @@ Feature: Better diagnostics if nested step is undefined
   |
   |     Assertion Failed: UNDEFINED SUB-STEP: When I do strange thign
 
-  Scenario:
+
+  Scenario: Nested steps contain an undefined step
     Given a new working directory
     And a file named "features/steps/steps.py" with:
       """
@@ -51,6 +52,9 @@ Feature: Better diagnostics if nested step is undefined
     When I run "behave -f plain -T features/example.execute_nested_undefined_step.feature"
     Then it should fail with:
       """
+      Scenario:
+        Given a step passes ... passed
+        When I execute nested steps with an undefined step ... failed
       Assertion Failed: UNDEFINED SUB-STEP: When an undefined, nested step is executed
       """
 

@@ -517,7 +517,7 @@ class Scenario(TagStatement, Replayable):
 
     .. attribute:: description
 
-       The description of the scenario as seen in the *feature file*. 
+       The description of the scenario as seen in the *feature file*.
        This is stored as a list of text lines.
 
     .. attribute:: feature
@@ -1179,6 +1179,24 @@ class Table(Replayable):
             assert len(row.cells) == new_column_index
             row.cells.append(value)
         return new_column_index
+
+    def remove_column(self, column_name):
+        if not isinstance(column_name, int):
+            try:
+                column_index = self.get_column_index(column_name)
+            except ValueError:
+                raise KeyError("column=%s is unknown" % column_name)
+
+        assert isinstance(column_index, int)
+        assert column_index < len(self.headings)
+        del self.headings[column_index]
+        for row in self.rows:
+            assert column_index < len(row.cells)
+            del row.cells[column_index]
+
+    def remove_columns(self, column_names):
+        for column_name in column_names:
+            self.remove_column(column_name)
 
     def has_column(self, column_name):
         return column_name in self.headings

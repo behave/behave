@@ -1,5 +1,5 @@
 @issue
-Feature: "TypeError: expected string or buffer" when running behave with --include option
+Feature: Issue #184: TypeError when running behave with --include option
 
   | Running behave with option '--include' causes fail with following error:
   |
@@ -45,7 +45,7 @@ Feature: "TypeError: expected string or buffer" when running behave with --inclu
           Then another step passes
       """
 
-  Scenario: Use --include command-line option
+  Scenario: Use --include command-line option to select some features
     When I run "behave -f plain --include='features/a.*\.feature'"
     Then it should pass with:
       """
@@ -59,6 +59,15 @@ Feature: "TypeError: expected string or buffer" when running behave with --inclu
     But the command output should not contain:
       """
       Feature: Bob
+      """
+
+
+  Scenario: Use --include command-line option to select all features
+    When I run "behave -f plain --include='.*\.feature'"
+    Then it should pass with:
+      """
+      2 features passed, 0 failed, 0 skipped
+      3 scenarios passed, 0 failed, 0 skipped
       """
 
 
@@ -78,13 +87,6 @@ Feature: "TypeError: expected string or buffer" when running behave with --inclu
       Feature: Alice
       """
 
-  Scenario: Use --include and --exclude command-line options
-    When I run "behave -f plain --include='.*\.feature'"
-    Then it should pass with:
-      """
-      2 features passed, 0 failed, 0 skipped
-      3 scenarios passed, 0 failed, 0 skipped
-      """
 
   Scenario: Use --include and --exclude command-line options
     When I run "behave -f plain --include='.*\.feature' --exclude='features/a.*\.feature'"
