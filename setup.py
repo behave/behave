@@ -1,6 +1,19 @@
+# -*- coding: utf-8 -*
+"""
+Setup script for behave.
+
+USAGE:
+    python setup.py install
+    python setup.py behave_test     # -- XFAIL on Windows (currently).
+    python setup.py nosetests
+"""
+
 import sys
+import os.path
+sys.path.insert(0, os.curdir)
 
 from setuptools import find_packages, setup
+from setuptools_behave import behave_test
 
 requirements = ['parse>=1.6.2']
 zip_safe = True
@@ -25,9 +38,19 @@ setup(
         "test", "test.*",
         "behave4cmd0", "behave4cmd0.*"]),
     entry_points={
-        'console_scripts': ['behave = behave.__main__:main'],
+        'console_scripts': [
+            'behave = behave.__main__:main'
+        ],
+        'distutils.commands': [
+            'behave_test = setuptools_behave:behave_test'
+        ]
     },
     install_requires=requirements,
+    test_suite='nose.collector',
+    tests_require=['nose>=1.3', 'mock>=1.0', 'PyHamcrest>=1.7.2'],
+    cmdclass = {
+        'behave_test': behave_test,
+    },
     use_2to3=True,
     license="BSD",
     classifiers=[
@@ -47,3 +70,5 @@ setup(
         "License :: OSI Approved :: BSD License",
     ],
 )
+
+
