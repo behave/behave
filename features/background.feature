@@ -1,4 +1,3 @@
-@wip
 Feature: Background
 
   As a test writer
@@ -12,9 +11,24 @@ Feature: Background
   |   * The Background may occur at most once
   |   * The Background steps are executed in each Scenario/ScenarioOutline
   |   * The Background steps are executed before any Scenario steps
+  |   * If a Background step fails then the is marked as scenario failed
+  |   * If a Background fails in a scenario then other scenarios are still executed.
   |
   | RELATED:
   |   * parser.background.sad_cases.feature
+  |
+  | NOTE:
+  |   Cucumber has a slightly different runtime behaviour.
+  |   When a background step fails the first scenario is marked as failed.
+  |   But the remaining scenarios are marked as skipped.
+  |
+  |   This can lead to problems when you have sporadic background step failures.
+  |   For this reason, behave retries the background steps for each scenario.
+  |   But this may lead to an increased test duration if a systematic failure
+  |   occurs in the failing background step.
+  |
+  | SEE ALSO:
+  |   * https://github.com/cucumber/cucumber/blob/master/features/docs/gherkin/background.feature
 
   @setup
   Scenario: Feature Setup
@@ -30,6 +44,12 @@ Feature: Background
         @step('{word} background step fails')
         def step_background_step_fails(context, word):
             assert False, "XFAIL: background step"
+
+        @step('{word} background step fails sometimes')
+        def step_background_step_fails_sometimes(context, word):
+            should_fail = (context.scenarios_count % 2) == 0
+            if should_fail:
+                step_background_step_fails(context, word)
         """
     And a file named "features/steps/passing_steps.py" with:
         """
@@ -40,7 +60,7 @@ Feature: Background
             pass
 
         @step('{word} step fails')
-        def step_passes(context, word):
+        def step_fails(context, word):
             assert False, "XFAIL"
         """
 
@@ -85,8 +105,7 @@ Feature: Background
     And note that "the Background steps are executed before any Scenario steps"
 
 
-  @wip
-  Scenario: Failing Background Step causes all Scenarios to fail/skipped
+  Scenario: Failing Background Step causes all Scenarios to fail
     Given a file named "features/background_fail_example.feature" with:
         """
         Feature:
@@ -106,7 +125,7 @@ Feature: Background
     When I run "behave -f plain -T features/background_fail_example.feature"
     Then it should fail with:
         """
-        0 scenarios passed, 0 failed, 2 skipped
+        0 scenarios passed, 2 failed, 0 skipped
         2 steps passed, 2 failed, 5 skipped, 0 undefined
         """
     And the command output should contain:
@@ -124,7 +143,62 @@ Feature: Background
             And a background step fails ... failed
         Assertion Failed: XFAIL: background step
         """
-    But note that "the failing Background step causes all Scenarios to be marked as skipped"
+    And note that "the failing Background step causes all Scenarios to fail"
+
+
+  Scenario: Failing Background Step does not prevent that other Scenarios are executed
+
+    If a Background step fails sometimes
+    it should be retried in the remaining Scenarios where it might pass.
+
+    Given a file named "features/background_fails_sometimes_example.feature" with:
+        """
+        Feature:
+
+          Background: B2
+            Given a background step fails sometimes
+
+          Scenario: S1
+            Given a step passes
+
+          Scenario: S2
+            When another step passes
+
+          Scenario: S3
+            Then another step passes
+        """
+    And a file named "features/environment.py" with:
+        """
+        scenarios_count = 0
+
+        def before_scenario(context, scenario):
+            global scenarios_count
+            context.scenarios_count = scenarios_count
+            scenarios_count += 1
+        """
+    When I run "behave -f plain -T features/background_fails_sometimes_example.feature"
+    Then it should fail with:
+        """
+        1 scenario passed, 2 failed, 0 skipped
+        2 steps passed, 2 failed, 2 skipped, 0 undefined
+        """
+    And the command output should contain:
+        """
+        Feature:
+            Background: B2
+
+            Scenario: S1
+              Given a background step fails sometimes ... failed
+          Assertion Failed: XFAIL: background step
+
+            Scenario: S2
+              Given a background step fails sometimes ... passed
+              When another step passes ... passed
+
+            Scenario: S3
+              Given a background step fails sometimes ... failed
+          Assertion Failed: XFAIL: background step
+        """
 
 
   Scenario: Feature with a Background and ScenarioOutlines
@@ -230,7 +304,7 @@ Feature: Background
     When I run "behave -f plain -T features/background_fail_outline_example.feature"
     Then it should fail with:
         """
-        0 scenarios passed, 0 failed, 6 skipped
+        0 scenarios passed, 6 failed, 0 skipped
         6 steps passed, 6 failed, 16 skipped, 0 undefined
         """
     And the command output should contain:
