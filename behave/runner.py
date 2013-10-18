@@ -904,8 +904,8 @@ class Runner(object):
         q = 0
         while q < len(loglines):
             if loglines[q] == "Captured stdout:\n":
-                while loglines[q] != "Captured stderr:\n" and \
-                q < len(loglines):
+                while q < len(loglines) and \
+                        loglines[q] != "Captured stderr:\n" :
                     substring += loglines[q]
                     q = q + 1
                 break       
