@@ -45,7 +45,7 @@ Feature: Issue #125: Duplicate "Captured stdout" if substep has failed
           Scenario:
               When substep fails with stdout "Hello" ... failed
 
-      Assertion Failed: Sub-step failed: When a step fails with stdout "Hello"
+      Assertion Failed: FAILED SUB-STEP: When a step fails with stdout "Hello"
       Substep info: Assertion Failed: EXPECT: Step fails with stdout.
       Captured stdout:
       Hello

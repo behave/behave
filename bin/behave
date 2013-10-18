@@ -30,7 +30,7 @@ def behave_main0():
     # from behave.configuration import Configuration
     from behave.__main__ import main as behave_main
     setup_behave()
-    behave_main()
+    return behave_main()
 
 # ----------------------------------------------------------------------------
 # MAIN:
@@ -39,4 +39,4 @@ if __name__ == "__main__":
     if os.environ.has_key("COVERAGE_PROCESS_START"):
         import coverage
         coverage.process_startup()
-    behave_main0()
+    sys.exit(behave_main0())

@@ -108,8 +108,11 @@ class FileLocation(object):
     def __eq__(self, other):
         if isinstance(other, FileLocation):
             return self.filename == other.filename and self.line == other.line
-        else:
+        elif isinstance(other, basestring):
             return self.filename == other
+        else:
+            raise AttributeError("Cannot compare FileLocation with %s:%s" % \
+                                 (type(other), other))
 
     def __ne__(self, other):
         return not self == other
@@ -123,8 +126,11 @@ class FileLocation(object):
             else:
                 assert self.filename == other.filename
                 return self.line < other.line
-        else:
+        elif isinstance(other, basestring):
             return self.filename < other
+        else:
+            raise AttributeError("Cannot compare FileLocation with %s:%s" % \
+                                 (type(other), other))
 
     def __le__(self, other):
         # -- SEE ALSO: python2.7, functools.total_ordering
@@ -148,9 +154,7 @@ class FileLocation(object):
     def __str__(self):
         if self.line is None:
             return self.filename
-        else:
-            assert self.line >= 0
-            return u"%s:%d" % (self.filename, self.line)
+        return u"%s:%d" % (self.filename, self.line)
 
 
 class BasicStatement(object):
@@ -183,9 +187,34 @@ class BasicStatement(object):
 
 
 class TagStatement(BasicStatement):
+
     def __init__(self, filename, line, keyword, name, tags):
         super(TagStatement, self).__init__(filename, line, keyword, name)
         self.tags = tags
+
+
+class TagAndStatusStatement(BasicStatement):
+    final_status = ('passed', 'failed', 'skipped')
+
+    def __init__(self, filename, line, keyword, name, tags):
+        super(TagAndStatusStatement, self).__init__(filename, line, keyword, name)
+        self.tags = tags
+        self.should_skip = False
+        self._cached_status = None
+
+    @property
+    def status(self):
+        if self._cached_status not in self.final_status:
+            # -- RECOMPUTE: As long as final status is not reached.
+            self._cached_status = self.compute_status()
+        return self._cached_status
+
+    def reset(self):
+        self.should_skip = False
+        self._cached_status = None
+
+    def compute_status(self):
+        raise NotImplementedError
 
 
 class Replayable(object):
@@ -195,7 +224,7 @@ class Replayable(object):
         getattr(formatter, self.type)(self)
 
 
-class Feature(TagStatement, Replayable):
+class Feature(TagAndStatusStatement, Replayable):
     '''A `feature`_ parsed from a *feature file*.
 
     The attributes are:
@@ -269,9 +298,16 @@ class Feature(TagStatement, Replayable):
         self.scenarios = []
         self.background = background
         self.parser = None
-
         for scenario in scenarios:
             self.add_scenario(scenario)
+
+    def reset(self):
+        '''
+        Reset to clean state before a test run.
+        '''
+        super(Feature, self).reset()
+        for scenario in self.scenarios:
+            scenario.reset()
 
     def __repr__(self):
         return '<Feature "%s": %d scenario(s)>' % \
@@ -285,38 +321,39 @@ class Feature(TagStatement, Replayable):
         scenario.background = self.background
         self.scenarios.append(scenario)
 
-    @property
-    def status(self):
+    def compute_status(self):
+        """
+        Compute the status of this feature based on its:
+           * scenarios
+           * scenario outlines
+
+        :return: Computed status (as string-enum).
+        """
         skipped = True
-        for scenario_or_outline in self.scenarios:
-            # FIXME: Check if necessary, ScenarioOutline.status computes OK.
-            if isinstance(scenario_or_outline, ScenarioOutline):
-                for scenario in scenario_or_outline:
-                    if scenario.status == 'failed':
-                        return 'failed'
-                    if scenario.status == 'untested':
-                        return 'untested'
-                    if scenario.status != 'skipped':
-                        skipped = False
-            else:
-                scenario = scenario_or_outline
-                if scenario.status == 'failed':
-                    return 'failed'
-                if scenario.status == 'untested':
-                    return 'untested'
-                if scenario.status != 'skipped':
-                    skipped = False
+        passed_count = 0
+        for scenario in self.scenarios:
+            scenario_status = scenario.status
+            if scenario_status == 'failed':
+                return 'failed'
+            elif scenario_status == 'untested':
+                if passed_count > 0:
+                    return 'failed'  # ABORTED: Some passed, now untested.
+                return 'untested'
+            if scenario_status != 'skipped':
+                skipped = False
+            if scenario_status == 'passed':
+                passed_count += 1
         return skipped and 'skipped' or 'passed'
 
     @property
     def duration(self):
         if self.background:
-            duration = self.background.duration or 0.0
+            feature_duration = self.background.duration or 0.0
         else:
-            duration = 0.0
+            feature_duration = 0.0
         for scenario in self.scenarios:
-            duration += scenario.duration
-        return duration
+            feature_duration += scenario.duration
+        return feature_duration
 
     def walk_scenarios(self, with_outlines=False):
         """
@@ -353,7 +390,7 @@ class Feature(TagStatement, Replayable):
         :param config:  Runner configuration to use (optional).
         :return: True, if scenario should run. False, otherwise.
         """
-        answer = self.status != "skipped"
+        answer = not self.should_skip
         if answer and config:
             answer = self.should_run_with_tags(config.tags)
         return answer
@@ -380,13 +417,14 @@ class Feature(TagStatement, Replayable):
         """
         Marks this feature (and all its scenarios and steps) as skipped.
         """
+        self._cached_status = None
+        self.should_skip = True
         for scenario in self.scenarios:
             scenario.mark_skipped()
         assert self.status == "skipped"
 
     def run(self, runner):
-        failed = False
-
+        self._cached_status = None
         runner.context._push()
         runner.context.feature = self
 
@@ -419,10 +457,9 @@ class Feature(TagStatement, Replayable):
             failed = scenario.run(runner)
             if failed:
                 failed_count += 1
-
-            # do we want to stop on the first failure?
-            if failed and runner.config.stop:
-                break
+                if runner.config.stop or runner.aborted:
+                    # -- FAIL-EARLY: Stop after first failure.
+                    break
 
         if run_feature:
             runner.run_hook('after_feature', runner.context, self)
@@ -493,7 +530,7 @@ class Background(BasicStatement, Replayable):
         return duration
 
 
-class Scenario(TagStatement, Replayable):
+class Scenario(TagAndStatusStatement, Replayable):
     '''A `scenario`_ parsed from a *feature file*.
 
     The attributes are:
@@ -509,7 +546,7 @@ class Scenario(TagStatement, Replayable):
 
     .. attribute:: description
 
-       The description of the scenario as seen in the *feature file*. 
+       The description of the scenario as seen in the *feature file*.
        This is stored as a list of text lines.
 
     .. attribute:: feature
@@ -566,36 +603,67 @@ class Scenario(TagStatement, Replayable):
         self.steps = steps or []
         self.background = None
         self.feature = None  # REFER-TO: owner=Feature
+        self._background_steps = None
         self._row = None
-        self.should_skip = None
+        self.was_dry_run = False
         self.stderr = None
         self.stdout = None
+
+    def reset(self):
+        '''
+        Reset the internal data to reintroduce new-born state just after the
+        ctor was called.
+        '''
+        super(Scenario, self).reset()
+        self._row = None
         self.was_dry_run = False
+        self.stderr = None
+        self.stdout = None
+        for step in self.all_steps:
+            step.reset()
+
+    @property
+    def background_steps(self):
+        '''
+        Provide background steps if feature has a background.
+        Lazy init that copies the background steps.
+
+        Note that a copy of the background steps is needed to ensure
+        that the background step status is specific to the scenario.
+
+        :return:  List of background steps or empty list
+        '''
+        if self._background_steps is None:
+            # -- LAZY-INIT (need copy of background.steps):
+            # Each scenario needs own background.steps status.
+            # Otherwise, background step status of the last scenario is used.
+            steps = []
+            if self.background:
+                steps = [copy.copy(step) for step in self.background.steps]
+            self._background_steps = steps
+        return self._background_steps
+
+    @property
+    def all_steps(self):
+        """Returns iterator to all steps, including background steps if any."""
+        if self.background is not None:
+            return itertools.chain(self.background_steps, self.steps)
+        else:
+            return iter(self.steps)
 
     def __repr__(self):
         return '<Scenario "%s">' % self.name
 
     def __iter__(self):
-        if self.background is not None:
-            return itertools.chain(self.background, self.steps)
-        else:
-            return iter(self.steps)
+        # XXX return iter(self.all_steps)
+        return self.all_steps
 
-    @property
-    def all_steps(self):
-        """Returns iterator to all steps, including background steps if any."""
-        return self.__iter__()
-
-    @property
-    def status(self):
-        if self.should_skip:
-            # -- PERFORMANCE SHORTCUT: Scenario(Outline) is marked as skipped.
-            return 'skipped'
-
-        for step in self.steps:
-            if step.status == 'failed':
-                return 'failed'
-            elif step.status == 'undefined':
+    def compute_status(self):
+        """Compute the status of the scenario from its steps.
+        :return: Computed status (as string).
+        """
+        for step in self.all_steps:
+            if step.status == 'undefined':
                 if self.was_dry_run:
                     # -- SPECIAL CASE: In dry-run with undefined-step discovery
                     #    Undefined steps should not cause failed scenario.
@@ -603,18 +671,23 @@ class Scenario(TagStatement, Replayable):
                 else:
                     # -- NORMALLY: Undefined steps cause failed scenario.
                     return 'failed'
-            elif step.status == 'skipped':
-                return 'skipped'
-            elif step.status == 'untested':
-                return 'untested'
+            elif step.status != 'passed':
+                assert step.status in ('failed', 'skipped', 'untested')
+                return step.status
+            #elif step.status == 'failed':
+            #    return 'failed'
+            #elif step.status == 'skipped':
+            #    return 'skipped'
+            #elif step.status == 'untested':
+            #    return 'untested'
         return 'passed'
 
     @property
     def duration(self):
-        duration = 0
-        for step in self.steps:
-            duration += step.duration
-        return duration
+        scenario_duration = 0
+        for step in self.all_steps:
+            scenario_duration += step.duration
+        return scenario_duration
 
     @property
     def effective_tags(self):
@@ -658,13 +731,15 @@ class Scenario(TagStatement, Replayable):
         """
         Marks this scenario (and all its steps) as skipped.
         """
+        self._cached_status = None
         self.should_skip = True
-        for step in self:
+        for step in self.all_steps:
             assert step.status == "untested" or step.status == "skipped"
             step.status = "skipped"
         assert self.status == "skipped", "OOPS: scenario.status=%s" % self.status
 
     def run(self, runner):
+        self._cached_status = None
         failed = False
         run_scenario = self.should_run(runner.config)
         run_steps = run_scenario and not runner.config.dry_run
@@ -691,12 +766,13 @@ class Scenario(TagStatement, Replayable):
                 for formatter in runner.formatters:
                     formatter.step(step)
 
-        for step in self:
+        for step in self.all_steps:
             if run_steps:
                 if not step.run(runner):
                     run_steps = False
                     failed = True
                     runner.context._set_root_attribute('failed', True)
+                    self._cached_status = 'failed'
             elif failed or dry_run_scenario:
                 # -- SKIP STEPS: After failure/undefined-step occurred.
                 # BUT: Detect all remaining undefined steps.
@@ -808,6 +884,14 @@ class ScenarioOutline(Scenario):
         self.examples = examples or []
         self._scenarios = []
 
+    def reset(self):
+        '''
+        Reset runtime temporary data like before a test run.
+        '''
+        super(ScenarioOutline, self).reset()
+        for scenario in self.scenarios:
+            scenario.reset()
+
     @property
     def scenarios(self):
         '''Return the scenarios with the steps altered to take the values from
@@ -827,7 +911,6 @@ class ScenarioOutline(Scenario):
                 scenario.background = self.background
                 scenario._row = row
                 self._scenarios.append(scenario)
-
         return self._scenarios
 
     def __repr__(self):
@@ -836,43 +919,50 @@ class ScenarioOutline(Scenario):
     def __iter__(self):
         return iter(self.scenarios)
 
-    @property
-    def status(self):
+    def compute_status(self):
         for scenario in self.scenarios:
-            if scenario.status == 'failed':
-                return 'failed'
-            if scenario.status == 'skipped':
-                return 'skipped'
-            if scenario.status == 'untested':
-                return 'untested'
+            scenario_status = scenario.status
+            if scenario_status != 'passed':
+                assert scenario_status in ('failed', 'skipped', 'untested')
+                return scenario_status
+            #if scenario.status == 'failed':
+            #    return 'failed'
+            #elif scenario.status == 'skipped':
+            #    return 'skipped'
+            #elif scenario.status == 'untested':
+            #    return 'untested'
         return 'passed'
 
     @property
     def duration(self):
-        duration = 0
+        outline_duration = 0
         for scenario in self.scenarios:
-            duration += scenario.duration
-        return duration
+            outline_duration += scenario.duration
+        return outline_duration
 
     def mark_skipped(self):
         """
         Marks this scenario outline (and all its scenarios/steps) as skipped.
         """
+        self._cached_status = None
+        self.should_skip = True
         for scenario in self.scenarios:
             scenario.mark_skipped()
         assert self.status == "skipped"
 
     def run(self, runner):
-        failed = False
-
-        for sub in self.scenarios:
-            runner.context._set_root_attribute('active_outline', sub._row)
-            failed = sub.run(runner)
-            if failed and runner.config.stop:
-                return False
+        self._cached_status = None
+        failed_count = 0
+        for scenario in self.scenarios:
+            runner.context._set_root_attribute('active_outline', scenario._row)
+            failed = scenario.run(runner)
+            if failed:
+                failed_count += 1
+                if runner.config.stop or runner.aborted:
+                    # -- FAIL-EARLY: Stop after first failure.
+                    break
         runner.context._set_root_attribute('active_outline', None)
-
-        return failed
+        return failed_count > 0
 
 
 class Examples(BasicStatement, Replayable):
@@ -990,6 +1080,13 @@ class Step(BasicStatement, Replayable):
         self.error_message = None
         self.exception = None
 
+    def reset(self):
+        '''Reset temporary runtime data to reach clean state again.'''
+        self.status = 'untested'
+        self.duration = 0.0
+        self.error_message = None
+        self.exception = None
+
     def __repr__(self):
         return '<%s "%s">' % (self.step_type, self.name)
 
@@ -1012,6 +1109,10 @@ class Step(BasicStatement, Replayable):
         return result
 
     def run(self, runner, quiet=False, capture=True):
+        # -- RESET: Run information.
+        self.error_message = None
+        self.exception = None
+
         # access module var here to allow test mocking to work
         match = step_registry.registry.find_match(self)
         if match is None:
@@ -1053,6 +1154,11 @@ class Step(BasicStatement, Replayable):
             else:
                 # no assertion text; format the exception
                 error = traceback.format_exc()
+        except KeyboardInterrupt, e:
+            runner.aborted = True
+            error = u"ABORTED: By user (KeyboardInterrupt)."
+            self.status = 'failed'
+            self.exception = e
         except Exception, e:
             self.status = 'failed'
             error = traceback.format_exc()
@@ -1086,7 +1192,6 @@ class Step(BasicStatement, Replayable):
                 formatter.result(self)
 
         runner.run_hook('after_step', runner.context, self)
-
         return keep_going
 
 
@@ -1162,6 +1267,24 @@ class Table(Replayable):
             assert len(row.cells) == new_column_index
             row.cells.append(value)
         return new_column_index
+
+    def remove_column(self, column_name):
+        if not isinstance(column_name, int):
+            try:
+                column_index = self.get_column_index(column_name)
+            except ValueError:
+                raise KeyError("column=%s is unknown" % column_name)
+
+        assert isinstance(column_index, int)
+        assert column_index < len(self.headings)
+        del self.headings[column_index]
+        for row in self.rows:
+            assert column_index < len(row.cells)
+            del row.cells[column_index]
+
+    def remove_columns(self, column_names):
+        for column_name in column_names:
+            self.remove_column(column_name)
 
     def has_column(self, column_name):
         return column_name in self.headings

@@ -8,7 +8,9 @@ NEWS and CHANGES:
 
   - Running:
 
+    * ABORT-BY-USER: Better handle KeyboardInterrupt to abort a test run.
     * feature list files (formerly: feature configfiles) support wildcards.
+    * Simplify and improve setup of logging subsystem (related to: #143, #177)
 
   - Formatters:
 
@@ -17,7 +19,19 @@ NEWS and CHANGES:
 
 IMPROVEMENT:
 
+  * issue #108: behave.main() can be called with command-line args (provided by: medwards, jenisys)
   * issue #172: Subfolders in junit XML filenames (provided by: roignac).
+  * Simple test runner to run behave tests from "setup.py"
+
+FIXED:
+
+  * issue #143: Logging starts with a StreamHandler way too early (provided by: jtatum, jenisys).
+  * issue #175: Scenario isn't marked as 'failed' when Background step fails
+  * issue #177: Cannot setup logging_format
+  * issue #184: TypeError when running behave with --include option (provided by: s1ider).
+  * issue #186: ScenarioOutline uses wrong return value when if fails (provided by: mdavezac)
+  * issue #188: Better diagnostics if nested step is undefined
+  * issue #191: Using context.execute_steps() may change context.table/.text
 
 
 Version: 1.2.3 (2013-07-08)

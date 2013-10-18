@@ -239,7 +239,7 @@ class TestScenarioRun(object):
 
 class TestScenarioOutline(object):
     def test_run_calls_run_on_each_generated_scenario(self):
-        outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
+        outline = model.ScenarioOutline('foo.feature', 17, u'Scenario Outline',
                                         u'foo')
         outline._scenarios = [Mock(), Mock()]
         for scenario in outline._scenarios:
@@ -253,7 +253,7 @@ class TestScenarioOutline(object):
         [s.run.assert_called_with(runner) for s in outline._scenarios]
 
     def test_run_stops_on_first_failure_if_requested(self):
-        outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
+        outline = model.ScenarioOutline('foo.feature', 17, u'Scenario Outline',
                                         u'foo')
         outline._scenarios = [Mock(), Mock()]
         outline._scenarios[0].run.return_value = True
@@ -269,7 +269,7 @@ class TestScenarioOutline(object):
         assert not outline._scenarios[1].run.called
 
     def test_run_sets_context_variable_for_outline(self):
-        outline = model.ScenarioOutline('foo.featuer', 17, u'Scenario Outline',
+        outline = model.ScenarioOutline('foo.feature', 17, u'Scenario Outline',
                                         u'foo')
         outline._scenarios = [Mock(), Mock(), Mock()]
         for scenario in outline._scenarios:
@@ -288,6 +288,70 @@ class TestScenarioOutline(object):
             (('active_outline', outline._scenarios[2]._row), {}),
             (('active_outline', None), {}),
         ])
+
+    def test_run_should_pass_when_all_examples_pass(self):
+        outline = model.ScenarioOutline('foo.feature', 17, u'Scenario Outline',
+                                        u'foo')
+        outline._scenarios = [Mock(), Mock(), Mock()]
+        for scenario in outline._scenarios:
+            scenario.run.return_value = False
+
+        runner = Mock()
+        context = runner.context = Mock()
+        config = runner.config = Mock()
+        config.stop = True
+
+        resultFailed = outline.run(runner)
+        eq_(resultFailed, False)
+
+    def test_run_should_fail_when_first_examples_fails(self):
+        outline = model.ScenarioOutline('foo.feature', 17, u'Scenario Outline',
+                                        u'foo')
+        failed = True
+        outline._scenarios = [Mock(), Mock()]
+        outline._scenarios[0].run.return_value = failed
+        outline._scenarios[1].run.return_value = not failed
+
+        runner = Mock()
+        context = runner.context = Mock()
+        config = runner.config = Mock()
+        config.stop = True
+
+        resultFailed = outline.run(runner)
+        eq_(resultFailed, True)
+
+    def test_run_should_fail_when_last_examples_fails(self):
+        outline = model.ScenarioOutline('foo.feature', 17, u'Scenario Outline',
+                                        u'foo')
+        failed = True
+        outline._scenarios = [Mock(), Mock()]
+        outline._scenarios[0].run.return_value = not failed
+        outline._scenarios[1].run.return_value = failed
+
+        runner = Mock()
+        context = runner.context = Mock()
+        config = runner.config = Mock()
+        config.stop = True
+
+        resultFailed = outline.run(runner)
+        eq_(resultFailed, True)
+
+    def test_run_should_fail_when_middle_examples_fails(self):
+        outline = model.ScenarioOutline('foo.feature', 17, u'Scenario Outline',
+                                        u'foo')
+        failed = True
+        outline._scenarios = [Mock(), Mock(), Mock()]
+        outline._scenarios[0].run.return_value = not failed
+        outline._scenarios[1].run.return_value = failed
+        outline._scenarios[2].run.return_value = not failed
+
+        runner = Mock()
+        context = runner.context = Mock()
+        config = runner.config = Mock()
+        config.stop = True
+
+        resultFailed = outline.run(runner)
+        eq_(resultFailed, True)
 
 
 def raiser(exception):

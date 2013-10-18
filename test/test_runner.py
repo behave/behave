@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import with_statement
 
+from __future__ import with_statement
 from collections import defaultdict
 import os.path
 import StringIO
@@ -263,6 +263,8 @@ class TestContext_ExecuteSteps(unittest.TestCase):
         runner_.config.stderr_capture  = False
         runner_.config.log_capture  = False
         self.context = runner.Context(runner_)
+        # self.context.text = None
+        # self.context.table = None
         runner_.context = self.context
         self.context.feature = Mock()
         self.context.feature.parser = parser.Parser()
@@ -292,7 +294,19 @@ Then a step passes
             try:
                 result = self.context.execute_steps(doc)
             except AssertionError, e:  # -- PY26-CLEANUP-MARK
-                ok_("Sub-step failed: When a step fails" in str(e))
+                ok_("FAILED SUB-STEP: When a step fails" in str(e))
+
+    def test_execute_steps_with_undefined_step(self):
+        doc = u'''
+Given a step passes
+When a step is undefined
+Then a step passes
+'''.lstrip()
+        with patch('behave.step_registry.registry', self.step_registry):
+            try:
+                result = self.context.execute_steps(doc)
+            except AssertionError, e:  # -- PY26-CLEANUP-MARK
+                ok_("UNDEFINED SUB-STEP: When a step is undefined" in str(e))
 
     def test_execute_steps_with_text(self):
         doc = u'''
@@ -327,8 +341,60 @@ Then a step passes
             eq_(result, True)
             eq_(expected_table, ExampleSteps.table)
 
+    def test_context_table_is_restored_after_execute_steps_without_table(self):
+        doc = u'''
+Given a step passes
+Then a step passes
+'''.lstrip()
+        with patch('behave.step_registry.registry', self.step_registry):
+            original_table = "<ORIGINAL_TABLE>"
+            self.context.table = original_table
+            self.context.execute_steps(doc)
+            eq_(self.context.table, original_table)
+
+    def test_context_table_is_restored_after_execute_steps_with_table(self):
+        doc = u'''
+Given a step with a table:
+    | Name  | Age |
+    | Alice |  12 |
+    | Bob   |  23 |
+Then a step passes
+'''.lstrip()
+        with patch('behave.step_registry.registry', self.step_registry):
+            original_table = "<ORIGINAL_TABLE>"
+            self.context.table = original_table
+            self.context.execute_steps(doc)
+            eq_(self.context.table, original_table)
+
+    def test_context_text_is_restored_after_execute_steps_without_text(self):
+        doc = u'''
+Given a step passes
+Then a step passes
+'''.lstrip()
+        with patch('behave.step_registry.registry', self.step_registry):
+            original_text = "<ORIGINAL_TEXT>"
+            self.context.text = original_text
+            self.context.execute_steps(doc)
+            eq_(self.context.text, original_text)
+
+    def test_context_text_is_restored_after_execute_steps_with_text(self):
+        doc = u'''
+Given a step passes
+When a step with text:
+    """
+    Lorem ipsum
+    Ipsum lorem
+    """
+'''.lstrip()
+        with patch('behave.step_registry.registry', self.step_registry):
+            original_text = "<ORIGINAL_TEXT>"
+            self.context.text = original_text
+            self.context.execute_steps(doc)
+            eq_(self.context.text, original_text)
+
+
     @raises(ValueError)
-    def test_execute_steps_called_without_feature(self):
+    def test_execute_steps_should_fail_when_called_without_feature(self):
         doc = u'''
 Given a passes
 Then a step passes
@@ -476,6 +542,7 @@ class TestRunner(object):
 
     def test_run_returns_true_if_everything_passed(self):
         r = runner.Runner(Mock())
+        r.setup_capture = Mock()
         r.setup_paths = Mock()
         r.run_with_paths = Mock()
         r.run_with_paths.return_value = True
@@ -483,6 +550,7 @@ class TestRunner(object):
 
     def test_run_returns_false_if_anything_failed(self):
         r = runner.Runner(Mock())
+        r.setup_capture = Mock()
         r.setup_paths = Mock()
         r.run_with_paths = Mock()
         r.run_with_paths.return_value = False

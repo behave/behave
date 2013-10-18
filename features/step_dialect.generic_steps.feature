@@ -49,7 +49,7 @@ Feature: Step dialect for generic steps
       * another step passes
 
 
-  Scenario: Simple step-by-step example
+  Scenario: Simple step-by-step example 2
     Given a file named "features/generic_steps.feature" with:
         """
         Feature:

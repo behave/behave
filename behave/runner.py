@@ -13,7 +13,6 @@ import weakref
 import time
 import collections
 
-from behave import parser
 from behave import matchers
 from behave.step_registry import setup_step_decorators
 from behave.formatter import formatters
@@ -21,7 +20,7 @@ from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
 from behave.runner_util import \
     collect_feature_locations, parse_features
-from behave.formatter.base import StreamOpener    
+from behave.formatter.base import StreamOpener
 
 multiprocessing = None
 try:
@@ -76,9 +75,15 @@ class Context(object):
       combined from the feature and scenario. This attribute will not be
       present outside of a feature scope.
 
+    .. attribute:: aborted
+
+      This is set to true in the root namespace when the user aborts a test run
+      (:exc:`KeyboardInterrupt` exception). Initially: False.
+
     .. attribute:: failed
 
-      This is set in the root namespace as soon as any step fails.
+      This is set to true in the root namespace as soon as a step fails.
+      Initially: False.
 
     .. attribute:: table
 
@@ -110,8 +115,14 @@ class Context(object):
 
     .. attribute:: stdout_capture
 
-      If logging capture is enabled then this attribute contains the captured
-      stdout as a StringIO instance. It is not present if stdout is not being
+      If stdout capture is enabled then this attribute contains the captured
+      output as a StringIO instance. It is not present if stdout is not being
+      captured.
+
+    .. attribute:: stderr_capture
+
+      If stderr capture is enabled then this attribute contains the captured
+      output as a StringIO instance. It is not present if stderr is not being
       captured.
 
     If an attempt made by user code to overwrite one of these variables, or
@@ -138,6 +149,7 @@ class Context(object):
         self._runner = weakref.proxy(runner)
         self._config = runner.config
         d = self._root = {
+            'aborted': False,
             'failed': False,
             'config': self._config,
             'active_outline': None,
@@ -268,16 +280,26 @@ class Context(object):
         if not self.feature:
             raise ValueError('execute_steps() called outside of feature')
 
+        # -- PREPARE: Save original context data for current step.
+        # Needed if step definition that called this method uses .table/.text
+        original_table = getattr(self, "table", None)
+        original_text  = getattr(self, "text", None)
+
         self.feature.parser.variant = 'steps'
         steps = self.feature.parser.parse_steps(steps_text)
         for step in steps:
             passed = step.run(self._runner, quiet=True, capture=False)
             if not passed:
                 # -- ISSUE #96: Provide more substep info to diagnose problem.
-                step_line = "%s %s" % (step.keyword, step.name)
-                more = step.error_message
-                assert False, \
-                    "Sub-step failed: %s\nSubstep info: %s" % (step_line, more)
+                step_line = u"%s %s" % (step.keyword, step.name)
+                message = "%s SUB-STEP: %s" % (step.status.upper(), step_line)
+                if step.error_message:
+                    message += "\nSubstep info: %s" % step.error_message
+                assert False, message
+
+        # -- FINALLY: Restore original context data for current step.
+        self.table = original_table
+        self.text  = original_text
         return True
 
 
@@ -342,6 +364,15 @@ class PathManager(object):
 
 
 class Runner(object):
+    '''
+    Test runner for behave.
+
+    .. attribute:: aborted
+
+      This is set to true when the user aborts a test run
+      (:exc:`KeyboardInterrupt` exception). Initially: False.
+      Stored as derived attribute in :attr:`Context.aborted`.
+    '''
     def __init__(self, config):
         self.config = config
         self.hooks = {}
@@ -364,6 +395,34 @@ class Runner(object):
         self.base_dir = None
         self.context = None
         self.formatters = None
+
+    # @property
+    def _get_aborted(self):
+        """
+        Indicates that a test run was aborted by the user
+        (:exc:`KeyboardInterrupt` exception).
+        Stored in :attr:`Context.aborted` attribute (as root attribute).
+
+        :return: Current aborted state, initially false.
+        :rtype: bool
+        """
+        value = False
+        if self.context:
+            value = self.context.aborted
+        return value
+
+    # @aborted.setter
+    def _set_aborted(self, value):
+        """
+        Set the aborted value.
+
+        :param value: New aborted value (as bool).
+        """
+        assert self.context
+        self.context._set_root_attribute('aborted', bool(value))
+
+    aborted = property(_get_aborted, _set_aborted,
+                       doc="Indicates that test run is aborted by the user.")
 
     def setup_paths(self):
         if self.config.paths:
@@ -444,10 +503,20 @@ class Runner(object):
         if base_dir != os.getcwd():
             self.path_manager.add(os.getcwd())
 
+    def before_all_default_hook(self, context):
+        """
+        Default implementation for :func:`before_all()` hook.
+        Setup the logging subsystem based on the configuration data.
+        """
+        context.config.setup_logging()
+
     def load_hooks(self, filename='environment.py'):
         hooks_path = os.path.join(self.base_dir, filename)
         if os.path.exists(hooks_path):
             exec_file(hooks_path, self.hooks)
+
+        if 'before_all' not in self.hooks:
+            self.hooks['before_all'] = self.before_all_default_hook
 
     def load_step_definitions(self, extra_step_paths=[]):
         step_globals = {
@@ -474,8 +543,13 @@ class Runner(object):
 
     def run_hook(self, name, context, *args):
         if not self.config.dry_run and (name in self.hooks):
+            # try:
             with context.user_mode():
                 self.hooks[name](context, *args)
+            # except KeyboardInterrupt:
+            #     self.aborted = True
+            #     if name not in ("before_all", "after_all"):
+            #         raise
 
     def feature_locations(self):
         return collect_feature_locations(self.config.paths)
@@ -487,17 +561,15 @@ class Runner(object):
             return self.run_with_paths()
 
     def run_with_paths(self):
-
-
+        context = self.context = Context(self)
         self.load_hooks()
         self.load_step_definitions()
-
-        context = self.context = Context(self)
-        # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
-        self.setup_capture()
+        assert not self.aborted
         stream_openers = self.config.outputs
         failed_count = 0
 
+        # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
+        self.setup_capture()
         self.run_hook('before_all', context)
 
         # -- STEP: Parse all feature files (by using their file location).
@@ -506,6 +578,7 @@ class Runner(object):
         features = parse_features(feature_locations, language=self.config.lang)
         self.features.extend(features)
 
+        # -- STEP: Multi-processing!
         if getattr(self.config, 'proc_count'):
             return self.run_multiproc()
 
@@ -515,16 +588,21 @@ class Runner(object):
         run_feature = True
         for feature in features:
             if run_feature:
-                self.feature = feature
-                for formatter in self.formatters:
-                    formatter.uri(feature.filename)
+                try:
+                    self.feature = feature
+                    for formatter in self.formatters:
+                        formatter.uri(feature.filename)
 
-                failed = feature.run(self)
-                if failed:
+                    failed = feature.run(self)
+                    if failed:
+                        failed_count += 1
+                        if self.config.stop or self.aborted:
+                            # -- FAIL-EARLY: After first failure.
+                            run_feature = False
+                except KeyboardInterrupt:
+                    self.aborted = True
                     failed_count += 1
-                    if self.config.stop:
-                        # -- FAIL-EARLY: After first failure.
-                        run_feature = False
+                    run_feature = False
 
             # -- ALWAYS: Report run/not-run feature to reporters.
             # REQUIRED-FOR: Summary to keep track of untested features.
@@ -532,15 +610,20 @@ class Runner(object):
                 reporter.feature(feature)
 
         # -- AFTER-ALL:
+        if self.aborted:
+            print "\nABORTED: By user."
         for formatter in self.formatters:
             formatter.close()
         self.run_hook('after_all', context)
         for reporter in self.config.reporters:
             reporter.end()
+        # if self.aborted:
+        #     print "\nABORTED: By user."
 
-        failed = ((failed_count > 0) or
+        failed = ((failed_count > 0) or self.aborted or
                   (len(self.undefined) > undefined_steps_initial_size))
         return failed
+
 
     def run_multiproc(self):
 
@@ -562,6 +645,7 @@ class Runner(object):
                     str(self.parallel_element)+"', which isn't valid.")
                     return 1
 
+        # -- Prevent context warnings.
         def do_nothing(obj2, obj3):
             pass
         self.context._emit_warning = do_nothing
@@ -672,13 +756,6 @@ class Runner(object):
         else:
             self.feature = current_job.feature
 
-    def setformatterbuffer(self, current_job, writebuf):
-        self.formatter = formatters.get_formatter(self.config, writebuf)
-        if current_job.type == 'feature':
-            self.formatter.uri(current_job.filename)
-        else:
-            self.formatter.uri(current_job.feature.filename)
-
     def generatereport(self, proc_number, current_job, start_time, end_time, writebuf):
         if not writebuf.pos:
             return ""
@@ -723,11 +800,8 @@ class Runner(object):
         if current_job.type != 'scenario':
             [self.countstepstatus(s, results) for s in current_job.scenarios]
         else:
-            for step in current_job.steps:
+            for step in current_job.all_steps:
                 results['steps_' + step.status] += 1
-            if current_job.background:
-                for step in current_job.background.steps:
-                    results['steps_' + step.status] += 1
 
     def multiproc_fullreport(self):
         metrics = collections.defaultdict(int)
@@ -921,11 +995,6 @@ class Runner(object):
             fd = open(filename,"w")
             fd.write(filedata)
             fd.close() 
-
-            
-             
-
-             
 
     def setup_capture(self):
         if self.config.stdout_capture:
