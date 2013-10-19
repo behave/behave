@@ -1135,7 +1135,8 @@ class Step(BasicStatement, Replayable):
                 formatter.match(match)
 
         runner.run_hook('before_step', runner.context, self)
-        runner.start_capture()
+        if capture:
+            runner.start_capture()
 
         try:
             start = time.time()
@@ -1165,8 +1166,8 @@ class Step(BasicStatement, Replayable):
             self.exception = e
 
         self.duration = time.time() - start
-
-        runner.stop_capture()
+        if capture:
+            runner.stop_capture()
 
         # flesh out the failure with details
         if self.status == 'failed':

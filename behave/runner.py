@@ -625,19 +625,33 @@ class Runner(object):
 
     def start_capture(self):
         if self.config.stdout_capture:
-            self.old_stdout = sys.stdout
-            sys.stdout = self.stdout_capture
+            # -- REPLACE ONLY: In non-capturing mode.
+            if not self.old_stdout:
+                self.old_stdout = sys.stdout
+                sys.stdout = self.stdout_capture
+            assert sys.stdout is self.stdout_capture
 
         if self.config.stderr_capture:
-            self.old_stderr = sys.stderr
-            sys.stderr = self.stderr_capture
+            # -- REPLACE ONLY: In non-capturing mode.
+            if not self.old_stderr:
+                self.old_stderr = sys.stderr
+                sys.stderr = self.stderr_capture
+            assert sys.stderr is self.stderr_capture
 
     def stop_capture(self):
         if self.config.stdout_capture:
-            sys.stdout = self.old_stdout
+            # -- RESTORE ONLY: In capturing mode.
+            if self.old_stdout:
+                sys.stdout = self.old_stdout
+                self.old_stdout = None
+            assert sys.stdout is not self.stdout_capture
 
         if self.config.stderr_capture:
-            sys.stderr = self.old_stderr
+            # -- RESTORE ONLY: In capturing mode.
+            if self.old_stderr:
+                sys.stderr = self.old_stderr
+                self.old_stderr = None
+            assert sys.stderr is not self.stderr_capture
 
     def teardown_capture(self):
         if self.config.log_capture:

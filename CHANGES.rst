@@ -32,6 +32,7 @@ FIXED:
   * issue #186: ScenarioOutline uses wrong return value when if fails (provided by: mdavezac)
   * issue #188: Better diagnostics if nested step is undefined
   * issue #191: Using context.execute_steps() may change context.table/.text
+  * issue #194: Nested steps prevent that original stdout/stderr is restored
 
 
 Version: 1.2.3 (2013-07-08)
