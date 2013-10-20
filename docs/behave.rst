@@ -78,13 +78,13 @@ You may see the same information presented below at any time using ``behave
    Capture logging. All logging during a step will be captured and
    displayed in the event of a failure. This is the default behaviour.
    This switch is used to override a configuration file setting.
+**--logging-level**
+   Specify a level to capture logging at. The default is INFO -
+   capturing everything.
 **--logging-format**
    Specify custom format to print statements. Uses the same format as
    used by standard logging handlers. The default is
    '%(levelname)s:%(name)s:%(message)s'.
-**--logging-level**
-   Specify a level to capture logging at. The default is NOTSET -
-   capturing everything.
 **--logging-datefmt**
    Specify custom date/time format to print statements. Uses the same
    format as used by standard logging handlers.
@@ -290,13 +290,13 @@ Recognised Settings
    Capture logging. All logging during a step will be captured and
    displayed in the event of a failure. This is the default behaviour.
    This switch is used to override a configuration file setting.
+**logging_level** -- text
+   Specify a level to capture logging at. The default is INFO -
+   capturing everything.
 **logging_format** -- text
    Specify custom format to print statements. Uses the same format as
    used by standard logging handlers. The default is
    '%(levelname)s:%(name)s:%(message)s'.
-**logging_level** -- text
-   Specify a level to capture logging at. The default is NOTSET -
-   capturing everything.
 **logging_datefmt** -- text
    Specify custom date/time format to print statements. Uses the same
    format as used by standard logging handlers.
