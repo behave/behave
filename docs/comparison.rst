@@ -62,7 +62,7 @@ Python step definitions. The main differences with behave are:
 * Has separate context objects for various levels: ``glc``, ``ftc`` and
   ``scc``. These relate to global, feature and scenario levels respectively.
 
-The issues we had with Freshen that suppoed us using it were:
+The issues we had with Freshen that stopped us using it were:
 
 * The integration with the nose runner made it quite hard to properly debug
   how and why tests were failing. Quite often you'd get a rather cryptic
