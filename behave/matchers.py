@@ -125,7 +125,6 @@ matcher_mapping = {
     'parse': ParseMatcher,
     're': RegexMatcher,
 }
-
 current_matcher = ParseMatcher
 
 
@@ -157,3 +156,27 @@ def step_matcher(name):
 
 def get_matcher(func, string):
     return current_matcher(func, string)
+
+
+# -----------------------------------------------------------------------------
+# EXPERIMENT: Parser with CardinalityField support
+# -----------------------------------------------------------------------------
+try:
+    from parse_type import cfparse
+
+    class CFParseMatcher(ParseMatcher):
+        """
+        Uses :class:`parse_type.cfparse.Parser` instead of "parse.Parser".
+        Provides support for automatic generation of type variants
+        for fields with CardinalityField part.
+        """
+        def __init__(self, func, string, step_type=None):
+            super(ParseMatcher, self).__init__(func, string, step_type)
+            self.parser = cfparse.Parser(self.string, self.custom_types)
+
+    # -- REGISTER-MATCHER:
+    matcher_mapping['cfparse'] = CFParseMatcher
+
+except ImportError:
+    pass
+
