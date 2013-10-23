@@ -128,7 +128,7 @@ matcher_mapping = {
 current_matcher = ParseMatcher
 
 
-def step_matcher(name):
+def use_step_matcher(name):
     '''Change the parameter matcher used in parsing step text.
 
     The change is immediate and may be performed between step definitions in
@@ -141,6 +141,7 @@ def step_matcher(name):
        This is a `simple parser`_ that uses a format very much like the Python
        builtin ``format()``. You must use named fields which are then matched
        to your ``step()`` function arguments.
+
     **re**
        This uses full regular expressions to parse the clause text. You will
        need to use named groups "(?P<name>...)" to define the variables pulled
@@ -153,6 +154,13 @@ def step_matcher(name):
     global current_matcher
     current_matcher = matcher_mapping[name]
 
+def step_matcher(name):
+    # -- BACKWARD-COMPATIBLE NAME: Mark as deprecated.
+    import warnings
+    warnings.warn("Use 'use_step_matcher()' instead",
+                  PendingDeprecationWarning, stacklevel=2)
+    use_step_matcher(name)
+
 
 def get_matcher(func, string):
     return current_matcher(func, string)
@@ -161,6 +169,7 @@ def get_matcher(func, string):
 # -----------------------------------------------------------------------------
 # EXPERIMENT: Parser with CardinalityField support
 # -----------------------------------------------------------------------------
+# USE: https://github.com/jenisys/parse_type
 try:
     from parse_type import cfparse
 
