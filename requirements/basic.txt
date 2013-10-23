@@ -9,7 +9,5 @@
 # ============================================================================
 
 argparse >= 1.2
-parse >= 1.6.2
-
-# -- MORE:
-# Python2.5: simplejson # -- json module was introduced in python2.6
+parse >= 1.6.3
+six >= 1.4
