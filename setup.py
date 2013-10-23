@@ -10,7 +10,10 @@ USAGE:
 
 import sys
 import os.path
-sys.path.insert(0, os.curdir)
+HERE0 = os.path.dirname(__file__) or os.curdir
+os.chdir(HERE0)
+HERE = os.curdir
+sys.path.insert(0, HERE)
 
 from setuptools import find_packages, setup
 from setuptools_behave import behave_test
@@ -19,22 +22,27 @@ from setuptools_behave import behave_test
 # CONFIGURATION:
 # -----------------------------------------------------------------------------
 python_version = float("%s.%s" % sys.version_info[:2])
-requirements = ['parse>=1.6.2']
-zip_safe = True
-major, minor = sys.version_info[:2]
-# if major == 2 and minor < 7:
-if python_version < 2.7:
+requirements = ['parse>=1.6.3']
+if python_version < 2.7 or 3.0 <= python_version <= 3.1:
     requirements.append('argparse')
+if python_version < 2.7:
     requirements.append('importlib')
-# if major == 2 and minor < 6:
+    requirements.append('ordereddict')
 if python_version < 2.6:
     requirements.append('simplejson')
 
-HERE = os.path.dirname(__file__)
+BEHAVE = os.path.join(HERE, "behave")
 README = os.path.join(HERE, "README.rst")
 description = ''.join(open(README).readlines()[4:])
 
+# -----------------------------------------------------------------------------
+# UTILITY:
+# -----------------------------------------------------------------------------
 def find_packages_by_root_package(where):
+    """
+    Better than excluding everything that is not needed,
+    collect only what is needed.
+    """
     root_package = os.path.basename(where)
     packages = [ "%s.%s" % (root_package, sub_package)
                  for sub_package in find_packages(where)]
@@ -54,7 +62,7 @@ setup(
     author_email='behave-users@googlegroups.com',
     url='http://github.com/behave/behave',
     provides = ["behave", "setuptools_behave"],
-    packages = find_packages_by_root_package("behave"),
+    packages = find_packages_by_root_package(BEHAVE),
     py_modules = ["setuptools_behave"],
     entry_points={
         'console_scripts': [
@@ -66,7 +74,7 @@ setup(
     },
     install_requires=requirements,
     test_suite='nose.collector',
-    tests_require=['nose>=1.3', 'mock>=1.0', 'PyHamcrest>=1.7.2'],
+    tests_require=['nose>=1.3', 'mock>=1.0', 'PyHamcrest>=1.8'],
     cmdclass = {
         'behave_test': behave_test,
     },
@@ -88,6 +96,7 @@ setup(
         "Topic :: Software Development :: Testing",
         "License :: OSI Approved :: BSD License",
     ],
+    zip_safe = True,
 )
 
 
