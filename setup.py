@@ -15,17 +15,36 @@ sys.path.insert(0, os.curdir)
 from setuptools import find_packages, setup
 from setuptools_behave import behave_test
 
+# -----------------------------------------------------------------------------
+# CONFIGURATION:
+# -----------------------------------------------------------------------------
+python_version = float("%s.%s" % sys.version_info[:2])
 requirements = ['parse>=1.6.2']
 zip_safe = True
 major, minor = sys.version_info[:2]
-if major == 2 and minor < 7:
+# if major == 2 and minor < 7:
+if python_version < 2.7:
     requirements.append('argparse')
     requirements.append('importlib')
-if major == 2 and minor < 6:
+# if major == 2 and minor < 6:
+if python_version < 2.6:
     requirements.append('simplejson')
 
-description = ''.join(open('README.rst').readlines()[5:])
+HERE = os.path.dirname(__file__)
+README = os.path.join(HERE, "README.rst")
+description = ''.join(open(README).readlines()[4:])
 
+def find_packages_by_root_package(where):
+    root_package = os.path.basename(where)
+    packages = [ "%s.%s" % (root_package, sub_package)
+                 for sub_package in find_packages(where)]
+    packages.insert(0, root_package)
+    return packages
+
+
+# -----------------------------------------------------------------------------
+# SETUP:
+# -----------------------------------------------------------------------------
 setup(
     name='behave',
     version='1.2.4a1',
@@ -34,9 +53,9 @@ setup(
     author='Benno Rice, Richard Jones and Jens Engel',
     author_email='behave-users@googlegroups.com',
     url='http://github.com/behave/behave',
-    packages=find_packages(exclude=[
-        "test", "test.*",
-        "behave4cmd0", "behave4cmd0.*"]),
+    provides = ["behave", "setuptools_behave"],
+    packages = find_packages_by_root_package("behave"),
+    py_modules = ["setuptools_behave"],
     entry_points={
         'console_scripts': [
             'behave = behave.__main__:main'
@@ -51,7 +70,7 @@ setup(
     cmdclass = {
         'behave_test': behave_test,
     },
-    use_2to3=True,
+    use_2to3= bool(python_version >= 3.0),
     license="BSD",
     classifiers=[
         "Development Status :: 4 - Beta",
