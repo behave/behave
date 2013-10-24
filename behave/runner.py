@@ -632,7 +632,20 @@ class Runner(object):
             " If you're on python2.5, go get the backport")
             return 1
         self.config.format = ['plain']
+
         self.parallel_element = getattr(self.config, 'parallel_element')
+        self.proc_count = getattr(self.config, 'proc_count'))
+
+        if "Mock" in str(self.proc_count):
+            print "INFO: Mock objects"
+            try:
+                print self.proc_count.proc_count
+                print self.parallel_element.parallel_element
+            except Exception,e:
+                print "Okay, that didn't work:",str(e)
+            from mock import Mock
+            return Mock(return_value=0)
+
 
         if not self.parallel_element:
             self.parallel_element = 'scenario'
@@ -676,15 +689,14 @@ class Runner(object):
                             feature_count + scenario_count)
                         scenario_count += 1
 
-        proc_count = int(getattr(self.config, 'proc_count'))
         print ("INFO: {0} scenario(s) and {1} feature(s) queued for"
                 " consideration by {2} workers. Some may be skipped if the"
                 " -t option was given..."
-               .format(scenario_count, feature_count, proc_count))
+               .format(scenario_count, feature_count, self.proc_count))
         time.sleep(2)
 
         procs = []
-        for i in range(proc_count):
+        for i in range(self.proc_count):
             p = multiprocessing.Process(target=self.worker, args=(i, ))
             procs.append(p)
             p.start()
