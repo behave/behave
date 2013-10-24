@@ -634,7 +634,7 @@ class Runner(object):
         self.config.format = ['plain']
 
         self.parallel_element = getattr(self.config, 'parallel_element')
-        self.proc_count = getattr(self.config, 'proc_count'))
+        self.proc_count = getattr(self.config, 'proc_count')
 
         if "Mock" in str(self.proc_count):
             print "INFO: Mock objects"
