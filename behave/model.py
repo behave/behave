@@ -291,15 +291,17 @@ class Feature(TagAndStatusStatement, Replayable):
 
     type = "feature"
 
-    def __init__(self, filename, line, keyword, name, tags=[], description=[],
-                 scenarios=[], background=None):
+    def __init__(self, filename, line, keyword, name, tags=None,
+                 description=None, scenarios=None, background=None):
+        tags = tags or []
         super(Feature, self).__init__(filename, line, keyword, name, tags)
         self.description = description or []
         self.scenarios = []
         self.background = background
         self.parser = None
-        for scenario in scenarios:
-            self.add_scenario(scenario)
+        if scenarios:
+            for scenario in scenarios:
+                self.add_scenario(scenario)
 
     def reset(self):
         '''
@@ -419,6 +421,9 @@ class Feature(TagAndStatusStatement, Replayable):
         self.should_skip = True
         for scenario in self.scenarios:
             scenario.mark_skipped()
+        else:
+            # -- SPECIAL CASE: Feature without scenarios
+            self._cached_status = "skipped"
         assert self.status == "skipped"
 
     def run(self, runner):
@@ -445,7 +450,7 @@ class Feature(TagAndStatusStatement, Replayable):
                 formatter.background(self.background)
 
         failed_count = 0
-        for scenario in self:
+        for scenario in self.scenarios:
             # -- OPTIONAL: Select scenario by name (regular expressions).
             if (runner.config.name and
                     not runner.config.name_re.search(scenario.name)):
@@ -458,6 +463,10 @@ class Feature(TagAndStatusStatement, Replayable):
                 if runner.config.stop or runner.aborted:
                     # -- FAIL-EARLY: Stop after first failure.
                     break
+        else:
+            if not run_feature:
+                # -- SPECIAL CASE: Feature without scenarios:
+                self._cached_status = 'skipped'
 
         if run_feature:
             runner.run_hook('after_feature', runner.context, self)
@@ -510,7 +519,7 @@ class Background(BasicStatement, Replayable):
     '''
     type = "background"
 
-    def __init__(self, filename, line, keyword, name, steps=[]):
+    def __init__(self, filename, line, keyword, name, steps=None):
         super(Background, self).__init__(filename, line, keyword, name)
         self.steps = steps or []
 
@@ -594,8 +603,9 @@ class Scenario(TagAndStatusStatement, Replayable):
     '''
     type = "scenario"
 
-    def __init__(self, filename, line, keyword, name, tags=[], steps=[],
+    def __init__(self, filename, line, keyword, name, tags=None, steps=None,
                  description=None):
+        tags = tags or []
         super(Scenario, self).__init__(filename, line, keyword, name, tags)
         self.description = description or []
         self.steps = steps or []
@@ -735,6 +745,9 @@ class Scenario(TagAndStatusStatement, Replayable):
         for step in self.all_steps:
             assert step.status == "untested" or step.status == "skipped"
             step.status = "skipped"
+        else:
+            # -- SPECIAL CASE: Scenario without steps
+            self._cached_status = "skipped"
         assert self.status == "skipped", "OOPS: scenario.status=%s" % self.status
 
     def run(self, runner):
@@ -781,11 +794,15 @@ class Scenario(TagAndStatusStatement, Replayable):
                 found_step = step_registry.registry.find_match(step)
                 if not found_step:
                     step.status = 'undefined'
-                    runner.undefined.append(step)
+                    runner.undefined_steps.append(step)
             else:
                 # -- SKIP STEPS: For disabled scenario.
                 # NOTE: Undefined steps are not detected (by intention).
                 step.status = 'skipped'
+        else:
+            if not run_scenario:
+                # -- SPECIAL CASE: Scenario without steps.
+                self._cached_status = 'skipped'
 
         # Attach the stdout and stderr if generate Junit report
         if runner.config.junit:
@@ -876,8 +893,8 @@ class ScenarioOutline(Scenario):
     '''
     type = "scenario_outline"
 
-    def __init__(self, filename, line, keyword, name, tags=[],
-                 steps=[], examples=[], description=None):
+    def __init__(self, filename, line, keyword, name, tags=None,
+                 steps=None, examples=None, description=None):
         super(ScenarioOutline, self).__init__(filename, line, keyword, name,
                                               tags, steps, description)
         self.examples = examples or []
@@ -947,6 +964,9 @@ class ScenarioOutline(Scenario):
         self.should_skip = True
         for scenario in self.scenarios:
             scenario.mark_skipped()
+        else:
+            # -- SPECIAL CASE: ScenarioOutline without scenarios/examples
+            self._cached_status = "skipped"
         assert self.status == "skipped"
 
     def run(self, runner):
@@ -1115,7 +1135,7 @@ class Step(BasicStatement, Replayable):
         # access module var here to allow test mocking to work
         match = step_registry.registry.find_match(self)
         if match is None:
-            runner.undefined.append(self)
+            runner.undefined_steps.append(self)
             if not quiet:
                 for formatter in runner.formatters:
                     formatter.match(NoMatch())
@@ -1227,13 +1247,14 @@ class Table(Replayable):
     '''
     type = "table"
 
-    def __init__(self, headings, line=None, rows=[]):
+    def __init__(self, headings, line=None, rows=None):
         Replayable.__init__(self)
         self.headings = headings
         self.line = line
         self.rows = []
-        for row in rows:
-            self.add_row(row, line)
+        if rows:
+            for row in rows:
+                self.add_row(row, line)
 
     def add_row(self, row, line=None):
         self.rows.append(Row(self.headings, row, line))
@@ -1586,3 +1607,13 @@ class NoMatch(Match):
         self.func = None
         self.arguments = []
         self.location = None
+
+
+def reset_model(model_elements):
+    """
+    Reset the test run information stored in model elements.
+
+    :param model_elements:  List of model elements (Feature, Scenario, ...)
+    """
+    for model_element in model_elements:
+        model_element.reset()

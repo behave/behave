@@ -352,27 +352,27 @@ class PathManager(object):
             self.paths.append(path)
 
 
-class Runner(object):
-    '''
-    Test runner for behave.
+class ModelRunner(object):
+    """
+    Test runner for a behave model (features).
+    Provides the core functionality of a test runner and
+    the functional API needed by model elements.
 
     .. attribute:: aborted
 
-      This is set to true when the user aborts a test run
-      (:exc:`KeyboardInterrupt` exception). Initially: False.
-      Stored as derived attribute in :attr:`Context.aborted`.
-    '''
-    def __init__(self, config):
-        self.config = config
-        self.hooks = {}
-        self.features = []
-        self.undefined = []
-        # -- XXX-JE-UNUSED:
-        # self.passed = []
-        # self.failed = []
-        # self.skipped = []
+          This is set to true when the user aborts a test run
+          (:exc:`KeyboardInterrupt` exception). Initially: False.
+          Stored as derived attribute in :attr:`Context.aborted`.
+    """
 
-        self.path_manager = PathManager()
+    def __init__(self, config, features=None):
+        self.config = config
+        self.features = features or []
+        self.hooks = {}
+        self.formatters = []
+        self.undefined_steps = []
+
+        self.context = None
         self.feature = None
 
         self.stdout_capture = None
@@ -381,20 +381,8 @@ class Runner(object):
         self.old_stdout = None
         self.old_stderr = None
 
-        self.base_dir = None
-        self.context = None
-        self.formatters = None
-
     # @property
     def _get_aborted(self):
-        """
-        Indicates that a test run was aborted by the user
-        (:exc:`KeyboardInterrupt` exception).
-        Stored in :attr:`Context.aborted` attribute (as root attribute).
-
-        :return: Current aborted state, initially false.
-        :rtype: bool
-        """
         value = False
         if self.context:
             value = self.context.aborted
@@ -402,16 +390,146 @@ class Runner(object):
 
     # @aborted.setter
     def _set_aborted(self, value):
-        """
-        Set the aborted value.
-
-        :param value: New aborted value (as bool).
-        """
         assert self.context
         self.context._set_root_attribute('aborted', bool(value))
 
     aborted = property(_get_aborted, _set_aborted,
                        doc="Indicates that test run is aborted by the user.")
+
+    def run_hook(self, name, context, *args):
+        if not self.config.dry_run and (name in self.hooks):
+            # try:
+            with context.user_mode():
+                self.hooks[name](context, *args)
+            # except KeyboardInterrupt:
+            #     self.aborted = True
+            #     if name not in ("before_all", "after_all"):
+            #         raise
+
+    def setup_capture(self):
+        if not self.context:
+            self.context = Context(self)
+
+        if self.config.stdout_capture:
+            self.stdout_capture = StringIO.StringIO()
+            self.context.stdout_capture = self.stdout_capture
+
+        if self.config.stderr_capture:
+            self.stderr_capture = StringIO.StringIO()
+            self.context.stderr_capture = self.stderr_capture
+
+        if self.config.log_capture:
+            self.log_capture = LoggingCapture(self.config)
+            self.log_capture.inveigle()
+            self.context.log_capture = self.log_capture
+
+    def start_capture(self):
+        if self.config.stdout_capture:
+            # -- REPLACE ONLY: In non-capturing mode.
+            if not self.old_stdout:
+                self.old_stdout = sys.stdout
+                sys.stdout = self.stdout_capture
+            assert sys.stdout is self.stdout_capture
+
+        if self.config.stderr_capture:
+            # -- REPLACE ONLY: In non-capturing mode.
+            if not self.old_stderr:
+                self.old_stderr = sys.stderr
+                sys.stderr = self.stderr_capture
+            assert sys.stderr is self.stderr_capture
+
+    def stop_capture(self):
+        if self.config.stdout_capture:
+            # -- RESTORE ONLY: In capturing mode.
+            if self.old_stdout:
+                sys.stdout = self.old_stdout
+                self.old_stdout = None
+            assert sys.stdout is not self.stdout_capture
+
+        if self.config.stderr_capture:
+            # -- RESTORE ONLY: In capturing mode.
+            if self.old_stderr:
+                sys.stderr = self.old_stderr
+                self.old_stderr = None
+            assert sys.stderr is not self.stderr_capture
+
+    def teardown_capture(self):
+        if self.config.log_capture:
+            self.log_capture.abandon()
+
+    def run_model(self, features=None):
+        if not self.context:
+            self.context = Context(self)
+        if features is None:
+            features = self.features
+
+        # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
+        context = self.context
+        self.setup_capture()
+        self.run_hook('before_all', context)
+
+        run_feature = not self.aborted
+        failed_count = 0
+        undefined_steps_initial_size = len(self.undefined_steps)
+        for feature in features:
+            if run_feature:
+                try:
+                    self.feature = feature
+                    for formatter in self.formatters:
+                        formatter.uri(feature.filename)
+
+                    failed = feature.run(self)
+                    if failed:
+                        failed_count += 1
+                        if self.config.stop or self.aborted:
+                            # -- FAIL-EARLY: After first failure.
+                            run_feature = False
+                except KeyboardInterrupt:
+                    self.aborted = True
+                    failed_count += 1
+                    run_feature = False
+
+            # -- ALWAYS: Report run/not-run feature to reporters.
+            # REQUIRED-FOR: Summary to keep track of untested features.
+            for reporter in self.config.reporters:
+                reporter.feature(feature)
+
+        # -- AFTER-ALL:
+        if self.aborted:
+            print "\nABORTED: By user."
+        for formatter in self.formatters:
+            formatter.close()
+        self.run_hook('after_all', self.context)
+        for reporter in self.config.reporters:
+            reporter.end()
+        # if self.aborted:
+        #     print "\nABORTED: By user."
+        failed = ((failed_count > 0) or self.aborted or
+                  (len(self.undefined_steps) > undefined_steps_initial_size))
+        return failed
+
+    def run(self):
+        """
+        Implements the run method by running the model.
+        """
+        self.context = Context(self)
+        return self.run_model()
+
+
+class Runner(ModelRunner):
+    """
+    Standard test runner for behave:
+
+      * setup paths
+      * loads environment hooks
+      * loads step definitions
+      * select feature files, parses them and creates model (elements)
+    """
+    def __init__(self, config):
+        super(Runner, self).__init__(config)
+        self.path_manager = PathManager()
+        self.base_dir = None
+
 
     def setup_paths(self):
         if self.config.paths:
@@ -509,7 +627,8 @@ class Runner(object):
 
     def load_step_definitions(self, extra_step_paths=[]):
         step_globals = {
-            'step_matcher': matchers.step_matcher,
+            'use_step_matcher': matchers.use_step_matcher,
+            'step_matcher':     matchers.step_matcher, # -- DEPRECATING
         }
         setup_step_decorators(step_globals)
 
@@ -530,16 +649,6 @@ class Runner(object):
                         exec_file(os.path.join(path, name), step_module_globals)
                         matchers.current_matcher = default_matcher
 
-    def run_hook(self, name, context, *args):
-        if not self.config.dry_run and (name in self.hooks):
-            # try:
-            with context.user_mode():
-                self.hooks[name](context, *args)
-            # except KeyboardInterrupt:
-            #     self.aborted = True
-            #     if name not in ("before_all", "after_all"):
-            #         raise
-
     def feature_locations(self):
         return collect_feature_locations(self.config.paths)
 
@@ -549,17 +658,15 @@ class Runner(object):
             self.setup_paths()
             return self.run_with_paths()
 
+
     def run_with_paths(self):
-        context = self.context = Context(self)
+        self.context = Context(self)
         self.load_hooks()
         self.load_step_definitions()
-        assert not self.aborted
-        stream_openers = self.config.outputs
-        failed_count = 0
 
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
-        self.setup_capture()
-        self.run_hook('before_all', context)
+        # self.setup_capture()
+        # self.run_hook('before_all', self.context)
 
         # -- STEP: Parse all feature files (by using their file location).
         feature_locations = [ filename for filename in self.feature_locations()
@@ -568,94 +675,10 @@ class Runner(object):
         self.features.extend(features)
 
         # -- STEP: Run all features.
+        stream_openers = self.config.outputs
         self.formatters = formatters.get_formatter(self.config, stream_openers)
-        undefined_steps_initial_size = len(self.undefined)
-        run_feature = True
-        for feature in features:
-            if run_feature:
-                try:
-                    self.feature = feature
-                    for formatter in self.formatters:
-                        formatter.uri(feature.filename)
+        return self.run_model()
 
-                    failed = feature.run(self)
-                    if failed:
-                        failed_count += 1
-                        if self.config.stop or self.aborted:
-                            # -- FAIL-EARLY: After first failure.
-                            run_feature = False
-                except KeyboardInterrupt:
-                    self.aborted = True
-                    failed_count += 1
-                    run_feature = False
-
-            # -- ALWAYS: Report run/not-run feature to reporters.
-            # REQUIRED-FOR: Summary to keep track of untested features.
-            for reporter in self.config.reporters:
-                reporter.feature(feature)
-
-        # -- AFTER-ALL:
-        if self.aborted:
-            print "\nABORTED: By user."
-        for formatter in self.formatters:
-            formatter.close()
-        self.run_hook('after_all', context)
-        for reporter in self.config.reporters:
-            reporter.end()
-        # if self.aborted:
-        #     print "\nABORTED: By user."
-
-        failed = ((failed_count > 0) or self.aborted or
-                  (len(self.undefined) > undefined_steps_initial_size))
-        return failed
-
-    def setup_capture(self):
-        if self.config.stdout_capture:
-            self.stdout_capture = StringIO.StringIO()
-            self.context.stdout_capture = self.stdout_capture
-
-        if self.config.stderr_capture:
-            self.stderr_capture = StringIO.StringIO()
-            self.context.stderr_capture = self.stderr_capture
-
-        if self.config.log_capture:
-            self.log_capture = LoggingCapture(self.config)
-            self.log_capture.inveigle()
-            self.context.log_capture = self.log_capture
-
-    def start_capture(self):
-        if self.config.stdout_capture:
-            # -- REPLACE ONLY: In non-capturing mode.
-            if not self.old_stdout:
-                self.old_stdout = sys.stdout
-                sys.stdout = self.stdout_capture
-            assert sys.stdout is self.stdout_capture
-
-        if self.config.stderr_capture:
-            # -- REPLACE ONLY: In non-capturing mode.
-            if not self.old_stderr:
-                self.old_stderr = sys.stderr
-                sys.stderr = self.stderr_capture
-            assert sys.stderr is self.stderr_capture
-
-    def stop_capture(self):
-        if self.config.stdout_capture:
-            # -- RESTORE ONLY: In capturing mode.
-            if self.old_stdout:
-                sys.stdout = self.old_stdout
-                self.old_stdout = None
-            assert sys.stdout is not self.stdout_capture
-
-        if self.config.stderr_capture:
-            # -- RESTORE ONLY: In capturing mode.
-            if self.old_stderr:
-                sys.stderr = self.old_stderr
-                self.old_stderr = None
-            assert sys.stderr is not self.stderr_capture
-
-    def teardown_capture(self):
-        if self.config.log_capture:
-            self.log_capture.abandon()
 
 
 

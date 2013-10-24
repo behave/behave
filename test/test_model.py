@@ -380,11 +380,11 @@ class TestStepRun(object):
     def test_run_appends_step_to_undefined_when_no_match_found(self):
         step = model.Step('foo.feature', 17, u'Given', 'given', u'foo')
         self.step_registry.find_match.return_value = None
-        self.runner.undefined = []
+        self.runner.undefined_steps = []
         with patch('behave.step_registry.registry', self.step_registry):
             assert not step.run(self.runner)
 
-        assert step in self.runner.undefined
+        assert step in self.runner.undefined_steps
         eq_(step.status, 'undefined')
 
     def test_run_reports_undefined_step_via_formatter_when_not_quiet(self):

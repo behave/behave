@@ -442,33 +442,43 @@ class Configuration(object):
         default_format="pretty",   # -- Used when no formatters are configured.
     )
 
-    def __init__(self, command_args=None, verbose=None):
+    def __init__(self, command_args=None, load_config=True, verbose=None,
+                 **kwargs):
         """
         Constructs a behave configuration object.
-          * loads the configuration defaults.
+          * loads the configuration defaults (if needed).
           * process the command-line args
           * store the configuration results
 
         :param command_args: Provide command args (as sys.argv).
             If command_args is None, sys.argv[1:] is used.
         :type command_args: list<str>, str
+        :param load_config: Indicate if configfile should be loaded (=true)
         :param verbose: Indicate if diagnostic output is enabled
+        :param kwargs:  Used to hand-over/overwrite default values.
         """
         if command_args is None:
             command_args = sys.argv[1:]
         elif isinstance(command_args, basestring):
+            if isinstance(command_args, unicode):
+                command_args = command_args.encode("utf-8")
             command_args = shlex.split(command_args)
         if verbose is None:
             # -- AUTO-DISCOVER: Verbose mode from command-line args.
             verbose = ('-v' in command_args) or ('--verbose' in command_args)
 
+        defaults = self.defaults.copy()
+        for name, value in kwargs.items():
+            defaults[name] = value
+        self.defaults = defaults
         self.formatters = []
         self.reporters = []
         self.name_re = None
         self.outputs = []
         self.include_re = None
         self.exclude_re = None
-        load_configuration(self.defaults, verbose=verbose)
+        if load_config:
+            load_configuration(self.defaults, verbose=verbose)
         parser.set_defaults(**self.defaults)
         args = parser.parse_args(command_args)
         for key, value in args.__dict__.items():

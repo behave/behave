@@ -44,6 +44,16 @@ def parse_steps(text, language=None, filename=None):
         raise
     return result
 
+def parse_tags(text):
+    """
+    Parse tags from text (one or more lines, as string).
+
+    :param text: Multi-line text with tags to parse (as unicode).
+    :return: List of tags (if successful).
+    """
+    # assert isinstance(text, unicode)
+    return Parser().parse_tags(text)
+
 
 class ParserError(Exception):
     def __init__(self, message, line, filename=None, line_text=None):

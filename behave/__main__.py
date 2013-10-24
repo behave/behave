@@ -120,8 +120,8 @@ def main(args=None):
     except InvalidFilenameError, e:
         print "InvalidFilenameError: %s" % e
 
-    if config.show_snippets and runner.undefined:
-        print_undefined_step_snippets(runner.undefined)
+    if config.show_snippets and runner.undefined_steps:
+        print_undefined_step_snippets(runner.undefined_steps)
 
     return_code = 0
     if failed:
