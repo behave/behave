@@ -144,7 +144,7 @@ def test_step_matcher_current_matcher():
     current_matcher = matchers.current_matcher
 
     for name, klass in matchers.matcher_mapping.items():
-        matchers.step_matcher(name)
+        matchers.use_step_matcher(name)
         matcher = matchers.get_matcher(lambda x: -x, 'foo')
         assert isinstance(matcher, klass)
 
