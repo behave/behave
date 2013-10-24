@@ -5,13 +5,13 @@ Feature: Issue #73: the current_matcher is not predictable
     | The ParseMatcher is used per default when the test runner starts.
     |
     | A step definition file may change the matcher several times
-    | by calling `step_matcher("re")` or `step_matcher("parse")`.
+    | by calling `use_step_matcher("re")` or `use_step_matcher("parse")`.
     | In order to make the writing of step definitions more predictable,
     | the matcher should be reset to the default matcher
     | before loading each step definition.
     |
     | A project can define its own default matcher by calling the
-    | `step_matcher(...)` in the "environment.py" hook.
+    | `use_step_matcher(...)` in the "environment.py" hook.
     | This matcher will be used as default before a step definition is loaded.
 
 
@@ -45,8 +45,8 @@ Feature: Issue #73: the current_matcher is not predictable
     Given a new working directory
     And   a file named "features/environment.py" with:
         """
-        from behave import step_matcher
-        step_matcher("re")
+        from behave import use_step_matcher
+        use_step_matcher("re")
         """
     And   a file named "features/steps/regexp_steps.py" with:
         """
@@ -76,13 +76,13 @@ Feature: Issue #73: the current_matcher is not predictable
     Given a new working directory
     And   a file named "features/environment.py" with:
         """
-        from behave import step_matcher
-        step_matcher("re")
+        from behave import use_step_matcher
+        use_step_matcher("re")
         """
      And   a file named "features/steps/eparse_steps.py" with:
          """
-         from behave import step, step_matcher
-         step_matcher("parse")
+         from behave import step, use_step_matcher
+         use_step_matcher("parse")
 
          @step(u'an extraordinary step {outcome:w}')
          def step_passes(context, outcome):
@@ -98,8 +98,8 @@ Feature: Issue #73: the current_matcher is not predictable
         """
      And   a file named "features/steps/xparse_steps.py" with:
          """
-         from behave import step, step_matcher
-         step_matcher("parse")
+         from behave import step, use_step_matcher
+         use_step_matcher("parse")
 
          @step(u'another step {outcome:w}')
          def step_passes(context, outcome):
@@ -125,61 +125,61 @@ Feature: Issue #73: the current_matcher is not predictable
     Given a new working directory
     And   a file named "features/environment.py" with:
         """
-        from behave import step_matcher
-        step_matcher("re")
+        from behave import use_step_matcher
+        use_step_matcher("re")
         """
      And   a file named "features/steps/given_steps.py" with:
          """
-         from behave import step, step_matcher
+         from behave import step, use_step_matcher
 
-         step_matcher("parse")
+         use_step_matcher("parse")
          @given(u'a step {outcome:w}')
          def given_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
 
-         step_matcher("re")
+         use_step_matcher("re")
          @given(u'another step (?P<outcome>passes|fails)')
          def given_another_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
 
-         step_matcher("parse")
+         use_step_matcher("parse")
          @given(u'an extraordinary step {outcome:w}')
          def given_extraordinary_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
          """
      And   a file named "features/steps/when_steps.py" with:
          """
-         from behave import step, step_matcher
+         from behave import step, use_step_matcher
 
          @when(u'a step (?P<outcome>passes|fails)')
          def when_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
 
-         step_matcher("parse")
+         use_step_matcher("parse")
          @when(u'another step {outcome:w}')
          def when_another_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
 
-         step_matcher("re")
+         use_step_matcher("re")
          @when(u'an extraordinary step (?P<outcome>passes|fails)')
          def when_extraordinary_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
          """
      And   a file named "features/steps/then_steps.py" with:
          """
-         from behave import step, step_matcher
+         from behave import step, use_step_matcher
 
-         step_matcher("parse")
+         use_step_matcher("parse")
          @then(u'a step {outcome:w}')
          def then_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
 
-         step_matcher("re")
+         use_step_matcher("re")
          @then(u'another step (?P<outcome>passes|fails)')
          def then_another_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
 
-         step_matcher("parse")
+         use_step_matcher("parse")
          @then(u'an extraordinary step {outcome:w}')
          def then_extraordinary_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)

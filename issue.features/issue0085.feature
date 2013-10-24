@@ -9,7 +9,7 @@ Feature: Issue #85: AssertionError with nested regex and pretty formatter
     Given a new working directory
     And   a file named "features/steps/regexp_steps.py" with:
         """
-        from behave import given, when, then, step_matcher
+        from behave import given, when, then, use_step_matcher
         @given(u'a {re_category} regular expression "{pattern}"')
         def impl(context, re_category, pattern):
             pass
@@ -32,7 +32,7 @@ Feature: Issue #85: AssertionError with nested regex and pretty formatter
             for name, value in data.items():
                 setattr(context, name, value)
 
-        step_matcher('re')
+        use_step_matcher('re')
 
         @when(u'I try to match "(?P<foo>foo and more)"')
         def impl(context, **kwargs):
