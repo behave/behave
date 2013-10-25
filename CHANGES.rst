@@ -33,6 +33,7 @@ FIXED:
   * issue #188: Better diagnostics if nested step is undefined
   * issue #191: Using context.execute_steps() may change context.table/.text
   * issue #194: Nested steps prevent that original stdout/stderr is restored
+  * issue #199: behave tag expression bug when or-not logic is used
 
 
 Version: 1.2.3 (2013-07-08)
