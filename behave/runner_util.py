@@ -359,6 +359,9 @@ def make_undefined_step_snippet(step, language=None):
     prefix = u""
     if sys.version_info[0] == 2:
         prefix = u"u"
+    single_quote = "'"
+    if single_quote in step.name:
+        step.name = step.name.replace(single_quote, r"\'")
 
     schema = u"@%s(%s'%s')\ndef step_impl(context):\n    assert False\n\n"
     snippet = schema % (step.step_type, prefix, step.name)
