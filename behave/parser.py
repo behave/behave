@@ -52,6 +52,8 @@ def parse_tags(text):
     :return: List of tags (if successful).
     """
     # assert isinstance(text, unicode)
+    if not text:
+        return []
     return Parser().parse_tags(text)
 
 
