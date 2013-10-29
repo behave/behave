@@ -2,9 +2,6 @@
 behave-parallel
 ======
 
-The real devs are at the following https://github.com/behave/behave
-
-
 
 ======
 USAGE
