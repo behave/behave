@@ -783,7 +783,7 @@ class Runner(object):
         if current_job.type != 'scenario':
             [self.getskippedsteps(s, writebuf) for s in current_job.scenarios]
         else:
-            for step in current_job.steps:
+            for step in current_job.all_steps:
                 if step.status == 'skipped':
                     writebuf.write(u"Skipped step because of previous error"
                                    " - Scenario:{0}|step:{1}\n"
