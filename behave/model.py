@@ -5,6 +5,7 @@ import copy
 import difflib
 import itertools
 import os.path
+import sys
 import time
 import traceback
 from behave import step_registry
@@ -1095,16 +1096,22 @@ class Step(BasicStatement, Replayable):
         self.table = table
 
         self.status = 'untested'
-        self.duration = 0.0
-        self.error_message = None
+        self.duration = 0
         self.exception = None
+        self.exc_traceback = None
+        self.error_message = None
 
     def reset(self):
         '''Reset temporary runtime data to reach clean state again.'''
         self.status = 'untested'
-        self.duration = 0.0
-        self.error_message = None
+        self.duration = 0
         self.exception = None
+        self.exc_traceback = None
+        self.error_message = None
+
+    def store_exception_context(self, exception):
+        self.exception = exception
+        self.exc_traceback = sys.exc_info()[2]
 
     def __repr__(self):
         return '<%s "%s">' % (self.step_type, self.name)
@@ -1129,8 +1136,7 @@ class Step(BasicStatement, Replayable):
 
     def run(self, runner, quiet=False, capture=True):
         # -- RESET: Run information.
-        self.error_message = None
-        self.exception = None
+        self.exception = self.exc_traceback = self.error_message = None
 
         # access module var here to allow test mocking to work
         match = step_registry.registry.find_match(self)
@@ -1166,23 +1172,23 @@ class Step(BasicStatement, Replayable):
             runner.context.table = self.table
             match.run(runner.context)
             self.status = 'passed'
+        except KeyboardInterrupt, e:
+            runner.aborted = True
+            error = u"ABORTED: By user (KeyboardInterrupt)."
+            self.status = 'failed'
+            self.store_exception_context(e)
         except AssertionError, e:
             self.status = 'failed'
-            self.exception = e
+            self.store_exception_context(e)
             if e.args:
                 error = u'Assertion Failed: %s' % e
             else:
                 # no assertion text; format the exception
                 error = traceback.format_exc()
-        except KeyboardInterrupt, e:
-            runner.aborted = True
-            error = u"ABORTED: By user (KeyboardInterrupt)."
-            self.status = 'failed'
-            self.exception = e
         except Exception, e:
             self.status = 'failed'
             error = traceback.format_exc()
-            self.exception = e
+            self.store_exception_context(e)
 
         self.duration = time.time() - start
         if capture:

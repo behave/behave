@@ -21,6 +21,7 @@ IMPROVEMENT:
 
   * issue #108: behave.main() can be called with command-line args (provided by: medwards, jenisys)
   * issue #172: Subfolders in junit XML filenames (provided by: roignac).
+  * issue #203: Integration with pdb (debug on error; basic support)
   * Simple test runner to run behave tests from "setup.py"
 
 FIXED:

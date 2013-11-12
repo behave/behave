@@ -108,16 +108,16 @@ They're plain-text (encoded in UTF-8) and look something like:
   Feature: Fight or flight
     In order to increase the ninja survival rate,
     As a ninja commander
-    I want my ninjas to decide whether to take on an 
+    I want my ninjas to decide whether to take on an
     opponent based on their skill levels
 
     Scenario: Weaker opponent
-      Given the ninja has a third level black-belt 
+      Given the ninja has a third level black-belt
        When attacked by a samurai
        Then the ninja should engage the opponent
 
     Scenario: Stronger opponent
-      Given the ninja has a third level black-belt 
+      Given the ninja has a third level black-belt
        When attacked by Chuck Norris
        Then the ninja should run for his life
 
@@ -141,7 +141,7 @@ to take the name of their preceding step, so:
 .. code-block:: gherkin
 
     Scenario: Stronger opponent
-      Given the ninja has a third level black-belt 
+      Given the ninja has a third level black-belt
        When attacked by Chuck Norris
        Then the ninja should run for his life
         And fall off a cliff
@@ -211,8 +211,8 @@ required data into a model.
         | name      | department  |
         | Barry     | Beer Cans   |
         | Pudey     | Silly Walks |
-        | Two-Lumps | Silly Walks | 
- 
+        | Two-Lumps | Silly Walks |
+
     When we count the number of people in each department
     Then we will find two people in "Silly Walks"
      But we will find one person in "Beer Cans"
@@ -353,7 +353,7 @@ Context
 
 You'll have noticed the "context" variable that's passed around. It's a
 clever place where you and *behave* can store information to share around.
-It runs at three levels, automatically managed by *behave*. 
+It runs at three levels, automatically managed by *behave*.
 
 When *behave* launches into a new feature or scenario it adds a new layer
 to the context, allowing the new activity level to add new values, or
@@ -475,20 +475,20 @@ Given a feature file with:
   Feature: Fight or flight
     In order to increase the ninja survival rate,
     As a ninja commander
-    I want my ninjas to decide whether to take on an 
+    I want my ninjas to decide whether to take on an
     opponent based on their skill levels
 
     @slow
     Scenario: Weaker opponent
-      Given the ninja has a third level black-belt 
+      Given the ninja has a third level black-belt
       When attacked by a samurai
       Then the ninja should engage the opponent
 
     Scenario: Stronger opponent
-      Given the ninja has a third level black-belt 
+      Given the ninja has a third level black-belt
       When attacked by Chuck Norris
       Then the ninja should run for his life
-      
+
 then running ``behave --tags=slow`` will run just the scenarios tagged
 ``@slow``. If you wish to check everything *except* the slow ones then you
 may run ``behave --tags=-slow``.
@@ -560,9 +560,38 @@ command-line flag. This flag:
 
     if not context.config.log_capture:
         logging.basicConfig(level=logging.DEBUG)
-     
+
 3. turns off pretty output - no ANSI escape sequences to confuse your
    scenario's output
 4. only runs scenarios tagged with "@wip"
 5. stops at the first error
+
+
+Debug-on-Error (in Case of Step Failures)
+=========================================
+
+A "debug on error/failure" functionality can easily be provided,
+by using the ``after_step()`` hook.
+The debugger is started when a step fails.
+
+It is in general a good idea to enable this functionality only when needed
+(in interactive mode). This is accomplished in this example by using an
+environment variable.
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    # USE: BEHAVE_DEBUG_ON_ERROR=yes     (to enable debug-on-error)
+    from distutils.util import strtobool as _bool
+    import os
+
+    BEHAVE_DEBUG_ON_ERROR = _bool(os.environ.get("BEHAVE_DEBUG_ON_ERROR", "no"))
+
+    def after_step(context, step):
+        if BEHAVE_DEBUG_ON_ERROR and step.status == "failed":
+            # -- ENTER DEBUGGER: Zoom in on failure location.
+            # NOTE: Use IPython debugger, same for pdb (basic python debugger).
+            import ipdb
+            ipdb.post_mortem(step.exc_traceback)
+
 
