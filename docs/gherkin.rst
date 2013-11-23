@@ -161,7 +161,7 @@ humans reading the feature text.
 
 .. any other advice we could include here?
 
-The Background and Scenarios will be discussed in the following sections.
+The Backgrounds and Scenarios will be discussed in the following sections.
 
 
 Backgrounds
