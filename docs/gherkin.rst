@@ -92,7 +92,7 @@ Gherkin: Feature Testing Language
 =================================
 
 *behave* `features`_ are written using a language called `Gherkin`_ (with
-with `some modifications`_) and are named "*name*.feature".
+`some modifications`_) and are named "*name*.feature".
 
 .. _`some modifications`: #modifications-to-the-gherkin-standard
 
