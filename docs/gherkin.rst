@@ -519,7 +519,9 @@ A tag takes the form of the at symbol "@" followed by a word (which may
 include underscores "_"). Valid tag lines include:
 
    @slow
+
    @wip
+
    @needs_database @slow
 
 For example:
