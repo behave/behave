@@ -468,7 +468,7 @@ You may associate a table of data with a step by simply entering it,
 indented, following the step. This can be useful for loading specific
 required data into a model.
 
-The table formatting doesn't have to be stricltly lined up but it does need
+The table formatting doesn't have to be strictly lined up but it does need
 to have the same number of columns on each line. A column is anything
 appearing between two vertical bars "|". Any whitespace between the column
 content and the vertical bar is removed.
