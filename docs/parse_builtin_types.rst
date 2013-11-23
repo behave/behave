@@ -7,7 +7,7 @@ Predefined Data Types in ``parse``
 under the hoods to parse parameters in step definitions.
 This leads to rather simple and readable parse expressions for step parameters.
 
-.. code:: python
+.. code-block:: python
 
     # -- FILE: features/steps/type_transform_example_steps.py
     from behave import given

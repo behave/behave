@@ -92,7 +92,7 @@ Gherkin: Feature Testing Language
 =================================
 
 *behave* `features`_ are written using a language called `Gherkin`_ (with
-with `some modifications`_) and are named "*name*.feature".
+`some modifications`_) and are named "*name*.feature".
 
 .. _`some modifications`: #modifications-to-the-gherkin-standard
 
@@ -161,7 +161,7 @@ humans reading the feature text.
 
 .. any other advice we could include here?
 
-The Background and Scenarios will be discussed in the following sections.
+The Backgrounds and Scenarios will be discussed in the following sections.
 
 
 Backgrounds
@@ -468,7 +468,7 @@ You may associate a table of data with a step by simply entering it,
 indented, following the step. This can be useful for loading specific
 required data into a model.
 
-The table formatting doesn't have to be stricltly lined up but it does need
+The table formatting doesn't have to be strictly lined up but it does need
 to have the same number of columns on each line. A column is anything
 appearing between two vertical bars "|". Any whitespace between the column
 content and the vertical bar is removed.
@@ -519,7 +519,9 @@ A tag takes the form of the at symbol "@" followed by a word (which may
 include underscores "_"). Valid tag lines include:
 
    @slow
+
    @wip
+
    @needs_database @slow
 
 For example:
