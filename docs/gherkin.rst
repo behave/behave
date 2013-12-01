@@ -161,11 +161,11 @@ humans reading the feature text.
 
 .. any other advice we could include here?
 
-The Backgrounds and Scenarios will be discussed in the following sections.
+The Background part and the Scenarios will be discussed in the following sections.
 
 
-Backgrounds
------------
+Background
+----------
 
 A background consists of a series of steps similar to `scenarios`_.
 It allows you to add some context to the scenarios of a feature.
@@ -181,6 +181,9 @@ The background description is for the benefit of humans reading the feature text
 Again the background name should just be a reasonably descriptive title
 for the background operation being performed or requirement being met.
 
+A background section may exist only once within a feature file.
+In addition, a background must be defined before any scenario or
+scenario outline.
 
 It contains `steps`_ as described below.
 
@@ -480,8 +483,8 @@ content and the vertical bar is removed.
         | name      | department  |
         | Barry     | Beer Cans   |
         | Pudey     | Silly Walks |
-        | Two-Lumps | Silly Walks | 
- 
+        | Two-Lumps | Silly Walks |
+
     When we count the number of people in each department
     Then we will find two people in "Silly Walks"
      But we will find one person in "Beer Cans"
@@ -516,19 +519,26 @@ Tags appear on the line preceding the feature or scenario you wish to tag.
 You may have many space-separated tags on a single line.
 
 A tag takes the form of the at symbol "@" followed by a word (which may
-include underscores "_"). Valid tag lines include:
+include underscores "_"). Valid tag lines include::
 
-   @slow
-
-   @wip
-
-   @needs_database @slow
+    @slow
+    @wip
+    @needs_database @slow
 
 For example:
 
 .. code-block:: gherkin
 
    @wip @slow
+   Feature: annual reporting
+     Some description of a slow reporting system.
+
+or:
+
+.. code-block:: gherkin
+
+   @wip
+   @slow
    Feature: annual reporting
      Some description of a slow reporting system.
 
@@ -550,20 +560,20 @@ Given a feature file with:
   Feature: Fight or flight
     In order to increase the ninja survival rate,
     As a ninja commander
-    I want my ninjas to decide whether to take on an 
+    I want my ninjas to decide whether to take on an
     opponent based on their skill levels
 
     @slow
     Scenario: Weaker opponent
-      Given the ninja has a third level black-belt 
+      Given the ninja has a third level black-belt
       When attacked by a samurai
       Then the ninja should engage the opponent
 
     Scenario: Stronger opponent
-      Given the ninja has a third level black-belt 
+      Given the ninja has a third level black-belt
       When attacked by Chuck Norris
       Then the ninja should run for his life
-      
+
 then running ``behave --tags=slow`` will run just the scenarios tagged
 ``@slow``. If you wish to check everything *except* the slow ones then you
 may run ``behave --tags=-slow``.
