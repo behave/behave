@@ -447,7 +447,7 @@ class TestStepRun(object):
                 def raiser(*args, **kwargs):
                     match.run.side_effect = None
                     if thing:
-                        raise thing
+                        print(thing)
 
                 def nonraiser(*args, **kwargs):
                     match.run.side_effect = raiser

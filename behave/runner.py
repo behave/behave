@@ -398,13 +398,25 @@ class ModelRunner(object):
 
     def run_hook(self, name, context, *args):
         if not self.config.dry_run and (name in self.hooks):
-            # try:
-            with context.user_mode():
-                self.hooks[name](context, *args)
-            # except KeyboardInterrupt:
-            #     self.aborted = True
-            #     if name not in ("before_all", "after_all"):
-            #         raise
+            try:
+                with context.user_mode():
+                    self.hooks[name](context, *args)
+            except Exception, e:
+                # Abort execution for before_all/after_all 
+                if 'all' in name:
+                    self.aborted = True
+                if 'step' in name:
+                    args[0].status = 'failed'
+                if 'scenario' in name:
+                    args[0].steps[-1].status = 'failed'
+                    args[0].compute_status()
+                    args[0].feature.compute_status()
+                if 'feature' in name:
+                    args[0].scenarios[-1].steps[-1].status = 'failed'
+                    args[0].scenarios[-1].compute_status()
+                    args[0].compute_status()
+                    args[0]._cached_status = 'failed'
+                print("Exception in %s hook: %s" % (name, e.message))
 
     def setup_capture(self):
         if not self.context:

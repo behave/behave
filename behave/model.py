@@ -471,6 +471,9 @@ class Feature(TagAndStatusStatement, Replayable):
 
         if run_feature:
             runner.run_hook('after_feature', runner.context, self)
+            if self._cached_status == 'failed' and failed_count == 0:
+                # after_feature hook has thrown an exception
+                failed_count = 1
             for tag in self.tags:
                 runner.run_hook('after_tag', runner.context, tag)
 
@@ -813,6 +816,8 @@ class Scenario(TagAndStatusStatement, Replayable):
 
         if not runner.config.dry_run and run_scenario:
             runner.run_hook('after_scenario', runner.context, self)
+            if self._cached_status == 'failed':
+                failed = True
             for tag in self.tags:
                 runner.run_hook('after_tag', runner.context, tag)
 
@@ -1163,36 +1168,40 @@ class Step(BasicStatement, Replayable):
         if capture:
             runner.start_capture()
 
-        try:
-            start = time.time()
-            # -- ENSURE:
-            #  * runner.context.text/.table attributes are reset (#66).
-            #  * Even EMPTY multiline text is available in context.
-            runner.context.text = self.text
-            runner.context.table = self.table
-            match.run(runner.context)
-            self.status = 'passed'
-        except KeyboardInterrupt, e:
-            runner.aborted = True
-            error = u"ABORTED: By user (KeyboardInterrupt)."
-            self.status = 'failed'
-            self.store_exception_context(e)
-        except AssertionError, e:
-            self.status = 'failed'
-            self.store_exception_context(e)
-            if e.args:
-                error = u'Assertion Failed: %s' % e
-            else:
-                # no assertion text; format the exception
+        error = ''
+        if self.status != 'failed':
+            try:
+                start = time.time()
+                # -- ENSURE:
+                #  * runner.context.text/.table attributes are reset (#66).
+                #  * Even EMPTY multiline text is available in context.
+                runner.context.text = self.text
+                runner.context.table = self.table
+                match.run(runner.context)
+                self.status = 'passed'
+            except KeyboardInterrupt, e:
+                runner.aborted = True
+                error = u"ABORTED: By user (KeyboardInterrupt)."
+                self.status = 'failed'
+                self.store_exception_context(e)
+            except AssertionError, e:
+                self.status = 'failed'
+                self.store_exception_context(e)
+                if e.args:
+                    error = u'Assertion Failed: %s' % e
+                else:
+                    # no assertion text; format the exception
+                    error = traceback.format_exc()
+            except Exception, e:
+                self.status = 'failed'
                 error = traceback.format_exc()
-        except Exception, e:
-            self.status = 'failed'
-            error = traceback.format_exc()
-            self.store_exception_context(e)
+                self.store_exception_context(e)
 
-        self.duration = time.time() - start
+            self.duration = time.time() - start
         if capture:
             runner.stop_capture()
+
+        runner.run_hook('after_step', runner.context, self)
 
         # flesh out the failure with details
         if self.status == 'failed':
@@ -1217,7 +1226,6 @@ class Step(BasicStatement, Replayable):
             for formatter in runner.formatters:
                 formatter.result(self)
 
-        runner.run_hook('after_step', runner.context, self)
         return keep_going
 
 
