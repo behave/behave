@@ -21,7 +21,7 @@ Feature Testing Layout
 .. _`Python step implementations`: tutorial.html#python-step-implementations
 .. _`environmental controls`: tutorial.html#environmental-controls
 
-These files are typically stored in a firectory called "features". The
+These files are typically stored in a directory called "features". The
 minimum requirement for a features directory is::
 
   features/
