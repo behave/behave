@@ -229,6 +229,83 @@ Feature: JSON Formatter
             ]
             """
 
+
+    Scenario: Use JSON formatter with type-converted step parameters
+
+      Ensure that step parameters (match arguments) leads to valid JSON
+      even when type converters are used which create non-simple types.
+
+      Given a file named "features/step_params_with_type_converter.feature" with:
+          """
+          Feature:
+            Scenario: Use type converter
+                Given "1+2j" as complex number
+                And "red" as color
+          """
+      And a file named "features/steps/type_converter_steps.py" with:
+          """
+          from behave import step, register_type
+          import parse
+
+          # -- TYPES AND TYPE CONVERTERS:
+          class Color(object):
+              def __init__(self, color_name):
+                  self.name = color_name
+
+          @parse.with_pattern("\w+")
+          def parse_color(text):
+              return Color(text.strip())
+
+          @parse.with_pattern(".+")
+          def parse_complex(text):
+              return complex(text)
+
+          register_type(Color=parse_color)
+          register_type(Complex=parse_complex)
+
+          # -- STEPS:
+          @step('"{number:Complex}" as complex number')
+          def step_complex_number(context, number):
+              context.number = number
+
+          @step('"{color:Color}" as color')
+          def step_color(context, color):
+              context.color = color
+          """
+      When I run "behave -f json.pretty features/step_params_with_type_converter.feature"
+      Then it should pass with:
+            """
+            1 scenario passed, 0 failed, 0 skipped
+            """
+      And the command output should contain:
+          """
+          "match": {
+            "arguments": [
+              {
+                "name": "number",
+                "value": "1+2j"
+              }
+            ],
+            "location": "features/steps/type_converter_steps.py:21"
+          },
+          "name": "\"1+2j\" as complex number",
+          """
+      And the command output should contain:
+          """
+          "match": {
+            "arguments": [
+              {
+                "name": "color",
+                "value": "red"
+              }
+            ],
+            "location": "features/steps/type_converter_steps.py:25"
+          },
+          "name": "\"red\" as color",
+          """
+      But note that "both matched arguments.values are provided as string"
+
+
     @xfail
     @regression_problem.with_duration
     Scenario: Use JSON formatter with feature and one scenario with steps

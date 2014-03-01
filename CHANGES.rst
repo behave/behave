@@ -15,6 +15,7 @@ NEWS and CHANGES:
   - Formatters:
 
     * steps.usage: Avoid duplicated steps usage due to Scenario Outlines.
+    * json: Ensures now that matched step params (match args) cause valid JSON.
 
 
 IMPROVEMENT:

@@ -3,6 +3,7 @@
 from __future__ import absolute_import
 from behave.formatter.base import Formatter
 import base64
+import six
 try:
     import json
 except ImportError:
@@ -17,6 +18,9 @@ class JSONFormatter(Formatter):
     description = 'JSON dump of test run'
     dumps_kwargs = {}
     split_text_into_lines = True   # EXPERIMENT for better readability.
+
+    json_number_types = (int, long, float)
+    json_scalar_types = json_number_types + (six.text_type, bool, type(None))
 
     def __init__(self, stream_opener, config):
         super(JSONFormatter, self).__init__(stream_opener, config)
@@ -136,12 +140,18 @@ class JSONFormatter(Formatter):
     def match(self, match):
         args = []
         for argument in match.arguments:
+            argument_value = argument.value
+            if not isinstance(argument_value, self.json_scalar_types):
+                # -- OOPS: Avoid invalid JSON format w/ custom types.
+                # Use raw string (original) instead.
+                argument_value = argument.original
+            assert isinstance(argument_value, self.json_scalar_types)
             arg = {
-                'value': argument.value,
+                'value': argument_value,
             }
             if argument.name:
                 arg['name'] = argument.name
-            if argument.original != argument.value:
+            if argument.original != argument_value:
                 # -- REDUNDANT DATA COMPRESSION: Suppress for strings.
                 arg['original'] = argument.original
             args.append(arg)
@@ -227,8 +237,8 @@ class JSONFormatter(Formatter):
     def write_json_footer(self):
         self.stream.write('\n]\n')
 
-    def write_json_feature(self, feature):
-        self.stream.write(json.dumps(feature, **self.dumps_kwargs))
+    def write_json_feature(self, feature_data):
+        self.stream.write(json.dumps(feature_data, **self.dumps_kwargs))
         self.stream.flush()
 
     def write_json_feature_separator(self):
