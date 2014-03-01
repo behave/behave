@@ -75,27 +75,45 @@ class Package(object):
         return versions_info
 
     @classmethod
-    def get_pkgversion(cls, filename):
-        parts = os.path.basename(filename).rsplit("-", 1)
-        version = ""
-        if len(parts) >= 2:
-            version = parts[1]
-        for pattern in cls.PATTERNS:
-            assert pattern.startswith("*")
-            suffix = pattern[1:]
-            if version.endswith(suffix):
-                version = version[:-len(suffix)]
-                break
-        return version
-
-    @staticmethod
-    def get_pkgname(filename):
-        name = os.path.basename(filename).rsplit("-", 1)[0]
-        if name.startswith("http%3A") or name.startswith("https%3A"):
+    def split_pkgname_parts(cls, filename):
+        basename = cls.splitext(os.path.basename(filename))
+        if basename.startswith("http") and r"%2F" in basename:
             # -- PIP DOWNLOAD-CACHE PACKAGE FILE NAME SCHEMA:
-            pos = name.rfind("%2F")
-            name = name[pos+3:]
-        return name
+            pos = basename.rfind("%2F")
+            basename = basename[pos+3:]
+
+        version_part_index = 0
+        parts = basename.split("-")
+        for index, part in enumerate(parts):
+            if index == 0:
+                continue
+            elif part and part[0].isdigit() and len(part) >= 3:
+                version_part_index = index
+                break
+        name = "-".join(parts[:version_part_index])
+        version = "0.0"
+        remainder = None
+        if version_part_index > 0:
+            version = parts[version_part_index]
+            if version_part_index+1 < len(parts):
+                remainder = "-".join(parts[version_part_index+1:])
+        assert name, "OOPS: basename=%s, name='%s'" % (basename, name)
+        return (name, version, remainder)
+
+
+    @classmethod
+    def get_pkgname(cls, filename):
+        return cls.split_pkgname_parts(filename)[0]
+
+    @classmethod
+    def get_pkgversion(cls, filename):
+        return cls.split_pkgname_parts(filename)[1]
+
+    @classmethod
+    def make_pkgname_with_version(cls, filename):
+        pkg_name = cls.get_pkgname(filename)
+        pkg_version = cls.get_pkgversion(filename)
+        return "%s-%s" % (pkg_name, pkg_version)
 
     @staticmethod
     def splitext(filename):
@@ -114,6 +132,25 @@ class Package(object):
                 return True
         return False
 
+def collect_packages(package_dir, package_map=None):
+    if package_map is None:
+        package_map = {}
+    packages = []
+    for filename in sorted(os.listdir(package_dir)):
+        if not Package.isa(filename):
+            continue
+        pkg_filepath = os.path.join(package_dir, filename)
+        package_name = Package.get_pkgname(pkg_filepath)
+        package = package_map.get(package_name, None)
+        if not package:
+            # -- NEW PACKAGE DETECTED: Store/register package.
+            package = Package(pkg_filepath)
+            package_map[package.name] = package
+            packages.append(package)
+        else:
+            # -- SAME PACKAGE: Collect other variant/version.
+            package.files.append(pkg_filepath)
+    return packages
 
 def make_index_for(package, index_dir, verbose=True):
     """
@@ -145,7 +182,8 @@ def make_index_for(package, index_dir, verbose=True):
             # -- ROOT-INDEX:
             pkg_name = os.path.basename(os.path.dirname(pkg_filename))
         else:
-            pkg_name = package.splitext(pkg_name)
+            # pkg_name = package.splitext(pkg_name)
+            pkg_name = package.make_pkgname_with_version(pkg_filename)
         pkg_relpath_to = os.path.relpath(pkg_filename, index_dir)
         parts.append(item_template.format(pkg_name, pkg_relpath_to))
 
@@ -178,6 +216,7 @@ def make_package_index(download_dir):
 
     EXAMPLE BEFORE:
       +-- downloads/
+           +-- wheelhouse/bob-1.4.2-*.whl
            +-- alice-1.0.zip
            +-- alice-1.0.tar.gz
            +-- bob-1.3.0.tar.gz
@@ -191,6 +230,7 @@ def make_package_index(download_dir):
            |      +-- bob/index.html     --> ../../bob-*.*
            |      +-- charly/index.html  --> ../../charly-*.*
            |      +-- index.html  --> alice/index.html, bob/index.html, ...
+           +-- wheelhouse/bob-1.4.2-*.whl
            +-- alice-1.0.zip
            +-- alice-1.0.tar.gz
            +-- bob-1.3.0.tar.gz
@@ -205,23 +245,18 @@ def make_package_index(download_dir):
         shutil.rmtree(pkg_rootdir, ignore_errors=True)
     os.mkdir(pkg_rootdir)
 
+    package_dirs = [download_dir]
+    wheelhouse_dir = os.path.join(download_dir, "wheelhouse")
+    if os.path.isdir(wheelhouse_dir):
+        print("Using wheelhouse: %s" % wheelhouse_dir)
+        package_dirs.append(wheelhouse_dir)
+
     # -- STEP: Collect all packages.
     package_map = {}
     packages = []
-    for filename in sorted(os.listdir(download_dir)):
-        if not Package.isa(filename):
-            continue
-        pkg_filepath = os.path.join(download_dir, filename)
-        package_name = Package.get_pkgname(pkg_filepath)
-        package = package_map.get(package_name, None)
-        if not package:
-            # -- NEW PACKAGE DETECTED: Store/register package.
-            package = Package(pkg_filepath)
-            package_map[package.name] = package
-            packages.append(package)
-        else:
-            # -- SAME PACKAGE: Collect other variant/version.
-            package.files.append(pkg_filepath)
+    for package_dir in package_dirs:
+        new_packages = collect_packages(package_dir, package_map)
+        packages.extend(new_packages)
 
     # -- STEP: Make local PYTHON PACKAGE INDEX.
     root_package = Package(None, "Python Package Index")
