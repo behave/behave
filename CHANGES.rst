@@ -12,6 +12,10 @@ NEWS and CHANGES:
     * feature list files (formerly: feature configfiles) support wildcards.
     * Simplify and improve setup of logging subsystem (related to: #143, #177)
 
+  - Step matchers:
+
+    * cfparse: Step matcher with "Cardinality Field" support (was: optional).
+
   - Formatters:
 
     * steps.usage: Avoid duplicated steps usage due to Scenario Outlines.
