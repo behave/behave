@@ -22,18 +22,18 @@ from setuptools_behave import behave_test
 # CONFIGURATION:
 # -----------------------------------------------------------------------------
 python_version = float("%s.%s" % sys.version_info[:2])
-requirements = ['parse>=1.6.3']
+requirements = ["parse>=1.6.3", "parse_type>=0.3.4", "six"]
 if python_version < 2.7 or 3.0 <= python_version <= 3.1:
-    requirements.append('argparse')
+    requirements.append("argparse")
 if python_version < 2.7:
-    requirements.append('importlib')
-    requirements.append('ordereddict')
+    requirements.append("importlib")
+    requirements.append("ordereddict")
 if python_version < 2.6:
-    requirements.append('simplejson')
+    requirements.append("simplejson")
 
 BEHAVE = os.path.join(HERE, "behave")
 README = os.path.join(HERE, "README.rst")
-description = ''.join(open(README).readlines()[4:])
+description = "".join(open(README).readlines()[4:])
 
 # -----------------------------------------------------------------------------
 # UTILITY:
@@ -54,29 +54,29 @@ def find_packages_by_root_package(where):
 # SETUP:
 # -----------------------------------------------------------------------------
 setup(
-    name='behave',
-    version='1.2.4a1',
-    description='behave is behaviour-driven development, Python style',
+    name="behave",
+    version="1.2.4a1",
+    description="behave is behaviour-driven development, Python style",
     long_description=description,
-    author='Benno Rice, Richard Jones and Jens Engel',
-    author_email='behave-users@googlegroups.com',
-    url='http://github.com/behave/behave',
+    author="Benno Rice, Richard Jones and Jens Engel",
+    author_email="behave-users@googlegroups.com",
+    url="http://github.com/behave/behave",
     provides = ["behave", "setuptools_behave"],
     packages = find_packages_by_root_package(BEHAVE),
     py_modules = ["setuptools_behave"],
     entry_points={
-        'console_scripts': [
-            'behave = behave.__main__:main'
+        "console_scripts": [
+            "behave = behave.__main__:main"
         ],
-        'distutils.commands': [
-            'behave_test = setuptools_behave:behave_test'
+        "distutils.commands": [
+            "behave_test = setuptools_behave:behave_test"
         ]
     },
     install_requires=requirements,
-    test_suite='nose.collector',
-    tests_require=['nose>=1.3', 'mock>=1.0', 'PyHamcrest>=1.8'],
+    test_suite="nose.collector",
+    tests_require=["nose>=1.3", "mock>=1.0", "PyHamcrest>=1.8"],
     cmdclass = {
-        'behave_test': behave_test,
+        "behave_test": behave_test,
     },
     use_2to3= bool(python_version >= 3.0),
     license="BSD",
