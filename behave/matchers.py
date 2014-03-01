@@ -77,12 +77,12 @@ class ParseMatcher(Matcher):
             return None
 
         args = []
-        for index, arg in enumerate(result.fixed):
+        for index, value in enumerate(result.fixed):
             start, end = result.spans[index]
-            args.append(model.Argument(start, end, step[start:end], arg))
-        for name, arg in result.named.items():
+            args.append(model.Argument(start, end, step[start:end], value))
+        for name, value in result.named.items():
             start, end = result.spans[name]
-            args.append(model.Argument(start, end, step[start:end], arg, name))
+            args.append(model.Argument(start, end, step[start:end], value, name))
         args.sort(key=lambda x: x.start)
         return args
 
