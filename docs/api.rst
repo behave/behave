@@ -102,23 +102,23 @@ Step Parameters
 
 You may additionally use `parameters`_ in your step names. These will be
 handled by either the default `simple parser`_ or by regular expressions if
-you invoke :func:`~behave.matchers.step_matcher`.
+you invoke :func:`~behave.use_step_matcher`.
 
 .. _`parameters`: tutorial.html#step-parameters
 .. _`simple parser`: http://pypi.python.org/pypi/parse
 
-.. autofunction:: behave.matchers.step_matcher
+.. autofunction:: behave.use_step_matcher
 
 You may add new types to the default parser by invoking 
-:func:`~behave.matchers.register_type`.
+:func:`~behave.register_type`.
 
-.. autofunction:: behave.matchers.register_type
+.. autofunction:: behave.register_type
 
 An example of this in action could be, in steps.py:
 
 .. code-block:: python
 
-    from behave.matchers import register_type
+    from behave import register_type
     register_type(custom=lambda s: s.upper())
 
     @given('a string {param:custom} a custom type')
@@ -171,14 +171,30 @@ The import statement:
 
 is written to introduce a restricted set of variables into your code:
 
-**given**, **when**, **then**, **step**
-  These are the decorators used to identify implementations.
+ =========================== =========== ===========================================
+ Name                        Kind        Description
+ =========================== =========== ===========================================
+ given, when, then, step     Decorator   Decorators for step implementations.
+ use_step_matcher(name)      Function    Selects current step matcher (parser).
+ register_type(Type=func)    Function    Registers a type converter.
+ =========================== =========== ===========================================
 
-**Given**, **When**, **Then**, **Step**
-  See above.
+See also the description in `step parameters`_.
 
-**step_matcher**
-  This is described in `step parameters`_.
+
+.. hidden:
+
+    **given**, **when**, **then**, **step**
+      These are the decorators used to identify implementations.
+
+    **Given**, **When**, **Then**, **Step**
+      See above.
+
+    **use_step_matcher**
+      This is described in `step parameters`_
+
+    **register_type**
+      This is described in `step parameters`_
 
 
 Environment File Functions
@@ -208,8 +224,13 @@ events during your testing:
 
   .. code-block:: python
 
-     if tag == 'browser':
-         context.browser = webdriver.Chrome()
+     # -- ASSUMING: tags @browser.chrome or @browser.any are used.
+     if tag.startswith("browser."):
+         browser_type = tag.replace("browser.", "", 1)
+         if browser_type == "chrome":
+            context.browser = webdriver.Chrome()
+         else:
+            context.browser = webdriver.PlainVanilla()
 
 **before_all(context), after_all(context)**
   These run before and after the whole shooting match.
@@ -226,6 +247,14 @@ Here's some ideas for things you could use the environment for.
     
       import logging
 
+      def before_all(context):
+          # -- SET LOG LEVEL: behave --logging-level=ERROR ...
+          context.config.setup_logging()
+
+          # -- ALTERNATIVE: Setup logging with a configuration file.
+          # context.config.setup_logging(configfile="behave_logging.ini")
+
+.. old:
       def before_all(context):
           if not context.config.log_capture:
               logging.basicConfig(level=logging.DEBUG)

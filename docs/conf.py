@@ -25,7 +25,11 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinxcontrib.cheeseshop']
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.extlinks",
+    "sphinxcontrib.cheeseshop",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -88,6 +92,11 @@ pygments_style = 'sphinx'
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
 
+extlinks = {
+    "pypi": ("https://pypi.python.org/pypi/%s", ""),
+    "github": ("https://github.com/%s", "github:/"),
+    "issue":  ("https://github.com/behave/behave/issue/%s", "issue #"),
+}
 
 # -- Options for HTML output ---------------------------------------------------
 
@@ -130,6 +139,7 @@ html_theme_path = ['_themes']
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
 html_logo = "behave_logo.png"
+# XXX html_logo = "_static/behave_logo.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32

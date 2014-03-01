@@ -330,23 +330,41 @@ clauses (with a Given step that puts some text into
     if text not in context.response:
         fail('%r not in %r' % (message, context.response))
 
-There's two parsers available by default in *behave*:
+There are several parsers available in *behave* (by default):
 
 **parse** (the default)
   This is a `simple parser`_ that uses a format very much like the Python
   builtin ``format()``. You must use named fields which are then matched to
   your ``step()`` function arguments.
+
+**cfparse** (extends :pypi:`parse`, requires: :pypi:`parse_type`)
+  Provides an extended parser with "Cardinality Field" (CF) support.
+  Automatically creates missing type converters for related cardinalities
+  as long as a type converter for cardinality=1 is provided.
+  Supports parse expressions like:
+
+    * ``{values:Type+}`` (cardinality=1..N, many)
+    * ``{values:Type*}`` (cardinality=0..N, many0)
+    * ``{value:Type?}``  (cardinality=0..1, optional).
+
 **re**
   This uses full regular expressions to parse the clause text. You will
   need to use named groups "(?P<name>...)" to define the variables pulled
   from the text and passed to your ``step()`` function.
 
-To specify which parser to use invoke :func:`~behave.matchers.step_matcher`
+To specify which parser to use invoke :func:`~behave.use_step_matcher`
 with the name of the matcher to use. You may change matcher to suit
 specific step functions - the last call to ``step_matcher`` before a step
 function declaration will be the one it uses.
 
+.. note::
+
+  The function :func:`~behave.matchers.step_matcher()` is becoming deprecated.
+  Use :func:`~behave.use_step_matcher()` instead.
+
 .. _`simple parser`: http://pypi.python.org/pypi/parse
+.. _`parse_type`:    http://pypi.python.org/pypi/parse_type
+
 
 Context
 -------
