@@ -2,11 +2,12 @@ from __future__ import with_statement
 
 import re
 import parse
+from parse_type import cfparse
 from behave import model
 
 
 class Matcher(object):
-    '''Pull parameters out of step names.
+    """Pull parameters out of step names.
 
     .. attribute:: string
 
@@ -15,7 +16,7 @@ class Matcher(object):
     .. attribute:: func
 
        The step function the pattern is being attached to.
-    '''
+    """
     schema = u"@%s('%s')"   # Schema used to describe step definition (matcher)
 
     def __init__(self, func, string, step_type=None):
@@ -31,12 +32,11 @@ class Matcher(object):
         return self._location
 
     def describe(self, schema=None):
-        '''
-        Provide a textual description of the step function/matcher object.
+        """Provide a textual description of the step function/matcher object.
 
         :param schema:  Text schema to use.
         :return: Textual description of this step definition (matcher).
-        '''
+        """
         step_type = self.step_type or 'step'
         if not schema:
             schema = self.schema
@@ -44,14 +44,14 @@ class Matcher(object):
 
 
     def check_match(self, step):
-        '''Match me against the "step" name supplied.
+        """Match me against the "step" name supplied.
 
         Return None if I don't match otherwise return a list of matches as
         :class:`behave.model.Argument` instances.
 
         The return value from this function will be converted into a
         :class:`behave.model.Match` instance by *behave*.
-        '''
+        """
         raise NotImplementedError
 
     def match(self, step):
@@ -86,9 +86,19 @@ class ParseMatcher(Matcher):
         args.sort(key=lambda x: x.start)
         return args
 
+class CFParseMatcher(ParseMatcher):
+    """
+    Uses :class:`parse_type.cfparse.Parser` instead of "parse.Parser".
+    Provides support for automatic generation of type variants
+    for fields with CardinalityField part.
+    """
+    def __init__(self, func, string, step_type=None):
+        super(ParseMatcher, self).__init__(func, string, step_type)
+        self.parser = cfparse.Parser(self.string, self.custom_types)
+
 
 def register_type(**kw):
-    '''Register a custom type that will be available to "parse" for type
+    """Register a custom type that will be available to "parse" for type
     conversion during matching.
 
     Converters should be supplied as name=callable arguments to
@@ -96,7 +106,7 @@ def register_type(**kw):
 
     The callable should accept a single string argument and return the
     type-converted value.
-    '''
+    """
     ParseMatcher.custom_types.update(kw)
 
 
@@ -122,25 +132,36 @@ class RegexMatcher(Matcher):
 
 
 matcher_mapping = {
-    'parse': ParseMatcher,
-    're': RegexMatcher,
+    "parse": ParseMatcher,
+    "cfparse": CFParseMatcher,
+    "re": RegexMatcher,
 }
 current_matcher = ParseMatcher
 
 
 def use_step_matcher(name):
-    '''Change the parameter matcher used in parsing step text.
+    """Change the parameter matcher used in parsing step text.
 
     The change is immediate and may be performed between step definitions in
     your step implementation modules - allowing adjacent steps to use different
     matchers if necessary.
 
-    There's two parsers available by default in *behave*:
+    There are several parsers available in *behave* (by default):
 
     **parse** (the default)
        This is a `simple parser`_ that uses a format very much like the Python
        builtin ``format()``. You must use named fields which are then matched
        to your ``step()`` function arguments.
+
+    **cfparse** (extends :pypi:`parse`, requires: :pypi:`parse_type`)
+      Provides an extended parser with "Cardinality Field" (CF) support.
+      Automatically creates missing type converters for related cardinality
+      as long as a type converter for cardinality=1 is provided.
+      Supports parse expressions like:
+
+        * ``{values:Type+}`` (cardinality=1..N, many)
+        * ``{values:Type*}`` (cardinality=0..N, many0)
+        * ``{value:Type?}``  (cardinality=0..1, optional)
 
     **re**
        This uses full regular expressions to parse the clause text. You will
@@ -150,42 +171,21 @@ def use_step_matcher(name):
     You may `define your own matcher`_.
 
     .. _`define your own matcher`: api.html#step-parameters
-    '''
+    """
     global current_matcher
     current_matcher = matcher_mapping[name]
 
 def step_matcher(name):
+    """
+    DEPRECATED, use :func:`use_step_matcher()` instead.
+    """
     # -- BACKWARD-COMPATIBLE NAME: Mark as deprecated.
     import warnings
     warnings.warn("Use 'use_step_matcher()' instead",
                   PendingDeprecationWarning, stacklevel=2)
     use_step_matcher(name)
 
-
 def get_matcher(func, string):
     return current_matcher(func, string)
 
-
-# -----------------------------------------------------------------------------
-# EXPERIMENT: Parser with CardinalityField support
-# -----------------------------------------------------------------------------
-# USE: https://github.com/jenisys/parse_type
-try:
-    from parse_type import cfparse
-
-    class CFParseMatcher(ParseMatcher):
-        """
-        Uses :class:`parse_type.cfparse.Parser` instead of "parse.Parser".
-        Provides support for automatic generation of type variants
-        for fields with CardinalityField part.
-        """
-        def __init__(self, func, string, step_type=None):
-            super(ParseMatcher, self).__init__(func, string, step_type)
-            self.parser = cfparse.Parser(self.string, self.custom_types)
-
-    # -- REGISTER-MATCHER:
-    matcher_mapping['cfparse'] = CFParseMatcher
-
-except ImportError:
-    pass
 
