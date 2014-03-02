@@ -101,11 +101,12 @@ Step Parameters
 ---------------
 
 You may additionally use `parameters`_ in your step names. These will be
-handled by either the default `simple parser`_ or by regular expressions if
-you invoke :func:`~behave.use_step_matcher`.
+handled by either the default simple parser (:pypi:`parse`),
+its extension "cfparse" or by regular expressions
+if you invoke :func:`~behave.use_step_matcher`.
 
 .. _`parameters`: tutorial.html#step-parameters
-.. _`simple parser`: http://pypi.python.org/pypi/parse
+
 
 .. autofunction:: behave.use_step_matcher
 
@@ -181,20 +182,6 @@ is written to introduce a restricted set of variables into your code:
 
 See also the description in `step parameters`_.
 
-
-.. hidden:
-
-    **given**, **when**, **then**, **step**
-      These are the decorators used to identify implementations.
-
-    **Given**, **When**, **Then**, **Step**
-      See above.
-
-    **use_step_matcher**
-      This is described in `step parameters`_
-
-    **register_type**
-      This is described in `step parameters`_
 
 
 Environment File Functions

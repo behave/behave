@@ -4,7 +4,7 @@
 Formatters and Reporters
 ==============================================================================
 
-`behave`_ provides 2 different concepts for reporting results of a test run:
+:pypi:`behave` provides 2 different concepts for reporting results of a test run:
 
   * formatters
   * reporters
@@ -59,5 +59,3 @@ Name            Description
 junit           Provides JUnit XML-like output.
 summary         Provides a summary of the test run.
 ============== ================================================================
-
-.. _behave: http://pypi.python.org/pypi/behave

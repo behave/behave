@@ -216,9 +216,8 @@ interface but more predictable behavior. This is injected into the code
 which needs it, and examples of that code's behavior are written using this
 object instead of the production version.
 
-These objects can either be created by hand, or created using a mocking framework such as mock__.
-
-__ http://pypi.python.org/pypi/mock
+These objects can either be created by hand, or created using a
+mocking framework such as :pypi:`mock`.
 
 Questioning responsibilities in this way, and using mocks to fulfill the
 required roles of collaborating classes, encourages the use of Role-based

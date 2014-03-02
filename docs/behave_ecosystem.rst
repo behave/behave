@@ -28,14 +28,14 @@ Editor Plugins
 =================== =============================================================================
 Editor Plugin       Description
 =================== =============================================================================
-`gedit-behave`_     `gedit`_ plugin for jumping between feature and step files.
+`gedit_behave`_     `gedit`_ plugin for jumping between feature and step files.
 `vim-behave`_       `vim`_ plugin: Port of `vim-cucumber`_ to Python `behave`_.
 =================== =============================================================================
 
 .. _gedit:  https://projects.gnome.org/gedit/
 .. _vim:    http://www.vim.org/
 
-.. _gedit-behave:   https://gitorious.org/cucutags/gedit-behave
+.. _gedit_behave:   https://gitorious.org/cucutags/gedit_behave
 .. _vim-behave:     https://gitorious.org/cucutags/vim-behave
 .. _vim-cucumber:   https://github.com/tpope/vim-cucumber.git
 

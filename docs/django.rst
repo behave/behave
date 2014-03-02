@@ -4,13 +4,11 @@ Django Testing Example
 
 This example uses:
 
-- `mechanize`_ to pretend to be a web browser
-- `WSGI intercept`_ to install a WSGI application in place of a real URI for testing
-- `BeautifulSoup`_ to parse the HTML fetched by the fake browser (substitute lxml or html5lib as you see fit)
+- :pypi:`mechanize` to pretend to be a web browser
+- :pypi:`wsgi_intercept` to install a WSGI application in place of a real URI for testing
+- :pypi:`BeautifulSoup` to parse the HTML fetched by the fake browser
+  (substitute lxml or html5lib as you see fit)
 
-.. _`mechanize`: http://pypi.python.org/pypi/mechanize/
-.. _`WSGI intercept`: http://pypi.python.org/pypi/wsgi_intercept
-.. _`BeautifulSoup`: http://pypi.python.org/pypi/BeautifulSoup/
 
 This is based on Nathan Reynolds' `Mechanize support for Django testcases`__
 and was developed by David Eyk in a `public gist`__.
