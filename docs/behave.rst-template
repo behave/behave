@@ -1,5 +1,5 @@
 ==============
-*behave* usage
+Using *behave*
 ==============
 
 The command-line tool *behave* has a bunch of `command-line arguments`_ and is

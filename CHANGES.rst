@@ -1,8 +1,18 @@
 Version History
 ===============================================================================
 
-Version: 1.2.4a1 (unreleased)
+Version: 1.2.5a1 (unreleased)
 -------------------------------------------------------------------------------
+
+GOALS:
+
+  - Drop support for Python 2.5 (may work, but untested).
+
+
+Version: 1.2.4 (2014-03-02)
+-------------------------------------------------------------------------------
+
+:Same as: Version 1.2.4a1 (unreleased).
 
 NEWS and CHANGES:
 

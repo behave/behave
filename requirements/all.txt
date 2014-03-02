@@ -9,6 +9,7 @@
 # ============================================================================
 
 -r basic.txt
+-r testing.txt
 -r develop.txt
 -r docs.txt
 -r more_py25.txt

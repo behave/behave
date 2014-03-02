@@ -16,7 +16,7 @@ To get started, we recommend the `tutorial`_ and then the `test language`_ and
 .. _`api`: api.html
 '''
 
-__version__ = '1.2.4a1'
+__version__ = '1.2.4'
 
 from behave.step_registry import *
 from behave.matchers import use_step_matcher, step_matcher, register_type
