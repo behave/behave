@@ -10,6 +10,7 @@ USAGE:
 
 import sys
 import os.path
+
 HERE0 = os.path.dirname(__file__) or os.curdir
 os.chdir(HERE0)
 HERE = os.curdir
