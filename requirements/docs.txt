@@ -2,7 +2,7 @@
 # BEHAVE: PYTHON PACKAGE REQUIREMENTS: For documentation generation
 # ============================================================================
 
-Sphinx >= 1.1
+Sphinx >= 1.2.2
 sphinxcontrib-cheeseshop >= 0.2
 
 # -- PIP WHEEL OOPS: with pip 1.5.2
