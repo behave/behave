@@ -1,15 +1,14 @@
-====================
-behave API reference
-====================
+.. _api:
 
-.. if you change any headings in here make sure you haven't broken the
-   cross-references in the API documentation or module docstrings!
+====================
+Behave API Reference
+====================
 
 This reference is meant for people actually writing step implementations
 for feature tests. It contains way more information than a typical step
 implementation will need: most implementations will only need to look at
-the basic implementation of `step functions`_ and *maybe* `environment file
-functions`_.
+the basic implementation of `step functions`_ and *maybe*
+`environment file functions`_.
 
 The model stuff is for people getting really *serious* about their step
 implementations.
@@ -115,16 +114,19 @@ You may add new types to the default parser by invoking
 
 .. autofunction:: behave.register_type
 
-An example of this in action could be, in steps.py:
+.. hidden:
 
-.. code-block:: python
+    # -- SUPERCEEDED BY: behave.register_type documentation
+    An example of this in action could be, in steps.py:
 
-    from behave import register_type
-    register_type(custom=lambda s: s.upper())
+    .. code-block:: python
 
-    @given('a string {param:custom} a custom type')
-    def step_impl(context, param):
-        assert param.isupper()
+        from behave import register_type
+        register_type(custom=lambda s: s.upper())
+
+        @given('a string {param:custom} a custom type')
+        def step_impl(context, param):
+            assert param.isupper()
 
 You may define a new parameter matcher by subclassing
 :class:`behave.matchers.Matcher` and registering it with
@@ -205,7 +207,7 @@ events during your testing:
 **before_tag(context, tag), after_tag(context, tag)**
   These run before and after a section tagged with the given name. They are
   invoked for each tag encountered in the order they're found in the
-  feature file. See  `controlling things with tags`_. The tag passed in is
+  feature file. See  :ref:`controlling things with tags`. The tag passed in is
   an instance of :class:`~behave.model.Tag` and because it's a subclass of
   string you can do simple tests like:
 
@@ -227,46 +229,46 @@ Some Useful Environment Ideas
 
 Here's some ideas for things you could use the environment for.
 
-1. Setting up basic logging configuration for when you've turned off
-   logging capture by *behave*:
+Logging Setup
+~~~~~~~~~~~~~~
 
-   .. code-block:: python
-    
-      import logging
+The following recipe works in all cases (log-capture on or off).
+If you want to use/configure logging, you should use the following snippet:
 
-      def before_all(context):
-          # -- SET LOG LEVEL: behave --logging-level=ERROR ...
-          context.config.setup_logging()
+.. code-block:: python
 
-          # -- ALTERNATIVE: Setup logging with a configuration file.
-          # context.config.setup_logging(configfile="behave_logging.ini")
+    # -- FILE:features/environment.py
+    def before_all(context):
+        # -- SET LOG LEVEL: behave --logging-level=ERROR ...
+        # on behave command-line or in "behave.ini".
+        context.config.setup_logging()
 
-.. old:
-      def before_all(context):
-          if not context.config.log_capture:
-              logging.basicConfig(level=logging.DEBUG)
+        # -- ALTERNATIVE: Setup logging with a configuration file.
+        # context.config.setup_logging(configfile="behave_logging.ini")
 
-   Note that you could also achieve this through always configuring basic
-   logging and then using the ``--logging-clear-handlers`` command-line
-   argument, but we think the above is a little nicer.
 
-   Also if you wish to capture any logging generated during an environment
-   hook function's invocation you may use the
-   :func:`~behave.log_capture.capture` decorator, like so:
+Capture Logging in Hooks
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-   .. code-block:: python
+If you wish to capture any logging generated during an environment
+hook function's invocation, you may use the
+:func:`~behave.log_capture.capture` decorator, like:
 
-      from behave.log_capture import capture
-     
-      @capture
-      def after_scenario(context):
-          ...
+.. code-block:: python
 
-   This will capture any logging done during the call to *after_scenario*
-   and print it out.
+    # -- FILE:features/environment.py
+    from behave.log_capture import capture
 
-2. TODO
+    @capture
+    def after_scenario(context):
+        ...
 
+This will capture any logging done during the call to *after_scenario*
+and print it out.
+
+
+Detecting that user code overwrites behave Context attributes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The *context* variable in all cases is an instance of
 :class:`behave.runner.Context`.
@@ -325,11 +327,13 @@ The feature, scenario and step objects represent the information parsed
 from the feature file. They have a number of common attributes:
 
 **keyword**
-  "Feature", "Scenario", "Given", etc.
+    "Feature", "Scenario", "Given", etc.
+
 **name**
-  The name of the step (the text after the keyword.)
+    The name of the step (the text after the keyword.)
+
 **filename** and **line**
-  The file name (or "<string>") and line number of the statement.
+    The file name (or "<string>") and line number of the statement.
 
 The structure of model objects parsed from a *feature file* will typically
 be:
@@ -385,8 +389,6 @@ Tables may be associated with either Examples or Steps:
 And Text may be associated with Steps:
 
 .. autoclass:: behave.model.Text
-
-.. _`controlling things with tags`: tutorial.html#controlling-things-with-tags
 
 
 

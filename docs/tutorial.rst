@@ -1,13 +1,10 @@
+.. _tutorial:
+
 ========
 Tutorial
 ========
 
-.. if you change any headings in here make sure you haven't broken the
-   cross-references in the API documentation or module docstrings!
-
-First, `install *behave*.`_
-
-.. _`Install *behave*.`: install.html
+First, :doc:`install behave <install>`.
 
 Now make a directory called "tutorial". In that directory create a file
 called "tutorial.feature" containing:
@@ -97,11 +94,10 @@ command-line switch.
 Feature Files
 =============
 
-A feature file has a `natural language format`_ describing a feature or
-part of a feature with representative examples of expected outcomes.
+A feature file has a :ref:`natural language format <chapter.gherkin>`
+describing a feature or part of a feature with representative examples of
+expected outcomes.
 They're plain-text (encoded in UTF-8) and look something like:
-
-.. _`natural language format`: gherkin.html#gherkin:-feature-testing-language
 
 .. code-block:: gherkin
 
@@ -146,8 +142,8 @@ to take the name of their preceding step, so:
        Then the ninja should run for his life
         And fall off a cliff
 
-In this case *behave* will look for a step definiton for "Then fall off a
-cliff".
+In this case *behave* will look for a step definition for
+``"Then fall off a cliff"``.
 
 
 Scenario Outlines
@@ -241,10 +237,8 @@ directory. You can call these whatever you like as long as they're
 *filename*.py in the steps directory. You don't need to tell *behave* which
 ones to use - it'll use all of them.
 
-The full detail of the Python side of *behave* is in the `API
-documenation`_.
-
-.. _`API documenation`: api.html
+The full detail of the Python side of *behave* is in the
+:doc:`API documentation <api>`.
 
 Steps are identified using decorators which match the predicate from the
 feature file: given, when, then and step (variants with Title case are also
@@ -259,8 +253,8 @@ Given a Scenario:
      Given I search for a valid account
       Then I will see the account details
 
-Step code implementing the two steps here might look like (using selenium
-webdriver and some other helpers):
+Step code implementing the two steps here might look like
+(using selenium webdriver and some other helpers):
 
 .. code-block:: python
 
@@ -340,6 +334,9 @@ There are several parsers available in *behave* (by default):
     in step definitions. The named fields are extracted,
     optionally type converted and then used as step function arguments.
 
+    Supports type conversions by using type converters
+    (see :func:`~behave.register_type()`).
+
 **cfparse** (extends: :pypi:`parse`, requires: :pypi:`parse_type`)
     Provides an extended parser with "Cardinality Field" (CF) support.
     Automatically creates missing type converters for related cardinality
@@ -350,17 +347,20 @@ There are several parsers available in *behave* (by default):
         * ``{values:Type*}`` (cardinality=0..N, many0)
         * ``{value:Type?}``  (cardinality=0..1, optional).
 
-    Supports type conversions.
+    Supports type conversions (as above).
 
 **re**
     This uses full regular expressions to parse the clause text. You will
     need to use named groups "(?P<name>...)" to define the variables pulled
     from the text and passed to your ``step()`` function.
-    Type conversion must occur in the step function implementation.
+
+    Type conversion is **not supported**.
+    A step function writer may implement type conversion
+    inside the step function (implementation).
 
 To specify which parser to use invoke :func:`~behave.use_step_matcher`
 with the name of the matcher to use. You may change matcher to suit
-specific step functions - the last call to ``step_matcher`` before a step
+specific step functions - the last call to ``use_step_matcher`` before a step
 function declaration will be the one it uses.
 
 .. note::
@@ -378,7 +378,7 @@ It runs at three levels, automatically managed by *behave*.
 
 When *behave* launches into a new feature or scenario it adds a new layer
 to the context, allowing the new activity level to add new values, or
-overwrite ones previosuly defined, for the duration of that activity. These
+overwrite ones previously defined, for the duration of that activity. These
 can be thought of as scopes.
 
 You can define values in your `environmental controls`_ file which may be
@@ -407,7 +407,7 @@ There's also some values added to the context by *behave* itself:
   This holds any table data associated with a step.
 
 **text**
-  This holds any multiline text associated with a step.
+  This holds any multi-line text associated with a step.
 
 **failed**
   This is set at the root of the context when any step fails. It is
@@ -447,8 +447,8 @@ from the feature file. They have a number of attributes:
 **name**
   The name of the step (the text after the keyword.)
 **tags**
-  A list of the tags attached to the section or step. See `controlling
-  things with tags`_.
+  A list of the tags attached to the section or step.
+  See `controlling things with tags`_.
 **filename** and **line**
   The file name (or "<string>") and line number of the statement.
 
@@ -482,6 +482,8 @@ Of course if you wish you could have a new browser for each feature, or to
 retain the database state between features or even initialise the database
 for to each scenario.
 
+
+.. _`controlling things with tags`:
 
 Controlling Things With Tags
 ============================
@@ -562,12 +564,13 @@ browser and web server then you could tag them ``@browser``:
           context.thread.join()
           context.browser.quit()
 
+
 Works In Progress
 =================
 
 *behave* supports the concept of a highly-unstable "work in progress"
 scenario that you're actively developing. This scenario may produce strange
-logging, or odd output to stdout or just plain interact in unexepected ways
+logging, or odd output to stdout or just plain interact in unexpected ways
 with *behave*'s scenario runner.
 
 To make testing such scenarios simpler we've implemented a "-w"

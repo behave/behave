@@ -88,6 +88,8 @@ doing in attempting to find your features use the "-v" (verbose)
 command-line switch.
 
 
+.. _chapter.gherkin:
+
 Gherkin: Feature Testing Language
 =================================
 

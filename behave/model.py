@@ -255,8 +255,8 @@ class Feature(TagAndStatusStatement, Replayable):
     .. attribute:: tags
 
        A list of @tags (as :class:`~behave.model.Tag` which are basically
-       glorified strings) attached to the feature. See `controlling
-       things with tags`_.
+       glorified strings) attached to the feature.
+       See :ref:`controlling things with tags`.
 
     .. attribute:: status
 
@@ -568,8 +568,8 @@ class Scenario(TagAndStatusStatement, Replayable):
     .. attribute:: tags
 
        A list of @tags (as :class:`~behave.model.Tag` which are basically
-       glorified strings) attached to the scenario. See `controlling
-       things with tags`_.
+       glorified strings) attached to the scenario.
+       See :ref:`controlling things with tags`.
 
     .. attribute:: status
 
@@ -858,8 +858,8 @@ class ScenarioOutline(Scenario):
     .. attribute:: tags
 
        A list of @tags (as :class:`~behave.model.Tag` which are basically
-       glorified strings) attached to the scenario. See `controlling
-       things with tags`_.
+       glorified strings) attached to the scenario.
+       See :ref:`controlling things with tags`.
 
     .. attribute:: status
 
@@ -1483,7 +1483,7 @@ class Tag(unicode):
     additional ``line`` number attribute (where the tag was seen in the source
     feature file.
 
-    See `controlling things with tags`_.
+    See :ref:`controlling things with tags`.
     '''
     def __new__(cls, name, line):
         o = unicode.__new__(cls, name)

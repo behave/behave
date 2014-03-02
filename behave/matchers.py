@@ -98,14 +98,34 @@ class CFParseMatcher(ParseMatcher):
 
 
 def register_type(**kw):
-    """Register a custom type that will be available to "parse" for type
-    conversion during matching.
+    """Registers a custom type that will be available to "parse"
+    for type conversion during step matching.
 
-    Converters should be supplied as name=callable arguments to
-    ``register_type()``.
+    Converters should be supplied as ``name=callable`` arguments (or as dict).
 
-    The callable should accept a single string argument and return the
-    type-converted value.
+    A type converter should follow :pypi:`parse` module rules.
+    In general, a type converter is a function that converts text (as string)
+    into a value-type (type converted value).
+
+    EXAMPLE:
+
+    .. code-block:: python
+
+        from behave import register_type, given
+        import parse
+
+        # -- TYPE CONVERTER: For a simple, positive integer number.
+        @parse.with_pattern(r"\d+")
+        def parse_number(text):
+            return int(text)
+
+        # -- REGISTER TYPE-CONVERTER: With behave
+        register_type(Number=parse_number)
+
+        # -- STEP DEFINITIONS: Use type converter.
+        @given('{amount:Number} vehicles')
+        def step_impl(context, amount):
+            assert isinstance(amount, int)
     """
     ParseMatcher.custom_types.update(kw)
 
@@ -157,6 +177,9 @@ def use_step_matcher(name):
         in step definitions. The named fields are extracted,
         optionally type converted and then used as step function arguments.
 
+        Supports type conversions by using type converters
+        (see :func:`~behave.register_type()`).
+
     **cfparse** (extends: :pypi:`parse`, requires: :pypi:`parse_type`)
         Provides an extended parser with "Cardinality Field" (CF) support.
         Automatically creates missing type converters for related cardinality
@@ -167,13 +190,16 @@ def use_step_matcher(name):
             * ``{values:Type*}`` (cardinality=0..N, many0)
             * ``{value:Type?}``  (cardinality=0..1, optional)
 
-        Supports type conversions, too.
+        Supports type conversions (as above).
 
     **re**
         This uses full regular expressions to parse the clause text. You will
         need to use named groups "(?P<name>...)" to define the variables pulled
         from the text and passed to your ``step()`` function.
-        Type conversion must occur in the step function implementation.
+
+        Type conversion is **not supported**.
+        A step function writer may implement type conversion
+        inside the step function (implementation).
 
     You may `define your own matcher`_.
 
