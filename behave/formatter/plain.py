@@ -15,20 +15,23 @@ class PlainFormatter(Formatter):
 
        * multi-line text (doc-strings)
        * table
+       * tags (maybe)
     """
-    name = 'plain'
-    description = 'Very basic formatter with maximum compatibility'
+    name = "plain"
+    description = "Very basic formatter with maximum compatibility"
 
+    SHOW_MULTI_LINE = True
+    SHOW_TAGS = False
     SHOW_ALIGNED_KEYWORDS = False
     DEFAULT_INDENT_SIZE = 2
-    ENABLE_MULTI_LINE = True
 
     def __init__(self, stream_opener, config, **kwargs):
         super(PlainFormatter, self).__init__(stream_opener, config)
         self.steps = []
         self.show_timings = config.show_timings
-        self.show_multiline = config.show_multiline and self.ENABLE_MULTI_LINE
+        self.show_multiline = config.show_multiline and self.SHOW_MULTI_LINE
         self.show_aligned_keywords = self.SHOW_ALIGNED_KEYWORDS
+        self.show_tags = self.SHOW_TAGS
         self.indent_size = self.DEFAULT_INDENT_SIZE
         # -- ENSURE: Output stream is open.
         self.stream = self.open()
@@ -49,28 +52,37 @@ class PlainFormatter(Formatter):
     def reset_steps(self):
         self.steps = []
 
+    def write_tags(self, tags, indent=None):
+        if tags and self.show_tags:
+            indent = indent or ""
+            text = " @".join(tags)
+            self.stream.write(u"%s@%s\n" % (indent, text))
+
     # -- IMPLEMENT-INTERFACE FOR: Formatter
     def feature(self, feature):
         self.reset_steps()
-        self.stream.write(u'%s: %s\n' % (feature.keyword, feature.name))
+        self.write_tags(feature.tags)
+        self.stream.write(u"%s: %s\n" % (feature.keyword, feature.name))
 
     def background(self, background):
         self.reset_steps()
         indent = make_indentation(self.indent_size)
-        text = u'%s%s: %s\n' % (indent, background.keyword, background.name)
+        text = u"%s%s: %s\n" % (indent, background.keyword, background.name)
         self.stream.write(text)
 
     def scenario(self, scenario):
         self.reset_steps()
-        self.stream.write(u'\n')
+        self.stream.write(u"\n")
         indent = make_indentation(self.indent_size)
-        text = u'%s%s: %s\n' % (indent, scenario.keyword, scenario.name)
+        text = u"%s%s: %s\n" % (indent, scenario.keyword, scenario.name)
+        self.write_tags(scenario.tags, indent)
         self.stream.write(text)
 
     def scenario_outline(self, outline):
         self.reset_steps()
         indent = make_indentation(self.indent_size)
-        text = u'%s%s: %s\n' % (indent, outline.keyword, outline.name)
+        text = u"%s%s: %s\n" % (indent, outline.keyword, outline.name)
+        self.write_tags(outline.tags, indent)
         self.stream.write(text)
 
     def step(self, step):
@@ -86,9 +98,9 @@ class PlainFormatter(Formatter):
         indent = make_indentation(2 * self.indent_size)
         if self.show_aligned_keywords:
             # -- RIGHT-ALIGN KEYWORDS (max. keyword width: 6):
-            text = u'%s%6s %s ... ' % (indent, step.keyword, step.name)
+            text = u"%s%6s %s ... " % (indent, step.keyword, step.name)
         else:
-            text = u'%s%s %s ... ' % (indent, step.keyword, step.name)
+            text = u"%s%s %s ... " % (indent, step.keyword, step.name)
         self.stream.write(text)
 
         status = result.status
@@ -96,9 +108,9 @@ class PlainFormatter(Formatter):
             status += " in %0.3fs" % step.duration
 
         if result.error_message:
-            self.stream.write(u'%s\n%s\n' % (status, result.error_message))
+            self.stream.write(u"%s\n%s\n" % (status, result.error_message))
         else:
-            self.stream.write(u'%s\n' % status)
+            self.stream.write(u"%s\n" % status)
 
         if self.show_multiline:
             if step.text:
@@ -107,7 +119,7 @@ class PlainFormatter(Formatter):
                 self.table(step.table)
 
     def eof(self):
-        self.stream.write('\n')
+        self.stream.write("\n")
 
     # -- MORE: Formatter helpers
     def doc_string(self, doc_string):
@@ -126,8 +138,10 @@ class Plain0Formatter(PlainFormatter):
 
       * multi-line text
       * tables
+      * tags
     """
-    name = 'plain0'
-    description = 'Very basic formatter with maximum compatibility'
-    ENABLE_MULTI_LINE = False
-
+    name = "plain0"
+    description = "Very basic formatter with maximum compatibility"
+    SHOW_MULTI_LINE = False
+    SHOW_TAGS = False
+    SHOW_ALIGNED_KEYWORDS = False
