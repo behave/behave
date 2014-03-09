@@ -7,12 +7,16 @@ Behave
     :alt: Travis CI Build Status
 
 .. image:: https://pypip.in/v/behave/badge.png
-    :target: https://crate.io/packages/behave/
-    :alt: Latest PyPI version
+    :target: https://pypi.python.org/pypi/behave
+    :alt: Latest Version
 
 .. image:: https://pypip.in/d/behave/badge.png
-    :target: https://crate.io/packages/behave/
-    :alt: Number of PyPI downloads
+    :target: https://pypi.python.org/pypi/behave
+    :alt: Downloads
+
+.. image:: https://pypip.in/license/behave/badge.png
+    :target: https://pypi.python.org/pypi/behave/
+    :alt: License
 
 .. |logo| image:: https://raw.github.com/behave/behave/master/docs/_static/behave_logo1.png
 
