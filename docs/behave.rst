@@ -249,6 +249,9 @@ Recognised Settings
 **format** -- text (multiple allowed)
    Specify a formatter. If none is specified the default formatter is
    used. Pass '--format help' to get a list of available formatters.
+**scenario_outline_annotation_schema** -- text
+   Specify name annotation schema for scenario outline.
+   (default="{name} -- @{row.id} {examples.name}")
 **show_skipped** -- boolean
    Don't print skipped steps (due to tags).
 **show_skipped** -- boolean

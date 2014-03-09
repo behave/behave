@@ -6,7 +6,29 @@ Version: 1.2.5a1 (unreleased)
 
 GOALS:
 
-  - Drop support for Python 2.5 (may work, but untested).
+  - Improve support for Python3 (>= 3.3)
+  - Improve support for Windows
+
+NEWS and CHANGES:
+
+  - General:
+
+    * Drop support for Python 2.5
+
+  - Running:
+
+    * ScenarioOutline: Annotates name with row.id, ... to better represent row.
+
+  - Model:
+
+    * ScenarioOutline: Various improvements, see docs (`New and Noteworthy`_).
+
+  - Formatters:
+
+    * plain: Can now show tags, but currently disabled per default
+
+
+.. _`New and Noteworthy`: https://github.com/behave/behave/blob/master/docs/new_and_noteworthy.rst
 
 
 Version: 1.2.4 (2014-03-02)

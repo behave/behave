@@ -39,6 +39,7 @@ Contents
    api
    django
    comparison
+   new_and_noteworthy
    appendix
 
 

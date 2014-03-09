@@ -196,19 +196,19 @@ Feature: Undefined Step
       And the command output should contain:
         """
         Feature:
-           Scenario Outline:
+           Scenario Outline:  -- @1.1
              Given a step passes ... passed
               When an undefined step is used ... undefined
 
-           Scenario Outline:
+           Scenario Outline:  -- @1.2
              Given a step passes ... passed
               When an undefined step is used ... undefined
 
-           Scenario Outline:
+           Scenario Outline:  -- @1.3
              Given a step fails ... failed
              Assertion Failed: XFAIL
 
-           Scenario Outline:
+           Scenario Outline:  -- @1.4
              Given a step fails ... failed
              Assertion Failed: XFAIL
         """

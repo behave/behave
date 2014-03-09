@@ -591,6 +591,11 @@ command-line flag. This flag:
 5. stops at the first error
 
 
+.. index::
+    single: debug-on-error
+
+.. _debug-on-error:
+
 Debug-on-Error (in Case of Step Failures)
 =========================================
 

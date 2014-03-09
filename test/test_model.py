@@ -1,16 +1,18 @@
-from __future__ import with_statement
+# -*- coding: utf-8 -*-
 
-import re
-import sys
-from mock import Mock, patch
-from nose.tools import *
+from __future__ import with_statement
 from behave import model
+from behave.configuration import Configuration
 from behave.compat.collections import OrderedDict
 from behave import step_registry
-from behave.configuration import Configuration
+from mock import Mock, patch
+from nose.tools import *
+import re
+import sys
+import unittest
 
 
-class TestFeatureRun(object):
+class TestFeatureRun(unittest.TestCase):
     def setUp(self):
         self.runner = Mock()
         self.runner.feature.tags = []
@@ -60,11 +62,14 @@ class TestFeatureRun(object):
             scenario.run.assert_called_with(self.runner)
 
     def test_run_runs_named_scenarios(self):
-        scenarios = [Mock(), Mock()]
+        scenarios = [Mock(model.Scenario), Mock(model.Scenario)]
         scenarios[0].name = 'first scenario'
         scenarios[1].name = 'second scenario'
         scenarios[0].tags = []
         scenarios[1].tags = []
+        # -- FAKE-CHECK:
+        scenarios[0].should_run_with_name_select.return_value = True
+        scenarios[1].should_run_with_name_select.return_value = False
 
         for scenario in scenarios:
             scenario.run.return_value = False
@@ -80,6 +85,8 @@ class TestFeatureRun(object):
 
         scenarios[0].run.assert_called_with(self.runner)
         assert not scenarios[1].run.called
+        scenarios[0].should_run_with_name_select.assert_called_with(self.config)
+        scenarios[1].should_run_with_name_select.assert_called_with(self.config)
 
     def test_run_runs_named_scenarios_with_regexp(self):
         scenarios = [Mock(), Mock()]
@@ -87,6 +94,9 @@ class TestFeatureRun(object):
         scenarios[1].name = 'second scenario'
         scenarios[0].tags = []
         scenarios[1].tags = []
+        # -- FAKE-CHECK:
+        scenarios[0].should_run_with_name_select.return_value = False
+        scenarios[1].should_run_with_name_select.return_value = True
 
         for scenario in scenarios:
             scenario.run.return_value = False
@@ -102,6 +112,8 @@ class TestFeatureRun(object):
 
         assert not scenarios[0].run.called
         scenarios[1].run.assert_called_with(self.runner)
+        scenarios[0].should_run_with_name_select.assert_called_with(self.config)
+        scenarios[1].should_run_with_name_select.assert_called_with(self.config)
 
     def test_feature_hooks_not_run_if_feature_not_being_run(self):
         self.config.tags.check.return_value = False
@@ -113,7 +125,7 @@ class TestFeatureRun(object):
         assert not self.run_hook.called
 
 
-class TestScenarioRun(object):
+class TestScenarioRun(unittest.TestCase):
     def setUp(self):
         self.runner = Mock()
         self.runner.feature.tags = []
@@ -236,8 +248,15 @@ class TestScenarioRun(object):
 
         assert not self.run_hook.called
 
+    def test_should_run_with_name_select(self):
+        scenario_name = u"first scenario"
+        scenario = model.Scenario("foo.feature", 17, u"Scenario", scenario_name)
+        self.config.name = ['first .*', 'second .*']
+        self.config.name_re = Configuration.build_name_re(self.config.name)
 
-class TestScenarioOutline(object):
+        assert scenario.should_run_with_name_select(self.config)
+
+class TestScenarioOutline(unittest.TestCase):
     def test_run_calls_run_on_each_generated_scenario(self):
         outline = model.ScenarioOutline('foo.feature', 17, u'Scenario Outline',
                                         u'foo')
@@ -360,7 +379,7 @@ def raiser(exception):
     return func
 
 
-class TestStepRun(object):
+class TestStepRun(unittest.TestCase):
     def setUp(self):
         self.runner = Mock()
         self.config = self.runner.config = Mock()
@@ -583,7 +602,7 @@ class TestStepRun(object):
         assert 'toads' in step.error_message
 
 
-class TestTableModel(object):
+class TestTableModel(unittest.TestCase):
     HEAD = [u'type of stuff', u'awesomeness', u'ridiculousness']
     DATA = [
         [u'fluffy', u'large', u'frequent'],
@@ -626,7 +645,7 @@ class TestTableModel(object):
         eq_(self.table[0].items(), zip(self.HEAD, self.DATA[0]))
 
 
-class TestModelRow(object):
+class TestModelRow(unittest.TestCase):
     HEAD = [u'name',  u'sex',    u'age']
     DATA = [u'Alice', u'female', u'12']
 
@@ -678,7 +697,7 @@ class TestModelRow(object):
         eq_(data1['age'],  u'12')
 
 
-class TestFileLocation(object):
+class TestFileLocation(unittest.TestCase):
     ordered_locations1 = [
         model.FileLocation("features/alice.feature",   1),
         model.FileLocation("features/alice.feature",   5),

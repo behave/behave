@@ -8,7 +8,7 @@ import ConfigParser
 import logging
 import shlex
 
-from behave.model import FileLocation
+from behave.model import FileLocation, ScenarioOutline
 from behave.reporter.junit import JUnitReporter
 from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import TagExpression
@@ -98,11 +98,17 @@ options = [
      dict(dest='default_format',
           help="Specify default formatter (default: pretty).")),
 
+
     (('-f', '--format'),
      dict(action='append',
           help="""Specify a formatter. If none is specified the default
                   formatter is used. Pass '--format help' to get a
                   list of available formatters.""")),
+
+    ((),  # -- CONFIGFILE only
+     dict(dest='scenario_outline_annotation_schema',
+          help="""Specify name annotation schema for scenario outline
+                  (default="{name} -- @{row.id} {examples.name}").""")),
 
 #    (('-g', '--guess'),
 #     dict(action='store_true',
@@ -320,7 +326,8 @@ options = [
 # -- OPTIONS: With raw value access semantics in configuration file.
 raw_value_options = frozenset([
     "logging_format",
-    "logging_datefmt"
+    "logging_datefmt",
+    # -- MAYBE: "scenario_outline_annotation_schema",
 ])
 
 def read_configuration(path):
@@ -440,6 +447,7 @@ class Configuration(object):
         junit=False,
         # -- SPECIAL:
         default_format="pretty",   # -- Used when no formatters are configured.
+        scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}"
     )
 
     def __init__(self, command_args=None, load_config=True, verbose=None,
@@ -477,6 +485,7 @@ class Configuration(object):
         self.outputs = []
         self.include_re = None
         self.exclude_re = None
+        self.scenario_outline_annotation_schema = None
         if load_config:
             load_configuration(self.defaults, verbose=verbose)
         parser.set_defaults(**self.defaults)
@@ -533,6 +542,8 @@ class Configuration(object):
         unknown_formats = self.collect_unknown_formats()
         if unknown_formats:
             parser.error("format=%s is unknown" % ", ".join(unknown_formats))
+
+        self.setup_model()
 
     def collect_unknown_formats(self):
         unknown_formats = []
@@ -599,3 +610,8 @@ class Configuration(object):
         # -- ENSURE: Default log level is set
         #    (even if logging subsystem is already configured).
         logging.getLogger().setLevel(level)
+
+    def setup_model(self):
+        if self.scenario_outline_annotation_schema:
+            name_schema = unicode(self.scenario_outline_annotation_schema)
+            ScenarioOutline.annotation_schema = name_schema.strip()

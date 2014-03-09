@@ -213,7 +213,7 @@ Feature: Background
             When a step <outcome1>
             Then another step <outcome2>
 
-            Examples:
+            Examples: Alpha
               | outcome1 | outcome2 |
               | passes   | passes   |
               | passes   | passes   |
@@ -239,31 +239,31 @@ Feature: Background
         Feature:
           Background:
 
-          Scenario Outline: SO1
+          Scenario Outline: SO1 -- @1.1 Alpha
             Given a background step passes ... passed
             And another background step passes ... passed
             When a step passes ... passed
             Then another step passes ... passed
 
-          Scenario Outline: SO1
+          Scenario Outline: SO1 -- @1.2 Alpha
             Given a background step passes ... passed
             And another background step passes ... passed
             When a step passes ... passed
             Then another step passes ... passed
 
-          Scenario Outline: SO2
+          Scenario Outline: SO2 -- @1.1
             Given a background step passes ... passed
             And another background step passes ... passed
             Given a step passes ... passed
             Then a step passes ... passed
 
-          Scenario Outline: SO2
+          Scenario Outline: SO2 -- @1.2
             Given a background step passes ... passed
             And another background step passes ... passed
             Given a step passes ... passed
             Then another step passes ... passed
 
-          Scenario Outline: SO2
+          Scenario Outline: SO2 -- @1.3
             Given a background step passes ... passed
             And another background step passes ... passed
             Given another step passes ... passed
@@ -286,7 +286,7 @@ Feature: Background
             When a step <outcome1>
             Then another step <outcome2>
 
-            Examples:
+            Examples: Alpha
               | outcome1 | outcome2 |
               | passes   | passes   |
               | passes   | fails    |
@@ -296,7 +296,7 @@ Feature: Background
           Scenario Outline: SO2
               When <word1> step passes
 
-            Examples:
+            Examples: Beta
               | word1   |
               | a       |
               | another |
@@ -312,32 +312,32 @@ Feature: Background
         Feature:
           Background:
 
-          Scenario Outline: SO1
+          Scenario Outline: SO1 -- @1.1 Alpha
             Given a background step passes ... passed
             And a background step fails ... failed
         Assertion Failed: XFAIL: background step
 
-          Scenario Outline: SO1
+          Scenario Outline: SO1 -- @1.2 Alpha
             Given a background step passes ... passed
             And a background step fails ... failed
         Assertion Failed: XFAIL: background step
 
-          Scenario Outline: SO1
+          Scenario Outline: SO1 -- @1.3 Alpha
             Given a background step passes ... passed
             And a background step fails ... failed
         Assertion Failed: XFAIL: background step
 
-          Scenario Outline: SO1
+          Scenario Outline: SO1 -- @1.4 Alpha
             Given a background step passes ... passed
             And a background step fails ... failed
         Assertion Failed: XFAIL: background step
 
-          Scenario Outline: SO2
+          Scenario Outline: SO2 -- @1.1 Beta
             Given a background step passes ... passed
             And a background step fails ... failed
         Assertion Failed: XFAIL: background step
 
-          Scenario Outline: SO2
+          Scenario Outline: SO2 -- @1.2 Beta
             Given a background step passes ... passed
             And a background step fails ... failed
         Assertion Failed: XFAIL: background step
