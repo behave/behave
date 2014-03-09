@@ -18,7 +18,7 @@ from behave.log_capture import LoggingCapture
 from behave.formatter.base import StreamOpener
 
 
-class TestContext(object):
+class TestContext(unittest.TestCase):
     def setUp(self):
         r = Mock()
         self.config = r.config = Mock()
@@ -557,7 +557,7 @@ class TestRunner(object):
         assert not r.run()
 
 
-class TestRunWithPaths(object):
+class TestRunWithPaths(unittest.TestCase):
     def setUp(self):
         self.config = Mock()
         self.config.reporters = []
