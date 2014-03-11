@@ -47,6 +47,14 @@ Feature: Scenario Outline -- Parametrized Scenarios
           context.param_name = name
           context.param_value = value
 
+      @step('a step with text')
+      def step_with_param_value(context):
+          assert context.text is not None, "REQUIRE: text"
+
+      @step('a step with table')
+      def step_with_param_value(context):
+          assert context.table is not None, "REQUIRE: table"
+
       @step('an unknown param {name}={value}')
       def step_with_unknown_param_value(context, name, value):
           pass
@@ -144,13 +152,60 @@ Feature: Scenario Outline -- Parametrized Scenarios
     But note that "unknown placeholders are not replaced"
 
 
-  @not_implemented
   @parametrize.steps
   Scenario: Use placeholders in generated scenario step.text
+    Given a file named "features/use_steps_with_param_text.feature" with:
+      '''
+      Feature:
+        Scenario Outline: Use parametrized step with text
+          Given a step with text:
+            """
+            <greeting> <name>;
+            Travel agency: <travel agency>
+            """
 
-  @not_implemented
+          Examples:
+            | ID  | name  | greeting | travel agency |
+            | 001 | Alice |  Hello   | Pony express  |
+      '''
+    When I run "behave -f plain --no-timings features/use_steps_with_param_text.feature"
+    Then it should pass with:
+      '''
+      Scenario Outline: Use parametrized step with text -*-
+          Given a step with text ... passed
+            """
+            Hello Alice;
+            Travel agency: Pony express
+            """
+      '''
+    And note that "placeholders in step.text are replaced with row data"
+
+
   @parametrize.steps
   Scenario: Use placeholders in generated scenario step.table
+    Given a file named "features/use_steps_with_param_table.feature" with:
+      """
+      Feature:
+        Scenario Outline: Use parametrized step with table
+          Given a step with table:
+            | Id   | Name   | Travel Agency   | row id   |
+            | <ID> | <name> | <travel agency> | <row.id> |
+
+          Examples:
+            | ID  | name  | greeting | travel agency |
+            | 001 | Alice |  Hello   | Pony express  |
+      """
+    When I run "behave -f plain --no-timings features/use_steps_with_param_table.feature"
+    Then it should pass with:
+      """
+      Scenario Outline: Use parametrized step with table -*- 
+        Given a step with table ... passed
+          | Id  | Name  | Travel Agency | row id   |
+          | 001 | Alice | Pony express  | <row.id> |
+      """
+    And note that "placeholders in step.table cells are replaced with row data"
+    But note that "<row.id> is currently not supported in table cells (like other special placeholders)"
+
 
   @parametrize.steps
   Scenario: Use special placeholders in generated scenario steps
