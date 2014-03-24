@@ -27,6 +27,10 @@ NEWS and CHANGES:
 
     * plain: Can now show tags, but currently disabled per default
 
+FIXED:
+
+  * issue #216: Using --wip option does not disable ANSI escape sequences (coloring).
+
 
 .. _`New and Noteworthy`: https://github.com/behave/behave/blob/master/docs/new_and_noteworthy.rst
 

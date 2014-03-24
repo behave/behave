@@ -4,9 +4,9 @@ import os
 import re
 import sys
 import argparse
-import ConfigParser
 import logging
 import shlex
+from six.moves import configparser
 
 from behave.model import FileLocation, ScenarioOutline
 from behave.reporter.junit import JUnitReporter
@@ -331,7 +331,7 @@ raw_value_options = frozenset([
 ])
 
 def read_configuration(path):
-    cfg = ConfigParser.SafeConfigParser()
+    cfg = configparser.SafeConfigParser()
     cfg.read(path)
     cfgdir = os.path.dirname(path)
     result = {}
@@ -506,11 +506,14 @@ class Configuration(object):
                     self.outputs.append(StreamOpener(stream=sys.stdout))
 
         if self.wip:
-            # Only run scenarios tagged with "wip". Additionally: use the
-            # "plain" formatter, do not capture stdout or logging output and
-            # stop at the first failure.
-            self.format = ['plain']
-            self.tags = ['wip']
+            # Only run scenarios tagged with "wip".
+            # Additionally:
+            #  * use the "plain" formatter (per default)
+            #  * do not capture stdout or logging output and
+            #  * stop at the first failure.
+            self.default_format = "plain"
+            self.tags = ["wip"]
+            self.color = False
             self.stop = True
             self.log_capture = False
             self.stdout_capture = False

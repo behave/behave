@@ -85,15 +85,13 @@ def main(args=None):
         return 0
 
     if not config.format:
-        default_format = config.defaults["default_format"]
-        config.format = [ default_format ]
+        config.format = [ config.default_format ]
     elif config.format and "format" in config.defaults:
         # -- CASE: Formatter are specified in behave configuration file.
         #    Check if formatter are provided on command-line, too.
         if len(config.format) == len(config.defaults["format"]):
             # -- NO FORMATTER on command-line: Add default formatter.
-            default_format = config.defaults["default_format"]
-            config.format.append(default_format)
+            config.format.append(config.default_format)
     if 'help' in config.format:
         from behave.formatter import formatters
         print "Available formatters:"
@@ -121,7 +119,8 @@ def main(args=None):
         print "InvalidFilenameError: %s" % e
 
     if config.show_snippets and runner.undefined_steps:
-        print_undefined_step_snippets(runner.undefined_steps)
+        print_undefined_step_snippets(runner.undefined_steps,
+                                      colored=config.color)
 
     return_code = 0
     if failed:
