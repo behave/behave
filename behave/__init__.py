@@ -21,5 +21,4 @@ __version__ = '1.2.5a1'
 from behave.step_registry import *
 from behave.matchers import use_step_matcher, step_matcher, register_type
 
-__step_names = 'given when then step Given When Then Step'.split()
-__all__ = __step_names + "use_step_matcher step_matcher register_type".split()
+__all__ = ['given', 'when', 'then', 'step', 'Given', 'When', 'Then', 'Step', 'use_step_matcher', 'step_matcher', 'register_type']
