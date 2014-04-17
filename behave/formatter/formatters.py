@@ -44,10 +44,36 @@ def get_formatter(config, stream_openers):
 # SETUP:
 # -----------------------------------------------------------------------------
 def setup_formatters():
+<<<<<<< HEAD
     warnings.warn("Use behave.formatter._builtins instead",
                   DeprecationWarning, stacklevel=2)
     from behave.formatter import _builtins
     _builtins.setup_formatters()
+=======
+    # -- NOTE: Use lazy imports for formatters (to speed up start-up time).
+    _L = LazyObject
+    register_as(_L("behave.formatter.plain:PlainFormatter"), "plain")
+    register_as(_L("behave.formatter.pretty:PrettyFormatter"), "pretty")
+    register_as(_L("behave.formatter.json:JSONFormatter"), "json")
+    register_as(_L("behave.formatter.json:PrettyJSONFormatter"), "json.pretty")
+    register_as(_L("behave.formatter.null:NullFormatter"), "null")
+    register_as(_L("behave.formatter.progress:ScenarioProgressFormatter"),
+                "progress")
+    register_as(_L("behave.formatter.progress:StepProgressFormatter"),
+                "progress2")
+    register_as(_L("behave.formatter.progress:ScenarioStepProgressFormatter"),
+                "progress3")
+    register_as(_L("behave.formatter.rerun:RerunFormatter"), "rerun")
+    register_as(_L("behave.formatter.tags:TagsFormatter"), "tags")
+    register_as(_L("behave.formatter.tags:TagsLocationFormatter"),
+                "tags.location")
+    register_as(_L("behave.formatter.steps:StepsFormatter"), "steps")
+    register_as(_L("behave.formatter.steps:StepsDocFormatter"), "steps.doc")
+    register_as(_L("behave.formatter.steps:StepsUsageFormatter"), "steps.usage")
+    register_as(_L("behave.formatter.sphinx_steps:SphinxStepsFormatter"),
+                "sphinx.steps")
+    register_as(_L("behave.formatter.html:HTMLFormatter"), "html")
+>>>>>>> HTML Formatter
 
 
 # -----------------------------------------------------------------------------
