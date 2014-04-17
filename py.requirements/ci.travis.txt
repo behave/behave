@@ -1,5 +1,6 @@
 mock
 nose
+lxml
 PyHamcrest >= 1.9
 pytest >= 3.0
 pytest-html >= 1.19.0
