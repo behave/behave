@@ -8,6 +8,7 @@ from behave.formatter.base import Formatter
 from behave.step_registry import StepRegistry, registry
 from behave.textutil import compute_words_maxsize, indent, make_indentation
 from behave import i18n
+from operator import attrgetter
 import inspect
 
 
@@ -237,8 +238,8 @@ class StepsDocFormatter(AbstractStepsFormatter):
                 step_definitions.append(step_definition)
 
         if self.ordered_by_location:
-            compare = lambda x, y: cmp(x.location, y.location)
-            step_definitions = sorted(step_definitions, compare)
+            step_definitions = sorted(step_definitions,
+                                      key=attrgetter("location"))
 
         for step_definition in step_definitions:
             self.write_step_definition(step_definition)
@@ -353,9 +354,9 @@ class StepsUsageFormatter(AbstractStepsFormatter):
     def report_used_step_definitions(self):
         # -- STEP: Used step definitions.
         # ORDERING: Sort step definitions by file location.
-        compare = lambda x, y: cmp(x[0].location, y[0].location)
+        get_location = lambda x: x[0].location
         step_definition_items = self.step_usage_database.items()
-        step_definition_items = sorted(step_definition_items, compare)
+        step_definition_items = sorted(step_definition_items, key=get_location)
 
         for step_definition, steps in step_definition_items:
             stepdef_text = self.describe_step_definition(step_definition)
@@ -380,8 +381,8 @@ class StepsUsageFormatter(AbstractStepsFormatter):
 
         # -- STEP: Prepare report for unused step definitions.
         # ORDERING: Sort step definitions by file location.
-        compare = lambda x, y: cmp(x.location, y.location)
-        step_definitions = sorted(unused_step_definitions, compare)
+        get_location = lambda x: x.location
+        step_definitions = sorted(unused_step_definitions, key=get_location)
         step_texts = [self.describe_step_definition(step_definition)
                       for step_definition in step_definitions]
 
@@ -400,8 +401,8 @@ class StepsUsageFormatter(AbstractStepsFormatter):
             return
 
         # -- STEP: Undefined steps.
-        compare = lambda x, y: cmp(x.location, y.location)
-        undefined_steps = sorted(self.undefined_steps, compare)
+        undefined_steps = sorted(self.undefined_steps,
+                                 key=attrgetter("location"))
 
         steps_text = [u"  %s %s" % (step.keyword, step.name)
                       for step in undefined_steps]

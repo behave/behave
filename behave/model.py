@@ -182,6 +182,11 @@ class BasicStatement(object):
     #     p = relpath(self.filename, os.getcwd())
     #     return '%s:%d' % (p, self.line)
 
+    def __lt__(self, other):
+        # -- PYTHON3 SUPPORT, ORDERABLE:
+        # NOTE: Ignore potential FileLocation differences.
+        return (self.keyword, self.name) < (other.keyword, other.name)
+
     def __cmp__(self, other):
         # -- NOTE: Ignore potential FileLocation differences.
         return cmp((self.keyword, self.name), (other.keyword, other.name))

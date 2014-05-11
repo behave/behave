@@ -16,6 +16,7 @@ from behave.formatter.steps import AbstractStepsFormatter
 from behave.formatter import sphinx_util
 from behave.compat.os_path import relpath
 from behave.model import Table
+from operator import attrgetter
 import inspect
 import os.path
 import sys
@@ -162,11 +163,10 @@ class SphinxStepsDocumentGenerator(object):
                 step_modules_map[step_filename] = step_module
             step_module.append(step_definition)
 
-        compare_name = lambda x, y: cmp(x.name, y.name)
-        compare_location = lambda x, y: cmp(x.location, y.location)
-        step_modules = sorted(step_modules_map.values(), compare_name)
+        step_modules = sorted(step_modules_map.values(), key=attrgetter("name"))
         for module in step_modules:
-            step_definitions = sorted(module.step_definitions, compare_location)
+            step_definitions = sorted(module.step_definitions,
+                                      key=attrgetter("location"))
             module.step_definitions = step_definitions
         return step_modules
 
