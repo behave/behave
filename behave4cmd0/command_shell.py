@@ -15,6 +15,7 @@ and running features, etc.
 from __future__ import print_function, with_statement
 from behave4cmd0.__setup import TOP
 import os.path
+import six
 import subprocess
 import sys
 import shlex
@@ -100,7 +101,8 @@ class Command(object):
                             universal_newlines=True,
                             cwd=cwd, **kwargs)
             out, err = process.communicate()
-            if sys.version_info[0] < 3: # py3: we get unicode strings, py2 not
+            # XXX-JE-OLD: if sys.version_info[0] < 3: # py3: we get unicode strings, py2 not
+            if six.PY2: # py3: we get unicode strings, py2 not
                 # XXX-DISABLED:
                 # try:
                 #    # jython may not have it
@@ -108,8 +110,10 @@ class Command(object):
                 # except AttributeError:
                 #     default_encoding = sys.stdout.encoding or 'UTF-8'
                 default_encoding = 'UTF-8'
-                out = unicode(out, process.stdout.encoding or default_encoding)
-                err = unicode(err, process.stderr.encoding or default_encoding)
+                # XXX-JE-OLD: out = unicode(out, process.stdout.encoding or default_encoding)
+                # XXX-JE-OLD: err = unicode(err, process.stderr.encoding or default_encoding)
+                out = six.text_type(out, process.stdout.encoding or default_encoding)
+                err = six.text_type(err, process.stderr.encoding or default_encoding)
             process.poll()
             assert process.returncode is not None
             command_result.stdout = out
