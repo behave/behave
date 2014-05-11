@@ -1,4 +1,3 @@
-@wip
 Feature: Duplicated Step Definitions
 
   As I tester and test writer
@@ -77,7 +76,6 @@ Feature: Duplicated Step Definitions
         @given('I call Bob')
         """
 
-  @wip
   @xfail
   Scenario: Duplicated Same Step Definition via import from another File
     Given a new working directory

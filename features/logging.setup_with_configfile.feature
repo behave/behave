@@ -1,4 +1,3 @@
-@wip
 Feature: Setup logging subsystem by using a logging configfile
 
   As a tester

@@ -162,7 +162,6 @@ Feature: Feature Listfile (List of feature filenames/directories)
           Given a step passes ... passed
       """
 
-  @wip
   Scenario: Use @feature_listfile with wildcards for file location (not supported)
 
     Note that wildcards are not supported when file locations are used.
