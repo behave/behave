@@ -27,7 +27,7 @@ class DocumentWriter(object):
     @classmethod
     def open(cls, filename, encoding=None):
         encoding = encoding or cls.default_encoding
-        stream = codecs.open(filename, "wt", encoding)
+        stream = codecs.open(filename, "wb", encoding)
         return cls(stream, filename)
 
     def write(self, *args):
