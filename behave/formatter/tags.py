@@ -132,9 +132,9 @@ class TagsFormatter(AbstractTagsFormatter):
 
     def report_tag_counts_by_usage(self):
         # -- PREPARE REPORT:
-        compare = lambda x, y: cmp(len(self.tag_counts[y]),
-                                   len(self.tag_counts[x]))
-        ordered_tags = sorted(list(self.tag_counts.keys()), compare)
+        compare_tag_counts_size = lambda x: len(self.tag_counts[x])
+        ordered_tags = sorted(list(self.tag_counts.keys()),
+                              key=compare_tag_counts_size)
         tag_maxsize = compute_words_maxsize(ordered_tags)
         schema = "  @%-" + str(tag_maxsize) + "s %4d    (used for %s)\n"
 

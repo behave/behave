@@ -95,8 +95,10 @@ class BehaveDurationData(object):
     def report_step_durations(self, limit=None, min_duration=None, ostream=sys.stdout):
         step_datas = self.step_registry.values()
         steps_size = len(step_datas)
-        compare = lambda x, y: cmp(x.max_duration, y.max_duration)
-        steps_by_longest_duration_first = sorted(step_datas, compare, reverse=True)
+        get_max_duration = lambda x: x.max_duration
+        steps_by_longest_duration_first = sorted(step_datas,
+                                                 key=get_max_duration,
+                                                 reverse=True)
         ostream.write("STEP DURATIONS (longest first, size=%d):\n" % steps_size)
         ostream.write("-" * 80)
         ostream.write("\n")
