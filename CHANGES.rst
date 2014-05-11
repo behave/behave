@@ -29,7 +29,7 @@ NEWS and CHANGES:
 
 FIXED:
 
-  * issue #221: Fix some PY2/PY2 incompatibilities (provided by: johbo)
+  * issue #221: Fix some PY2/PY3 incompatibilities (provided by: johbo)
   * issue #216: Using --wip option does not disable ANSI escape sequences (coloring).
 
 
