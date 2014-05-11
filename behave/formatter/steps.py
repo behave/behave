@@ -8,6 +8,7 @@ from behave.formatter.base import Formatter
 from behave.step_registry import StepRegistry, registry
 from behave.textutil import compute_words_maxsize, indent, make_indentation
 from behave import i18n
+from operator import attrgetter
 import inspect
 
 
@@ -237,8 +238,8 @@ class StepsDocFormatter(AbstractStepsFormatter):
                 step_definitions.append(step_definition)
 
         if self.ordered_by_location:
-            get_location = lambda x: x.location
-            step_definitions = sorted(step_definitions, key=get_location)
+            step_definitions = sorted(step_definitions,
+                                      key=attrgetter("location"))
 
         for step_definition in step_definitions:
             self.write_step_definition(step_definition)
@@ -400,8 +401,8 @@ class StepsUsageFormatter(AbstractStepsFormatter):
             return
 
         # -- STEP: Undefined steps.
-        get_location = lambda x: x.location
-        undefined_steps = sorted(self.undefined_steps, key=get_location)
+        undefined_steps = sorted(self.undefined_steps,
+                                 key=attrgetter("location"))
 
         steps_text = [u"  %s %s" % (step.keyword, step.name)
                       for step in undefined_steps]

@@ -16,7 +16,8 @@ VERSION = "0.1.0"
 # -- IMPORTS:
 from behave import json_parser
 from behave.model import ScenarioOutline
-from   optparse import OptionParser
+from optparse import OptionParser
+from operator import attrgetter
 import os.path
 import sys
 
@@ -95,9 +96,8 @@ class BehaveDurationData(object):
     def report_step_durations(self, limit=None, min_duration=None, ostream=sys.stdout):
         step_datas = self.step_registry.values()
         steps_size = len(step_datas)
-        get_max_duration = lambda x: x.max_duration
         steps_by_longest_duration_first = sorted(step_datas,
-                                                 key=get_max_duration,
+                                                 key=attrgetter("max_duration"),
                                                  reverse=True)
         ostream.write("STEP DURATIONS (longest first, size=%d):\n" % steps_size)
         ostream.write("-" * 80)
