@@ -76,6 +76,7 @@ def setup_formatters():
     register_as(_L("behave.formatter.steps:StepsUsageFormatter"), "steps.usage")
     register_as(_L("behave.formatter.sphinx_steps:SphinxStepsFormatter"),
                 "sphinx.steps")
+    register_as(_L("behave.formatter.html:HTMLFormatter"), "html")
 
 
 # -----------------------------------------------------------------------------
