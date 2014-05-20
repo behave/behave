@@ -26,16 +26,7 @@ def _prettify(elem):
 class HTMLFormatter(Formatter):
     name = 'html'
     description = 'Very basic HTML formatter'
-
-    def __init__(self, stream, config):
-        super(HTMLFormatter, self).__init__(stream, config)
-
-        self.html = ET.Element('html')
-
-        head = ET.SubElement(self.html, 'head')
-        ET.SubElement(head, 'title').text = u'Behave steps'
-        ET.SubElement(head, 'meta', {'content': 'text/html;charset=utf-8'})
-        ET.SubElement(head, 'style').text = """body{color:#fff;margin:0;
+    default_css = """body{color:#fff;margin:0;
         padding:0}.behave,td,th{font:400 11px "Lucida Grande",Helvetica,sans-serif;
         background:#fff;color:#000}.behave #behave-header,td #behave-header,
         th #behave-header{background:#65c400;color:#fff;height:8em}.behave 
@@ -94,6 +85,19 @@ class HTMLFormatter(Formatter):
         p{margin:0 0 0 2px}.behave #summary #totals,td #summary #totals,th 
         #summary #totals{font-size:1.2em}"""
 
+    def __init__(self, stream, config):
+        super(HTMLFormatter, self).__init__(stream, config)
+
+        self.css = self.default_css
+        if config.css is not None:
+            self.css = config.css
+
+        self.html = ET.Element('html')
+
+        head = ET.SubElement(self.html, 'head')
+        ET.SubElement(head, 'title').text = u'Behave steps'
+        ET.SubElement(head, 'meta', {'content': 'text/html;charset=utf-8'})
+        ET.SubElement(head, 'style').text = self.css
         self.stream = self.open()
         body = ET.SubElement(self.html, 'body')
         self.suite = ET.SubElement(body, 'div', {'class': 'behave'})
