@@ -114,7 +114,7 @@ class HTMLFormatter(Formatter):
 
         expand_collapse = ET.SubElement(summary, 'div', id='expand-collapse')
 
-        expander = ET.SubElement(expand_collapse, 'span', id='expander')
+        expander = ET.SubElement(expand_collapse, 'a', id='expander')
         expander.set('onclick',
                      "var ols=document.getElementsByClassName('scenario_steps');" +
                      "for (var i=0; i< ols.length; i++) {" +
@@ -126,7 +126,7 @@ class HTMLFormatter(Formatter):
         spacer = ET.SubElement(expand_collapse, 'span')
         spacer.text = u"  "
 
-        collapser = ET.SubElement(expand_collapse, 'span', id='collapser')
+        collapser = ET.SubElement(expand_collapse, 'a', id='collapser')
         collapser.set('onclick',
                       "var ols=document.getElementsByClassName('scenario_steps');" +
                       "for (var i=0; i< ols.length; i++) {" +
