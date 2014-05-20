@@ -347,7 +347,18 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                 </li>
-                <li class="step failed"><div class="step_name"><span class="keyword">But </span><span class="step val">a step fails</span></div><div class="step_file"><span>features/steps/steps.py:7</span></div><span class="embed"/><a class="message" onclick="rslt=document.getElementById('embed_1');rslt.style.display =(rslt.style.display == 'none' ? 'block' : 'none');return false">Error message</a><pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>    </li>
+                <li class="step failed">
+                  <div class="step_name">
+                    <span class="keyword">But </span>
+                    <span class="step val">a step fails</span>
+                  </div>
+                  <div class="step_file">
+                    <span>features/steps/steps.py:7</span>
+                  </div>
+                  <span class="embed"/>
+                  <a class="message" onclick="rslt=document.getElementById('embed_1');rslt.style.display =(rslt.style.display == 'none' ? 'block' : 'none');return false">Error message</a>
+                  <pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+                </li>
               </ol>
             </div>
             """
@@ -392,7 +403,18 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                 </li>
-                <li class="step failed"><div class="step_name"><span class="keyword">When </span><span class="step val">a step fails</span></div><div class="step_file"><span>features/steps/steps.py:7</span></div><span class="embed"/><a class="message" onclick="rslt=document.getElementById('embed_1');rslt.style.display =(rslt.style.display == 'none' ? 'block' : 'none');return false">Error message</a><pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>    </li>
+                <li class="step failed">
+                  <div class="step_name">
+                    <span class="keyword">When </span>
+                    <span class="step val">a step fails</span>
+                  </div>
+                  <div class="step_file">
+                    <span>features/steps/steps.py:7</span>
+                  </div>
+                  <span class="embed"/>
+                  <a class="message" onclick="rslt=document.getElementById('embed_1');rslt.style.display =(rslt.style.display == 'none' ? 'block' : 'none');return false">Error message</a>
+                  <pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+                </li>
               </ol>
             </div>
             """
@@ -532,7 +554,18 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                 </li>
-                <li class="step failed"><div class="step_name"><span class="keyword">But </span><span class="step val">a step fails</span></div><div class="step_file"><span>features/steps/steps.py:7</span></div><span class="embed"/><a class="message" onclick="rslt=document.getElementById('embed_1');rslt.style.display =(rslt.style.display == 'none' ? 'block' : 'none');return false">Error message</a><pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>    </li>
+                <li class="step failed">
+                  <div class="step_name">
+                    <span class="keyword">But </span>
+                    <span class="step val">a step fails</span>
+                  </div>
+                  <div class="step_file">
+                    <span>features/steps/steps.py:7</span>
+                  </div>
+                  <span class="embed"/>
+                  <a class="message" onclick="rslt=document.getElementById('embed_1');rslt.style.display =(rslt.style.display == 'none' ? 'block' : 'none');return false">Error message</a>
+                  <pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+                </li>
               </ol>
             </div>
             <div class="scenario">
@@ -581,7 +614,18 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                 </li>
-                <li class="step failed"><div class="step_name"><span class="keyword">But </span><span class="step val">a step fails</span></div><div class="step_file"><span>features/steps/steps.py:7</span></div><span class="embed"/><a class="message" onclick="rslt=document.getElementById('embed_2');rslt.style.display =(rslt.style.display == 'none' ? 'block' : 'none');return false">Error message</a><pre id="embed_2" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>    </li>
+                <li class="step failed">
+                  <div class="step_name">
+                    <span class="keyword">But </span>
+                    <span class="step val">a step fails</span>
+                  </div>
+                  <div class="step_file">
+                    <span>features/steps/steps.py:7</span>
+                  </div>
+                  <span class="embed"/>
+                  <a class="message" onclick="rslt=document.getElementById('embed_2');rslt.style.display =(rslt.style.display == 'none' ? 'block' : 'none');return false">Error message</a>
+                  <pre id="embed_2" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+                </li>
               </ol>
             </div>
             """
@@ -603,7 +647,7 @@ Feature: HTML Formatter
             """
         And the command output should contain:
             """
-                        <div class="scenario">
+            <div class="scenario">
               <span class="scenario_file">features/feature_step_with_one_parameter.feature:2</span>
               <h3 onclick="ol=document.getElementById('scenario_0');ol.style.display =(ol.style.display == 'none' ? 'block' : 'none');return false">
                 <span class="val">Scenario: Simple scenario with one parameter in step</span>
@@ -622,8 +666,11 @@ Feature: HTML Formatter
                 <li class="step passed">
                   <div class="step_name">
                     <span class="keyword">When </span>
-                    <span class="step val">a step with parameter "<b>foo</b></span>
-                    <span class="step val">" passes</span>
+                    <span class="step val">
+                      a step with parameter &quot;
+                      <b>foo</b>
+                    </span>
+                    <span class="step val">&quot; passes</span>
                   </div>
                   <div class="step_file">
                     <span>features/steps/steps.py:11</span>
@@ -680,9 +727,15 @@ Feature: HTML Formatter
                 <li class="step passed">
                   <div class="step_name">
                     <span class="keyword">When </span>
-                    <span class="step val">a step with parameter "<b>foo</b></span>
-                    <span class="step val">" and parameter "<b>bar</b></span>
-                    <span class="step val">" passes</span>
+                    <span class="step val">
+                      a step with parameter &quot;
+                      <b>foo</b>
+                    </span>
+                    <span class="step val">
+                      &quot; and parameter &quot;
+                      <b>bar</b>
+                    </span>
+                    <span class="step val">&quot; passes</span>
                   </div>
                   <div class="step_file">
                     <span>features/steps/steps.py:15</span>

@@ -1,5 +1,6 @@
 from behave.formatter.base import Formatter
-import lxml.etree as ET
+import xml.etree.ElementTree as ET
+from xml.dom import minidom
 import base64
 import os.path
 from behave.compat.collections import Counter
@@ -14,6 +15,14 @@ def _valid_XML_char_ordinal(i):
         )
 
 
+def _prettify(elem):
+    """Return a pretty-printed XML string for the Element.
+    """
+    rough_string = ET.tostring(elem, 'utf-8')
+    reparsed = minidom.parseString(rough_string)
+    return reparsed.toprettyxml(indent="  ")
+
+
 class HTMLFormatter(Formatter):
     name = 'html'
     description = 'Very basic HTML formatter'
@@ -26,7 +35,7 @@ class HTMLFormatter(Formatter):
         head = ET.SubElement(self.html, 'head')
         ET.SubElement(head, 'title').text = u'Behave steps'
         ET.SubElement(head, 'meta', {'content': 'text/html;charset=utf-8'})
-        ET.SubElement(head, 'style').text = """body{font-size:0;color:#fff;margin:0;
+        ET.SubElement(head, 'style').text = """body{color:#fff;margin:0;
         padding:0}.behave,td,th{font:400 11px "Lucida Grande",Helvetica,sans-serif;
         background:#fff;color:#000}.behave #behave-header,td #behave-header,
         th #behave-header{background:#65c400;color:#fff;height:8em}.behave 
@@ -385,4 +394,4 @@ class HTMLFormatter(Formatter):
 
         # Sending the report to stream
         if len(self.all_features) > 0:
-            self.stream.write(ET.tostring(self.html, pretty_print = True))
+            self.stream.write(_prettify(self.html))

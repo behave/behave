@@ -12,7 +12,7 @@ cache:
     - $HOME/.cache/pip
 
 install:
-  - travis_retry pip install -q mock nose PyHamcrest lxml
+  - travis_retry pip install -q mock nose PyHamcrest
   - python setup.py -q install
 
 script:
