@@ -136,6 +136,10 @@ options = [
           help="""Specify name annotation schema for scenario outline
                   (default="{name} -- @{row.id} {examples.name}").""")),
 
+    ((),  # -- CONFIGFILE only
+     dict(dest='css',
+          help="""Specify a different css for HTML formatter""")),
+
 #    (('-g', '--guess'),
 #     dict(action='store_true',
 #          help="Guess best match for ambiguous steps.")),
@@ -510,6 +514,7 @@ class Configuration(object):
         # -- SPECIAL:
         default_format="pretty",    # -- Used when no formatters are configured.
         default_tags="",            # -- Used when no tags are defined.
+        css=None,
         scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}"
     )
     cmdline_only_options = set("userdata_defines")
@@ -551,6 +556,7 @@ class Configuration(object):
         self.outputs = []
         self.include_re = None
         self.exclude_re = None
+        self.css = None
         self.scenario_outline_annotation_schema = None
         self.steps_dir = "steps"
         self.environment_file = "environment.py"
