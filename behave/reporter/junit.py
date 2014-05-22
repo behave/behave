@@ -30,12 +30,12 @@ class ElementTreeWithCDATA(ElementTree.ElementTree):
 
 
 if hasattr(ElementTree, '_serialize'):
-    def _serialize_xml(write, elem, encoding, qnames, namespaces,
+    def _serialize_xml(write, elem, qnames, namespaces, short_empty_elements,
                        orig=ElementTree._serialize_xml):
         if elem.tag == '![CDATA[':
-            write("\n<%s%s]]>\n" % (elem.tag, elem.text.encode(encoding)))
+            write("\n<%s%s]]>\n" % (elem.tag, elem.text.encode("UTF-8")))
             return
-        return orig(write, elem, encoding, qnames, namespaces)
+        return orig(write, elem, qnames, namespaces, short_empty_elements)
 
     ElementTree._serialize_xml = ElementTree._serialize['xml'] = _serialize_xml
 
@@ -119,7 +119,7 @@ class JUnitReporter(Reporter):
 
         tree = ElementTreeWithCDATA(suite)
         report_filename = os.path.join(self.config.junit_directory, filename)
-        tree.write(codecs.open(report_filename, 'w'), 'UTF-8')
+        tree.write(codecs.open(report_filename, 'wb'), 'UTF-8')
 
     # -- MORE:
     @staticmethod
