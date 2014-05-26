@@ -100,7 +100,7 @@ Feature: HTML Formatter
             </div>
             """
 
-    Scenario: Use HTML formatter on feature on one empty scenario
+    Scenario: Use HTML formatter on feature with one empty scenario
         Given a file named "features/feature_one_empty_scenario.feature" with:
             """
             Feature:
@@ -121,14 +121,14 @@ Feature: HTML Formatter
             </div>
             <div class="scenario">
               <span class="scenario_file">features/feature_one_empty_scenario.feature:2</span>
-              <h3 onclick="ol=document.getElementById('scenario_0');ol.style.display =(ol.style.display == 'none' ? 'block' : 'none');return false">
+              <h3 onclick="Collapsible_toggle('scenario_0')">
                 <span class="val">Scenario: Simple scenario without steps</span>
               </h3>
               <ol class="scenario_steps" id="scenario_0"/>
             </div>
             """
 
-    Scenario: Use HTML formatter on feature on one empty scenario with description
+    Scenario: Use HTML formatter on feature with one empty scenario and description
         Given a file named "features/feature_one_empty_scenario_with_description.feature" with:
             """
             Feature:
@@ -153,7 +153,7 @@ Feature: HTML Formatter
             </div>
             <div class="scenario">
               <span class="scenario_file">features/feature_one_empty_scenario_with_description.feature:2</span>
-              <h3 onclick="ol=document.getElementById('scenario_0');ol.style.display =(ol.style.display == 'none' ? 'block' : 'none');return false">
+              <h3 onclick="Collapsible_toggle('scenario_0')">
                 <span class="val">Scenario: Simple scenario with description but without steps</span>
               </h3>
               <pre class="message">First scenario description line.
@@ -163,7 +163,7 @@ Feature: HTML Formatter
             </div>
             """
 
-    Scenario: Use HTML formatter on feature on one empty scenario with tags
+    Scenario: Use HTML formatter on feature with one empty scenario and tags
         Given a file named "features/feature_one_empty_scenario_with_tags.feature" with:
             """
             Feature:
@@ -186,14 +186,14 @@ Feature: HTML Formatter
             <div class="scenario">
               <span class="scenario_file">features/feature_one_empty_scenario_with_tags.feature:3</span>
               <span class="tag">@foo, @bar</span>
-              <h3 onclick="ol=document.getElementById('scenario_0');ol.style.display =(ol.style.display == 'none' ? 'block' : 'none');return false">
+              <h3 onclick="Collapsible_toggle('scenario_0')">
                 <span class="val">Scenario: Simple scenario with tags but without steps</span>
               </h3>
               <ol class="scenario_steps" id="scenario_0"/>
             </div>
             """
 
-    Scenario: Use HTML formatter on feature on one passing scenario
+    Scenario: Use HTML formatter on feature with one passing scenario
         Given a file named "features/feature_one_passing_scenario.feature" with:
             """
             Feature:
@@ -219,7 +219,7 @@ Feature: HTML Formatter
             </div>
             <div class="scenario">
               <span class="scenario_file">features/feature_one_passing_scenario.feature:2</span>
-              <h3 onclick="ol=document.getElementById('scenario_0');ol.style.display =(ol.style.display == 'none' ? 'block' : 'none');return false">
+              <h3 onclick="Collapsible_toggle('scenario_0')">
                 <span class="val">Scenario: Simple scenario with passing steps</span>
               </h3>
               <ol class="scenario_steps" id="scenario_0">
@@ -277,7 +277,7 @@ Feature: HTML Formatter
             </div>
             """
 
-    Scenario: Use HTML formatter on feature on one failing scenario
+    Scenario: Use HTML formatter on feature with one failing scenario
         Given a file named "features/feature_one_failing_scenario.feature" with:
             """
             Feature:
@@ -303,7 +303,7 @@ Feature: HTML Formatter
             </div>
             <div class="scenario">
               <span class="scenario_file">features/feature_one_failing_scenario.feature:2</span>
-              <h3 onclick="ol=document.getElementById('scenario_0');ol.style.display =(ol.style.display == 'none' ? 'block' : 'none');return false" style="background: #C40D0D; color: #FFFFFF">
+              <h3 onclick="Collapsible_toggle('scenario_0')" style="background: #C40D0D; color: #FFFFFF">
                 <span class="val">Scenario: Simple scenario with failing step</span>
               </h3>
               <ol class="scenario_steps" id="scenario_0">
@@ -347,7 +347,19 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                 </li>
-                <li class="step failed"><div class="step_name"><span class="keyword">But </span><span class="step val">a step fails</span></div><div class="step_file"><span>features/steps/steps.py:7</span></div><span class="embed"/><a class="message" onclick="rslt=document.getElementById('embed_1');rslt.style.display =(rslt.style.display == 'none' ? 'block' : 'none');return false">Error message</a><pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>    </li>
+                <li class="step failed">
+                  <div class="step_name">
+                    <span class="keyword">But </span>
+                    <span class="step val">a step fails</span>
+                  </div>
+                  <div class="step_file">
+                    <span>features/steps/steps.py:7</span>
+                  </div>
+                  <span class="embed"/>
+                  <a class="message" onclick="Collapsible_toggle('embed_1')">Error message</a>
+                  <pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+
+                </li>
               </ol>
             </div>
             """
@@ -378,7 +390,7 @@ Feature: HTML Formatter
             </div>
             <div class="scenario">
               <span class="scenario_file">features/feature_one_failing_scenario_with_skipped_steps.feature:2</span>
-              <h3 onclick="ol=document.getElementById('scenario_0');ol.style.display =(ol.style.display == 'none' ? 'block' : 'none');return false" style="background: #C40D0D; color: #FFFFFF">
+              <h3 onclick="Collapsible_toggle('scenario_0')" style="background: #C40D0D; color: #FFFFFF">
                 <span class="val">Scenario: Simple scenario with failing and skipped steps</span>
               </h3>
               <ol class="scenario_steps" id="scenario_0">
@@ -392,7 +404,18 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                 </li>
-                <li class="step failed"><div class="step_name"><span class="keyword">When </span><span class="step val">a step fails</span></div><div class="step_file"><span>features/steps/steps.py:7</span></div><span class="embed"/><a class="message" onclick="rslt=document.getElementById('embed_1');rslt.style.display =(rslt.style.display == 'none' ? 'block' : 'none');return false">Error message</a><pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>    </li>
+                <li class="step failed">
+                  <div class="step_name">
+                    <span class="keyword">When </span>
+                    <span class="step val">a step fails</span>
+                  </div>
+                  <div class="step_file">
+                    <span>features/steps/steps.py:7</span>
+                  </div>
+                  <span class="embed"/>
+                  <a class="message" onclick="Collapsible_toggle('embed_1')">Error message</a>
+                  <pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+                </li>
               </ol>
             </div>
             """
@@ -400,25 +423,19 @@ Feature: HTML Formatter
     Scenario: Use HTML formatter on feature with three scenarios
         Given a file named "features/feature_three_scenarios.feature" with:
             """
-            Feature:
-              Scenario: Simple passing scenario
+            Feature: Many Scenarios
+              Scenario: Passing
                   Given a step passes
-                  When a step passes
                   Then a step passes
-                  And a step passes
-                  But a step passes
-              Scenario: Simple failing scenario
+
+              Scenario: Failing
                   Given a step passes
-                  When a step passes
-                  Then a step passes
-                  And a step passes
-                  But a step fails
-              Scenario: Simple failing scenario with skipped steps
+                  Then a step fails
+
+              Scenario: Failing with skipped steps
                   Given a step passes
-                  When a step passes
+                  When a step fails
                   Then a step passes
-                  And a step passes
-                  But a step fails
             """
         When I run "behave -f html features/feature_three_scenarios.feature"
         Then it should fail with:
@@ -430,8 +447,8 @@ Feature: HTML Formatter
             """
             <div class="scenario">
               <span class="scenario_file">features/feature_three_scenarios.feature:2</span>
-              <h3 onclick="ol=document.getElementById('scenario_0');ol.style.display =(ol.style.display == 'none' ? 'block' : 'none');return false">
-                <span class="val">Scenario: Simple passing scenario</span>
+              <h3 onclick="Collapsible_toggle('scenario_0')">
+                <span class="val">Scenario: Passing</span>
               </h3>
               <ol class="scenario_steps" id="scenario_0">
                 <li class="step passed">
@@ -446,37 +463,7 @@ Feature: HTML Formatter
                 </li>
                 <li class="step passed">
                   <div class="step_name">
-                    <span class="keyword">When </span>
-                    <span class="step val">a step passes</span>
-                  </div>
-                  <div class="step_file">
-                    <span>features/steps/steps.py:3</span>
-                  </div>
-                  <span class="embed"/>
-                </li>
-                <li class="step passed">
-                  <div class="step_name">
                     <span class="keyword">Then </span>
-                    <span class="step val">a step passes</span>
-                  </div>
-                  <div class="step_file">
-                    <span>features/steps/steps.py:3</span>
-                  </div>
-                  <span class="embed"/>
-                </li>
-                <li class="step passed">
-                  <div class="step_name">
-                    <span class="keyword">And </span>
-                    <span class="step val">a step passes</span>
-                  </div>
-                  <div class="step_file">
-                    <span>features/steps/steps.py:3</span>
-                  </div>
-                  <span class="embed"/>
-                </li>
-                <li class="step passed">
-                  <div class="step_name">
-                    <span class="keyword">But </span>
                     <span class="step val">a step passes</span>
                   </div>
                   <div class="step_file">
@@ -487,9 +474,9 @@ Feature: HTML Formatter
               </ol>
             </div>
             <div class="scenario">
-              <span class="scenario_file">features/feature_three_scenarios.feature:8</span>
-              <h3 onclick="ol=document.getElementById('scenario_1');ol.style.display =(ol.style.display == 'none' ? 'block' : 'none');return false" style="background: #C40D0D; color: #FFFFFF">
-                <span class="val">Scenario: Simple failing scenario</span>
+              <span class="scenario_file">features/feature_three_scenarios.feature:6</span>
+              <h3 onclick="Collapsible_toggle('scenario_1')" style="background: #C40D0D; color: #FFFFFF">
+                <span class="val">Scenario: Failing</span>
               </h3>
               <ol class="scenario_steps" id="scenario_1">
                 <li class="step passed">
@@ -502,43 +489,25 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                 </li>
-                <li class="step passed">
-                  <div class="step_name">
-                    <span class="keyword">When </span>
-                    <span class="step val">a step passes</span>
-                  </div>
-                  <div class="step_file">
-                    <span>features/steps/steps.py:3</span>
-                  </div>
-                  <span class="embed"/>
-                </li>
-                <li class="step passed">
+                <li class="step failed">
                   <div class="step_name">
                     <span class="keyword">Then </span>
-                    <span class="step val">a step passes</span>
+                    <span class="step val">a step fails</span>
                   </div>
                   <div class="step_file">
-                    <span>features/steps/steps.py:3</span>
+                    <span>features/steps/steps.py:7</span>
                   </div>
                   <span class="embed"/>
+                  <a class="message" onclick="Collapsible_toggle('embed_1')">Error message</a>
+                  <pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+
                 </li>
-                <li class="step passed">
-                  <div class="step_name">
-                    <span class="keyword">And </span>
-                    <span class="step val">a step passes</span>
-                  </div>
-                  <div class="step_file">
-                    <span>features/steps/steps.py:3</span>
-                  </div>
-                  <span class="embed"/>
-                </li>
-                <li class="step failed"><div class="step_name"><span class="keyword">But </span><span class="step val">a step fails</span></div><div class="step_file"><span>features/steps/steps.py:7</span></div><span class="embed"/><a class="message" onclick="rslt=document.getElementById('embed_1');rslt.style.display =(rslt.style.display == 'none' ? 'block' : 'none');return false">Error message</a><pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>    </li>
               </ol>
             </div>
             <div class="scenario">
-              <span class="scenario_file">features/feature_three_scenarios.feature:14</span>
-              <h3 onclick="ol=document.getElementById('scenario_2');ol.style.display =(ol.style.display == 'none' ? 'block' : 'none');return false" style="background: #C40D0D; color: #FFFFFF">
-                <span class="val">Scenario: Simple failing scenario with skipped steps</span>
+              <span class="scenario_file">features/feature_three_scenarios.feature:10</span>
+              <h3 onclick="Collapsible_toggle('scenario_2')" style="background: #C40D0D; color: #FFFFFF">
+                <span class="val">Scenario: Failing with skipped steps</span>
               </h3>
               <ol class="scenario_steps" id="scenario_2">
                 <li class="step passed">
@@ -551,37 +520,19 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                 </li>
-                <li class="step passed">
+                <li class="step failed">
                   <div class="step_name">
                     <span class="keyword">When </span>
-                    <span class="step val">a step passes</span>
+                    <span class="step val">a step fails</span>
                   </div>
                   <div class="step_file">
-                    <span>features/steps/steps.py:3</span>
+                    <span>features/steps/steps.py:7</span>
                   </div>
                   <span class="embed"/>
+                  <a class="message" onclick="Collapsible_toggle('embed_2')">Error message</a>
+                  <pre id="embed_2" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+
                 </li>
-                <li class="step passed">
-                  <div class="step_name">
-                    <span class="keyword">Then </span>
-                    <span class="step val">a step passes</span>
-                  </div>
-                  <div class="step_file">
-                    <span>features/steps/steps.py:3</span>
-                  </div>
-                  <span class="embed"/>
-                </li>
-                <li class="step passed">
-                  <div class="step_name">
-                    <span class="keyword">And </span>
-                    <span class="step val">a step passes</span>
-                  </div>
-                  <div class="step_file">
-                    <span>features/steps/steps.py:3</span>
-                  </div>
-                  <span class="embed"/>
-                </li>
-                <li class="step failed"><div class="step_name"><span class="keyword">But </span><span class="step val">a step fails</span></div><div class="step_file"><span>features/steps/steps.py:7</span></div><span class="embed"/><a class="message" onclick="rslt=document.getElementById('embed_2');rslt.style.display =(rslt.style.display == 'none' ? 'block' : 'none');return false">Error message</a><pre id="embed_2" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>    </li>
               </ol>
             </div>
             """
@@ -603,11 +554,11 @@ Feature: HTML Formatter
             """
         And the command output should contain:
             """
-                        <div class="scenario">
+            <div class="scenario">
               <span class="scenario_file">features/feature_step_with_one_parameter.feature:2</span>
-              <h3 onclick="ol=document.getElementById('scenario_0');ol.style.display =(ol.style.display == 'none' ? 'block' : 'none');return false">
-                <span class="val">Scenario: Simple scenario with one parameter in step</span>
-              </h3>
+                <h3 onclick="Collapsible_toggle('scenario_0')">
+                  <span class="val">Scenario: Simple scenario with one parameter in step</span>
+                </h3>
               <ol class="scenario_steps" id="scenario_0">
                 <li class="step passed">
                   <div class="step_name">
@@ -622,8 +573,11 @@ Feature: HTML Formatter
                 <li class="step passed">
                   <div class="step_name">
                     <span class="keyword">When </span>
-                    <span class="step val">a step with parameter "<b>foo</b></span>
-                    <span class="step val">" passes</span>
+                    <span class="step val">
+                      a step with parameter &quot;
+                      <b>foo</b>
+                    </span>
+                    <span class="step val">&quot; passes</span>
                   </div>
                   <div class="step_file">
                     <span>features/steps/steps.py:11</span>
@@ -663,7 +617,7 @@ Feature: HTML Formatter
             """
             <div class="scenario">
               <span class="scenario_file">features/feature_step_with_parameters.feature:2</span>
-              <h3 onclick="ol=document.getElementById('scenario_0');ol.style.display =(ol.style.display == 'none' ? 'block' : 'none');return false">
+              <h3 onclick="Collapsible_toggle('scenario_0')">
                 <span class="val">Scenario: Simple scenario with parameters in step</span>
               </h3>
               <ol class="scenario_steps" id="scenario_0">
@@ -680,9 +634,15 @@ Feature: HTML Formatter
                 <li class="step passed">
                   <div class="step_name">
                     <span class="keyword">When </span>
-                    <span class="step val">a step with parameter "<b>foo</b></span>
-                    <span class="step val">" and parameter "<b>bar</b></span>
-                    <span class="step val">" passes</span>
+                    <span class="step val">
+                      a step with parameter &quot;
+                      <b>foo</b>
+                    </span>
+                    <span class="step val">
+                      &quot; and parameter &quot;
+                      <b>bar</b>
+                    </span>
+                    <span class="step val">&quot; passes</span>
                   </div>
                   <div class="step_file">
                     <span>features/steps/steps.py:15</span>
@@ -708,14 +668,15 @@ Feature: HTML Formatter
             """
             Feature:
               Scenario: Simple scenario with multiline string in step
-                  Given a step passes
-                  When a step passes:
+                Given a step passes
+                When a step passes:
                   '''
-                    Tiger, tiger, burning bright
-                    In the forests of the night,
-                    What immortal hand or eye
-                    Could frame thy fearful symmetry?
+                  Tiger, tiger, burning bright
+                  In the forests of the night,
+                  What immortal hand or eye
+                  Could frame thy fearful symmetry?
                   '''
+                Then a step passes
             """
         When I run "behave -f html features/feature_multiline_step.feature"
         Then it should pass with:
@@ -725,52 +686,35 @@ Feature: HTML Formatter
             """
         And the command output should contain:
             """
-            <div class="scenario">
-              <span class="scenario_file">features/feature_multiline_step.feature:2</span>
-              <h3 onclick="ol=document.getElementById('scenario_0');ol.style.display =(ol.style.display == 'none' ? 'block' : 'none');return false">
-                <span class="val">Scenario: Simple scenario with multiline string in step</span>
-              </h3>
-              <ol class="scenario_steps" id="scenario_0">
-                <li class="step passed">
-                  <div class="step_name">
-                    <span class="keyword">Given </span>
-                    <span class="step val">a step passes</span>
-                  </div>
-                  <div class="step_file">
-                    <span>features/steps/steps.py:3</span>
-                  </div>
-                  <span class="embed"/>
-                </li>
-                <li class="step passed">
-                  <div class="step_name">
-                    <span class="keyword">When </span>
-                    <span class="step val">a step passes</span>
-                  </div>
-                  <div class="step_file">
-                    <span>features/steps/steps.py:3</span>
-                  </div>
-                  <span class="embed"/>
-                  <div class="message">
-                    <pre style="white-space: pre-wrap;">  Tiger, tiger, burning bright
-                    In the forests of the night,
-                    What immortal hand or eye
-                    Could frame thy fearful symmetry?</pre>
-                  </div>
-                </li>
-              </ol>
-            </div>
+            <li class="step passed">
+              <div class="step_name">
+                <span class="keyword">When </span>
+                <span class="step val">a step passes</span>
+              </div>
+              <div class="step_file">
+                <span>features/steps/steps.py:3</span>
+              </div>
+              <span class="embed"/>
+              <div class="message">
+                <pre style="white-space: pre-wrap;">Tiger, tiger, burning bright
+                In the forests of the night,
+                What immortal hand or eye
+                Could frame thy fearful symmetry?</pre>
+              </div>
+            </li>
             """
 
     Scenario: Use HTML formatter on step with table
         Given a file named "features/feature_step_with_table.feature" with:
             """
-            Feature:
-              Scenario: Simple scenario with failing and skipped steps
-                  Given a step passes
-                  When a step passes:
-                  | Field | Value |
-                  | Foo   | bar   |
-                  | baz   | qux   |
+            Feature: Step with table data
+              Scenario:
+                Given a step passes
+                When a step passes:
+                  | Name | Value |
+                  | Foo  | 42    |
+                  | Bar  | qux   |
+                Then a step passes
             """
         When I run "behave -f html features/feature_step_with_table.feature"
         Then it should pass with:
@@ -780,46 +724,28 @@ Feature: HTML Formatter
             """
         And the command output should contain:
             """
-            <div class="scenario">
-              <span class="scenario_file">features/feature_step_with_table.feature:2</span>
-              <h3 onclick="ol=document.getElementById('scenario_0');ol.style.display =(ol.style.display == 'none' ? 'block' : 'none');return false">
-                <span class="val">Scenario: Simple scenario with failing and skipped steps</span>
-              </h3>
-              <ol class="scenario_steps" id="scenario_0">
-                <li class="step passed">
-                  <div class="step_name">
-                    <span class="keyword">Given </span>
-                    <span class="step val">a step passes</span>
-                  </div>
-                  <div class="step_file">
-                    <span>features/steps/steps.py:3</span>
-                  </div>
-                  <span class="embed"/>
-                </li>
-                <li class="step passed">
-                  <div class="step_name">
-                    <span class="keyword">When </span>
-                    <span class="step val">a step passes</span>
-                  </div>
-                  <div class="step_file">
-                    <span>features/steps/steps.py:3</span>
-                  </div>
-                  <span class="embed"/>
-                  <table>
-                    <tr>
-                      <th>Field</th>
-                      <th>Value</th>
-                    </tr>
-                    <tr>
-                      <td>Foo</td>
-                      <td>bar</td>
-                    </tr>
-                    <tr>
-                      <td>baz</td>
-                      <td>qux</td>
-                    </tr>
-                  </table>
-                </li>
-              </ol>
-            </div>
+            <li class="step passed">
+              <div class="step_name">
+                <span class="keyword">When </span>
+                <span class="step val">a step passes</span>
+              </div>
+              <div class="step_file">
+                <span>features/steps/steps.py:3</span>
+              </div>
+              <span class="embed"/>
+              <table>
+                <tr>
+                  <th>Name</th>
+                  <th>Value</th>
+                </tr>
+                <tr>
+                  <td>Foo</td>
+                  <td>42</td>
+                </tr>
+                <tr>
+                  <td>Bar</td>
+                  <td>qux</td>
+                </tr>
+              </table>
+            </li>
             """
