@@ -5,7 +5,7 @@ python:
   - pypy
 
 install:
-  - pip install --use-mirrors -q mock nose PyHamcrest lxml
+  - pip install --use-mirrors -q mock nose PyHamcrest
   - python setup.py -q install
 script:
   - python --version
