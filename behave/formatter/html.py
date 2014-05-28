@@ -23,9 +23,6 @@ IMPROVEMENTS:
     => AVOID using combination of style attributes where style is better.
 
 TODO:
-  * After pretty-printing: HTML has XML PI
-        <?xml version="1.0" ?>
-        <html>
   * Embedding only works with one part ?!?
   * Even empty embed elements are contained ?!?
 
@@ -58,13 +55,15 @@ def _valid_XML_char_ordinal(i):
 
 def ET_tostring(elem, pretty_print=False):
     """Render an HTML element(tree) and optionally pretty-print it."""
+
     text = ET.tostring(elem, "utf-8")   # XXX, method="html")
     if pretty_print:
         # -- RECIPE: For pretty-printing w/ xml.etree.ElementTree.
         # SEE: http://pymotw.com/2/xml/etree/ElementTree/create.html
         from xml.dom import minidom
+        declaration_len = len(minidom.Document().toxml())
         reparsed = minidom.parseString(text)
-        text = reparsed.toprettyxml(indent="  ")
+        text = reparsed.toprettyxml(indent="  ")[declaration_len:]
     return text
 
 class JavascriptLibrary(object):
