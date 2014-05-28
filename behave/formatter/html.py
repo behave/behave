@@ -162,7 +162,8 @@ right:0;float:right}.behave #summary p,td #summary p,th #summary
 p{margin:0 0 0 2px}.behave #summary #totals,td #summary #totals,th
 #summary #totals{font-size:1.2em} h3.failed,#behave-header.failed{background:
 #c40d0d !important} h3.undefined,#behave-header.undefined{background:#faf834
- !important; color:#000 !important} #behave-header.failed a{color:#fff}
+ !important; color:#000 !important} #behave-header.failed a{color:#fff} pre {
+ white-space: pre-wrap}
 """
 
 
@@ -345,7 +346,7 @@ class HTMLFormatter(Formatter):
 
         if result.text:
             message = ET.SubElement(step, 'div', {'class': 'message'})
-            pre = ET.SubElement(message, 'pre', {'style': 'white-space: pre-wrap;'})
+            pre = ET.SubElement(message, 'pre')
             pre.text = result.text
 
         if result.table:
@@ -368,7 +369,7 @@ class HTMLFormatter(Formatter):
 
             embed = ET.SubElement(step, 'pre',
                                   {'id': "embed_%s" % self.embed_id,
-                                  'style': 'display: none; white-space: pre-wrap;'})
+                                   'style': 'display: none'})
             cleaned_error_message = ''.join(
                 c for c in result.error_message if _valid_XML_char_ordinal(ord(c))
             )

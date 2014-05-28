@@ -357,7 +357,7 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                   <a class="message" onclick="Collapsible_toggle('embed_1')">Error message</a>
-                  <pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+                  <pre id="embed_1" style="display: none">Assertion Failed: XFAIL-STEP</pre>
 
                 </li>
               </ol>
@@ -414,7 +414,7 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                   <a class="message" onclick="Collapsible_toggle('embed_1')">Error message</a>
-                  <pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+                  <pre id="embed_1" style="display: none">Assertion Failed: XFAIL-STEP</pre>
                 </li>
               </ol>
             </div>
@@ -499,7 +499,7 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                   <a class="message" onclick="Collapsible_toggle('embed_1')">Error message</a>
-                  <pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+                  <pre id="embed_1" style="display: none">Assertion Failed: XFAIL-STEP</pre>
 
                 </li>
               </ol>
@@ -530,7 +530,7 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                   <a class="message" onclick="Collapsible_toggle('embed_2')">Error message</a>
-                  <pre id="embed_2" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+                  <pre id="embed_2" style="display: none">Assertion Failed: XFAIL-STEP</pre>
 
                 </li>
               </ol>
@@ -696,7 +696,7 @@ Feature: HTML Formatter
               </div>
               <span class="embed"/>
               <div class="message">
-                <pre style="white-space: pre-wrap;">Tiger, tiger, burning bright
+                <pre>Tiger, tiger, burning bright
                 In the forests of the night,
                 What immortal hand or eye
                 Could frame thy fearful symmetry?</pre>
