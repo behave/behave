@@ -256,13 +256,13 @@ class HTMLFormatter(Formatter):
         self.current_feature = ET.SubElement(self.suite, 'div', {'class': 'feature'})
         if feature.tags:
             tags_element = ET.SubElement(self.current_feature, 'span', {'class': 'tag'})
-            tags_element.text = u'@' + reduce(lambda d, x: "%s, @%s" % (d, x), feature.tags)
+            tags_element.text = u'@' + ', @'.join(feature.tags)
         h2 = ET.SubElement(self.current_feature, 'h2')
         feature_element = ET.SubElement(h2, 'span', {'class': 'val'})
         feature_element.text = u'%s: %s' % (feature.keyword, feature.name)
         if feature.description:
             description_element = ET.SubElement(self.current_feature, 'pre', {'class': 'message'})
-            description_element.text = reduce(lambda d, x: "%s\n%s" % (d, x), feature.description)
+            description_element.text = '\n'.join(feature.description)
 
     def background(self, background):
         self.current_background = ET.SubElement(self.suite, 'div', {'class': 'background'})
@@ -283,7 +283,7 @@ class HTMLFormatter(Formatter):
 
         if scenario.tags:
             tags = ET.SubElement(self.scenario_el, 'span', {'class': 'tag'})
-            tags.text = u'@' + reduce(lambda d, x: "%s, @%s" % (d, x), scenario.tags)
+            tags.text = u'@' + ', @'.join(scenario.tags)
 
         self.scenario_name = ET.SubElement(self.scenario_el, 'h3')
         span = ET.SubElement(self.scenario_name, 'span', {'class': 'val'})
@@ -291,7 +291,7 @@ class HTMLFormatter(Formatter):
 
         if scenario.description:
             description_element = ET.SubElement(self.scenario_el, 'pre', {'class': 'message'})
-            description_element.text = reduce(lambda d, x: "%s\n%s" % (d, x), scenario.description)
+            description_element.text = '\n'.join(scenario.description)
 
         self.steps = ET.SubElement(self.scenario_el, 'ol',
                                    {'class': 'scenario_steps',
@@ -455,33 +455,33 @@ class HTMLFormatter(Formatter):
             self.all_features = []
         self.duration.text =\
             u"Finished in %0.1f seconds" %\
-            sum(map(lambda x: x.duration, self.all_features))
+            sum([x.duration for x in self.all_features])
 
         # Filling in summary details
         result = []
-        statuses = map(lambda x: x.status, self.all_features)
+        statuses = [x.status for x in self.all_features]
         status_counter = Counter(statuses)
         for k in status_counter:
             result.append('%s: %s' % (k, status_counter[k]))
         self.current_feature_totals.text = u'Features: %s' % ', '.join(result)
 
         result = []
-        scenarios_list = map(lambda x: x.scenarios, self.all_features)
+        scenarios_list = [x.scenarios for x in self.all_features]
         scenarios = []
         if len(scenarios_list) > 0:
-            scenarios = reduce(lambda a, b: a + b, scenarios_list)
-        statuses = map(lambda x: x.status, scenarios)
+            scenarios = [x for subl in scenarios_list for x in subl]
+        statuses = [x.status for x in scenarios]
         status_counter = Counter(statuses)
         for k in status_counter:
             result.append('%s: %s' % (k, status_counter[k]))
         self.scenario_totals.text = u'Scenarios: %s' % ', '.join(result)
 
         result = []
-        step_list = map(lambda x: x.steps, scenarios)
+        step_list = [x.steps for x in scenarios]
         steps = []
         if step_list:
-            steps = reduce(lambda a, b: a + b, step_list)
-        statuses = map(lambda x: x.status, steps)
+            steps = [x for subl in step_list for x in subl]
+        statuses = [x.status for x in steps]
         status_counter = Counter(statuses)
         for k in status_counter:
             result.append('%s: %s' % (k, status_counter[k]))
