@@ -30,12 +30,18 @@ class ElementTreeWithCDATA(ElementTree.ElementTree):
 
 
 if hasattr(ElementTree, '_serialize'):
-    def _serialize_xml(write, elem, qnames, namespaces, short_empty_elements,
+    def _serialize_xml(write, elem, qnames, namespaces,
+                       short_empty_elements=None,
                        orig=ElementTree._serialize_xml):
         if elem.tag == '![CDATA[':
             write("\n<%s%s]]>\n" % (elem.tag, elem.text.encode("UTF-8")))
             return
-        return orig(write, elem, qnames, namespaces, short_empty_elements)
+        if short_empty_elements:
+            # python >=3.3
+            return orig(write, elem, qnames, namespaces, short_empty_elements)
+        else:
+            # python <3.3
+            return orig(write, elem, qnames, namespaces)
 
     ElementTree._serialize_xml = ElementTree._serialize['xml'] = _serialize_xml
 
