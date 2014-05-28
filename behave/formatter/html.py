@@ -25,9 +25,6 @@ IMPROVEMENTS:
 TODO:
   * Embedding only works with one part ?!?
   * Even empty embed elements are contained ?!?
-
-IDEA:
-  * "Expand Failed" or "Show Failed" action (on collapsible scenarios).
 """
 
 from behave.formatter.base import Formatter
@@ -88,6 +85,17 @@ function Collapsible_collapseAll(className)
     var elems = document.getElementsByClassName(className);
     for (var i=0; i < elems.length; i++) {
         elems[i].style.display = 'none';
+    }
+}
+
+function Collapsible_expandAllFailed()
+{
+    var elems = document.getElementsByClassName('failed');
+    for (var i=0; i < elems.length; i++) {
+        var elem = elems[i];
+        if (elem.nodeName == 'H3'){
+            elem.parentElement.getElementsByTagName('ol')[0].style.display = 'block';
+        }
     }
 }
 """
@@ -226,6 +234,11 @@ class HTMLFormatter(Formatter):
         collapser = ET.SubElement(expand_collapse, 'a', id='collapser', href="#")
         collapser.set('onclick', "Collapsible_collapseAll('scenario_steps')")
         collapser.text = u'Collapse All'
+        cea_spacer = ET.SubElement(expand_collapse, 'span')
+        cea_spacer.text = u" | "
+        expander = ET.SubElement(expand_collapse, 'a', id='failed_expander', href="#")
+        expander.set('onclick', "Collapsible_expandAllFailed()")
+        expander.text = u'Expand All Failed'
 
 
         self.embed_id = 0
