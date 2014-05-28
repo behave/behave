@@ -42,7 +42,8 @@ if hasattr(ElementTree, '_serialize'):
                         short_empty_elements=None,
                         orig=ElementTree._serialize_xml):
         if elem.tag == '![CDATA[':
-            write("\n<%s%s]]>\n" % (elem.tag, elem.text.encode("UTF-8")))
+            write("\n<{tag}{text}]]>\n".format(
+                tag=elem.tag, text=elem.text))
             return
         if short_empty_elements:
             # python >=3.3
