@@ -152,7 +152,9 @@ solid #0ff;background:#e0ffff;color:#011;margin-left:10px}.behave #summary,td
 #summary,th #summary{margin:0;padding:5px 10px;text-align:right;top:0;
 right:0;float:right}.behave #summary p,td #summary p,th #summary
 p{margin:0 0 0 2px}.behave #summary #totals,td #summary #totals,th
-#summary #totals{font-size:1.2em}
+#summary #totals{font-size:1.2em} h3.failed,#behave-header.failed{background:
+#c40d0d !important} h3.undefined,#behave-header.undefined{background:#faf834
+ !important; color:#000 !important}
 """
 
 
@@ -361,14 +363,12 @@ class HTMLFormatter(Formatter):
             embed.tail = u'    '
 
         if result.status == 'failed':
-            style = 'background: #C40D0D; color: #FFFFFF'
-            self.scenario_name.set('style', style)
-            self.header.set('style', style)
+            self.scenario_name.set('class', 'failed')
+            self.header.set('class', 'failed')
 
         if result.status == 'undefined':
-            style = 'background: #FAF834; color: #000000'
-            self.scenario_name.set('style', style)
-            self.header.set('style', style)
+            self.scenario_name.set('class', 'undefined')
+            self.header.set('class', 'undefined')
 
         if hasattr(self, 'embed_in_this_step') and self.embed_in_this_step:
             self._doEmbed(self.last_step_embed_span,

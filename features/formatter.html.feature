@@ -303,7 +303,7 @@ Feature: HTML Formatter
             </div>
             <div class="scenario">
               <span class="scenario_file">features/feature_one_failing_scenario.feature:2</span>
-              <h3 onclick="Collapsible_toggle('scenario_0')" style="background: #C40D0D; color: #FFFFFF">
+              <h3 class="failed" onclick="Collapsible_toggle('scenario_0')">
                 <span class="val">Scenario: Simple scenario with failing step</span>
               </h3>
               <ol class="scenario_steps" id="scenario_0">
@@ -390,7 +390,7 @@ Feature: HTML Formatter
             </div>
             <div class="scenario">
               <span class="scenario_file">features/feature_one_failing_scenario_with_skipped_steps.feature:2</span>
-              <h3 onclick="Collapsible_toggle('scenario_0')" style="background: #C40D0D; color: #FFFFFF">
+              <h3 class="failed" onclick="Collapsible_toggle('scenario_0')">
                 <span class="val">Scenario: Simple scenario with failing and skipped steps</span>
               </h3>
               <ol class="scenario_steps" id="scenario_0">
@@ -475,7 +475,7 @@ Feature: HTML Formatter
             </div>
             <div class="scenario">
               <span class="scenario_file">features/feature_three_scenarios.feature:6</span>
-              <h3 onclick="Collapsible_toggle('scenario_1')" style="background: #C40D0D; color: #FFFFFF">
+              <h3 class="failed" onclick="Collapsible_toggle('scenario_1')">
                 <span class="val">Scenario: Failing</span>
               </h3>
               <ol class="scenario_steps" id="scenario_1">
@@ -506,7 +506,7 @@ Feature: HTML Formatter
             </div>
             <div class="scenario">
               <span class="scenario_file">features/feature_three_scenarios.feature:10</span>
-              <h3 onclick="Collapsible_toggle('scenario_2')" style="background: #C40D0D; color: #FFFFFF">
+              <h3 class="failed" onclick="Collapsible_toggle('scenario_2')">
                 <span class="val">Scenario: Failing with skipped steps</span>
               </h3>
               <ol class="scenario_steps" id="scenario_2">
