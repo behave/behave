@@ -154,7 +154,7 @@ right:0;float:right}.behave #summary p,td #summary p,th #summary
 p{margin:0 0 0 2px}.behave #summary #totals,td #summary #totals,th
 #summary #totals{font-size:1.2em} h3.failed,#behave-header.failed{background:
 #c40d0d !important} h3.undefined,#behave-header.undefined{background:#faf834
- !important; color:#000 !important}
+ !important; color:#000 !important} #behave-header.failed a{color:#fff}
 """
 
 
