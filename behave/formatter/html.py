@@ -58,9 +58,12 @@ def ET_tostring(elem, pretty_print=False):
         # -- RECIPE: For pretty-printing w/ xml.etree.ElementTree.
         # SEE: http://pymotw.com/2/xml/etree/ElementTree/create.html
         from xml.dom import minidom
+        import re
         declaration_len = len(minidom.Document().toxml())
         reparsed = minidom.parseString(text)
         text = reparsed.toprettyxml(indent="  ")[declaration_len:]
+        text_re = re.compile(r'>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
+        text = text_re.sub(r'>\g<1></', text)
     return text
 
 class JavascriptLibrary(object):
@@ -325,17 +328,17 @@ class HTMLFormatter(Formatter):
         keyword = ET.SubElement(step_name, 'span', {'class': 'keyword'})
         keyword.text = result.keyword + u' '
 
+        step_text = ET.SubElement(step_name, 'span', {'class': 'step val'})
         if self.arguments:
             text_start = 0
             for argument in self.arguments:
-                step_text = ET.SubElement(step_name, 'span', {'class': 'step val'})
-                step_text.text = result.name[text_start:argument.start]
+                step_part = ET.SubElement(step_text, 'span')
+                step_part.text = result.name[text_start:argument.start]
                 ET.SubElement(step_text, 'b').text = str(argument.value)
                 text_start = argument.end
-            step_text = ET.SubElement(step_name, 'span', {'class': 'step val'})
-            step_text.text = result.name[self.arguments[-1].end:]
+            step_part = ET.SubElement(step_text, 'span')
+            step_part.text = result.name[self.arguments[-1].end:]
         else:
-            step_text = ET.SubElement(step_name, 'span', {'class': 'step val'})
             step_text.text = result.name
 
         step_file = ET.SubElement(step, 'div', {'class': 'step_file'})
