@@ -790,6 +790,10 @@ class Scenario(TagAndStatusStatement, Replayable):
                 runner.run_hook('before_tag', runner.context, tag)
             runner.run_hook('before_scenario', runner.context, self)
 
+            # Re-evaluate because mark_skipped() could have been called in before_scenario
+            run_scenario = self.should_run(runner.config)
+            run_steps = run_scenario and not runner.config.dry_run
+
         runner.setup_capture()
 
         if run_scenario or runner.config.show_skipped:
