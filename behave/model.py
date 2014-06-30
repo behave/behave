@@ -446,10 +446,16 @@ class Feature(TagAndStatusStatement, Replayable):
         # current tags as a set
         runner.context.tags = set(self.tags)
 
+        hooks_called = False
         if not runner.config.dry_run and run_feature:
+            hooks_called = True
             for tag in self.tags:
                 runner.run_hook('before_tag', runner.context, tag)
             runner.run_hook('before_feature', runner.context, self)
+
+            # -- RE-EVALUATE SHOULD-RUN STATE:
+            # Hook may call feature.mark_skipped() to exclude it.
+            run_feature = self.should_run()
 
         if self.background and (run_feature or runner.config.show_skipped):
             for formatter in runner.formatters:
@@ -458,8 +464,6 @@ class Feature(TagAndStatusStatement, Replayable):
         failed_count = 0
         for scenario in self.scenarios:
             # -- OPTIONAL: Select scenario by name (regular expressions).
-            # XXX if (runner.config.name and
-            # XXX         not runner.config.name_re.search(scenario.name)):
             if (runner.config.name and
                      not scenario.should_run_with_name_select(runner.config)):
                 scenario.mark_skipped()
@@ -473,10 +477,10 @@ class Feature(TagAndStatusStatement, Replayable):
                     break
         else:
             if not run_feature:
-                # -- SPECIAL CASE: Feature without scenarios:
+                # -- SPECIAL CASE: Feature without scenarios
                 self._cached_status = 'skipped'
 
-        if run_feature:
+        if hooks_called:
             runner.run_hook('after_feature', runner.context, self)
             for tag in self.tags:
                 runner.run_hook('after_tag', runner.context, tag)
@@ -785,14 +789,16 @@ class Scenario(TagAndStatusStatement, Replayable):
         runner.context.scenario = self
         runner.context.tags = set(self.effective_tags)
 
+        hooks_called = False
         if not runner.config.dry_run and run_scenario:
+            hooks_called = True
             for tag in self.tags:
                 runner.run_hook('before_tag', runner.context, tag)
             runner.run_hook('before_scenario', runner.context, self)
 
-            # Re-evaluate because mark_skipped() could have been called in before_scenario
-            run_scenario = self.should_run(runner.config)
-            run_steps = run_scenario and not runner.config.dry_run
+            # -- RE-EVALUATE SHOULD-RUN STATE:
+            # Hook may call scenario.mark_skipped() to exclude it.
+            run_scenario = run_steps = self.should_run()
 
         runner.setup_capture()
 
@@ -833,7 +839,7 @@ class Scenario(TagAndStatusStatement, Replayable):
             self.stderr = runner.context.stderr_capture.getvalue()
         runner.teardown_capture()
 
-        if not runner.config.dry_run and run_scenario:
+        if hooks_called:
             runner.run_hook('after_scenario', runner.context, self)
             for tag in self.tags:
                 runner.run_hook('after_tag', runner.context, tag)

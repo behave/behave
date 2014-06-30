@@ -27,6 +27,10 @@ NEWS and CHANGES:
 
     * plain: Can now show tags, but currently disabled per default
 
+ENHANCEMENTS:
+
+  * issue #228: Exclude scenario fron run (provided by: jdeppe, jenisys)
+
 FIXED:
 
   * issue #221: Fix some PY2/PY3 incompatibilities (provided by: johbo)

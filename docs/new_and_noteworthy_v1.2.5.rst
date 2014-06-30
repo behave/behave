@@ -1,7 +1,6 @@
 Noteworthy in Version 1.2.5
 ==============================================================================
 
-
 .. index::
     single: ScenarioOutline; name annotation
     pair:   ScenarioOutline; file location
@@ -281,3 +280,67 @@ by selecting it by name (name part or regular expression):
     ...  # features/xxx.feature
       Wow -- @1.1 Araxas  .
       Wow -- @1.2 Araxas  .
+
+
+.. index::
+    single: Scenario; exclude from test run
+    pair:   Scenario; exclude from test run
+    single: Feature; exclude from test run
+    pair:   Feature; exclude from test run
+
+Exclude Feature/Scenario from test run at runtime
+-------------------------------------------------------------------------------
+
+A test writer can now provide decision logic to exclude
+a feature, scenario, scenario outline at runtime from a test run
+by using the following hooks:
+
+  * ``before_feature()`` for a feature
+  * ``before_scenario()`` for a scenario
+
+Example:
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    # EXAMPLE: Exclude scenario from run-set.
+    import sys
+
+    def before_scenario(context, scenario):
+        if should_exclude_scenario(context, scenario):
+            sys.stdout.write("EXCLUDED-BY-USER: Scenario %s\n" % scenario.name)
+            scenario.mark_skipped()     #< Use MARK-SKIPPED to EXCLUDE
+
+    def should_exclude_scenario(context, scenario):
+        current_os = sys.platform
+        use_os_tag = "with_os.%s" % current_os
+        if use_os_tag not in select_os_tags(scenario.effective_tags, use_os_tag):
+            return True
+        return False
+
+    def select_os_tags(tags, default_tag=None):
+        selected_tags = [ for tag in tags if tag.startswith("with_os.") ]
+        if not selected_tags and default_tag:
+            # -- NO OS-TAG: Use default tag.
+            selected_tags.append(default_tag)
+        return selected_tags
+
+.. code-block:: gherkin
+
+    # -- FILE: features/alice.feature
+    Feature:
+
+        @with_os.win32
+        Scenario: Windows-only -- Do something
+          Given I do something on Windows
+          ...
+
+        @with_os.darwin
+        Scenario: MACOSX-only -- Do something else
+          Given I do something on MACOSX
+          ...
+
+.. note::
+
+    The runtime decision logic of the user is applied after other mechanisms
+    that select the run-set of features and scenarios (like tags, ...).
