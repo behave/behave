@@ -798,7 +798,7 @@ class Scenario(TagAndStatusStatement, Replayable):
                     formatter.step(step)
 
         for step in self.all_steps:
-            if run_steps:
+            if run_steps and not self.should_skip:
                 if not step.run(runner):
                     run_steps = False
                     failed = True
