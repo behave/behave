@@ -24,7 +24,7 @@ Feature: Active Tags
 
 
     @setup
-    Scenario:
+    Scenario: Feature Setup
       Given a new working directory
       And a file named "features/steps/pass_steps.py" with:
         """
@@ -35,7 +35,7 @@ Feature: Active Tags
             pass
         """
 
-    Scenario: Use "@only.with_{category}.*" tag schema with one category
+    Scenario: Use "@only.with_{category}" tag schema with one category
       Given a file named "features/example1.active_tags.feature" with:
         """
         Feature:
@@ -60,7 +60,7 @@ Feature: Active Tags
 
         def before_scenario(context, scenario):
             if active_tag_matcher.should_exclude_with(scenario.effective_tags):
-                sys.stdout.write("ACTIVE-DISABLED: Scenario %s\n" % scenario.name)
+                sys.stdout.write("ACTIVE-TAG DISABLED: Scenario %s\n" % scenario.name)
                 scenario.mark_skipped()   #< LATE-EXCLUDE from run-set.
         """
       When I run "behave -f plain -T features/example1.active_tags.feature"
@@ -71,15 +71,15 @@ Feature: Active Tags
         """
       And the command output should contain:
         """
-        ACTIVE-DISABLED: Scenario Bob
+        ACTIVE-TAG DISABLED: Scenario Bob
         """
       But the command output should not contain:
         """
-        ACTIVE-DISABLED: Scenario Alice
+        ACTIVE-TAG DISABLED: Scenario Alice
         """
 
 
-    Scenario: Use "@only.with_{category}.*" tag schema with many categories
+    Scenario: Use "@only.with_{category}" tag schema with many categories
       Given a file named "features/example2.active_tags.feature" with:
         """
         Feature:
@@ -108,7 +108,7 @@ Feature: Active Tags
 
         def before_scenario(context, scenario):
             if active_tag_matcher.should_exclude_with(scenario.effective_tags):
-                sys.stdout.write("ACTIVE-DISABLED: Scenario %s\n" % scenario.name)
+                sys.stdout.write("ACTIVE-TAG DISABLED: Scenario %s\n" % scenario.name)
                 scenario.mark_skipped()   #< LATE-EXCLUDE from run-set.
         """
       When I run "behave -f plain -T features/example2.active_tags.feature"
@@ -119,9 +119,9 @@ Feature: Active Tags
         """
       And the command output should contain:
         """
-        ACTIVE-DISABLED: Scenario Bob
+        ACTIVE-TAG DISABLED: Scenario Bob
         """
       But the command output should not contain:
         """
-        ACTIVE-DISABLED: Scenario Alice
+        ACTIVE-TAG DISABLED: Scenario Alice
         """

@@ -73,13 +73,13 @@ Feature: Exclude Feature from Test Run
             """
             import sys
 
-            def should_exclude_feature(context, feature):
+            def should_exclude_feature(feature):
                 if "Alice" in feature.name:
                     return True
                 return False
 
             def before_feature(context, feature):
-                if should_exclude_feature(context, feature):
+                if should_exclude_feature(feature):
                     sys.stdout.write("EXCLUDED-BY-USER: Feature %s\n" % feature.name)
                     feature.mark_skipped()
             """
