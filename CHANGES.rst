@@ -18,6 +18,7 @@ NEWS and CHANGES:
   - Running:
 
     * ScenarioOutline: Annotates name with row.id, ... to better represent row.
+    * NEW: Active Tags, see docs (`New and Noteworthy`_).
 
   - Model:
 

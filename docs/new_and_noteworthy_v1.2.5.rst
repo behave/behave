@@ -288,59 +288,157 @@ by selecting it by name (name part or regular expression):
     single: Feature; exclude from test run
     pair:   Feature; exclude from test run
 
-Exclude Feature/Scenario from test run at runtime
+
+Exclude Feature/Scenario at Runtime
 -------------------------------------------------------------------------------
 
-A test writer can now provide decision logic to exclude
-a feature, scenario, scenario outline at runtime from a test run
-by using the following hooks:
+A test writer can now provide a runtime decision logic to exclude
+a feature, scenario or scenario outline from a test run
+within the following hooks:
 
   * ``before_feature()`` for a feature
   * ``before_scenario()`` for a scenario
 
-Example:
+by using the ``mark_skipped()`` method before a feature or scenario is run.
 
 .. code-block:: python
 
     # -- FILE: features/environment.py
-    # EXAMPLE: Exclude scenario from run-set.
+    # EXAMPLE: Exclude scenario from run-set at runtime.
     import sys
 
+    def should_exclude_scenario(scenario):
+        # -- RUNTIME DECISION LOGIC: Will exclude
+        #  * Scenario: Alice
+        #  * Scenario: Alice in Wonderland
+        #  * Scenario: Bob and Alice2
+        return "Alice" in scenario.name
+
     def before_scenario(context, scenario):
-        if should_exclude_scenario(context, scenario):
-            sys.stdout.write("EXCLUDED-BY-USER: Scenario %s\n" % scenario.name)
-            scenario.mark_skipped()     #< Use MARK-SKIPPED to EXCLUDE
+        if should_exclude_scenario(scenario):
+            sys.stdout.write("RUNTIME-EXCLUDED: Scenario %s\n" % scenario.name)
+            scenario.mark_skipped()     #< LATE EXCLUDE FROM RUN-SET.
 
-    def should_exclude_scenario(context, scenario):
-        current_os = sys.platform
-        use_os_tag = "with_os.%s" % current_os
-        if use_os_tag not in select_os_tags(scenario.effective_tags, use_os_tag):
-            return True
-        return False
 
-    def select_os_tags(tags, default_tag=None):
-        selected_tags = [ for tag in tags if tag.startswith("with_os.") ]
-        if not selected_tags and default_tag:
-            # -- NO OS-TAG: Use default tag.
-            selected_tags.append(default_tag)
-        return selected_tags
+.. index::
+    single: Active Tags
+    pair:   @only.with_{category}; tag schema
+
+Active Tags: Use "@only.with_{category}"
+-------------------------------------------------------------------------------
+
+The term **active tags** is used for tags where it is decided at runtime
+if a tag is enabled or disabled. The runtime logic excludes then scenarios/features
+with disabled tags.
+
+Assuming you have the feature file where:
+
+  * scenario "Alice" should only run when browser "Chrome" is used
+  * scenario "Bob" should only run when browser "Safari" is used
 
 .. code-block:: gherkin
 
     # -- FILE: features/alice.feature
     Feature:
 
-        @with_os.win32
-        Scenario: Windows-only -- Do something
-          Given I do something on Windows
-          ...
+        @only.with_browser=chrome
+        Scenario: Alice (Run only with Browser Chrome)
+            Given I do something
+            ...
 
-        @with_os.darwin
-        Scenario: MACOSX-only -- Do something else
-          Given I do something on MACOSX
-          ...
+        @only.with_browser=safari
+        Scenario: Bob (Run only with Browser Safari)
+            Given I do something else
+            ...
+
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    # EXAMPLE: ACTIVE TAGS, exclude scenario from run-set at runtime.
+    # NOTE: OnlyWithCategoryTagMatcher implements the runtime decision logic.
+    from behave.tag_matcher import OnlyWithCategoryTagMatcher
+    import os
+    import sys
+
+    active_tag_matcher = None
+
+    def before_all(context):
+        # -- SETUP ACTIVE-TAG MATCHER: For category="browser"
+        global active_tag_matcher
+        current_browser = os.environ.get("BEHAVE_BROWSER", "chrome")
+        active_tag_matcher = OnlyWithCategoryTagMatcher("browser", current_browser)
+
+    def before_scenario(context, scenario):
+        # -- NOTE: scenario.effective_tags := scenario.tags + feature.tags
+        if active_tag_matcher.should_exclude_with(scenario.effective_tags):
+            # -- NOTE: Exclude any with @only.with_browser=<other_browser>
+            sys.stdout.write("ACTIVE-TAG DISABLED: Scenario %s\n" % scenario.name)
+            scenario.mark_skipped()     #< LATE EXCLUDE FROM RUN-SET.
 
 .. note::
 
-    The runtime decision logic of the user is applied after other mechanisms
-    that select the run-set of features and scenarios (like tags, ...).
+    By using this mechanism, the ``@only.with_browser=*`` tags become
+    **active tags**. The runtime decision logic decides when these tags
+    are enabled or disabled (and uses them to exclude their scenario/feature).
+
+
+.. index::
+    single: Active Tags
+    pair:   @only.with_{category}; tag schema
+
+Active Tags: Use "@only.with_{category}" with Many Categories
+-------------------------------------------------------------------------------
+
+When you use many ``categories`` for active tags, it becomes unnecessary
+complicated with the earlier described mechanism. In this case, you should use
+the :class:`~behave.tag_matcher.OnlyWithAnyCategoryTagMatcher`.
+
+Assuming you have scenarios with the following runtime conditions:
+
+  * Run scenario Alice only on Windows OS
+  * Run scenario Bob only with browser Chrome
+
+.. code-block:: gherkin
+
+    # -- FILE: features/alice.feature
+    # TAG SCHEMA: @only.with_{category}={current_value}
+    Feature:
+
+      @only.with_os=win32
+      Scenario: Alice (Run only on Windows)
+        Given I do something
+        ...
+
+      @only.with_browser=chrome
+      Scenario: Bob (Run only with Web-Browser Chrome)
+        Given I do something else
+        ...
+
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    from behave.tag_matcher import OnlyWithAnyCategoryTagMatcher
+    import sys
+
+    # -- MATCHES ANY TAGS: @only.with_{category}={value}
+    # NOTE: category_value_provider provides active values for categories.
+    category_value_provider = {
+        "browser": os.environ.get("BEHAVE_BROWSER", "chrome"),
+        "os":      sys.platform,
+    }
+    active_tag_matcher = OnlyWithAnyCategoryTagMatcher(category_value_provider)
+
+    def before_feature(context, feature):
+        if active_tag_matcher.should_exclude_with(feature.tags):
+            feature.mark_skipped()   #< LATE-EXCLUDE from run-set.
+
+    def before_scenario(context, scenario):
+        if active_tag_matcher.should_exclude_with(scenario.effective_tags):
+            scenario.mark_skipped()   #< LATE-EXCLUDE from run-set.
+
+
+.. note::
+
+    Unknown categories, missing in the ``category_value_provider`` are ignored.
