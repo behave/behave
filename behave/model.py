@@ -1059,17 +1059,22 @@ class ScenarioOutline(Scenario):
         return iter(self.scenarios)
 
     def compute_status(self):
+        if not self.scenarios:
+            return 'passed' # No scenario, report as passed
+        skipped = 0
         for scenario in self.scenarios:
             scenario_status = scenario.status
-            if scenario_status != 'passed':
-                assert scenario_status in ('failed', 'skipped', 'untested')
-                return scenario_status
-            #if scenario.status == 'failed':
-            #    return 'failed'
-            #elif scenario.status == 'skipped':
-            #    return 'skipped'
-            #elif scenario.status == 'untested':
-            #    return 'untested'
+            if scenario_status == 'failed':
+                return 'failed'
+            elif scenario_status == 'skipped':
+                skipped += 1
+            elif scenario_status == 'untested':
+                return 'untested'
+            else:
+                assert scenario_status == 'passed'
+        if skipped == len(self.scenarios):
+            # All scenario have been skipped, report as skipped entirely
+            return 'skipped'
         return 'passed'
 
     @property
