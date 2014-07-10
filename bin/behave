@@ -36,7 +36,7 @@ def behave_main0():
 # MAIN:
 # ----------------------------------------------------------------------------
 if __name__ == "__main__":
-    if os.environ.has_key("COVERAGE_PROCESS_START"):
+    if "COVERAGE_PROCESS_START" in os.environ:
         import coverage
         coverage.process_startup()
     sys.exit(behave_main0())

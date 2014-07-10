@@ -352,7 +352,7 @@ def read_configuration(path):
         action = keywords.get('action', 'store')
         if action == 'store':
             use_raw_value = dest in raw_value_options
-            result[dest] = cfg.get('behave', dest, use_raw_value)
+            result[dest] = cfg.get('behave', dest, raw = use_raw_value)
         elif action in ('store_true', 'store_false'):
             result[dest] = cfg.getboolean('behave', dest)
         elif action == 'append':
