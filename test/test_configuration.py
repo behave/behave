@@ -1,6 +1,7 @@
 from __future__ import with_statement
 import os.path
 import tempfile
+import unittest
 
 from nose.tools import *
 from behave import configuration
@@ -40,4 +41,9 @@ class TestConfiguration(object):
         eq_(d['tags'], ['@foo,~@bar', '@zap'])
         eq_(d['stdout_capture'], False)
         ok_('bogus' not in d)
+
+    def test_settings_derived_from_steps_prefix(self):
+        config = configuration.Configuration(["--steps-prefix=prefixed_"])
+        eq_("prefixed_steps", config.steps_dir)
+        eq_("prefixed_environment.py", config.env_py)
 
