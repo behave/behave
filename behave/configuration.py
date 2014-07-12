@@ -240,6 +240,19 @@ options = [
      dict(action='append', dest='outfiles', metavar='FILE',
           help="Write to specified file instead of stdout.")),
 
+    (('--steps-prefix',),
+     dict(help="""Prepend the given prefix to the name of the steps directory
+                  and environment.py. Example: --steps-prefix=other_ will
+                  look for steps in the other_steps directory for each feature,
+                  and instead of environment.py, other_environment.py will be
+                  used.""",
+          config_help="""Prepend the given prefix to the name of the steps
+                         directory and environment.py. Example:
+                         ``steps-prefix = other_`` will look for steps in the
+                         other_steps directory for each feature, and instead of
+                         environment.py, other_environment.py will be
+                         used.""")),
+
     ((),  # -- CONFIGFILE only
      dict(action='append', dest='paths',
           help="Specify default feature paths, used when none are provided.")),
@@ -445,6 +458,9 @@ class Configuration(object):
         logging_level=logging.INFO,
         summary=True,
         junit=False,
+        steps_prefix='',
+        steps_dir='steps',
+        env_py='environment.py',
         # -- SPECIAL:
         default_format="pretty",   # -- Used when no formatters are configured.
         scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}"
@@ -545,6 +561,9 @@ class Configuration(object):
         unknown_formats = self.collect_unknown_formats()
         if unknown_formats:
             parser.error("format=%s is unknown" % ", ".join(unknown_formats))
+
+        self.steps_dir = self.steps_prefix + 'steps'
+        self.env_py = self.steps_prefix + 'environment.py'
 
         self.setup_model()
 
