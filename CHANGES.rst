@@ -19,6 +19,7 @@ NEWS and CHANGES:
 
     * ScenarioOutline: Annotates name with row.id, ... to better represent row.
     * NEW: Active Tags, see docs (`New and Noteworthy`_).
+    * NEW: Test stages, see docs (`New and Noteworthy`_).
 
   - Model:
 
@@ -30,6 +31,7 @@ NEWS and CHANGES:
 
 ENHANCEMENTS:
 
+  * issue #240: Test Stages with different step implementations (provided by: attilammagyar, jenisys)
   * issue #238: Allow to skip scenario in step function (provided by: hotgloupi, jenisys)
   * issue #228: Exclude scenario fron run (provided by: jdeppe, jenisys)
 

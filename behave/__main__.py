@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import sys
-
 from behave import __version__
 from behave.configuration import Configuration, ConfigError
 from behave.runner import Runner
@@ -50,38 +50,38 @@ you have to use logical AND::
 def main(args=None):
     config = Configuration(args)
     if config.version:
-        print "behave " + __version__
+        print("behave " + __version__)
         return 0
 
     if config.tags_help:
-        print TAG_HELP
+        print(TAG_HELP)
         return 0
 
     if config.lang_list:
         from behave.i18n import languages
         iso_codes = languages.keys()
         iso_codes.sort()
-        print "Languages available:"
+        print("Languages available:")
         for iso_code in iso_codes:
             native = languages[iso_code]['native'][0]
             name = languages[iso_code]['name'][0]
-            print u'%s: %s / %s' % (iso_code, native, name)
+            print(u'%s: %s / %s' % (iso_code, native, name))
         return 0
 
     if config.lang_help:
         from behave.i18n import languages
         if config.lang_help not in languages:
-            print '%s is not a recognised language: try --lang-list' % \
-                    config.lang_help
+            print('%s is not a recognised language: try --lang-list' % \
+                    config.lang_help)
             return 1
         trans = languages[config.lang_help]
-        print u"Translations for %s / %s" % (trans['name'][0],
-              trans['native'][0])
+        print(u"Translations for %s / %s" % (trans['name'][0],
+                                             trans['native'][0]))
         for kw in trans:
             if kw in 'name native'.split():
                 continue
-            print u'%16s: %s' % (kw.title().replace('_', ' '),
-                  u', '.join(w for w in trans[kw] if w != '*'))
+            print(u'%16s: %s' % (kw.title().replace('_', ' '),
+                  u', '.join(w for w in trans[kw] if w != '*')))
         return 0
 
     if not config.format:
@@ -94,13 +94,13 @@ def main(args=None):
             config.format.append(config.default_format)
     if 'help' in config.format:
         from behave.formatter import formatters
-        print "Available formatters:"
+        print("Available formatters:")
         formatters.list_formatters(sys.stdout)
         return 0
 
     if len(config.outputs) > len(config.format):
-        print 'CONFIG-ERROR: More outfiles (%d) than formatters (%d).' % \
-              (len(config.outputs), len(config.format))
+        print('CONFIG-ERROR: More outfiles (%d) than formatters (%d).' % \
+              (len(config.outputs), len(config.format)))
         return 1
 
     failed = True
@@ -108,15 +108,15 @@ def main(args=None):
     try:
         failed = runner.run()
     except ParserError, e:
-        print "ParseError: %s" % e
+        print("ParseError: %s" % e)
     except ConfigError, e:
-        print "ConfigError: %s" % e
+        print("ConfigError: %s" % e)
     except FileNotFoundError, e:
-        print "FileNotFoundError: %s" % e
+        print("FileNotFoundError: %s" % e)
     except InvalidFileLocationError, e:
-        print "InvalidFileLocationError: %s" % e
+        print("InvalidFileLocationError: %s" % e)
     except InvalidFilenameError, e:
-        print "InvalidFilenameError: %s" % e
+        print("InvalidFilenameError: %s" % e)
 
     if config.show_snippets and runner.undefined_steps:
         print_undefined_step_snippets(runner.undefined_steps,

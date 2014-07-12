@@ -418,7 +418,7 @@ def step_I_set_the_environment_variable_to(context, env_name, env_value):
     context.environ[env_name] = env_value
     os.environ[env_name] = env_value
 
-@step(u'I remove the environment variable {env_name}')
+@step(u'I remove the environment variable "{env_name}"')
 def step_I_remove_the_environment_variable(context, env_name):
     if not hasattr(context, "environ"):
         context.environ = {}

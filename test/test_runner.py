@@ -407,8 +407,7 @@ Then a step passes
 def create_mock_config():
     config = Mock()
     config.steps_dir = 'steps'
-    config.env_py = 'environment.py'
-
+    config.environment_file = 'environment.py'
     return config
 
 

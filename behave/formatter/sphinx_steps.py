@@ -12,6 +12,7 @@ TODO:
     http://sphinx-doc.org/
 """
 
+from __future__ import print_function
 from behave.formatter.steps import AbstractStepsFormatter
 from behave.formatter import sphinx_util
 from behave.compat.os_path import relpath
@@ -138,7 +139,7 @@ class SphinxStepsDocumentGenerator(object):
     def ensure_destdir_exists(self):
         assert self.destdir
         if os.path.isfile(self.destdir):
-            print "OOPS: remove %s" % self.destdir
+            print("OOPS: remove %s" % self.destdir)
             os.remove(self.destdir)
         if not os.path.exists(self.destdir):
             os.makedirs(self.destdir)

@@ -1,8 +1,6 @@
 from __future__ import with_statement
 import os.path
 import tempfile
-import unittest
-
 from nose.tools import *
 from behave import configuration
 
@@ -42,8 +40,28 @@ class TestConfiguration(object):
         eq_(d['stdout_capture'], False)
         ok_('bogus' not in d)
 
-    def test_settings_derived_from_steps_prefix(self):
-        config = configuration.Configuration(["--steps-prefix=prefixed_"])
-        eq_("prefixed_steps", config.steps_dir)
-        eq_("prefixed_environment.py", config.env_py)
+    def test_settings_without_stage(self):
+        # -- OR: Setup with default, unnamed stage.
+        assert "BEHAVE_STAGE" not in os.environ
+        config = configuration.Configuration()
+        eq_("steps", config.steps_dir)
+        eq_("environment.py", config.environment_file)
 
+    def test_settings_with_stage(self):
+        config = configuration.Configuration(["--stage=STAGE1"])
+        eq_("STAGE1_steps", config.steps_dir)
+        eq_("STAGE1_environment.py", config.environment_file)
+
+    def test_settings_with_stage_and_envvar(self):
+        os.environ["BEHAVE_STAGE"] = "STAGE2"
+        config = configuration.Configuration(["--stage=STAGE1"])
+        eq_("STAGE1_steps", config.steps_dir)
+        eq_("STAGE1_environment.py", config.environment_file)
+        del os.environ["BEHAVE_STAGE"]
+
+    def test_settings_with_stage_from_envvar(self):
+        os.environ["BEHAVE_STAGE"] = "STAGE2"
+        config = configuration.Configuration()
+        eq_("STAGE2_steps", config.steps_dir)
+        eq_("STAGE2_environment.py", config.environment_file)
+        del os.environ["BEHAVE_STAGE"]

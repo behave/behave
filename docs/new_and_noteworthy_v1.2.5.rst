@@ -461,3 +461,40 @@ Assuming you have scenarios with the following runtime conditions:
 .. note::
 
     Unknown categories, missing in the ``category_value_provider`` are ignored.
+
+
+.. index::
+    single: Stage
+    pair: Stage; Test Stage
+
+Test Stages: Use different Step Implementations for Each Stage
+-------------------------------------------------------------------------------
+
+A test stage allows the user to provide different step and environment
+implementation for each stage. Examples for test stages are:
+
+   * develop (example: development environment with simple database)
+   * product (example: use the real product and its database)
+   * systemint (system integration)
+   * ...
+
+Each test stage may have a different test environment and needs to
+fulfill different testing constraints.
+
+EXAMPLE DIRECTORY LAYOUT (with ``stage=testlab`` and default stage)::
+
+  features/
+    +-- steps/                # -- Step implementations for default stage.
+    |   +-- foo_steps.py
+    +-- testlab_steps/        # -- Step implementations for stage=testlab.
+    |   +-- foo_steps.py
+    +-- environment.py          # -- Environment for default stage.
+    +-- testlab_environment.py  # -- Environment for stage=testlab.
+    +-- *.feature
+
+To use the ``stage=testlab``, you run behave with::
+
+
+    behave --stage=testlab ...
+
+or define the environment variable ``BEHAVE_STAGE=testlab``.

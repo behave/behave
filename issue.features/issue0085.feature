@@ -9,6 +9,7 @@ Feature: Issue #85: AssertionError with nested regex and pretty formatter
     Given a new working directory
     And   a file named "features/steps/regexp_steps.py" with:
         """
+        from __future__ import print_function
         from behave import given, when, then, use_step_matcher
         @given(u'a {re_category} regular expression "{pattern}"')
         def impl(context, re_category, pattern):
@@ -37,19 +38,19 @@ Feature: Issue #85: AssertionError with nested regex and pretty formatter
         @when(u'I try to match "(?P<foo>foo and more)"')
         def impl(context, **kwargs):
             kwargs["regexp_case"] = "simple"
-            print "CASE UNNESTED: {0}".format(kwargs)
+            print("CASE UNNESTED: {0}".format(kwargs))
             store_in_context(context, kwargs)
 
         @when(u'I try to match "(?P<foo>foo(?P<bar>bar)?)"')
         def impl(context, **kwargs):
             kwargs["regexp_case"] = "nested"
-            print "CASE NESTED: {0}".format(kwargs)
+            print("CASE NESTED: {0}".format(kwargs))
             store_in_context(context, kwargs)
 
         @when(u'I try to match "(?P<foo>foo) (?P<bar>bar)?"')
         def impl(context, **kwargs):
             kwargs["regexp_case"] = "optional"
-            print "CASE OPTIONAL: {0}".format(kwargs)
+            print("CASE OPTIONAL: {0}".format(kwargs))
             store_in_context(context, kwargs)
         """
     And   a file named "features/matching.feature" with:
