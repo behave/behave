@@ -4,6 +4,7 @@ from __future__ import with_statement
 import copy
 import difflib
 import itertools
+import logging
 import os.path
 import sys
 import time
@@ -206,6 +207,7 @@ class TagAndStatusStatement(BasicStatement):
         super(TagAndStatusStatement, self).__init__(filename, line, keyword, name)
         self.tags = tags
         self.should_skip = False
+        self.skip_reason = None
         self._cached_status = None
 
     @property
@@ -217,6 +219,7 @@ class TagAndStatusStatement(BasicStatement):
 
     def reset(self):
         self.should_skip = False
+        self.skip_reason = None
         self._cached_status = None
 
     def compute_status(self):
@@ -420,17 +423,34 @@ class Feature(TagAndStatusStatement, Replayable):
         return run_feature
 
     def mark_skipped(self):
+        """Marks this feature (and all its scenarios and steps) as skipped.
+        Note this function may be called before the feature is executed.
         """
-        Marks this feature (and all its scenarios and steps) as skipped.
+        self.skip(require_not_executed=True)
+        assert self.status == "skipped"
+
+    def skip(self, reason=None, require_not_executed=False):
+        """Skip executing this feature or the remaining parts of it.
+        Note that this feature may be already partly executed
+        when this function is called.
+
+        :param reason:  Optional reason why feature should be skipped (as string).
+        :param require_not_executed: Optional, requires that feature is not
+                        executed yet (default: false).
         """
+        if reason:
+            logger = logging.getLogger("behave")
+            logger.warn(u"SKIP FEATURE %s: %s" % (self.name, reason))
+
         self._cached_status = None
         self.should_skip = True
+        self.skip_reason = reason
         for scenario in self.scenarios:
-            scenario.mark_skipped()
-        else:
+            scenario.skip(reason, require_not_executed)
+        if not self.scenarios:
             # -- SPECIAL CASE: Feature without scenarios
             self._cached_status = "skipped"
-        assert self.status == "skipped"
+        assert self.status in self.final_status #< skipped, failed or passed.
 
     def run(self, runner):
         self._cached_status = None
@@ -475,10 +495,10 @@ class Feature(TagAndStatusStatement, Replayable):
                 if runner.config.stop or runner.aborted:
                     # -- FAIL-EARLY: Stop after first failure.
                     break
-        else:
-            if not run_feature:
-                # -- SPECIAL CASE: Feature without scenarios
-                self._cached_status = 'skipped'
+
+        if not self.scenarios and not run_feature:
+            # -- SPECIAL CASE: Feature without scenarios
+            self._cached_status = 'skipped'
 
         if hooks_called:
             runner.run_hook('after_feature', runner.context, self)
@@ -675,7 +695,6 @@ class Scenario(TagAndStatusStatement, Replayable):
         return '<Scenario "%s">' % self.name
 
     def __iter__(self):
-        # XXX return iter(self.all_steps)
         return self.all_steps
 
     def compute_status(self):
@@ -760,18 +779,38 @@ class Scenario(TagAndStatusStatement, Replayable):
         return not config.name or config.name_re.search(self.name)
 
     def mark_skipped(self):
+        """Marks this scenario (and all its steps) as skipped.
+        Note that this method can be called before the scenario is executed.
         """
-        Marks this scenario (and all its steps) as skipped.
+        self.skip(require_not_executed=True)
+        assert self.status == "skipped", "OOPS: scenario.status=%s" % self.status
+
+    def skip(self, reason=None, require_not_executed=False):
+        """Skip from executing this scenario or the remaining parts of it.
+        Note that the scenario may be already partly executed
+        when this method is called.
+
+        :param reason:  Optional reason why it should be skipped (as string).
         """
+        if reason:
+            scenario_type = self.__class__.__name__
+            logger = logging.getLogger("behave")
+            logger.warn(u"SKIP %s %s: %s" % (scenario_type, self.name, reason))
+
         self._cached_status = None
         self.should_skip = True
+        self.skip_reason = reason
         for step in self.all_steps:
-            assert step.status == "untested" or step.status == "skipped"
-            step.status = "skipped"
-        else:
-            # -- SPECIAL CASE: Scenario without steps
-            self._cached_status = "skipped"
-        assert self.status == "skipped", "OOPS: scenario.status=%s" % self.status
+            not_executed = step.status in ("untested", "skipped")
+            if not_executed:
+                step.status = "skipped"
+            else:
+                assert not require_not_executed, \
+                    "REQUIRE NOT-EXECUTED, but step is %s" % step.status
+        if not self.all_steps:
+             # -- SPECIAL CASE: Scenario without steps
+             self._cached_status = "skipped"
+        assert self.status in self.final_status #< skipped, failed or passed
 
     def run(self, runner):
         self._cached_status = None
@@ -808,12 +847,16 @@ class Scenario(TagAndStatusStatement, Replayable):
                     formatter.step(step)
 
         for step in self.all_steps:
-            if run_steps and not self.should_skip:
+            if run_steps:
                 if not step.run(runner):
                     run_steps = False
                     failed = True
                     runner.context._set_root_attribute('failed', True)
                     self._cached_status = 'failed'
+                elif self.should_skip:
+                    # -- CASE: Step skipped remaining scenario.
+                    # assert self.status == "skipped", "Status: %s" % self.status
+                    run_steps = False
             elif failed or dry_run_scenario:
                 # -- SKIP STEPS: After failure/undefined-step occurred.
                 # BUT: Detect all remaining undefined steps.
@@ -826,12 +869,14 @@ class Scenario(TagAndStatusStatement, Replayable):
                     runner.undefined_steps.append(step)
             else:
                 # -- SKIP STEPS: For disabled scenario.
-                # NOTE: Undefined steps are not detected (by intention).
+                # CASES:
+                #   * Undefined steps are not detected (by intention).
+                #   * Step skipped remaining scenario.
                 step.status = 'skipped'
-        else:
-            if not run_scenario:
-                # -- SPECIAL CASE: Scenario without steps.
-                self._cached_status = 'skipped'
+
+        if not run_scenario:
+            # -- SPECIAL CASE: Scenario without steps.
+            self._cached_status = 'skipped'
 
         # Attach the stdout and stderr if generate Junit report
         if runner.config.junit:
@@ -1069,23 +1114,18 @@ class ScenarioOutline(Scenario):
         return iter(self.scenarios)
 
     def compute_status(self):
-        if not self.scenarios:
-            return 'passed' # No scenario, report as passed
-        skipped = 0
+        skipped_count = 0
         for scenario in self.scenarios:
             scenario_status = scenario.status
-            if scenario_status == 'failed':
-                return 'failed'
-            elif scenario_status == 'skipped':
-                skipped += 1
-            elif scenario_status == 'untested':
-                return 'untested'
-            else:
-                assert scenario_status == 'passed'
-        if skipped == len(self.scenarios):
-            # All scenario have been skipped, report as skipped entirely
-            return 'skipped'
-        return 'passed'
+            if scenario_status in ("failed", "untested"):
+                return scenario_status
+            elif scenario_status == "skipped":
+                skipped_count += 1
+        if skipped_count == len(self.scenarios):
+            # -- ALL SKIPPED:
+            return "skipped"
+        # -- OTHERWISE: ALL PASSED
+        return "passed"
 
     @property
     def duration(self):
@@ -1126,18 +1166,34 @@ class ScenarioOutline(Scenario):
         # -- NOTHING SELECTED:
         return False
 
+
     def mark_skipped(self):
+        """Marks this scenario outline (and all its scenarios/steps) as skipped.
+        Note that this method may be called before the scenario outline
+        is executed.
         """
-        Marks this scenario outline (and all its scenarios/steps) as skipped.
+        self.skip(require_not_executed=True)
+        assert self.status == "skipped"
+
+    def skip(self, reason=None, require_not_executed=False):
+        """Skip from executing this scenario outline or its remaining parts.
+        Note that the scenario outline may be already partly executed
+        when this method is called.
+
+        :param reason:  Optional reason why it should be skipped (as string).
         """
+        if reason:
+            logger = logging.getLogger("behave")
+            logger.warn(u"SKIP ScenarioOutline %s: %s" % (self.name, reason))
+
         self._cached_status = None
         self.should_skip = True
         for scenario in self.scenarios:
-            scenario.mark_skipped()
-        else:
+            scenario.skip(reason, require_not_executed)
+        if not self.scenarios:
             # -- SPECIAL CASE: ScenarioOutline without scenarios/examples
             self._cached_status = "skipped"
-        assert self.status == "skipped"
+        assert self.status in self.final_status #< skipped, failed or passed
 
     def run(self, runner):
         self._cached_status = None
@@ -1302,16 +1358,6 @@ class Step(BasicStatement, Replayable):
         .. note:: Deprecating
             Use 'ScenarioOutline.make_step_for_row()' instead.
         """
-        # new_step = copy.deepcopy(self)
-        # for name, value in table_row.items():
-        #     new_step.name = new_step.name.replace("<%s>" % name, value)
-        #     if new_step.text:
-        #         new_step.text = new_step.text.replace("<%s>" % name, value)
-        #     if new_step.table:
-        #         for row in new_step.table:
-        #             for i, cell in enumerate(row.cells):
-        #                 row.cells[i] = cell.replace("<%s>" % name, value)
-        # return new_step
         import warnings
         warnings.warn("Use 'ScenarioOutline.make_step_for_row()' instead",
                       PendingDeprecationWarning, stacklevel=2)
@@ -1321,6 +1367,7 @@ class Step(BasicStatement, Replayable):
     def run(self, runner, quiet=False, capture=True):
         # -- RESET: Run information.
         self.exception = self.exc_traceback = self.error_message = None
+        self.status = 'untested'
 
         # access module var here to allow test mocking to work
         match = step_registry.registry.find_match(self)
@@ -1355,7 +1402,9 @@ class Step(BasicStatement, Replayable):
             runner.context.text = self.text
             runner.context.table = self.table
             match.run(runner.context)
-            self.status = 'passed'
+            if self.status == 'untested':
+                # -- NOTE: Executed step may have skipped scenario and itself.
+                self.status = 'passed'
         except KeyboardInterrupt, e:
             runner.aborted = True
             error = u"ABORTED: By user (KeyboardInterrupt)."
@@ -1731,7 +1780,7 @@ class Text(unicode):
     def assert_equals(self, expected):
         '''Assert that my text is identical to the "expected" text.
 
-        A nice context diff will be displayed if they do not match.'
+        A nice context diff will be displayed if they do not match.
         '''
         if self == expected:
             return True

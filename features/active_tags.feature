@@ -61,7 +61,7 @@ Feature: Active Tags
         def before_scenario(context, scenario):
             if active_tag_matcher.should_exclude_with(scenario.effective_tags):
                 sys.stdout.write("ACTIVE-TAG DISABLED: Scenario %s\n" % scenario.name)
-                scenario.mark_skipped()   #< LATE-EXCLUDE from run-set.
+                scenario.skip()   #< LATE-EXCLUDE from run-set.
         """
       When I run "behave -f plain -T features/example1.active_tags.feature"
       Then it should pass with:
@@ -109,7 +109,7 @@ Feature: Active Tags
         def before_scenario(context, scenario):
             if active_tag_matcher.should_exclude_with(scenario.effective_tags):
                 sys.stdout.write("ACTIVE-TAG DISABLED: Scenario %s\n" % scenario.name)
-                scenario.mark_skipped()   #< LATE-EXCLUDE from run-set.
+                scenario.skip()   #< LATE-EXCLUDE from run-set.
         """
       When I run "behave -f plain -T features/example2.active_tags.feature"
       Then it should pass with:

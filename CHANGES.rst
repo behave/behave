@@ -30,6 +30,7 @@ NEWS and CHANGES:
 
 ENHANCEMENTS:
 
+  * issue #238: Allow to skip scenario in step function (provided by: hotgloupi, jenisys)
   * issue #228: Exclude scenario fron run (provided by: jdeppe, jenisys)
 
 FIXED:

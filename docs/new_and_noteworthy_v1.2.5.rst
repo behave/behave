@@ -298,13 +298,14 @@ within the following hooks:
 
   * ``before_feature()`` for a feature
   * ``before_scenario()`` for a scenario
+  * step implementation (normally only: given step)
 
-by using the ``mark_skipped()`` method before a feature or scenario is run.
+by using the ``skip()`` method before a feature or scenario is run.
 
 .. code-block:: python
 
     # -- FILE: features/environment.py
-    # EXAMPLE: Exclude scenario from run-set at runtime.
+    # EXAMPLE 1: Exclude scenario from run-set at runtime.
     import sys
 
     def should_exclude_scenario(scenario):
@@ -316,8 +317,27 @@ by using the ``mark_skipped()`` method before a feature or scenario is run.
 
     def before_scenario(context, scenario):
         if should_exclude_scenario(scenario):
-            sys.stdout.write("RUNTIME-EXCLUDED: Scenario %s\n" % scenario.name)
-            scenario.mark_skipped()     #< LATE EXCLUDE FROM RUN-SET.
+            scenario.skip()  #< EXCLUDE FROM RUN-SET.
+            # -- OR WITH REASON:
+            # reason = "RUNTIME-EXCLUDED"
+            # scenario.skip(reason)
+
+.. code-block:: python
+
+    # -- FILE: features/steps/my_steps.py
+    # EXAMPLE 2: Skip remaining steps in step implementation.
+    from behave import given
+
+    @given('the assumption "{assumption}" is met')
+    def step_check_assumption(context, assumption):
+        if not is_assumption_valid(assumption):
+            # -- SKIP: Remaining steps in current scenario.
+            context.scenario.skip("OOPS: Assumption not met")
+            return
+
+        # -- NORMAL CASE:
+        ...
+
 
 
 .. index::
@@ -373,8 +393,7 @@ Assuming you have the feature file where:
         # -- NOTE: scenario.effective_tags := scenario.tags + feature.tags
         if active_tag_matcher.should_exclude_with(scenario.effective_tags):
             # -- NOTE: Exclude any with @only.with_browser=<other_browser>
-            sys.stdout.write("ACTIVE-TAG DISABLED: Scenario %s\n" % scenario.name)
-            scenario.mark_skipped()     #< LATE EXCLUDE FROM RUN-SET.
+            scenario.skip(reason="DISABLED ACTIVE-TAG")
 
 .. note::
 
@@ -432,11 +451,11 @@ Assuming you have scenarios with the following runtime conditions:
 
     def before_feature(context, feature):
         if active_tag_matcher.should_exclude_with(feature.tags):
-            feature.mark_skipped()   #< LATE-EXCLUDE from run-set.
+            feature.skip(reason="DISABLED ACTIVE-TAG")
 
     def before_scenario(context, scenario):
         if active_tag_matcher.should_exclude_with(scenario.effective_tags):
-            scenario.mark_skipped()   #< LATE-EXCLUDE from run-set.
+            scenario.skip("DISABLED ACTIVE-TAG")
 
 
 .. note::

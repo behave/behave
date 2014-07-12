@@ -1,3 +1,4 @@
+@feature_request
 @issue
 Feature: Issue #228: Allow before_scenario to determine whether steps should be run.
 
@@ -19,7 +20,7 @@ Feature: Issue #228: Allow before_scenario to determine whether steps should be 
         """
         def before_scenario(context, scenario):
             if scenario.name == 'Skip this scenario':
-                scenario.mark_skipped()
+                scenario.skip()
         """
     And a file named "features/issue228_example.feature" with
         """

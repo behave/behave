@@ -81,7 +81,7 @@ Feature: Exclude Feature from Test Run
             def before_feature(context, feature):
                 if should_exclude_feature(feature):
                     sys.stdout.write("EXCLUDED-BY-USER: Feature %s\n" % feature.name)
-                    feature.mark_skipped()
+                    feature.skip()
             """
         When I run "behave -f plain -T features/"
         Then it should pass with:
