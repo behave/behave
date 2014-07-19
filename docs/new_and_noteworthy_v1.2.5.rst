@@ -498,3 +498,70 @@ To use the ``stage=testlab``, you run behave with::
     behave --stage=testlab ...
 
 or define the environment variable ``BEHAVE_STAGE=testlab``.
+
+
+.. index::
+    single: Userdata
+    pair: Userdata
+
+Userdata
+-------------------------------------------------------------------------------
+
+Userdata is configuration options used by step and environment
+implementations to allow control over their behavior without changing
+the source code. Example use cases include:
+
+   * Passing a URL to the steps to an external resource that is not
+     managed by the testing system. (However, it is recommended to
+     minimize external dependencies used during testing in order to keep
+     the tests fast and prevent them from becoming flaky.)
+   * Turning off cleanup mechanisms implemented in environment hooks,
+     for debugging purposes.
+
+Example: when running the feature below with ``behave --define
+keep_artifacts=yes``, the temporary file will not be removed.
+
+.. code-block:: gherkin
+
+    # -- FILE: features/file.feature
+    Feature:
+      Scenario:
+        When a file is created as a result of a step
+        Then ...
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    import tempfile
+
+    def before_scenario(context, scenario):
+        context.tempfile = tempfile.mkstemp(prefix="my-tempfile-", suffix=".txt")
+
+    def after_scenario(context, scenario):
+        keep_artifacts = getattr(context.config.userdata, "keep_artifacts", "no")
+
+        if keep_artifacts != "yes":
+            os.remove(context.tempfile)
+
+.. code-block:: python
+
+    # -- FILE: features/steps/file.py
+    from behave import when, then
+
+    @when("a file is created as a result of a step")
+    def step_a_file_is_created_as_a_result_of_a_step(context):
+        open(context.tempfile, "w").write("Foo")
+
+Userdata can also be specified in ``behave.ini`` or ``.behaverc``:
+
+.. code-block:: ini
+
+    # -- file:behave.ini
+    [behave]
+    ...
+
+    [userdata]
+    keep_artifacts = yes
+
+When a user defined option is present in both the config file and in
+command-line arguments, then the former is overridden by the latter.
