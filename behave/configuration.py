@@ -69,6 +69,12 @@ options = [
      dict(action='store_true',
           help="Invokes formatters without executing the steps.")),
 
+    (('-D', '--define'),
+     dict(action='append', dest='userdata',
+          help="""Define custom settings available to steps in
+                  context.config.userdata. Example: --define foo=bar
+                  puts the string "bar" into context.config.userdata.foo.""")),
+
     (('-e', '--exclude'),
      dict(metavar="PATTERN", dest='exclude_re',
           help="""Don't run feature files matching regular expression
@@ -454,6 +460,7 @@ class Configuration(object):
         summary=True,
         junit=False,
         stage=None,
+        userdata=[],
         # -- SPECIAL:
         default_format="pretty",   # -- Used when no formatters are configured.
         scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}"
@@ -561,6 +568,7 @@ class Configuration(object):
             # -- USE ENVIRONMENT-VARIABLE, if stage is undefined.
             self.stage = os.environ.get("BEHAVE_STAGE", None)
         self.setup_stage(self.stage)
+        self.setup_userdata()
         self.setup_model()
 
     def collect_unknown_formats(self):
@@ -662,3 +670,9 @@ class Configuration(object):
             environment_file = prefix + environment_file
         self.steps_dir = steps_dir
         self.environment_file = environment_file
+
+    def setup_userdata(self):
+        class UserData(object):
+            keep_artifacts = "yes"
+
+        self.userdata = UserData()
