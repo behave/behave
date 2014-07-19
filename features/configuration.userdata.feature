@@ -37,3 +37,31 @@ Feature: Define custom settings to be used by step definitions
            1 scenario passed, 0 failed, 0 skipped
            2 steps passed, 0 failed, 0 skipped, 0 undefined
            """
+
+    Scenario: Passing custom settings through behave.ini
+      Given a file named "behave.ini" with:
+            """
+            [userdata]
+            keep_artifacts = yes
+            """
+       When I run "behave -f plain"
+       Then it should pass with:
+            """
+            1 feature passed, 0 failed, 0 skipped
+            1 scenario passed, 0 failed, 0 skipped
+            2 steps passed, 0 failed, 0 skipped, 0 undefined
+            """
+
+    Scenario: Command-line userdata overrides config file
+      Given a file named "behave.ini" with:
+            """
+            [userdata]
+            keep_artifacts = no
+            """
+       When I run "behave -f plain --define keep_artifacts=yes"
+       Then it should pass with:
+            """
+            1 feature passed, 0 failed, 0 skipped
+            1 scenario passed, 0 failed, 0 skipped
+            2 steps passed, 0 failed, 0 skipped, 0 undefined
+            """

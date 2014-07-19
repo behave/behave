@@ -398,6 +398,11 @@ def read_configuration(path):
             result[paths_name] = \
                 [os.path.normpath(os.path.join(cfgdir, p)) for p in paths]
 
+    if 'userdata' in cfg.sections():
+        result['userdata'] = cfg.items('userdata')
+    else:
+        result['userdata'] = []
+
     return result
 
 
@@ -676,6 +681,12 @@ class Configuration(object):
 class UserData(object):
     def __init__(self, userdata):
         for entry in userdata:
-            parts = entry.split("=", 1)
-            name, value = parts[0], parts[1] if len(parts) > 1 else ""
+            name, value = self.parse_entry(entry)
             self.__setattr__(name, value)
+
+    def parse_entry(self, entry):
+        if isinstance(entry, str):
+            parts = entry.split("=", 1)
+            return parts[0], parts[1] if len(parts) > 1 else ""
+
+        return entry

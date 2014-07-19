@@ -17,6 +17,9 @@ format=pretty
        tag-counter
 stdout_capture=no
 bogus=spam
+
+[userdata]
+foo = bar
 '''
 
 class TestConfiguration(object):
@@ -40,6 +43,7 @@ class TestConfiguration(object):
         eq_(d['tags'], ['@foo,~@bar', '@zap'])
         eq_(d['stdout_capture'], False)
         ok_('bogus' not in d)
+        eq_(d['userdata'], [('foo', 'bar')])
 
     def test_settings_without_stage(self):
         # -- OR: Setup with default, unnamed stage.
@@ -85,3 +89,11 @@ class TestUserData(unittest.TestCase):
         userdata = configuration.UserData(["foo", "bar="])
         self.assertEqual("", userdata.foo)
         self.assertEqual("", userdata.bar)
+
+    def test_create_from_config_file_section_mixed_w_eq_separated_entries(self):
+        userdata = configuration.UserData([
+            ("foo", "foo_value"),
+            "bar=bar_value",
+        ])
+        self.assertEqual("foo_value", userdata.foo)
+        self.assertEqual("bar_value", userdata.bar)
