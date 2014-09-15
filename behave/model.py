@@ -1432,17 +1432,20 @@ class Step(BasicStatement, Replayable):
             if capture:
                 # -- CAPTURE-ONLY: Non-nested step failures.
                 if runner.config.stdout_capture:
-                    output = runner.stdout_capture.getvalue()
+                    output = unicode(runner.stdout_capture.getvalue(),
+                                     'unicode-escape')
                     if output:
-                        error += '\nCaptured stdout:\n' + output
+                        error += u'\nCaptured stdout:\n' + output
                 if runner.config.stderr_capture:
-                    output = runner.stderr_capture.getvalue()
+                    output = unicode(runner.stderr_capture.getvalue(),
+                                     'unicode-escape')
                     if output:
-                        error += '\nCaptured stderr:\n' + output
+                        error += u'\nCaptured stderr:\n' + output
                 if runner.config.log_capture:
-                    output = runner.log_capture.getvalue()
+                    output = unicode(runner.log_capture.getvalue(),
+                                     'unicode-escape')
                     if output:
-                        error += '\nCaptured logging:\n' + output
+                        error += u'\nCaptured logging:\n' + output
             self.error_message = error
             keep_going = False
 
