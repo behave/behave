@@ -2,6 +2,7 @@
 
 import os.path
 import codecs
+import sys
 from xml.etree import ElementTree
 from behave.reporter.base import Reporter
 from behave.model import Scenario, ScenarioOutline, Step
@@ -28,16 +29,35 @@ class ElementTreeWithCDATA(ElementTree.ElementTree):
             ElementTree.ElementTree._write(self, file, node, encoding,
                                            namespaces)
 
-
 if hasattr(ElementTree, '_serialize'):
-    def _serialize_xml(write, elem, encoding, qnames, namespaces,
-                       orig=ElementTree._serialize_xml):
+
+    def _serialize_xml2(write, elem, encoding, qnames, namespaces,
+                        orig=ElementTree._serialize_xml):
         if elem.tag == '![CDATA[':
             write("\n<%s%s]]>\n" % (elem.tag, elem.text.encode(encoding)))
             return
         return orig(write, elem, encoding, qnames, namespaces)
 
-    ElementTree._serialize_xml = ElementTree._serialize['xml'] = _serialize_xml
+    def _serialize_xml3(write, elem, qnames, namespaces,
+                        short_empty_elements=None,
+                        orig=ElementTree._serialize_xml):
+        if elem.tag == '![CDATA[':
+            write("\n<{tag}{text}]]>\n".format(
+                tag=elem.tag, text=elem.text))
+            return
+        if short_empty_elements:
+            # python >=3.3
+            return orig(write, elem, qnames, namespaces, short_empty_elements)
+        else:
+            # python <3.3
+            return orig(write, elem, qnames, namespaces)
+
+    if sys.version_info.major == 3:
+        ElementTree._serialize_xml = \
+            ElementTree._serialize['xml'] = _serialize_xml3
+    elif sys.version_info.major == 2:
+        ElementTree._serialize_xml = \
+            ElementTree._serialize['xml'] = _serialize_xml2
 
 
 class FeatureReportData(object):
@@ -119,7 +139,7 @@ class JUnitReporter(Reporter):
 
         tree = ElementTreeWithCDATA(suite)
         report_filename = os.path.join(self.config.junit_directory, filename)
-        tree.write(codecs.open(report_filename, 'w'), 'UTF-8')
+        tree.write(codecs.open(report_filename, 'wb'), 'UTF-8')
 
     # -- MORE:
     @staticmethod

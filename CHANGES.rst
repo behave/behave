@@ -37,6 +37,8 @@ ENHANCEMENTS:
 
 FIXED:
 
+  * issue #257: Fix JUnitReporter (XML) for Python3 (provided by: actionless)
+  * issue #249: Fix a number of docstring problems (provided by: masak)
   * issue #253: Various problems in PrettyFormatter.exception()
   * issue #221: Fix some PY2/PY3 incompatibilities (provided by: johbo)
   * issue #216: Using --wip option does not disable ANSI escape sequences (coloring).
