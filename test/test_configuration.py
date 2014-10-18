@@ -1,4 +1,5 @@
 from __future__ import with_statement
+import unittest
 import os.path
 import tempfile
 from nose.tools import *
@@ -16,6 +17,9 @@ format=pretty
        tag-counter
 stdout_capture=no
 bogus=spam
+
+[userdata]
+foo = bar
 '''
 
 class TestConfiguration(object):
@@ -39,6 +43,7 @@ class TestConfiguration(object):
         eq_(d['tags'], ['@foo,~@bar', '@zap'])
         eq_(d['stdout_capture'], False)
         ok_('bogus' not in d)
+        eq_(d['userdata'], [('foo', 'bar')])
 
     def test_settings_without_stage(self):
         # -- OR: Setup with default, unnamed stage.
@@ -65,3 +70,30 @@ class TestConfiguration(object):
         eq_("STAGE2_steps", config.steps_dir)
         eq_("STAGE2_environment.py", config.environment_file)
         del os.environ["BEHAVE_STAGE"]
+
+    def test_userdata_is_appended(self):
+        config = configuration.Configuration([
+            "--define", "foo=foo_value",
+            "--define=bar=bar_value",
+        ])
+        eq_("foo_value", config.userdata.foo)
+        eq_("bar_value", config.userdata.bar)
+
+
+class TestUserData(unittest.TestCase):
+    def test_create_from_list_of_eq_separated_entries(self):
+        userdata = configuration.UserData(["foo=bar=baz"])
+        self.assertEqual("bar=baz", userdata.foo)
+
+    def test_right_side_of_eq_separated_entry_may_be_empty(self):
+        userdata = configuration.UserData(["foo", "bar="])
+        self.assertEqual("", userdata.foo)
+        self.assertEqual("", userdata.bar)
+
+    def test_create_from_config_file_section_mixed_w_eq_separated_entries(self):
+        userdata = configuration.UserData([
+            ("foo", "foo_value"),
+            "bar=bar_value",
+        ])
+        self.assertEqual("foo_value", userdata.foo)
+        self.assertEqual("bar_value", userdata.bar)
