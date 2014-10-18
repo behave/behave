@@ -808,8 +808,8 @@ class Scenario(TagAndStatusStatement, Replayable):
                 assert not require_not_executed, \
                     "REQUIRE NOT-EXECUTED, but step is %s" % step.status
         if not self.all_steps:
-             # -- SPECIAL CASE: Scenario without steps
-             self._cached_status = "skipped"
+            # -- SPECIAL CASE: Scenario without steps
+            self._cached_status = "skipped"
         assert self.status in self.final_status #< skipped, failed or passed
 
     def run(self, runner):
