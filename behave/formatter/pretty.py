@@ -221,10 +221,11 @@ class PrettyFormatter(Formatter):
     #     self.stream.write(text)
     #     self.stream.flush()
 
-    def exception(self, exception):
-        exception_text = HERP
-        self.stream.write(self.failed(exception_text) + '\n')
-        self.stream.flush()
+    # -- UNUSED:
+    # def exception(self, exception):
+    #     exception_text = str(exception)
+    #     self.stream.write(self.format("failed").text(exception_text) + "\n")
+    #     self.stream.flush()
 
     def color(self, cell, statuses, color):
         if statuses:
