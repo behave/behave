@@ -540,12 +540,12 @@ class Background(BasicStatement, Replayable):
 
     .. attribute:: filename
 
-       The file name (or "<string>") of the *feature file* where the scenario
+       The file name (or "<string>") of the *feature file* where the background
        was found.
 
     .. attribute:: line
 
-       The line number of the *feature file* where the scenario was found.
+       The line number of the *feature file* where the background was found.
 
     .. _`background`: gherkin.html#backgrounds
     '''
@@ -1231,12 +1231,12 @@ class Examples(BasicStatement, Replayable):
 
     .. attribute:: filename
 
-       The file name (or "<string>") of the *feature file* where the scenario
+       The file name (or "<string>") of the *feature file* where the example
        was found.
 
     .. attribute:: line
 
-       The line number of the *feature file* where the scenario was found.
+       The line number of the *feature file* where the example was found.
 
     .. _`examples`: gherkin.html#examples
     '''
