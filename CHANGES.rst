@@ -34,6 +34,7 @@ ENHANCEMENTS:
   * issue #240: Test Stages with different step implementations (provided by: attilammagyar, jenisys)
   * issue #238: Allow to skip scenario in step function (provided by: hotgloupi, jenisys)
   * issue #228: Exclude scenario fron run (provided by: jdeppe, jenisys)
+  * issue #242: JUnitReporter can show scenario tags (provided by: rigomes)
 
 FIXED:
 

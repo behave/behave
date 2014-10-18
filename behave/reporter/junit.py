@@ -90,7 +90,8 @@ class JUnitReporter(Reporter):
     """
     show_multiline = True
     show_timings   = True     # -- Show step timings.
-
+    show_tags      = True
+    
     def make_feature_filename(self, feature):
         filename = None
         for path in self.config.paths:
@@ -186,6 +187,13 @@ class JUnitReporter(Reporter):
         return text
 
     @classmethod
+    def describe_tags(cls, tags):
+        text = u''
+        if tags:
+            text = u'@'+ u' @'.join(tags)
+        return text
+
+    @classmethod
     def describe_scenario(cls, scenario):
         """
         Describe the scenario and the test status.
@@ -195,8 +203,8 @@ class JUnitReporter(Reporter):
         :return: Textual description of the scenario.
         """
         header_line = u'\n@scenario.begin\n'
-        tags = scenario.tags
-        header_line += '\n  %s\n' % ' '.join(['@%s' % tag for tag in tags])
+        if cls.show_tags and scenario.tags:
+            header_line += '\n  %s\n' % cls.describe_tags(scenario.tags)
         header_line += '  %s: %s\n' % (scenario.keyword, scenario.name)
         footer_line = u'\n@scenario.end\n' + u'-' * 80 + '\n'
         text = u''
