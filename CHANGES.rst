@@ -37,6 +37,7 @@ ENHANCEMENTS:
 
 FIXED:
 
+  * issue #253: Various problems in PrettyFormatter.exception()
   * issue #221: Fix some PY2/PY3 incompatibilities (provided by: johbo)
   * issue #216: Using --wip option does not disable ANSI escape sequences (coloring).
 
