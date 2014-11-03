@@ -83,9 +83,9 @@ line:
    tests/steps/website.py
    tests/steps/utils.py
 
-  Note that with this approach, if you want to execute *behave* without
-  having to explicitly specify the directory (first option) you can set
-  ``paths=tests/features`` in your `configuration file`_.
+  Note that with this approach, if you want to execute *behave* without having
+  to explicitly specify the directory (first option) you can set the ``paths``
+  setting in your `configuration file`_ (e.g. ``paths=tests/features``).
 
 If you're having trouble setting things up and want to see what *behave* is
 doing in attempting to find your features use the "-v" (verbose)
