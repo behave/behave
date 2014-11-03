@@ -401,7 +401,7 @@ def load_configuration(defaults, verbose=False):
         paths.append(os.path.join(os.environ['APPDATA']))
 
     for path in paths:
-        for filename in 'behave.ini .behaverc'.split():
+        for filename in ('behave.ini', '.behaverc', 'setup.cfg'):
             filename = os.path.join(path, filename)
             if os.path.isfile(filename):
                 if verbose:
