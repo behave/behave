@@ -83,10 +83,15 @@ line:
    tests/steps/website.py
    tests/steps/utils.py
 
+  Note that with this approach, if you want to execute *behave* without
+  having to explicitly specify the directory (first option) you can set
+  ``paths=tests/features`` in your `configuration file`_.
+
 If you're having trouble setting things up and want to see what *behave* is
 doing in attempting to find your features use the "-v" (verbose)
 command-line switch.
 
+.. _`configuration file`: behave.html#configuration-files
 
 .. _chapter.gherkin:
 

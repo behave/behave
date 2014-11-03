@@ -188,7 +188,7 @@ Configuration files for *behave* are called either ".behaverc" or
 If you are wondering where *behave* is getting its configuration defaults
 from you can use the "-v" command-line argument and it'll tell you.
 
-Confuguration files **must** start with the label "[behave]" and are
+Configuration files **must** start with the label "[behave]" and are
 formatted in the Windows INI style, for example:
 
 .. code-block:: ini
