@@ -634,7 +634,7 @@ class Configuration(object):
 
     def setup_model(self):
         if self.scenario_outline_annotation_schema:
-            name_schema = unicode(self.scenario_outline_annotation_schema)
+            name_schema = six.text_type(self.scenario_outline_annotation_schema)
             ScenarioOutline.annotation_schema = name_schema.strip()
 
     def setup_stage(self, stage=None):
