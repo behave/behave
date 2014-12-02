@@ -55,8 +55,13 @@ Feature: Undefined Step
       And the command output should contain:
         """
         You can implement step definitions for undefined steps with these snippets:
-
-        @when(u'an undefined step is used')
+        """
+      And the command output should contain:
+        """
+        'an undefined step is used'
+        """
+      And the command output should contain:
+        """
         def step_impl(context):
             assert False
         """
