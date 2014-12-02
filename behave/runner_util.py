@@ -11,6 +11,7 @@ import os.path
 import re
 import sys
 import types
+import six
 
 
 # -----------------------------------------------------------------------------
@@ -351,7 +352,7 @@ def make_undefined_step_snippet(step, language=None):
     :param language: i18n language, optionally needed for step text parsing.
     :return: Undefined-step snippet (as string).
     """
-    if isinstance(step, types.StringTypes):
+    if isinstance(step, six.string_types):
         step_text = step
         steps = parser.parse_steps(step_text, language=language)
         step = steps[0]

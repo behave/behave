@@ -19,7 +19,7 @@ import six
 import subprocess
 import sys
 import shlex
-import codecs
+
 
 # HERE = os.path.dirname(__file__)
 # TOP  = os.path.join(HERE, "..")
@@ -79,14 +79,16 @@ class Command(object):
         Make a subprocess call, collect its output and returncode.
         Returns CommandResult instance as ValueObject.
         """
-        assert isinstance(command, str)
+        assert isinstance(command, six.string_types)
         command_result = CommandResult()
         command_result.command = command
 
         # -- BUILD COMMAND ARGS:
-        if isinstance(command, bytes):
-            #command = codecs.encode(command)
-            command = command.encode()
+        if six.PY2 and isinstance(command, six.text_type):
+            import codecs
+            command = codecs.encode(command)
+        elif six.PY3 and isinstance(command, six.text_type):
+            command = command.encode('utf-8').decode('unicode_escape')
         cmdargs = shlex.split(command)
 
         # -- TRANSFORM COMMAND (optional)

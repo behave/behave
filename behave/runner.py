@@ -3,7 +3,7 @@
 from __future__ import with_statement, print_function
 import contextlib
 import os.path
-import StringIO
+import six
 import sys
 import traceback
 import warnings
@@ -265,7 +265,8 @@ class Context(object):
 
         Returns boolean False if the steps are not parseable, True otherwise.
         '''
-        assert isinstance(steps_text, unicode), "Steps must be unicode."
+        assert isinstance(steps_text, six.text_type), "Steps must be unicode " \
+                                                      "in py2 or str in py3."
         if not self.feature:
             raise ValueError('execute_steps() called outside of feature')
 
@@ -411,11 +412,11 @@ class ModelRunner(object):
             self.context = Context(self)
 
         if self.config.stdout_capture:
-            self.stdout_capture = StringIO.StringIO()
+            self.stdout_capture = six.StringIO()
             self.context.stdout_capture = self.stdout_capture
 
         if self.config.stderr_capture:
-            self.stderr_capture = StringIO.StringIO()
+            self.stderr_capture = six.StringIO()
             self.context.stderr_capture = self.stderr_capture
 
         if self.config.log_capture:

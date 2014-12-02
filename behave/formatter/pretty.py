@@ -5,6 +5,7 @@ from behave.formatter.base import Formatter
 from behave.model_describe import escape_cell, escape_triple_quotes
 from behave.textutil import indent
 import sys
+from six import text_type as unicode
 
 
 # -----------------------------------------------------------------------------

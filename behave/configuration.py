@@ -7,6 +7,7 @@ import sys
 import argparse
 import logging
 import shlex
+import six
 from six.moves import configparser
 
 from behave.model import FileLocation, ScenarioOutline
@@ -476,9 +477,11 @@ class Configuration(object):
         """
         if command_args is None:
             command_args = sys.argv[1:]
-        elif isinstance(command_args, basestring):
-            if isinstance(command_args, unicode):
+        elif isinstance(command_args, six.string_types):
+            if six.PY2 and isinstance(command_args, six.text_type):
                 command_args = command_args.encode("utf-8")
+            elif six.PY3 and isinstance(command_args, six.binary_type):
+                command_args = command_args.decode("utf-8")
             command_args = shlex.split(command_args)
         if verbose is None:
             # -- AUTO-DISCOVER: Verbose mode from command-line args.

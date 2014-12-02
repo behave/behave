@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import with_statement
+from __future__ import with_statement, unicode_literals
 import copy
 import difflib
 import itertools
 import logging
 import os.path
+import six
+from six import text_type as unicode
 import sys
 import time
 import traceback
@@ -1405,12 +1407,12 @@ class Step(BasicStatement, Replayable):
             if self.status == 'untested':
                 # -- NOTE: Executed step may have skipped scenario and itself.
                 self.status = 'passed'
-        except KeyboardInterrupt, e:
+        except KeyboardInterrupt as e:
             runner.aborted = True
             error = u"ABORTED: By user (KeyboardInterrupt)."
             self.status = 'failed'
             self.store_exception_context(e)
-        except AssertionError, e:
+        except AssertionError as e:
             self.status = 'failed'
             self.store_exception_context(e)
             if e.args:
@@ -1418,7 +1420,7 @@ class Step(BasicStatement, Replayable):
             else:
                 # no assertion text; format the exception
                 error = traceback.format_exc()
-        except Exception, e:
+        except Exception as e:
             self.status = 'failed'
             error = traceback.format_exc()
             self.store_exception_context(e)
@@ -1854,8 +1856,11 @@ class Match(Replayable):
         :param step_function: Function whose location should be determined.
         :return: Step function location as string.
         '''
-        filename = relpath(step_function.func_code.co_filename, os.getcwd())
-        line_number = step_function.func_code.co_firstlineno
+        filename = relpath(
+            six.get_function_code(step_function).co_filename,
+            os.getcwd())
+        line_number = six.get_function_code(
+            step_function).co_firstlineno
         return FileLocation(filename, line_number)
 
 
