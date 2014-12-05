@@ -36,7 +36,7 @@ for fixed, keywords in configuration.options:
     text = textwrap.fill(text, 70, initial_indent='   ', subsequent_indent='   ')
     if fixed:
         # -- COMMAND-LINE OPTIONS (CONFIGFILE only have empty fixed):
-        cmdline.append('**%s**\n%s' % (', '.join(fixed), text))
+        cmdline.append('.. option:: %s\n\n%s\n' % (', '.join(fixed), text))
 
     if skip or dest in 'tags_help lang_list lang_help version'.split():
         continue
