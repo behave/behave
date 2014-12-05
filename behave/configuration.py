@@ -106,6 +106,13 @@ options = [
                   formatter is used. Pass '--format help' to get a
                   list of available formatters.""")),
 
+    (('--catalog',),
+     dict(action='store_true', dest='catalog',
+          help="""Show a catalog of all available step definitions in a
+                  form as they appear in feature file, along with their
+                  documentation.
+                  This is a shortcut for '--dry-run --no-summary --format steps.catalog'""")),
+
     ((),  # -- CONFIGFILE only
      dict(dest='scenario_outline_annotation_schema',
           help="""Specify name annotation schema for scenario outline
@@ -454,6 +461,7 @@ class Configuration(object):
         summary=True,
         junit=False,
         stage=None,
+        catalog=False,
         # -- SPECIAL:
         default_format="pretty",   # -- Used when no formatters are configured.
         scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}"
@@ -515,6 +523,11 @@ class Configuration(object):
                     self.outputs.append(StreamOpener(outfile))
                 else:
                     self.outputs.append(StreamOpener(stream=sys.stdout))
+    
+        if self.catalog:
+            self.dry_run = True
+            self.summary = False
+            self.format = ['steps.catalog']
 
         if self.wip:
             # Only run scenarios tagged with "wip".
