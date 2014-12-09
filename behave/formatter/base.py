@@ -2,6 +2,7 @@
 
 import codecs
 import os.path
+import six
 import sys
 
 
@@ -37,6 +38,10 @@ class StreamOpener(object):
     def ensure_stream_with_encoder(cls, stream, encoding=None):
         if not encoding:
             encoding = cls.default_encoding
+
+        if six.PY3:
+            return stream
+
         if hasattr(stream, "stream"):
             return stream    # Already wrapped with a codecs.StreamWriter
         elif sys.version_info[0] < 3:
