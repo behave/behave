@@ -129,7 +129,16 @@ class FileLocation(object):
                 return False
             else:
                 assert self.filename == other.filename
-                return self.line < other.line
+
+                if self.line is None and other.line is None:
+                    return False
+                elif self.line is None:
+                    return True
+                elif other.line is None:
+                    return False
+                else:
+                    return self.line < other.line
+
         elif isinstance(other, six.string_types):
             return self.filename < other
         else:
