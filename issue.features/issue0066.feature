@@ -10,12 +10,13 @@ Feature: Issue #66: context.text and context.table are not cleared
       """
       from behave import given, when, then
       from hamcrest import assert_that, equal_to, is_not, is_, none
+      import six
 
       @given(u'a step with multiline text')
       def step(context):
           assert context.text is not None
           assert context.text, "Ensure non-empty"
-          assert isinstance(context.text, basestring)
+          assert isinstance(context.text, six.string_types)
 
       @given(u'a step with a table')
       def step(context):
