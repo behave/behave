@@ -13,8 +13,8 @@ Feature: User-specific Configuration Data (userdata)
   |   * context.config.userdata (as dict)
   |
   | SUPPORTED DATA TYPES (from "behave.ini" and command-line):
-  |   * string (default)
-  |   * bool (= true, if definition has no value)
+  |   * string
+  |   * bool-like (= "true", if definition has no value)
 
   @setup
   Scenario: Feature Setup

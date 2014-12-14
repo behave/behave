@@ -60,7 +60,7 @@ class TestUserData(TestCase):
         assert isinstance(userdata, dict)
         self.assertEqual(value1, "Foo")
         self.assertEqual(value2, 42)
-        self.assertIs(value3, Unknown)
+        assert value3 is Unknown
 
     def test_getas__with_known_param_and_valid_text(self):
         userdata = UserData(param="42")
@@ -99,7 +99,7 @@ class TestUserData(TestCase):
         assert "param" not in userdata, "ENSURE: unknown param"
 
         value = userdata.getas(int, "param")
-        self.assertIs(value, None)
+        assert value is None
 
     def test_getas__with_unknown_param_returns_default_value(self):
         userdata = UserData()
