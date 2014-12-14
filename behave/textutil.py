@@ -3,6 +3,8 @@
 Provides some utility functions related to text processing.
 """
 
+from six import string_types
+
 
 def make_indentation(indent_size, part=u" "):
     """
@@ -21,7 +23,7 @@ def indent(text, prefix):
     """
     lines = text
     newline = u""
-    if isinstance(text, basestring):
+    if isinstance(text, string_types):
         lines = text.splitlines(True)
     elif lines and not lines[0].endswith("\n"):
         # -- TEXT LINES: Without trailing new-line.

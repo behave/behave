@@ -9,6 +9,7 @@ import os.path
 import sys
 import time
 import traceback
+from six import string_types
 from behave import step_registry
 from behave.compat.os_path import relpath
 
@@ -72,7 +73,7 @@ class FileLocation(object):
         self.line = line
 
     # def __new__(cls, filename, line=None):
-    #     assert isinstance(filename, basestring)
+    #     assert isinstance(filename, string_types)
     #     obj = unicode.__new__(cls, filename)
     #     obj.line = line
     #     obj.__filename = filename
@@ -110,7 +111,7 @@ class FileLocation(object):
     def __eq__(self, other):
         if isinstance(other, FileLocation):
             return self.filename == other.filename and self.line == other.line
-        elif isinstance(other, basestring):
+        elif isinstance(other, string_types):
             return self.filename == other
         else:
             raise AttributeError("Cannot compare FileLocation with %s:%s" % \
@@ -128,7 +129,7 @@ class FileLocation(object):
             else:
                 assert self.filename == other.filename
                 return self.line < other.line
-        elif isinstance(other, basestring):
+        elif isinstance(other, string_types):
             return self.filename < other
         else:
             raise AttributeError("Cannot compare FileLocation with %s:%s" % \

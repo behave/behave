@@ -498,3 +498,144 @@ To use the ``stage=testlab``, you run behave with::
     behave --stage=testlab ...
 
 or define the environment variable ``BEHAVE_STAGE=testlab``.
+
+
+.. index::
+    single: userdata
+    pair: userdata; user-specific configuration data
+
+User-specific Configuration Data (userdata)
+-------------------------------------------------------------------------------
+
+The userdata feature allows a user to provide its own configuration data:
+
+  * as command-line option ``-D name=value`` or ``--define name=value``
+  * with the behave configuration file in section ``behave.userdata``
+  * load more configuration data in ``before_all()`` hook
+
+.. code-block:: ini
+
+    # -- FILE: behave.ini
+    [behave.userdata]
+    browser = firefox
+    server  = asterix
+
+.. note::
+
+    Command-line definitions override userdata definitions in the
+    configuration file.
+
+    If the command-line contains no value part, like in ``-D NEEDS_CLEANUP``,
+    its value is ``"true"``.
+
+
+The userdata settings can be accessed as dictionary in hooks and steps
+by using the ``context.config.userdata`` dictionary.
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    def before_all(context):
+        browser = context.config.userdata.get("browser", "chrome")
+        setup_browser(browser)
+
+.. code-block:: python
+
+    # -- FILE: features/steps/userdata_example_steps.py
+    @given('I setup the system with the user-specified server"')
+    def step_setup_system_with_userdata_server(context):
+        server_host = context.config.userdata.get("server", "beatrix")
+        context.xxx_client = xxx_protocol.connect(server_host)
+
+.. code-block:: sh
+
+    # -- ADAPT TEST-RUN: With user-specific data settings.
+    # SHELL:
+    behave -D server=obelix features/
+    behave --define server=obelix features/
+
+Other examples for user-specific data are:
+
+   * Passing a URL to an external resource that should be used in the tests
+
+   * Turning off cleanup mechanisms implemented in environment hooks,
+     for debugging purposes.
+
+
+Userdata and Type Converters
+-------------------------------------------------------------------------------
+
+The userdata object provides basic support for "type conversion on demand", 
+similar to the :mod:`configparser` module. The following type conversion
+methods are provided:
+
+  * ``Userdata.getint(name, default=0)``
+  * ``Userdata.getfloat(name, default=0.0)``
+  * ``Userdata.getbool(name, default=False)``
+  * ``Userdata.getas(convert_func, name, default=None, ...)``
+
+Type conversion may raise a ``ValueError`` exception if the conversion fails.
+
+The following example shows how the type converter functions for integers are used:
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    def before_all(context):
+        userdata = context.config.userdata
+        server_name  = userdata.get("server", "beatrix")
+        int_number   = userdata.getint("port", 80)
+        bool_answer  = userdata.getbool("are_you_sure")
+        float_number = userdata.getfloat("temperature_threshold", 50.0)
+        ...
+
+.. hidden:
+
+  * :py:meth:`behave.configuration.Userdata.getint()`
+  * :py:meth:`behave.configuration.Userdata.getfloat()`
+  * :py:meth:`behave.configuration.Userdata.getbool()`
+  * :py:meth:`behave.configuration.Userdata.getas()`
+
+
+Userdata: Advanced Cases
+-------------------------------------------------------------------------------
+
+The last section described the basic use cases of userdata.
+For more complicated cases, it is better to provide your own configuration setup
+in the ``before_all()`` hook.
+
+This section describes how to load a JSON configuration file and store its
+data in the ``userdata`` dictionary.
+
+.. code-block:: py
+
+    # -- FILE: features/environment.py
+    import json
+    import os.path
+
+    def before_all(context):
+        """Load and update userdata from JSON configuration file."""
+        userdata = context.config.userdata
+        configfile = userdata.get("configfile", "userconfig.json")
+        if os.path.exists(configfile):
+            assert configfile.endswith(".json")
+            more_userdata = json.load(open(configfile))
+            context.config.update_userdata(more_userdata)
+            # -- NOTE: Reapplies userdata_defines from command-line, too.
+
+
+.. code-block:: json
+
+    # -- FILE: userconfig.json
+    {
+        "browser": "firefox",
+        "server":  "asterix",
+        "count":   42,
+        "cleanup": true
+    }
+
+Other advanced use cases:
+
+  * support configuration profiles via cmdline "... -D PROFILE=xxx ..."
+    (uses profile-specific configuration file or profile-specific config section)
+  * provide test stage specific configuration data

@@ -22,6 +22,9 @@ You may see the same information presented below at any time using ``behave
    is used to override a configuration file setting.
 **-d, --dry-run**
    Invokes formatters without executing the steps.
+**-D, --define**
+   Define user-specific data in config.userdata dictionary. Example:
+   -D foo=bar to store it in config.userdata["foo"].
 **-e, --exclude**
    Don't run feature files matching regular expression PATTERN.
 **-i, --include**
@@ -113,6 +116,10 @@ You may see the same information presented below at any time using ``behave
    Print the file and line of the step definition with the steps. This
    is the default behaviour. This switch is used to override a
    configuration file setting.
+**--stage**
+   Defines the current test stage. The test stage name is used as name
+   prefix for the environment file and the steps directory (instead of
+   default path names).
 **--stop**
    Stop running tests at the first failure.
 **-t, --tags**
@@ -232,6 +239,9 @@ Recognised Settings
    is used to override a configuration file setting.
 **dry_run** -- boolean
    Invokes formatters without executing the steps.
+**_userdata_defines** -- text (multiple allowed)
+   Define user-specific data in config.userdata dictionary. Example:
+   -D foo=bar to store it in config.userdata["foo"].
 **exclude_re** -- text
    Don't run feature files matching regular expression PATTERN.
 **include_re** -- text
@@ -250,8 +260,8 @@ Recognised Settings
    Specify a formatter. If none is specified the default formatter is
    used. Pass '--format help' to get a list of available formatters.
 **scenario_outline_annotation_schema** -- text
-   Specify name annotation schema for scenario outline.
-   (default="{name} -- @{row.id} {examples.name}")
+   Specify name annotation schema for scenario outline
+   (default="{name} -- @{row.id} {examples.name}").
 **show_skipped** -- boolean
    Don't print skipped steps (due to tags).
 **show_skipped** -- boolean
@@ -331,6 +341,10 @@ Recognised Settings
    Print the file and line of the step definition with the steps. This
    is the default behaviour. This switch is used to override a
    configuration file setting.
+**stage** -- text
+   Defines the current test stage. The test stage name is used as name
+   prefix for the environment file and the steps directory (instead of
+   default path names).
 **stop** -- boolean
    Stop running tests at the first failure.
 **tags** -- text (multiple allowed)

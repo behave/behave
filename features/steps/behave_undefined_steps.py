@@ -1,4 +1,4 @@
-# -*- coding -*-
+# -*- coding: UTF-8 -*-
 """
 Provides step definitions for behave based on behave4cmd.
 

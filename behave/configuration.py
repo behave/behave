@@ -4,10 +4,11 @@ from __future__ import print_function
 import os
 import re
 import sys
-import argparse
 import logging
 import shlex
+import argparse
 from six.moves import configparser
+from six import string_types
 
 from behave.model import FileLocation, ScenarioOutline
 from behave.reporter.junit import JUnitReporter
@@ -15,10 +16,13 @@ from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import TagExpression
 from behave.formatter.base import StreamOpener
 from behave.formatter.formatters import formatters as registered_formatters
+from behave.userdata import UserData, parse_user_define
+from behave._types import Unknown
 
 
-class Unknown(object): pass
-
+# -----------------------------------------------------------------------------
+# CONFIGURATION DATA TYPES:
+# -----------------------------------------------------------------------------
 class LogLevel(object):
     names = [
          "NOTSET", "CRITICAL", "FATAL", "ERROR",
@@ -54,6 +58,11 @@ class ConfigError(Exception):
     pass
 
 
+
+
+# -----------------------------------------------------------------------------
+# CONFIGURATION SCHEMA:
+# -----------------------------------------------------------------------------
 options = [
     (('-c', '--no-color'),
      dict(action='store_false', dest='color',
@@ -68,6 +77,11 @@ options = [
     (('-d', '--dry-run'),
      dict(action='store_true',
           help="Invokes formatters without executing the steps.")),
+
+    (('-D', '--define'),
+     dict(dest='userdata_defines', type=parse_user_define, action='append',
+          help="""Define user-specific data in config.userdata dictionary.
+                  Example: -D foo=bar to store it in config.userdata["foo"].""")),
 
     (('-e', '--exclude'),
      dict(metavar="PATTERN", dest='exclude_re',
@@ -337,6 +351,26 @@ raw_value_options = frozenset([
     # -- MAYBE: "scenario_outline_annotation_schema",
 ])
 
+# -- XXX-IDEA:
+# def read_userdata(stage=None, path=None, config=None):
+#     if not config:
+#         if not path:
+#             path = "behave.ini"
+#         cfg = configparser.SafeConfigParser()
+#         if os.path.exists(path):
+#             cfg.read(path)
+#
+#     section_names = ["behave.userdata"]
+#     if stage:
+#         section_names.append("behave.userdata.stage_%s" % stage)
+#
+#     userdata = {}
+#     for section in section_names:
+#         if config.has_section(section):
+#             userdata.update(config.items(section))
+#     return userdata
+
+
 def read_configuration(path):
     cfg = configparser.SafeConfigParser()
     cfg.read(path)
@@ -363,6 +397,8 @@ def read_configuration(path):
         elif action in ('store_true', 'store_false'):
             result[dest] = cfg.getboolean('behave', dest)
         elif action == 'append':
+            if dest == 'userdata_defines':
+                continue    # -- SKIP-CONFIGFILE: Command-line only option.
             result[dest] = \
                 [s.strip() for s in cfg.get('behave', dest).splitlines()]
         else:
@@ -392,7 +428,22 @@ def read_configuration(path):
             result[paths_name] = \
                 [os.path.normpath(os.path.join(cfgdir, p)) for p in paths]
 
+    result['userdata'] = {}
+    if cfg.has_section('behave.userdata'):
+        result['userdata'].update(cfg.items('behave.userdata'))
     return result
+
+
+def config_filenames():
+    paths = ['./', os.path.expanduser('~')]
+    if sys.platform in ('cygwin', 'win32') and 'APPDATA' in os.environ:
+        paths.append(os.path.join(os.environ['APPDATA']))
+
+    for path in reversed(paths):
+        for filename in 'behave.ini .behaverc'.split():
+            filename = os.path.join(path, filename)
+            if os.path.isfile(filename):
+                yield filename
 
 
 def load_configuration(defaults, verbose=False):
@@ -400,7 +451,7 @@ def load_configuration(defaults, verbose=False):
     if sys.platform in ('cygwin', 'win32') and 'APPDATA' in os.environ:
         paths.append(os.path.join(os.environ['APPDATA']))
 
-    for path in paths:
+    for path in reversed(paths):
         for filename in 'behave.ini .behaverc'.split():
             filename = os.path.join(path, filename)
             if os.path.isfile(filename):
@@ -414,29 +465,30 @@ def load_configuration(defaults, verbose=False):
             print('%15s %s' % (k, v))
 
 
-# construct the parser
-#usage = "%(prog)s [options] [ [FILE|DIR|URL][:LINE[:LINE]*] ]+"
-usage = "%(prog)s [options] [ [DIR|FILE|FILE:LINE] ]+"
-description = """\
-Run a number of feature tests with behave."""
-more = """
-EXAMPLES:
-behave features/
-behave features/one.feature features/two.feature
-behave features/one.feature:10
-behave @features.txt
-"""
-parser = argparse.ArgumentParser(usage=usage, description=description)
-for fixed, keywords in options:
-    if not fixed:
-        continue    # -- CONFIGFILE only.
-    if 'config_help' in keywords:
-        keywords = dict(keywords)
-        del keywords['config_help']
-    parser.add_argument(*fixed, **keywords)
-parser.add_argument('paths', nargs='*',
+def setup_parser():
+    # construct the parser
+    #usage = "%(prog)s [options] [ [FILE|DIR|URL][:LINE[:LINE]*] ]+"
+    usage = "%(prog)s [options] [ [DIR|FILE|FILE:LINE] ]+"
+    description = """\
+    Run a number of feature tests with behave."""
+    more = """
+    EXAMPLES:
+    behave features/
+    behave features/one.feature features/two.feature
+    behave features/one.feature:10
+    behave @features.txt
+    """
+    parser = argparse.ArgumentParser(usage=usage, description=description)
+    for fixed, keywords in options:
+        if not fixed:
+            continue    # -- CONFIGFILE only.
+        if 'config_help' in keywords:
+            keywords = dict(keywords)
+            del keywords['config_help']
+        parser.add_argument(*fixed, **keywords)
+    parser.add_argument('paths', nargs='*',
                 help='Feature directory, file or file location (FILE:LINE).')
-
+    return parser
 
 class Configuration(object):
     defaults = dict(
@@ -454,10 +506,12 @@ class Configuration(object):
         summary=True,
         junit=False,
         stage=None,
+        userdata={},
         # -- SPECIAL:
         default_format="pretty",   # -- Used when no formatters are configured.
         scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}"
     )
+    cmdline_only_options = set("userdata_defines")
 
     def __init__(self, command_args=None, load_config=True, verbose=None,
                  **kwargs):
@@ -476,7 +530,7 @@ class Configuration(object):
         """
         if command_args is None:
             command_args = sys.argv[1:]
-        elif isinstance(command_args, basestring):
+        elif isinstance(command_args, string_types):
             if isinstance(command_args, unicode):
                 command_args = command_args.encode("utf-8")
             command_args = shlex.split(command_args)
@@ -497,12 +551,14 @@ class Configuration(object):
         self.scenario_outline_annotation_schema = None
         self.steps_dir = "steps"
         self.environment_file = "environment.py"
+        self.userdata_defines = None
         if load_config:
             load_configuration(self.defaults, verbose=verbose)
+        parser = setup_parser()
         parser.set_defaults(**self.defaults)
         args = parser.parse_args(command_args)
         for key, value in args.__dict__.items():
-            if key.startswith('_'):
+            if key.startswith('_') and key not in self.cmdline_only_options:
                 continue
             setattr(self, key, value)
 
@@ -562,6 +618,7 @@ class Configuration(object):
             self.stage = os.environ.get("BEHAVE_STAGE", None)
         self.setup_stage(self.stage)
         self.setup_model()
+        self.setup_userdata()
 
     def collect_unknown_formats(self):
         unknown_formats = []
@@ -602,8 +659,8 @@ class Configuration(object):
         But note that the logging setup can only occur once.
 
         SETUP MODES:
-          * :func:`logging.config.fileConfig()`, if ``configfile` is provided.
-          * :func:`logging.basicConfig(), otherwise.
+          * :func:`logging.config.fileConfig()`, if ``configfile`` is provided.
+          * :func:`logging.basicConfig()`, otherwise.
 
         .. code-block: python
             # -- FILE: features/environment.py
@@ -662,3 +719,19 @@ class Configuration(object):
             environment_file = prefix + environment_file
         self.steps_dir = steps_dir
         self.environment_file = environment_file
+
+    def setup_userdata(self):
+        if not isinstance(self.userdata, UserData):
+            self.userdata = UserData(self.userdata)
+        if self.userdata_defines:
+            # -- ENSURE: Cmd-line overrides configuration file parameters.
+            self.userdata.update(self.userdata_defines)
+
+    def update_userdata(self, data):
+        """Update userdata with data and reapply userdata defines (cmdline).
+        :param data:  Provides (partial) userdata (as dict)
+        """
+        self.userdata.update(data)
+        if self.userdata_defines:
+            # -- REAPPLY: Cmd-line defines (override configuration file data).
+            self.userdata.update(self.userdata_defines)

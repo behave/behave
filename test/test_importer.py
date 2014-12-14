@@ -4,6 +4,7 @@ Tests for behave.importing.
 The module provides a lazy-loading/importing mechanism.
 """
 
+from __future__ import absolute_import
 from behave.importer import LazyObject, LazyDict
 from behave.formatter.base import Formatter
 from nose.tools import eq_, assert_raises
