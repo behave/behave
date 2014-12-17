@@ -146,9 +146,9 @@ class PrettyFormatter(Formatter):
             lines = self.step_lines + 1
             if self.show_multiline:
                 if result.table:
-                    lines += len(result.table.rows) + 1
+                    lines += self.table_lines
                 if result.text:
-                    lines += len(result.text.splitlines()) + 2
+                    lines += self.text_lines
             self.stream.write(up(lines))
             arguments = []
             location = None
@@ -182,7 +182,7 @@ class PrettyFormatter(Formatter):
         self.stream.write('\n')
         self.stream.flush()
 
-    def table(self, table):
+    def table(self, table, strformat):
         cell_lengths = []
         all_rows = [table.headings] + table.rows
         for row in all_rows:
@@ -199,19 +199,25 @@ class PrettyFormatter(Formatter):
             self.stream.write('      |')
             for j, (cell, max_length) in enumerate(zip(row, max_lengths)):
                 self.stream.write(' ')
-                self.stream.write(self.color(cell, None, j))
+                self.stream.write(strformat(cell))
                 self.stream.write(' ' * (max_length - cell_lengths[i][j]))
                 self.stream.write(' |')
             self.stream.write('\n')
         self.stream.flush()
 
-    def doc_string(self, doc_string):
-        #self.stream.write('      """' + doc_string.content_type + '\n')
-        prefix = '      '
-        self.stream.write('%s"""\n' % prefix)
-        doc_string = escape_triple_quotes(indent(doc_string, prefix))
-        self.stream.write(doc_string)
-        self.stream.write('\n%s"""\n' % prefix)
+        # Count the lines required to print the table
+        table_width = 7 + 3 * len(table.headings) + sum(max_lengths)
+        self.table_lines = len(all_rows) * (1 + table_width // self.display_width)
+
+    def doc_string(self, doc_string, strformat):
+        triplequotes = self.format('comments').text(u'"""')
+        # Count the lines required to print the docstring
+        self.text_lines = 2 + sum([
+            (1 + len(line) // self.display_width)
+            for line in indent(doc_string, u'      ').splitlines()])
+        doc_string = strformat(escape_triple_quotes(doc_string))
+        self.stream.write(indent('\n'.join(
+            [triplequotes, doc_string, triplequotes]), '      ') + '\n')
         self.stream.flush()
 
     # def doc_string(self, doc_string):
@@ -313,33 +319,39 @@ class PrettyFormatter(Formatter):
             self.stream.write(text_format.text(text))
             line_length += (len(text))
 
+        if self.show_timings:
+            if status in ('passed', 'failed'):
+                timing = '%5.2fs' % step.duration
+            else:
+                timing = ' ' * 6
+        else:
+            timing = ''
         if self.show_source:
             location = unicode(location)
-            if self.show_timings and status in ('passed', 'failed'):
-                location += ' %0.3fs' % step.duration
+            if timing:
+                location = (location or '') + ' ' + timing
             location = self.indented_text(location, proceed)
             self.stream.write(self.format('comments').text(location))
             line_length += len(location)
-        elif self.show_timings and status in ('passed', 'failed'):
-            timing = '%0.3fs' % step.duration
+        elif timing:
             timing = self.indented_text(timing, proceed)
             self.stream.write(self.format('comments').text(timing))
             line_length += len(timing)
         self.stream.write("\n")
 
-        self.step_lines = int((line_length - 1) / self.display_width)
+        self.step_lines = int((line_length - 1) // self.display_width)
 
         if self.show_multiline:
             if step.text:
-                self.doc_string(step.text)
+                self.doc_string(step.text, strformat=text_format.text)
             if step.table:
-                self.table(step.table)
+                self.table(step.table, strformat=text_format.text)
 
     def print_tags(self, tags, indentation):
         if not tags:
             return
         line = ' '.join('@' + tag for tag in tags)
-        self.stream.write(indentation + line + '\n')
+        self.stream.write(indentation + self.format('tag').text(line) + '\n')
 
     def print_comments(self, comments, indentation):
         if not comments:
