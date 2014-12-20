@@ -32,6 +32,7 @@ NEWS and CHANGES:
 
 ENHANCEMENTS:
 
+  * issue #261: Support "setup.cfg" as configuration file, too (provided by: bittner)
   * issue #242: JUnitReporter can show scenario tags (provided by: rigomes)
   * issue #240: Test Stages with different step implementations (provided by: attilammagyar, jenisys)
   * issue #238: Allow to skip scenario in step function (provided by: hotgloupi, jenisys)
