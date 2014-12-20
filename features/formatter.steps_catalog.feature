@@ -69,7 +69,7 @@ Feature: Steps Catalog Formatter
 
     @usecase.primary
     Scenario: Show documentation of available step definitions in dry-run mode
-        When I run "behave --catalog features/"
+        When I run "behave --steps-catalog features/"
         Then it should pass with:
           """
           Given {person} lives in {city}
