@@ -120,6 +120,11 @@ options = [
                   formatter is used. Pass '--format help' to get a
                   list of available formatters.""")),
 
+    (('--steps-catalog',),
+     dict(action='store_true', dest='steps_catalog',
+          help="""Show a catalog of all available step definitions.
+                  SAME AS: --format=steps.catalog --dry-run --no-summary -q""")),
+
     ((),  # -- CONFIGFILE only
      dict(dest='scenario_outline_annotation_schema',
           help="""Specify name annotation schema for scenario outline
@@ -477,6 +482,7 @@ class Configuration(object):
         log_capture=True,
         logging_format='%(levelname)s:%(name)s:%(message)s',
         logging_level=logging.INFO,
+        steps_catalog=False,
         summary=True,
         junit=False,
         stage=None,
@@ -545,6 +551,15 @@ class Configuration(object):
                     self.outputs.append(StreamOpener(outfile))
                 else:
                     self.outputs.append(StreamOpener(stream=sys.stdout))
+
+        if self.steps_catalog:
+            # -- SHOW STEP-CATALOG: As step summary.
+            self.default_format = "steps.catalog"
+            self.format = ["steps.catalog"]
+            self.dry_run = True
+            self.summary = False
+            self.show_skipped = False
+            self.quiet = True
 
         if self.wip:
             # Only run scenarios tagged with "wip".

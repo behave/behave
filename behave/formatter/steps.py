@@ -29,6 +29,7 @@ class AbstractStepsFormatter(Formatter):
         super(AbstractStepsFormatter, self).__init__(stream_opener, config)
         self.step_registry = None
         self.current_feature = None
+        self.shows_location = config.show_source
 
     def reset(self):
         self.step_registry = None
@@ -72,8 +73,7 @@ class AbstractStepsFormatter(Formatter):
     def report(self):
         raise NotImplementedError()
 
-    @staticmethod
-    def describe_step_definition(step_definition, step_type=None):
+    def describe_step_definition(self, step_definition, step_type=None):
         if not step_type:
             step_type = step_definition.step_type
         assert step_type
@@ -258,6 +258,68 @@ class StepsDocFormatter(AbstractStepsFormatter):
             self.stream.write(indent(doc, self.doc_prefix))
             self.stream.write("\n")
         self.stream.write("\n")
+
+
+# -----------------------------------------------------------------------------
+# CLASS: StepsCatalogFormatter
+# -----------------------------------------------------------------------------
+class StepsCatalogFormatter(StepsDocFormatter):
+    """
+    Provides formatter class that shows the documentation of all registered
+    step definitions. The primary purpose is to provide help for a test writer.
+    
+    In order to ease work for non-programmer testers, the technical details of
+    the steps (i.e. function name, source location) are ommited and the
+    steps are shown as they would apprear in a feature file (no noisy '@',
+    or '(', etc.).
+    
+    Also, the output is sorted by step type (Given, When, Then)
+    
+    Generic step definitions are listed with all three step types.
+
+    EXAMPLE:
+        $ behave --dry-run -f steps.catalog features/
+        Given a file named "{filename}" with
+            Creates a textual file with the content provided as docstring.
+
+        When I run "{command}"
+            Run a command as subprocess, collect its output and returncode.
+
+        Given a file named "{filename}" exists
+        When a file named "{filename}" exists
+        Then a file named "{filename}" exists
+            Verifies that a file with this filename exists.
+
+            .. code-block:: gherkin
+
+                Given a file named "abc.txt" exists
+                 When a file named "abc.txt" exists
+        ...
+
+    .. note::
+        Supports behave dry-run mode.
+    """
+    name = "steps.catalog"
+    description = "Shows non-technical documentation for step definitions."
+    shows_location = False
+    shows_function_name = False
+    ordered_by_location = False
+    doc_prefix = make_indentation(4)
+
+
+    def describe_step_definition(self, step_definition, step_type=None):
+        if not step_type:
+            step_type = step_definition.step_type
+        assert step_type
+        desc = []
+        if step_type == 'step':
+            for step_type in self.step_types[:-1]:
+                text = u"%5s %s" % (step_type.title(), step_definition.string)
+                desc.append(text)
+        else:
+            desc.append(u"%s %s" % (step_type.title(), step_definition.string))
+            
+        return '\n'.join(desc)
 
 
 # -----------------------------------------------------------------------------
