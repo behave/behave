@@ -33,8 +33,10 @@ NEWS and CHANGES:
 
 ENHANCEMENTS:
 
+  * pull #272: Use option role to format command line arg docs (provided by: helenst)
   * pull #271: Provide steps.catalog formatter (provided by: berdroid)
   * pull #261: Support "setup.cfg" as configuration file, too (provided by: bittner)
+  * pull #260: Documenation tweaks and typo fixes (provided by: bittner)
   * issue #242: JUnitReporter can show scenario tags (provided by: rigomes)
   * issue #240: Test Stages with different step implementations (provided by: attilammagyar, jenisys)
   * issue #238: Allow to skip scenario in step function (provided by: hotgloupi, jenisys)
@@ -46,6 +48,7 @@ FIXED:
   * issue #257: Fix JUnitReporter (XML) for Python3 (provided by: actionless)
   * issue #249: Fix a number of docstring problems (provided by: masak)
   * issue #253: Various problems in PrettyFormatter.exception()
+  * issue #236: Command line docs are confusing (solved by: #272)
   * issue #221: Fix some PY2/PY3 incompatibilities (provided by: johbo)
   * issue #216: Using --wip option does not disable ANSI escape sequences (coloring).
 
