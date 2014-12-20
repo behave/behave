@@ -351,25 +351,6 @@ raw_value_options = frozenset([
     # -- MAYBE: "scenario_outline_annotation_schema",
 ])
 
-# -- XXX-IDEA:
-# def read_userdata(stage=None, path=None, config=None):
-#     if not config:
-#         if not path:
-#             path = "behave.ini"
-#         cfg = configparser.SafeConfigParser()
-#         if os.path.exists(path):
-#             cfg.read(path)
-#
-#     section_names = ["behave.userdata"]
-#     if stage:
-#         section_names.append("behave.userdata.stage_%s" % stage)
-#
-#     userdata = {}
-#     for section in section_names:
-#         if config.has_section(section):
-#             userdata.update(config.items(section))
-#     return userdata
-
 
 def read_configuration(path):
     cfg = configparser.SafeConfigParser()
@@ -440,24 +421,17 @@ def config_filenames():
         paths.append(os.path.join(os.environ['APPDATA']))
 
     for path in reversed(paths):
-        for filename in 'behave.ini .behaverc'.split():
+        for filename in reversed(('behave.ini', '.behaverc', 'setup.cfg')):
             filename = os.path.join(path, filename)
             if os.path.isfile(filename):
                 yield filename
 
 
 def load_configuration(defaults, verbose=False):
-    paths = ['./', os.path.expanduser('~')]
-    if sys.platform in ('cygwin', 'win32') and 'APPDATA' in os.environ:
-        paths.append(os.path.join(os.environ['APPDATA']))
-
-    for path in reversed(paths):
-        for filename in 'behave.ini .behaverc'.split():
-            filename = os.path.join(path, filename)
-            if os.path.isfile(filename):
-                if verbose:
-                    print('Loading config defaults from "%s"' % filename)
-                defaults.update(read_configuration(filename))
+    for filename in config_filenames():
+        if verbose:
+            print('Loading config defaults from "%s"' % filename)
+        defaults.update(read_configuration(filename))
 
     if verbose:
         print('Using defaults:')
