@@ -29,10 +29,12 @@ NEWS and CHANGES:
   - Formatters:
 
     * plain: Can now show tags, but currently disabled per default
+    * NEW: steps.catalog: Readable summary of all steps (similar to: steps.doc, #271)
 
 ENHANCEMENTS:
 
-  * issue #261: Support "setup.cfg" as configuration file, too (provided by: bittner)
+  * pull #271: Provide steps.catalog formatter (provided by: berdroid)
+  * pull #261: Support "setup.cfg" as configuration file, too (provided by: bittner)
   * issue #242: JUnitReporter can show scenario tags (provided by: rigomes)
   * issue #240: Test Stages with different step implementations (provided by: attilammagyar, jenisys)
   * issue #238: Allow to skip scenario in step function (provided by: hotgloupi, jenisys)
