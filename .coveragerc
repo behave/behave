@@ -10,8 +10,9 @@
 [run]
 append  = .coverage
 include = behave*
+omit = nose
 branch  = True
-parallel = True
+#parallel = True
 
 [report]
 # Regexes for lines to exclude from consideration
@@ -39,4 +40,3 @@ directory = build/coverage.html
 
 [xml]
 outfile = build/coverage.xml
-

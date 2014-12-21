@@ -5,11 +5,14 @@ python:
   - pypy
 
 install:
-  - pip install --use-mirrors -q mock nose PyHamcrest
+  - pip install --use-mirrors -q mock nose PyHamcrest python-coveralls
   - python setup.py -q install
 script:
   - python --version
-  - nosetests
-  - behave -f progress --junit --tags=~@xfail features/
-  - behave -f progress --junit --tags=~@xfail tools/test-features/
-  - behave -f progress --junit --tags=~@xfail issue.features/
+  - nosetests --with-coverage
+  - COVERAGE_FILE=.coverage.features coverage run bin/behave -f progress --junit --tags=~@xfail features/
+  - COVERAGE_FILE=.coverage.tools coverage run bin/behave -f progress --junit --tags=~@xfail tools/test-features/
+  - COVERAGE_FILE=.coverage.issues coverage run bin/behave -f progress --junit --tags=~@xfail issue.features/
+after_success:
+  - coverage combine
+  - coveralls
