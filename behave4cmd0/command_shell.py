@@ -19,7 +19,7 @@ import six
 import subprocess
 import sys
 import shlex
-import codecs
+
 
 # HERE = os.path.dirname(__file__)
 # TOP  = os.path.join(HERE, "..")
@@ -79,13 +79,16 @@ class Command(object):
         Make a subprocess call, collect its output and returncode.
         Returns CommandResult instance as ValueObject.
         """
-        assert isinstance(command, basestring)
+        assert isinstance(command, six.string_types)
         command_result = CommandResult()
         command_result.command = command
 
         # -- BUILD COMMAND ARGS:
-        if isinstance(command, unicode):
+        if six.PY2 and isinstance(command, six.text_type):
+            import codecs
             command = codecs.encode(command)
+        elif six.PY3 and isinstance(command, six.text_type):
+            command = command.encode('utf-8').decode('unicode_escape')
         cmdargs = shlex.split(command)
 
         # -- TRANSFORM COMMAND (optional)
@@ -123,7 +126,7 @@ class Command(object):
                 print("shell.cwd={0}".format(kwargs.get("cwd", None)))
                 print("shell.command: {0}".format(" ".join(cmdargs)))
                 print("shell.command.output:\n{0};".format(command_result.output))
-        except OSError, e:
+        except OSError as e:
             command_result.stderr = u"OSError: %s" % e
             command_result.returncode = e.errno
             assert e.errno != 0
@@ -142,7 +145,7 @@ def behave(cmdline, cwd=".", **kwargs):
     Run behave as subprocess command and return process/shell instance
     with results (collected output, returncode).
     """
-    assert isinstance(cmdline, basestring)
+    assert isinstance(cmdline, str)
     return run("behave " + cmdline, cwd=cwd, **kwargs)
 
 # -----------------------------------------------------------------------------

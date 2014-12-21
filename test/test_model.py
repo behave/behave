@@ -642,7 +642,7 @@ class TestTableModel(unittest.TestCase):
         self.table[0]['spam']
 
     def test_table_row_items(self):
-        eq_(self.table[0].items(), zip(self.HEAD, self.DATA[0]))
+        eq_(list(self.table[0].items()), list(zip(self.HEAD, self.DATA[0])))
 
 
 class TestModelRow(unittest.TestCase):

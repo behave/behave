@@ -356,9 +356,10 @@ def make_undefined_step_snippet(step, language=None):
         steps = parser.parse_steps(step_text, language=language)
         step = steps[0]
         assert step, "ParseError: %s" % step_text
-    prefix = u""
-    if sys.version_info[0] == 2:
-        prefix = u"u"
+    # prefix = u""
+    # if sys.version_info[0] == 2:
+    #    prefix = u"u"
+    prefix = u"u"
     single_quote = "'"
     if single_quote in step.name:
         step.name = step.name.replace(single_quote, r"\'")

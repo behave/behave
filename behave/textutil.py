@@ -3,7 +3,7 @@
 Provides some utility functions related to text processing.
 """
 
-from six import string_types
+from six import string_types, text_type
 
 
 def make_indentation(indent_size, part=u" "):
@@ -28,7 +28,7 @@ def indent(text, prefix):
     elif lines and not lines[0].endswith("\n"):
         # -- TEXT LINES: Without trailing new-line.
         newline = u"\n"
-    return newline.join([prefix + unicode(line) for line in lines])
+    return newline.join([prefix + text_type(line) for line in lines])
 
 
 def compute_words_maxsize(words):

@@ -6,6 +6,7 @@ import re
 import sys
 import logging
 import shlex
+import six
 import argparse
 from six.moves import configparser
 from six import string_types
@@ -510,9 +511,11 @@ class Configuration(object):
         """
         if command_args is None:
             command_args = sys.argv[1:]
-        elif isinstance(command_args, string_types):
-            if isinstance(command_args, unicode):
+        elif isinstance(command_args, six.string_types):
+            if six.PY2 and isinstance(command_args, six.text_type):
                 command_args = command_args.encode("utf-8")
+            elif six.PY3 and isinstance(command_args, six.binary_type):
+                command_args = command_args.decode("utf-8")
             command_args = shlex.split(command_args)
         if verbose is None:
             # -- AUTO-DISCOVER: Verbose mode from command-line args.
@@ -677,7 +680,7 @@ class Configuration(object):
 
     def setup_model(self):
         if self.scenario_outline_annotation_schema:
-            name_schema = unicode(self.scenario_outline_annotation_schema)
+            name_schema = six.text_type(self.scenario_outline_annotation_schema)
             ScenarioOutline.annotation_schema = name_schema.strip()
 
     def setup_stage(self, stage=None):

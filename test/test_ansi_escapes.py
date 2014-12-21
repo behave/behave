@@ -11,7 +11,7 @@ from behave.formatter import ansi_escapes
 import unittest
 
 class StripEscapesTest(unittest.TestCase):
-    ALL_COLORS = ansi_escapes.colors.keys()
+    ALL_COLORS = [color for color in ansi_escapes.colors.keys()]
     CURSOR_UPS = [ ansi_escapes.up(count)  for count in range(10) ]
     TEXTS = [
         u"lorem ipsum",

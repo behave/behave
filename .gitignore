@@ -5,6 +5,7 @@
 *$py.class
 build/
 dist/
+eggs/
 __pycache__/
 __WORKDIR__/
 _build/
@@ -16,4 +17,5 @@ _WORKSPACE/
 .coverage
 .ropeproject
 nosetests.xml
+reports/
 tools/virtualenvs

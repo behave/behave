@@ -107,15 +107,15 @@ def main(args=None):
     runner = Runner(config)
     try:
         failed = runner.run()
-    except ParserError, e:
+    except ParserError as e:
         print("ParseError: %s" % e)
-    except ConfigError, e:
+    except ConfigError as e:
         print("ConfigError: %s" % e)
-    except FileNotFoundError, e:
+    except FileNotFoundError as e:
         print("FileNotFoundError: %s" % e)
-    except InvalidFileLocationError, e:
+    except InvalidFileLocationError as e:
         print("InvalidFileLocationError: %s" % e)
-    except InvalidFilenameError, e:
+    except InvalidFilenameError as e:
         print("InvalidFilenameError: %s" % e)
 
     if config.show_snippets and runner.undefined_steps:

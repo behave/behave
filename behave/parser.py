@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import with_statement
+from six import text_type as unicode
 
 from behave import model, i18n
 
@@ -20,7 +21,7 @@ def parse_feature(data, language=None, filename=None):
 
     try:
         result = Parser(language).parse(data, filename)
-    except ParserError, e:
+    except ParserError as e:
         e.filename = filename
         raise
 
@@ -39,7 +40,7 @@ def parse_steps(text, language=None, filename=None):
     assert isinstance(text, unicode)
     try:
         result = Parser(language, variant='steps').parse_steps(text, filename)
-    except ParserError, e:
+    except ParserError as e:
         e.filename = filename
         raise
     return result
