@@ -73,6 +73,7 @@ def setup_formatters():
                 "tags.location")
     register_as(_L("behave.formatter.steps:StepsFormatter"), "steps")
     register_as(_L("behave.formatter.steps:StepsDocFormatter"), "steps.doc")
+    register_as(_L("behave.formatter.steps:StepsCatalogFormatter"), "steps.catalog")
     register_as(_L("behave.formatter.steps:StepsUsageFormatter"), "steps.usage")
     register_as(_L("behave.formatter.sphinx_steps:SphinxStepsFormatter"),
                 "sphinx.steps")

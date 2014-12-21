@@ -81,8 +81,3 @@ The issues we had with Freshen that stopped us using it were:
   around and the module namespace is polluted.
 * Only Before and no contextual before/after control, thus requiring use of
   atexit for teardown operations and no fine-grained control.
-
-The above being said the integration with nose means that you gain things like
-JUnit output and coverage analysis fairly easily. This may or may not be an
-issue for you. Behave will be adding JUnit output soon and we will more than
-likely forget to remove this sentence when we do.

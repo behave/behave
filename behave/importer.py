@@ -6,10 +6,7 @@ REQUIRES: importlib (provided in Python2.7, Python3.2...)
 """
 
 from behave.compat import importlib
-
-
-class Unknown(object):
-    pass
+from behave._types import Unknown
 
 
 class LazyObject(object):

@@ -53,7 +53,7 @@ class CommandResult(object):
 
     @property
     def failed(self):
-        return not self.returncode
+        return self.returncode != 0
 
     def clear(self):
         self.command = None
