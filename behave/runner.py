@@ -645,15 +645,16 @@ class Runner(ModelRunner):
         with PathManager(paths):
             default_matcher = matchers.current_matcher
             for path in paths:
-                for name in sorted(os.listdir(path)):
-                    if name.endswith('.py'):
-                        # -- LOAD STEP DEFINITION:
-                        # Reset to default matcher after each step-definition.
-                        # A step-definition may change the matcher 0..N times.
-                        # ENSURE: Each step definition has clean globals.
-                        step_module_globals = step_globals.copy()
-                        exec_file(os.path.join(path, name), step_module_globals)
-                        matchers.current_matcher = default_matcher
+                for dirpath, dirnames, filenames in os.walk(path):
+                    for name in sorted(filenames):
+                        if name.endswith('.py'):
+                            # -- LOAD STEP DEFINITION:
+                            # Reset to default matcher after each step-definition.
+                            # A step-definition may change the matcher 0..N times.
+                            # ENSURE: Each step definition has clean globals.
+                            step_module_globals = step_globals.copy()
+                            exec_file(os.path.join(dirpath, name), step_module_globals)
+                            matchers.current_matcher = default_matcher
 
     def feature_locations(self):
         return collect_feature_locations(self.config.paths)
