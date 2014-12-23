@@ -365,7 +365,7 @@ def make_undefined_step_snippet(step, language=None):
     if single_quote in step.name:
         step.name = step.name.replace(single_quote, r"\'")
 
-    schema = u"@%s(%s'%s')\ndef step_impl(context):\n    assert False\n\n"
+    schema = u"@%s(%s'%s')\ndef step_impl(context):\n    raise NotImplementedError()\n\n"
     snippet = schema % (step.step_type, prefix, step.name)
     return snippet
 
