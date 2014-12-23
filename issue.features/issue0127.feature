@@ -40,7 +40,7 @@ Feature: Issue #127: Strip trailing colons
 
         @given(u'the following superusers exist:')
         def step_impl(context):
-            assert False
+            raise NotImplementedError(u'STEP: Given the following superusers exist:')
         """
 
   Scenario: Step Definition has trailing colon (BAD CASE)
@@ -60,5 +60,5 @@ Feature: Issue #127: Strip trailing colons
 
         @given(u'the following superusers exist')
         def step_impl(context):
-            assert False
+            raise NotImplementedError(u'STEP: Given the following superusers exist')
         """

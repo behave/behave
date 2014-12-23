@@ -22,6 +22,7 @@ NEWS and CHANGES:
     * NEW: Active Tags, see docs (`New and Noteworthy`_).
     * NEW: Test stages, see docs (`New and Noteworthy`_).
     * NEW: User-specific configuration data, see docs (`New and Noteworthy`_).
+    * CHANGED: Undefined step snippet uses now NotImplementedError (related to: #254)
 
   - Model:
 
@@ -38,6 +39,7 @@ ENHANCEMENTS:
   * pull #271: Provide steps.catalog formatter (provided by: berdroid)
   * pull #261: Support "setup.cfg" as configuration file, too (provided by: bittner)
   * pull #260: Documenation tweaks and typo fixes (provided by: bittner)
+  * pull #254: Undefined step raises NotImplementedError instead of assert False (provided by: mhfrantz)
   * issue #242: JUnitReporter can show scenario tags (provided by: rigomes)
   * issue #240: Test Stages with different step implementations (provided by: attilammagyar, jenisys)
   * issue #238: Allow to skip scenario in step function (provided by: hotgloupi, jenisys)

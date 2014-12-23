@@ -33,5 +33,5 @@ Feature: Issue #181: Escape apostrophes in undefined steps snippets
 
         @given(u'I\'m using an "undefined step"')
         def step_impl(context):
-            assert False
+            raise NotImplementedError(u'STEP: Given I\'m using an "undefined step"')
         """

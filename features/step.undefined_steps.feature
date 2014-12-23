@@ -58,7 +58,7 @@ Feature: Undefined Step
 
         @when(u'an undefined step is used')
         def step_impl(context):
-            assert False
+            raise NotImplementedError(u'STEP: When an undefined step is used')
         """
       And an undefined-step snippet should exist for "When an undefined step is used"
 
