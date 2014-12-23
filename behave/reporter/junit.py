@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import os.path
 import codecs
 import sys
@@ -9,6 +10,7 @@ from behave.model import Scenario, ScenarioOutline, Step
 from behave.formatter import ansi_escapes
 from behave.model_describe import ModelDescriptor
 from behave.textutil import indent, make_indentation
+import six
 
 
 def CDATA(text=None):
@@ -266,12 +268,12 @@ class JUnitReporter(Reporter):
             failure = ElementTree.Element(element_name)
             step_text = self.describe_step(step).rstrip()
             text = u"\nFailing step: %s\nLocation: %s\n" % (step_text, step.location)
-            message = unicode(step.exception)
+            message = six.text_type(step.exception)
             if len(message) > 80:
                 message = message[:80] + "..."
             failure.set('type', step.exception.__class__.__name__)
             failure.set('message', message)
-            text += unicode(step.error_message)
+            text += six.text_type(step.error_message)
             failure.append(CDATA(text))
             case.append(failure)
         elif scenario.status in ('skipped', 'untested'):

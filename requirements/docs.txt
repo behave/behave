@@ -3,6 +3,9 @@
 # ============================================================================
 
 Sphinx >= 1.2.2
+
+# -- PROBLEM-WITH-PYTHON3:
+# sphinxcontrib-cheeseshop >= 0.2
 sphinxcontrib-cheeseshop >= 0.2
 
 # -- PIP WHEEL OOPS: with pip 1.5.2

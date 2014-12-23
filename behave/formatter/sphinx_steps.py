@@ -12,10 +12,9 @@ TODO:
     http://sphinx-doc.org/
 """
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 from behave.formatter.steps import AbstractStepsFormatter
 from behave.formatter import sphinx_util
-from behave.compat.os_path import relpath
 from behave.model import Table
 from operator import attrgetter
 import inspect
@@ -58,7 +57,7 @@ class StepsModule(object):
         if not self._filename:
             if self.step_definitions:
                 filename = inspect.getfile(self.step_definitions[0].func)
-                self._filename = relpath(filename)
+                self._filename = os.path.relpath(filename)
         return self._filename
 
     @property

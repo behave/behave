@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from behave.tag_matcher import *
 from mock import Mock
 from unittest import TestCase

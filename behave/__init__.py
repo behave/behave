@@ -16,10 +16,11 @@ To get started, we recommend the `tutorial`_ and then the `test language`_ and
 .. _`api`: api.html
 '''
 
-__version__ = '1.2.5a1'
-
+from __future__ import absolute_import
 from behave.step_registry import *
 from behave.matchers import use_step_matcher, step_matcher, register_type
 
 __step_names = 'given when then step Given When Then Step'.split()
 __all__ = __step_names + "use_step_matcher step_matcher register_type".split()
+__version__ = '1.2.5a1'
+

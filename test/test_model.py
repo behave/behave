@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import with_statement
+from __future__ import absolute_import, print_function, with_statement
 from behave import model
 from behave.configuration import Configuration
 from behave.compat.collections import OrderedDict
@@ -10,6 +10,8 @@ from nose.tools import *
 import re
 import sys
 import unittest
+from six.moves import range
+from six.moves import zip
 
 
 class TestFeatureRun(unittest.TestCase):
@@ -385,7 +387,7 @@ class TestStepRun(unittest.TestCase):
         self.config = self.runner.config = Mock()
         self.config.outputs = [None]
         self.context = self.runner.context = Mock()
-        print ('context is', self.context)
+        print('context is %s' % self.context)
         self.formatters = self.runner.formatters = [Mock()]
         self.step_registry = Mock()
         self.stdout_capture = self.runner.stdout_capture = Mock()
@@ -642,7 +644,8 @@ class TestTableModel(unittest.TestCase):
         self.table[0]['spam']
 
     def test_table_row_items(self):
-        eq_(self.table[0].items(), zip(self.HEAD, self.DATA[0]))
+        # XXX-PY2-OLD: eq_(self.table[0].items(), zip(self.HEAD, self.DATA[0]))
+        eq_(list(self.table[0].items()), list(zip(self.HEAD, self.DATA[0])))
 
 
 class TestModelRow(unittest.TestCase):

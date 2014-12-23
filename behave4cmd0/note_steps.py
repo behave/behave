@@ -5,6 +5,7 @@ The note steps explain what was important in the last few steps of
 this scenario (for a test reader).
 """
 
+from __future__ import absolute_import
 from behave import step
 
 

@@ -14,6 +14,7 @@ EXAMPLES:
     Then  it should pass because "the answer is correct".
 """
 
+from __future__ import absolute_import
 from behave import step, then
 
 # -----------------------------------------------------------------------------

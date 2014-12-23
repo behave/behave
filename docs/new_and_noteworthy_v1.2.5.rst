@@ -292,6 +292,8 @@ by selecting it by name (name part or regular expression):
 Exclude Feature/Scenario at Runtime
 -------------------------------------------------------------------------------
 
+:Since:  behave 1.2.5a1
+
 A test writer can now provide a runtime decision logic to exclude
 a feature, scenario or scenario outline from a test run
 within the following hooks:
@@ -346,6 +348,8 @@ by using the ``skip()`` method before a feature or scenario is run.
 
 Active Tags: Use "@only.with_{category}"
 -------------------------------------------------------------------------------
+
+:Since:  behave 1.2.5a1
 
 The term **active tags** is used for tags where it is decided at runtime
 if a tag is enabled or disabled. The runtime logic excludes then scenarios/features
@@ -409,6 +413,8 @@ Assuming you have the feature file where:
 Active Tags: Use "@only.with_{category}" with Many Categories
 -------------------------------------------------------------------------------
 
+:Since:  behave 1.2.5a1
+
 When you use many ``categories`` for active tags, it becomes unnecessary
 complicated with the earlier described mechanism. In this case, you should use
 the :class:`~behave.tag_matcher.OnlyWithAnyCategoryTagMatcher`.
@@ -470,6 +476,8 @@ Assuming you have scenarios with the following runtime conditions:
 Test Stages: Use different Step Implementations for Each Stage
 -------------------------------------------------------------------------------
 
+:Since:  behave 1.2.5a1
+
 A test stage allows the user to provide different step and environment
 implementation for each stage. Examples for test stages are:
 
@@ -506,6 +514,8 @@ or define the environment variable ``BEHAVE_STAGE=testlab``.
 
 User-specific Configuration Data (userdata)
 -------------------------------------------------------------------------------
+
+:Since:  behave 1.2.5a1
 
 The userdata feature allows a user to provide its own configuration data:
 
@@ -565,7 +575,7 @@ Other examples for user-specific data are:
 Userdata and Type Converters
 -------------------------------------------------------------------------------
 
-The userdata object provides basic support for "type conversion on demand", 
+The userdata object provides basic support for "type conversion on demand",
 similar to the :mod:`configparser` module. The following type conversion
 methods are provided:
 

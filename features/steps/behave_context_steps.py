@@ -14,7 +14,8 @@ EXAMPLE
       Then the behave context should not have a parameter named "person"
 """
 
-from behave import given, when, then, step
+from __future__ import absolute_import
+from behave import given, then, step
 from hamcrest import assert_that, equal_to
 
 # -----------------------------------------------------------------------------

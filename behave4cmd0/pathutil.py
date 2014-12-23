@@ -6,25 +6,15 @@ TODO:
   matcher that ignores empty lines and whitespace and has contains comparison
 """
 
-from __future__ import print_function, unicode_literals
-# from behave4cmd.steputil import ensure_attribute_exists
-# import shutil
+from __future__ import absolute_import, print_function, unicode_literals
 import os.path
 import codecs
-# try:
-#     import io
-# except ImportError:
-#     # -- FOR: python2.5
-#     import codecs as io
+
 
 # -----------------------------------------------------------------------------
 # CONSTANTS:
 # -----------------------------------------------------------------------------
-# HERE     = os.path.dirname(__file__)
-# WORKDIR  = os.path.join(HERE, "..", "__WORKDIR__")
-# # -- XXX-SHOULD-BE:
-# WORKDIR  = os.path.join(os.getcwd(), "__WORKDIR__")
-# WORKDIR  = os.path.abspath(WORKDIR)
+# HERE, WORKDIR: see "__setup.py"
 
 
 # -----------------------------------------------------------------------------

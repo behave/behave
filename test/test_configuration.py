@@ -1,4 +1,4 @@
-from __future__ import with_statement
+from __future__ import absolute_import, with_statement
 from unittest import TestCase
 import os.path
 import tempfile
@@ -48,8 +48,13 @@ class TestConfiguration(object):
         ok_('bogus' not in d)
         eq_(d['userdata'], {'foo': 'bar', 'answer': '42'})
 
+    def ensure_stage_environment_is_not_set(self):
+        if "BEHAVE_STAGE" in os.environ:
+            del os.environ["BEHAVE_STAGE"]
+
     def test_settings_without_stage(self):
         # -- OR: Setup with default, unnamed stage.
+        self.ensure_stage_environment_is_not_set()
         assert "BEHAVE_STAGE" not in os.environ
         config = Configuration()
         eq_("steps", config.steps_dir)

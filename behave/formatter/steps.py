@@ -4,12 +4,14 @@ Provides a formatter that provides an overview of available step definitions
 (step implementations).
 """
 
+from __future__ import absolute_import
 from behave.formatter.base import Formatter
 from behave.step_registry import StepRegistry, registry
 from behave.textutil import compute_words_maxsize, indent, make_indentation
 from behave import i18n
 from operator import attrgetter
 import inspect
+from six.moves import zip
 
 
 # -----------------------------------------------------------------------------
@@ -286,8 +288,8 @@ class StepsCatalogFormatter(StepsDocFormatter):
             Run a command as subprocess, collect its output and returncode.
 
         Given a file named "{filename}" exists
-        When a file named "{filename}" exists
-        Then a file named "{filename}" exists
+         When a file named "{filename}" exists
+         Then a file named "{filename}" exists
             Verifies that a file with this filename exists.
 
             .. code-block:: gherkin

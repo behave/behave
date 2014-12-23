@@ -3,7 +3,8 @@
 Provides some utility functions related to text processing.
 """
 
-from six import string_types
+from __future__ import absolute_import
+import six
 
 
 def make_indentation(indent_size, part=u" "):
@@ -23,12 +24,12 @@ def indent(text, prefix):
     """
     lines = text
     newline = u""
-    if isinstance(text, string_types):
+    if isinstance(text, six.string_types):
         lines = text.splitlines(True)
     elif lines and not lines[0].endswith("\n"):
         # -- TEXT LINES: Without trailing new-line.
         newline = u"\n"
-    return newline.join([prefix + unicode(line) for line in lines])
+    return newline.join([prefix + six.text_type(line) for line in lines])
 
 
 def compute_words_maxsize(words):

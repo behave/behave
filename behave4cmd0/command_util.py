@@ -6,6 +6,7 @@ TODO:
   matcher that ignores empty lines and whitespace and has contains comparison
 """
 
+from __future__ import absolute_import
 from behave4cmd0 import pathutil
 from behave4cmd0.__setup import TOP, TOPA
 import os.path

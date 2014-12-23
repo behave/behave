@@ -5,8 +5,9 @@ Importer module for lazy-loading/importing modules and objects.
 REQUIRES: importlib (provided in Python2.7, Python3.2...)
 """
 
-from behave.compat import importlib
+from __future__ import absolute_import
 from behave._types import Unknown
+import importlib
 
 
 class LazyObject(object):

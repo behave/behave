@@ -12,14 +12,16 @@ and running features, etc.
 
 """
 
-from __future__ import print_function, with_statement
+from __future__ import absolute_import, print_function, with_statement
 from behave4cmd0.__setup import TOP
 import os.path
 import six
 import subprocess
 import sys
 import shlex
-import codecs
+if six.PY2:
+    import codecs
+
 
 # HERE = os.path.dirname(__file__)
 # TOP  = os.path.join(HERE, "..")
@@ -79,13 +81,16 @@ class Command(object):
         Make a subprocess call, collect its output and returncode.
         Returns CommandResult instance as ValueObject.
         """
-        assert isinstance(command, basestring)
+        assert isinstance(command, six.string_types)
         command_result = CommandResult()
         command_result.command = command
 
         # -- BUILD COMMAND ARGS:
-        if isinstance(command, unicode):
-            command = codecs.encode(command)
+        if isinstance(command, six.text_type):
+            if six.PY2:
+                command = codecs.encode(command)
+            else:
+                command = command.encode('utf-8').decode('unicode_escape')
         cmdargs = shlex.split(command)
 
         # -- TRANSFORM COMMAND (optional)
@@ -101,17 +106,8 @@ class Command(object):
                             universal_newlines=True,
                             cwd=cwd, **kwargs)
             out, err = process.communicate()
-            # XXX-JE-OLD: if sys.version_info[0] < 3: # py3: we get unicode strings, py2 not
             if six.PY2: # py3: we get unicode strings, py2 not
-                # XXX-DISABLED:
-                # try:
-                #    # jython may not have it
-                #     default_encoding = sys.getdefaultencoding()
-                # except AttributeError:
-                #     default_encoding = sys.stdout.encoding or 'UTF-8'
                 default_encoding = 'UTF-8'
-                # XXX-JE-OLD: out = unicode(out, process.stdout.encoding or default_encoding)
-                # XXX-JE-OLD: err = unicode(err, process.stderr.encoding or default_encoding)
                 out = six.text_type(out, process.stdout.encoding or default_encoding)
                 err = six.text_type(err, process.stderr.encoding or default_encoding)
             process.poll()
@@ -123,7 +119,7 @@ class Command(object):
                 print("shell.cwd={0}".format(kwargs.get("cwd", None)))
                 print("shell.command: {0}".format(" ".join(cmdargs)))
                 print("shell.command.output:\n{0};".format(command_result.output))
-        except OSError, e:
+        except OSError as e:
             command_result.stderr = u"OSError: %s" % e
             command_result.returncode = e.errno
             assert e.errno != 0
@@ -142,7 +138,7 @@ def behave(cmdline, cwd=".", **kwargs):
     Run behave as subprocess command and return process/shell instance
     with results (collected output, returncode).
     """
-    assert isinstance(cmdline, basestring)
+    assert isinstance(cmdline, six.string_types)
     return run("behave " + cmdline, cwd=cwd, **kwargs)
 
 # -----------------------------------------------------------------------------

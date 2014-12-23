@@ -17,6 +17,7 @@ EXAMPLE:
       '''
 """
 
+from __future__ import absolute_import
 from behave import given, when, then
 from behave.runner_util import FeatureListParser
 from hamcrest import assert_that, equal_to

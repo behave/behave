@@ -13,6 +13,7 @@ NEWS and CHANGES:
 
   - General:
 
+    * Improve support for Python3 (py3.3, py3.4; #268)
     * Drop support for Python 2.5
 
   - Running:
@@ -43,6 +44,7 @@ ENHANCEMENTS:
 
 FIXED:
 
+  * pull #268: Fix py3 compatibility with all tests passed (provided by: sunliwen)
   * issue #257: Fix JUnitReporter (XML) for Python3 (provided by: actionless)
   * issue #249: Fix a number of docstring problems (provided by: masak)
   * issue #253: Various problems in PrettyFormatter.exception()

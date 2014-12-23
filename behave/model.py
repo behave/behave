@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import with_statement
+from __future__ import absolute_import, with_statement
 import copy
 import difflib
 import itertools
 import logging
 import os.path
+import six
+from six.moves import zip
 import sys
 import time
 import traceback
-from six import string_types
 from behave import step_registry
-from behave.compat.os_path import relpath
 
 
 class Argument(object):
@@ -73,7 +73,7 @@ class FileLocation(object):
         self.line = line
 
     # def __new__(cls, filename, line=None):
-    #     assert isinstance(filename, string_types)
+    #     assert isinstance(filename, six.string_types)
     #     obj = unicode.__new__(cls, filename)
     #     obj.line = line
     #     obj.__filename = filename
@@ -103,15 +103,23 @@ class FileLocation(object):
         :param start: Base path or start directory (default=current dir).
         :return: Relative path from start to filename
         """
-        return relpath(self.filename, start)
+        return os.path.relpath(self.filename, start)
 
     def exists(self):
         return os.path.exists(self.filename)
 
+    def _line_lessthan(self, other_line):
+        if self.line is None:
+            return not (other_line is None)
+        elif other_line is None:
+            return False
+        else:
+            return self.line < other_line
+
     def __eq__(self, other):
         if isinstance(other, FileLocation):
             return self.filename == other.filename and self.line == other.line
-        elif isinstance(other, string_types):
+        elif isinstance(other, six.string_types):
             return self.filename == other
         else:
             raise AttributeError("Cannot compare FileLocation with %s:%s" % \
@@ -128,8 +136,9 @@ class FileLocation(object):
                 return False
             else:
                 assert self.filename == other.filename
-                return self.line < other.line
-        elif isinstance(other, string_types):
+                return self._line_lessthan(other.line)
+
+        elif isinstance(other, six.string_types):
             return self.filename < other
         else:
             raise AttributeError("Cannot compare FileLocation with %s:%s" % \
@@ -163,10 +172,10 @@ class FileLocation(object):
 class BasicStatement(object):
     def __init__(self, filename, line, keyword, name):
         filename = filename or '<string>'
-        filename = relpath(filename, os.getcwd())   # -- NEEDS: abspath?
+        filename = os.path.relpath(filename, os.getcwd())   # -- NEEDS: abspath?
         self.location = FileLocation(filename, line)
-        assert isinstance(keyword, unicode)
-        assert isinstance(name, unicode)
+        assert isinstance(keyword, six.text_type)
+        assert isinstance(name, six.text_type)
         self.keyword = keyword
         self.name = name
 
@@ -181,17 +190,43 @@ class BasicStatement(object):
 
     # @property
     # def location(self):
-    #     p = relpath(self.filename, os.getcwd())
+    #     p = os.path.relpath(self.filename, os.getcwd())
     #     return '%s:%d' % (p, self.line)
+
+    def __hash__(self):
+        # -- NEEDED-FOR: PYTHON3
+        # return id((self.keyword, self.name))
+        return id(self)
+
+    def __eq__(self, other):
+        # -- PYTHON3 SUPPORT, ORDERABLE:
+        # NOTE: Ignore potential FileLocation differences.
+        return (self.keyword, self.name) == (other.keyword, other.name)
 
     def __lt__(self, other):
         # -- PYTHON3 SUPPORT, ORDERABLE:
         # NOTE: Ignore potential FileLocation differences.
         return (self.keyword, self.name) < (other.keyword, other.name)
 
-    def __cmp__(self, other):
-        # -- NOTE: Ignore potential FileLocation differences.
-        return cmp((self.keyword, self.name), (other.keyword, other.name))
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __le__(self, other):
+        # -- SEE ALSO: python2.7, functools.total_ordering
+        return not other < self
+
+    def __gt__(self, other):
+        # -- SEE ALSO: python2.7, functools.total_ordering
+        assert isinstance(other, BasicStatement)
+        return other < self
+
+    def __ge__(self, other):
+        # -- SEE ALSO: python2.7, functools.total_ordering
+        return not self < other
+
+    # def __cmp__(self, other):
+    #     # -- NOTE: Ignore potential FileLocation differences.
+    #     return cmp((self.keyword, self.name), (other.keyword, other.name))
 
 
 class TagStatement(BasicStatement):
@@ -1406,12 +1441,12 @@ class Step(BasicStatement, Replayable):
             if self.status == 'untested':
                 # -- NOTE: Executed step may have skipped scenario and itself.
                 self.status = 'passed'
-        except KeyboardInterrupt, e:
+        except KeyboardInterrupt as e:
             runner.aborted = True
             error = u"ABORTED: By user (KeyboardInterrupt)."
             self.status = 'failed'
             self.store_exception_context(e)
-        except AssertionError, e:
+        except AssertionError as e:
             self.status = 'failed'
             self.store_exception_context(e)
             if e.args:
@@ -1419,7 +1454,7 @@ class Step(BasicStatement, Replayable):
             else:
                 # no assertion text; format the exception
                 error = traceback.format_exc()
-        except Exception, e:
+        except Exception as e:
             self.status = 'failed'
             error = traceback.format_exc()
             self.store_exception_context(e)
@@ -1663,7 +1698,7 @@ class Row(object):
         self.headings = headings
         self.comments = comments
         for c in cells:
-            assert isinstance(c, unicode)
+            assert isinstance(c, six.text_type)
         self.cells = cells
         self.line = line
 
@@ -1710,7 +1745,7 @@ class Row(object):
         return OrderedDict(self.items())
 
 
-class Tag(unicode):
+class Tag(six.text_type):
     """Tags appear may be associated with Features or Scenarios.
 
     They're a subclass of regular strings (unicode pre-Python 3) with an
@@ -1720,7 +1755,7 @@ class Tag(unicode):
     See :ref:`controlling things with tags`.
     """
     def __new__(cls, name, line):
-        o = unicode.__new__(cls, name)
+        o = six.text_type.__new__(cls, name)
         o.line = line
         return o
 
@@ -1735,7 +1770,7 @@ class Tag(unicode):
         :param text: Unicode text as input for name.
         :return: Unicode name that can be used as tag.
         """
-        assert isinstance(text, unicode)
+        assert isinstance(text, six.text_type)
         if unescape:
             # -- UNESCAPE: Some escaped sequences
             text = text.replace("\\t", "\t").replace("\\n", "\n")
@@ -1749,7 +1784,7 @@ class Tag(unicode):
         return u"".join(chars)
 
 
-class Text(unicode):
+class Text(six.text_type):
     '''Store multiline text from a Step definition.
 
     The attributes are:
@@ -1763,9 +1798,9 @@ class Text(unicode):
        Currently only 'text/plain'.
     '''
     def __new__(cls, value, content_type=u'text/plain', line=0):
-        assert isinstance(value, unicode)
-        assert isinstance(content_type, unicode)
-        o = unicode.__new__(cls, value)
+        assert isinstance(value, six.text_type)
+        assert isinstance(content_type, six.text_type)
+        o = six.text_type.__new__(cls, value)
         o.content_type = content_type
         o.line = line
         return o
@@ -1855,8 +1890,9 @@ class Match(Replayable):
         :param step_function: Function whose location should be determined.
         :return: Step function location as string.
         '''
-        filename = relpath(step_function.func_code.co_filename, os.getcwd())
-        line_number = step_function.func_code.co_firstlineno
+        step_function_code = six.get_function_code(step_function)
+        filename = os.path.relpath(step_function_code.co_filename, os.getcwd())
+        line_number = step_function_code.co_firstlineno
         return FileLocation(filename, line_number)
 
 

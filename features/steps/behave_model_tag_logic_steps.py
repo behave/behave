@@ -41,6 +41,7 @@ Provides step definitions that test tag logic for selected features, scenarios.
         | Scenario   | B3     | no        |
 """
 
+from __future__ import absolute_import
 from behave import given, when, then
 from behave_model_util import BehaveModelBuilder, convert_comma_list
 from behave_model_util import \

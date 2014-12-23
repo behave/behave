@@ -3,6 +3,7 @@
 Provides ANSI escape sequences for coloring/formatting output in ANSI terminals.
 """
 
+from __future__ import absolute_import
 import os
 import re
 

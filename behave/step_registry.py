@@ -5,6 +5,8 @@ The step registry allows to match steps (model elements) with
 step implementations (step definitions). This is necessary to execute steps.
 """
 
+from __future__ import absolute_import
+
 
 class AmbiguousStep(ValueError):
     pass

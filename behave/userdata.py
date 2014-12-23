@@ -3,6 +3,7 @@
 Functionality to support user-specific configuration data (userdata).
 """
 
+from __future__ import absolute_import
 from behave._types import Unknown
 
 

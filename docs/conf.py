@@ -12,6 +12,7 @@
 # serve to show the default.
 
 import sys, os
+import six
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -28,8 +29,12 @@ sys.path.insert(0, os.path.abspath('..'))
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.extlinks",
+    # -- PYTHON2 SUPPORT ONLY:
     "sphinxcontrib.cheeseshop",
 ]
+# if six.PY2:
+#     # -- PYTHON2 ONLY: Not ported to python3, yet.
+#     extensions.append("sphinxcontrib.cheeseshop")
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -46,7 +51,7 @@ master_doc = 'index'
 # General information about the project.
 project = u'behave'
 authors = u'Benno Rice, Richard Jones and Jens Engel'
-copyright = u'2012-2013, %s' % authors
+copyright = u'2012-2014, %s' % authors
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -138,7 +143,7 @@ html_theme_path = ['_themes']
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "_static/behave_logo.png"
+html_logo = "_static/behave_logo2.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32

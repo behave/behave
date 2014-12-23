@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from behave.configuration import Configuration
 from behave.userdata import UserData, parse_user_define
 from behave._types import Unknown

@@ -1,4 +1,4 @@
-from __future__ import with_statement
+from __future__ import absolute_import, with_statement
 
 from mock import Mock, patch
 from nose.tools import *
@@ -142,8 +142,8 @@ class TestRegexMatcher(object):
 
 def test_step_matcher_current_matcher():
     current_matcher = matchers.current_matcher
-
-    for name, klass in matchers.matcher_mapping.items():
+    # XXX-CHECK-PY23: If list() is needed.
+    for name, klass in list(matchers.matcher_mapping.items()):
         matchers.use_step_matcher(name)
         matcher = matchers.get_matcher(lambda x: -x, 'foo')
         assert isinstance(matcher, klass)

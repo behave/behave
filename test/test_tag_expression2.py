@@ -5,9 +5,11 @@ Alternative approach to test TagExpression by testing all possible combinations.
 REQUIRES: Python >= 2.6, because itertools.combinations() is used.
 """
 
+from __future__ import absolute_import
 from behave.tag_expression import TagExpression
 from nose import tools
 import itertools
+from six.moves import range
 
 has_combinations = hasattr(itertools, "combinations")
 if has_combinations:

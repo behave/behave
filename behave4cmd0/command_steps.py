@@ -9,7 +9,7 @@ TODO:
   matcher that ignores empty lines and whitespace and has contains comparison
 """
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 from behave import given, when, then, step, matchers
 from behave4cmd0 import command_shell, command_util, pathutil, textutil
 from behave4cmd0.pathutil import posixpath_normpath
@@ -86,8 +86,8 @@ def step_i_run_command(context, command):
     context.command_result = command_shell.run(command, cwd=context.workdir)
     command_util.workdir_save_coverage_files(context.workdir)
     if False and DEBUG:
-        print(u"XXX run_command: {0}".format(command))
-        print(u"XXX run_command.outout {0}".format(context.command_result.output))
+        print(u"run_command: {0}".format(command))
+        print(u"run_command.output {0}".format(context.command_result.output))
 
 
 @then(u'it should fail with result "{result:int}"')

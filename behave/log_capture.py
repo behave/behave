@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 import logging
 import functools
 from logging.handlers import BufferingHandler
 import re
-
-from behave.configuration import ConfigError
 
 
 class RecordFilter(object):
@@ -88,7 +86,7 @@ class LoggingCapture(BufferingHandler):
         if config.logging_filter:
             self.addFilter(RecordFilter(config.logging_filter))
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self.buffer)
 
     def flush(self):

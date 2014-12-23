@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import with_statement, print_function
+from __future__ import absolute_import, print_function, with_statement
 import contextlib
 import os.path
-import StringIO
+import six
+from six import StringIO
 import sys
 import traceback
 import warnings
@@ -265,7 +266,7 @@ class Context(object):
 
         Returns boolean False if the steps are not parseable, True otherwise.
         '''
-        assert isinstance(steps_text, unicode), "Steps must be unicode."
+        assert isinstance(steps_text, six.text_type), "Steps must be unicode."
         if not self.feature:
             raise ValueError('execute_steps() called outside of feature')
 
@@ -296,14 +297,11 @@ def exec_file(filename, globals={}, locals=None):
     if locals is None:
         locals = globals
     locals['__file__'] = filename
-    if sys.version_info[0] == 3:
-        with open(filename) as f:
-            # -- FIX issue #80: exec(f.read(), globals, locals)
-            filename2 = os.path.relpath(filename, os.getcwd())
-            code = compile(f.read(), filename2, 'exec')
-            exec(code, globals, locals)
-    else:
-        execfile(filename, globals, locals)
+    with open(filename) as f:
+        # -- FIX issue #80: exec(f.read(), globals, locals)
+        filename2 = os.path.relpath(filename, os.getcwd())
+        code = compile(f.read(), filename2, 'exec')
+        exec(code, globals, locals)
 
 
 def path_getrootdir(path):
@@ -411,11 +409,11 @@ class ModelRunner(object):
             self.context = Context(self)
 
         if self.config.stdout_capture:
-            self.stdout_capture = StringIO.StringIO()
+            self.stdout_capture = StringIO()
             self.context.stdout_capture = self.stdout_capture
 
         if self.config.stderr_capture:
-            self.stderr_capture = StringIO.StringIO()
+            self.stderr_capture = StringIO()
             self.context.stderr_capture = self.stderr_capture
 
         if self.config.log_capture:

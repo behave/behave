@@ -3,6 +3,7 @@
 Provides a summary after each test run.
 """
 
+from __future__ import absolute_import, division
 import sys
 from behave.model import ScenarioOutline
 from behave.reporter.base import Reporter
@@ -72,7 +73,7 @@ class SummaryReporter(Reporter):
         self.stream.write(format_summary('feature', self.feature_summary))
         self.stream.write(format_summary('scenario', self.scenario_summary))
         self.stream.write(format_summary('step', self.step_summary))
-        timings = int(self.duration / 60), self.duration % 60
+        timings = (int(self.duration / 60.0), self.duration % 60)
         self.stream.write('Took %dm%02.3fs\n' % timings)
 
     def process_scenario(self, scenario):

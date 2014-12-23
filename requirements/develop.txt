@@ -8,7 +8,7 @@
 # -- DEVELOPMENT SUPPORT:
 # PREPARED: nose-cov >= 1.4
 # PREPARED: paver >= 1.2
-tox   >= 1.6.1
+tox   >= 1.8.1
 coverage >= 3.7
 
 # -- CONFIGURATION MANAGEMENT (helpers):

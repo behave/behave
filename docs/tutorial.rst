@@ -604,17 +604,27 @@ by using the ``after_step()`` hook.
 The debugger is started when a step fails.
 
 It is in general a good idea to enable this functionality only when needed
-(in interactive mode). This is accomplished in this example by using an
-environment variable.
+(in interactive mode). The functionality is enabled (in this example)
+by using the user-specific configuration data. A user can:
+
+  * provide a userdata define on command-line
+  * store a value in the "behave.userdata" section of behave's configuration file
 
 .. code-block:: python
 
     # -- FILE: features/environment.py
-    # USE: BEHAVE_DEBUG_ON_ERROR=yes     (to enable debug-on-error)
-    from distutils.util import strtobool as _bool
-    import os
+    # USE: behave -D BEHAVE_DEBUG_ON_ERROR         (to enable  debug-on-error)
+    # USE: behave -D BEHAVE_DEBUG_ON_ERROR=yes     (to enable  debug-on-error)
+    # USE: behave -D BEHAVE_DEBUG_ON_ERROR=no      (to disable debug-on-error)
 
-    BEHAVE_DEBUG_ON_ERROR = _bool(os.environ.get("BEHAVE_DEBUG_ON_ERROR", "no"))
+    BEHAVE_DEBUG_ON_ERROR = False
+
+    def setup_debug_on_error(userdata):
+        global BEHAVE_DEBUG_ON_ERROR
+        BEHAVE_DEBUG_ON_ERROR = userdata.getbool("BEHAVE_DEBUG_ON_ERROR")
+
+    def before_all(context):
+        setup_debug_on_error(context.config.userdata)
 
     def after_step(context, step):
         if BEHAVE_DEBUG_ON_ERROR and step.status == "failed":

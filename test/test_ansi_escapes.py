@@ -6,12 +6,14 @@
 #   W0614   Unused import ... from wildcard import
 #   W0621   Redefining name ... from outer scope
 
+from __future__ import absolute_import
 from nose import tools
 from behave.formatter import ansi_escapes
 import unittest
+from six.moves import range
 
 class StripEscapesTest(unittest.TestCase):
-    ALL_COLORS = ansi_escapes.colors.keys()
+    ALL_COLORS = list(ansi_escapes.colors.keys())
     CURSOR_UPS = [ ansi_escapes.up(count)  for count in range(10) ]
     TEXTS = [
         u"lorem ipsum",
@@ -45,9 +47,10 @@ class StripEscapesTest(unittest.TestCase):
             tools.eq_(text, ansi_escapes.strip_escapes(text))
 
     def test_should_return_empty_string_for_any_ansi_escape(self):
-        for text in ansi_escapes.colors.values():
+        # XXX-JE-CHECK-PY23: If list() is really needed.
+        for text in list(ansi_escapes.colors.values()):
             tools.eq_("", ansi_escapes.strip_escapes(text))
-        for text in ansi_escapes.escapes.values():
+        for text in list(ansi_escapes.escapes.values()):
             tools.eq_("", ansi_escapes.strip_escapes(text))
 
 

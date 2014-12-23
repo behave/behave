@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+import argparse
+import logging
 import os
 import re
 import sys
-import logging
 import shlex
-import argparse
+import six
 from six.moves import configparser
-from six import string_types
 
 from behave.model import FileLocation, ScenarioOutline
 from behave.reporter.junit import JUnitReporter
@@ -440,7 +440,7 @@ def load_configuration(defaults, verbose=False):
 
     if verbose:
         print('Using defaults:')
-        for k, v in defaults.items():
+        for k, v in six.iteritems(defaults):
             print('%15s %s' % (k, v))
 
 
@@ -510,16 +510,18 @@ class Configuration(object):
         """
         if command_args is None:
             command_args = sys.argv[1:]
-        elif isinstance(command_args, string_types):
-            if isinstance(command_args, unicode):
+        elif isinstance(command_args, six.string_types):
+            if six.PY2 and isinstance(command_args, six.text_type):
                 command_args = command_args.encode("utf-8")
+            elif six.PY3 and isinstance(command_args, six.binary_type):
+                command_args = command_args.decode("utf-8")
             command_args = shlex.split(command_args)
         if verbose is None:
             # -- AUTO-DISCOVER: Verbose mode from command-line args.
             verbose = ('-v' in command_args) or ('--verbose' in command_args)
 
         defaults = self.defaults.copy()
-        for name, value in kwargs.items():
+        for name, value in six.iteritems(kwargs):
             defaults[name] = value
         self.defaults = defaults
         self.formatters = []
@@ -537,7 +539,7 @@ class Configuration(object):
         parser = setup_parser()
         parser.set_defaults(**self.defaults)
         args = parser.parse_args(command_args)
-        for key, value in args.__dict__.items():
+        for key, value in six.iteritems(args.__dict__):
             if key.startswith('_') and key not in self.cmdline_only_options:
                 continue
             setattr(self, key, value)
@@ -677,7 +679,7 @@ class Configuration(object):
 
     def setup_model(self):
         if self.scenario_outline_annotation_schema:
-            name_schema = unicode(self.scenario_outline_annotation_schema)
+            name_schema = six.text_type(self.scenario_outline_annotation_schema)
             ScenarioOutline.annotation_schema = name_schema.strip()
 
     def setup_stage(self, stage=None):

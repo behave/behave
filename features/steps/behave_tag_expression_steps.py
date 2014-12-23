@@ -21,6 +21,7 @@ Provides step definitions that test tag expressions (and tag logic).
         | -@foo          | S0, S2, S3   |
 """
 
+from __future__ import absolute_import
 from behave import given, then, register_type
 from behave.tag_expression import TagExpression
 from behave_model_util import convert_comma_list, convert_model_element_tags

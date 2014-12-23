@@ -172,7 +172,7 @@ class OnlyWithAnyCategoryTagMatcher(TagMatcher):
                 exclude_decision_map[category] = False
             else:
                 # -- CASE: Inactive category value selected, may exclude it.
-                if not exclude_decision_map.has_key(category):
+                if category not in exclude_decision_map:
                     exclude_decision_map[category] = True
         return any(exclude_decision_map.values())
 

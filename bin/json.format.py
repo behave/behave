@@ -7,6 +7,8 @@ REQUIRES: Python >= 2.6 (json module is part of Python standard library)
 LICENSE:  BSD
 """
 
+from __future__ import absolute_import
+
 __author__    = "Jens Engel"
 __copyright__ = "(c) 2011-2013 by Jens Engel"
 VERSION = "0.2.2"
@@ -15,7 +17,7 @@ VERSION = "0.2.2"
 import os.path
 import glob
 import logging
-from   optparse import OptionParser
+from optparse import OptionParser
 import sys
 try:
     import json
@@ -89,7 +91,7 @@ def json_formatall(filenames, indent=DEFAULT_INDENT_SIZE, dry_run=False):
 #        except json.decoder.JSONDecodeError, e:
 #            console.error("ERROR: %s (filename: %s)", e, filename)
 #            errors += 1
-        except StandardError, e:
+        except Exception as e:
             console.error("ERROR %s: %s (filename: %s)",
                           e.__class__.__name__, e, filename)
             errors += 1

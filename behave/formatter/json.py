@@ -19,7 +19,7 @@ class JSONFormatter(Formatter):
     dumps_kwargs = {}
     split_text_into_lines = True   # EXPERIMENT for better readability.
 
-    json_number_types = (int, long, float)
+    json_number_types = six.integer_types + (float,)
     json_scalar_types = json_number_types + (six.text_type, bool, type(None))
 
     def __init__(self, stream_opener, config):
@@ -47,7 +47,7 @@ class JSONFormatter(Formatter):
             'keyword': feature.keyword,
             'name': feature.name,
             'tags': list(feature.tags),
-            'location': unicode(feature.location),
+            'location': six.text_type(feature.location),
             'status': feature.status,
         }
         element = self.current_feature_data
@@ -59,7 +59,7 @@ class JSONFormatter(Formatter):
             'type': 'background',
             'keyword': background.keyword,
             'name': background.name,
-            'location': unicode(background.location),
+            'location': six.text_type(background.location),
             'steps': [],
         })
         if background.name:
@@ -76,7 +76,7 @@ class JSONFormatter(Formatter):
             'keyword': scenario.keyword,
             'name': scenario.name,
             'tags': scenario.tags,
-            'location': unicode(scenario.location),
+            'location': six.text_type(scenario.location),
             'steps': [],
         })
         if scenario.description:
@@ -89,7 +89,7 @@ class JSONFormatter(Formatter):
             'keyword': scenario_outline.keyword,
             'name': scenario_outline.name,
             'tags': scenario_outline.tags,
-            'location': unicode(scenario_outline.location),
+            'location': six.text_type(scenario_outline.location),
             'steps': [],
             'examples': [],
         })
@@ -110,7 +110,7 @@ class JSONFormatter(Formatter):
             'type': 'examples',
             'keyword': examples.keyword,
             'name': examples.name,
-            'location': unicode(examples.location),
+            'location': six.text_type(examples.location),
         }
 
         if examples.table:
@@ -124,7 +124,7 @@ class JSONFormatter(Formatter):
             'keyword': step.keyword,
             'step_type': step.step_type,
             'name': step.name,
-            'location': unicode(step.location),
+            'location': six.text_type(step.location),
         }
 
         if step.text:
@@ -157,7 +157,7 @@ class JSONFormatter(Formatter):
             args.append(arg)
 
         match_data = {
-            'location': unicode(match.location) or "",
+            'location': six.text_type(match.location) or "",
             'arguments': args,
         }
         if match.location:

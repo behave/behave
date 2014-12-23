@@ -7,8 +7,10 @@ EXAMPLE:
     $ behave --dry-run -f tag_counts features/
 """
 
+from __future__ import absolute_import
 from behave.formatter.base import Formatter
 from behave.textutil import compute_words_maxsize
+import six
 
 
 # -----------------------------------------------------------------------------
@@ -108,7 +110,7 @@ class TagsFormatter(AbstractTagsFormatter):
 
         parts = []
         if len(details) == 1:
-            parts.append(details.keys()[0])
+            parts.append(list(details.keys())[0])
         else:
             for category in sorted(details.keys()):
                 text = u"%s: %d" % (category, details[category])
@@ -172,7 +174,7 @@ class TagsLocationFormatter(AbstractTagsFormatter):
         # -- PREPARE REPORT:
         locations = set()
         for tag_elements in self.tag_counts.values():
-            locations.update([unicode(x.location) for x in tag_elements])
+            locations.update([six.text_type(x.location) for x in tag_elements])
         location_column_size = compute_words_maxsize(locations)
         schema = u"    %-" + str(location_column_size) + "s   %s\n"
 

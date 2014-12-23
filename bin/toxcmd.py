@@ -18,6 +18,7 @@ import argparse
 import inspect
 import os.path
 import shutil
+import six
 import sys
 
 __author__ = "Jens Engel"
@@ -148,15 +149,32 @@ command_mkdir.setup_parser = setup_parser_mkdir
 # -----------------------------------------------------------------------------
 # SUBCOMMAND: py2to3
 # -----------------------------------------------------------------------------
+command_py2to3_work_around3k = six.PY3
 def command_py2to3(args):
     """
     Apply '2to3' tool (Python2 to Python3 conversion tool) to Python sources.
     """
     from lib2to3.main import main
-    sys.exit(main("lib2to3.fixes", args=args.sources))
+    args2 = []
+    if command_py2to3_work_around3k:
+        if args.no_diffs:
+            args2.append("--no-diffs")
+        if args.write:
+            args2.append("-w")
+        if args.nobackups:
+            args2.append("-n")
+    args2.extend(args.sources)
+    sys.exit(main("lib2to3.fixes", args=args2))
 
 
 def setup_parser4py2to3(parser):
+    if command_py2to3_work_around3k:
+        parser.add_argument("--no-diffs", action="store_true",
+                          help="Don't show diffs of the refactoring")
+        parser.add_argument("-w", "--write", action="store_true",
+                          help="Write back modified files")
+        parser.add_argument("-n", "--nobackups", action="store_true", default=False,
+                          help="Don't write backups for modified files.")
     parser.add_argument("sources", nargs="+", help="Source files.")
 
 
@@ -183,7 +201,7 @@ def discover_commands():
 
 class Command(object):
     def __init__(self, name, func):
-        assert isinstance(name, basestring)
+        assert isinstance(name, six.string_types)
         assert callable(func)
         self.name = name
         self.func = func
