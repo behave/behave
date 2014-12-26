@@ -56,7 +56,7 @@ class TestLazyObject(object):
         self.theory.assert_module_is_imported(module_name)
 
     def test_load_module__should_succeed_for_existing_module(self):
-        module_name = "behave.textutil"
+        module_name = "test._importer_candidate"
         self.theory.ensure_module_is_not_imported(module_name)
 
         module = LazyObject.load_module(module_name)
@@ -81,7 +81,7 @@ class TestLazyObject(object):
         assert_raises(ImportError, lazy.get)
 
     def test_get__should_fail_for_unknown_object_in_module(self):
-        lazy = LazyObject("behave.textutil", "xxx")
+        lazy = LazyObject("test._importer_candidate", "xxx")
         assert_raises(ImportError, lazy.get)
 
 
