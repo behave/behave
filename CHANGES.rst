@@ -35,6 +35,7 @@ NEWS and CHANGES:
 
 ENHANCEMENTS:
 
+  * pull #285: Travis CI improvements to use container environment, etc. (provided by: thedrow)
   * pull #272: Use option role to format command line arg docs (provided by: helenst)
   * pull #271: Provide steps.catalog formatter (provided by: berdroid)
   * pull #261: Support "setup.cfg" as configuration file, too (provided by: bittner)
