@@ -1,4 +1,5 @@
 language: python
+sudo: false
 python:
   - 2.6
   - 2.7
@@ -7,7 +8,7 @@ python:
   - pypy
 
 install:
-  - pip install --use-mirrors -q mock nose PyHamcrest
+  - travis_retry pip install -q mock nose PyHamcrest
   - python setup.py -q install
 script:
   - python --version
