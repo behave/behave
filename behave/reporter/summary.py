@@ -4,9 +4,10 @@ Provides a summary after each test run.
 """
 
 from __future__ import absolute_import, division
-import sys
 from behave.model import ScenarioOutline
 from behave.reporter.base import Reporter
+from behave.formatter.base import StreamOpener
+import sys
 
 
 # -- DISABLED: optional_steps = ('untested', 'undefined')
@@ -28,9 +29,9 @@ def format_summary(statement_type, summary):
             label = statement_type
             if counts != 1:
                 label += 's'
-            part = '%d %s %s' % (counts, label, status)
+            part = u'%d %s %s' % (counts, label, status)
         else:
-            part = '%d %s' % (counts, status)
+            part = u'%d %s' % (counts, status)
         parts.append(part)
     return ', '.join(parts) + '\n'
 
@@ -41,7 +42,8 @@ class SummaryReporter(Reporter):
 
     def __init__(self, config):
         super(SummaryReporter, self).__init__(config)
-        self.stream = getattr(sys, self.output_stream_name, sys.stderr)
+        stream = getattr(sys, self.output_stream_name, sys.stderr)
+        self.stream = StreamOpener.ensure_stream_with_encoder(stream)
         self.feature_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
                                 'untested': 0}
         self.scenario_summary = {'passed': 0, 'failed': 0, 'skipped': 0,
@@ -65,7 +67,7 @@ class SummaryReporter(Reporter):
         if self.show_failed_scenarios and self.failed_scenarios:
             self.stream.write("\nFailing scenarios:\n")
             for scenario in self.failed_scenarios:
-                self.stream.write("  %s  %s\n" % (
+                self.stream.write(u"  %s  %s\n" % (
                     scenario.location, scenario.name))
             self.stream.write("\n")
 

@@ -7,11 +7,15 @@ from behave.compat.collections import OrderedDict
 from behave import step_registry
 from mock import Mock, patch
 from nose.tools import *
-import re
+import six
 import sys
 import unittest
 from six.moves import range
 from six.moves import zip
+
+
+# -- CONVENIENCE-ALIAS:
+_text = six.text_type
 
 
 class TestFeatureRun(unittest.TestCase):
@@ -748,7 +752,7 @@ class TestFileLocation(unittest.TestCase):
     def test_compare_less_than(self):
         for locations in [self.ordered_locations1, self.ordered_locations2]:
             for value1, value2 in zip(locations, locations[1:]):
-                assert value1  < value2, "FAILED: %s < %s" % (str(value1), str(value2))
+                assert value1  < value2, "FAILED: %s < %s" % (_text(value1), _text(value2))
                 assert value1 != value2
 
     def test_compare_less_than_with_string(self):
@@ -756,33 +760,33 @@ class TestFileLocation(unittest.TestCase):
         for value1, value2 in zip(locations, locations[1:]):
             if value1.filename == value2.filename:
                 continue
-            assert value1  < value2.filename, "FAILED: %s < %s" % (str(value1), str(value2.filename))
-            assert value1.filename < value2,  "FAILED: %s < %s" % (str(value1.filename), str(value2))
+            assert value1  < value2.filename, "FAILED: %s < %s" % (_text(value1), _text(value2.filename))
+            assert value1.filename < value2,  "FAILED: %s < %s" % (_text(value1.filename), _text(value2))
 
     def test_compare_greater_than(self):
         for locations in [self.ordered_locations1, self.ordered_locations2]:
             for value1, value2 in zip(locations, locations[1:]):
-                assert value2  > value1, "FAILED: %s > %s" % (str(value2), str(value1))
+                assert value2  > value1, "FAILED: %s > %s" % (_text(value2), _text(value1))
                 assert value2 != value1
 
     def test_compare_less_or_equal(self):
         for value1, value2 in self.same_locations:
-            assert value1 <= value2, "FAILED: %s <= %s" % (str(value1), str(value2))
+            assert value1 <= value2, "FAILED: %s <= %s" % (_text(value1), _text(value2))
             assert value1 == value2
 
         for locations in [self.ordered_locations1, self.ordered_locations2]:
             for value1, value2 in zip(locations, locations[1:]):
-                assert value1 <= value2, "FAILED: %s <= %s" % (str(value1), str(value2))
+                assert value1 <= value2, "FAILED: %s <= %s" % (_text(value1), _text(value2))
                 assert value1 != value2
 
     def test_compare_greater_or_equal(self):
         for value1, value2 in self.same_locations:
-            assert value2 >= value1, "FAILED: %s >= %s" % (str(value2), str(value1))
+            assert value2 >= value1, "FAILED: %s >= %s" % (_text(value2), _text(value1))
             assert value2 == value1
 
         for locations in [self.ordered_locations1, self.ordered_locations2]:
             for value1, value2 in zip(locations, locations[1:]):
-                assert value2 >= value1, "FAILED: %s >= %s" % (str(value2), str(value1))
+                assert value2 >= value1, "FAILED: %s >= %s" % (_text(value2), _text(value1))
                 assert value2 != value1
 
     def test_filename_should_be_same_as_self(self):
@@ -795,7 +799,7 @@ class TestFileLocation(unittest.TestCase):
             expected = u"%s:%s" % (location.filename, location.line)
             if location.line is None:
                 expected = location.filename
-            assert str(location) == expected
+            assert six.text_type(location) == expected
 
     def test_repr_conversion(self):
         for location in self.ordered_locations2:

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import, with_statement
+from __future__ import absolute_import, with_statement, unicode_literals
+from behave import step_registry
+from behave.textutil import text as _text
 import copy
 import difflib
 import itertools
@@ -11,7 +13,6 @@ from six.moves import zip
 import sys
 import time
 import traceback
-from behave import step_registry
 
 
 class Argument(object):
@@ -63,26 +64,13 @@ class FileLocation(object):
       * "{filename}:{line}" or
       * "{filename}" (if line number is not present)
     """
-    # -- pylint: disable=R0904,R0924
+    # -- pylint: disable=R0904
     #   R0904: 30,0:FileLocation: Too many public methods (43/30) => unicode
-    #   R0924: 30,0:FileLocation: Badly implemented Container, ...=> unicode
     __pychecker__ = "missingattrs=line"     # -- Ignore warnings for 'line'.
 
     def __init__(self, filename, line=None):
         self.filename = filename
         self.line = line
-
-    # def __new__(cls, filename, line=None):
-    #     assert isinstance(filename, six.string_types)
-    #     obj = unicode.__new__(cls, filename)
-    #     obj.line = line
-    #     obj.__filename = filename
-    #     return obj
-    #
-    # @property
-    # def filename(self):
-    #     # -- PREVENT: Assignments via property (and avoid self-recursion).
-    #     return self.__filename
 
     def get(self):
         return self.filename
@@ -164,9 +152,16 @@ class FileLocation(object):
                (self.filename, self.line)
 
     def __str__(self):
+        filename = self.filename
+        if isinstance(filename, six.binary_type):
+            filename = _text(filename, "utf-8")
         if self.line is None:
-            return self.filename
-        return u"%s:%d" % (self.filename, self.line)
+            return filename
+        return u"%s:%d" % (filename, self.line)
+
+    if six.PY2:
+        __unicode__ = __str__
+        __str__ = lambda self: self.__unicode__().encode("utf-8")
 
 
 class BasicStatement(object):
@@ -1119,12 +1114,12 @@ class ScenarioOutline(Scenario):
         for example_index, example in enumerate(self.examples):
             example.index = example_index+1
             params["examples.name"]  = example.name
-            params["examples.index"] = str(example.index)
+            params["examples.index"] = _text(example.index)
             for row_index, row in enumerate(example.table):
                 row.index = row_index+1
                 row.id = "%d.%d" % (example.index, row.index)
                 params["row.id"] = row.id
-                params["row.index"] = str(row.index)
+                params["row.index"] = _text(row.index)
                 scenario_name = self.make_scenario_name(example, row, params)
                 row_tags = self.make_row_tags(row, params)
                 new_steps = []
@@ -1450,13 +1445,14 @@ class Step(BasicStatement, Replayable):
             self.status = 'failed'
             self.store_exception_context(e)
             if e.args:
-                error = u'Assertion Failed: %s' % e
+                message = _text(e)
+                error = u'Assertion Failed: '+ message
             else:
                 # no assertion text; format the exception
-                error = traceback.format_exc()
+                error = _text(traceback.format_exc())
         except Exception as e:
             self.status = 'failed'
-            error = traceback.format_exc()
+            error = _text(traceback.format_exc())
             self.store_exception_context(e)
 
         self.duration = time.time() - start
@@ -1465,20 +1461,24 @@ class Step(BasicStatement, Replayable):
 
         # flesh out the failure with details
         if self.status == 'failed':
+            assert isinstance(error, six.text_type)
             if capture:
                 # -- CAPTURE-ONLY: Non-nested step failures.
                 if runner.config.stdout_capture:
                     output = runner.stdout_capture.getvalue()
                     if output:
-                        error += '\nCaptured stdout:\n' + output
+                        output = _text(output)
+                        error += u'\nCaptured stdout:\n' + output
                 if runner.config.stderr_capture:
                     output = runner.stderr_capture.getvalue()
                     if output:
-                        error += '\nCaptured stderr:\n' + output
+                        output = _text(output)
+                        error += u'\nCaptured stderr:\n' + output
                 if runner.config.log_capture:
                     output = runner.log_capture.getvalue()
                     if output:
-                        error += '\nCaptured logging:\n' + output
+                        output = _text(output)
+                        error += u'\nCaptured logging:\n' + output
             self.error_message = error
             keep_going = False
 

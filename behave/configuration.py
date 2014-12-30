@@ -635,7 +635,7 @@ class Configuration(object):
 
     def exclude(self, filename):
         if isinstance(filename, FileLocation):
-            filename = str(filename)
+            filename = six.text_type(filename)
 
         if self.include_re and self.include_re.search(filename) is None:
             return True

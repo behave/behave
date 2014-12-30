@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import, with_statement
 from behave import model, i18n
+from behave.textutil import text as _text
 import six
 
 
@@ -70,9 +71,16 @@ class ParserError(Exception):
         self.filename = filename
 
     def __str__(self):
+        arg0 = _text(self.args[0])
         if self.filename:
-            return 'Failed to parse "%s": %s' % (self.filename, self.args[0])
-        return 'Failed to parse <string>: %s' % self.args[0]
+            filename = _text(self.filename)
+            return u'Failed to parse "%s": %s' % (filename, arg0)
+        else:
+            return u'Failed to parse <string>: %s' % arg0
+
+    if six.PY2:
+        __unicode__ = __str__
+        __str__ = lambda self: self.__unicode__().encode("utf-8")
 
 
 class Parser(object):

@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import, print_function
-import sys
 from behave import __version__
 from behave.configuration import Configuration, ConfigError
+from behave.parser import ParserError
 from behave.runner import Runner
 from behave.runner_util import print_undefined_step_snippets, \
     InvalidFileLocationError, InvalidFilenameError, FileNotFoundError
-from behave.parser import ParserError
+from behave.textutil import text as _text
+import sys
+
 
 TAG_HELP = """
 Scenarios inherit tags declared on the Feature level. The simplest
@@ -108,15 +110,20 @@ def main(args=None):
     try:
         failed = runner.run()
     except ParserError as e:
-        print("ParseError: %s" % e)
+        print(u"ParseError: %s" % e)
     except ConfigError as e:
-        print("ConfigError: %s" % e)
+        print(u"ConfigError: %s" % e)
     except FileNotFoundError as e:
-        print("FileNotFoundError: %s" % e)
+        print(u"FileNotFoundError: %s" % e)
     except InvalidFileLocationError as e:
-        print("InvalidFileLocationError: %s" % e)
+        print(u"InvalidFileLocationError: %s" % e)
     except InvalidFilenameError as e:
-        print("InvalidFilenameError: %s" % e)
+        print(u"InvalidFilenameError: %s" % e)
+    except Exception as e:
+        # -- DIAGNOSTICS:
+        text = _text(e)
+        print(u"Exception %s: %s" % (e.__class__.__name__, text))
+        raise
 
     if config.show_snippets and runner.undefined_steps:
         print_undefined_step_snippets(runner.undefined_steps,

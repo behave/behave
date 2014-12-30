@@ -86,11 +86,11 @@ class Command(object):
         command_result.command = command
 
         # -- BUILD COMMAND ARGS:
-        if isinstance(command, six.text_type):
-            if six.PY2:
-                command = codecs.encode(command)
-            else:
-                command = command.encode('utf-8').decode('unicode_escape')
+        if six.PY2 and isinstance(command, six.text_type):
+            # -- PREPARE-FOR: shlex.split()
+            # In PY2, shlex.split() requires bytes string (non-unicode).
+            # In PY3, shlex.split() accepts unicode string.
+            command = codecs.encode(command, "utf-8")
         cmdargs = shlex.split(command)
 
         # -- TRANSFORM COMMAND (optional)

@@ -7,7 +7,8 @@ Provides a formatter that provides an overview of available step definitions
 from __future__ import absolute_import
 from behave.formatter.base import Formatter
 from behave.step_registry import StepRegistry, registry
-from behave.textutil import compute_words_maxsize, indent, make_indentation
+from behave.textutil import \
+    compute_words_maxsize, indent, make_indentation, text as _text
 from behave import i18n
 from operator import attrgetter
 import inspect
@@ -170,7 +171,7 @@ class StepsFormatter(AbstractStepsFormatter):
                 max_size = compute_words_maxsize(steps_text)
                 if max_size < self.min_location_column:
                     max_size = self.min_location_column
-                schema = u"  %-" + str(max_size) + "s  # %s\n"
+                schema = u"  %-" + _text(max_size) + "s  # %s\n"
             else:
                 schema = u"  %s\n"
 
@@ -269,14 +270,14 @@ class StepsCatalogFormatter(StepsDocFormatter):
     """
     Provides formatter class that shows the documentation of all registered
     step definitions. The primary purpose is to provide help for a test writer.
-    
+
     In order to ease work for non-programmer testers, the technical details of
     the steps (i.e. function name, source location) are ommited and the
     steps are shown as they would apprear in a feature file (no noisy '@',
     or '(', etc.).
-    
+
     Also, the output is sorted by step type (Given, When, Then)
-    
+
     Generic step definitions are listed with all three step types.
 
     EXAMPLE:
@@ -320,7 +321,7 @@ class StepsCatalogFormatter(StepsDocFormatter):
                 desc.append(text)
         else:
             desc.append(u"%s %s" % (step_type.title(), step_definition.string))
-            
+
         return '\n'.join(desc)
 
 
@@ -431,9 +432,9 @@ class StepsUsageFormatter(AbstractStepsFormatter):
             if max_size < self.min_location_column:
                 max_size = self.min_location_column
 
-            schema = u"%-" + str(max_size) + "s  # %s\n"
+            schema = u"%-" + _text(max_size) + "s  # %s\n"
             self.stream.write(schema % (stepdef_text, step_definition.location))
-            schema = u"%-" + str(max_size) + "s  # %s\n"
+            schema = u"%-" + _text(max_size) + "s  # %s\n"
             for step, step_text in zip(steps, steps_text):
                 self.stream.write(schema % (step_text, step.location))
             self.stream.write("\n")
@@ -455,10 +456,10 @@ class StepsUsageFormatter(AbstractStepsFormatter):
             max_size = self.min_location_column-2
 
         # -- STEP: Write report.
-        schema = u"  %-" + str(max_size) + "s  # %s\n"
+        schema = u"  %-" + _text(max_size) + "s  # %s\n"
         self.stream.write("UNUSED STEP DEFINITIONS[%d]:\n" % len(step_texts))
-        for step_definition, text in zip(step_definitions, step_texts):
-            self.stream.write(schema % (text, step_definition.location))
+        for step_definition, step_text in zip(step_definitions, step_texts):
+            self.stream.write(schema % (step_text, step_definition.location))
 
     def report_undefined_steps(self):
         if not self.undefined_steps:
@@ -475,7 +476,7 @@ class StepsUsageFormatter(AbstractStepsFormatter):
             max_size = self.min_location_column
 
         self.stream.write("\nUNDEFINED STEPS[%d]:\n" % len(steps_text))
-        schema = u"%-" + str(max_size) + "s  # %s\n"
+        schema = u"%-" + _text(max_size) + "s  # %s\n"
         for step, step_text in zip(undefined_steps, steps_text):
             self.stream.write(schema % (step_text, step.location))
 

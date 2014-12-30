@@ -2,7 +2,7 @@
 
 import sys
 from behave.formatter.base import StreamOpener
-from behave.textutil import compute_words_maxsize
+from behave.textutil import compute_words_maxsize, text as _text
 from behave.importer import LazyDict, LazyObject
 
 
@@ -33,7 +33,7 @@ def list_formatters(stream):
     """
     formatter_names = sorted(formatters)
     column_size = compute_words_maxsize(formatter_names)
-    schema = u"  %-"+ str(column_size) +"s  %s\n"
+    schema = u"  %-"+ _text(column_size) +"s  %s\n"
     for name in formatter_names:
         stream.write(schema % (name, formatters[name].description))
 

@@ -8,9 +8,11 @@ from behave import parser
 from behave.model import FileLocation
 from bisect import bisect
 from six import string_types
+import codecs
 import glob
 import os.path
 import re
+import six
 import sys
 
 
@@ -257,6 +259,8 @@ class FeatureListParser(object):
         if not os.path.isfile(filename):
             raise FileNotFoundError(filename)
         here = os.path.dirname(filename) or "."
+        # -- MAYBE BETTER:
+        # contents = codecs.open(filename, "utf-8").read()
         contents = open(filename).read()
         return cls.parse(contents, here)
 
@@ -367,7 +371,7 @@ def make_undefined_step_snippet(step, language=None):
 
     schema = u"@%s(%s'%s')\ndef step_impl(context):\n"
     schema += u"    raise NotImplementedError(%s'STEP: %s %s')\n\n"
-    snippet = schema % (step.step_type, prefix, step.name, 
+    snippet = schema % (step.step_type, prefix, step.name,
                         prefix, step.step_type.title(), step.name)
     return snippet
 

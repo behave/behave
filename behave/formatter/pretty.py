@@ -4,7 +4,7 @@ from __future__ import absolute_import, division
 from behave.formatter.ansi_escapes import escapes, up
 from behave.formatter.base import Formatter
 from behave.model_describe import escape_cell, escape_triple_quotes
-from behave.textutil import indent
+from behave.textutil import indent, text as _text
 import sys
 import six
 from six.moves import range
@@ -211,11 +211,12 @@ class PrettyFormatter(Formatter):
 
     def doc_string(self, doc_string):
         #self.stream.write('      """' + doc_string.content_type + '\n')
-        prefix = '      '
-        self.stream.write('%s"""\n' % prefix)
+        doc_string = _text(doc_string)
+        prefix = u'      '
+        self.stream.write(u'%s"""\n' % prefix)
         doc_string = escape_triple_quotes(indent(doc_string, prefix))
         self.stream.write(doc_string)
-        self.stream.write('\n%s"""\n' % prefix)
+        self.stream.write(u'\n%s"""\n' % prefix)
         self.stream.flush()
 
     # def doc_string(self, doc_string):
@@ -227,7 +228,7 @@ class PrettyFormatter(Formatter):
 
     # -- UNUSED:
     # def exception(self, exception):
-    #     exception_text = str(exception)
+    #     exception_text = _text(exception)
     #     self.stream.write(self.format("failed").text(exception_text) + "\n")
     #     self.stream.flush()
 

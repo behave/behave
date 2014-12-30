@@ -14,6 +14,7 @@ NEWS and CHANGES:
   - General:
 
     * Improve support for Python3 (py3.3, py3.4; #268)
+    * Various unicode related fixes (Unicode errors with non-ASCII, etc.)
     * Drop support for Python 2.5
 
   - Running:
@@ -39,7 +40,7 @@ ENHANCEMENTS:
   * pull #272: Use option role to format command line arg docs (provided by: helenst)
   * pull #271: Provide steps.catalog formatter (provided by: berdroid)
   * pull #261: Support "setup.cfg" as configuration file, too (provided by: bittner)
-  * pull #260: Documenation tweaks and typo fixes (provided by: bittner)
+  * pull #260: Documentation tweaks and typo fixes (provided by: bittner)
   * pull #254: Undefined step raises NotImplementedError instead of assert False (provided by: mhfrantz)
   * issue #242: JUnitReporter can show scenario tags (provided by: rigomes)
   * issue #240: Test Stages with different step implementations (provided by: attilammagyar, jenisys)
@@ -50,12 +51,19 @@ ENHANCEMENTS:
 FIXED:
 
   * pull #268: Fix py3 compatibility with all tests passed (provided by: sunliwen)
+  * pull #252: Related to #251 (provided by: mcepl)
+  * pull #190: UnicodeDecodeError in tracebacks (provided by: b3ni, vrutkovs, related to: #226, #230)
   * issue #257: Fix JUnitReporter (XML) for Python3 (provided by: actionless)
   * issue #249: Fix a number of docstring problems (provided by: masak)
   * issue #253: Various problems in PrettyFormatter.exception()
+  * issue #251: Unicode crash in model.py (provided by: mcepl, jenisys)
   * issue #236: Command line docs are confusing (solved by: #272)
+  * issue #230: problem with assert message that contains ascii over 128 value (provided by: jenisys)
+  * issue #226: UnicodeDecodeError in tracebacks (provided by: md1023, karulis, jenisys)
   * issue #221: Fix some PY2/PY3 incompatibilities (provided by: johbo)
   * issue #216: Using --wip option does not disable ANSI escape sequences (coloring).
+  * issue #119: Python3 support for behave (solved by: #268 and ...)
+  * issue #82:  JUnitReporter fails with Python 3.x (fixed with: #257, #268)
 
 
 .. _`New and Noteworthy`: https://github.com/behave/behave/blob/master/docs/new_and_noteworthy.rst

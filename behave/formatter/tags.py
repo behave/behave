@@ -9,7 +9,7 @@ EXAMPLE:
 
 from __future__ import absolute_import
 from behave.formatter.base import Formatter
-from behave.textutil import compute_words_maxsize
+from behave.textutil import compute_words_maxsize, text as _text
 import six
 
 
@@ -121,7 +121,7 @@ class TagsFormatter(AbstractTagsFormatter):
         # -- PREPARE REPORT:
         ordered_tags = sorted(list(self.tag_counts.keys()))
         tag_maxsize = compute_words_maxsize(ordered_tags)
-        schema = "  @%-" + str(tag_maxsize) + "s %4d    (used for %s)\n"
+        schema = "  @%-" + _text(tag_maxsize) + "s %4d    (used for %s)\n"
 
         # -- EMIT REPORT:
         self.stream.write("TAG COUNTS (alphabetically sorted):\n")
@@ -138,7 +138,7 @@ class TagsFormatter(AbstractTagsFormatter):
         ordered_tags = sorted(list(self.tag_counts.keys()),
                               key=compare_tag_counts_size)
         tag_maxsize = compute_words_maxsize(ordered_tags)
-        schema = "  @%-" + str(tag_maxsize) + "s %4d    (used for %s)\n"
+        schema = "  @%-" + _text(tag_maxsize) + "s %4d    (used for %s)\n"
 
         # -- EMIT REPORT:
         self.stream.write("TAG COUNTS (most often used first):\n")
@@ -176,7 +176,7 @@ class TagsLocationFormatter(AbstractTagsFormatter):
         for tag_elements in self.tag_counts.values():
             locations.update([six.text_type(x.location) for x in tag_elements])
         location_column_size = compute_words_maxsize(locations)
-        schema = u"    %-" + str(location_column_size) + "s   %s\n"
+        schema = u"    %-" + _text(location_column_size) + "s   %s\n"
 
         # -- EMIT REPORT:
         self.stream.write("TAG LOCATIONS (alphabetically ordered):\n")

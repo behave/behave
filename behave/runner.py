@@ -15,8 +15,8 @@ from behave.step_registry import setup_step_decorators
 from behave.formatter import formatters
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
-from behave.runner_util import \
-    collect_feature_locations, parse_features
+from behave.runner_util import collect_feature_locations, parse_features
+from behave.textutil import text as _text
 
 
 class ContextMaskWarning(UserWarning):
@@ -299,9 +299,14 @@ def exec_file(filename, globals={}, locals=None):
     locals['__file__'] = filename
     with open(filename) as f:
         # -- FIX issue #80: exec(f.read(), globals, locals)
+        # try:
         filename2 = os.path.relpath(filename, os.getcwd())
         code = compile(f.read(), filename2, 'exec')
         exec(code, globals, locals)
+        # except Exception as e:
+        #     e_text = _text(e)
+        #     print("Exception %s: %s" % (e.__class__.__name__, e_text))
+        #     raise
 
 
 def path_getrootdir(path):
@@ -649,9 +654,14 @@ class Runner(ModelRunner):
                         # Reset to default matcher after each step-definition.
                         # A step-definition may change the matcher 0..N times.
                         # ENSURE: Each step definition has clean globals.
+                        # try:
                         step_module_globals = step_globals.copy()
                         exec_file(os.path.join(path, name), step_module_globals)
                         matchers.current_matcher = default_matcher
+                        # except Exception as e:
+                        #     e_text = _text(e)
+                        #     print("Exception %s: %s" % (e.__class__.__name__, e_text))
+                        #     raise
 
     def feature_locations(self):
         return collect_feature_locations(self.config.paths)

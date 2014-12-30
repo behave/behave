@@ -3,6 +3,7 @@
 from __future__ import absolute_import, print_function, with_statement
 from collections import defaultdict
 from six import StringIO
+import six
 import os.path
 import sys
 import warnings
@@ -16,6 +17,10 @@ from behave import model, parser, runner, step_registry
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
 from behave.formatter.base import StreamOpener
+
+
+# -- CONVENIENCE-ALIAS:
+_text = six.text_type
 
 
 class TestContext(unittest.TestCase):
@@ -294,7 +299,7 @@ Then a step passes
             try:
                 result = self.context.execute_steps(doc)
             except AssertionError as e:
-                ok_("FAILED SUB-STEP: When a step fails" in str(e))
+                ok_("FAILED SUB-STEP: When a step fails" in _text(e))
 
     def test_execute_steps_with_undefined_step(self):
         doc = u'''
@@ -306,7 +311,7 @@ Then a step passes
             try:
                 result = self.context.execute_steps(doc)
             except AssertionError as e:
-                ok_("UNDEFINED SUB-STEP: When a step is undefined" in str(e))
+                ok_("UNDEFINED SUB-STEP: When a step is undefined" in _text(e))
 
     def test_execute_steps_with_text(self):
         doc = u'''
