@@ -5,11 +5,12 @@ Project Info
 Category        Hyperlink
 =============== ===============================================================
 Documentation:  http://pythonhosted.org/behave/
-                (or: https://behave.readthedocs.org/)
+                (or: https://behave-behave.readthedocs.org/)
 Download:       http://pypi.python.org/pypi/behave (or: `github archive`_)
 Development:    https://github.com/behave/behave
 Issue Tracker:  https://github.com/behave/behave/issues
 Changelog:      `CHANGES.rst <CHANGES.rst>`_
+Newsgroup:      https://groups.google.com/forum/#!forum/behave-users
 =============== ===============================================================
 
 .. hint::
