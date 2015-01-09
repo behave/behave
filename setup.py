@@ -39,7 +39,7 @@ setup(
         "behave4cmd0", "behave4cmd0.*"]),
     entry_points={
         'console_scripts': [
-            'behave = behave.__main__:main'
+            'behave-parallel = behave.__main__:main'
         ],
         'distutils.commands': [
             'behave_test = setuptools_behave:behave_test'
