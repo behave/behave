@@ -1,8 +1,8 @@
 from mock import Mock, patch
 from nose.tools import *
 
-from behave.model import ScenarioOutline, Scenario
-from behave.reporter.summary import SummaryReporter, format_summary
+from behave_parallel.model import ScenarioOutline, Scenario
+from behave_parallel.reporter.summary import SummaryReporter, format_summary
 
 class TestFormatStatus(object):
     def test_passed_entry_contains_label(self):

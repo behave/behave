@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from behave.formatter.base import StreamOpener
-from behave.textutil import compute_words_maxsize
-from behave.importer import LazyDict, LazyObject
+from behave_parallel.formatter.base import StreamOpener
+from behave_parallel.textutil import compute_words_maxsize
+from behave_parallel.importer import LazyDict, LazyObject
 
 
 # -----------------------------------------------------------------------------

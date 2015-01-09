@@ -1,9 +1,9 @@
 # -*- coding: utf8 -*-
 
-from behave.formatter.ansi_escapes import escapes, up
-from behave.formatter.base import Formatter
-from behave.model_describe import escape_cell, escape_triple_quotes
-from behave.textutil import indent
+from behave_parallel.formatter.ansi_escapes import escapes, up
+from behave_parallel.formatter.base import Formatter
+from behave_parallel.model_describe import escape_cell, escape_triple_quotes
+from behave_parallel.textutil import indent
 import sys
 
 

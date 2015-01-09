@@ -17,8 +17,8 @@ EXAMPLE:
       '''
 """
 
-from behave import given, when, then
-from behave.runner_util import FeatureListParser
+from behave_parallel import given, when, then
+from behave_parallel.runner_util import FeatureListParser
 from hamcrest import assert_that, equal_to
 from copy import copy
 import re

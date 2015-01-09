@@ -2,12 +2,12 @@
 
 import sys
 
-from behave import __version__
-from behave.configuration import Configuration, ConfigError
-from behave.runner import Runner
-from behave.runner_util import print_undefined_step_snippets, \
+from behave_parallel import __version__
+from behave_parallel.configuration import Configuration, ConfigError
+from behave_parallel.runner import Runner
+from behave_parallel.runner_util import print_undefined_step_snippets, \
     InvalidFileLocationError, InvalidFilenameError, FileNotFoundError
-from behave.parser import ParserError
+from behave_parallel.parser import ParserError
 
 TAG_HELP = """
 Scenarios inherit tags declared on the Feature level. The simplest
@@ -58,7 +58,7 @@ def main(args=None):
         return 0
 
     if config.lang_list:
-        from behave.i18n import languages
+        from behave_parallel.i18n import languages
         iso_codes = languages.keys()
         iso_codes.sort()
         print "Languages available:"
@@ -69,7 +69,7 @@ def main(args=None):
         return 0
 
     if config.lang_help:
-        from behave.i18n import languages
+        from behave_parallel.i18n import languages
         if config.lang_help not in languages:
             print '%s is not a recognised language: try --lang-list' % \
                     config.lang_help
@@ -95,7 +95,7 @@ def main(args=None):
             default_format = config.defaults["default_format"]
             config.format.append(default_format)
     if 'help' in config.format:
-        from behave.formatter import formatters
+        from behave_parallel.formatter import formatters
         print "Available formatters:"
         formatters.list_formatters(sys.stdout)
         return 0

@@ -7,8 +7,8 @@ EXAMPLE:
     $ behave --dry-run -f tag_counts features/
 """
 
-from behave.formatter.base import Formatter
-from behave.textutil import compute_words_maxsize
+from behave_parallel.formatter.base import Formatter
+from behave_parallel.textutil import compute_words_maxsize
 
 
 # -----------------------------------------------------------------------------

@@ -7,7 +7,7 @@ import os.path
 # ----------------------------------------------------------------------------
 # SETUP PATHS:
 # ----------------------------------------------------------------------------
-NAME = "behave"
+NAME = "behave_parallel"
 HERE = os.path.dirname(__file__)
 TOP  = os.path.join(HERE, "..")
 if os.path.isdir(os.path.join(TOP, NAME)):
@@ -20,7 +20,7 @@ def setup_behave():
     """
     Apply tweaks, extensions and patches to "behave".
     """
-    from behave.configuration import Configuration
+    from behave_parallel.configuration import Configuration
     # -- DISABLE: Timings to simplify issue.features/ tests.
     # Configuration.defaults["format0"] = "pretty"
     # Configuration.defaults["format0"] = "progress"
@@ -28,7 +28,7 @@ def setup_behave():
 
 def behave_main0():
     # from behave.configuration import Configuration
-    from behave.__main__ import main as behave_main
+    from behave_parallel.__main__ import main as behave_main
     setup_behave()
     return behave_main()
 

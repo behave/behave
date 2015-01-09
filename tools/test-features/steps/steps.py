@@ -1,5 +1,5 @@
 import logging
-from behave import *
+from behave_parallel import *
 
 spam_log = logging.getLogger('spam')
 ham_log = logging.getLogger('ham')
@@ -103,7 +103,7 @@ def step(context, tag):
 def step(context, argument):
     context.argument = argument
 
-from behave.matchers import register_type
+from behave_parallel.matchers import register_type
 register_type(custom=lambda s: s.upper())
 
 @given('a string {argument:custom} a custom type')

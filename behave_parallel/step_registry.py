@@ -27,7 +27,7 @@ class StepRegistry(object):
 
     def add_step_definition(self, keyword, string, func):
         # TODO try to fix module dependencies to avoid this
-        from behave import matchers, model
+        from behave_parallel import matchers, model
         step_location = model.Match.make_location(func)
         step_type = keyword.lower()
         step_definitions = self.steps[step_type]

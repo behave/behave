@@ -5,11 +5,11 @@ import tempfile
 from mock import Mock, patch
 from nose.tools import *
 
-from behave.formatter import formatters
-from behave.formatter import pretty
+from behave_parallel.formatter import formatters
+from behave_parallel.formatter import pretty
 # from behave.formatter import tags
-from behave.formatter.base import StreamOpener
-from behave.model import Tag, Feature, Match, Scenario, Step
+from behave_parallel.formatter.base import StreamOpener
+from behave_parallel.model import Tag, Feature, Match, Scenario, Step
 
 
 class TestGetTerminalSize(object):

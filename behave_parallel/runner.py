@@ -13,14 +13,14 @@ import weakref
 import time
 import collections
 
-from behave import matchers
-from behave.step_registry import setup_step_decorators
-from behave.formatter import formatters
-from behave.configuration import ConfigError
-from behave.log_capture import LoggingCapture
-from behave.runner_util import \
+from behave_parallel import matchers
+from behave_parallel.step_registry import setup_step_decorators
+from behave_parallel.formatter import formatters
+from behave_parallel.configuration import ConfigError
+from behave_parallel.log_capture import LoggingCapture
+from behave_parallel.runner_util import \
     collect_feature_locations, parse_features
-from behave.formatter.base import StreamOpener
+from behave_parallel.formatter.base import StreamOpener
 
 multiprocessing = None
 try:

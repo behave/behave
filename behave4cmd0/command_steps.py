@@ -10,7 +10,7 @@ TODO:
 """
 
 from __future__ import print_function
-from behave import given, when, then, step, matchers
+from behave_parallel import given, when, then, step, matchers
 from behave4cmd0 import command_shell, command_util, pathutil, textutil
 from behave4cmd0.pathutil import posixpath_normpath
 import os

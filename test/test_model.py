@@ -4,10 +4,10 @@ import re
 import sys
 from mock import Mock, patch
 from nose.tools import *
-from behave import model
-from behave.compat.collections import OrderedDict
-from behave import step_registry
-from behave.configuration import Configuration
+from behave_parallel import model
+from behave_parallel.compat.collections import OrderedDict
+from behave_parallel import step_registry
+from behave_parallel.configuration import Configuration
 
 
 class TestFeatureRun(object):

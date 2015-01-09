@@ -14,7 +14,7 @@ EXAMPLES:
     Then  it should pass because "the answer is correct".
 """
 
-from behave import step, then
+from behave_parallel import step, then
 
 # -----------------------------------------------------------------------------
 # STEPS FOR: passing

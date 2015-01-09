@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from behave.formatter.base import Formatter
-from behave.model_describe import ModelPrinter
-from behave.textutil import make_indentation
+from behave_parallel.formatter.base import Formatter
+from behave_parallel.model_describe import ModelPrinter
+from behave_parallel.textutil import make_indentation
 
 
 # -----------------------------------------------------------------------------

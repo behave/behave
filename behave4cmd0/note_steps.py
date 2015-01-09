@@ -5,7 +5,7 @@ The note steps explain what was important in the last few steps of
 this scenario (for a test reader).
 """
 
-from behave import step
+from behave_parallel import step
 
 
 # -----------------------------------------------------------------------------

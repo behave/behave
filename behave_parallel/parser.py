@@ -2,7 +2,7 @@
 
 from __future__ import with_statement
 
-from behave import model, i18n
+from behave_parallel import model, i18n
 
 DEFAULT_LANGUAGE = 'en'
 

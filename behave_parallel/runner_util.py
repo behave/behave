@@ -3,8 +3,8 @@
 Contains utility functions and classes for Runners.
 """
 
-from behave import parser
-from behave.model import FileLocation
+from behave_parallel import parser
+from behave_parallel.model import FileLocation
 from bisect import bisect
 import glob
 import os.path
@@ -389,7 +389,7 @@ def print_undefined_step_snippets(undefined_steps, stream=None, colored=True):
 
     if colored:
         # -- OOPS: Unclear if stream supports ANSI coloring.
-        from behave.formatter.ansi_escapes import escapes
+        from behave_parallel.formatter.ansi_escapes import escapes
         msg = escapes['undefined'] + msg + escapes['reset']
     stream.write(msg)
     stream.flush()

@@ -3,7 +3,7 @@
 Provides utility function for generating Sphinx-based documentation.
 """
 
-from behave.textutil import compute_words_maxsize
+from behave_parallel.textutil import compute_words_maxsize
 import codecs
 
 

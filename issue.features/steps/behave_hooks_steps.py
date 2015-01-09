@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from behave import then
+from behave_parallel import then
 
 @then('the behave hook "{hook}" was called')
 def step_behave_hook_was_called(context, hook):

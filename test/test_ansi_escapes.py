@@ -7,7 +7,7 @@
 #   W0621   Redefining name ... from outer scope
 
 from nose import tools
-from behave.formatter import ansi_escapes
+from behave_parallel.formatter import ansi_escapes
 import unittest
 
 class StripEscapesTest(unittest.TestCase):

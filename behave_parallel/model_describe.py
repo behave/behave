@@ -3,7 +3,7 @@
 Provides textual descriptions for :mod:`behave.model` elements.
 """
 
-from behave.textutil import indent
+from behave_parallel.textutil import indent
 
 
 # -----------------------------------------------------------------------------

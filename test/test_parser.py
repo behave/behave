@@ -2,7 +2,7 @@
 
 from nose.tools import *
 
-from behave import i18n, model, parser
+from behave_parallel import i18n, model, parser
 
 class Common(object):
     def compare_steps(self, steps, expected):

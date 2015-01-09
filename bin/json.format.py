@@ -15,7 +15,7 @@ VERSION = "0.2.2"
 import os.path
 import glob
 import logging
-from   optparse import OptionParser
+from optparse import OptionParser
 import sys
 try:
     import json

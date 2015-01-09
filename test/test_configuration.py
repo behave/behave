@@ -3,7 +3,7 @@ import os.path
 import tempfile
 
 from nose.tools import *
-from behave import configuration
+from behave_parallel import configuration
 
 # one entry of each kind handled
 TEST_CONFIG='''[behave]

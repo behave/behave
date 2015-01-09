@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from behave.formatter.base import Formatter
+from behave_parallel.formatter.base import Formatter
 
 class NullFormatter(Formatter):
     """

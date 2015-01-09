@@ -7,8 +7,8 @@ import textwrap
 
 sys.argv[0] = 'behave'
 
-from behave import configuration
-from behave import __main__
+from behave_parallel import configuration
+from behave_parallel import __main__
 
 with open('behave.rst-template') as f:
     template = f.read()
