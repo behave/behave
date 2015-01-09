@@ -27,7 +27,7 @@ if major == 2 and minor < 6:
 description = ''.join(open('README.rst').readlines()[5:])
 
 setup(
-    name='behave',
+    name='behave-parallel',
     version='1.2.4a1',
     description='behave is behaviour-driven development, Python style',
     long_description=description,
