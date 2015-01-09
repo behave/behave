@@ -12,8 +12,9 @@ _WORKSPACE/
 .cache/
 .idea/
 .tox/
-.DS_Store
 .coverage
 .ropeproject
 nosetests.xml
 tools/virtualenvs
+.idea
+*.DS_Store

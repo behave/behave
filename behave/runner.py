@@ -777,7 +777,12 @@ class Runner(object):
             self.getskippedsteps(current_job, writebuf)
 
         writebuf.seek(0)
-        return reportheader + writebuf.read() + "\n" + reportfooter
+        try:
+            result = reportheader + writebuf.read() + "\n" + reportfooter
+        except UnicodeError as err:
+            result = err.object[0:err.start]+err.object[err.end:len(err.object)-1]
+
+        return result
 
     def getskippedsteps(self, current_job, writebuf):
         if current_job.type != 'scenario':
@@ -993,7 +998,7 @@ class Runner(object):
             filename += feature_reports[uniquekey]['filebasename']
             filename += ".xml"
             fd = open(filename,"w")
-            fd.write(filedata)
+            fd.write(filedata.encode('utf8'))
             fd.close() 
 
     def setup_capture(self):
