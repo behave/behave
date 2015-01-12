@@ -18,8 +18,8 @@ To get started, we recommend the `tutorial`_ and then the `test language`_ and
 
 __version__ = '1.2.4a1'
 
-from behave_parallel.step_registry import *
-from behave_parallel.matchers import step_matcher
+from behave.step_registry import *
+from behave.matchers import step_matcher
 
 names = 'given when then step'
 names = names + ' ' + names.title()

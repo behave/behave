@@ -2,7 +2,7 @@ from __future__ import with_statement
 
 import re
 import parse
-from behave_parallel import model
+from behave import model
 
 
 class Matcher(object):

@@ -14,8 +14,8 @@ VERSION = "0.1.0"
 
 
 # -- IMPORTS:
-from behave_parallel import json_parser
-from behave_parallel.model import ScenarioOutline
+from behave import json_parser
+from behave.model import ScenarioOutline
 from optparse import OptionParser
 import os.path
 import sys

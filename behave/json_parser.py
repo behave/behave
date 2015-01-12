@@ -12,7 +12,7 @@ __author__    = "Jens Engel"
 
 
 # -- IMPORTS:
-from behave_parallel import model
+from behave import model
 import codecs
 try:
     import json

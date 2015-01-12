@@ -3,7 +3,7 @@ import functools
 from logging.handlers import BufferingHandler
 import re
 
-from behave_parallel.configuration import ConfigError
+from behave.configuration import ConfigError
 
 
 class RecordFilter(object):

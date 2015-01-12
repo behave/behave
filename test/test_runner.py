@@ -12,10 +12,10 @@ from mock import Mock, patch
 from nose.tools import *
 import unittest
 
-from behave_parallel import model, parser, runner, step_registry
-from behave_parallel.configuration import ConfigError
-from behave_parallel.log_capture import LoggingCapture
-from behave_parallel.formatter.base import StreamOpener
+from behave import model, parser, runner, step_registry
+from behave.configuration import ConfigError
+from behave.log_capture import LoggingCapture
+from behave.formatter.base import StreamOpener
 
 
 class TestContext(object):

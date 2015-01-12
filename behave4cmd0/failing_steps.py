@@ -14,7 +14,7 @@ EXAMPLES:
     Then  it should fail because "the person is unknown".
 """
 
-from behave_parallel import step, then
+from behave import step, then
 
 # -----------------------------------------------------------------------------
 # STEPS FOR: failing

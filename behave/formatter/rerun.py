@@ -22,8 +22,8 @@ Normally, you put the RerunFormatter into the behave configuration file:
     outfiles = rerun_failing.features
 """
 
-from behave_parallel.formatter.base import Formatter
-from behave_parallel.compat.os_path import relpath
+from behave.formatter.base import Formatter
+from behave.compat.os_path import relpath
 from datetime import datetime
 import os
 

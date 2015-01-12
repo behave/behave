@@ -57,12 +57,12 @@ IDEA:
         | bar      | CURRENT | xxx     |
 """
 
-from behave_parallel import given, when, then, step
+from behave import given, when, then, step
 from behave4cmd0.command_steps import \
     step_file_should_contain_multiline_text, \
     step_file_should_not_contain_multiline_text
-from behave_parallel.configuration import LogLevel
-from behave_parallel.log_capture import LoggingCapture
+from behave.configuration import LogLevel
+from behave.log_capture import LoggingCapture
 import logging
 
 # -----------------------------------------------------------------------------

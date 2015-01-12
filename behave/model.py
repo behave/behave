@@ -7,8 +7,8 @@ import itertools
 import os.path
 import time
 import traceback
-from behave_parallel import step_registry
-from behave_parallel.compat.os_path import relpath
+from behave import step_registry
+from behave.compat.os_path import relpath
 
 
 class Argument(object):
@@ -1445,7 +1445,7 @@ class Row(object):
         Converts the row and its cell data into a dictionary.
         :return: Row data as dictionary (without comments, line info).
         """
-        from behave_parallel.compat.collections import OrderedDict
+        from behave.compat.collections import OrderedDict
         return OrderedDict(self.items())
 
 

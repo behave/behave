@@ -5,7 +5,7 @@ Importer module for lazy-loading/importing modules and objects.
 REQUIRES: importlib (provided in Python2.7, Python3.2...)
 """
 
-from behave_parallel.compat import importlib
+from behave.compat import importlib
 
 
 class Unknown(object):

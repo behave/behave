@@ -3,7 +3,7 @@ from __future__ import with_statement
 from nose.tools import *
 from mock import patch
 
-from behave_parallel.log_capture import LoggingCapture
+from behave.log_capture import LoggingCapture
 
 class TestLogCapture(object):
     def test_get_value_returns_all_log_records(self):

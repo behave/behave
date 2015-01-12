@@ -49,7 +49,7 @@ copyright = u'2012-2013, %s' % authors
 # built documents.
 #
 # The short X.Y version.
-from behave_parallel import __version__
+from behave import __version__
 version = __version__
 # The full version, including alpha/beta/rc tags.
 release = __version__

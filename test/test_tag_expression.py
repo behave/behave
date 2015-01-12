@@ -1,6 +1,6 @@
 from nose import tools
 
-from behave_parallel.tag_expression import TagExpression
+from behave.tag_expression import TagExpression
 
 class TestTagExpressionNoTags(object):
     def setUp(self):

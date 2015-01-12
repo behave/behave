@@ -9,8 +9,8 @@ A "dot" character that represents the result status is printed after
 executing a scope item.
 """
 
-from behave_parallel.formatter.base import Formatter
-from behave_parallel.compat.os_path import relpath
+from behave.formatter.base import Formatter
+from behave.compat.os_path import relpath
 import os
 
 # -----------------------------------------------------------------------------

@@ -12,10 +12,10 @@ TODO:
     http://sphinx-doc.org/
 """
 
-from behave_parallel.formatter.steps import AbstractStepsFormatter
-from behave_parallel.formatter import sphinx_util
-from behave_parallel.compat.os_path import relpath
-from behave_parallel.model import Table
+from behave.formatter.steps import AbstractStepsFormatter
+from behave.formatter import sphinx_util
+from behave.compat.os_path import relpath
+from behave.model import Table
 import inspect
 import os.path
 import sys

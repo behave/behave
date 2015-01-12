@@ -4,7 +4,7 @@ from mock import Mock, patch
 from nose.tools import *
 import parse
 
-from behave_parallel import matchers, model, runner
+from behave import matchers, model, runner
 
 class DummyMatcher(matchers.Matcher):
     desired_result = None

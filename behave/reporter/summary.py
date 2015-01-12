@@ -4,8 +4,8 @@ Provides a summary after each test run.
 """
 
 import sys
-from behave_parallel.model import ScenarioOutline
-from behave_parallel.reporter.base import Reporter
+from behave.model import ScenarioOutline
+from behave.reporter.base import Reporter
 
 
 # -- DISABLED: optional_steps = ('untested', 'undefined')

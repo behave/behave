@@ -4,10 +4,10 @@ Provides a formatter that provides an overview of available step definitions
 (step implementations).
 """
 
-from behave_parallel.formatter.base import Formatter
-from behave_parallel.step_registry import StepRegistry, registry
-from behave_parallel.textutil import compute_words_maxsize, indent, make_indentation
-from behave_parallel import i18n
+from behave.formatter.base import Formatter
+from behave.step_registry import StepRegistry, registry
+from behave.textutil import compute_words_maxsize, indent, make_indentation
+from behave import i18n
 import inspect
 
 

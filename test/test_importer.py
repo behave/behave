@@ -4,8 +4,8 @@ Tests for behave.importing.
 The module provides a lazy-loading/importing mechanism.
 """
 
-from behave_parallel.importer import LazyObject, LazyDict
-from behave_parallel.formatter.base import Formatter
+from behave.importer import LazyObject, LazyDict
+from behave.formatter.base import Formatter
 from nose.tools import eq_, assert_raises
 import sys
 import types

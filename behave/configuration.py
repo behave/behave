@@ -8,12 +8,12 @@ import ConfigParser
 import logging
 import shlex
 
-from behave_parallel.model import FileLocation
-from behave_parallel.reporter.junit import JUnitReporter
-from behave_parallel.reporter.summary import SummaryReporter
-from behave_parallel.tag_expression import TagExpression
-from behave_parallel.formatter.base import StreamOpener
-from behave_parallel.formatter.formatters import formatters as registered_formatters
+from behave.model import FileLocation
+from behave.reporter.junit import JUnitReporter
+from behave.reporter.summary import SummaryReporter
+from behave.tag_expression import TagExpression
+from behave.formatter.base import StreamOpener
+from behave.formatter.formatters import formatters as registered_formatters
 
 
 class Unknown(object): pass

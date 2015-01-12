@@ -3,11 +3,11 @@
 import os.path
 import codecs
 from xml.etree import ElementTree
-from behave_parallel.reporter.base import Reporter
-from behave_parallel.model import Scenario, ScenarioOutline, Step
-from behave_parallel.formatter import ansi_escapes
-from behave_parallel.model_describe import ModelDescriptor
-from behave_parallel.textutil import indent, make_indentation
+from behave.reporter.base import Reporter
+from behave.model import Scenario, ScenarioOutline, Step
+from behave.formatter import ansi_escapes
+from behave.model_describe import ModelDescriptor
+from behave.textutil import indent, make_indentation
 
 
 def CDATA(text=None):
