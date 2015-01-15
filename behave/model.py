@@ -656,6 +656,51 @@ class Scenario(TagAndStatusStatement, Replayable):
             self.set_status(Status.skipped)
         assert self.status in self.final_status #< skipped, failed or passed
 
+    def _run_steps(self, steps, run_steps, runner, failed,
+                   dry_run_scenario):
+        for step in steps:
+            if run_steps:
+                if not step.run(runner):
+                    # -- CASE: Failed or undefined step
+                    #    Optionally continue_after_failed_step if enabled.
+                    #    But disable run_steps after undefined-step.
+                    run_steps = (self.continue_after_failed_step and
+                                 step.status == Status.failed)
+                    failed = True
+                    # pylint: disable=protected-access
+                    runner.context._set_root_attribute("failed", True)
+                    self.set_status(Status.failed)
+                elif self.should_skip:
+                    # -- CASE: Step skipped remaining scenario.
+                    # assert self.status == Status.skipped
+                    run_steps = False
+            elif failed or dry_run_scenario:
+                # -- SKIP STEPS: After failure/undefined-step occurred.
+                # BUT: Detect all remaining undefined steps.
+                step.status = Status.skipped
+                if dry_run_scenario:
+                    # pylint: disable=redefined-variable-type
+                    step.status = Status.untested
+                    found_step_match = runner.step_registry.find_match(step)
+                if not found_step_match:
+                    step.status = Status.undefined
+                    runner.undefined_steps.append(step)
+                elif dry_run_scenario:
+                    # -- BETTER DIAGNOSTICS: Provide step file location
+                    # (when --format=pretty is used).
+                    assert step.status == Status.untested
+                    for formatter in runner.formatters:
+                        # -- EMULATE: Step.run() protocol w/o step execution.
+                        formatter.match(found_step_match)
+                        formatter.result(step)
+            else:
+                # -- SKIP STEPS: For disabled scenario.
+                # CASES:
+                #   * Undefined steps are not detected (by intention).
+                #   * Step skipped remaining scenario.
+                step.status = Status.skipped
+        return failed, run_steps
+
     def run(self, runner):
         # pylint: disable=too-many-branches, too-many-statements
         self.clear_status()
@@ -700,54 +745,21 @@ class Scenario(TagAndStatusStatement, Replayable):
                 for formatter in runner.formatters:
                     formatter.step(step)
 
-        # Run background hooks, then steps
-        if self.background:
-            runner.run_hook('before_background', runner.context, self)
-        
-        # Run main steps
-
+        # Run background steps & hooks
         if not skip_scenario_untested:
-            for step in self.all_steps:
-                if run_steps:
-                    if not step.run(runner):
-                        # -- CASE: Failed or undefined step
-                        #    Optionally continue_after_failed_step if enabled.
-                        #    But disable run_steps after undefined-step.
-                        run_steps = (self.continue_after_failed_step and
-                                     step.status == Status.failed)
-                        failed = True
-                        # pylint: disable=protected-access
-                        runner.context._set_root_attribute("failed", True)
-                        self.set_status(Status.failed)
-                    elif self.should_skip:
-                        # -- CASE: Step skipped remaining scenario.
-                        # assert self.status == Status.skipped
-                        run_steps = False
-                elif failed or dry_run_scenario:
-                    # -- SKIP STEPS: After failure/undefined-step occurred.
-                    # BUT: Detect all remaining undefined steps.
-                    step.status = Status.skipped
-                    if dry_run_scenario:
-                        # pylint: disable=redefined-variable-type
-                        step.status = Status.untested
-                    found_step_match = runner.step_registry.find_match(step)
-                    if not found_step_match:
-                        step.status = Status.undefined
-                        runner.undefined_steps.append(step)
-                    elif dry_run_scenario:
-                        # -- BETTER DIAGNOSTICS: Provide step file location
-                        # (when --format=pretty is used).
-                        assert step.status == Status.untested
-                        for formatter in runner.formatters:
-                            # -- EMULATE: Step.run() protocol w/o step execution.
-                            formatter.match(found_step_match)
-                            formatter.result(step)
-                else:
-                    # -- SKIP STEPS: For disabled scenario.
-                    # CASES:
-                    #   * Undefined steps are not detected (by intention).
-                    #   * Step skipped remaining scenario.
-                    step.status = Status.skipped
+            if self.background:
+                runner.run_hook('before_background', runner.context, self)
+                failed, run_steps = \
+                    self._run_steps(self.background_steps,
+                                    run_steps,
+                                    runner,
+                                    failed,
+                                    dry_run_scenario)
+                runner.run_hook('after_background', runner.context, self)
+
+            # Run main steps
+            failed, run_steps = self._run_steps(self.steps, run_steps, runner,
+                                                failed, dry_run_scenario)
 
         self.clear_status()  # -- ENFORCE: compute_status() after run.
         if not run_scenario and not self.steps:

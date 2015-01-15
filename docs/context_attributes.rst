@@ -56,6 +56,7 @@ Hook    :func:`after_all`           test run
 Hook    :func:`before_tags`         feature or scenario
 Hook    :func:`after_tags`          feature or scenario
 Hook    :func:`before_background`   feature
+Hook    :func:`after_background`    feature
 Hook    :func:`before_feature`      feature
 Hook    :func:`after_feature`       feature
 Hook    :func:`before_scenario`     scenario
