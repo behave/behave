@@ -107,3 +107,48 @@ Feature: Issue #290: Call before/after_background_hooks when running backgrounds
         1 scenario passed, 1 failed, 0 skipped
         3 steps passed, 1 failed, 0 skipped, 0 undefined
         """
+
+  @thisone
+  Scenario: before_background_hook can skip the background
+    Given a file named "features/environment.py" with
+        """
+        _background_count = 0
+        def before_background(context, background):
+            global _background_count
+            if _background_count > 0:
+               background.skip()
+            _background_count += 1
+            print ('before_background hook called')
+
+        def after_background(context, background):
+            print ('after_background hook called')
+        """
+    When I run "behave -f plain --no-capture features/backgroundhook_example.feature"
+    Then it should fail
+    And the command output should contain:
+        """
+        Scenario: A scenario
+        before_background hook called
+        background_step
+        Given a background step ... passed
+        after_background hook called
+        a step
+        Given a step succeeds ... passed
+        """
+
+     And the command output should contain:
+        """
+        Scenario: Another scenario to check hook fired twice
+        before_background hook called
+        Given a background step ... skipped
+        after_background hook called
+        another step
+        Given another step fails ... failed
+        """
+
+    And the command output should contain:
+        """
+        0 features passed, 1 failed, 0 skipped
+        1 scenario passed, 1 failed, 0 skipped
+        2 steps passed, 1 failed, 1 skipped, 0 undefined
+        """
