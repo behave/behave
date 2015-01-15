@@ -700,6 +700,12 @@ class Scenario(TagAndStatusStatement, Replayable):
                 for formatter in runner.formatters:
                     formatter.step(step)
 
+        # Run background hooks, then steps
+        if self.background:
+            runner.run_hook('before_background', runner.context, self)
+        
+        # Run main steps
+
         if not skip_scenario_untested:
             for step in self.all_steps:
                 if run_steps:
