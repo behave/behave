@@ -4,6 +4,7 @@ Feature: Issue #280: AmbiguousStep error with similar step definitions and use_s
   Having two steps with definitions starting with the same string causes an AmbiguousStep error to be thrown:
   |behave.step_registry.AmbiguousStep: @when('I add a (?<name>\w+) to it and an exclamation mark') has already
   |been defined in existing step @when('I add a (?<name>\w+) to it') at features\steps\steps.py:10
+  To fix if a regular expression delimiters (^ and $) should be added to the RegexMatcher
 
 
   Background: Test Setup
@@ -30,10 +31,6 @@ Feature: Issue #280: AmbiguousStep error with similar step definitions and use_s
       @then(u'it is a (?P<greeting>hi\s\w+)')
       def step(context, greeting):
           assert_that(context.result, equal_to(greeting))
-
-      @then(u'it is a (?P<mumble>hi\s\w+)')
-      def step(context, mumble):
-          assert_that(context.result, equal_to(shout))
       """
 
   Scenario: Ensure AmbiguousStep error is not thrown
@@ -52,10 +49,10 @@ Feature: Issue #280: AmbiguousStep error with similar step definitions and use_s
         Scenario Outline:
           Given a simple word
           When I add <name> to it twice
-          Then it is a <mumble>
+          Then it is a <greeting>
 
           Examples:
-          | name    | mumble        |
+          | name    | greeting      |
           | Alice   | hi AliceAlice |
       """
     When I run "behave -f plain features/issue280.feature"
