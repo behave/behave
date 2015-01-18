@@ -90,7 +90,7 @@ class Formatter(object):
     Processing Logic (simplified, without ScenarioOutline and skip logic)::
 
         for feature in runner.features:
-            formatter = get_formatter(...)
+            formatter = make_formatters(...)
             formatter.uri(feature.filename)
             formatter.feature(feature)
             for scenario in feature.scenarios:

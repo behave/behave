@@ -33,6 +33,7 @@ NEWS and CHANGES:
 
     * plain: Can now show tags, but currently disabled per default
     * NEW: steps.catalog: Readable summary of all steps (similar to: steps.doc, #271)
+    * NEW: User-defined formatters, see docs (`New and Noteworthy`_).
 
 ENHANCEMENTS:
 
@@ -50,6 +51,7 @@ ENHANCEMENTS:
 
 FIXED:
 
+  * pull  #283: Fix "fork me" image in docs (provided by: frodopwns)
   * issue #280: Fix missing begin/end-markers in RegexMatcher (provided by: tomekwszelaki, jenisys)
   * pull  #268: Fix py3 compatibility with all tests passed (provided by: sunliwen)
   * pull  #252: Related to #251 (provided by: mcepl)

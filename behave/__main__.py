@@ -95,9 +95,7 @@ def main(args=None):
             # -- NO FORMATTER on command-line: Add default formatter.
             config.format.append(config.default_format)
     if 'help' in config.format:
-        from behave.formatter import formatters
-        print("Available formatters:")
-        formatters.list_formatters(sys.stdout)
+        print_formatters("Available formatters:")
         return 0
 
     if len(config.outputs) > len(config.format):
@@ -133,6 +131,31 @@ def main(args=None):
     if failed:
         return_code = 1
     return return_code
+
+def print_formatters(title=None, stream=None):
+    """
+    Prints the list of available formatters and their description.
+
+    :param title:   Optional title (as string).
+    :param stream:  Optional, output stream to use (default: sys.stdout).
+    """
+    from behave.formatter._registry  import format_items
+    from behave.textutil import compute_words_maxsize, text as _text
+    from operator import itemgetter
+
+    if stream is None:
+        stream = sys.stdout
+    if title:
+        stream.write(u"%s\n" % title)
+
+    format_items = sorted(format_items(resolved=True), key=itemgetter(0))
+    format_names = [item[0]  for item in format_items]
+    column_size = compute_words_maxsize(format_names)
+    schema = u"  %-"+ _text(column_size) +"s  %s\n"
+    for name, formatter_class in format_items:
+        formatter_description = getattr(formatter_class, "description", "")
+        stream.write(schema % (name, formatter_description))
+
 
 if __name__ == '__main__':
     # -- EXAMPLE: main("--version")

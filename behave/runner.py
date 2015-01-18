@@ -12,11 +12,10 @@ import weakref
 
 from behave import matchers
 from behave.step_registry import setup_step_decorators
-from behave.formatter import formatters
+from behave.formatter._registry import make_formatters
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
 from behave.runner_util import collect_feature_locations, parse_features
-from behave.textutil import text as _text
 
 
 class ContextMaskWarning(UserWarning):
@@ -690,7 +689,7 @@ class Runner(ModelRunner):
 
         # -- STEP: Run all features.
         stream_openers = self.config.outputs
-        self.formatters = formatters.get_formatter(self.config, stream_openers)
+        self.formatters = make_formatters(self.config, stream_openers)
         return self.run_model()
 
 

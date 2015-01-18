@@ -15,10 +15,15 @@ from behave.reporter.junit import JUnitReporter
 from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import TagExpression
 from behave.formatter.base import StreamOpener
-from behave.formatter.formatters import formatters as registered_formatters
+from behave.formatter import _registry as _format_registry
 from behave.userdata import UserData, parse_user_define
 from behave._types import Unknown
 
+# -- PYTHON 2/3 COMPATIBILITY:
+# SINCE Python 3.2: ConfigParser = SafeConfigParser
+ConfigParser = configparser.ConfigParser
+if six.PY2:
+    ConfigParser = configparser.SafeConfigParser
 
 # -----------------------------------------------------------------------------
 # CONFIGURATION DATA TYPES:
@@ -358,9 +363,9 @@ raw_value_options = frozenset([
 
 
 def read_configuration(path):
-    cfg = configparser.SafeConfigParser()
-    cfg.read(path)
-    cfgdir = os.path.dirname(path)
+    config = ConfigParser()
+    config.read(path)
+    config_dir = os.path.dirname(path)
     result = {}
     for fixed, keywords in options:
         if 'dest' in keywords:
@@ -374,22 +379,23 @@ def read_configuration(path):
                     dest = opt[1:]
         if dest in 'tags_help lang_list lang_help version'.split():
             continue
-        if not cfg.has_option('behave', dest):
+        if not config.has_option('behave', dest):
             continue
         action = keywords.get('action', 'store')
         if action == 'store':
             use_raw_value = dest in raw_value_options
-            result[dest] = cfg.get('behave', dest, raw=use_raw_value)
+            result[dest] = config.get('behave', dest, raw=use_raw_value)
         elif action in ('store_true', 'store_false'):
-            result[dest] = cfg.getboolean('behave', dest)
+            result[dest] = config.getboolean('behave', dest)
         elif action == 'append':
             if dest == 'userdata_defines':
                 continue    # -- SKIP-CONFIGFILE: Command-line only option.
             result[dest] = \
-                [s.strip() for s in cfg.get('behave', dest).splitlines()]
+                [s.strip() for s in config.get('behave', dest).splitlines()]
         else:
             raise ValueError('action "%s" not implemented' % action)
 
+    # -- STEP: format/outfiles coupling
     if 'format' in result:
         # -- OPTIONS: format/outfiles are coupled in configuration file.
         formatters = result['format']
@@ -412,11 +418,19 @@ def read_configuration(path):
             # NOTE: Absolute paths are preserved by os.path.join().
             paths = result[paths_name]
             result[paths_name] = \
-                [os.path.normpath(os.path.join(cfgdir, p)) for p in paths]
+                [os.path.normpath(os.path.join(config_dir, p)) for p in paths]
 
-    result['userdata'] = {}
-    if cfg.has_section('behave.userdata'):
-        result['userdata'].update(cfg.items('behave.userdata'))
+    # -- STEP: Special additional configuration sections.
+    # SCHEMA: config_section: data_name
+    special_config_section_map = {
+        "behave.formatters": "more_formatters",
+        "behave.userdata":   "userdata",
+    }
+    for section_name, data_name in special_config_section_map.items():
+        result[data_name] = {}
+        if config.has_section(section_name):
+            result[data_name].update(config.items(section_name))
+
     return result
 
 
@@ -534,6 +548,7 @@ class Configuration(object):
         self.steps_dir = "steps"
         self.environment_file = "environment.py"
         self.userdata_defines = None
+        self.more_formatters = None
         if load_config:
             load_configuration(self.defaults, verbose=verbose)
         parser = setup_parser()
@@ -545,14 +560,7 @@ class Configuration(object):
             setattr(self, key, value)
 
         self.paths = [os.path.normpath(path) for path in self.paths]
-        if not args.outfiles:
-            self.outputs.append(StreamOpener(stream=sys.stdout))
-        else:
-            for outfile in args.outfiles:
-                if outfile and outfile != '-':
-                    self.outputs.append(StreamOpener(outfile))
-                else:
-                    self.outputs.append(StreamOpener(stream=sys.stdout))
+        self.setup_outputs(args.outfiles)
 
         if self.steps_catalog:
             # -- SHOW STEP-CATALOG: As step summary.
@@ -600,6 +608,7 @@ class Configuration(object):
         if self.summary:
             self.reporters.append(SummaryReporter(self))
 
+        self.setup_formats()
         unknown_formats = self.collect_unknown_formats()
         if unknown_formats:
             parser.error("format=%s is unknown" % ", ".join(unknown_formats))
@@ -611,14 +620,35 @@ class Configuration(object):
         self.setup_model()
         self.setup_userdata()
 
+    def setup_outputs(self, args_outfiles=None):
+        if self.outputs:
+            assert not args_outfiles, "ONLY-ONCE"
+            return
+
+        # -- NORMAL CASE: Setup only initially (once).
+        if not args_outfiles:
+            self.outputs.append(StreamOpener(stream=sys.stdout))
+        else:
+            for outfile in args_outfiles:
+                if outfile and outfile != '-':
+                    self.outputs.append(StreamOpener(outfile))
+                else:
+                    self.outputs.append(StreamOpener(stream=sys.stdout))
+
+    def setup_formats(self):
+        """Register more, user-defined formatters by name."""
+        if self.more_formatters:
+            for name, scoped_class_name in self.more_formatters.items():
+                _format_registry.register_as(name, scoped_class_name)
+
     def collect_unknown_formats(self):
         unknown_formats = []
         if self.format:
-            for formatter in self.format:
-                if formatter == "help":
+            for format_name in self.format:
+                if (format_name == "help" or
+                        _format_registry.is_formatter_valid(format_name)):
                     continue
-                elif formatter not in registered_formatters:
-                    unknown_formats.append(formatter)
+                unknown_formats.append(format_name)
         return unknown_formats
 
     @staticmethod

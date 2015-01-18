@@ -649,3 +649,78 @@ Other advanced use cases:
   * support configuration profiles via cmdline "... -D PROFILE=xxx ..."
     (uses profile-specific configuration file or profile-specific config section)
   * provide test stage specific configuration data
+
+
+User-defined Formatters
+-------------------------------------------------------------------------------
+
+:Since:  behave 1.2.5a1
+
+Behave formatters are a typical candidate for an extension point.
+You often need another formatter that provides the desired output format for a
+test-run.
+
+Therefore, behave supports now formatters as extension point (or plugin).
+It is now possible to use own, user-defined formatters in two ways:
+
+  * Use formatter class (as "scoped class name") as ``--format`` option value
+  * Register own formatters by name in behave's configuration file
+
+.. note::
+
+    Scoped class name (schema):
+
+      * ``my.module:MyClass``   (preferred)
+      * ``my.module::MyClass``  (alternative; with double colon as separator)
+
+
+User-defined Formatter on Command-line
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Just use the formatter class (as "scoped class name") on the command-line
+as value for the ``-format`` option (short option: ``-f``):
+
+.. code-block:: sh
+
+    behave -f my.own_module:SimpleFormatter ...
+    behave -f behave.formatter.plain:PlainFormatter ...
+
+.. code-block:: python
+
+    # -- FILE: my/own_module.py
+    # (or installed as Python module: my.own_module)
+    from behave.formatter.base import Formatter
+
+    class SimpleFormatter(Formatter):
+        description = "A very simple NULL formatter"
+
+
+Register User-defined Formatter by Name
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It is also possible to extend behave's built-in formatters
+by registering one or more user-defined formatters by name in the
+configuration file:
+
+.. code-block:: ini
+
+    # -- FILE: behave.ini
+    [behave.formatters]
+    foo = behave_contrib.formatter.foo:FooFormatter
+    bar = behave_contrib.formatter.bar:BarFormatter
+
+.. code-block:: python
+
+    # -- FILE: behave_contrib/formatter/foo.py
+    from behave.formatter.base import Formatter
+
+    class FooFormatter(Formatter):
+        description = "A FOO formatter"
+        ...
+
+Now you can use the name for any registered, user-defined formatter:
+
+.. code-block:: sh
+
+    # -- NOTE: Use FooFormatter that was registered by name "foo".
+    behave -f foo ...

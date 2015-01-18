@@ -5,7 +5,7 @@ The module provides a lazy-loading/importing mechanism.
 """
 
 from __future__ import absolute_import
-from behave.importer import LazyObject, LazyDict
+from behave.importer import LazyObject, LazyDict, load_module, parse_scoped_name
 from behave.formatter.base import Formatter
 from nose.tools import eq_, assert_raises
 import sys
@@ -41,17 +41,17 @@ class ImportModuleTheory(TestTheory):
         eq_(module.__name__, name)
 
 
-class TestLazyObject(object):
+class TestLoadModule(object):
     theory = ImportModuleTheory
 
     def test_load_module__should_fail_for_unknown_module(self):
-        assert_raises(ImportError, LazyObject.load_module, "__unknown_module__")
+        assert_raises(ImportError, load_module, "__unknown_module__")
 
     def test_load_module__should_succeed_for_already_imported_module(self):
         module_name = "behave.importer"
         self.theory.assert_module_is_imported(module_name)
 
-        module = LazyObject.load_module(module_name)
+        module = load_module(module_name)
         self.theory.assert_module_with_name(module, module_name)
         self.theory.assert_module_is_imported(module_name)
 
@@ -59,9 +59,11 @@ class TestLazyObject(object):
         module_name = "test._importer_candidate"
         self.theory.ensure_module_is_not_imported(module_name)
 
-        module = LazyObject.load_module(module_name)
+        module = load_module(module_name)
         self.theory.assert_module_with_name(module, module_name)
         self.theory.assert_module_is_imported(module_name)
+
+class TestLazyObject(object):
 
     def test_get__should_succeed_for_known_object(self):
         lazy = LazyObject("behave.importer", "LazyObject")
