@@ -133,7 +133,10 @@ def register_type(**kw):
 class RegexMatcher(Matcher):
     def __init__(self, func, string, step_type=None):
         super(RegexMatcher, self).__init__(func, string, step_type)
-        self.regex = re.compile(self.string)
+        assert not (string.startswith("^") or string.endswith("$")), \
+            "Regular expression should not use begin/end-markers: "+ string
+        expression = "^%s$" % self.string
+        self.regex = re.compile(expression)
 
     def check_match(self, step):
         m = self.regex.match(step)
