@@ -50,9 +50,10 @@ ENHANCEMENTS:
 
 FIXED:
 
-  * pull #268: Fix py3 compatibility with all tests passed (provided by: sunliwen)
-  * pull #252: Related to #251 (provided by: mcepl)
-  * pull #190: UnicodeDecodeError in tracebacks (provided by: b3ni, vrutkovs, related to: #226, #230)
+  * issue #280: Fix missing begin/end-markers in RegexMatcher (provided by: tomekwszelaki, jenisys)
+  * pull  #268: Fix py3 compatibility with all tests passed (provided by: sunliwen)
+  * pull  #252: Related to #251 (provided by: mcepl)
+  * pull  #190: UnicodeDecodeError in tracebacks (provided by: b3ni, vrutkovs, related to: #226, #230)
   * issue #257: Fix JUnitReporter (XML) for Python3 (provided by: actionless)
   * issue #249: Fix a number of docstring problems (provided by: masak)
   * issue #253: Various problems in PrettyFormatter.exception()

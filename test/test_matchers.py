@@ -140,6 +140,38 @@ class TestRegexMatcher(object):
         have = [(a.start, a.end, a.original, a.value, a.name) for a in args]
         eq_(have, expected)
 
+    def test_steps_with_same_prefix_are_not_ordering_sensitive(self):
+        # -- RELATED-TO: issue #280
+        def step_func1(context): pass
+        def step_func2(context): pass
+        matcher1 = matchers.RegexMatcher(step_func1, "I do something")
+        matcher2 = matchers.RegexMatcher(step_func2, "I do something more")
+
+        # -- CHECK: ORDERING SENSITIVITY
+        matched1 = matcher1.match(matcher2.string)
+        matched2 = matcher2.match(matcher1.string)
+        assert matched1 is None
+        assert matched2 is None
+
+        # -- CHECK: Can match itself (if step text is simple)
+        matched1 = matcher1.match(matcher1.string)
+        matched2 = matcher2.match(matcher2.string)
+        assert isinstance(matched1, model.Match)
+        assert isinstance(matched2, model.Match)
+
+    @raises(AssertionError)
+    def test_step_should_not_use_regex_begin_marker(self):
+        matchers.RegexMatcher(None, "^I do something")
+
+    @raises(AssertionError)
+    def test_step_should_not_use_regex_end_marker(self):
+        matchers.RegexMatcher(None, "I do something$")
+
+    @raises(AssertionError)
+    def test_step_should_not_use_regex_begin_and_end_marker(self):
+        matchers.RegexMatcher(None, "^I do something$")
+
+
 def test_step_matcher_current_matcher():
     current_matcher = matchers.current_matcher
     # XXX-CHECK-PY23: If list() is needed.
