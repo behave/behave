@@ -516,7 +516,7 @@ class Feature(TagAndStatusStatement, Replayable):
         for scenario in self.scenarios:
             # -- OPTIONAL: Select scenario by name (regular expressions).
             if (runner.config.name and
-                     not scenario.should_run_with_name_select(runner.config)):
+                    not scenario.should_run_with_name_select(runner.config)):
                 scenario.mark_skipped()
                 continue
 
@@ -924,6 +924,140 @@ class Scenario(TagAndStatusStatement, Replayable):
         return failed
 
 
+class ScenarioOutlineBuilder(object):
+    """Helper class to use a ScenarioOutline as a template and
+    build its scenarios (as template instances).
+    """
+
+    def __init__(self, annotation_schema):
+        self.annotation_schema = annotation_schema
+
+    @staticmethod
+    def render_template(text, row=None, params=None):
+        """Render a text template with placeholders, ala "Hello <name>".
+
+        :param row:     As placeholder provider (dict-like).
+        :param params:  As additional placeholder provider (as dict).
+        :return: Rendered text, known placeholders are substituted w/ values.
+        """
+        if not ('<' in text and '>' in text):
+            return text
+
+        safe_values = False
+        for placeholders in (row, params):
+            if not placeholders:
+                continue
+            for name, value in placeholders.items():
+                if safe_values and ('<' in value and '>' in value):
+                    continue    # -- OOPS, value looks like placeholder.
+                text = text.replace("<%s>" % name, value)
+        return text
+
+    def make_scenario_name(self, outline_name, example, row, params=None):
+        """Build a scenario name for an example row of this scenario outline.
+        Placeholders for row data are replaced by values.
+
+        SCHEMA: "{outline_name} -*- {examples.name}@{row.id}"
+
+        :param outline_name:    ScenarioOutline's name (as template).
+        :param example:         Examples object.
+        :param row:             Row of this example.
+        :param params:          Additional placeholders for example/row.
+        :return: Computed name for the scenario representing example/row.
+        """
+        if params is None:
+            params = {}
+        params["examples.name"] = example.name or ""
+        params.setdefault("examples.index", example.index)
+        params.setdefault("row.index", row.index)
+        params.setdefault("row.id", row.id)
+
+        # -- STEP: Replace placeholders in scenario/example name (if any).
+        examples_name = self.render_template(example.name, row, params)
+        params["examples.name"] = examples_name
+        scenario_name = self.render_template(outline_name, row, params)
+
+        class Data(object):
+            def __init__(self, name, index):
+                self.name = name
+                self.index = index
+                self.id = name
+
+        example_data = Data(examples_name, example.index)
+        row_data = Data(row.id, row.index)
+        return self.annotation_schema.format(name=scenario_name,
+                                            examples=example_data, row=row_data)
+
+    @classmethod
+    def make_row_tags(cls, outline_tags, row, params=None):
+        if not outline_tags:
+            return None
+
+        tags = []
+        for tag in outline_tags:
+            if '<' in tag and '>' in tag:
+                tag = cls.render_template(tag, row, params)
+            if '<' in tag or '>' in tag:
+                # -- OOPS: Unknown placeholder, drop tag.
+                continue
+            new_tag = Tag.make_name(tag, unescape=True)
+            tags.append(new_tag)
+        return tags
+
+    @classmethod
+    def make_step_for_row(cls, outline_step, row, params=None):
+        # -- BASED-ON: new_step = outline_step.set_values(row)
+        new_step = copy.deepcopy(outline_step)
+        new_step.name = cls.render_template(new_step.name, row, params)
+        if new_step.text:
+            new_step.text = cls.render_template(new_step.text, row)
+        if new_step.table:
+            for name, value in row.items():
+                for row in new_step.table:
+                    for i, cell in enumerate(row.cells):
+                        row.cells[i] = cell.replace("<%s>" % name, value)
+        return new_step
+
+    def build_scenarios(self, scenario_outline):
+        """Build scenarios for a ScenarioOutline from its examples."""
+        # -- BUILD SCENARIOS (once): For this ScenarioOutline from examples.
+        params = {
+            "examples.name": None,
+            "examples.index": None,
+            "row.index": None,
+            "row.id": None,
+        }
+        scenarios = []
+        for example_index, example in enumerate(scenario_outline.examples):
+            example.index = example_index+1
+            params["examples.name"] = example.name
+            params["examples.index"] = _text(example.index)
+            for row_index, row in enumerate(example.table):
+                row.index = row_index+1
+                row.id = "%d.%d" % (example.index, row.index)
+                params["row.id"] = row.id
+                params["row.index"] = _text(row.index)
+                scenario_name = self.make_scenario_name(scenario_outline.name,
+                                                        example, row, params)
+                row_tags = self.make_row_tags(scenario_outline.tags, row, params)
+                new_steps = []
+                for outline_step in scenario_outline.steps:
+                    new_step = self.make_step_for_row(outline_step, row, params)
+                    new_steps.append(new_step)
+
+                # -- STEP: Make Scenario name for this row.
+                # scenario_line = example.line + 2 + row_index
+                scenario_line = row.line
+                scenario = Scenario(scenario_outline.filename, scenario_line,
+                                    scenario_outline.keyword,
+                                    scenario_name, row_tags, new_steps)
+                scenario.feature = scenario_outline.feature
+                scenario.background = scenario_outline.background
+                scenario._row = row
+                scenarios.append(scenario)
+        return scenarios
+
+
 class ScenarioOutline(Scenario):
     """A `scenario outline`_ parsed from a *feature file*.
 
@@ -1009,92 +1143,8 @@ class ScenarioOutline(Scenario):
     def reset(self):
         """Reset runtime temporary data like before a test run."""
         super(ScenarioOutline, self).reset()
-        for scenario in self.scenarios:
+        for scenario in self._scenarios:    # -- AVOID: BUILD-SCENARIOS
             scenario.reset()
-
-    @staticmethod
-    def render_template(text, row=None, params=None):
-        """Render a text template with placeholders, ala "Hello <name>".
-
-        :param row:     As placeholder provider (dict-like).
-        :param params:  As additional placeholder provider (as dict).
-        :return: Rendered text, known placeholders are substituted w/ values.
-        """
-        if not ('<' in text and '>' in text):
-            return text
-
-        safe_values = False
-        for placeholders in (row, params):
-            if not placeholders:
-                continue
-            for name, value in placeholders.items():
-                if safe_values and ('<' in value and '>' in value):
-                    continue    # -- OOPS, value looks like placeholder.
-                text = text.replace("<%s>" % name, value)
-        return text
-
-    def make_scenario_name(self, example, row, params=None):
-        """Build a scenario name for an example row of this scenario outline.
-        Placeholders for row data are replaced by values.
-
-        SCHEMA: "{scenario_outline.name} -*- {examples.name}@{row.id}"
-
-        :param example:  Examples object.
-        :param row:      Row of this example.
-        :param params:   Additional placeholders for example/row.
-        :return: Computed name for the scenario representing example/row.
-        """
-        if params is None:
-            params = {}
-        params["examples.name"] = example.name or ""
-        params.setdefault("examples.index", example.index)
-        params.setdefault("row.index", row.index)
-        params.setdefault("row.id", row.id)
-
-        # -- STEP: Replace placeholders in scenario/example name (if any).
-        examples_name = self.render_template(example.name, row, params)
-        params["examples.name"] = examples_name
-        scenario_name = self.render_template(self.name, row, params)
-
-        class Data(object):
-            def __init__(self, name, index):
-                self.name = name
-                self.index = index
-                self.id = name
-
-        example_data = Data(examples_name, example.index)
-        row_data = Data(row.id, row.index)
-        return self.annotation_schema.format(name=scenario_name,
-                                        examples=example_data, row=row_data)
-
-    def make_row_tags(self, row, params=None):
-        if not self.tags:
-            return None
-
-        tags = []
-        for tag in self.tags:
-            if '<' in tag and '>' in tag:
-                tag = self.render_template(tag, row, params)
-            if '<' in tag or '>' in tag:
-                # -- OOPS: Unknown placeholder, drop tag.
-                continue
-            new_tag = Tag.make_name(tag, unescape=True)
-            tags.append(new_tag)
-        return tags
-
-    @classmethod
-    def make_step_for_row(cls, outline_step, row, params=None):
-        # -- BASED-ON: new_step = outline_step.set_values(row)
-        new_step = copy.deepcopy(outline_step)
-        new_step.name = cls.render_template(new_step.name, row, params)
-        if new_step.text:
-            new_step.text = cls.render_template(new_step.text, row)
-        if new_step.table:
-            for name, value in row.items():
-                for row in new_step.table:
-                    for i, cell in enumerate(row.cells):
-                        row.cells[i] = cell.replace("<%s>" % name, value)
-        return new_step
 
     @property
     def scenarios(self):
@@ -1105,54 +1155,25 @@ class ScenarioOutline(Scenario):
             return self._scenarios
 
         # -- BUILD SCENARIOS (once): For this ScenarioOutline from examples.
-        params = {
-            "examples.name": None,
-            "examples.index": None,
-            "row.index": None,
-            "row.id": None,
-        }
-        for example_index, example in enumerate(self.examples):
-            example.index = example_index+1
-            params["examples.name"]  = example.name
-            params["examples.index"] = _text(example.index)
-            for row_index, row in enumerate(example.table):
-                row.index = row_index+1
-                row.id = "%d.%d" % (example.index, row.index)
-                params["row.id"] = row.id
-                params["row.index"] = _text(row.index)
-                scenario_name = self.make_scenario_name(example, row, params)
-                row_tags = self.make_row_tags(row, params)
-                new_steps = []
-                for outline_step in self.steps:
-                    new_step = self.make_step_for_row(outline_step, row, params)
-                    new_steps.append(new_step)
-
-                # -- STEP: Make Scenario name for this row.
-                # scenario_line = example.line + 2 + row_index
-                scenario_line = row.line
-                scenario = Scenario(self.filename, scenario_line, self.keyword,
-                                    scenario_name, row_tags, new_steps)
-                scenario.feature = self.feature
-                scenario.background = self.background
-                scenario._row = row
-                self._scenarios.append(scenario)
+        builder = ScenarioOutlineBuilder(self.annotation_schema)
+        self._scenarios = builder.build_scenarios(self)
         return self._scenarios
 
     def __repr__(self):
         return '<ScenarioOutline "%s">' % self.name
 
     def __iter__(self):
-        return iter(self.scenarios)
+        return iter(self.scenarios) # -- REQUIRE: BUILD-SCENARIOS
 
     def compute_status(self):
         skipped_count = 0
-        for scenario in self.scenarios:
+        for scenario in self._scenarios:    # -- AVOID: BUILD-SCENARIOS
             scenario_status = scenario.status
             if scenario_status in ("failed", "untested"):
                 return scenario_status
             elif scenario_status == "skipped":
                 skipped_count += 1
-        if skipped_count == len(self.scenarios):
+        if skipped_count == len(self._scenarios):
             # -- ALL SKIPPED:
             return "skipped"
         # -- OTHERWISE: ALL PASSED
@@ -1161,7 +1182,7 @@ class ScenarioOutline(Scenario):
     @property
     def duration(self):
         outline_duration = 0
-        for scenario in self.scenarios:
+        for scenario in self._scenarios:    # -- AVOID: BUILD-SCENARIOS
             outline_duration += scenario.duration
         return outline_duration
 
@@ -1176,7 +1197,7 @@ class ScenarioOutline(Scenario):
         if tag_expression.check(self.effective_tags):
             return True
 
-        for scenario in self.scenarios:
+        for scenario in self.scenarios:     # -- REQUIRE: BUILD-SCENARIOS
             if scenario.should_run_with_tags(tag_expression):
                 return True
         # -- NOTHING SELECTED:
@@ -1191,7 +1212,7 @@ class ScenarioOutline(Scenario):
         if not config.name:
             return True # -- SELECT-ALL: Select by name is not specified.
 
-        for scenario in self.scenarios:
+        for scenario in self.scenarios:     # -- REQUIRE: BUILD-SCENARIOS
             if scenario.should_run_with_name_select(config):
                 return True
         # -- NOTHING SELECTED:
@@ -1229,7 +1250,7 @@ class ScenarioOutline(Scenario):
     def run(self, runner):
         self._cached_status = None
         failed_count = 0
-        for scenario in self.scenarios:
+        for scenario in self.scenarios:     # -- REQUIRE: BUILD-SCENARIOS
             runner.context._set_root_attribute('active_outline', scenario._row)
             failed = scenario.run(runner)
             if failed:
@@ -1387,13 +1408,13 @@ class Step(BasicStatement, Replayable):
         :return: Cloned, adapted step object.
 
         .. note:: Deprecating
-            Use 'ScenarioOutline.make_step_for_row()' instead.
+            Use 'ScenarioOutlineBuilder.make_step_for_row()' instead.
         """
         import warnings
         warnings.warn("Use 'ScenarioOutline.make_step_for_row()' instead",
                       PendingDeprecationWarning, stacklevel=2)
         outline_step = self
-        return ScenarioOutline.make_step_for_row(outline_step, table_row)
+        return ScenarioOutlineBuilder.make_step_for_row(outline_step, table_row)
 
     def run(self, runner, quiet=False, capture=True):
         # -- RESET: Run information.
