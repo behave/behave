@@ -64,6 +64,7 @@ FIXED:
   * issue #230: problem with assert message that contains ascii over 128 value (provided by: jenisys)
   * issue #226: UnicodeDecodeError in tracebacks (provided by: md1023, karulis, jenisys)
   * issue #221: Fix some PY2/PY3 incompatibilities (provided by: johbo)
+  * pull  #219: IDE's unknown modules import issue (provided by: xbx)
   * issue #216: Using --wip option does not disable ANSI escape sequences (coloring).
   * issue #119: Python3 support for behave (solved by: #268 and ...)
   * issue #82:  JUnitReporter fails with Python 3.x (fixed with: #257, #268)
