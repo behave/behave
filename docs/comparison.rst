@@ -14,13 +14,15 @@ Cucumber_
 =========
 
 You can actually use Cucumber to run test code written in Python. It uses
-rubypython_ to fire up a Python interpreter inside the Ruby process though and
+"rubypython" (dead) to fire up a Python interpreter inside the Ruby process though and
 this can be somewhat brittle. Obviously we prefer to use something written in
 Python but if you've got an existing workflow based around Cucumber and you
 have code in multiple languages, Cucumber may be the one for you.
 
 .. _Cucumber: http://cukes.info/
-.. _rubypython: http://rubypython.rubyforge.org/
+.. dead-project:
+
+    rubypython: http://rubypython.rubyforge.org/
 
 Lettuce_
 ========

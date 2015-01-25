@@ -42,6 +42,14 @@ Contents
    new_and_noteworthy
    appendix
 
+.. seealso::
+
+    * `behave.example`_: `Behave Examples and Tutorials`_ (HTML)
+    * Peter Parente: `BDD and Behave <http://tott-meetup.readthedocs.org/en/latest/sessions/behave.html>`_ (tutorial)
+
+.. _behave.example: https://github.com/jenisys/behave.example
+.. _`Behave Examples and Tutorials`: http://jenisys.github.io/behave.example/
+
 
 Indices and tables
 ==================

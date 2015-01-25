@@ -66,9 +66,6 @@ Cardinality            Description
 
 
 .. _`regular expressions`: http://en.wikipedia.org/wiki/Regular_expression
-.. _Python regular expressions: http://docs.python.org/2/library/re.html#module-re
-.. _re module: http://docs.python.org/2/library/re.html#module-re
-
-
-
+.. _Python regular expressions: https://docs.python.org/2/library/re.html#module-re
+.. _re module: https://docs.python.org/2/library/re.html#module-re
 

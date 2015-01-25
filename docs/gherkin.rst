@@ -371,9 +371,10 @@ Examples:
 - Developing a library? Kicking off some kind of action that has an
   observable effect somewhere else.
 
-.. _`requests`: http://python-requests.org/
-.. _`twill`: http://twill.idyll.org/
-.. _`selenium`: http://seleniumhq.org/projects/webdriver/
+.. _`requests`: http://docs.python-requests.org/en/latest/
+.. _`twill`:    http://twill.idyll.org/
+.. _`selenium`: http://docs.seleniumhq.org/projects/webdriver/
+
 
 Then
 """"
