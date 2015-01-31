@@ -1,6 +1,7 @@
 # ============================================================================
 # BEHAVE: PYTHON PACKAGE REQUIREMENTS: More packages for Python2.6
 # ============================================================================
+# REQUIRE: pip >= 6.0
 
-ordereddict
-importlib
+ordereddict; python_version <= '2.6'
+importlib;   python_version <= '2.6'
