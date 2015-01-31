@@ -1,15 +1,10 @@
 # ============================================================================
 # BEHAVE: PYTHON PACKAGE REQUIREMENTS: For documentation generation
 # ============================================================================
+# REQUIRES: pip >= 6.0
 
-Sphinx >= 1.2.2
+Sphinx >= 1.2.3
 
 # -- PROBLEM-WITH-PYTHON3:
-# sphinxcontrib-cheeseshop >= 0.2
-sphinxcontrib-cheeseshop >= 0.2
-
-# -- PIP WHEEL OOPS: with pip 1.5.2
-# When Sphinx wheel is downloaded, the dependent packages are not downloaded.
-# Pygments
-# Jinja2
-# docutils
+# ONLY PYTHON2: sphinxcontrib-cheeseshop
+sphinxcontrib-cheeseshop >= 0.2; python_version < '3.0'

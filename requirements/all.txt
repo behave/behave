@@ -12,6 +12,5 @@
 -r testing.txt
 -r develop.txt
 -r docs.txt
--r more_py25.txt
 -r more_py26.txt
 -r json.txt

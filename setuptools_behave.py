@@ -31,7 +31,7 @@ class behave_test(Command):
     description = "Run feature tests with behave"
     default_format = "progress"
     default_args   = "features"
-    local_egg_dir  = "eggs"
+    local_egg_dir  = ".eggs"
     command_consumes_arguments = False
     user_options = [
         ("format=", "f", "Use formatter (default: %s)" % default_format),
@@ -71,7 +71,7 @@ class behave_test(Command):
         initial_dir = os.getcwd()
         try:
             dir_util.mkpath(install_dir)
-            os.chdir(self.local_egg_dir)
+            # -- NO LONGER NEEDED: os.chdir(self.local_egg_dir)
             if self.distribution.install_requires:
                 self.distribution.fetch_build_eggs(self.distribution.install_requires)
             if self.distribution.tests_require:

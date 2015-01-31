@@ -85,7 +85,8 @@ options = [
 
     (('-D', '--define'),
      dict(dest='userdata_defines', type=parse_user_define, action='append',
-          help="""Define user-specific data in config.userdata dictionary.
+          metavar="NAME=VALUE",
+          help="""Define user-specific data for the config.userdata dictionary.
                   Example: -D foo=bar to store it in config.userdata["foo"].""")),
 
     (('-e', '--exclude'),
