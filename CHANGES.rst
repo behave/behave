@@ -1,13 +1,18 @@
 Version History
 ===============================================================================
 
-Version: 1.2.5a1 (unreleased)
+Version: 1.2.6a1 (unreleased)
 -------------------------------------------------------------------------------
 
 GOALS:
 
-  - Improve support for Python3 (>= 3.3)
   - Improve support for Windows
+
+
+Version: 1.2.5 (2015-01-31)
+-------------------------------------------------------------------------------
+
+:Same as: Version 1.2.5a1 (unreleased).
 
 NEWS and CHANGES:
 
