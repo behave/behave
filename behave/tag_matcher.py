@@ -5,8 +5,6 @@ import re
 import operator
 import warnings
 
-warnings.simplefilter("once", DeprecationWarning)
-
 
 class TagMatcher(object):
     """Abstract base class that defines the TagMatcher protocol."""

@@ -173,7 +173,7 @@ class TestActiveTagMatcher1(TestCase):
             self.assertEqual(len(selected), 1)
             selected_tag0 = selected[0][0]
             self.assertEqual(selected_tag0, tag)
-            self.assert_(selected_tag0.startswith(tag_prefix))
+            self.assertTrue(selected_tag0.startswith(tag_prefix))
 
     def test_select_active_tags__ignores_invalid_active_tags(self):
         invalid_active_tags = [
@@ -204,7 +204,7 @@ class TestActiveTagMatcher1(TestCase):
         for case, tags in test_patterns:
             selected = self.tag_matcher.select_active_tags(tags)
             selected = list(selected)
-            self.assert_(len(selected) >= 1, case)
+            self.assertTrue(len(selected) >= 1, case)
 
 
     def test_should_exclude_with__returns_false_with_enabled_tag(self):
