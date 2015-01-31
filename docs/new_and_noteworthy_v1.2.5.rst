@@ -1,12 +1,15 @@
 Noteworthy in Version 1.2.5
 ==============================================================================
 
+Scenario Outline Improvements
+-------------------------------------------------------------------------------
+
 .. index::
     single: ScenarioOutline; name annotation
     pair:   ScenarioOutline; file location
 
-Scenario Outline: Better represent Example/Row
--------------------------------------------------------------------------------
+Better represent Example/Row
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :Since:  behave 1.2.5a1
 :Covers: Name annotation, file location
@@ -106,8 +109,8 @@ row.id          Shortcut for schema: "<examples.index>.<row.index>"
 .. index::
     single: ScenarioOutline; name with placeholders
 
-Scenario Outline: Name may contain Placeholders
--------------------------------------------------------------------------------
+Name may contain Placeholders
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :Since: behave 1.2.5a1
 
@@ -153,8 +156,8 @@ one for each examples/row combination:
 .. index::
     pair:   ScenarioOutline; tags with placeholders
 
-Scenario Outline: Tags may contain Placeholders
--------------------------------------------------------------------------------
+Tags may contain Placeholders
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :Since: behave 1.2.5a1
 
@@ -225,8 +228,8 @@ by using the select-by-tag mechanism:
 .. index::
     single: ScenarioOutline; select-group-by-name
 
-Scenario Outline: Run examples group via select-by-name
--------------------------------------------------------------------------------
+Run examples group via select-by-name
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :Since: behave 1.2.5a1
 
@@ -343,140 +346,14 @@ by using the ``skip()`` method before a feature or scenario is run.
 
 
 .. index::
-    single: Active Tags
-    pair:   @only.with_{category}; tag schema
-
-Active Tags: Use "@only.with_{category}"
--------------------------------------------------------------------------------
-
-:Since:  behave 1.2.5a1
-
-The term **active tags** is used for tags where it is decided at runtime
-if a tag is enabled or disabled. The runtime logic excludes then scenarios/features
-with disabled tags.
-
-Assuming you have the feature file where:
-
-  * scenario "Alice" should only run when browser "Chrome" is used
-  * scenario "Bob" should only run when browser "Safari" is used
-
-.. code-block:: gherkin
-
-    # -- FILE: features/alice.feature
-    Feature:
-
-        @only.with_browser=chrome
-        Scenario: Alice (Run only with Browser Chrome)
-            Given I do something
-            ...
-
-        @only.with_browser=safari
-        Scenario: Bob (Run only with Browser Safari)
-            Given I do something else
-            ...
-
-
-.. code-block:: python
-
-    # -- FILE: features/environment.py
-    # EXAMPLE: ACTIVE TAGS, exclude scenario from run-set at runtime.
-    # NOTE: OnlyWithCategoryTagMatcher implements the runtime decision logic.
-    from behave.tag_matcher import OnlyWithCategoryTagMatcher
-    import os
-    import sys
-
-    active_tag_matcher = None
-
-    def before_all(context):
-        # -- SETUP ACTIVE-TAG MATCHER: For category="browser"
-        global active_tag_matcher
-        current_browser = os.environ.get("BEHAVE_BROWSER", "chrome")
-        active_tag_matcher = OnlyWithCategoryTagMatcher("browser", current_browser)
-
-    def before_scenario(context, scenario):
-        # -- NOTE: scenario.effective_tags := scenario.tags + feature.tags
-        if active_tag_matcher.should_exclude_with(scenario.effective_tags):
-            # -- NOTE: Exclude any with @only.with_browser=<other_browser>
-            scenario.skip(reason="DISABLED ACTIVE-TAG")
-
-.. note::
-
-    By using this mechanism, the ``@only.with_browser=*`` tags become
-    **active tags**. The runtime decision logic decides when these tags
-    are enabled or disabled (and uses them to exclude their scenario/feature).
-
-
-.. index::
-    single: Active Tags
-    pair:   @only.with_{category}; tag schema
-
-Active Tags: Use "@only.with_{category}" with Many Categories
--------------------------------------------------------------------------------
-
-:Since:  behave 1.2.5a1
-
-When you use many ``categories`` for active tags, it becomes unnecessary
-complicated with the earlier described mechanism. In this case, you should use
-the :class:`~behave.tag_matcher.OnlyWithAnyCategoryTagMatcher`.
-
-Assuming you have scenarios with the following runtime conditions:
-
-  * Run scenario Alice only on Windows OS
-  * Run scenario Bob only with browser Chrome
-
-.. code-block:: gherkin
-
-    # -- FILE: features/alice.feature
-    # TAG SCHEMA: @only.with_{category}={current_value}
-    Feature:
-
-      @only.with_os=win32
-      Scenario: Alice (Run only on Windows)
-        Given I do something
-        ...
-
-      @only.with_browser=chrome
-      Scenario: Bob (Run only with Web-Browser Chrome)
-        Given I do something else
-        ...
-
-
-.. code-block:: python
-
-    # -- FILE: features/environment.py
-    from behave.tag_matcher import OnlyWithAnyCategoryTagMatcher
-    import sys
-
-    # -- MATCHES ANY TAGS: @only.with_{category}={value}
-    # NOTE: category_value_provider provides active values for categories.
-    category_value_provider = {
-        "browser": os.environ.get("BEHAVE_BROWSER", "chrome"),
-        "os":      sys.platform,
-    }
-    active_tag_matcher = OnlyWithAnyCategoryTagMatcher(category_value_provider)
-
-    def before_feature(context, feature):
-        if active_tag_matcher.should_exclude_with(feature.tags):
-            feature.skip(reason="DISABLED ACTIVE-TAG")
-
-    def before_scenario(context, scenario):
-        if active_tag_matcher.should_exclude_with(scenario.effective_tags):
-            scenario.skip("DISABLED ACTIVE-TAG")
-
-
-.. note::
-
-    Unknown categories, missing in the ``category_value_provider`` are ignored.
-
-
-.. index::
     single: Stage
     pair: Stage; Test Stage
 
-Test Stages: Use different Step Implementations for Each Stage
+Test Stages
 -------------------------------------------------------------------------------
 
 :Since:  behave 1.2.5a1
+:Intention: Use different Step Implementations for Each Stage
 
 A test stage allows the user to provide different step and environment
 implementation for each stage. Examples for test stages are:
@@ -508,16 +385,18 @@ To use the ``stage=testlab``, you run behave with::
 or define the environment variable ``BEHAVE_STAGE=testlab``.
 
 
+.. _userdata:
 .. index::
     single: userdata
     pair: userdata; user-specific configuration data
 
-User-specific Configuration Data (userdata)
+Userdata
 -------------------------------------------------------------------------------
 
 :Since:  behave 1.2.5a1
+:Intention: User-specific Configuration Data
 
-The userdata feature allows a user to provide its own configuration data:
+The userdata functionality allows a user to provide its own configuration data:
 
   * as command-line option ``-D name=value`` or ``--define name=value``
   * with the behave configuration file in section ``behave.userdata``
@@ -572,8 +451,8 @@ Other examples for user-specific data are:
      for debugging purposes.
 
 
-Userdata and Type Converters
--------------------------------------------------------------------------------
+Type Converters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The userdata object provides basic support for "type conversion on demand",
 similar to the :mod:`configparser` module. The following type conversion
@@ -595,7 +474,7 @@ The following example shows how the type converter functions for integers are us
         userdata = context.config.userdata
         server_name  = userdata.get("server", "beatrix")
         int_number   = userdata.getint("port", 80)
-        bool_answer  = userdata.getbool("are_you_sure")
+        bool_answer  = userdata.getbool("are_you_sure", True)
         float_number = userdata.getfloat("temperature_threshold", 50.0)
         ...
 
@@ -607,8 +486,8 @@ The following example shows how the type converter functions for integers are us
   * :py:meth:`behave.configuration.Userdata.getas()`
 
 
-Userdata: Advanced Cases
--------------------------------------------------------------------------------
+Advanced Cases
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The last section described the basic use cases of userdata.
 For more complicated cases, it is better to provide your own configuration setup
@@ -649,6 +528,212 @@ Other advanced use cases:
   * support configuration profiles via cmdline "... -D PROFILE=xxx ..."
     (uses profile-specific configuration file or profile-specific config section)
   * provide test stage specific configuration data
+
+
+.. index::
+    single: Active Tags
+
+Active Tags
+-------------------------------------------------------------------------------
+
+:Since:  behave 1.2.5a1
+
+**Active tags** are used when it is necessary to decide at runtime
+which features or scenarios should run (and which should be skipped).
+The runtime decision is based on which:
+
+  * platform the tests run (like: Windows, Linux, MACOSX, ...)
+  * runtime environment resources are available (by querying the "testbed")
+  * runtime environment resources should be used (via `userdata`_ or ...)
+
+Therefore, for *active tags* it is decided at runtime if a tag is enabled or 
+disabled. The runtime decision logic excludes features/scenarios with disabled 
+active tags before they are run. 
+
+.. note::
+  
+  The active tag mechanism is applied after the normal tag filtering 
+  that is configured on the command-line.
+
+  The active tag mechanism uses  the :class:`~behave.tag_matcher.ActiveTagMatcher`
+  for its core functionality.
+
+
+.. index::
+    single: Active Tag Logic
+
+Active Tag Logic
+~~~~~~~~~~~~~~~~~
+
+  * A (positive) active tag is enabled, 
+    if its value matches the current value of its category.
+
+  * A negated active tag (starting with "not") is enabled, 
+    if its value does not match the current value of its category.
+
+  * A sequence of active tags is enabled,
+    if all its active tags are enabled (logical-and operation).
+
+
+.. index::
+    single: Active Tag Schema
+    pair:   @active.with_{category}={value}; active tag schema (dialect 1)
+    pair:   @not_active.with_{category}={value}; active tag schema (dialect 1)
+    pair:   @use.with_{category}={value}; active tag schema (dialect 2)
+    pair:   @not.with_{category}={value}; active tag schema (dialect 2)
+    pair:   @only.with_{category}={value}; active tag schema (dialect 2)
+
+Active Tag Schema
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following two tag schemas are supported for active tags (by default).
+
+**Dialect 1:**
+
+  * @active.with_{category}={value}
+  * @not_active.with_{category}={value}
+
+**Dialect 2:**
+
+  * @use.with_{category}={value}
+  * @not.with_{category}={value}
+  * @only.with_{category}={value}
+
+
+
+
+Example 1
+~~~~~~~~~~
+
+Assuming you have the feature file where:
+
+  * scenario "Alice" should only run when browser "Chrome" is used
+  * scenario "Bob" should only run when browser "Safari" is used
+
+.. code-block:: gherkin
+
+    # -- FILE: features/alice.feature
+    Feature:
+
+        @use.with_browser=chrome
+        Scenario: Alice (Run only with Browser Chrome)
+            Given I do something
+            ...
+
+        @use.with_browser=safari
+        Scenario: Bob (Run only with Browser Safari)
+            Given I do something else
+            ...
+
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    # EXAMPLE: ACTIVE TAGS, exclude scenario from run-set at runtime.
+    # NOTE: ActiveTagMatcher implements the runtime decision logic.
+    from behave.tag_matcher import ActiveTagMatcher
+    import os
+    import sys
+
+    active_tag_value_provider = {
+        "browser": "chrome"
+    }
+    active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
+
+    def before_all(context):
+        # -- SETUP ACTIVE-TAG MATCHER VALUE(s): 
+        active_tag_value_provider["browser"] = os.environ.get("BROWSER", "chrome")
+
+    def before_scenario(context, scenario):
+        # -- NOTE: scenario.effective_tags := scenario.tags + feature.tags
+        if active_tag_matcher.should_exclude_with(scenario.effective_tags):
+            # -- NOTE: Exclude any with @use.with_browser=<other_browser>
+            scenario.skip(reason="DISABLED ACTIVE-TAG")
+
+
+.. note::
+
+    By using this mechanism, the ``@use.with_browser=*`` tags become
+    **active tags**. The runtime decision logic decides when these tags
+    are enabled or disabled (and uses them to exclude their scenario/feature).
+
+
+
+
+Example 2
+~~~~~~~~~~
+
+Assuming you have scenarios with the following runtime conditions:
+
+  * Run scenario Alice only on Windows OS
+  * Run scenario Bob only with browser Chrome
+
+.. code-block:: gherkin
+
+    # -- FILE: features/alice.feature
+    # TAG SCHEMA: @use.with_{category}={value}, ...
+    Feature:
+
+      @use.with_os=win32
+      Scenario: Alice (Run only on Windows)
+        Given I do something
+        ...
+
+      @use.with_browser=chrome
+      Scenario: Bob (Run only with Web-Browser Chrome)
+        Given I do something else
+        ...
+
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    from behave.tag_matcher import ActiveTagMatcher
+    import sys
+
+    # -- MATCHES ANY TAGS: @use.with_{category}={value}
+    # NOTE: active_tag_value_provider provides category values for active tags.
+    active_tag_value_provider = {
+        "browser": os.environ.get("BEHAVE_BROWSER", "chrome"),
+        "os":      sys.platform,
+    }
+    active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
+
+    def setup_active_tag_values(userdata):
+        for category in active_tag_value_provider.keys():
+            if category in userdata:
+                active_tag_value_provider[category] = userdata[category]
+
+    def before_all(context):
+        # -- SETUP ACTIVE-TAG MATCHER (with userdata): 
+        # USE: behave -D browser=safari ...
+        setup_active_tag_values(context.config.userdata)
+
+    def before_feature(context, feature):
+        if active_tag_matcher.should_exclude_with(feature.tags):
+            feature.skip(reason="DISABLED ACTIVE-TAG")
+
+    def before_scenario(context, scenario):
+        if active_tag_matcher.should_exclude_with(scenario.effective_tags):
+            scenario.skip("DISABLED ACTIVE-TAG")
+
+
+By using the `userdata`_ mechanism, you can now define on command-line
+which browser should be used when you run behave.
+
+.. code-block:: sh
+
+    # -- SHELL: Run behave with browser=safari, ... by using userdata.
+    # TEST VARIANT 1: Run tests with browser=safari
+    behave -D browser=safari features/
+
+    # TEST VARIANT 2: Run tests with browser=chrome
+    behave -D browser=chrome features/
+
+
+.. note::
+
+    Unknown categories, missing in the ``active_tag_value_provider`` are ignored.
 
 
 User-defined Formatters
@@ -724,3 +809,4 @@ Now you can use the name for any registered, user-defined formatter:
 
     # -- NOTE: Use FooFormatter that was registered by name "foo".
     behave -f foo ...
+
