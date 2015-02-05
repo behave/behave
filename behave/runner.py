@@ -940,7 +940,7 @@ class Runner(object):
 
         try:
             error_string += failed_step.exception[0]+'" '
-        except AttributeError:
+        except Exception:
             error_string += 'No Exception"'
 
         error_string += 'type="'
