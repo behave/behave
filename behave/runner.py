@@ -936,7 +936,13 @@ class Runner(object):
             if step.status == 'failed':
                 failed_step = step
                 break
-        error_string += failed_step.exception[0]+'" '
+
+
+        try:
+            error_string += failed_step.exception[0]+'" '
+        except AttributeError:
+            error_string += 'No Exception"'
+
         error_string += 'type="'
         error_string += re.sub(".*?\.(.*?)\'.*","\\1",\
         str(type(failed_step.exception)))+'">\n'
