@@ -2,14 +2,26 @@
 # PYTHON PACKAGE REQUIREMENTS FOR: behave -- For development only
 # ============================================================================
 
-# -- REQUIRES: testing
-# -r testing.txt
-
-# -- DEVELOPMENT SUPPORT:
-# PREPARED: nose-cov >= 1.4
-# PREPARED: paver >= 1.2
-tox   >= 1.8.1
-coverage >= 3.7
+# -- BUILD-TOOL:
+# invoke > 0.9.0: 
+# invoke-0.9.0 has problems with context attribute access => FIXED in repo HEAD 
+# (note: development version has also version 0.9.0).
+-e git+https://github.com/pyinvoke/invoke#egg=invoke
+path.py >= 7.2
 
 # -- CONFIGURATION MANAGEMENT (helpers):
 bumpversion >= 0.4.0
+
+# -- DEVELOPMENT SUPPORT:
+# PREPARED: nose-cov >= 1.4
+tox   >= 1.8.1
+coverage >= 3.7
+pytest-cov
+
+# -- PYTHON2/3 COMPATIBILITY: pypa/modernize
+# python-futurize
+modernize
+
+# -- REQUIRES: testing, docs
+-r testing.txt
+-r docs.txt
