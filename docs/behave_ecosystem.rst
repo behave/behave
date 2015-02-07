@@ -41,24 +41,27 @@ IDE             Plugin              Description
 Editors and Editor Plugins
 ------------------------------------------------------------------------------
 
-=================== =================== =============================================================================
+=================== ======================= =============================================================================
 Editor              Plugin                  Description
-=================== =================== =============================================================================
-`gedit`_            `gedit_behave`_     `gedit`_ plugin for jumping between feature and step files.
-`Gherkin editor`_   ---                 An editor for writing ``*.feature`` files.
-`Notepad++`_        `NP++ gherkin`_     Notepad++ editor syntax highlighting for Gherkin.
-`vim`_              `vim-behave`_       `vim`_ plugin: Port of `vim-cucumber`_ to Python `behave`_.
-=================== =================== =============================================================================
+=================== ======================= =============================================================================
+`gedit`_            `gedit_behave`_         `gedit`_ plugin for jumping between feature and step files.
+`Gherkin editor`_   ---                     An editor for writing ``*.feature`` files.
+`Notepad++`_        `NP++ gherkin`_         Notepad++ editor syntax highlighting for Gherkin.
+`Sublime Text`_     `Behave Step Finder`_   Helps to navigate to steps in behave.
+`vim`_              `vim-behave`_           `vim`_ plugin: Port of `vim-cucumber`_ to Python `behave`_.
+=================== ======================= =============================================================================
 
 .. _`Notepad++`: http://www.notepad-plus-plus.org
 .. _gedit:  https://wiki.gnome.org/Apps/Gedit
 .. _vim:    http://www.vim.org/
+.. _`Sublime Text`:    http://www.sublimetext.com
 
 .. _`Gherkin editor`: http://gherkineditor.codeplex.com
 .. _gedit_behave:   https://gitorious.org/cucutags/gedit_behave
 .. _`NP++ gherkin`: http://productive.me/develop/cucumbergherkin-syntax-highlighting-for-notepad
 .. _vim-behave:     https://gitorious.org/cucutags/vim-behave
 .. _vim-cucumber:   https://github.com/tpope/vim-cucumber
+.. _Behave Step Finder: https://packagecontrol.io/packages/Behave%20Step%20Finder
 
 
 Tools
