@@ -47,6 +47,7 @@ Editor              Plugin                  Description
 `gedit`_            `gedit_behave`_         `gedit`_ plugin for jumping between feature and step files.
 `Gherkin editor`_   ---                     An editor for writing ``*.feature`` files.
 `Notepad++`_        `NP++ gherkin`_         Notepad++ editor syntax highlighting for Gherkin.
+`Sublime Text`_     `Cucumber (ST Bundle)`_ Gherkin editor support, table formatting.
 `Sublime Text`_     `Behave Step Finder`_   Helps to navigate to steps in behave.
 `vim`_              `vim-behave`_           `vim`_ plugin: Port of `vim-cucumber`_ to Python `behave`_.
 =================== ======================= =============================================================================
@@ -61,6 +62,7 @@ Editor              Plugin                  Description
 .. _`NP++ gherkin`: http://productive.me/develop/cucumbergherkin-syntax-highlighting-for-notepad
 .. _vim-behave:     https://gitorious.org/cucutags/vim-behave
 .. _vim-cucumber:   https://github.com/tpope/vim-cucumber
+.. _`Cucumber (ST Bundle)`:    https://packagecontrol.io/packages/Cucumber
 .. _Behave Step Finder: https://packagecontrol.io/packages/Behave%20Step%20Finder
 
 
