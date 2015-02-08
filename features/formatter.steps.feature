@@ -5,11 +5,11 @@ Feature: Steps Formatter (Step Definitions Formatter)
     I want to get a quick overview which step definitions exist
     To simplify the writing of feature tests.
 
-    | SOLUTION: Use StepsFormatter in dry-run mode, like:
-    |
-    |       behave --dry-run -f steps features/
-    |
-    | NOTE: This formatter is similar to the "stepdefs" formatter in cucumber.
+    . SOLUTION: Use StepsFormatter in dry-run mode, like:
+    .
+    .       behave --dry-run -f steps features/
+    .
+    . NOTE: This formatter is similar to the "stepdefs" formatter in cucumber.
 
 
     @setup

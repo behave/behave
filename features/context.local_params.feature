@@ -1,9 +1,9 @@
 Feature: Local Context Parameters defined in Scenarios (Steps)
 
-    | Specification:
-    |   * When a step adds/modifies an attribute in the Context object,
-    |     then its value is only available to other steps in this scenario.
-    |   * After a scenario is executed all Context object changes are undone.
+    . SPECIFICATION:
+    .   * When a step adds/modifies an attribute in the Context object,
+    .     then its value is only available to other steps in this scenario.
+    .   * After a scenario is executed all Context object changes are undone.
 
     Scenario: Add Local Context parameter in Scenario/Step
       Given the behave context does not have a parameter "local_name"

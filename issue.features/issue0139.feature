@@ -2,12 +2,12 @@
 @not_reproducible
 Feature: Issue #139: Wrong steps seem to be executed when using --wip
 
-  | RELATED-TO: issue #35
-  | behave --format=plain --tags @one" seems to execute right scenario w/ wrong steps
-  |
-  | If you have a feature file with two scenarios where the second is tagged
-  | with @wip, running behave -w will output step names from the first scenario.
-  | It does seem to run the correct code for the steps.
+  . RELATED-TO: issue #35
+  . behave --format=plain --tags @one" seems to execute right scenario w/ wrong steps
+  .
+  . If you have a feature file with two scenarios where the second is tagged
+  . with @wip, running behave -w will output step names from the first scenario.
+  . It does seem to run the correct code for the steps.
 
 
   Scenario:

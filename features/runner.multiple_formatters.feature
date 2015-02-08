@@ -1,23 +1,23 @@
 Feature: Multiple Formatter with different outputs
 
-    | Specification: Command-line option --format
-    |  * Each --format option specifies one formatter to use.
-    |
-    | Specification: Command-line option --outfile
-    |  * Multiple --outfile options can be provided
-    |  * The nth --outfile option is used for the nth formatter
-    |  * If less --outfile options are provided than formatter,
-    |    the remaining formatter use stdout as output stream.
-    |    Therefore, the last formatter should in general use stdout.
-    |
-    | Specification: Configuration file
-    |  * Option format with one or more formatters can be used (optional).
-    |  * Formatters specified in the configuration file are always executed.
-    |  * If not enough outfiles are specified, the outfiles list is extended
-    |    by using an outfile "${format}.output" for each missing outfile.
-    |
-    | RELATED TO:
-    |  * issue #47  Formatter chain is broken
+  . SPECIFICATION: Command-line option --format
+  .  * Each --format option specifies one formatter to use.
+  .
+  . SPECIFICATION: Command-line option --outfile
+  .  * Multiple --outfile options can be provided
+  .  * The nth --outfile option is used for the nth formatter
+  .  * If less --outfile options are provided than formatter,
+  .    the remaining formatter use stdout as output stream.
+  .    Therefore, the last formatter should in general use stdout.
+  .
+  . SPECIFICATION: Configuration file
+  .  * Option format with one or more formatters can be used (optional).
+  .  * Formatters specified in the configuration file are always executed.
+  .  * If not enough outfiles are specified, the outfiles list is extended
+  .    by using an outfile "${format}.output" for each missing outfile.
+  .
+  . RELATED TO:
+  .  * issue #47  Formatter chain is broken
 
 
     @setup

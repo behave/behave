@@ -1,22 +1,22 @@
 Feature: Undefined Step
 
-    | Terminology:
-    |  * An undefined step is a step without matching step implementation.
-    |
-    | Specification:
-    |  * An undefined step should be reported after the run.
-    |  * An undefined step should cause its scenario to fail.
-    |  * If an undefined step is detected the remaining scenario steps are skipped.
-    |  * All undefined steps in a scenario should be reported (issue #42).
-    |  * Undefined steps should be detected even after a step fails in a scenario.
-    |  * Each undefined step should be reported only once.
-    |  * If a scenario is disabled (by tag expression, etc.),
-    |    the undefined step discovery should not occur.
-    |    This allows to prepare scenarios that are not intended to run (yet).
-    |  * Option --dry-run should discover undefined steps, too.
-    |
-    | RELATED TO:
-    |  * issue #42  Multiple undefined steps in same scenario are detected.
+  . TERMINOLOGY:
+  .  * An undefined step is a step without matching step implementation.
+  .
+  . SPECIFICATION:
+  .  * An undefined step should be reported after the run.
+  .  * An undefined step should cause its scenario to fail.
+  .  * If an undefined step is detected the remaining scenario steps are skipped.
+  .  * All undefined steps in a scenario should be reported (issue #42).
+  .  * Undefined steps should be detected even after a step fails in a scenario.
+  .  * Each undefined step should be reported only once.
+  .  * If a scenario is disabled (by tag expression, etc.),
+  .    the undefined step discovery should not occur.
+  .    This allows to prepare scenarios that are not intended to run (yet).
+  .  * Option --dry-run should discover undefined steps, too.
+  .
+  . RELATED TO:
+  .  * issue #42  Multiple undefined steps in same scenario are detected.
 
 
     @setup

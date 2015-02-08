@@ -4,17 +4,17 @@ Feature: User-specific Configuration Data (userdata)
   I want to provide my own configuration data
   So that the test suite and/or the environment can be adapted to its needs.
 
-  | MECHANISM:
-  |   * Use -D name=value (--define) option to specify user data on command-line.
-  |   * Specify user data in section "behave.userdata" of "behave.ini"
-  |   * Load/setup user data in before_all() hook (advanced cases)
-  |
-  | USING USER DATA:
-  |   * context.config.userdata (as dict)
-  |
-  | SUPPORTED DATA TYPES (from "behave.ini" and command-line):
-  |   * string
-  |   * bool-like (= "true", if definition has no value)
+  . MECHANISM:
+  .   * Use -D name=value (--define) option to specify user data on command-line.
+  .   * Specify user data in section "behave.userdata" of "behave.ini"
+  .   * Load/setup user data in before_all() hook (advanced cases)
+  .
+  . USING USER DATA:
+  .   * context.config.userdata (as dict)
+  .
+  . SUPPORTED DATA TYPES (from "behave.ini" and command-line):
+  .   * string
+  .   * bool-like (= "true", if definition has no value)
 
   @setup
   Scenario: Feature Setup

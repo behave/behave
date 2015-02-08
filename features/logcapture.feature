@@ -7,15 +7,15 @@ Feature: Capture log output
   But log-records are only shown when failures/errors occur
   So that failure diagnostics are simplified
 
-  | SPECIFICATION:
-  |  * log_capture mode is enabled per default
-  |  * log_capture mode can be defined on command-line
-  |  * log_capture mode can be defined in behave configuration file
-  |  * In log_capture mode: Captured log-records are only shown if a scenario fails
-  |
-  | RELATED:
-  |  * logcapture.*.feature
-  |  * logging.*.feature
+  . SPECIFICATION:
+  .  * log_capture mode is enabled per default
+  .  * log_capture mode can be defined on command-line
+  .  * log_capture mode can be defined in behave configuration file
+  .  * In log_capture mode: Captured log-records are only shown if a scenario fails
+  .
+  . RELATED:
+  .  * logcapture.*.feature
+  .  * logging.*.feature
 
   @setup
   Scenario: Feature Setup

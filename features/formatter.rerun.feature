@@ -5,26 +5,26 @@ Feature: Rerun Formatter
     As a tester
     I want that behave generates the necessary information for me.
 
-    | SOLUTION:
-    |
-    |   Put RerunFormatter into "behave.ini" configuration file:
-    |
-    |       # -- file:behave.ini
-    |       [behave]
-    |       format   = rerun
-    |       outfiles = rerun.txt
-    |
-    |   Then a "rerun.txt" file is generated during each test run
-    |   that contains the file locations of the failing scenarios, like:
-    |
-    |       # -- file:rerun.txt
-    |       # RERUN: Failing scenarios during last test run.
-    |       features/alice.feature:10
-    |       features/alice.feature:42
-    |
-    |   To rerun the failing scenarios of the last test run, use:
-    |
-    |       behave @rerun.txt
+    . SOLUTION:
+    .
+    .   Put RerunFormatter into "behave.ini" configuration file:
+    .
+    .       # -- file:behave.ini
+    .       [behave]
+    .       format   = rerun
+    .       outfiles = rerun.txt
+    .
+    .   Then a "rerun.txt" file is generated during each test run
+    .   that contains the file locations of the failing scenarios, like:
+    .
+    .       # -- file:rerun.txt
+    .       # RERUN: Failing scenarios during last test run.
+    .       features/alice.feature:10
+    .       features/alice.feature:42
+    .
+    .   To rerun the failing scenarios of the last test run, use:
+    .
+    .       behave @rerun.txt
 
 
     @setup

@@ -3,10 +3,10 @@ Feature: Test run can be aborted by the user
   As a tester
   I want sometimes to abort a test run (because it is anyway failing, etc.)
   So that I am more productive.
-
-  | NOTES:
-  |  * The test runner should fail gracefully (most of the times)
-  |  * At least some cleanup hooks should be called (in general)
+  
+  . NOTES:
+  .  * The test runner should fail gracefully (most of the times)
+  .  * At least some cleanup hooks should be called (in general)
 
 
   @setup

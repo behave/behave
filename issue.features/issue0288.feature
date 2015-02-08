@@ -1,14 +1,14 @@
 @issue
 @only.with_python2=true
 Feature: Issue #288 -- print() needed in "environment.py" file or steps
-
-  | QUICKFIX: Apply to your code base
-  |   pip install modernize
-  |   python-modernize --fix=libmodernize.fixes.fix_print my_directory/          # Shows only changes
-  |   python-modernize --fix=libmodernize.fixes.fix_print --write my_directory/  # Applies changes
-  |
-  | NOTE: Currently, the feature describes the implemented behaviour of behave.
   
+  . QUICKFIX: Apply to your code base
+  .   pip install modernize
+  .   python-modernize --fix=libmodernize.fixes.fix_print my_directory/          # Shows only changes
+  .   python-modernize --fix=libmodernize.fixes.fix_print --write my_directory/  # Applies changes
+  .
+  . NOTE: Currently, the feature describes the implemented behaviour of behave.
+
     Background: Feature Setup
         Given a new working directory
         And a file named "features/steps/steps.py" with:
@@ -30,7 +30,7 @@ Feature: Issue #288 -- print() needed in "environment.py" file or steps
                 Scenario: Bob
                     Given some step passes
             """
-    
+
 
     Scenario: Environment File Example
         Given a file named "features/environment.py" with:

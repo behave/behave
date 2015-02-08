@@ -5,14 +5,14 @@ Feature: Select feature files by using regular expressions
   I want to include/exclude feature files into/from a test run by using wildcards
   To be more flexible and avoid to specify all feature files
 
-  | SPECIFICATION:
-  |  * behave provides --include and --exclude command line options
-  |  * --include option selects a subset of all files that should be included
-  |  * --exclude option is applied after include option is applied
-  |
-  | EXAMPLE:
-  |     behave --include="features/ali.*\.feature" ...
-  |     behave --exclude="features/ali.*" ...
+  . SPECIFICATION:
+  .  * behave provides --include and --exclude command line options
+  .  * --include option selects a subset of all files that should be included
+  .  * --exclude option is applied after include option is applied
+  .
+  . EXAMPLE:
+  .     behave --include="features/ali.*\.feature" ...
+  .     behave --exclude="features/ali.*" ...
 
 
     Background:

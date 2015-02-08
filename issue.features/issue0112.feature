@@ -2,9 +2,9 @@
 @change_request
 Feature: Issue #112: Improvement to AmbiguousStep error
 
-    | AmbiguousStep could be more useful if it also showed the existing string
-    | with which the new one is clashing. This is particularly useful
-    | if using step parameters.
+    . AmbiguousStep could be more useful if it also showed the existing string
+    . with which the new one is clashing. This is particularly useful
+    . if using step parameters.
 
 
   Background:

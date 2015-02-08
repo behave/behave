@@ -4,20 +4,20 @@ Feature: Advanced, more complex directory layout (Variant 2)
   I want a deeper, more structured directory structure when many feature files exist
   So that I have the parts better under control (more managable)
 
-  | ADVANCED, MORE COMPLEX DIRECTORY LAYOUT STRUCTURE:
-  |     features/
-  |       +-- group1.features/
-  |       |      +-- *.feature
-  |       +-- group2.features/
-  |       |      +-- *.feature
-  |       +-- steps/*.py          # Step definitions or step-library imports.
-  |       +-- environment.py      # OPTIONAL: environment setup/hooks.
-  |
-  | SEE ALSO:
-  |   * http://pythonhosted.org/behave/gherkin.html#layout-variations
-  |
-  | RELATED:
-  |   * issue #99: Layout variation "a directory containing your feature files" ...
+  . ADVANCED, MORE COMPLEX DIRECTORY LAYOUT STRUCTURE:
+  .     features/
+  .       +-- group1.features/
+  .       |      +-- *.feature
+  .       +-- group2.features/
+  .       |      +-- *.feature
+  .       +-- steps/*.py          # Step definitions or step-library imports.
+  .       +-- environment.py      # OPTIONAL: environment setup/hooks.
+  .
+  . SEE ALSO:
+  .   * http://pythonhosted.org/behave/gherkin.html#layout-variations
+  .
+  . RELATED:
+  .   * issue #99: Layout variation "a directory containing your feature files" ...
 
     @setup
     Scenario: Setup directory structure

@@ -6,24 +6,23 @@ Feature: Feature Listfile (List of feature filenames/directories)
     And I do not want to provide the list each time
     But provide a text file that contains the list of features.
 
-    | SPECIFICATION: behave file args
-    |  * Prepend an '@' char (AT) to the feature configfile name to classify it.
-    |
-    | SPECIFICATION: Feature listfile (text file)
-    |  * Each line contains a feature filename or directory with features
-    |  * Feature filenames/dirnames are relative to the feature configfile
-    |  * Empty lines are removed while reading
-    |  * Comment lines are removed while reading (start with '#' char)
-    |  * Wildcards are expanded to select 0..N files or directories.
-    |  * Wildcards for file locations are not supported (only filenames or dirs).
-    |
-    | SPECIFICATION: Runner
-    |  * Feature configfile with unknown/not found feature files
-    |    cause runner to fail.
-    |
-    | NOTE: Also supported by Cucumber.
-    | RELATED:
-    |  * issue #75
+    . SPECIFICATION: behave file args
+    .  * Prepend an '@' char (AT) to the feature configfile name to classify it.
+    .
+    . SPECIFICATION: Feature listfile (text file)
+    .  * Each line contains a feature filename or directory with features
+    .  * Feature filenames/dirnames are relative to the feature configfile
+    .  * Empty lines are removed while reading
+    .  * Comment lines are removed while reading (start with '#' char)
+    .  * Wildcards are expanded to select 0..N files or directories.
+    .  * Wildcards for file locations are not supported (only filenames or dirs).
+    .
+    . SPECIFICATION: Runner
+    .  * Feature configfile with unknown/not found feature files
+    .    cause runner to fail.
+    .
+    . NOTE: Also supported by Cucumber.
+    . RELATED: issue #75
 
 
   @setup

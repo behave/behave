@@ -4,31 +4,31 @@ Feature: Scenario Outline -- Improvements
   I want that Scenario Outline (as paramtrized Scenario) is improved
   So that I know better which example/row combination is run.
 
-  | REQUIREMENTS:
-  |   * Generated scenario name should better indicate row/example combination.
-  |   * Naming schema for generated scenario names should be configurable.
-  |   * File location of generated scenario should represent row/example.
-  |   * It should be possible select all scenarios of an examples group.
-  |
-  | IMPROVEMENTS:
-  |   * annotate Scenario Outline name (with row.id, examples.name, ...)
-  |   * use placeholders (from row/example) in Scenario Outline tags.
-  |   * use placeholders (from row/example) in Scenario Outline name.
-  |   * use placeholders (from row/example) in Examples (group) name.
-  |   * file location for generated scenario is unique (selectable in rerun)
-  |
-  | SPECIFICATION: Special placeholders
-  |
-  |   | Placeholder     | Description |
-  |   |  name           |  Name of the Scenario Outline.                 |
-  |   |  examples.name  |  Name of the examples group (or empty string). |
-  |   |  examples.index |  Index of examples group (range: 1..N).        |
-  |   |  row.index      |  Index of row in examples group (range: 1..R). |
-  |   |  row.id         |  Same as: "{example.index}.{row.index}"        |
-  |
-  | RELATED:
-  |   * scenario_outline.name_annotation.feature
-  |   * scenario_outline.parametrized.feature
+  . REQUIREMENTS:
+  .   * Generated scenario name should better indicate row/example combination.
+  .   * Naming schema for generated scenario names should be configurable.
+  .   * File location of generated scenario should represent row/example.
+  .   * It should be possible select all scenarios of an examples group.
+  .
+  . IMPROVEMENTS:
+  .   * annotate Scenario Outline name (with row.id, examples.name, ...)
+  .   * use placeholders (from row/example) in Scenario Outline tags.
+  .   * use placeholders (from row/example) in Scenario Outline name.
+  .   * use placeholders (from row/example) in Examples (group) name.
+  .   * file location for generated scenario is unique (selectable in rerun)
+  .
+  . SPECIFICATION: Special placeholders
+  .
+  .   | Placeholder     | Description |
+  .   |  name           |  Name of the Scenario Outline.                 |
+  .   |  examples.name  |  Name of the examples group (or empty string). |
+  .   |  examples.index |  Index of examples group (range: 1..N).        |
+  .   |  row.index      |  Index of row in examples group (range: 1..R). |
+  .   |  row.id         |  Same as: "{example.index}.{row.index}"        |
+  .
+  . RELATED:
+  .   * scenario_outline.name_annotation.feature
+  .   * scenario_outline.parametrized.feature
 
   @setup
   Scenario: Test Setup

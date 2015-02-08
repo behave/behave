@@ -4,35 +4,35 @@ Feature: Active Tags
   I want that some tags are evaluated at runtime
   So that some features/scenarios automatically excluded from the run-set.
 
-  | SPECIFICATION: Active tag
-  |   * An active tag is evaluated at runtime.
-  |   * An active tag is either enabled or disabled (decided by runtime decision logic).
-  |   * A disabled active tag causes that its feature/scenario is excluded from the run-set.
-  |   * If several active tags are used for a feature/scenario/scenario outline,
-  |     the following tag logic is used:
-  |
-  |     enabled = enabled1 and enabled2 and ...
-  |
-  | ACTIVE TAG SCHEMA (dialect1):
-  |     @active.with_{category}={value}
-  |     @not_active.with_{category}={value}
-  |
-  | ACTIVE TAG SCHEMA (dialect2):
-  |     @use.with_{category}={value}
-  |     @not.with_{category}={value}
-  |     @only.with_{category}={value}
-  |
-  | RATIONALE:
-  |   Some aspects of the runtime environment are only known
-  |   when the tests are running. Therefore, it many cases it is simpler
-  |   to use such a mechanism as "active tags" instead of moving this decision
-  |   to the build-script that runs the tests.
-  |
-  |   This allows to automatically skip some tests (scenarios, features)
-  |   that would otherwise fail anyway.
-  |
-  | NOTE:
-  |   * DRY-RUN MODE: Hooks are not called in dry-run mode.
+  . SPECIFICATION: Active tag
+  .   * An active tag is evaluated at runtime.
+  .   * An active tag is either enabled or disabled (decided by runtime decision logic).
+  .   * A disabled active tag causes that its feature/scenario is excluded from the run-set.
+  .   * If several active tags are used for a feature/scenario/scenario outline,
+  .     the following tag logic is used:
+  .
+  .     enabled = enabled1 and enabled2 and ...
+  .
+  . ACTIVE TAG SCHEMA (dialect1):
+  .     @active.with_{category}={value}
+  .     @not_active.with_{category}={value}
+  .
+  . ACTIVE TAG SCHEMA (dialect2):
+  .     @use.with_{category}={value}
+  .     @not.with_{category}={value}
+  .     @only.with_{category}={value}
+  .
+  . RATIONALE:
+  .   Some aspects of the runtime environment are only known
+  .   when the tests are running. Therefore, it many cases it is simpler
+  .   to use such a mechanism as "active tags" instead of moving this decision
+  .   to the build-script that runs the tests.
+  .
+  .   This allows to automatically skip some tests (scenarios, features)
+  .   that would otherwise fail anyway.
+  .
+  . NOTE:
+  .   * DRY-RUN MODE: Hooks are not called in dry-run mode.
 
 
     @setup

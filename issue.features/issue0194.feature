@@ -1,13 +1,13 @@
 @issue
 Feature: Issue #194: Nested steps prevent that original stdout/stderr is restored
 
-  | When nested steps are used,
-  | the original stdout/stderr streams are not restored after the scenario.
-  | This is caused by starting/stopping capture again while executing nested steps.
-  |
-  | ENSURE THAT:
-  |   * Original streams are restored in after_scenario() hook.
-  |   * Nested steps should not replace existing capture objects.
+  . When nested steps are used,
+  . the original stdout/stderr streams are not restored after the scenario.
+  . This is caused by starting/stopping capture again while executing nested steps.
+  .
+  . ENSURE THAT:
+  .   * Original streams are restored in after_scenario() hook.
+  .   * Nested steps should not replace existing capture objects.
 
   @setup
   Scenario: Feature Setup

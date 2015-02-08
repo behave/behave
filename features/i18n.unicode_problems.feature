@@ -1,17 +1,17 @@
 @unicode
 Feature: Internationalization (i18n) and Problems with Unicode Strings
 
-  | POTENTIAL PROBLEM AREAS:
-  |   * Feature, scenario, step names with problematic chars
-  |   * Tags with problematic chars
-  |   * step raises exception with problematic text (output capture)
-  |   * step generates output with problematic and some step fails (stdout capture)
-  |   * filenames with problematic chars: feature files, steps files
-  |
-  | CHECKED FORMATTERS and REPORTERS:
-  |   * plain
-  |   * pretty
-  |   * junit   (used via "behave.ini" defaults)
+  . POTENTIAL PROBLEM AREAS:
+  .   * Feature, scenario, step names with problematic chars
+  .   * Tags with problematic chars
+  .   * step raises exception with problematic text (output capture)
+  .   * step generates output with problematic and some step fails (stdout capture)
+  .   * filenames with problematic chars: feature files, steps files
+  .
+  . CHECKED FORMATTERS and REPORTERS:
+  .   * plain
+  .   * pretty
+  .   * junit   (used via "behave.ini" defaults)
 
 
   @setup

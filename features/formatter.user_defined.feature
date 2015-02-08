@@ -5,16 +5,16 @@ Feature: Use a user-defined Formatter
   So that I am able to add a new, user-defined formatters
   when I need other output formats (or override existing ones).
 
-  | SPECIFICATION:
-  |   * A user-defined formatter must inherit from the "Formatter" class.
-  |   * A user-defined formatter can be specified on command-line
-  |     by using a scoped class name as value for the '--format' option.
-  |   * A user-defined formatter can be registered by name
-  |     by using the "behave.formatters" section in the behave config file.
-  |
-  | SCOPED CLASS NAME (for formatter.class):
-  |   * my.module_name:ClassName   (preferred:   single colon separator)
-  |   * my.module_name::ClassName  (alternative: double colon separator)
+  . SPECIFICATION:
+  .   * A user-defined formatter must inherit from the "Formatter" class.
+  .   * A user-defined formatter can be specified on command-line
+  .     by using a scoped class name as value for the '--format' option.
+  .   * A user-defined formatter can be registered by name
+  .     by using the "behave.formatters" section in the behave config file.
+  .
+  . SCOPED CLASS NAME (for formatter.class):
+  .   * my.module_name:ClassName   (preferred:   single colon separator)
+  .   * my.module_name::ClassName  (alternative: double colon separator)
 
 
   @setup

@@ -2,12 +2,12 @@
 @unicode
 Feature: UnicodeDecodeError in tracebacks (when an exception in a step implementation)
 
-  | Exception with non-ASCII character is raised in a step implementation.
-  | UnicodeDecodeError occurs with:
-  |   'ascii' codec can't decode byte 0x82 in position 11: ordinal not in range(128)
-  |
-  | RELATED:
-  |   * features/i18n.unicode_problems.feature
+  . Exception with non-ASCII character is raised in a step implementation.
+  . UnicodeDecodeError occurs with:
+  .   'ascii' codec can't decode byte 0x82 in position 11: ordinal not in range(128)
+  .
+  . RELATED:
+  .   * features/i18n.unicode_problems.feature
 
   @setup
   Scenario: Feature Setup

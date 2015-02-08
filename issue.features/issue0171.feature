@@ -1,12 +1,12 @@
 @issue
 Feature: Issue #171: Importing step from other step file fails with AmbiguousStep Error
 
-  | When a step module imports another step module
-  | this should not cause AmbiguousStep errors
-  | due to duplicated registration of the same step functions.
-  |
-  | NOTES:
-  |   * In general you should avoid this case (provided as example here).
+  . When a step module imports another step module
+  . this should not cause AmbiguousStep errors
+  . due to duplicated registration of the same step functions.
+  .
+  . NOTES:
+  .   * In general you should avoid this case (provided as example here).
 
 
   @reuse.colocated_test

@@ -4,36 +4,36 @@ Feature: Scenario Description
     I want to explain the rationale of a test scenario or scenario outline
     Before I actually execute the steps.
 
-    | SPECIFICATION: Scenario Description
-    |   * Scenario descriptions are in optional section between
-    |     Scenario line and the first step.
-    |   * All description lines are added to the scenario description.
-    |   * Empty lines are not part of the scenario description (are removed).
-    |   * Comment lines are not part of the scenario description (are removed).
-    |   * A Scenario/ScenarioOutline with a scenario description,
-    |     but without steps is valid (to support preparation of scenarios).
-    |
-    | SPECIFICATION: A scenario description line...
-    |   * must not start with step keywords, like:
-    |
-    |       Given, When, Then, And, But, etc.
-    |       (including lower-case versions)
-    |
-    |   * must not start with '*' (ASTERISK) due to generic step keyword ambiguity
-    |   * must not start with '@' (AT) due to tag ambiguity
-    |     (supporting: scenario without steps but with step description).
-    |   * may start with '|' (table-cell-separator).
-    |   * does not contain only whitespace chars (empty line, filtered-out).
-    |   * does not start with '#' (HASH) after whitespace chars (comment line).
-    |
-    | GRAMMAR STRUCTURE:
-    |   Scenario-Line : 1
-    |       Scenario-Description-Line : 0 .. N
-    |       Step-Line : 0 .. N
-    |
-    |   Scenario-Line := Scenario-Keyword ':' Scenario-Name
-    |   Scenario-Description-Line := Line does not start with Step-Keyword
-    |   Step-Line := Step-Keyword Words+
+    . SPECIFICATION: Scenario Description
+    .   * Scenario descriptions are in optional section between
+    .     Scenario line and the first step.
+    .   * All description lines are added to the scenario description.
+    .   * Empty lines are not part of the scenario description (are removed).
+    .   * Comment lines are not part of the scenario description (are removed).
+    .   * A Scenario/ScenarioOutline with a scenario description,
+    .     but without steps is valid (to support preparation of scenarios).
+    .
+    . SPECIFICATION: A scenario description line...
+    .   * must not start with step keywords, like:
+    .
+    .       Given, When, Then, And, But, etc.
+    .       (including lower-case versions)
+    .
+    .   * must not start with '*' (ASTERISK) due to generic step keyword ambiguity
+    .   * must not start with '@' (AT) due to tag ambiguity
+    .     (supporting: scenario without steps but with step description).
+    .   * may start with '|' (table-cell-separator).
+    .   * does not contain only whitespace chars (empty line, filtered-out).
+    .   * does not start with '#' (HASH) after whitespace chars (comment line).
+    .
+    . GRAMMAR STRUCTURE:
+    .   Scenario-Line : 1
+    .       Scenario-Description-Line : 0 .. N
+    .       Step-Line : 0 .. N
+    .
+    .   Scenario-Line := Scenario-Keyword ':' Scenario-Name
+    .   Scenario-Description-Line := Line does not start with Step-Keyword
+    .   Step-Line := Step-Keyword Words+
 
 
     @setup
