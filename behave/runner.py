@@ -941,7 +941,7 @@ class Runner(object):
         try:
             error_string += failed_step.exception[0]+'" '
         except Exception:
-            error_string += 'No Exception"'
+            error_string += 'No Exception" '
 
         error_string += 'type="'
         error_string += re.sub(".*?\.(.*?)\'.*","\\1",\
