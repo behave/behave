@@ -164,6 +164,14 @@ class Context(object):
             # -- NOTE: Otherwise skipped if AssertionError/Exception is raised.
             self._mode = self.BEHAVE
 
+    def get_stack(self):
+        return self._stack[0]
+
+    def set_stack(self, new_values):
+        for k, v in new_values.items():
+            if k not in self._stack[0]:
+                self._stack[0][k] = v
+            
     def _set_root_attribute(self, attr, value):
         for frame in self.__dict__['_stack']:
             if frame is self.__dict__['_root']:
