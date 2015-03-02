@@ -8,6 +8,10 @@ GOALS:
 
   - Improve support for Windows
 
+FIXED:
+
+  * pull  #293: Use title-cased keywords in tutorial scenario (provided by: neoblackcap)
+
 
 Version: 1.2.5 (2015-01-31)
 -------------------------------------------------------------------------------
