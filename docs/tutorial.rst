@@ -233,15 +233,15 @@ Python Step Implementations
 ===========================
 
 Steps used in the scenarios are implemented in Python files in the "steps"
-directory. You can call these whatever you like as long as they're
-*filename*.py in the steps directory. You don't need to tell *behave* which
+directory. You can call these whatever you like as long as they use
+the python ``*.py`` file extension. You don't need to tell *behave* which
 ones to use - it'll use all of them.
 
 The full detail of the Python side of *behave* is in the
 :doc:`API documentation <api>`.
 
 Steps are identified using decorators which match the predicate from the
-feature file: given, when, then and step (variants with Title case are also
+feature file: **given**, **when**, **then** and **step** (variants with Title case are also
 available if that's your preference.) The decorator accepts a string
 containing the rest of the phrase used in the scenario step it belongs to.
 
@@ -276,7 +276,7 @@ Step code implementing the two steps here might look like
 The ``step`` decorator matches the step to *any* step type, "given", "when"
 or "then". The "and" and "but" step types are renamed internally to take
 the preceding step's keyword (so an "and" following a "given" will become a
-"given" internally and use a "give" decorated step).
+"given" internally and use a **given** decorated step).
 
 If you find you'd like your step implementation to invoke another step you
 may do so with the :class:`~behave.runner.Context` method
