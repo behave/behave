@@ -15,8 +15,8 @@ called "tutorial.feature" containing:
 
    Scenario: run a simple test
       Given we have behave installed
-       when we implement a test
-       then behave will test it for us!
+       When we implement a test
+       Then behave will test it for us!
 
 Make a new directory called "tutorial/steps". In that directory create a
 file called "tutorial.py" containing:
