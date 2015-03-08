@@ -289,15 +289,23 @@ which that code is invoked (if they exist.)
 
     before_all
     for feature in all_features:
+        for tag in feature.tags:
+            before_tag
         before_feature
         for scenario in feature.scenarios:
+            for tag in scenario.tags:
+                before_tag
             before_scenario
             for step in scenario.steps:
                 before_step
                     step.run()
                 after_step
             after_scenario
-        after_feature         
+            for tag in scenario.tags:
+                after_tag
+        after_feature 
+        for tag in feature.tags:
+            after_tag
     after_all
   
 If the feature contains scenario outlines then there is an addtional loop
@@ -307,16 +315,24 @@ over all the scenarios in the outline making the running look like this:
 
     before_all
     for feature in all_features:
+        for tag in feature.tags:
+            before_tag
         before_feature
         for outline in feature.scenarios:
             for scenario in outline.scenarios:
+                for tag in scenario.tags:
+                    before_tag
                 before_scenario
                 for step in scenario.steps:
                     before_step
                         step.run()
                     after_step
                 after_scenario
-        after_feature         
+                for tag in scenario.tags:
+                    after_tag
+        after_feature
+        for tag in feature.tags:
+            after_tag
     after_all
 
 
