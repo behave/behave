@@ -776,7 +776,12 @@ class Runner(object):
         if current_job.status == 'failed':
             self.getskippedsteps(current_job, writebuf)
 
-        writebuf.seek(0)
+        try:
+            writebuf.seek(0)
+        except UnicodeDecodeError as e:
+            print "BUFFER: %s" % str(writebuf.buflist)
+            writebuf.pos = 0
+
         try:
             result = reportheader + writebuf.read() + "\n" + reportfooter
         except UnicodeError as err:
@@ -937,6 +942,13 @@ class Runner(object):
                 failed_step = step
                 break
 
+        if not failed_step:
+            error_string += "Unknown Error" '" type="AttributeError">\n'
+            error_string += "Failing step: Unknown\n"
+            error_string += "<![CDATA[\n"
+            error_string += "]]>\n"
+            error_string += "</error>"
+            return error_string
 
         try:
             error_string += failed_step.exception[0]+'" '
