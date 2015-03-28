@@ -422,7 +422,7 @@ Or you can make it read more fluently by writing:
      Then I see something
       But I don't see something else
 
-The two scenarios are identical to *bevave* - steps beginning with "and" or
+The two scenarios are identical to *behave* - steps beginning with "and" or
 "but" are exactly the same kind of steps as all the others. They simply
 mimic the step that preceeds them.
 
