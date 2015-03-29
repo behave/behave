@@ -89,6 +89,10 @@ def step_i_run_command(context, command):
         print(u"run_command: {0}".format(command))
         print(u"run_command.output {0}".format(context.command_result.output))
 
+@when(u'I successfully run "{command}"')
+def step_i_successfully_run_command(context, command):
+    step_i_run_command(context, command)
+    step_it_should_pass(context)
 
 @then(u'it should fail with result "{result:int}"')
 def step_it_should_fail_with_result(context, result):
@@ -110,11 +114,13 @@ def step_the_command_returncode_is_nonzero(context):
 
 @then(u'it should pass')
 def step_it_should_pass(context):
-    assert_that(context.command_result.returncode, equal_to(0))
+    assert_that(context.command_result.returncode, equal_to(0),
+                context.command_result.output)
 
 @then(u'it should fail')
 def step_it_should_fail(context):
-    assert_that(context.command_result.returncode, is_not(equal_to(0)))
+    assert_that(context.command_result.returncode, is_not(equal_to(0)),
+                context.command_result.output)
 
 @then(u'it should pass with')
 def step_it_should_pass_with(context):

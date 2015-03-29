@@ -74,6 +74,25 @@ class Command(object):
     COMMAND_MAP = {
         "behave": os.path.normpath("{0}/bin/behave".format(TOP))
     }
+    PREPROCESSOR_MAP = {}
+    POSTPROCESSOR_MAP = {}
+
+    @staticmethod
+    def preprocess_command(preprocessors, cmdargs, command=None, cwd="."):
+        if not os.path.isdir(cwd):
+            return cmdargs
+        elif not command:
+            command = " ".join(cmdargs)
+
+        for preprocess in preprocessors:
+            cmdargs = preprocess(command, cmdargs, cwd)
+        return cmdargs
+
+    @staticmethod
+    def postprocess_command(postprocessors, command_result):
+        for postprocess in postprocessors:
+            command_result = postprocess(command_result)
+        return command_result
 
     @classmethod
     def run(cls, command, cwd=".", **kwargs):
@@ -94,9 +113,15 @@ class Command(object):
         cmdargs = shlex.split(command)
 
         # -- TRANSFORM COMMAND (optional)
-        real_command = cls.COMMAND_MAP.get(cmdargs[0], None)
+        command0 = cmdargs[0]
+        real_command = cls.COMMAND_MAP.get(command0, None)
         if real_command:
-            cmdargs[0] = real_command
+            cmdargs0 = real_command.split()
+            cmdargs = cmdargs0 + cmdargs[1:]
+        preprocessors = cls.PREPROCESSOR_MAP.get(command0)
+        if preprocessors:
+            cmdargs = cls.preprocess_command(preprocessors, cmdargs, command, cwd)
+
 
         # -- RUN COMMAND:
         try:
@@ -123,9 +148,43 @@ class Command(object):
             command_result.stderr = u"OSError: %s" % e
             command_result.returncode = e.errno
             assert e.errno != 0
+
+        postprocessors = cls.POSTPROCESSOR_MAP.get(command0)
+        if postprocessors:
+            command_result = cls.postprocess_command(postprocessors, command_result)
         return command_result
 
 
+# -----------------------------------------------------------------------------
+# PREPROCESSOR:
+# -----------------------------------------------------------------------------
+def path_glob(command, cmdargs, cwd="."):
+    import glob
+    if not glob.has_magic(command):
+        return cmdargs
+
+    assert os.path.isdir(cwd)
+    try:
+        current_cwd = os.getcwd()
+        os.chdir(cwd)
+        new_cmdargs = []
+        for cmdarg in cmdargs:
+            if not glob.has_magic(cmdarg):
+                new_cmdargs.append(cmdarg)
+                continue
+
+            more_args = glob.glob(cmdarg)
+            if more_args:
+                new_cmdargs.extend(more_args)
+            else:
+                # -- BAD-CASE: Require at least one match.
+                # Otherwise, restore original arg.
+                new_cmdargs.append(cmdarg)
+
+        cmdargs = new_cmdargs
+    finally:
+        os.chdir(current_cwd)
+    return cmdargs
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS:
