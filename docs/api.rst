@@ -14,7 +14,7 @@ The model stuff is for people getting really *serious* about their step
 implementations.
 
 .. note::
-   
+
    Anywhere this document says "string" it means "unicode string" in
    Python 2.x
 
@@ -87,7 +87,7 @@ will look for a step implementation decorated with either "given" or "step":
   @given('some other known state')
   def step_impl(context):
      set_up(some, other, state)
-      
+
 and similarly the "but" would be renamed internally to "then". Multiple
 "and" or "but" steps in a row would inherit the non-"and" or "but" keyword.
 
@@ -109,7 +109,7 @@ if you invoke :func:`~behave.use_step_matcher`.
 
 .. autofunction:: behave.use_step_matcher
 
-You may add new types to the default parser by invoking 
+You may add new types to the default parser by invoking
 :func:`~behave.register_type`.
 
 .. autofunction:: behave.register_type
@@ -297,10 +297,10 @@ which that code is invoked (if they exist.)
                     step.run()
                 after_step
             after_scenario
-        after_feature         
+        after_feature
     after_all
-  
-If the feature contains scenario outlines then there is an addtional loop
+
+If the feature contains scenario outlines then there is an additional loop
 over all the scenarios in the outline making the running look like this:
 
 .. parsed-literal::
@@ -316,7 +316,7 @@ over all the scenarios in the outline making the running look like this:
                         step.run()
                     after_step
                 after_scenario
-        after_feature         
+        after_feature
     after_all
 
 
@@ -396,7 +396,7 @@ Logging Capture
 ===============
 
 The logging capture *behave* uses by default is implemented by the class
-:class:`~behave.log_capture.LoggingCapture`. It has methods 
+:class:`~behave.log_capture.LoggingCapture`. It has methods
 
 .. autoclass:: behave.log_capture.LoggingCapture
    :members:
