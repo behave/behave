@@ -78,7 +78,7 @@ Run behave:
 .. code-block:: bash
 
     $ behave
-    Feature: Showin off behave # features/example.feature:2
+    Feature: Showing off behave # features/example.feature:2
 
       Scenario: Run a simple test          # features/example.feature:4
         Given we have behave installed     # features/steps/example_steps.py:4
