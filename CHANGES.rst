@@ -10,6 +10,8 @@ GOALS:
 
 DOCUMENTATION:
 
+  * pull #307: Typo in readme (provided by: dflock)
+  * pull #305: behave.rst related fixes reapplied (provided by: bittner)
   * pull #292: Use title-cased keywords in tutorial scenario (provided by: neoblackcap)
   * pull #291: Tiny tweaks in tutorial docs (provided by: bernardpaulus)
 
