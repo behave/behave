@@ -301,6 +301,10 @@ options = [
     # dict(action='store_true',
     #    help='Fail if there are any undefined or pending steps.')),
 
+    ((),  # -- CONFIGFILE only
+     dict(dest='default_tags', metavar='TAG_EXPRESSION',
+          config_help="""Define default tags when non are provided.
+                         See --tags for more information.""")),
     (('-t', '--tags'),
      dict(action='append', metavar='TAG_EXPRESSION',
           help="""Only execute features or scenarios with tags
@@ -415,7 +419,7 @@ def read_configuration(path):
 
     for paths_name in ('paths', 'outfiles'):
         if paths_name in result:
-            # -- Evaluate relative paths relative to configfile location.
+            # -- Evaluate relative paths relative to location.
             # NOTE: Absolute paths are preserved by os.path.join().
             paths = result[paths_name]
             result[paths_name] = \
@@ -503,7 +507,8 @@ class Configuration(object):
         stage=None,
         userdata={},
         # -- SPECIAL:
-        default_format="pretty",   # -- Used when no formatters are configured.
+        default_format="pretty",    # -- Used when no formatters are configured.
+        default_tags="",            # -- Used when no tags are defined.
         scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}"
     )
     cmdline_only_options = set("userdata_defines")
@@ -579,13 +584,13 @@ class Configuration(object):
             #  * do not capture stdout or logging output and
             #  * stop at the first failure.
             self.default_format = "plain"
-            self.tags = ["wip"]
+            self.tags = ["wip"] + self.default_tags.split()
             self.color = False
             self.stop = True
             self.log_capture = False
             self.stdout_capture = False
 
-        self.tags = TagExpression(self.tags or [])
+        self.tags = TagExpression(self.tags or self.default_tags.split())
 
         if self.quiet:
             self.show_source = False
