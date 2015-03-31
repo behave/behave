@@ -284,8 +284,9 @@ you have to use logical AND::
 Configuration Files
 ===================
 
-Configuration files for *behave* are called either ".behaverc", "behave.ini",
-or "setup.cfg" (your preference) and are located in one of three places:
+Configuration files for *behave* are called either ".behaverc",
+"behave.ini" or "setup.cfg" (your preference) and are located in one of
+three places:
 
 1. the current working directory (good for per-project settings),
 2. your home directory ($HOME), or

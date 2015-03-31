@@ -27,8 +27,9 @@ Tag Expression
 Configuration Files
 ===================
 
-Configuration files for *behave* are called either ".behaverc" or
-"behave.ini" (your preference) and are located in one of three places:
+Configuration files for *behave* are called either ".behaverc",
+"behave.ini" or "setup.cfg" (your preference) and are located in one of
+three places:
 
 1. the current working directory (good for per-project settings),
 2. your home directory ($HOME), or
@@ -37,11 +38,11 @@ Configuration files for *behave* are called either ".behaverc" or
 If you are wondering where *behave* is getting its configuration defaults
 from you can use the "-v" command-line argument and it'll tell you.
 
-Confuguration files **must** start with the label "[behave]" and are
+Configuration files **must** start with the label "[behave]" and are
 formatted in the Windows INI style, for example:
 
 .. code-block:: ini
-  
+
   [behave]
   format=plain
   logging_clear_handlers=yes

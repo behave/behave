@@ -305,7 +305,7 @@ options = [
      dict(dest='default_tags', metavar='TAG_EXPRESSION',
           help="""Define default tags when non are provided.
                   See --tags for more information.""")),
-    
+
     (('-t', '--tags'),
      dict(action='append', metavar='TAG_EXPRESSION',
           help="""Only execute features or scenarios with tags
