@@ -13,6 +13,10 @@ DOCUMENTATION:
   * pull #292: Use title-cased keywords in tutorial scenario (provided by: neoblackcap)
   * pull #291: Tiny tweaks in tutorial docs (provided by: bernardpaulus)
 
+ENHANCEMENTS:
+
+  * issue #301: Support default tags in configfile
+
 
 Version: 1.2.5 (2015-01-31)
 -------------------------------------------------------------------------------
