@@ -303,8 +303,9 @@ options = [
 
     ((),  # -- CONFIGFILE only
      dict(dest='default_tags', metavar='TAG_EXPRESSION',
-          config_help="""Define default tags when non are provided.
-                         See --tags for more information.""")),
+          help="""Define default tags when non are provided.
+                  See --tags for more information.""")),
+    
     (('-t', '--tags'),
      dict(action='append', metavar='TAG_EXPRESSION',
           help="""Only execute features or scenarios with tags

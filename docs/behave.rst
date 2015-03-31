@@ -30,8 +30,8 @@ You may see the same information presented below at any time using ``behave
 
 .. option:: -D, --define
 
-   Define user-specific data in config.userdata dictionary. Example:
-   -D foo=bar to store it in config.userdata["foo"].
+   Define user-specific data for the config.userdata dictionary.
+   Example: -D foo=bar to store it in config.userdata["foo"].
 
 .. option:: -e, --exclude
 
@@ -339,8 +339,8 @@ Recognised Settings
 **dry_run** -- boolean
    Invokes formatters without executing the steps.
 **userdata_defines** -- text (multiple allowed)
-   Define user-specific data in config.userdata dictionary. Example:
-   -D foo=bar to store it in config.userdata["foo"].
+   Define user-specific data for the config.userdata dictionary.
+   Example: -D foo=bar to store it in config.userdata["foo"].
 **exclude_re** -- text
    Don't run feature files matching regular expression PATTERN.
 **include_re** -- text
@@ -449,6 +449,9 @@ Recognised Settings
    default path names).
 **stop** -- boolean
    Stop running tests at the first failure.
+**default_tags** -- text
+   Define default tags when non are provided. See --tags for more
+   information.
 **tags** -- text (multiple allowed)
    Only execute certain features or scenarios based on the tag
    expression given. See below for how to code tag expressions in
