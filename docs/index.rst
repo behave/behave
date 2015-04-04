@@ -1,10 +1,6 @@
 Welcome to behave!
 ==================
 
-.. pypi-release:: behave
-   :prefix: Download
-   :class: note
-
 behave is behaviour-driven development, Python style.
 
 Behavior-driven development (or BDD) is an agile software development
