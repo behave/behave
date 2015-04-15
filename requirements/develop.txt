@@ -3,10 +3,8 @@
 # ============================================================================
 
 # -- BUILD-TOOL:
-# invoke > 0.9.0: 
-# invoke-0.9.0 has problems with context attribute access => FIXED in repo HEAD 
-# (note: development version has also version 0.9.0).
--e git+https://github.com/pyinvoke/invoke#egg=invoke
+# PREPARED: invoke
+invoke >= 1.0
 path.py >= 7.2
 
 # -- CONFIGURATION MANAGEMENT (helpers):
@@ -20,7 +18,7 @@ pytest-cov
 
 # -- PYTHON2/3 COMPATIBILITY: pypa/modernize
 # python-futurize
-modernize
+modernize >= 0.4
 
 # -- REQUIRES: testing, docs
 -r testing.txt
