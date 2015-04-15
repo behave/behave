@@ -1,10 +1,6 @@
 Installation
 ============
 
-.. pypi-release:: behave
-   :prefix: Download
-   :class: note
-
 Using pip (or ...)
 ------------------
 
