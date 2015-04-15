@@ -8,6 +8,8 @@ from behave.runner import Runner
 from behave.runner_util import print_undefined_step_snippets, \
     InvalidFileLocationError, InvalidFilenameError, FileNotFoundError
 from behave.textutil import text as _text
+import codecs
+import six
 import sys
 
 
@@ -61,13 +63,16 @@ def main(args=None):
 
     if config.lang_list:
         from behave.i18n import languages
+        stdout = sys.stdout
+        if six.PY2:
+            # -- PYTHON2: Overcome implicit encode problems (encoding=ASCII).
+            stdout = codecs.getwriter("UTF-8")(sys.stdout)
         iso_codes = languages.keys()
-        iso_codes.sort()
         print("Languages available:")
-        for iso_code in iso_codes:
-            native = languages[iso_code]['native'][0]
-            name = languages[iso_code]['name'][0]
-            print(u'%s: %s / %s' % (iso_code, native, name))
+        for iso_code in sorted(iso_codes):
+            native = languages[iso_code]["native"][0]
+            name = languages[iso_code]["name"][0]
+            print(u'%s: %s / %s' % (iso_code, native, name), file=stdout)
         return 0
 
     if config.lang_help:

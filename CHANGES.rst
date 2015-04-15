@@ -19,6 +19,10 @@ ENHANCEMENTS:
 
   * issue #301: Support default tags in configfile
 
+FIXED:
+
+  * issue #309: behave --lang-list fails on Python3 (and Python2)
+
 
 Version: 1.2.5 (2015-01-31)
 -------------------------------------------------------------------------------
