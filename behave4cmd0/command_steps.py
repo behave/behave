@@ -135,7 +135,8 @@ def step_it_should_pass_with(context):
     '''
     assert context.text is not None, "ENSURE: multiline text is provided."
     step_command_output_should_contain(context)
-    assert_that(context.command_result.returncode, equal_to(0))
+    assert_that(context.command_result.returncode, equal_to(0),
+                context.command_result.output)
 
 
 @then(u'it should fail with')
