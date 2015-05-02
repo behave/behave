@@ -7,48 +7,48 @@ Feature: Select Scenarios by File Location
     like: "alice.feature:10"   (schema: {filename}:{line})
 
 
-    | CONCEPT: File Location
-    |   * A file location consists of file name and a positive line number
-    |   * A file location is represented as "{filename}:{line}" (or "{filename}")
-    |   * A file location with filename but without line number
-    |     refers to the complete file
-    |   * A file location with line number 0 (zero) refers to the complete file
-    |
-    | SPECIFICATION: Scenario selection by file locations
-    |   * scenario.line == file_location.line selects scenario (preferred method).
-    |   * Any line number in the following range is acceptable:
-    |        scenario.line <= file_location.line < next_scenario.line
-    |   * The first scenario is selected,
-    |     if the file location line number is less than first scenario.line.
-    |   * The last scenario is selected,
-    |     if the file location line number is greater than the lines in the file.
-    |
-    | SPECIFICATION: Runner with scenario locations (file locations)
-    |   * Adjacent file locations are merged if they refer to the same file, like:
-    |
-    |       alice.feature:10
-    |       alice.feature:20
-    |
-    |       => MERGED: Selects/runs "alice.feature" with 2 scenarios.
-    |
-    |       alice.feature
-    |       alice.feature:20
-    |
-    |       => MERGED: Selects "alice.feature" with all scenarios.
-    |
-    |       alice.feature:10
-    |       bob.feature:20
-    |       alice.feature:20
-    |
-    |       => NOT MERGED: Selects/runs "alice.feature" twice.
-    |
-    |   * If file locations (scenario locations) are used,
-    |     scenarios with @setup or @teardown tags are selected, too.
-    |
-    |     REASON: Simplifies to use a Setup Scenario instead of a Background.
-    |
-    |   * Additional scenario selection mechanisms, like tags, names,
-    |     are applied afterwards.
+    . CONCEPT: File Location
+    .   * A file location consists of file name and a positive line number
+    .   * A file location is represented as "{filename}:{line}" (or "{filename}")
+    .   * A file location with filename but without line number
+    .     refers to the complete file
+    .   * A file location with line number 0 (zero) refers to the complete file
+    .
+    . SPECIFICATION: Scenario selection by file locations
+    .   * scenario.line == file_location.line selects scenario (preferred method).
+    .   * Any line number in the following range is acceptable:
+    .        scenario.line <= file_location.line < next_scenario.line
+    .   * The first scenario is selected,
+    .     if the file location line number is less than first scenario.line.
+    .   * The last scenario is selected,
+    .     if the file location line number is greater than the lines in the file.
+    .
+    . SPECIFICATION: Runner with scenario locations (file locations)
+    .   * Adjacent file locations are merged if they refer to the same file, like:
+    .
+    .       alice.feature:10
+    .       alice.feature:20
+    .
+    .       => MERGED: Selects/runs "alice.feature" with 2 scenarios.
+    .
+    .       alice.feature
+    .       alice.feature:20
+    .
+    .       => MERGED: Selects "alice.feature" with all scenarios.
+    .
+    .       alice.feature:10
+    .       bob.feature:20
+    .       alice.feature:20
+    .
+    .       => NOT MERGED: Selects/runs "alice.feature" twice.
+    .
+    .   * If file locations (scenario locations) are used,
+    .     scenarios with @setup or @teardown tags are selected, too.
+    .
+    .     REASON: Simplifies to use a Setup Scenario instead of a Background.
+    .
+    .   * Additional scenario selection mechanisms, like tags, names,
+    .     are applied afterwards.
 
 
     @setup

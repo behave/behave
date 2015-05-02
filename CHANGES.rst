@@ -1,18 +1,41 @@
 Version History
 ===============================================================================
 
-Version: 1.2.5a1 (unreleased)
+Version: 1.2.6 (unreleased)
 -------------------------------------------------------------------------------
 
 GOALS:
 
-  - Improve support for Python3 (>= 3.3)
   - Improve support for Windows
+
+DOCUMENTATION:
+
+  * pull #307: Typo in readme (provided by: dflock)
+  * pull #305: behave.rst related fixes reapplied (provided by: bittner)
+  * pull #292: Use title-cased keywords in tutorial scenario (provided by: neoblackcap)
+  * pull #291: Tiny tweaks in tutorial docs (provided by: bernardpaulus)
+
+ENHANCEMENTS:
+
+  * issue #301: Support default tags in configfile
+
+FIXED:
+
+  * issue #310: Use setuptools_behave.py with behave module
+  * issue #309: behave --lang-list fails on Python3 (and Python2)
+
+
+Version: 1.2.5 (2015-01-31)
+-------------------------------------------------------------------------------
+
+:Same as: Version 1.2.5a1 (unreleased).
 
 NEWS and CHANGES:
 
   - General:
 
+    * Improve support for Python3 (py3.3, py3.4; #268)
+    * Various unicode related fixes (Unicode errors with non-ASCII, etc.)
     * Drop support for Python 2.5
 
   - Running:
@@ -20,6 +43,8 @@ NEWS and CHANGES:
     * ScenarioOutline: Annotates name with row.id, ... to better represent row.
     * NEW: Active Tags, see docs (`New and Noteworthy`_).
     * NEW: Test stages, see docs (`New and Noteworthy`_).
+    * NEW: User-specific configuration data, see docs (`New and Noteworthy`_).
+    * CHANGED: Undefined step snippet uses now NotImplementedError (related to: #254)
 
   - Model:
 
@@ -28,17 +53,42 @@ NEWS and CHANGES:
   - Formatters:
 
     * plain: Can now show tags, but currently disabled per default
+    * NEW: steps.catalog: Readable summary of all steps (similar to: steps.doc, #271)
+    * NEW: User-defined formatters, see docs (`New and Noteworthy`_).
 
 ENHANCEMENTS:
 
+  * pull #285: Travis CI improvements to use container environment, etc. (provided by: thedrow)
+  * pull #272: Use option role to format command line arg docs (provided by: helenst)
+  * pull #271: Provide steps.catalog formatter (provided by: berdroid)
+  * pull #261: Support "setup.cfg" as configuration file, too (provided by: bittner)
+  * pull #260: Documentation tweaks and typo fixes (provided by: bittner)
+  * pull #254: Undefined step raises NotImplementedError instead of assert False (provided by: mhfrantz)
+  * issue #242: JUnitReporter can show scenario tags (provided by: rigomes)
   * issue #240: Test Stages with different step implementations (provided by: attilammagyar, jenisys)
   * issue #238: Allow to skip scenario in step function (provided by: hotgloupi, jenisys)
   * issue #228: Exclude scenario fron run (provided by: jdeppe, jenisys)
+  * issue #227: Add a way to add command line options to behave (provided by: attilammagyar, jenisys)
 
 FIXED:
 
+  * pull  #283: Fix "fork me" image in docs (provided by: frodopwns)
+  * issue #280: Fix missing begin/end-markers in RegexMatcher (provided by: tomekwszelaki, jenisys)
+  * pull  #268: Fix py3 compatibility with all tests passed (provided by: sunliwen)
+  * pull  #252: Related to #251 (provided by: mcepl)
+  * pull  #190: UnicodeDecodeError in tracebacks (provided by: b3ni, vrutkovs, related to: #226, #230)
+  * issue #257: Fix JUnitReporter (XML) for Python3 (provided by: actionless)
+  * issue #249: Fix a number of docstring problems (provided by: masak)
+  * issue #253: Various problems in PrettyFormatter.exception()
+  * issue #251: Unicode crash in model.py (provided by: mcepl, jenisys)
+  * issue #236: Command line docs are confusing (solved by: #272)
+  * issue #230: problem with assert message that contains ascii over 128 value (provided by: jenisys)
+  * issue #226: UnicodeDecodeError in tracebacks (provided by: md1023, karulis, jenisys)
   * issue #221: Fix some PY2/PY3 incompatibilities (provided by: johbo)
+  * pull  #219: IDE's unknown modules import issue (provided by: xbx)
   * issue #216: Using --wip option does not disable ANSI escape sequences (coloring).
+  * issue #119: Python3 support for behave (solved by: #268 and ...)
+  * issue #82:  JUnitReporter fails with Python 3.x (fixed with: #257, #268)
 
 
 .. _`New and Noteworthy`: https://github.com/behave/behave/blob/master/docs/new_and_noteworthy.rst

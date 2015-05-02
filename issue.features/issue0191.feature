@@ -1,12 +1,12 @@
 @issue
 Feature: Issue #191 Using context.execute_steps() may change context.table/.text
 
-  | PROBLEM DESCRIPTION:
-  | When you execute nested steps via "context.execute_steps()" in a
-  | step implementation, the following context attributes of the current step
-  | may be modified and may be longer valid:
-  |   * context.text (multi-line text)
-  |   * context.table
+  . PROBLEM DESCRIPTION:
+  . When you execute nested steps via "context.execute_steps()" in a
+  . step implementation, the following context attributes of the current step
+  . may be modified and may be longer valid:
+  .   * context.text (multi-line text)
+  .   * context.table
 
 
   @setup

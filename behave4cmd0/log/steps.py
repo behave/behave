@@ -57,6 +57,7 @@ IDEA:
         | bar      | CURRENT | xxx     |
 """
 
+from __future__ import absolute_import
 from behave import given, when, then, step
 from behave4cmd0.command_steps import \
     step_file_should_contain_multiline_text, \

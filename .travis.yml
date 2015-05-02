@@ -1,15 +1,31 @@
 language: python
+sudo: false
 python:
   - 2.6
   - 2.7
+  - 3.3
+  - 3.4
   - pypy
 
+cache:
+  directories:
+    - $HOME/.cache/pip
+
 install:
-  - pip install --use-mirrors -q mock nose PyHamcrest
+  - travis_retry pip install -q mock nose PyHamcrest
   - python setup.py -q install
+
 script:
   - python --version
   - nosetests
   - behave -f progress --junit --tags=~@xfail features/
   - behave -f progress --junit --tags=~@xfail tools/test-features/
   - behave -f progress --junit --tags=~@xfail issue.features/
+
+# -- USE: New container-based infrastructure for faster startup.
+#    http://docs.travis-ci.com/user/workers/container-based-infrastructure/
+#    
+# SEE ALSO: 
+#   http://lint.travis-ci.org
+#   http://docs.travis-ci.com/user/caching/
+#   http://docs.travis-ci.com/user/multi-os/  (Linux, MACOSX)

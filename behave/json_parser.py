@@ -8,10 +8,7 @@ Utility to retrieve runtime information from behave's JSON output.
 REQUIRES: Python >= 2.6 (json module is part of Python standard library)
 """
 
-__author__    = "Jens Engel"
-
-
-# -- IMPORTS:
+from __future__ import absolute_import
 from behave import model
 import codecs
 try:
@@ -19,6 +16,9 @@ try:
 except ImportError:
     # -- PYTHON 2.5 backward compatible: Use simplejson module.
     import simplejson as json
+
+__author__    = "Jens Engel"
+
 
 
 # ----------------------------------------------------------------------------

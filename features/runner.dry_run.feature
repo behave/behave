@@ -6,13 +6,13 @@ Feature: Runner should support a --dry-run option
     And all step definitions exist
     Before I actually run the tests (by executing steps).
 
-    | Specification: Dry-run mode
-    |   * Undefined steps are detected
-    |   * Marks steps as "untested" or "undefined"
-    |   * Marks scenarios as "untested"
-    |   * Marks features as "untested"
-    |   * Causes no failed scenarios, features
-    |   * Causes failed test-run when undefined steps are found.
+    . SPECIFICATION: Dry-run mode
+    .   * Undefined steps are detected
+    .   * Marks steps as "untested" or "undefined"
+    .   * Marks scenarios as "untested"
+    .   * Marks features as "untested"
+    .   * Causes no failed scenarios, features
+    .   * Causes failed test-run when undefined steps are found.
 
     @setup
     Scenario: Feature Setup

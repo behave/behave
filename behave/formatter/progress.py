@@ -9,9 +9,12 @@ A "dot" character that represents the result status is printed after
 executing a scope item.
 """
 
+from __future__ import absolute_import
 from behave.formatter.base import Formatter
-from behave.compat.os_path import relpath
 import os
+import os.path
+import six
+
 
 # -----------------------------------------------------------------------------
 # CLASS: ProgressFormatterBase
@@ -52,8 +55,8 @@ class ProgressFormatterBase(Formatter):
     # -- FORMATTER API:
     def feature(self, feature):
         self.current_feature = feature
-        short_filename = relpath(feature.filename, os.getcwd())
-        self.stream.write("%s  " % short_filename)
+        short_filename = os.path.relpath(feature.filename, os.getcwd())
+        self.stream.write("%s  " % six.text_type(short_filename))
         self.stream.flush()
 
     def background(self, background):
@@ -84,7 +87,6 @@ class ProgressFormatterBase(Formatter):
         """
         self.report_scenario_completed()
         self.report_feature_completed()
-        # XXX-OLD: self.stream.write('\n')
         self.report_failures()
         self.stream.flush()
         self.reset()
@@ -129,7 +131,6 @@ class ProgressFormatterBase(Formatter):
     def report_failures(self):
         if self.failures:
             separator = "-" * 80
-            # XXX-OLD: self.stream.write(u"\n%s\n" % separator)
             self.stream.write(u"%s\n" % separator)
             for result in self.failures:
                 self.stream.write(u"FAILURE in step '%s':\n" % result.name)
@@ -158,11 +159,10 @@ class ScenarioProgressFormatter(ProgressFormatterBase):
         if not self.current_scenario:
             return  # SKIP: No results to report for first scenario.
         # -- NORMAL-CASE:
-        # XXX-JE-TODO
         status = self.current_scenario.status
         dot_status = self.dot_status[status]
         if status == "failed":
-            # XXX-JE-TODO: self.failures.append(result)
+            # MAYBE TODO: self.failures.append(result)
             pass
         self.stream.write(dot_status)
         self.stream.flush()
@@ -228,7 +228,7 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
     # -- FORMATTER API:
     def feature(self, feature):
         self.current_feature = feature
-        short_filename = relpath(feature.filename, os.getcwd())
+        short_filename = os.path.relpath(feature.filename, os.getcwd())
         self.stream.write(u"%s    # %s" % (feature.name, short_filename))
 
     def scenario(self, scenario):
@@ -242,16 +242,16 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         scenario_name = scenario.name
         if scenario_name:
             scenario_name += " "
-        # XXX-JE-OLD: self.stream.write(u'\n%s%s ' % (self.scenario_prefix, scenario_name))
         self.stream.write(u"%s%s " % (self.scenario_prefix, scenario_name))
         self.stream.flush()
 
-    def eof_XXX_DISABLED(self):
-        has_scenarios = self.current_feature and self.current_scenario
-        super(ScenarioStepProgressFormatter, self).eof()
-        if has_scenarios:
-            # -- EMPTY-LINE between 2 features.
-            self.stream.write("\n")
+    # -- DISABLED:
+    # def eof(self):
+    #     has_scenarios = self.current_feature and self.current_scenario
+    #     super(ScenarioStepProgressFormatter, self).eof()
+    #     if has_scenarios:
+    #         # -- EMPTY-LINE between 2 features.
+    #         self.stream.write("\n")
 
     # -- PROGRESS FORMATTER DETAILS:
     # @overriden
@@ -271,7 +271,6 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
     def report_failures(self):
         if self.failures:
             separator = "-" * 80
-            # XXX-JE-OLD: self.stream.write(u"\n%s\n" % separator)
             self.stream.write(u"%s\n" % separator)
             for failure in self.failures:
                 self.stream.write(u"FAILURE in step '%s' (%s):\n" % \

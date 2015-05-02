@@ -5,11 +5,11 @@ Feature: Select named scenarios to run
     I want to select a subset of all scenarios
     By using their name or parts of the scenario name.
 
-    | SPECIFICATION: When --name option is provided
-    |   * Name selection is applied only to scenarios (currently)
-    |   * A scenario is selected when scenario name part matches one of the provided names
-    |   * Regular expressions can be used to match parts
-    |   * If a scenario is not selected, it should be marked as skipped
+    . SPECIFICATION: When --name option is provided
+    .   * Name selection is applied only to scenarios (currently)
+    .   * A scenario is selected when scenario name part matches one of the provided names
+    .   * Regular expressions can be used to match parts
+    .   * If a scenario is not selected, it should be marked as skipped
 
 
     @setup

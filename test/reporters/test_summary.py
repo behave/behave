@@ -1,3 +1,6 @@
+# -*- coding: UTF-8 -*-
+
+from __future__ import absolute_import, division
 from mock import Mock, patch
 from nose.tools import *
 
@@ -77,7 +80,7 @@ class TestSummaryReporter(object):
 
         reporter.end()
         output = stdout.write.call_args_list[-1][0][0]
-        minutes = int(reporter.duration / 60)
+        minutes = int(reporter.duration / 60.0)
         seconds = reporter.duration % 60
 
         assert '%dm' % (minutes,) in output

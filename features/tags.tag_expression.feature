@@ -5,22 +5,22 @@ Feature: Tag Expression
   And I want to include and/or exclude some tags
   So that I can focus on the "important" scenarios (and features).
 
-  | SPECIFICATION:
-  |   * a tag expression is a boolean expression
-  |   * a tag expression supports the operators: and, or, not
-  |   * a tag expression is structured as:
-  |       (or_expr1) and (or_expr2) and ...
-  |
-  | EXAMPLES:
-  |   | Tag logic         | Tag expression  | Comment |
-  |   | @foo              | @foo            | Select elements with @foo tag |
-  |   | @foo              |  foo            | Same, '@' is optional.        |
-  |   | not @foo          | -@foo           | Use minus for "not".          |
-  |   | not @foo          | ~foo            | Same, use tilde instead of minus |
-  |   | @foo or @bar      | @foo,@bar       | Use comma for "or".           |
-  |   | @foo and @bar     | @foo @bar       | Use space separated terms.    |
-  |   | @foo or  not @bar | @foo,-@bar      |                               |
-  |   | @foo and not @bar | @foo -@bar      |                               |
+  . SPECIFICATION:
+  .   * a tag expression is a boolean expression
+  .   * a tag expression supports the operators: and, or, not
+  .   * a tag expression is structured as:
+  .       (or_expr1) and (or_expr2) and ...
+  .
+  . EXAMPLES:
+  .   | Tag logic         | Tag expression  | Comment |
+  .   | @foo              | @foo            | Select elements with @foo tag |
+  .   | @foo              |  foo            | Same, '@' is optional.        |
+  .   | not @foo          | -@foo           | Use minus for "not".          |
+  .   | not @foo          | ~foo            | Same, use tilde instead of minus |
+  .   | @foo or @bar      | @foo,@bar       | Use comma for "or".           |
+  .   | @foo and @bar     | @foo @bar       | Use space separated terms.    |
+  .   | @foo or  not @bar | @foo,-@bar      |                               |
+  .   | @foo and not @bar | @foo -@bar      |                               |
 
 
   Scenario: Select @foo

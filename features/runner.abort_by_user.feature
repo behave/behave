@@ -3,10 +3,10 @@ Feature: Test run can be aborted by the user
   As a tester
   I want sometimes to abort a test run (because it is anyway failing, etc.)
   So that I am more productive.
-
-  | NOTES:
-  |  * The test runner should fail gracefully (most of the times)
-  |  * At least some cleanup hooks should be called (in general)
+  
+  . NOTES:
+  .  * The test runner should fail gracefully (most of the times)
+  .  * At least some cleanup hooks should be called (in general)
 
 
   @setup
@@ -278,7 +278,7 @@ Feature: Test run can be aborted by the user
         """
       And the command output should contain:
         """
-        File "{__WORKDIR__}/features/environment.py", line 2, in before_all
+        File "features/environment.py", line 2, in before_all
           raise KeyboardInterrupt()   #< ABORT-HERE
         """
       And note that "no feature is not run"
@@ -301,7 +301,7 @@ Feature: Test run can be aborted by the user
         """
       And the command output should contain:
         """
-        File "{__WORKDIR__}/features/environment.py", line 2, in after_all
+        File "features/environment.py", line 2, in after_all
           raise KeyboardInterrupt()   #< ABORT-HERE
         """
       And note that "all features are run"

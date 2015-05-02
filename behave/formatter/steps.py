@@ -4,12 +4,15 @@ Provides a formatter that provides an overview of available step definitions
 (step implementations).
 """
 
+from __future__ import absolute_import
 from behave.formatter.base import Formatter
 from behave.step_registry import StepRegistry, registry
-from behave.textutil import compute_words_maxsize, indent, make_indentation
+from behave.textutil import \
+    compute_words_maxsize, indent, make_indentation, text as _text
 from behave import i18n
 from operator import attrgetter
 import inspect
+from six.moves import zip
 
 
 # -----------------------------------------------------------------------------
@@ -29,6 +32,7 @@ class AbstractStepsFormatter(Formatter):
         super(AbstractStepsFormatter, self).__init__(stream_opener, config)
         self.step_registry = None
         self.current_feature = None
+        self.shows_location = config.show_source
 
     def reset(self):
         self.step_registry = None
@@ -72,8 +76,7 @@ class AbstractStepsFormatter(Formatter):
     def report(self):
         raise NotImplementedError()
 
-    @staticmethod
-    def describe_step_definition(step_definition, step_type=None):
+    def describe_step_definition(self, step_definition, step_type=None):
         if not step_type:
             step_type = step_definition.step_type
         assert step_type
@@ -168,7 +171,7 @@ class StepsFormatter(AbstractStepsFormatter):
                 max_size = compute_words_maxsize(steps_text)
                 if max_size < self.min_location_column:
                     max_size = self.min_location_column
-                schema = u"  %-" + str(max_size) + "s  # %s\n"
+                schema = u"  %-" + _text(max_size) + "s  # %s\n"
             else:
                 schema = u"  %s\n"
 
@@ -258,6 +261,68 @@ class StepsDocFormatter(AbstractStepsFormatter):
             self.stream.write(indent(doc, self.doc_prefix))
             self.stream.write("\n")
         self.stream.write("\n")
+
+
+# -----------------------------------------------------------------------------
+# CLASS: StepsCatalogFormatter
+# -----------------------------------------------------------------------------
+class StepsCatalogFormatter(StepsDocFormatter):
+    """
+    Provides formatter class that shows the documentation of all registered
+    step definitions. The primary purpose is to provide help for a test writer.
+
+    In order to ease work for non-programmer testers, the technical details of
+    the steps (i.e. function name, source location) are ommited and the
+    steps are shown as they would apprear in a feature file (no noisy '@',
+    or '(', etc.).
+
+    Also, the output is sorted by step type (Given, When, Then)
+
+    Generic step definitions are listed with all three step types.
+
+    EXAMPLE:
+        $ behave --dry-run -f steps.catalog features/
+        Given a file named "{filename}" with
+            Creates a textual file with the content provided as docstring.
+
+        When I run "{command}"
+            Run a command as subprocess, collect its output and returncode.
+
+        Given a file named "{filename}" exists
+         When a file named "{filename}" exists
+         Then a file named "{filename}" exists
+            Verifies that a file with this filename exists.
+
+            .. code-block:: gherkin
+
+                Given a file named "abc.txt" exists
+                 When a file named "abc.txt" exists
+        ...
+
+    .. note::
+        Supports behave dry-run mode.
+    """
+    name = "steps.catalog"
+    description = "Shows non-technical documentation for step definitions."
+    shows_location = False
+    shows_function_name = False
+    ordered_by_location = False
+    doc_prefix = make_indentation(4)
+
+
+    def describe_step_definition(self, step_definition, step_type=None):
+        if not step_type:
+            step_type = step_definition.step_type
+        assert step_type
+        desc = []
+        if step_type == 'step':
+            for step_type in self.step_types[:-1]:
+                text = u"%5s %s" % (step_type.title(), step_definition.string)
+                desc.append(text)
+        else:
+            desc.append(u"%s %s" % (step_type.title(), step_definition.string))
+
+        return '\n'.join(desc)
 
 
 # -----------------------------------------------------------------------------
@@ -367,9 +432,9 @@ class StepsUsageFormatter(AbstractStepsFormatter):
             if max_size < self.min_location_column:
                 max_size = self.min_location_column
 
-            schema = u"%-" + str(max_size) + "s  # %s\n"
+            schema = u"%-" + _text(max_size) + "s  # %s\n"
             self.stream.write(schema % (stepdef_text, step_definition.location))
-            schema = u"%-" + str(max_size) + "s  # %s\n"
+            schema = u"%-" + _text(max_size) + "s  # %s\n"
             for step, step_text in zip(steps, steps_text):
                 self.stream.write(schema % (step_text, step.location))
             self.stream.write("\n")
@@ -391,10 +456,10 @@ class StepsUsageFormatter(AbstractStepsFormatter):
             max_size = self.min_location_column-2
 
         # -- STEP: Write report.
-        schema = u"  %-" + str(max_size) + "s  # %s\n"
+        schema = u"  %-" + _text(max_size) + "s  # %s\n"
         self.stream.write("UNUSED STEP DEFINITIONS[%d]:\n" % len(step_texts))
-        for step_definition, text in zip(step_definitions, step_texts):
-            self.stream.write(schema % (text, step_definition.location))
+        for step_definition, step_text in zip(step_definitions, step_texts):
+            self.stream.write(schema % (step_text, step_definition.location))
 
     def report_undefined_steps(self):
         if not self.undefined_steps:
@@ -411,7 +476,7 @@ class StepsUsageFormatter(AbstractStepsFormatter):
             max_size = self.min_location_column
 
         self.stream.write("\nUNDEFINED STEPS[%d]:\n" % len(steps_text))
-        schema = u"%-" + str(max_size) + "s  # %s\n"
+        schema = u"%-" + _text(max_size) + "s  # %s\n"
         for step, step_text in zip(undefined_steps, steps_text):
             self.stream.write(schema % (step_text, step.location))
 

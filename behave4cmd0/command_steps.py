@@ -9,7 +9,7 @@ TODO:
   matcher that ignores empty lines and whitespace and has contains comparison
 """
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 from behave import given, when, then, step, matchers
 from behave4cmd0 import command_shell, command_util, pathutil, textutil
 from behave4cmd0.pathutil import posixpath_normpath
@@ -86,9 +86,13 @@ def step_i_run_command(context, command):
     context.command_result = command_shell.run(command, cwd=context.workdir)
     command_util.workdir_save_coverage_files(context.workdir)
     if False and DEBUG:
-        print(u"XXX run_command: {0}".format(command))
-        print(u"XXX run_command.outout {0}".format(context.command_result.output))
+        print(u"run_command: {0}".format(command))
+        print(u"run_command.output {0}".format(context.command_result.output))
 
+@when(u'I successfully run "{command}"')
+def step_i_successfully_run_command(context, command):
+    step_i_run_command(context, command)
+    step_it_should_pass(context)
 
 @then(u'it should fail with result "{result:int}"')
 def step_it_should_fail_with_result(context, result):
@@ -110,11 +114,13 @@ def step_the_command_returncode_is_nonzero(context):
 
 @then(u'it should pass')
 def step_it_should_pass(context):
-    assert_that(context.command_result.returncode, equal_to(0))
+    assert_that(context.command_result.returncode, equal_to(0),
+                context.command_result.output)
 
 @then(u'it should fail')
 def step_it_should_fail(context):
-    assert_that(context.command_result.returncode, is_not(equal_to(0)))
+    assert_that(context.command_result.returncode, is_not(equal_to(0)),
+                context.command_result.output)
 
 @then(u'it should pass with')
 def step_it_should_pass_with(context):
@@ -129,7 +135,8 @@ def step_it_should_pass_with(context):
     '''
     assert context.text is not None, "ENSURE: multiline text is provided."
     step_command_output_should_contain(context)
-    assert_that(context.command_result.returncode, equal_to(0))
+    assert_that(context.command_result.returncode, equal_to(0),
+                context.command_result.output)
 
 
 @then(u'it should fail with')

@@ -1,12 +1,12 @@
 Feature: Summary with Undefined Steps
 
-    | Specification:
-    |  * An undefined step should be counted as "undefined" step.
-    |  * An undefined step should cause its scenario to fail.
-    |  * If an undefined step is detected the remaining scenario steps are skipped.
-    |
-    | RELATED TO:
-    |  * issue #42  Multiple undefined steps in same scenario are detected.
+  . SPECIFICATION:
+  .  * An undefined step should be counted as "undefined" step.
+  .  * An undefined step should cause its scenario to fail.
+  .  * If an undefined step is detected the remaining scenario steps are skipped.
+  .
+  . RELATED TO:
+  .  * issue #42  Multiple undefined steps in same scenario are detected.
 
 
     @setup

@@ -3,12 +3,21 @@
 importlib was introduced in python2.7, python3.2...
 """
 
+from __future__ import absolute_import
+import warnings
+
+# -- DEPRECATED: importlib is either part of python standard library
+#   or its requirement (for the backport) is explicitly stated (for Python 2.6)
+warnings.warn("DEPRECATED, no longer needed", DeprecationWarning, stacklevel=2)
+
+
 try:
     from importlib import import_module
 except ImportError:
     """Backport of importlib.import_module from 3.x."""
     # While not critical (and in no way guaranteed!), it would be nice to keep this
     # code compatible with Python 2.3.
+    from six.moves import range
     import sys
 
     def _resolve_name(name, package, level):
@@ -16,7 +25,7 @@ except ImportError:
         if not hasattr(package, 'rindex'):
             raise ValueError("'package' not set to a string")
         dot = len(package)
-        for x in xrange(level, 1, -1):
+        for x in range(level, 1, -1):
             try:
                 dot = package.rindex('.', 0, dot)
             except ValueError:

@@ -1,10 +1,10 @@
 @issue
 Feature: Issue #145: before_feature/after_feature should not be skipped
 
-  | Hooks before_feature(), after_feature() (and before_step()) are skipped
-  | if --tags options select feature tag and scenario tag.
-  |
-  | SEE ALSO: https://github.com/cucumber/cucumber/wiki/Tags
+  Hooks before_feature(), after_feature() (and before_step()) are skipped
+  if --tags options select feature tag and scenario tag.
+
+  SEE ALSO: https://github.com/cucumber/cucumber/wiki/Tags
 
   @setup
   Scenario: Setup

@@ -38,7 +38,7 @@ ALTERNATIVE:
     pip install --find-links=/tmp/downloads --no-index argparse Jinja2
 """
 
-from __future__ import with_statement, print_function
+from __future__ import absolute_import, print_function, with_statement
 from fnmatch import fnmatch
 import os.path
 import shutil

@@ -1,11 +1,11 @@
 @issue
 Feature: Issue #81: Allow defining steps in a separate library
 
-    | The current design forces steps.py to be in a particular folder.
-    | This does not allow to reuse a common library of BDD steps across
-    | multiple software projects in a company.
-    | It would be great if one could define a separate lib with common steps
-    | (e.g. steps4mycompany.py)
+  . The current design forces steps.py to be in a particular folder.
+  . This does not allow to reuse a common library of BDD steps across
+  . multiple software projects in a company.
+  . It would be great if one could define a separate lib with common steps
+  . (e.g. steps4mycompany.py)
 
 
   Background: Test Setup

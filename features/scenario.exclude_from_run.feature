@@ -6,35 +6,35 @@ Feature: Exclude Scenario from Test Run
     So that the command-line configuration becomes simpler
     (and auto-configuration is supported).
 
-    | MECHANISM:
-    |   The "before_scenario()" hook can decide just before a scenario should run
-    |   that the scenario should be excluded from the test-run.
-    |   NOTE: Hooks are not called in dry-run mode.
-    |
-    | RATIONALE:
-    |   There are certain situations where it is better to skip a scenario
-    |   than to run and fail the scenario.
-    |
-    |   Reasons for these cases are of often test environment related:
-    |     * test environment does not fulfill the desired criteria
-    |     * used testbed does not fulfill test requirements
-    |
-    |   Instead of providing the exclude-scenario selection on the command-line,
-    |   the test (environment) and configuration logic should determine
-    |   if a test should be excluded (as auto-configuration functionality).
-    |
-    | EXAMPLE:
-    |   Certain scenarios should not run on Windows (or Linux, ...).
-    |
-    | EVALUATION ORDER:
-    |   Before the user can exclude a scenario from a test-run,
-    |   additional mechanisms decide, if the scenario is part of the selected run-set.
-    |   These are:
-    |     * tags
-    |     * ...
-    |
-    | RELATED:
-    |   * features/feature.exclude_from_run.feature
+    . MECHANISM:
+    .   The "before_scenario()" hook can decide just before a scenario should run
+    .   that the scenario should be excluded from the test-run.
+    .   NOTE: Hooks are not called in dry-run mode.
+    .
+    . RATIONALE:
+    .   There are certain situations where it is better to skip a scenario
+    .   than to run and fail the scenario.
+    .
+    .   Reasons for these cases are of often test environment related:
+    .     * test environment does not fulfill the desired criteria
+    .     * used testbed does not fulfill test requirements
+    .
+    .   Instead of providing the exclude-scenario selection on the command-line,
+    .   the test (environment) and configuration logic should determine
+    .   if a test should be excluded (as auto-configuration functionality).
+    .
+    . EXAMPLE:
+    .   Certain scenarios should not run on Windows (or Linux, ...).
+    .
+    . EVALUATION ORDER:
+    .   Before the user can exclude a scenario from a test-run,
+    .   additional mechanisms decide, if the scenario is part of the selected run-set.
+    .   These are:
+    .     * tags
+    .     * ...
+    .
+    . RELATED:
+    .   * features/feature.exclude_from_run.feature
 
 
     @setup

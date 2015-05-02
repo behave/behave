@@ -3,14 +3,17 @@
 Contains utility functions and classes for Runners.
 """
 
+from __future__ import absolute_import
 from behave import parser
 from behave.model import FileLocation
 from bisect import bisect
+from six import string_types
+import codecs
 import glob
 import os.path
 import re
+import six
 import sys
-import types
 
 
 # -----------------------------------------------------------------------------
@@ -256,6 +259,8 @@ class FeatureListParser(object):
         if not os.path.isfile(filename):
             raise FileNotFoundError(filename)
         here = os.path.dirname(filename) or "."
+        # -- MAYBE BETTER:
+        # contents = codecs.open(filename, "utf-8").read()
         contents = open(filename).read()
         return cls.parse(contents, here)
 
@@ -278,7 +283,7 @@ def parse_features(feature_files, language=None):
     features = []
     for location in feature_files:
         if not isinstance(location, FileLocation):
-            assert isinstance(location, basestring)
+            assert isinstance(location, string_types)
             location = FileLocation(os.path.normpath(location))
 
         if location.filename == scenario_collector.filename:
@@ -351,20 +356,23 @@ def make_undefined_step_snippet(step, language=None):
     :param language: i18n language, optionally needed for step text parsing.
     :return: Undefined-step snippet (as string).
     """
-    if isinstance(step, types.StringTypes):
+    if isinstance(step, string_types):
         step_text = step
         steps = parser.parse_steps(step_text, language=language)
         step = steps[0]
         assert step, "ParseError: %s" % step_text
-    prefix = u""
-    if sys.version_info[0] == 2:
-        prefix = u"u"
+    # prefix = u""
+    # if sys.version_info[0] == 2:
+    #    prefix = u"u"
+    prefix = u"u"
     single_quote = "'"
     if single_quote in step.name:
         step.name = step.name.replace(single_quote, r"\'")
 
-    schema = u"@%s(%s'%s')\ndef step_impl(context):\n    assert False\n\n"
-    snippet = schema % (step.step_type, prefix, step.name)
+    schema = u"@%s(%s'%s')\ndef step_impl(context):\n"
+    schema += u"    raise NotImplementedError(%s'STEP: %s %s')\n\n"
+    snippet = schema % (step.step_type, prefix, step.name,
+                        prefix, step.step_type.title(), step.name)
     return snippet
 
 

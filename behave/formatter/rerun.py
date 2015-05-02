@@ -22,9 +22,10 @@ Normally, you put the RerunFormatter into the behave configuration file:
     outfiles = rerun_failing.features
 """
 
+from __future__ import absolute_import
 from behave.formatter.base import Formatter
-from behave.compat.os_path import relpath
 from datetime import datetime
+from os.path import relpath
 import os
 
 

@@ -3,7 +3,15 @@
 Compatibility of :module:`os.path` between different Python versions.
 """
 
+from __future__ import absolute_import
 import os.path
+import warnings
+
+# -- DEPRECATED: os.path.relpath() is supported for Python >= 2.6.
+#   NOTE: Support of Python 2.5 is dropped.
+warnings.warn("DEPRECATED, Python2.5 is no longer supported.",
+              DeprecationWarning, stacklevel=2)
+
 
 relpath = getattr(os.path, "relpath", None)
 if relpath is None: # pragma: no cover

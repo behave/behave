@@ -14,13 +14,17 @@ This is based on Nathan Reynolds' `Mechanize support for Django testcases`__
 and was developed by David Eyk in a `public gist`__.
 
 __ https://github.com/nathforge/django-mechanize/
-__ https://gist.github.com/1637965
+__ https://gist.github.com/eykd/1637965
+
 
 Alternative Option
 ==================
 
 There is a module under development which provides a Django-specific
-TestRunner for Behave. Please take a look at https://github.com/rwillmer/django-behave
+TestRunner for Behave. Please take a look at django-behave`_.
+
+.. _django-behave:  https://github.com/django-behave/django-behave
+
 
 Implementation
 ==============
@@ -118,7 +122,7 @@ __ tutorial.html#python-step-implementations
 
         def browser_url(url):
             """Create a URL for the virtual WSGI server.
-            
+
             e.g context.browser_url('/'), context.browser_url(reverse('my_view'))
             """
             return urlparse.urljoin('http://%s:%d/' % (host, port), url)

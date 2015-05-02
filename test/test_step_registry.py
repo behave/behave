@@ -1,8 +1,9 @@
-from __future__ import with_statement
+from __future__ import absolute_import, with_statement
 
 from mock import Mock, patch
 from nose.tools import *
 from behave import step_registry
+from six.moves import range
 
 class TestStepRegistry(object):
     def test_add_step_definition_adds_to_lowercased_keyword(self):
@@ -13,7 +14,8 @@ class TestStepRegistry(object):
             magic_object = object()
             get_matcher.return_value = magic_object
 
-            for step_type in registry.steps.keys():
+            # XXX-CHECK-PY23: if list() is needed.
+            for step_type in list(registry.steps.keys()):
                 l = []
                 registry.steps[step_type] = l
 

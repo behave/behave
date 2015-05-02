@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-import sys
+from __future__ import absolute_import, print_function
 from behave import __version__
 from behave.configuration import Configuration, ConfigError
+from behave.parser import ParserError
 from behave.runner import Runner
 from behave.runner_util import print_undefined_step_snippets, \
     InvalidFileLocationError, InvalidFilenameError, FileNotFoundError
-from behave.parser import ParserError
+from behave.textutil import text as _text
+import codecs
+import six
+import sys
+
 
 TAG_HELP = """
 Scenarios inherit tags declared on the Feature level. The simplest
@@ -59,13 +63,16 @@ def main(args=None):
 
     if config.lang_list:
         from behave.i18n import languages
+        stdout = sys.stdout
+        if six.PY2:
+            # -- PYTHON2: Overcome implicit encode problems (encoding=ASCII).
+            stdout = codecs.getwriter("UTF-8")(sys.stdout)
         iso_codes = languages.keys()
-        iso_codes.sort()
         print("Languages available:")
-        for iso_code in iso_codes:
-            native = languages[iso_code]['native'][0]
-            name = languages[iso_code]['name'][0]
-            print(u'%s: %s / %s' % (iso_code, native, name))
+        for iso_code in sorted(iso_codes):
+            native = languages[iso_code]["native"][0]
+            name = languages[iso_code]["name"][0]
+            print(u'%s: %s / %s' % (iso_code, native, name), file=stdout)
         return 0
 
     if config.lang_help:
@@ -93,9 +100,7 @@ def main(args=None):
             # -- NO FORMATTER on command-line: Add default formatter.
             config.format.append(config.default_format)
     if 'help' in config.format:
-        from behave.formatter import formatters
-        print("Available formatters:")
-        formatters.list_formatters(sys.stdout)
+        print_formatters("Available formatters:")
         return 0
 
     if len(config.outputs) > len(config.format):
@@ -107,16 +112,21 @@ def main(args=None):
     runner = Runner(config)
     try:
         failed = runner.run()
-    except ParserError, e:
-        print("ParseError: %s" % e)
-    except ConfigError, e:
-        print("ConfigError: %s" % e)
-    except FileNotFoundError, e:
-        print("FileNotFoundError: %s" % e)
-    except InvalidFileLocationError, e:
-        print("InvalidFileLocationError: %s" % e)
-    except InvalidFilenameError, e:
-        print("InvalidFilenameError: %s" % e)
+    except ParserError as e:
+        print(u"ParseError: %s" % e)
+    except ConfigError as e:
+        print(u"ConfigError: %s" % e)
+    except FileNotFoundError as e:
+        print(u"FileNotFoundError: %s" % e)
+    except InvalidFileLocationError as e:
+        print(u"InvalidFileLocationError: %s" % e)
+    except InvalidFilenameError as e:
+        print(u"InvalidFilenameError: %s" % e)
+    except Exception as e:
+        # -- DIAGNOSTICS:
+        text = _text(e)
+        print(u"Exception %s: %s" % (e.__class__.__name__, text))
+        raise
 
     if config.show_snippets and runner.undefined_steps:
         print_undefined_step_snippets(runner.undefined_steps,
@@ -126,6 +136,31 @@ def main(args=None):
     if failed:
         return_code = 1
     return return_code
+
+def print_formatters(title=None, stream=None):
+    """
+    Prints the list of available formatters and their description.
+
+    :param title:   Optional title (as string).
+    :param stream:  Optional, output stream to use (default: sys.stdout).
+    """
+    from behave.formatter._registry  import format_items
+    from behave.textutil import compute_words_maxsize, text as _text
+    from operator import itemgetter
+
+    if stream is None:
+        stream = sys.stdout
+    if title:
+        stream.write(u"%s\n" % title)
+
+    format_items = sorted(format_items(resolved=True), key=itemgetter(0))
+    format_names = [item[0]  for item in format_items]
+    column_size = compute_words_maxsize(format_names)
+    schema = u"  %-"+ _text(column_size) +"s  %s\n"
+    for name, formatter_class in format_items:
+        formatter_description = getattr(formatter_class, "description", "")
+        stream.write(schema % (name, formatter_description))
+
 
 if __name__ == '__main__':
     # -- EXAMPLE: main("--version")

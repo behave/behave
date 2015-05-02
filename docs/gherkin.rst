@@ -83,10 +83,15 @@ line:
    tests/steps/website.py
    tests/steps/utils.py
 
+  Note that with this approach, if you want to execute *behave* without having
+  to explicitly specify the directory (first option) you can set the ``paths``
+  setting in your `configuration file`_ (e.g. ``paths=tests``).
+
 If you're having trouble setting things up and want to see what *behave* is
 doing in attempting to find your features use the "-v" (verbose)
 command-line switch.
 
+.. _`configuration file`: behave.html#configuration-files
 
 .. _chapter.gherkin:
 
@@ -366,9 +371,10 @@ Examples:
 - Developing a library? Kicking off some kind of action that has an
   observable effect somewhere else.
 
-.. _`requests`: http://python-requests.org/
-.. _`twill`: http://twill.idyll.org/
-.. _`selenium`: http://seleniumhq.org/projects/webdriver/
+.. _`requests`: http://docs.python-requests.org/en/latest/
+.. _`twill`:    http://twill.idyll.org/
+.. _`selenium`: http://docs.seleniumhq.org/projects/webdriver/
+
 
 Then
 """"
@@ -416,7 +422,7 @@ Or you can make it read more fluently by writing:
      Then I see something
       But I don't see something else
 
-The two scenarios are identical to *bevave* - steps beginning with "and" or
+The two scenarios are identical to *behave* - steps beginning with "and" or
 "but" are exactly the same kind of steps as all the others. They simply
 mimic the step that preceeds them.
 

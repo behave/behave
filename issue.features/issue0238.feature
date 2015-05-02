@@ -32,7 +32,7 @@ Feature: Issue #238 Skip a Scenario in a Scenario Outline
         def step_passes(context):
             pass
         """
-      When I run "behave -f plain --show-skipped"
+      When I run "behave -f plain --show-skipped --no-timings"
       Then it should pass with:
         """
         1 feature passed, 0 failed, 0 skipped

@@ -6,7 +6,7 @@ TODO:
   matcher that ignores empty lines and whitespace and has contains comparison
 """
 
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 from hamcrest import assert_that, is_not, equal_to, contains_string
 # DISABLED: from behave4cmd.hamcrest_text import matches_regexp
 import codecs

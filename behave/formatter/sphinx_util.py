@@ -3,8 +3,10 @@
 Provides utility function for generating Sphinx-based documentation.
 """
 
-from behave.textutil import compute_words_maxsize
+from __future__ import absolute_import
+from behave.textutil import compute_words_maxsize, text as _text
 import codecs
+import six
 
 
 # -----------------------------------------------------------------------------
@@ -95,12 +97,12 @@ class DocumentWriter(object):
         separator_parts = []
         row_schema_parts = []
         for col_index, heading in enumerate(table.headings):
-            column = [unicode(row[col_index]) for row in table.rows]
+            column = [six.text_type(row[col_index]) for row in table.rows]
             column.append(heading)
             column_size = compute_words_maxsize(column)
             cols_size.append(column_size)
             separator_parts.append("=" * column_size)
-            row_schema_parts.append("%-" + str(column_size) + "s")
+            row_schema_parts.append("%-" + _text(column_size) + "s")
 
         separator = " ".join(separator_parts) + "\n"
         row_schema = " ".join(row_schema_parts) + "\n"

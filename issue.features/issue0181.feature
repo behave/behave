@@ -1,16 +1,15 @@
 @issue
 Feature: Issue #181: Escape apostrophes in undefined steps snippets
 
-
-  | I have noticed that, for the following line in my features file:
-  |
-  |   Then I'm redirected to http://www.example.com
-  |
-  | Behave outputs the following:
-  |
-  |   @then(u'I'm redirected to http://www.example.com')
-  |   def step_impl(context):
-  |       assert False
+  . I have noticed that, for the following line in my features file:
+  .
+  .   Then I'm redirected to http://www.example.com
+  .
+  . Behave outputs the following:
+  .
+  .   @then(u'I'm redirected to http://www.example.com')
+  .   def step_impl(context):
+  .       assert False
 
 
   Scenario:
@@ -33,5 +32,5 @@ Feature: Issue #181: Escape apostrophes in undefined steps snippets
 
         @given(u'I\'m using an "undefined step"')
         def step_impl(context):
-            assert False
+            raise NotImplementedError(u'STEP: Given I\'m using an "undefined step"')
         """

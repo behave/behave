@@ -7,11 +7,10 @@
 # SEE ALSO:
 #  * http://www.pip-installer.org/
 # ============================================================================
+# ALREADY: -r testing.txt
+# ALREADY: -r docs.txt
 
 -r basic.txt
--r testing.txt
 -r develop.txt
--r docs.txt
--r more_py25.txt
 -r more_py26.txt
 -r json.txt

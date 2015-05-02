@@ -12,14 +12,16 @@ and running features, etc.
 
 """
 
-from __future__ import print_function, with_statement
+from __future__ import absolute_import, print_function, with_statement
 from behave4cmd0.__setup import TOP
 import os.path
 import six
 import subprocess
 import sys
 import shlex
-import codecs
+if six.PY2:
+    import codecs
+
 
 # HERE = os.path.dirname(__file__)
 # TOP  = os.path.join(HERE, "..")
@@ -53,7 +55,7 @@ class CommandResult(object):
 
     @property
     def failed(self):
-        return not self.returncode
+        return self.returncode != 0
 
     def clear(self):
         self.command = None
@@ -72,6 +74,25 @@ class Command(object):
     COMMAND_MAP = {
         "behave": os.path.normpath("{0}/bin/behave".format(TOP))
     }
+    PREPROCESSOR_MAP = {}
+    POSTPROCESSOR_MAP = {}
+
+    @staticmethod
+    def preprocess_command(preprocessors, cmdargs, command=None, cwd="."):
+        if not os.path.isdir(cwd):
+            return cmdargs
+        elif not command:
+            command = " ".join(cmdargs)
+
+        for preprocess in preprocessors:
+            cmdargs = preprocess(command, cmdargs, cwd)
+        return cmdargs
+
+    @staticmethod
+    def postprocess_command(postprocessors, command_result):
+        for postprocess in postprocessors:
+            command_result = postprocess(command_result)
+        return command_result
 
     @classmethod
     def run(cls, command, cwd=".", **kwargs):
@@ -79,19 +100,28 @@ class Command(object):
         Make a subprocess call, collect its output and returncode.
         Returns CommandResult instance as ValueObject.
         """
-        assert isinstance(command, basestring)
+        assert isinstance(command, six.string_types)
         command_result = CommandResult()
         command_result.command = command
 
         # -- BUILD COMMAND ARGS:
-        if isinstance(command, unicode):
-            command = codecs.encode(command)
+        if six.PY2 and isinstance(command, six.text_type):
+            # -- PREPARE-FOR: shlex.split()
+            # In PY2, shlex.split() requires bytes string (non-unicode).
+            # In PY3, shlex.split() accepts unicode string.
+            command = codecs.encode(command, "utf-8")
         cmdargs = shlex.split(command)
 
         # -- TRANSFORM COMMAND (optional)
-        real_command = cls.COMMAND_MAP.get(cmdargs[0], None)
+        command0 = cmdargs[0]
+        real_command = cls.COMMAND_MAP.get(command0, None)
         if real_command:
-            cmdargs[0] = real_command
+            cmdargs0 = real_command.split()
+            cmdargs = cmdargs0 + cmdargs[1:]
+        preprocessors = cls.PREPROCESSOR_MAP.get(command0)
+        if preprocessors:
+            cmdargs = cls.preprocess_command(preprocessors, cmdargs, command, cwd)
+
 
         # -- RUN COMMAND:
         try:
@@ -101,17 +131,8 @@ class Command(object):
                             universal_newlines=True,
                             cwd=cwd, **kwargs)
             out, err = process.communicate()
-            # XXX-JE-OLD: if sys.version_info[0] < 3: # py3: we get unicode strings, py2 not
             if six.PY2: # py3: we get unicode strings, py2 not
-                # XXX-DISABLED:
-                # try:
-                #    # jython may not have it
-                #     default_encoding = sys.getdefaultencoding()
-                # except AttributeError:
-                #     default_encoding = sys.stdout.encoding or 'UTF-8'
                 default_encoding = 'UTF-8'
-                # XXX-JE-OLD: out = unicode(out, process.stdout.encoding or default_encoding)
-                # XXX-JE-OLD: err = unicode(err, process.stderr.encoding or default_encoding)
                 out = six.text_type(out, process.stdout.encoding or default_encoding)
                 err = six.text_type(err, process.stderr.encoding or default_encoding)
             process.poll()
@@ -123,13 +144,47 @@ class Command(object):
                 print("shell.cwd={0}".format(kwargs.get("cwd", None)))
                 print("shell.command: {0}".format(" ".join(cmdargs)))
                 print("shell.command.output:\n{0};".format(command_result.output))
-        except OSError, e:
+        except OSError as e:
             command_result.stderr = u"OSError: %s" % e
             command_result.returncode = e.errno
             assert e.errno != 0
+
+        postprocessors = cls.POSTPROCESSOR_MAP.get(command0)
+        if postprocessors:
+            command_result = cls.postprocess_command(postprocessors, command_result)
         return command_result
 
 
+# -----------------------------------------------------------------------------
+# PREPROCESSOR:
+# -----------------------------------------------------------------------------
+def path_glob(command, cmdargs, cwd="."):
+    import glob
+    if not glob.has_magic(command):
+        return cmdargs
+
+    assert os.path.isdir(cwd)
+    try:
+        current_cwd = os.getcwd()
+        os.chdir(cwd)
+        new_cmdargs = []
+        for cmdarg in cmdargs:
+            if not glob.has_magic(cmdarg):
+                new_cmdargs.append(cmdarg)
+                continue
+
+            more_args = glob.glob(cmdarg)
+            if more_args:
+                new_cmdargs.extend(more_args)
+            else:
+                # -- BAD-CASE: Require at least one match.
+                # Otherwise, restore original arg.
+                new_cmdargs.append(cmdarg)
+
+        cmdargs = new_cmdargs
+    finally:
+        os.chdir(current_cwd)
+    return cmdargs
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS:
@@ -142,7 +197,7 @@ def behave(cmdline, cwd=".", **kwargs):
     Run behave as subprocess command and return process/shell instance
     with results (collected output, returncode).
     """
-    assert isinstance(cmdline, basestring)
+    assert isinstance(cmdline, six.string_types)
     return run("behave " + cmdline, cwd=cwd, **kwargs)
 
 # -----------------------------------------------------------------------------

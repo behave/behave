@@ -2,14 +2,24 @@
 # PYTHON PACKAGE REQUIREMENTS FOR: behave -- For development only
 # ============================================================================
 
-# -- REQUIRES: testing
-# -r testing.txt
-
-# -- DEVELOPMENT SUPPORT:
-# PREPARED: nose-cov >= 1.4
-# PREPARED: paver >= 1.2
-tox   >= 1.6.1
-coverage >= 3.7
+# -- BUILD-TOOL:
+# PREPARED: invoke
+invoke >= 0.10.1
+path.py >= 7.2
 
 # -- CONFIGURATION MANAGEMENT (helpers):
 bumpversion >= 0.4.0
+
+# -- DEVELOPMENT SUPPORT:
+# PREPARED: nose-cov >= 1.4
+tox   >= 1.8.1
+coverage >= 3.7
+pytest-cov
+
+# -- PYTHON2/3 COMPATIBILITY: pypa/modernize
+# python-futurize
+modernize >= 0.4
+
+# -- REQUIRES: testing, docs
+-r testing.txt
+-r docs.txt

@@ -1,10 +1,10 @@
 @issue
 Feature: Issue #109: Insists that implemented tests are not implemented
 
-    | STATUS: Resolved, not a behave problem.
-    |
-    | Following feature file marks implemented step "when I submit the following data"
-    | as not implemented.
+    . STATUS: Resolved, not a behave problem.
+    .
+    . Following feature file marks implemented step "when I submit the following data"
+    . as not implemented.
 
 
   Scenario:

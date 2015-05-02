@@ -3,27 +3,26 @@ Feature: Scenario Outline -- Parametrized Scenarios
   As a test writer
   I want to use the DRY principle when writing scenarios
   So that I am more productive and my work is less error-prone.
-
-
-  | COMMENT:
-  |   A Scenario Outline is basically a parametrized Scenario template.
-  |   It is instantiated for each examples row with the corresponding data.
-  |
-  | SCENARIO GENERICS BASICS: What can be parametrized?
-  |   * Scenario name:  Based on Scenario Outline with placeholders
-  |   * Scenario steps: Step name with placeholders (including: step.text, step.table)
-  |   * Scenario tags:  Based on Scenario Outline tags with placeholders
-  |
-  | CONSTRAINTS:
-  |   * placeholders (names) for tags should not contain any whitespace.
-  |   * a row data placeholder may override/hide a special placeholder (see below).
-  |
-  | SPECIAL PLACEHOLDERS:
-  |   | Placeholder     | Description |
-  |   |  examples.name  |  Name of the examples group (or empty string). |
-  |   |  examples.index |  Index of examples group (range: 1..N).        |
-  |   |  row.index      |  Index of row in examples group (range: 1..R). |
-  |   |  row.id         |  Same as: "{example.index}.{row.index}"        |
+  
+  . COMMENT:
+  .   A Scenario Outline is basically a parametrized Scenario template.
+  .   It is instantiated for each examples row with the corresponding data.
+  .
+  . SCENARIO GENERICS BASICS: What can be parametrized?
+  .   * Scenario name:  Based on Scenario Outline with placeholders
+  .   * Scenario steps: Step name with placeholders (including: step.text, step.table)
+  .   * Scenario tags:  Based on Scenario Outline tags with placeholders
+  .
+  . CONSTRAINTS:
+  .   * placeholders (names) for tags should not contain any whitespace.
+  .   * a row data placeholder may override/hide a special placeholder (see below).
+  .
+  . SPECIAL PLACEHOLDERS:
+  .   | Placeholder     | Description |
+  .   |  examples.name  |  Name of the examples group (or empty string). |
+  .   |  examples.index |  Index of examples group (range: 1..N).        |
+  .   |  row.index      |  Index of row in examples group (range: 1..R). |
+  .   |  row.id         |  Same as: "{example.index}.{row.index}"        |
 
 
   @setup
@@ -198,7 +197,7 @@ Feature: Scenario Outline -- Parametrized Scenarios
     When I run "behave -f plain --no-timings features/use_steps_with_param_table.feature"
     Then it should pass with:
       """
-      Scenario Outline: Use parametrized step with table -*- 
+      Scenario Outline: Use parametrized step with table -*-
         Given a step with table ... passed
           | Id  | Name  | Travel Agency | row id   |
           | 001 | Alice | Pony express  | <row.id> |

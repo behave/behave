@@ -56,7 +56,7 @@ def find_packages_by_root_package(where):
 # -----------------------------------------------------------------------------
 setup(
     name="behave",
-    version="1.2.5a1",
+    version="1.2.6.dev0",
     description="behave is behaviour-driven development, Python style",
     long_description=description,
     author="Benno Rice, Richard Jones and Jens Engel",
@@ -88,6 +88,7 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: Implementation :: CPython",

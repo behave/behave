@@ -5,8 +5,7 @@ In the good tradition of the `Eclipse IDE`_,
 a number of news, changes and improvements are described here to provide
 better background information about what has changed and how to make use of it.
 
-This page orders the information chronically
-(newest entries first, like a blog).
+This page orders the information by newest version first.
 
 .. _`Eclipse IDE`:  http://www.eclipse.org/
 

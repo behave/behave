@@ -1,18 +1,18 @@
 @issue
 Feature: Issue #73: the current_matcher is not predictable
 
-    | behave provides 2 matchers: ParseMatcher (parse) and RegexpMatcher (re).
-    | The ParseMatcher is used per default when the test runner starts.
-    |
-    | A step definition file may change the matcher several times
-    | by calling `use_step_matcher("re")` or `use_step_matcher("parse")`.
-    | In order to make the writing of step definitions more predictable,
-    | the matcher should be reset to the default matcher
-    | before loading each step definition.
-    |
-    | A project can define its own default matcher by calling the
-    | `use_step_matcher(...)` in the "environment.py" hook.
-    | This matcher will be used as default before a step definition is loaded.
+  . behave provides 2 matchers: ParseMatcher (parse) and RegexpMatcher (re).
+  . The ParseMatcher is used per default when the test runner starts.
+  .
+  . A step definition file may change the matcher several times
+  . by calling `use_step_matcher("re")` or `use_step_matcher("parse")`.
+  . In order to make the writing of step definitions more predictable,
+  . the matcher should be reset to the default matcher
+  . before loading each step definition.
+  .
+  . A project can define its own default matcher by calling the
+  . `use_step_matcher(...)` in the "environment.py" hook.
+  . This matcher will be used as default before a step definition is loaded.
 
 
   Scenario: Verify that ParseMatcher is the default matcher

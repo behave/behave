@@ -17,7 +17,7 @@ Feature: Execute Steps within a Step Function (Nested Steps)
       @when(u'I buy {amount:n} {item:w}')
       def step_when_I_buy(context, amount, item):
           assert amount >= 0
-          if not context.shopping_cart.has_key(item):
+          if not item in context.shopping_cart:
               context.shopping_cart[item] = 0
           context.shopping_cart[item] += amount
 

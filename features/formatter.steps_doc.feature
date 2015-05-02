@@ -5,9 +5,9 @@ Feature: Steps Doc Formatter
     I want to get a quick overview how to use a step definition
     By reading the step definition documentation (doc-stings).
 
-    | SOLUTION: Use StepsDocFormatter in dry-run mode, like:
-    |
-    |       behave --dry-run -f steps.doc features/
+    . SOLUTION: Use StepsDocFormatter in dry-run mode, like:
+    .
+    .       behave --dry-run -f steps.doc features/
 
 
     @setup

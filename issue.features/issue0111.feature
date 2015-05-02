@@ -1,14 +1,14 @@
 @issue
 Feature: Issue #111: Comment following @wip tag results in scenario being ignored
 
-    | If a comment is placed after the @wip tag, the following scenario
-    | is ignored by behave:
-    |
-    |   @wip # comment: this is work in progress
-    |   Scenario: test scenario
-    |
-    | results in behave -w not running the "test scenario".
-    | After removing the comment, it runs as expected.
+    . If a comment is placed after the @wip tag, the following scenario
+    . is ignored by behave:
+    .
+    .   @wip # comment: this is work in progress
+    .   Scenario: test scenario
+    .
+    . results in behave -w not running the "test scenario".
+    . After removing the comment, it runs as expected.
 
 
   Scenario: Test Setup

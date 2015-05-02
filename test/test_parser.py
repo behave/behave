@@ -1,5 +1,6 @@
-#-*- encoding: UTF-8 -*-
+#-*- coding: UTF-8 -*-
 
+from __future__ import absolute_import
 from nose.tools import *
 
 from behave import i18n, model, parser

@@ -5,6 +5,9 @@ The step registry allows to match steps (model elements) with
 step implementations (step definitions). This is necessary to execute steps.
 """
 
+from __future__ import absolute_import
+from behave.textutil import text as _text
+
 
 class AmbiguousStep(ValueError):
     pass
@@ -25,25 +28,26 @@ class StepRegistry(object):
                 step.location == other_location and
                 other_location.filename != "<string>")
 
-    def add_step_definition(self, keyword, string, func):
+    def add_step_definition(self, keyword, step_text, func):
         # TODO try to fix module dependencies to avoid this
         from behave import matchers, model
         step_location = model.Match.make_location(func)
         step_type = keyword.lower()
+        step_text = _text(step_text)
         step_definitions = self.steps[step_type]
         for existing in step_definitions:
-            if self.same_step_definition(existing, string, step_location):
+            if self.same_step_definition(existing, step_text, step_location):
                 # -- EXACT-STEP: Same step function is already registered.
                 # This may occur when a step module imports another one.
                 return
-            elif existing.match(string):
-                message = '%s has already been defined in\n  existing step %s'
-                new_step = u"@%s('%s')" % (step_type, string)
+            elif existing.match(step_text):
+                message = u'%s has already been defined in\n  existing step %s'
+                new_step = u"@%s('%s')" % (step_type, step_text)
                 existing.step_type = step_type
                 existing_step = existing.describe()
-                existing_step += " at %s" % existing.location
+                existing_step += u" at %s" % existing.location
                 raise AmbiguousStep(message % (new_step, existing_step))
-        step_definitions.append(matchers.get_matcher(func, string))
+        step_definitions.append(matchers.get_matcher(func, step_text))
 
     def find_step_definition(self, step):
         candidates = self.steps[step.step_type]
@@ -76,9 +80,9 @@ class StepRegistry(object):
     def make_decorator(self, step_type):
         # pylint: disable=W0621
         #   W0621: 44,29:StepRegistry.make_decorator: Redefining 'step_type' ..
-        def decorator(string):
+        def decorator(step_text):
             def wrapper(func):
-                self.add_step_definition(step_type, string, func)
+                self.add_step_definition(step_type, step_text, func)
                 return func
             return wrapper
         return decorator
@@ -87,12 +91,12 @@ class StepRegistry(object):
 registry = StepRegistry()
 
 # -- Create the decorators
-def setup_step_decorators(context=None, registry=registry):
-    if context is None:
-        context = globals()
+def setup_step_decorators(run_context=None, registry=registry):
+    if run_context is None:
+        run_context = globals()
     for step_type in ('given', 'when', 'then', 'step'):
         step_decorator = registry.make_decorator(step_type)
-        context[step_type.title()] = context[step_type] = step_decorator
+        run_context[step_type.title()] = run_context[step_type] = step_decorator
 
 # -----------------------------------------------------------------------------
 # MODULE INIT:

@@ -1,14 +1,14 @@
 @issue
 Feature: Issue #127: Strip trailing colons
 
-  | Trailing colon in a step is stripped by the Gherkin parser.
-  | Undefined step snippets should not suggest the step with a trailing colon.
-  |
-  | GENERAL RULE (by looking at the parser):
-  |   1. Colon in step in feature file is OK
-  |      (parser strips this for step-with-table or step-with-multiline-text).
-  |   2. Step definitions in Python files should not end with a colon
-  |      (used in @given/@when/@then decorators).
+  . Trailing colon in a step is stripped by the Gherkin parser.
+  . Undefined step snippets should not suggest the step with a trailing colon.
+  .
+  . GENERAL RULE (by looking at the parser):
+  .   1. Colon in step in feature file is OK
+  .      (parser strips this for step-with-table or step-with-multiline-text).
+  .   2. Step definitions in Python files should not end with a colon
+  .      (used in @given/@when/@then decorators).
 
 
   Background:
@@ -40,7 +40,7 @@ Feature: Issue #127: Strip trailing colons
 
         @given(u'the following superusers exist:')
         def step_impl(context):
-            assert False
+            raise NotImplementedError(u'STEP: Given the following superusers exist:')
         """
 
   Scenario: Step Definition has trailing colon (BAD CASE)
@@ -60,5 +60,5 @@ Feature: Issue #127: Strip trailing colons
 
         @given(u'the following superusers exist')
         def step_impl(context):
-            assert False
+            raise NotImplementedError(u'STEP: Given the following superusers exist')
         """

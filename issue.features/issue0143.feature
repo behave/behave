@@ -1,8 +1,8 @@
 @issue
 Feature: Issue #143: Logging starts with a StreamHandler way too early
 
-  | This verifies that some imported library or other item has not made a
-  | call to logging too soon, which would add a StreamHandler.
+  . This verifies that some imported library or other item has not made a
+  . call to logging too soon, which would add a StreamHandler.
 
 
   @setup

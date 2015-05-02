@@ -11,7 +11,7 @@ development practices as found in extreme programming. It has `evolved over
 the last few years`__.
 
 __ http://dannorth.net/introducing-bdd
-__ http://forums.pragprog.com/forums/95/topics/3035
+__ https://forums.pragprog.com/forums/95/topics/3035
 
 On the "Agile specifications, BDD and Testing eXchange" in November 2009 in
 London, Dan North `gave the following definition of BDD`__:
@@ -21,7 +21,7 @@ London, Dan North `gave the following definition of BDD`__:
   of interactions with well-defined outputs, resulting in the delivery of
   working, tested software that matters.
 
-__ http://skillsmatter.com/podcast/java-jee/how-to-sell-bdd-to-the-business
+__ https://skillsmatter.com/skillscasts/923-how-to-sell-bdd-to-the-business
 
 BDD focuses on obtaining a clear understanding of desired software behavior
 through discussion with stakeholders. It extends TDD by writing test cases
@@ -185,12 +185,12 @@ Sometimes the difference between the context, events and outcomes is made more e
         # given
         window = gui.Window("My Window")
         frame = gui.Frame(window)
- 
+
         # When
         window.close()
- 
+
         # Then
-        assert_(not frame.isVisible())       
+        assert_(not frame.isVisible())
 
 However the example is phrased, the effect describes the behavior of the
 code in question. For instance, from the examples above one can derive:

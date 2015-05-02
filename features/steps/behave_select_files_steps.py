@@ -17,11 +17,13 @@ EXAMPLE:
       '''
 """
 
+from __future__ import absolute_import
 from behave import given, when, then
 from behave.runner_util import FeatureListParser
 from hamcrest import assert_that, equal_to
 from copy import copy
 import re
+import six
 
 # -----------------------------------------------------------------------------
 # STEP UTILS:
@@ -39,7 +41,7 @@ class BasicBehaveRunner(object):
         selected = []
         for filename in self.feature_files:
             if not self.config.exclude(filename):
-                selected.append(str(filename))
+                selected.append(six.text_type(filename))
         return selected
 
 # -----------------------------------------------------------------------------

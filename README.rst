@@ -2,6 +2,10 @@
 Behave
 ======
 
+.. image:: https://badges.gitter.im/Join%20Chat.svg
+   :alt: Join the chat at https://gitter.im/behave/behave
+   :target: https://gitter.im/behave/behave?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 .. image:: https://travis-ci.org/behave/behave.png?branch=master
     :target: https://travis-ci.org/behave/behave
     :alt: Travis CI Build Status
@@ -74,7 +78,7 @@ Run behave:
 .. code-block:: bash
 
     $ behave
-    Feature: Showin off behave # features/example.feature:2
+    Feature: Showing off behave # features/example.feature:2
 
       Scenario: Run a simple test          # features/example.feature:4
         Given we have behave installed     # features/steps/example_steps.py:4
@@ -106,24 +110,3 @@ More Information
 .. _latest changes: https://github.com/behave/behave/blob/master/CHANGES.rst
 .. _behave.example: https://github.com/jenisys/behave.example
 
-
-Testing Domains
--------------------------------------------------------------------------------
-
-Behave and other BDD frameworks allow you to provide **step libraries**
-to reuse step definitions in similar projects that address the same 
-problem domain.
-
-Support of the following testing domains is currently known:
-
-=============== ================= =========================================================
-Testing Domain   Name              Description
-=============== ================= =========================================================
-Command-line    `behave4cmd`_     Test command-line tools, like behave, etc. (coming soon).
-Web Apps        `django-behave`_  Test Django Web apps with behave.
-Web, SMS, ...   `behaving`_       Test Web Apps, Email, SMS, Personas (step library).
-=============== ================= =========================================================
-
-.. _behave4cmd: https://github.com/jenisys/behave4cmd
-.. _django-behave: https://github.com/rwillmer/django-behave
-.. _behaving: https://github.com/ggozad/behaving

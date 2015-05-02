@@ -2,6 +2,7 @@
 
 import codecs
 import os.path
+import six
 import sys
 
 
@@ -37,15 +38,20 @@ class StreamOpener(object):
     def ensure_stream_with_encoder(cls, stream, encoding=None):
         if not encoding:
             encoding = cls.default_encoding
-        if hasattr(stream, "stream"):
+
+        if six.PY3:
+            return stream
+        elif hasattr(stream, "stream"):
             return stream    # Already wrapped with a codecs.StreamWriter
-        elif sys.version_info[0] < 3:
+        else:
+            assert six.PY2
             # py2 does, however, sometimes declare an encoding on sys.stdout,
             # even if it doesn't use it (or it might be explicitly None)
             stream = codecs.getwriter(encoding)(stream)
-        elif not getattr(stream, 'encoding', None):
-            # ok, so the stream doesn't have an encoding at all so add one
-            stream = codecs.getwriter(encoding)(stream)
+        # elif not getattr(stream, 'encoding', None):
+        #     # -- TODO: POTENTIAL DEAD-CODE: Inspect and cleanup later.
+        #     # ok, so the stream doesn't have an encoding at all so add one
+        #     stream = codecs.getwriter(encoding)(stream)
         return stream
 
     def open(self):
@@ -84,7 +90,7 @@ class Formatter(object):
     Processing Logic (simplified, without ScenarioOutline and skip logic)::
 
         for feature in runner.features:
-            formatter = get_formatter(...)
+            formatter = make_formatters(...)
             formatter.uri(feature.filename)
             formatter.feature(feature)
             for scenario in feature.scenarios:

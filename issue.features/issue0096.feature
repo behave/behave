@@ -1,23 +1,23 @@
 @issue
 Feature: Issue #96: Sub-steps failed without any error info to help debug issue
 
-    | I am trying to run execute_steps. One of them fails, but the error output
-    | from behave has no details whatsoever. It is virtually impossible
-    | to figure out why it failed. as no error output is present except the
-    | final error message
-    |
-    |   def before_scenario(context,scenario):
-    |       context.execute_steps(u'''
-    |           When "admin:admin" sends POST "/tasks/testStart"
-    |           Then I expect HTTP code 200
-    |       ''')
-    |
-    | File ".../behave/runner.py", line 262, in execute_steps
-    |  assert False, "FAILED SUB-STEP: %s" % step
-    |  AssertionError: FAILED SUB-STEP: When "admin:admin" sends POST "/tasks/testStart"
-    |
-    |  All we get is the "sub-step failed" but no info whatsoever
-    |  as to why it failed...
+    . I am trying to run execute_steps. One of them fails, but the error output
+    . from behave has no details whatsoever. It is virtually impossible
+    . to figure out why it failed. as no error output is present except the
+    . final error message
+    .
+    .   def before_scenario(context,scenario):
+    .       context.execute_steps(u'''
+    .           When "admin:admin" sends POST "/tasks/testStart"
+    .           Then I expect HTTP code 200
+    .       ''')
+    .
+    . File ".../behave/runner.py", line 262, in execute_steps
+    .  assert False, "FAILED SUB-STEP: %s" % step
+    .  AssertionError: FAILED SUB-STEP: When "admin:admin" sends POST "/tasks/testStart"
+    .
+    .  All we get is the "sub-step failed" but no info whatsoever
+    .  as to why it failed...
 
 
 

@@ -8,7 +8,12 @@
 #  * http://www.pip-installer.org/
 # ============================================================================
 
-argparse >= 1.1
+argparse >= 1.3
 parse >= 1.6.3
 parse_type >= 0.3.4
-six >= 1.5
+six >= 1.9
+
+# -- FOR PYTHON 2.6:
+# REQUIRES: pip >= 6.0
+ordereddict; python_version <= '2.6'
+importlib;   python_version <= '2.6'

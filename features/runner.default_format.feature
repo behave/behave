@@ -1,11 +1,11 @@
 @sequential
 Feature: Default Formatter
 
-    | Specification:
-    |  * Default formatter is used when no other formatter is specified/provided.
-    |  * Default formatter uses stdout as default output/outfile.
-    |  * Pretty formatter is the default formatter.
-    |  * Behave configfile can specify the default formatter.
+  . SPECIFICATION:
+  .  * Default formatter is used when no other formatter is specified/provided.
+  .  * Default formatter uses stdout as default output/outfile.
+  .  * Pretty formatter is the default formatter.
+  .  * Behave configfile can specify the default formatter.
 
 
     @setup

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import six
+
 class TagExpression(object):
     """
     Tag expression, as logical boolean expression, to select
@@ -101,5 +103,9 @@ class TagExpression(object):
         """Conversion back into string that represents this tag expression."""
         and_parts = []
         for or_terms in self.ands:
-            and_parts.append(",".join(or_terms))
-        return " ".join(and_parts)
+            and_parts.append(u",".join(or_terms))
+        return u" ".join(and_parts)
+
+    if six.PY2:
+        __unicode__ = __str__
+        __str__ = lambda self: self.__unicode__().encode("utf-8")

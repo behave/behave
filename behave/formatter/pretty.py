@@ -1,10 +1,14 @@
 # -*- coding: utf8 -*-
 
+from __future__ import absolute_import, division
 from behave.formatter.ansi_escapes import escapes, up
 from behave.formatter.base import Formatter
 from behave.model_describe import escape_cell, escape_triple_quotes
-from behave.textutil import indent
+from behave.textutil import indent, text as _text
 import sys
+import six
+from six.moves import range
+from six.moves import zip
 
 
 # -----------------------------------------------------------------------------
@@ -38,7 +42,7 @@ def get_terminal_size():
 # -----------------------------------------------------------------------------
 class MonochromeFormat(object):
     def text(self, text):
-        assert isinstance(text, unicode)
+        assert isinstance(text, six.text_type)
         return text
 
 
@@ -47,7 +51,7 @@ class ColorFormat(object):
         self.status = status
 
     def text(self, text):
-        assert isinstance(text, unicode)
+        assert isinstance(text, six.text_type)
         return escapes[self.status] + text + escapes['reset']
 
 
@@ -207,11 +211,12 @@ class PrettyFormatter(Formatter):
 
     def doc_string(self, doc_string):
         #self.stream.write('      """' + doc_string.content_type + '\n')
-        prefix = '      '
-        self.stream.write('%s"""\n' % prefix)
+        doc_string = _text(doc_string)
+        prefix = u'      '
+        self.stream.write(u'%s"""\n' % prefix)
         doc_string = escape_triple_quotes(indent(doc_string, prefix))
         self.stream.write(doc_string)
-        self.stream.write('\n%s"""\n' % prefix)
+        self.stream.write(u'\n%s"""\n' % prefix)
         self.stream.flush()
 
     # def doc_string(self, doc_string):
@@ -221,10 +226,11 @@ class PrettyFormatter(Formatter):
     #     self.stream.write(text)
     #     self.stream.flush()
 
-    def exception(self, exception):
-        exception_text = HERP
-        self.stream.write(self.failed(exception_text) + '\n')
-        self.stream.flush()
+    # -- UNUSED:
+    # def exception(self, exception):
+    #     exception_text = _text(exception)
+    #     self.stream.write(self.format("failed").text(exception_text) + "\n")
+    #     self.stream.flush()
 
     def color(self, cell, statuses, color):
         if statuses:
@@ -264,7 +270,7 @@ class PrettyFormatter(Formatter):
         self.stream.write(u"  %s: %s " % (self.statement.keyword,
                                           self.statement.name))
 
-        location = self.indented_text(unicode(self.statement.location), True)
+        location = self.indented_text(six.text_type(self.statement.location), True)
         if self.show_source:
             self.stream.write(self.format('comments').text(location))
         self.stream.write("\n")
@@ -289,7 +295,7 @@ class PrettyFormatter(Formatter):
         self.stream.write(text_format.text(step.keyword + ' '))
         line_length = 5 + len(step.keyword)
 
-        step_name = unicode(step.name)
+        step_name = six.text_type(step.name)
 
         text_start = 0
         for arg in arguments:
@@ -313,7 +319,7 @@ class PrettyFormatter(Formatter):
             line_length += (len(text))
 
         if self.show_source:
-            location = unicode(location)
+            location = six.text_type(location)
             if self.show_timings and status in ('passed', 'failed'):
                 location += ' %0.3fs' % step.duration
             location = self.indented_text(location, proceed)

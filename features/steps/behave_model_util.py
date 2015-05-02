@@ -1,5 +1,7 @@
+from __future__ import absolute_import
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from behave.model import reset_model, Feature, Scenario
 from behave.runner import ModelRunner
 from behave.parser import parse_tags

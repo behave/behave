@@ -3,9 +3,9 @@ Feature: Step Dialect for BDD Steps with Given/When/Then Keywords
   In order to execute a sequence of steps with BDD keywords (Given/When/Then)
   As a test/story writer
   I want to have the possibility to express myself.
-
-  | NOTE:
-  |   * More details are provided in other features.
+  
+  . NOTE:
+  .   * More details are provided in other features.
 
 
   Scenario: Simple example

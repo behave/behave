@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import with_statement
-
+from __future__ import absolute_import, with_statement
 from behave import model, i18n
+from behave.textutil import text as _text
+import six
+
 
 DEFAULT_LANGUAGE = 'en'
 
@@ -16,11 +18,11 @@ def parse_file(filename, language=None):
 
 def parse_feature(data, language=None, filename=None):
     # ALL data operated on by the parser MUST be unicode
-    assert isinstance(data, unicode)
+    assert isinstance(data, six.text_type)
 
     try:
         result = Parser(language).parse(data, filename)
-    except ParserError, e:
+    except ParserError as e:
         e.filename = filename
         raise
 
@@ -36,10 +38,10 @@ def parse_steps(text, language=None, filename=None):
     :param filename:  Filename (optional).
     :return: Parsed steps (if successful).
     """
-    assert isinstance(text, unicode)
+    assert isinstance(text, six.text_type)
     try:
         result = Parser(language, variant='steps').parse_steps(text, filename)
-    except ParserError, e:
+    except ParserError as e:
         e.filename = filename
         raise
     return result
@@ -69,9 +71,16 @@ class ParserError(Exception):
         self.filename = filename
 
     def __str__(self):
+        arg0 = _text(self.args[0])
         if self.filename:
-            return 'Failed to parse "%s": %s' % (self.filename, self.args[0])
-        return 'Failed to parse <string>: %s' % self.args[0]
+            filename = _text(self.filename)
+            return u'Failed to parse "%s": %s' % (filename, arg0)
+        else:
+            return u'Failed to parse <string>: %s' % arg0
+
+    if six.PY2:
+        __unicode__ = __str__
+        __str__ = lambda self: self.__unicode__().encode("utf-8")
 
 
 class Parser(object):
@@ -506,7 +515,7 @@ class Parser(object):
         :param text:  Text that contains 0..* steps
         :return: List of parsed steps (as model.Step objects).
         """
-        assert isinstance(text, unicode)
+        assert isinstance(text, six.text_type)
         if not self.language:
             self.language = u"en"
         self.reset()

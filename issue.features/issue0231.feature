@@ -2,14 +2,13 @@
 @not_reproducible
 Feature: Issue #231: Display the output of the last print command
 
-
-  | The output of the last print command in a step is not displayed
-  | in the behave output (at least with standard pretty formatter),
-  | unless the string to print ends with newline ('\n').
-  |
-  | ANALYSIS: NOT-REPRODUCIBLE
-  |   Checked print function and stdout without newline.
-  |   Both show the expected capture stdout output when the step fails.
+  . The output of the last print command in a step is not displayed
+  . in the behave output (at least with standard pretty formatter),
+  . unless the string to print ends with newline ('\n').
+  .
+  . ANALYSIS: NOT-REPRODUCIBLE
+  .   Checked print function and stdout without newline.
+  .   Both show the expected capture stdout output when the step fails.
 
   @setup
   Scenario: Feature Setup

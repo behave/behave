@@ -1,11 +1,11 @@
-Feature: Global Context Parameters defined in "environment.py"
+Feature: Global Context Parameters defined in environment file
 
-    | Specification:
-    |   * When a Context parameter is defined in "environment.py",
-    |     its value is provided to all scenarios (steps).
-    |   * Each scenario has the same global parameters (and values).
-    |   * A scenario (step) may modify global parameters (values).
-    |   * After a scenario is executed all changes to Context parameters are reverted.
+  . SPECIFICATION:
+  .   * When a Context parameter is defined in "environment.py",
+  .     its value is provided to all scenarios (steps).
+  .   * Each scenario has the same global parameters (and values).
+  .   * A scenario (step) may modify global parameters (values).
+  .   * After a scenario is executed all changes to Context parameters are reverted.
 
     Scenario: Test Setup Description (Example)
       Given a file named "features/environment.py" with:

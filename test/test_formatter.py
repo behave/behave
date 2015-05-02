@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import struct
 import sys
 import tempfile
@@ -5,9 +6,8 @@ import unittest
 from mock import Mock, patch
 from nose.tools import *
 
-from behave.formatter import formatters
+from behave.formatter._registry import make_formatters
 from behave.formatter import pretty
-# from behave.formatter import tags
 from behave.formatter.base import StreamOpener
 from behave.model import Tag, Feature, Match, Scenario, Step
 
@@ -109,7 +109,7 @@ class FormatterTests(unittest.TestCase):
 
     def _formatter(self, file, config):
         stream_opener = StreamOpener(stream=file)
-        f = formatters.get_formatter(config, [stream_opener])[0]
+        f = make_formatters(config, [stream_opener])[0]
         f.uri('<string>')
         return f
 
@@ -205,7 +205,7 @@ class MultipleFormattersTests(FormatterTests):
 
     def _formatters(self, file, config):
         stream_opener = StreamOpener(stream=file)
-        fs = formatters.get_formatter(config, [stream_opener])
+        fs = make_formatters(config, [stream_opener])
         for f in fs:
             f.uri('<string>')
         return fs

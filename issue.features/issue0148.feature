@@ -2,8 +2,8 @@
 @already_fixed
 Feature: Issue #148: Substeps do not fail
 
-      FIXED-BY: issue #117 context.execute_steps() should support table and multi-line text.
-      RELATED-TO: issue #96
+  FIXED-BY: issue #117 context.execute_steps() should support table and multi-line text.
+  RELATED-TO: issue #96
 
   @setup
   Scenario: Setup

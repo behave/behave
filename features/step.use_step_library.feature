@@ -1,8 +1,8 @@
 Feature: Use a step library
 
-    As a tester
-    I want to use steps from one or more step libraries
-    To simplify the reuse of problem domain specific steps in multiple projects.
+  As a tester
+  I want to use steps from one or more step libraries
+  To simplify the reuse of problem domain specific steps in multiple projects.
 
 
   Scenario: Use a simple step library

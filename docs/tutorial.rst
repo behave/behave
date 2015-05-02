@@ -15,8 +15,8 @@ called "tutorial.feature" containing:
 
    Scenario: run a simple test
       Given we have behave installed
-       when we implement a test
-       then behave will test it for us!
+       When we implement a test
+       Then behave will test it for us!
 
 Make a new directory called "tutorial/steps". In that directory create a
 file called "tutorial.py" containing:
@@ -233,15 +233,15 @@ Python Step Implementations
 ===========================
 
 Steps used in the scenarios are implemented in Python files in the "steps"
-directory. You can call these whatever you like as long as they're
-*filename*.py in the steps directory. You don't need to tell *behave* which
+directory. You can call these whatever you like as long as they use
+the python ``*.py`` file extension. You don't need to tell *behave* which
 ones to use - it'll use all of them.
 
 The full detail of the Python side of *behave* is in the
 :doc:`API documentation <api>`.
 
 Steps are identified using decorators which match the predicate from the
-feature file: given, when, then and step (variants with Title case are also
+feature file: **given**, **when**, **then** and **step** (variants with Title case are also
 available if that's your preference.) The decorator accepts a string
 containing the rest of the phrase used in the scenario step it belongs to.
 
@@ -276,7 +276,7 @@ Step code implementing the two steps here might look like
 The ``step`` decorator matches the step to *any* step type, "given", "when"
 or "then". The "and" and "but" step types are renamed internally to take
 the preceding step's keyword (so an "and" following a "given" will become a
-"given" internally and use a "give" decorated step).
+"given" internally and use a **given** decorated step).
 
 If you find you'd like your step implementation to invoke another step you
 may do so with the :class:`~behave.runner.Context` method
@@ -604,17 +604,27 @@ by using the ``after_step()`` hook.
 The debugger is started when a step fails.
 
 It is in general a good idea to enable this functionality only when needed
-(in interactive mode). This is accomplished in this example by using an
-environment variable.
+(in interactive mode). The functionality is enabled (in this example)
+by using the user-specific configuration data. A user can:
+
+  * provide a userdata define on command-line
+  * store a value in the "behave.userdata" section of behave's configuration file
 
 .. code-block:: python
 
     # -- FILE: features/environment.py
-    # USE: BEHAVE_DEBUG_ON_ERROR=yes     (to enable debug-on-error)
-    from distutils.util import strtobool as _bool
-    import os
+    # USE: behave -D BEHAVE_DEBUG_ON_ERROR         (to enable  debug-on-error)
+    # USE: behave -D BEHAVE_DEBUG_ON_ERROR=yes     (to enable  debug-on-error)
+    # USE: behave -D BEHAVE_DEBUG_ON_ERROR=no      (to disable debug-on-error)
 
-    BEHAVE_DEBUG_ON_ERROR = _bool(os.environ.get("BEHAVE_DEBUG_ON_ERROR", "no"))
+    BEHAVE_DEBUG_ON_ERROR = False
+
+    def setup_debug_on_error(userdata):
+        global BEHAVE_DEBUG_ON_ERROR
+        BEHAVE_DEBUG_ON_ERROR = userdata.getbool("BEHAVE_DEBUG_ON_ERROR")
+
+    def before_all(context):
+        setup_debug_on_error(context.config.userdata)
 
     def after_step(context, step):
         if BEHAVE_DEBUG_ON_ERROR and step.status == "failed":

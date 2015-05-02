@@ -14,6 +14,7 @@ EXAMPLES:
     Then  it should fail because "the person is unknown".
 """
 
+from __future__ import absolute_import
 from behave import step, then
 
 # -----------------------------------------------------------------------------

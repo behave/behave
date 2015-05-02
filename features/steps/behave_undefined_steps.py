@@ -1,4 +1,4 @@
-# -*- coding -*-
+# -*- coding: UTF-8 -*-
 """
 Provides step definitions for behave based on behave4cmd.
 
@@ -6,7 +6,8 @@ REQUIRES:
   * behave4cmd.steplib.output steps (command output from behave).
 """
 
-from behave import given, when, then, step
+from __future__ import absolute_import
+from behave import then
 from behave.runner_util import make_undefined_step_snippet
 
 

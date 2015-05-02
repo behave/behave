@@ -1,10 +1,10 @@
 @issue
 Feature: Issue #216: ANSI escape sequences are used while using --wip option
 
-  | ENSURE THAT:
-  |   * Coloring is disabled when --wip option is used.
-  |   * In addition, no colouring is used when using --show-skipped option
-  |   * Undefined step snippets are not "colored".
+  . ENSURE THAT:
+  .   * Coloring is disabled when --wip option is used.
+  .   * In addition, no colouring is used when using --show-skipped option
+  .   * Undefined step snippets are not "colored".
 
   @setup
   Scenario: Feature Setup
@@ -14,6 +14,7 @@ Feature: Issue #216: ANSI escape sequences are used while using --wip option
         [behave]
         default_format = pretty
         show_skipped   = false
+        show_timings   = false
         """
     And a file named "features/steps/use_behave4cmd_steps.py" with:
         """
@@ -97,7 +98,7 @@ Feature: Issue #216: ANSI escape sequences are used while using --wip option
 
         @wip
         Scenario: Alice            # features/scenario_with_undefined_steps.feature:4
-          Given a step passes      # ../behave4cmd0/passing_steps.py:22
+          Given a step passes      # ../behave4cmd0/passing_steps.py:23
           When a step is undefined # None
           Then a step passes       # None
       """
@@ -120,7 +121,7 @@ Feature: Issue #216: ANSI escape sequences are used while using --wip option
 
         @wip
         Scenario: Alice            # features/scenario_with_undefined_steps.feature:4
-          Given a step passes      # ../behave4cmd0/passing_steps.py:22
+          Given a step passes      # ../behave4cmd0/passing_steps.py:23
           When a step is undefined # None
           Then a step passes       # None
       """

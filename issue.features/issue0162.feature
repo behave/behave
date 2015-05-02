@@ -1,20 +1,20 @@
 @issue
 Feature: Issue #162 Unnecessary ContextMaskWarnings when assert fails or exception is raised
 
-  | Behave shows unnecessary ContextMaskWarnings related to:
-  |
-  |   * tags
-  |   * capture_stdout
-  |   * capture_stderr
-  |   * log_capture
-  |
-  | if:
-  |
-  |   * an assertion fails in a step-definition/step-function
-  |   * an exception is raised by a step-definition/step-function
-  |
-  | and an additional scenario follows.
-  | REASON: Context "behave" mode is not restored when an exception is raised.
+  . Behave shows unnecessary ContextMaskWarnings related to:
+  .
+  .   * tags
+  .   * capture_stdout
+  .   * capture_stderr
+  .   * log_capture
+  .
+  . if:
+  .
+  .   * an assertion fails in a step-definition/step-function
+  .   * an exception is raised by a step-definition/step-function
+  .
+  . and an additional scenario follows.
+  . REASON: Context "behave" mode is not restored when an exception is raised.
 
 
   @setup
