@@ -822,7 +822,10 @@ class Runner(object):
             print "\n" * 3
             print "_" * 75
             jobresult = self.resultsqueue.get()
-            print unicode(jobresult['reportinginfo'], errors='replace')
+            try:
+                print unicode(jobresult['reportinginfo'], errors='replace')
+            except Exception as e:
+                pass
             if 'junit_report' in jobresult:
                 junit_report_objs.append(jobresult['junit_report'])
             if jobresult['jobtype'] != 'feature':
