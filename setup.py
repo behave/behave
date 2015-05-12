@@ -24,11 +24,9 @@ from setuptools_behave import behave_test
 # -----------------------------------------------------------------------------
 python_version = float("%s.%s" % sys.version_info[:2])
 requirements = ["parse>=1.6.3", "parse_type>=0.3.4", "six"]
-if python_version < 2.7 or 3.0 <= python_version <= 3.1:
-    requirements.append("argparse")
+py26_extra = ["argparse", "importlib", "ordereddict"]
 if python_version < 2.7:
-    requirements.append("importlib")
-    requirements.append("ordereddict")
+    requirements.extend(py26_extra)
 if python_version < 2.6:
     requirements.append("simplejson")
 
@@ -78,6 +76,11 @@ setup(
     tests_require=["nose>=1.3", "mock>=1.0", "PyHamcrest>=1.8"],
     cmdclass = {
         "behave_test": behave_test,
+    },
+    extras_require={
+        # -- SUPPORT-WHEELS: Extra packages for Python2.6
+        # SEE: https://bitbucket.org/pypa/wheel/ , CHANGES.txt (v0.24.0)
+        ':python_version=="2.6"': py26_extra,
     },
     use_2to3= bool(python_version >= 3.0),
     license="BSD",
