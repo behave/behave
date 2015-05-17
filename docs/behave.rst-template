@@ -43,37 +43,43 @@ formatted in the Windows INI style, for example:
 
 .. code-block:: ini
 
-  [behave]
-  format=plain
-  logging_clear_handlers=yes
-  logging_filter=-suds
+    [behave]
+    format=plain
+    logging_clear_handlers=yes
+    logging_filter=-suds
 
-The types possible are:
+
+Configuration Parameter Types
+-----------------------------
+
+The following types are supported (and used):
 
 **text**
-  This just assigns whatever text you supply to the configuration setting.
+    This just assigns whatever text you supply to the configuration setting.
 
-**boolean**
-  This assigns a boolean value to the configuration setting. True values
-  are "1", "yes", "true", and "on". False values are "0", "no", "false",
-  and "off".
+**bool**
+    This assigns a boolean value to the configuration setting.
+    The text describes the functionality when the value is true.
+    True values are "1", "yes", "true", and "on".
+    False values are "0", "no", "false", and "off".
 
-**text (multiple allowed)**
-  These fields accept one or more values on new lines, for example a tag
-  expression might look like:
+**sequence<text>**
+    These fields accept one or more values on new lines, for example a tag
+    expression might look like:
 
-  .. code-block:: ini
+    .. code-block:: ini
 
-    tags=@foo,~@bar
-         @zap
+        tags=@foo,~@bar
+            @zap
 
-  which is the equivalent of the command-line usage::
+    which is the equivalent of the command-line usage::
 
-    --tags @foo,~@bar --tags @zap.
+        --tags @foo,~@bar --tags @zap
 
 
-Recognised Settings
--------------------
+
+Configuration Parameters
+-----------------------------
 
 {config}
 

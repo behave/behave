@@ -17,236 +17,233 @@ You may see the same information presented below at any time using ``behave
 
 .. option:: -c, --no-color
 
-   Disable the use of ANSI color escapes.
+    Disable the use of ANSI color escapes.
 
 .. option:: --color
 
-   Use ANSI color escapes. This is the default behaviour. This switch
-   is used to override a configuration file setting.
+    Use ANSI color escapes. This is the default behaviour. This switch is
+    used to override a configuration file setting.
 
 .. option:: -d, --dry-run
 
-   Invokes formatters without executing the steps.
+    Invokes formatters without executing the steps.
 
 .. option:: -D, --define
 
-   Define user-specific data for the config.userdata dictionary.
-   Example: -D foo=bar to store it in config.userdata["foo"].
+    Define user-specific data for the config.userdata dictionary. Example:
+    -D foo=bar to store it in config.userdata["foo"].
 
 .. option:: -e, --exclude
 
-   Don't run feature files matching regular expression PATTERN.
+    Don't run feature files matching regular expression PATTERN.
 
 .. option:: -i, --include
 
-   Only run feature files matching regular expression PATTERN.
+    Only run feature files matching regular expression PATTERN.
 
 .. option:: --no-junit
 
-   Don't output JUnit-compatible reports.
+    Don't output JUnit-compatible reports.
 
 .. option:: --junit
 
-   Output JUnit-compatible reports. When junit is enabled, all stdout
-   and stderr will be redirected and dumped to the junit report,
-   regardless of the '--capture' and '--no-capture' options.
+    Output JUnit-compatible reports. When junit is enabled, all stdout and
+    stderr will be redirected and dumped to the junit report,
+    regardless of the '--capture' and '--no-capture' options.
 
 .. option:: --junit-directory
 
-   Directory in which to store JUnit reports.
+    Directory in which to store JUnit reports.
 
 .. option:: -f, --format
 
-   Specify a formatter. If none is specified the default formatter is
-   used. Pass '--format help' to get a list of available formatters.
+    Specify a formatter. If none is specified the default formatter is
+    used. Pass '--format help' to get a list of available formatters.
 
 .. option:: --steps-catalog
 
-   Show a catalog of all available step definitions. SAME AS:
-   --format=steps.catalog --dry-run --no-summary -q
+    Show a catalog of all available step definitions. SAME AS:
+    --format=steps.catalog --dry-run --no-summary -q
 
 .. option:: -k, --no-skipped
 
-   Don't print skipped steps (due to tags).
+    Don't print skipped steps (due to tags).
 
 .. option:: --show-skipped
 
-   Print skipped steps. This is the default behaviour. This switch is
-   used to override a configuration file setting.
+    Print skipped steps. This is the default behaviour. This switch is
+    used to override a configuration file setting.
 
 .. option:: --no-snippets
 
-   Don't print snippets for unimplemented steps.
+    Don't print snippets for unimplemented steps.
 
 .. option:: --snippets
 
-   Print snippets for unimplemented steps. This is the default
-   behaviour. This switch is used to override a configuration file
-   setting.
+    Print snippets for unimplemented steps. This is the default behaviour.
+    This switch is used to override a configuration file setting.
 
 .. option:: -m, --no-multiline
 
-   Don't print multiline strings and tables under steps.
+    Don't print multiline strings and tables under steps.
 
 .. option:: --multiline
 
-   Print multiline strings and tables under steps. This is the default
-   behaviour. This switch is used to override a configuration file
-   setting.
+    Print multiline strings and tables under steps. This is the default
+    behaviour. This switch is used to override a configuration file
+    setting.
 
 .. option:: -n, --name
 
-   Only execute the feature elements which match part of the given
-   name. If this option is given more than once, it will match against
-   all the given names.
+    Only execute the feature elements which match part of the given name.
+    If this option is given more than once, it will match against all
+    the given names.
 
 .. option:: --no-capture
 
-   Don't capture stdout (any stdout output will be printed
-   immediately.)
+    Don't capture stdout (any stdout output will be printed immediately.)
 
 .. option:: --capture
 
-   Capture stdout (any stdout output will be printed if there is a
-   failure.) This is the default behaviour. This switch is used to
-   override a configuration file setting.
+    Capture stdout (any stdout output will be printed if there is a
+    failure.) This is the default behaviour. This switch is used to
+    override a configuration file setting.
 
 .. option:: --no-capture-stderr
 
-   Don't capture stderr (any stderr output will be printed
-   immediately.)
+    Don't capture stderr (any stderr output will be printed immediately.)
 
 .. option:: --capture-stderr
 
-   Capture stderr (any stderr output will be printed if there is a
-   failure.) This is the default behaviour. This switch is used to
-   override a configuration file setting.
+    Capture stderr (any stderr output will be printed if there is a
+    failure.) This is the default behaviour. This switch is used to
+    override a configuration file setting.
 
 .. option:: --no-logcapture
 
-   Don't capture logging. Logging configuration will be left intact.
+    Don't capture logging. Logging configuration will be left intact.
 
 .. option:: --logcapture
 
-   Capture logging. All logging during a step will be captured and
-   displayed in the event of a failure. This is the default behaviour.
-   This switch is used to override a configuration file setting.
+    Capture logging. All logging during a step will be captured and
+    displayed in the event of a failure. This is the default
+    behaviour. This switch is used to override a configuration file
+    setting.
 
 .. option:: --logging-level
 
-   Specify a level to capture logging at. The default is INFO -
-   capturing everything.
+    Specify a level to capture logging at. The default is INFO - capturing
+    everything.
 
 .. option:: --logging-format
 
-   Specify custom format to print statements. Uses the same format as
-   used by standard logging handlers. The default is
-   '%(levelname)s:%(name)s:%(message)s'.
+    Specify custom format to print statements. Uses the same format as
+    used by standard logging handlers. The default is
+    '%(levelname)s:%(name)s:%(message)s'.
 
 .. option:: --logging-datefmt
 
-   Specify custom date/time format to print statements. Uses the same
-   format as used by standard logging handlers.
+    Specify custom date/time format to print statements. Uses the same
+    format as used by standard logging handlers.
 
 .. option:: --logging-filter
 
-   Specify which statements to filter in/out. By default, everything
-   is captured. If the output is too verbose, use this option to
-   filter out needless output. Example: --logging-filter=foo will
-   capture statements issued ONLY to foo or foo.what.ever.sub but not
-   foobar or other logger. Specify multiple loggers with comma:
-   filter=foo,bar,baz. If any logger name is prefixed with a minus, eg
-   filter=-foo, it will be excluded rather than included.
+    Specify which statements to filter in/out. By default, everything is
+    captured. If the output is too verbose, use this option to filter
+    out needless output. Example: --logging-filter=foo will capture
+    statements issued ONLY to foo or foo.what.ever.sub but not foobar
+    or other logger. Specify multiple loggers with comma:
+    filter=foo,bar,baz. If any logger name is prefixed with a minus,
+    eg filter=-foo, it will be excluded rather than included.
 
 .. option:: --logging-clear-handlers
 
-   Clear all other logging handlers.
+    Clear all other logging handlers.
 
 .. option:: --no-summary
 
-   Don't display the summary at the end of the run.
+    Don't display the summary at the end of the run.
 
 .. option:: --summary
 
-   Display the summary at the end of the run.
+    Display the summary at the end of the run.
 
 .. option:: -o, --outfile
 
-   Write to specified file instead of stdout.
+    Write to specified file instead of stdout.
 
 .. option:: -q, --quiet
 
-   Alias for --no-snippets --no-source.
+    Alias for --no-snippets --no-source.
 
 .. option:: -s, --no-source
 
-   Don't print the file and line of the step definition with the
-   steps.
+    Don't print the file and line of the step definition with the steps.
 
 .. option:: --show-source
 
-   Print the file and line of the step definition with the steps. This
-   is the default behaviour. This switch is used to override a
-   configuration file setting.
+    Print the file and line of the step definition with the steps. This is
+    the default behaviour. This switch is used to override a
+    configuration file setting.
 
 .. option:: --stage
 
-   Defines the current test stage. The test stage name is used as name
-   prefix for the environment file and the steps directory (instead of
-   default path names).
+    Defines the current test stage. The test stage name is used as name
+    prefix for the environment file and the steps directory (instead
+    of default path names).
 
 .. option:: --stop
 
-   Stop running tests at the first failure.
+    Stop running tests at the first failure.
 
 .. option:: -t, --tags
 
-   Only execute features or scenarios with tags matching
-   TAG_EXPRESSION. Pass '--tags-help' for more information.
+    Only execute features or scenarios with tags matching TAG_EXPRESSION.
+    Pass '--tags-help' for more information.
 
 .. option:: -T, --no-timings
 
-   Don't print the time taken for each step.
+    Don't print the time taken for each step.
 
 .. option:: --show-timings
 
-   Print the time taken, in seconds, of each step after the step has
-   completed. This is the default behaviour. This switch is used to
-   override a configuration file setting.
+    Print the time taken, in seconds, of each step after the step has
+    completed. This is the default behaviour. This switch is used to
+    override a configuration file setting.
 
 .. option:: -v, --verbose
 
-   Show the files and features loaded.
+    Show the files and features loaded.
 
 .. option:: -w, --wip
 
-   Only run scenarios tagged with "wip". Additionally: use the "plain"
-   formatter, do not capture stdout or logging output and stop at the
-   first failure.
+    Only run scenarios tagged with "wip". Additionally: use the "plain"
+    formatter, do not capture stdout or logging output and stop at the
+    first failure.
 
 .. option:: -x, --expand
 
-   Expand scenario outline tables in output.
+    Expand scenario outline tables in output.
 
 .. option:: --lang
 
-   Use keywords for a language other than English.
+    Use keywords for a language other than English.
 
 .. option:: --lang-list
 
-   List the languages available for --lang.
+    List the languages available for --lang.
 
 .. option:: --lang-help
 
-   List the translations accepted for one language.
+    List the translations accepted for one language.
 
 .. option:: --tags-help
 
-   Show help for tag expressions.
+    Show help for tag expressions.
 
 .. option:: --version
 
-   Show version.
+    Show version.
 
 
 
@@ -300,178 +297,344 @@ formatted in the Windows INI style, for example:
 
 .. code-block:: ini
 
-  [behave]
-  format=plain
-  logging_clear_handlers=yes
-  logging_filter=-suds
+    [behave]
+    format=plain
+    logging_clear_handlers=yes
+    logging_filter=-suds
 
-The types possible are:
+
+Configuration Parameter Types
+-----------------------------
+
+The following types are supported (and used):
 
 **text**
-  This just assigns whatever text you supply to the configuration setting.
+    This just assigns whatever text you supply to the configuration setting.
 
-**boolean**
-  This assigns a boolean value to the configuration setting. True values
-  are "1", "yes", "true", and "on". False values are "0", "no", "false",
-  and "off".
+**bool**
+    This assigns a boolean value to the configuration setting.
+    The text describes the functionality when the value is true.
+    True values are "1", "yes", "true", and "on".
+    False values are "0", "no", "false", and "off".
 
-**text (multiple allowed)**
-  These fields accept one or more values on new lines, for example a tag
-  expression might look like:
+**sequence<text>**
+    These fields accept one or more values on new lines, for example a tag
+    expression might look like:
 
-  .. code-block:: ini
+    .. code-block:: ini
 
-    tags=@foo,~@bar
-         @zap
+        tags=@foo,~@bar
+            @zap
 
-  which is the equivalent of the command-line usage::
+    which is the equivalent of the command-line usage::
 
-    --tags @foo,~@bar --tags @zap.
+        --tags @foo,~@bar --tags @zap
 
 
-Recognised Settings
--------------------
 
-**color** -- boolean
-   Disable the use of ANSI color escapes.
-**color** -- boolean
-   Use ANSI color escapes. This is the default behaviour. This switch
-   is used to override a configuration file setting.
-**dry_run** -- boolean
-   Invokes formatters without executing the steps.
-**userdata_defines** -- text (multiple allowed)
-   Define user-specific data for the config.userdata dictionary.
-   Example: -D foo=bar to store it in config.userdata["foo"].
-**exclude_re** -- text
-   Don't run feature files matching regular expression PATTERN.
-**include_re** -- text
-   Only run feature files matching regular expression PATTERN.
-**junit** -- boolean
-   Don't output JUnit-compatible reports.
-**junit** -- boolean
-   Output JUnit-compatible reports. When junit is enabled, all stdout
-   and stderr will be redirected and dumped to the junit report,
-   regardless of the '--capture' and '--no-capture' options.
-**junit_directory** -- text
-   Directory in which to store JUnit reports.
-**default_format** -- text
-   Specify default formatter (default: pretty).
-**format** -- text (multiple allowed)
-   Specify a formatter. If none is specified the default formatter is
-   used. Pass '--format help' to get a list of available formatters.
-**steps_catalog** -- boolean
-   Show a catalog of all available step definitions. SAME AS:
-   --format=steps.catalog --dry-run --no-summary -q
-**scenario_outline_annotation_schema** -- text
-   Specify name annotation schema for scenario outline
-   (default="{name} -- @{row.id} {examples.name}").
-**show_skipped** -- boolean
-   Don't print skipped steps (due to tags).
-**show_skipped** -- boolean
-   Print skipped steps. This is the default behaviour. This switch is
-   used to override a configuration file setting.
-**show_snippets** -- boolean
-   Don't print snippets for unimplemented steps.
-**show_snippets** -- boolean
-   Print snippets for unimplemented steps. This is the default
-   behaviour. This switch is used to override a configuration file
-   setting.
-**show_multiline** -- boolean
-   Don't print multiline strings and tables under steps.
-**show_multiline** -- boolean
-   Print multiline strings and tables under steps. This is the default
-   behaviour. This switch is used to override a configuration file
-   setting.
-**name** -- text (multiple allowed)
-   Only execute the feature elements which match part of the given
-   name. If this option is given more than once, it will match against
-   all the given names.
-**stdout_capture** -- boolean
-   Don't capture stdout (any stdout output will be printed
-   immediately.)
-**stdout_capture** -- boolean
-   Capture stdout (any stdout output will be printed if there is a
-   failure.) This is the default behaviour. This switch is used to
-   override a configuration file setting.
-**stderr_capture** -- boolean
-   Don't capture stderr (any stderr output will be printed
-   immediately.)
-**stderr_capture** -- boolean
-   Capture stderr (any stderr output will be printed if there is a
-   failure.) This is the default behaviour. This switch is used to
-   override a configuration file setting.
-**log_capture** -- boolean
-   Don't capture logging. Logging configuration will be left intact.
-**log_capture** -- boolean
-   Capture logging. All logging during a step will be captured and
-   displayed in the event of a failure. This is the default behaviour.
-   This switch is used to override a configuration file setting.
-**logging_level** -- text
-   Specify a level to capture logging at. The default is INFO -
-   capturing everything.
-**logging_format** -- text
-   Specify custom format to print statements. Uses the same format as
-   used by standard logging handlers. The default is
-   '%(levelname)s:%(name)s:%(message)s'.
-**logging_datefmt** -- text
-   Specify custom date/time format to print statements. Uses the same
-   format as used by standard logging handlers.
-**logging_filter** -- text
-   Specify which statements to filter in/out. By default, everything
-   is captured. If the output is too verbose, use this option to
-   filter out needless output. Example: ``logging_filter = foo`` will
-   capture statements issued ONLY to "foo" or "foo.what.ever.sub" but
-   not "foobar" or other logger. Specify multiple loggers with comma:
-   ``logging_filter = foo,bar,baz``. If any logger name is prefixed
-   with a minus, eg ``logging_filter = -foo``, it will be excluded
-   rather than included.
-**logging_clear_handlers** -- boolean
-   Clear all other logging handlers.
-**summary** -- boolean
-   Don't display the summary at the end of the run.
-**summary** -- boolean
-   Display the summary at the end of the run.
-**outfiles** -- text (multiple allowed)
-   Write to specified file instead of stdout.
-**paths** -- text (multiple allowed)
-   Specify default feature paths, used when none are provided.
-**quiet** -- boolean
-   Alias for --no-snippets --no-source.
-**show_source** -- boolean
-   Don't print the file and line of the step definition with the
-   steps.
-**show_source** -- boolean
-   Print the file and line of the step definition with the steps. This
-   is the default behaviour. This switch is used to override a
-   configuration file setting.
-**stage** -- text
-   Defines the current test stage. The test stage name is used as name
-   prefix for the environment file and the steps directory (instead of
-   default path names).
-**stop** -- boolean
-   Stop running tests at the first failure.
-**default_tags** -- text
-   Define default tags when non are provided. See --tags for more
-   information.
-**tags** -- text (multiple allowed)
-   Only execute certain features or scenarios based on the tag
-   expression given. See below for how to code tag expressions in
-   configuration files.
-**show_timings** -- boolean
-   Don't print the time taken for each step.
-**show_timings** -- boolean
-   Print the time taken, in seconds, of each step after the step has
-   completed. This is the default behaviour. This switch is used to
-   override a configuration file setting.
-**verbose** -- boolean
-   Show the files and features loaded.
-**wip** -- boolean
-   Only run scenarios tagged with "wip". Additionally: use the "plain"
-   formatter, do not capture stdout or logging output and stop at the
-   first failure.
-**expand** -- boolean
-   Expand scenario outline tables in output.
-**lang** -- text
-   Use keywords for a language other than English.
+Configuration Parameters
+-----------------------------
+
+.. index::
+    single: configuration param; color
+
+.. describe:: color : bool
+
+    Use ANSI color escapes. This is the default behaviour. This switch is
+    used to override a configuration file setting.
+
+.. index::
+    single: configuration param; dry_run
+
+.. describe:: dry_run : bool
+
+    Invokes formatters without executing the steps.
+
+.. index::
+    single: configuration param; userdata_defines
+
+.. describe:: userdata_defines : sequence<text>
+
+    Define user-specific data for the config.userdata dictionary. Example:
+    -D foo=bar to store it in config.userdata["foo"].
+
+.. index::
+    single: configuration param; exclude_re
+
+.. describe:: exclude_re : text
+
+    Don't run feature files matching regular expression PATTERN.
+
+.. index::
+    single: configuration param; include_re
+
+.. describe:: include_re : text
+
+    Only run feature files matching regular expression PATTERN.
+
+.. index::
+    single: configuration param; junit
+
+.. describe:: junit : bool
+
+    Output JUnit-compatible reports. When junit is enabled, all stdout and
+    stderr will be redirected and dumped to the junit report,
+    regardless of the '--capture' and '--no-capture' options.
+
+.. index::
+    single: configuration param; junit_directory
+
+.. describe:: junit_directory : text
+
+    Directory in which to store JUnit reports.
+
+.. index::
+    single: configuration param; default_format
+
+.. describe:: default_format : text
+
+    Specify default formatter (default: pretty).
+
+.. index::
+    single: configuration param; format
+
+.. describe:: format : sequence<text>
+
+    Specify a formatter. If none is specified the default formatter is
+    used. Pass '--format help' to get a list of available formatters.
+
+.. index::
+    single: configuration param; steps_catalog
+
+.. describe:: steps_catalog : bool
+
+    Show a catalog of all available step definitions. SAME AS:
+    --format=steps.catalog --dry-run --no-summary -q
+
+.. index::
+    single: configuration param; scenario_outline_annotation_schema
+
+.. describe:: scenario_outline_annotation_schema : text
+
+    Specify name annotation schema for scenario outline (default="{name}
+    -- @{row.id} {examples.name}").
+
+.. index::
+    single: configuration param; show_skipped
+
+.. describe:: show_skipped : bool
+
+    Print skipped steps. This is the default behaviour. This switch is
+    used to override a configuration file setting.
+
+.. index::
+    single: configuration param; show_snippets
+
+.. describe:: show_snippets : bool
+
+    Print snippets for unimplemented steps. This is the default behaviour.
+    This switch is used to override a configuration file setting.
+
+.. index::
+    single: configuration param; show_multiline
+
+.. describe:: show_multiline : bool
+
+    Print multiline strings and tables under steps. This is the default
+    behaviour. This switch is used to override a configuration file
+    setting.
+
+.. index::
+    single: configuration param; name
+
+.. describe:: name : sequence<text>
+
+    Only execute the feature elements which match part of the given name.
+    If this option is given more than once, it will match against all
+    the given names.
+
+.. index::
+    single: configuration param; stdout_capture
+
+.. describe:: stdout_capture : bool
+
+    Capture stdout (any stdout output will be printed if there is a
+    failure.) This is the default behaviour. This switch is used to
+    override a configuration file setting.
+
+.. index::
+    single: configuration param; stderr_capture
+
+.. describe:: stderr_capture : bool
+
+    Capture stderr (any stderr output will be printed if there is a
+    failure.) This is the default behaviour. This switch is used to
+    override a configuration file setting.
+
+.. index::
+    single: configuration param; log_capture
+
+.. describe:: log_capture : bool
+
+    Capture logging. All logging during a step will be captured and
+    displayed in the event of a failure. This is the default
+    behaviour. This switch is used to override a configuration file
+    setting.
+
+.. index::
+    single: configuration param; logging_level
+
+.. describe:: logging_level : text
+
+    Specify a level to capture logging at. The default is INFO - capturing
+    everything.
+
+.. index::
+    single: configuration param; logging_format
+
+.. describe:: logging_format : text
+
+    Specify custom format to print statements. Uses the same format as
+    used by standard logging handlers. The default is
+    '%(levelname)s:%(name)s:%(message)s'.
+
+.. index::
+    single: configuration param; logging_datefmt
+
+.. describe:: logging_datefmt : text
+
+    Specify custom date/time format to print statements. Uses the same
+    format as used by standard logging handlers.
+
+.. index::
+    single: configuration param; logging_filter
+
+.. describe:: logging_filter : text
+
+    Specify which statements to filter in/out. By default, everything is
+    captured. If the output is too verbose, use this option to filter
+    out needless output. Example: ``logging_filter = foo`` will
+    capture statements issued ONLY to "foo" or "foo.what.ever.sub" but
+    not "foobar" or other logger. Specify multiple loggers with comma:
+    ``logging_filter = foo,bar,baz``. If any logger name is prefixed
+    with a minus, eg ``logging_filter = -foo``, it will be excluded
+    rather than included.
+
+.. index::
+    single: configuration param; logging_clear_handlers
+
+.. describe:: logging_clear_handlers : bool
+
+    Clear all other logging handlers.
+
+.. index::
+    single: configuration param; summary
+
+.. describe:: summary : bool
+
+    Display the summary at the end of the run.
+
+.. index::
+    single: configuration param; outfiles
+
+.. describe:: outfiles : sequence<text>
+
+    Write to specified file instead of stdout.
+
+.. index::
+    single: configuration param; paths
+
+.. describe:: paths : sequence<text>
+
+    Specify default feature paths, used when none are provided.
+
+.. index::
+    single: configuration param; quiet
+
+.. describe:: quiet : bool
+
+    Alias for --no-snippets --no-source.
+
+.. index::
+    single: configuration param; show_source
+
+.. describe:: show_source : bool
+
+    Print the file and line of the step definition with the steps. This is
+    the default behaviour. This switch is used to override a
+    configuration file setting.
+
+.. index::
+    single: configuration param; stage
+
+.. describe:: stage : text
+
+    Defines the current test stage. The test stage name is used as name
+    prefix for the environment file and the steps directory (instead
+    of default path names).
+
+.. index::
+    single: configuration param; stop
+
+.. describe:: stop : bool
+
+    Stop running tests at the first failure.
+
+.. index::
+    single: configuration param; default_tags
+
+.. describe:: default_tags : text
+
+    Define default tags when non are provided. See --tags for more
+    information.
+
+.. index::
+    single: configuration param; tags
+
+.. describe:: tags : sequence<text>
+
+    Only execute certain features or scenarios based on the tag expression
+    given. See below for how to code tag expressions in configuration
+    files.
+
+.. index::
+    single: configuration param; show_timings
+
+.. describe:: show_timings : bool
+
+    Print the time taken, in seconds, of each step after the step has
+    completed. This is the default behaviour. This switch is used to
+    override a configuration file setting.
+
+.. index::
+    single: configuration param; verbose
+
+.. describe:: verbose : bool
+
+    Show the files and features loaded.
+
+.. index::
+    single: configuration param; wip
+
+.. describe:: wip : bool
+
+    Only run scenarios tagged with "wip". Additionally: use the "plain"
+    formatter, do not capture stdout or logging output and stop at the
+    first failure.
+
+.. index::
+    single: configuration param; expand
+
+.. describe:: expand : bool
+
+    Expand scenario outline tables in output.
+
+.. index::
+    single: configuration param; lang
+
+.. describe:: lang : text
+
+    Use keywords for a language other than English.
+
 
 
