@@ -413,7 +413,7 @@ class HTMLFormatter(Formatter):
             embed.tail = u'    '
             ET.SubElement(embed, 'source',{
                           'src': u'data:%s;base64,%s' % (mime_type, base64.b64encode(data)),
-                          'type': '%s; codecs="vp8 vorbis"' % mime_type})
+                          'type': mime_type})
 
         if 'image/' in mime_type:
             if not caption:
