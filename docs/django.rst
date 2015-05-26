@@ -112,7 +112,7 @@ __ tutorial.html#python-step-implementations
 
         ### Take a TestRunner hostage.
         from django.test.simple import DjangoTestSuiteRunner
-        # We'll use thise later to frog-march Django through the motions
+        # We'll use this later to frog-march Django through the motions
         # of setting up and tearing down the test environment, including
         # test databases.
         context.runner = DjangoTestSuiteRunner()
