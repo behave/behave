@@ -31,7 +31,7 @@ def indent(text, prefix):
         # -- TEXT LINES: Without trailing new-line.
         newline = u"\n"
     # XXX return newline.join([prefix + six.text_type(line, errors="replace")
-    return newline.join([prefix + six.text_type(line)  for line in lines])
+    return newline.join([prefix + six.text_type(line) for line in lines])
 
 
 def compute_words_maxsize(words):
