@@ -117,6 +117,36 @@ Feature: Use Alternate Step Implementations for Each Test Stage
     But note that "I should better remove it again (TEARDOWN PHASE)"
     And I remove the environment variable "BEHAVE_STAGE"
 
+  Scenario: Use stage=develop and environment=staging
+    Given a file named "features/staging_environment.py" with:
+        """
+        def before_all(context):
+            context.use_staging_environment = True
+            context.use_develop_stage = True
+        """
+    And a file named "features/develop_steps/foo_steps.py" with:
+        """
+        from behave import step
+
+        @step('I do something in a test stage')
+        def step_do_something(context):
+            assert context.config.stage == "develop"
+            assert context.config.environment == "staging"
+            assert context.use_staging_environment
+            assert context.use_develop_stage
+        """
+    When I run "behave -c --stage=develop --environment=staging features/example1.feature"
+    Then it should pass with:
+        """
+        1 feature passed, 0 failed, 0 skipped
+        1 scenario passed, 0 failed, 0 skipped
+        1 step passed, 0 failed, 0 skipped, 0 undefined
+        """
+    And the command output should contain:
+        """
+        Scenario:                              # features/example1.feature:2
+          Given I do something in a test stage # features/develop_steps/foo_steps.py:3
+        """
 
   Scenario: Using an unknown stage
     When I run "behave -c --stage=unknown features/example1.feature"
