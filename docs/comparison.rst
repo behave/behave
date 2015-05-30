@@ -40,7 +40,7 @@ the basic functionality of `Cucumber`_. The main differences with behave are:
 
 The issues we had with Lettuce that stopped us using it were:
 
-* Lack of tags.
+* Lack of tags (which are supported by now, at least since v0.2.20).
 * The hooks functionality was patchy. For instance it was very hard to clean
   up the ``world`` variable between scenario outlines. Behave clears the
   scenario-level context between outlines automatically.

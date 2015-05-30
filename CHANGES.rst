@@ -11,6 +11,7 @@ GOALS:
 DOCUMENTATION:
 
   * FIX: cmdline/config-param doc-generator, avoid duplicated param entries (related to: #318)
+  * issue #317: Update comparison: lettuce tags (provided by: ramiabughazaleh)
   * pull #307: Typo in readme (provided by: dflock)
   * pull #305: behave.rst related fixes reapplied (provided by: bittner)
   * pull #292: Use title-cased keywords in tutorial scenario (provided by: neoblackcap)
