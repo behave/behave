@@ -21,7 +21,7 @@ Alternative Option
 ==================
 
 There is a module under development which provides a Django-specific
-TestRunner for Behave. Please take a look at django-behave`_.
+TestRunner for Behave. Please take a look at django-behave_.
 
 .. _django-behave:  https://github.com/django-behave/django-behave
 
