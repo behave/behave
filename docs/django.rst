@@ -1,6 +1,27 @@
-======================
-Django Testing Example
-======================
+=======================
+Django Test Integration
+=======================
+
+There are at least 2 projects that integrate Django and Behave.  Both use a
+`LiveServerTestCase`_ to spin up a runserver for the tests automatically, and
+shut it down when done with the test run.  The approach used for integrating
+Django, though, varies slightly.
+
+:pypi:`behave-django`
+    Integrates Django via setup code in your Behave ``environment.py`` file.
+    Behave tests are invoked with a dedicated ``python manage.py behave``
+    command by default.
+:pypi:`django-behave`
+    Provides a Django-specific TestRunner for Behave, which is set with the
+    `TEST_RUNNER`_ property in your settings.  Behave tests are run
+    with the usual ``python manage.py test <app_name>`` by default.
+
+.. _LiveServerTestCase: https://docs.djangoproject.com/en/1.8/topics/testing/tools/#liveservertestcase
+.. _TEST_RUNNER: https://docs.djangoproject.com/en/1.8/topics/testing/advanced/#using-different-testing-frameworks
+
+
+Manual Integration (Alternative)
+================================
 
 This example uses:
 
@@ -17,17 +38,8 @@ __ https://github.com/nathforge/django-mechanize/
 __ https://gist.github.com/eykd/1637965
 
 
-Alternative Option
-==================
-
-There is a module under development which provides a Django-specific
-TestRunner for Behave. Please take a look at django-behave`_.
-
-.. _django-behave:  https://github.com/django-behave/django-behave
-
-
 Implementation
-==============
+--------------
 
 `Features`__ file "features/browser.feature":
 
@@ -100,7 +112,7 @@ __ tutorial.html#python-step-implementations
 
         ### Take a TestRunner hostage.
         from django.test.simple import DjangoTestSuiteRunner
-        # We'll use thise later to frog-march Django through the motions
+        # We'll use this later to frog-march Django through the motions
         # of setting up and tearing down the test environment, including
         # test databases.
         context.runner = DjangoTestSuiteRunner()
