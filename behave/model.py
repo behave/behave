@@ -665,6 +665,7 @@ class Scenario(TagAndStatusStatement, Replayable):
     .. _`scenario`: gherkin.html#scenarios
     '''
     type = "scenario"
+    continue_after_failed_step = False
 
     def __init__(self, filename, line, keyword, name, tags=None, steps=None,
                  description=None):
@@ -880,7 +881,11 @@ class Scenario(TagAndStatusStatement, Replayable):
         for step in self.all_steps:
             if run_steps:
                 if not step.run(runner):
-                    run_steps = False
+                    # -- CASE: Failed or undefined step
+                    #    Optionally continue_after_failed_step if enabled.
+                    #    But disable run_steps after undefined-step.
+                    run_steps = (self.continue_after_failed_step and
+                                 step.status == "failed")
                     failed = True
                     runner.context._set_root_attribute('failed', True)
                     self._cached_status = 'failed'

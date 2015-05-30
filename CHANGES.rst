@@ -10,7 +10,7 @@ GOALS:
 
 DOCUMENTATION:
 
-  * FIX: cmdline/config-param doc-generator, avoid duplicated param entries (related to: #318) 
+  * FIX: cmdline/config-param doc-generator, avoid duplicated param entries (related to: #318)
   * pull #307: Typo in readme (provided by: dflock)
   * pull #305: behave.rst related fixes reapplied (provided by: bittner)
   * pull #292: Use title-cased keywords in tutorial scenario (provided by: neoblackcap)
@@ -19,6 +19,7 @@ DOCUMENTATION:
 ENHANCEMENTS:
 
   * issue #301: Support default tags in configfile
+  * issue #299: Runner can continue after a failed step (same as: #314)
 
 FIXED:
 
