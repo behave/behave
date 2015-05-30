@@ -2,26 +2,32 @@
 Django Test Integration
 =======================
 
-There are at least 2 projects that integrate Django and Behave.  Both use a
-`LiveServerTestCase`_ to spin up a runserver for the tests automatically, and
-shut it down when done with the test run.  The approach used for integrating
+There are now at least 2 projects that integrate `Django`_ and :pypi:`behave`.  
+Both use a `LiveServerTestCase`_ to spin up a runserver for the tests automatically, 
+and shut it down when done with the test run.  The approach used for integrating
 Django, though, varies slightly.
 
 :pypi:`behave-django`
     Integrates Django via setup code in your Behave ``environment.py`` file.
     Behave tests are invoked with a dedicated ``python manage.py behave``
     command by default.
+
 :pypi:`django-behave`
     Provides a Django-specific TestRunner for Behave, which is set with the
     `TEST_RUNNER`_ property in your settings.  Behave tests are run
     with the usual ``python manage.py test <app_name>`` by default.
 
+.. _Django: https://www.djangoproject.com
 .. _LiveServerTestCase: https://docs.djangoproject.com/en/1.8/topics/testing/tools/#liveservertestcase
 .. _TEST_RUNNER: https://docs.djangoproject.com/en/1.8/topics/testing/advanced/#using-different-testing-frameworks
 
 
-Manual Integration (Alternative)
+Manual Integration
 ================================
+
+The approach that is shown here provides a manual intergration.
+It serves as basic example how such a functionality can be provided.
+In general, it is probably better to use one of the projects above.
 
 This example uses:
 
@@ -45,14 +51,15 @@ Implementation
 
 .. code-block:: gherkin
 
- Feature: Demonstrate how to test Django with behave & mechanize
+    # -- FILE: features/browser.feature
+    Feature: Demonstrate how to test Django with behave & mechanize
 
-   Scenario: Logging in to our new Django site
+      Scenario: Logging in to our new Django site
 
-     Given a user
-     When I log in
-     Then I see my account summary
-      And I see a warm and welcoming message
+        Given a user
+         When I log in
+         Then I see my account summary
+          And I see a warm and welcoming message
 
 __ tutorial.html#feature-files
 
@@ -60,6 +67,7 @@ __ tutorial.html#feature-files
 
 .. code-block:: python
 
+    # -- FILE: features/steps/browser.py
     from behave import given, when, then
 
     @given('a user')
@@ -97,7 +105,8 @@ __ tutorial.html#python-step-implementations
 `Environment setup`__ in "features/environment.py":
 
 .. code-block:: python
-
+    
+    # -- FILE: features/environment.py
     import os
     # This is necessary for all installed apps to be recognized, for some reason.
     os.environ['DJANGO_SETTINGS_MODULE'] = 'myproject.settings'

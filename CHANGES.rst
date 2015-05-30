@@ -10,6 +10,7 @@ GOALS:
 
 DOCUMENTATION:
 
+  * pull #321: Update Django integration (provided by: bittner, contains: #315, #316)
   * FIX: cmdline/config-param doc-generator, avoid duplicated param entries (related to: #318)
   * issue #317: Update comparison: lettuce tags (provided by: ramiabughazaleh)
   * pull #307: Typo in readme (provided by: dflock)
