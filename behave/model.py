@@ -1467,7 +1467,7 @@ class Step(BasicStatement, Replayable):
             self.store_exception_context(e)
             if e.args:
                 if six.PY2:
-                    message = _text(e.message)
+                    message = _text(e.args[0])
                 else:
                     message = _text(e)
                 error = u'Assertion Failed: '+ message
