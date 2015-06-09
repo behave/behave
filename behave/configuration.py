@@ -292,6 +292,11 @@ options = [
                   file and the steps directory (instead of default path names).
                   """)),
 
+    (('-r', '--retry'),
+     dict(dest='retry_count',
+          help="""Retry failing features a number of times before declaring
+                  failure.""")),
+
     (('--stop',),
      dict(action='store_true',
           help='Stop running tests at the first failure.')),
@@ -506,6 +511,7 @@ class Configuration(object):
         summary=True,
         junit=False,
         stage=None,
+        retry_count=1,
         userdata={},
         # -- SPECIAL:
         default_format="pretty",    # -- Used when no formatters are configured.
