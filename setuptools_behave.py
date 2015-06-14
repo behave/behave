@@ -125,5 +125,6 @@ class behave_test(Command):
         if self.dry_run:
             cmd_options += " --dry-run"
         cmd_options += " --format=%s %s" % (self.format, path)
-        self.announce("CMDLINE: %s %s" % (behave, cmd_options), level=3)
-        return subprocess.call([sys.executable, behave] + shlex.split(cmd_options))
+        self.announce("CMDLINE: python %s %s" % (behave, cmd_options), level=3)
+        behave_cmd = shlex.split(behave)
+        return subprocess.call([sys.executable] + behave_cmd + shlex.split(cmd_options))
