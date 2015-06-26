@@ -279,7 +279,7 @@ class JUnitReporter(Reporter):
             text += _text(step.error_message)
             failure.append(CDATA(text))
             case.append(failure)
-        elif scenario.status in ('skipped', 'untested'):
+        elif scenario.status in ('skipped', 'untested') and self.config.show_skipped:
             report.counts_skipped += 1
             step = self.select_step_with_status('undefined', scenario)
             if step:
@@ -312,7 +312,8 @@ class JUnitReporter(Reporter):
             stderr.append(CDATA(text))
             case.append(stderr)
 
-        report.testcases.append(case)
+        if scenario.status != 'skipped' or self.config.show_skipped:
+            report.testcases.append(case)
 
     def _process_scenario_outline(self, scenario_outline, report):
         assert isinstance(scenario_outline, ScenarioOutline)
