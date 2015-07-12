@@ -862,6 +862,30 @@ Fonctionnalit\xe9: testing stuff
         eq_(feature.name, "testing stuff")
         eq_(feature.description, ["Oh my god, it's full of stuff..."])
 
+    def test_multiple_language_comments(self):
+        # -- LAST LANGUAGE is used.
+        doc = u"""
+# language: en
+# language: fr
+Fonctionnalit\xe9: testing stuff
+  Oh my god, it's full of stuff...
+"""
+
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "testing stuff")
+        eq_(feature.description, ["Oh my god, it's full of stuff..."])
+
+    def test_language_comment_wins_over_commandline(self):
+        doc = u"""
+# language: fr
+Fonctionnalit\xe9: testing stuff
+  Oh my god, it's full of stuff...
+"""
+
+        feature = parser.parse_feature(doc, language="de")
+        eq_(feature.name, "testing stuff")
+        eq_(feature.description, ["Oh my god, it's full of stuff..."])
+
     def test_whitespace_before_first_line_comment_still_sets_language(self):
         doc = u"""
 

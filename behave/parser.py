@@ -56,7 +56,7 @@ def parse_tags(text):
     # assert isinstance(text, unicode)
     if not text:
         return []
-    return Parser().parse_tags(text)
+    return Parser(variant='tags').parse_tags(text)
 
 
 class ParserError(Exception):
@@ -242,9 +242,10 @@ class Parser(object):
 
     def action(self, line):
         if line.strip().startswith('#') and not self.state == 'multiline':
-            if self.keywords or self.state != 'init' or self.tags:
+            if self.state != 'init' or self.tags or self.variant != 'feature':
                 return
 
+            # -- DETECT: language comment (at begin of feature file; state=init)
             line = line.strip()[1:].strip()
             if line.lstrip().lower().startswith('language:'):
                 language = line[9:].strip()
@@ -517,7 +518,7 @@ class Parser(object):
         """
         assert isinstance(text, six.text_type)
         if not self.language:
-            self.language = u"en"
+            self.language = DEFAULT_LANGUAGE
         self.reset()
         self.filename = filename
         self.statement = model.Scenario(filename, 0, u"scenario", u"")

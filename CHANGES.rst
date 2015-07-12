@@ -24,6 +24,10 @@ ENHANCEMENTS:
   * issue #301: Support default tags in configfile
   * issue #299: Runner can continue after a failed step (same as: #314)
 
+CHANGES:
+
+  * parser: language comment in feature file has higher priority than --lang option (related to: #334). 
+
 FIXED:
 
   * issue #319: python-version requirements in behave.whl for Python2.6 (submitted by: darkfoxprime)
