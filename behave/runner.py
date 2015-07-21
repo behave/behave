@@ -369,11 +369,12 @@ class Context(object):
         executed in turn just as though they were defined in a feature file.
 
         If the execute_steps call fails (either through error or failure
-        assertion) then the step invoking it will fail.
+        assertion) then the step invoking it will need to catch the resulting
+        exceptions.
+
+        Returns True if the steps executed correctly.
 
         ValueError will be raised if this is invoked outside a feature context.
-
-        Returns boolean False if the steps are not parseable, True otherwise.
         """
         assert isinstance(steps_text, six.text_type), "Steps must be unicode."
         if not self.feature:
