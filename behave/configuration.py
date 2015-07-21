@@ -370,6 +370,7 @@ raw_value_options = frozenset([
 
 def read_configuration(path):
     config = ConfigParser()
+    config.optionxform = str
     config.read(path)
     config_dir = os.path.dirname(path)
     result = {}
