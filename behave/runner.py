@@ -815,17 +815,15 @@ class Runner(object):
 
     def multiproc_fullreport(self):
         metrics = collections.defaultdict(int)
-        combined_features_from_scenarios_results = collections.defaultdict(
-            lambda: '')
-        junit_report_objs = [] 
+        combined_features_from_scenarios_results = collections.defaultdict(lambda: '')
+        junit_report_objs = []
         while not self.resultsqueue.empty():
             print "\n" * 3
             print "_" * 75
             jobresult = self.resultsqueue.get()
-            try:
-                print unicode(jobresult['reportinginfo'], errors='replace')
-            except Exception as e:
-                pass
+
+            print jobresult['reportinginfo']
+
             if 'junit_report' in jobresult:
                 junit_report_objs.append(jobresult['junit_report'])
             if jobresult['jobtype'] != 'feature':
