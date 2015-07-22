@@ -722,6 +722,7 @@ class Runner(object):
                 for reporter in self.config.reporters:
                     reporter.feature(current_job)
 
+            self.clean_buffer(writebuf)
             job_report_text = self.generatereport(proc_number,
             current_job, start_time, end_time, writebuf)
 
@@ -779,7 +780,7 @@ class Runner(object):
         try:
             writebuf.seek(0)
         except UnicodeDecodeError as e:
-            print "BUFFER: %s" % str(writebuf.buflist)
+            print "BUFFER: %s" % e
             writebuf.pos = 0
 
         try:
@@ -795,8 +796,7 @@ class Runner(object):
         else:
             for step in current_job.all_steps:
                 if step.status == 'skipped':
-                    writebuf.write(u"Skipped step because of previous error"
-                                   " - Scenario:{0}|step:{1}\n"
+                    writebuf.write(u"Skipped step because of previous error - Scenario:{0}|step:{1}\n"
                                    .format(current_job.name, step.name))
 
     def countscenariostatus(self, current_job, results):
@@ -868,7 +868,7 @@ class Runner(object):
 
     def generate_junit_report(self, cj, writebuf):
         report_obj = {} 
-        report_string = ""
+        report_string = u""
         report_obj['filebasename'] = cj.location.basename()[:-8]
         report_obj['feature_name'] = cj.feature.name        
         report_obj['status'] = cj.status
@@ -938,7 +938,7 @@ class Runner(object):
         
     def get_junit_error(self, cj, writebuf):
         failed_step = None
-        error_string = ""
+        error_string = u""
         error_string += '<error message="'
         for step in cj.steps:
             if step.status == 'failed':
@@ -992,19 +992,19 @@ class Runner(object):
                 feature_reports[uniquekey]['data'] += jro['report_string']
 
         for uniquekey in feature_reports.keys(): 
-            filedata = "<?xml version='1.0' encoding='UTF-8'?>\n"
+            filedata = u"<?xml version='1.0' encoding='UTF-8'?>\n"
             filedata += '<testsuite errors="'
-            filedata += str(len(re.findall\
+            filedata += unicode(len(re.findall\
             ("failed",feature_reports[uniquekey]['statuses'])))
             filedata += '" failures="0" name="'
             filedata += uniquekey+'" '
             filedata += 'skipped="'
-            filedata += str(len(re.findall\
+            filedata += unicode(len(re.findall\
             ("skipped",feature_reports[uniquekey]['statuses'])))
             filedata += '" tests="'
-            filedata += str(feature_reports[uniquekey]['total_scenarios'])
+            filedata += unicode(feature_reports[uniquekey]['total_scenarios'])
             filedata += '" time="'
-            filedata += str(round(feature_reports[uniquekey]['duration'],4))
+            filedata += unicode(round(feature_reports[uniquekey]['duration'],4))
             filedata += '">'
             filedata += "\n\n"
             filedata += feature_reports[uniquekey]['data']
@@ -1056,5 +1056,8 @@ class Runner(object):
         if self.config.log_capture:
             self.log_capture.abandon()
 
-
-
+    @staticmethod
+    def clean_buffer(buf):
+        for i in range(len(buf.buflist)):
+            if isinstance(buf.buflist[i], str):
+                buf.buflist[i] = unicode(buf.buflist[i], "utf-8")
