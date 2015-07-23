@@ -723,11 +723,12 @@ class Runner(object):
                     reporter.feature(current_job)
 
             self.clean_buffer(writebuf)
-            job_report_text = self.generatereport(proc_number,
-            current_job, start_time, end_time, writebuf)
+            job_report_text = self.generatereport(
+                proc_number, current_job,
+                start_time, end_time, writebuf)
 
             if job_report_text:
-                results = {}
+                results = dict()
                 results['steps_passed'] = 0
                 results['steps_failed'] = 0
                 results['steps_skipped'] = 0
