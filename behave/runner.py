@@ -2,7 +2,7 @@
 
 from __future__ import with_statement
 import contextlib
-import os.path
+import logging
 import StringIO
 import re
 import os
@@ -717,7 +717,7 @@ class Runner(object):
             end_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
             #sys.stderr.write(current_job.status[0]+" ")
-            print current_job.status[0]+" "
+            logging.info(current_job.status[0]+"\n")
 
             if current_job.type == 'feature':
                 for reporter in self.config.reporters:
@@ -828,7 +828,10 @@ class Runner(object):
             print "_" * 75
             jobresult = self.resultsqueue.get()
 
-            print jobresult['reportinginfo']
+            try:
+                print self.to_unicode(jobresult['reportinginfo'])
+            except Exception as e:
+                logging.info(e)
 
             if 'junit_report' in jobresult:
                 junit_report_objs.append(jobresult['junit_report'])
@@ -1068,4 +1071,4 @@ class Runner(object):
     @staticmethod
     def to_unicode(var):
         string = str(var) if isinstance(var, int) else var
-        return unicode(string, "utf-8") if isinstance(string, str) else string
+        return unicode(string, "utf-8",  errors='replace') if isinstance(string, str) else string
