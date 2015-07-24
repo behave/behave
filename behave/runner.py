@@ -716,7 +716,8 @@ class Runner(object):
             current_job.run(self)
             end_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
-            sys.stderr.write(current_job.status[0]+" ")
+            #sys.stderr.write(current_job.status[0]+" ")
+            print current_job.status[0]+" "
 
             if current_job.type == 'feature':
                 for reporter in self.config.reporters:
@@ -923,9 +924,9 @@ class Runner(object):
                 while q < len(loglines) and \
                         loglines[q] != "Captured stderr:\n":
                     substring += loglines[q]
-                    q = q + 1
+                    q += 1
                 break       
-            q = q + 1 
+            q += 1
 
         substring += "]]>\n</system-out>"
 
