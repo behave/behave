@@ -760,7 +760,7 @@ class Runner(object):
 
     def generatereport(self, proc_number, current_job, start_time, end_time, writebuf):
         if not writebuf.pos:
-            return ""
+            return u""
 
         reportheader = start_time + "|WORKER" + str(proc_number) + " START|" + \
         "status:" + current_job.status + "|" + current_job.filename + "\n"
@@ -781,13 +781,17 @@ class Runner(object):
         try:
             writebuf.seek(0)
         except UnicodeDecodeError as e:
-            print "BUFFER: %s" % e
-            writebuf.pos = 0
+            print "SEEK: %s" % e
+            return u""
 
+        header_unicode = self.to_unicode(reportheader)
+        footer_unicode = self.to_unicode(reportfooter)
         try:
-            result = reportheader + writebuf.read() + "\n" + reportfooter
+            result = header_unicode + writebuf.read() + u"\n" + footer_unicode
         except UnicodeError as err:
-            result = err.object[0:err.start]+err.object[err.end:len(err.object)-1]
+            print "HEADER ERROR: %s" % err
+            result = header_unicode + unicode(writebuf.read(), errors='replace') + u"\n" + footer_unicode
+            #result = err.object[0:err.start]+err.object[err.end:len(err.object)-1]
 
         return result
 
@@ -1055,8 +1059,12 @@ class Runner(object):
         if self.config.log_capture:
             self.log_capture.abandon()
 
-    @staticmethod
-    def clean_buffer(buf):
+    def clean_buffer(self, buf):
         for i in range(len(buf.buflist)):
-            if isinstance(buf.buflist[i], str):
-                buf.buflist[i] = unicode(buf.buflist[i], "utf-8")
+            buf.buflist[i] = self.to_unicode(buf.buflist[i])
+
+
+    @staticmethod
+    def to_unicode(var):
+        string = str(var) if isinstance(var, int) else var
+        return unicode(string, "utf-8") if isinstance(string, str) else string
