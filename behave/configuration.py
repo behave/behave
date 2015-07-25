@@ -342,7 +342,7 @@ options = [
 
     (('--lang',),
      dict(metavar='LANG',
-          help="Use keywords for a language other than English.")),
+          help="Use as default language for feature file parsing.")),
 
     (('--lang-list',),
      dict(action='store_true',
