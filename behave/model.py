@@ -1475,10 +1475,10 @@ class Step(BasicStatement, Replayable):
                 error = u'Assertion Failed: '+ message
             else:
                 # no assertion text; format the exception
-                error = _text(traceback.format_exc())
+                error = _text(traceback.format_exc(), 'utf-8')
         except Exception as e:
             self.status = 'failed'
-            error = _text(traceback.format_exc())
+            error = _text(traceback.format_exc(), 'utf-8')
             self.store_exception_context(e)
 
         self.duration = time.time() - start
