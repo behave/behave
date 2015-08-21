@@ -286,6 +286,12 @@ options = [
                   behaviour. This switch is used to override a
                   configuration file setting.""")),
 
+    (('--environment',),
+     dict(help="""Defines the current test environment.
+                  The test environment name is used as name prefix for the environment
+                  file.
+                  """)),
+
     (('--stage',),
      dict(help="""Defines the current test stage.
                   The test stage name is used as name prefix for the environment
@@ -505,6 +511,7 @@ class Configuration(object):
         steps_catalog=False,
         summary=True,
         junit=False,
+        environment=None,
         stage=None,
         userdata={},
         # -- SPECIAL:
@@ -620,10 +627,14 @@ class Configuration(object):
         if unknown_formats:
             parser.error("format=%s is unknown" % ", ".join(unknown_formats))
 
+        if self.environment is None:
+            # -- USE ENVIRONMENT-VARIABLE, if environment is undefined.
+            self.environment = os.environ.get("BEHAVE_ENVIRONMENT", None)
+
         if self.stage is None:
             # -- USE ENVIRONMENT-VARIABLE, if stage is undefined.
             self.stage = os.environ.get("BEHAVE_STAGE", None)
-        self.setup_stage(self.stage)
+        self.setup_stage(self.stage, self.environment)
         self.setup_model()
         self.setup_userdata()
 
@@ -719,7 +730,7 @@ class Configuration(object):
             name_schema = six.text_type(self.scenario_outline_annotation_schema)
             ScenarioOutline.annotation_schema = name_schema.strip()
 
-    def setup_stage(self, stage=None):
+    def setup_stage(self, stage=None, environment=None):
         """Setup the test stage that selects a different set of
         steps and environment implementations.
 
@@ -740,11 +751,17 @@ class Configuration(object):
         """
         steps_dir = "steps"
         environment_file = "environment.py"
-        if stage:
+
+        if stage is not None:
             # -- USE A TEST STAGE: Select different set of implementations.
             prefix = stage + "_"
             steps_dir = prefix + steps_dir
-            environment_file = prefix + environment_file
+            environment_file = prefix + "environment.py"
+
+        if environment is not None:
+            prefix = environment + "_"
+            environment_file = prefix + "environment.py"
+
         self.steps_dir = steps_dir
         self.environment_file = environment_file
 

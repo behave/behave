@@ -593,6 +593,11 @@ class Runner(ModelRunner):
             message = 'No %s directory in "%s"' % (steps_dir, base_dir)
             raise ConfigError(message)
 
+        if environment_file != "environment.py":
+            if not os.path.isfile(os.path.join(new_base_dir, environment_file)):
+                message = 'No environemnt file "%s"' % (environment_file)
+                raise ConfigError(message)
+
         base_dir = new_base_dir
         self.config.base_dir = base_dir
 
