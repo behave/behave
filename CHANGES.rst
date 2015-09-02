@@ -10,6 +10,7 @@ GOALS:
 
 DOCUMENTATION:
 
+  * issue #356: Clarify step implementation imports (submitted by: tomxtobin)
   * pull #327: Fix typo in Django doc (provided by: nikolas)
   * pull #321: Update Django integration (provided by: bittner, contains: #315, #316)
   * FIX: cmdline/config-param doc-generator, avoid duplicated param entries (related to: #318)
