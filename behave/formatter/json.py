@@ -17,7 +17,7 @@ class JSONFormatter(Formatter):
     name = 'json'
     description = 'JSON dump of test run'
     dumps_kwargs = {}
-    split_text_into_lines = True   # EXPERIMENT for better readability.
+    split_text_into_lines = False   # EXPERIMENT for better readability.
 
     json_number_types = six.integer_types + (float,)
     json_scalar_types = json_number_types + (six.text_type, bool, type(None))
@@ -119,6 +119,11 @@ class JSONFormatter(Formatter):
             'headings': table.headings,
             'rows': [ list(row) for row in table.rows ]
         }
+        # table_data = {
+        #     'headings': '\n'.join(map(str, table.headings)),
+        #     'rows': [ '\n'.join(map(str, list(row))) for row in table.rows ]
+        # }
+
         return table_data
 
     def examples(self, examples):
