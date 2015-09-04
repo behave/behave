@@ -43,10 +43,16 @@ class JSONFormatter(Formatter):
     def feature(self, feature):
         self.reset()
         self.current_feature = feature
+
+        tags_for_cucumber = []
+        for tagitem in feature.tags:
+            tags_for_cucumber.append({"name":"@"+tagitem})
+
         self.current_feature_data = {
             'keyword': feature.keyword,
             'name': feature.name,
-            'tags': list(feature.tags),
+            'tags': tags_for_cucumber,
+            'line': feature.line,
             'location': six.text_type(feature.location),
             'status': feature.status,
         }
@@ -71,11 +77,16 @@ class JSONFormatter(Formatter):
             self.step(step_)
 
     def scenario(self, scenario):
+        tags_for_cucumber = []
+        for tagitem in scenario.tags:
+            tags_for_cucumber.append({"name":"@"+tagitem})
+
         element = self.add_feature_element({
             'type': 'scenario',
             'keyword': scenario.keyword,
             'name': scenario.name,
-            'tags': scenario.tags,
+            'tags': tags_for_cucumber,
+            'line': scenario.line,
             'location': six.text_type(scenario.location),
             'steps': [],
         })
@@ -84,11 +95,16 @@ class JSONFormatter(Formatter):
         self._step_index = 0
 
     def scenario_outline(self, scenario_outline):
+        tags_for_cucumber = []
+        for tagitem in scenario_outline.tags:
+            tags_for_cucumber.append({"name":"@"+tagitem})
+
         element = self.add_feature_element({
             'type': 'scenario_outline',
             'keyword': scenario_outline.keyword,
             'name': scenario_outline.name,
-            'tags': scenario_outline.tags,
+            'tags': tags_for_cucumber,
+            'line': scenario_outline.line,
             'location': six.text_type(scenario_outline.location),
             'steps': [],
             'examples': [],
@@ -125,6 +141,7 @@ class JSONFormatter(Formatter):
             'step_type': step.step_type,
             'name': step.name,
             'location': six.text_type(step.location),
+            'line': step.line
         }
 
         if step.text:
