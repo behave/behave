@@ -58,7 +58,7 @@ class JSONFormatter(Formatter):
         }
         element = self.current_feature_data
         if feature.description:
-            element['description'] = feature.description
+            element['description'] = '\n'.join(map(str, feature.description))
 
     def background(self, background):
         element = self.add_feature_element({
@@ -91,7 +91,7 @@ class JSONFormatter(Formatter):
             'steps': [],
         })
         if scenario.description:
-            element['description'] = scenario.description
+            element['description'] = '\n'.join(map(str, scenario.description))
         self._step_index = 0
 
     def scenario_outline(self, scenario_outline):
@@ -110,7 +110,7 @@ class JSONFormatter(Formatter):
             'examples': [],
         })
         if scenario_outline.description:
-            element['description'] = scenario_outline.description
+            element['description'] = '\n'.join(map(str, scenario_outline.description))
         self._step_index = 0
 
     @classmethod
