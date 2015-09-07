@@ -23,7 +23,7 @@ Django, though, varies slightly.
 
 
 Manual Integration
-================================
+==================
 
 The approach that is shown here provides a manual integration.
 It serves as basic example how such a functionality can be provided.
