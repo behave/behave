@@ -8,8 +8,8 @@ and shut it down when done with the test run.  The approach used for integrating
 Django, though, varies slightly.
 
 :pypi:`behave-django`
-    Provides a dedicated management command.  Very easy integration (thanks to
-    monkey patching).  Behave tests are run with ``python manage.py behave``.
+    Provides a dedicated management command.  Easy, automatic integration (thanks
+    to monkey patching).  Behave tests are run with ``python manage.py behave``.
     Allows running tests against an existing database as a special feature.
 
 :pypi:`django-behave`
