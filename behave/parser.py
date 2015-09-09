@@ -4,7 +4,7 @@ from __future__ import absolute_import, with_statement
 from behave import model, i18n
 from behave.textutil import text as _text
 import six
-
+import re
 
 DEFAULT_LANGUAGE = 'en'
 
@@ -437,7 +437,11 @@ class Parser(object):
             self.state = 'steps'
             return self.action_steps(line)
 
-        cells = [cell.strip() for cell in line.split('|')[1:-1]]
+        cells = [
+            cell.replace(
+                "\\|", "|"
+            ).strip() for cell in re.split(r'(?<!\\)\|', line[1:-1])
+        ]
         if self.table is None:
             self.table = model.Table(cells, self.line)
         else:
