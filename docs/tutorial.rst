@@ -521,10 +521,10 @@ Another common use-case is to tag a scenario you're working on with
 
 Tag selection on the command-line may be combined:
 
-``--tags=wip,slow``
+-``--tags=wip,slow``
    This will select all the cases tagged *either* "wip" or "slow".
 
-``--tags=wip --tags=slow``
+-``--tags=wip --tags=slow``
    This will select all the cases tagged *both* "wip" and "slow".
 
 If a feature or scenario is tagged and then skipped because of a
