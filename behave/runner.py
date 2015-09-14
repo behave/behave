@@ -716,8 +716,8 @@ class Runner(object):
             current_job.run(self)
             end_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
-            #sys.stderr.write(current_job.status[0]+" ")
-            logging.info(current_job.status[0]+"\n")
+            sys.stderr.write(current_job.status[0]+" ")
+            #logging.info(current_job.status[0]+"\n")
 
             if current_job.type == 'feature':
                 for reporter in self.config.reporters:
