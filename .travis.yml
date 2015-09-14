@@ -1,11 +1,12 @@
 language: python
 sudo: false
 python:
-  - 2.6
-  - 2.7
-  - 3.3
-  - 3.4
-  - pypy
+  - "2.6"
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "pypy"
 
 cache:
   directories:
