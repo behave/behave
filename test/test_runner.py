@@ -176,8 +176,6 @@ class TestContext(unittest.TestCase):
         info = warning.args[0]
         assert info.startswith('behave runner'), "%r doesn't start with 'behave runner'" % info
         assert "'thing'" in info, '%r not in %r' % ("'thing'", info)
-        file = __file__.rsplit('.', 1)[0]
-        assert file in info, '%r not in %r' % (file, info)
 
     def test_setting_root_attribute_that_masks_existing_causes_warning(self):
         warns = []
@@ -202,8 +200,6 @@ class TestContext(unittest.TestCase):
         info = warning.args[0]
         assert info.startswith('behave runner'), "%r doesn't start with 'behave runner'" % info
         assert "'thing'" in info, '%r not in %r' % ("'thing'", info)
-        file = __file__.rsplit('.', 1)[0]
-        assert file in info, '%r not in %r' % (file, info)
 
     def test_context_deletable(self):
         eq_('thing' in self.context, False)
