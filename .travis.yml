@@ -5,6 +5,7 @@ python:
   - 2.7
   - 3.3
   - 3.4
+  - 3.5
   - pypy
 
 cache:
@@ -24,8 +25,8 @@ script:
 
 # -- USE: New container-based infrastructure for faster startup.
 #    http://docs.travis-ci.com/user/workers/container-based-infrastructure/
-#    
-# SEE ALSO: 
+#
+# SEE ALSO:
 #   http://lint.travis-ci.org
 #   http://docs.travis-ci.com/user/caching/
 #   http://docs.travis-ci.com/user/multi-os/  (Linux, MACOSX)

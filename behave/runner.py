@@ -22,7 +22,7 @@ class ContextMaskWarning(UserWarning):
     '''Raised if a context variable is being overwritten in some situations.
 
     If the variable was originally set by user code then this will be raised if
-    *behave* overwites the value.
+    *behave* overwrites the value.
 
     If the variable was originally set by *behave* then this will be raised if
     user code overwites the value.
