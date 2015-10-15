@@ -1,7 +1,7 @@
 from __future__ import absolute_import, with_statement
 
 import re
-import parse
+from parse_type import parse
 from parse_type import cfparse
 from behave import model
 
