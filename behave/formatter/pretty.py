@@ -68,7 +68,6 @@ class PrettyFormatter(Formatter):
         self.stream = self.open()
         isatty = getattr(self.stream, "isatty", lambda: True)
         stream_supports_colors = isatty()
-        print 'config.force_color', config.force_color
         self.monochrome = not config.color or not stream_supports_colors
         if config.force_color:
             self.monochrome = False
