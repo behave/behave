@@ -15,6 +15,18 @@ import time
 import traceback
 
 
+class DummyCtxManager(object):
+    def __init__(self, context, scenario):
+        self.context = context
+        self.scenario = scenario
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        pass
+
+
 class Argument(object):
     '''An argument found in a *feature file* step name and extracted using
     step decorator `parameters`_.
@@ -871,59 +883,67 @@ class Scenario(TagAndStatusStatement, Replayable):
             # Hook may call scenario.mark_skipped() to exclude it.
             run_scenario = run_steps = self.should_run()
 
-        runner.setup_capture()
-
-        if run_scenario or runner.config.show_skipped:
-            for step in self:
-                for formatter in runner.formatters:
-                    formatter.step(step)
-
-        for step in self.all_steps:
-            if run_steps:
-                if not step.run(runner):
-                    # -- CASE: Failed or undefined step
-                    #    Optionally continue_after_failed_step if enabled.
-                    #    But disable run_steps after undefined-step.
-                    run_steps = (self.continue_after_failed_step and
-                                 step.status == "failed")
-                    failed = True
-                    runner.context._set_root_attribute('failed', True)
-                    self._cached_status = 'failed'
-                elif self.should_skip:
-                    # -- CASE: Step skipped remaining scenario.
-                    # assert self.status == "skipped", "Status: %s" % self.status
-                    run_steps = False
-            elif failed or dry_run_scenario:
-                # -- SKIP STEPS: After failure/undefined-step occurred.
-                # BUT: Detect all remaining undefined steps.
-                step.status = 'skipped'
-                if dry_run_scenario:
-                    step.status = 'untested'
-                found_step = step_registry.registry.find_match(step)
-                if not found_step:
-                    step.status = 'undefined'
-                    runner.undefined_steps.append(step)
+        def ctx_manager_factory():
+            if 'AroundScenario' in runner.hooks:
+                return runner.hooks['AroundScenario'](runner.context, self)
             else:
-                # -- SKIP STEPS: For disabled scenario.
-                # CASES:
-                #   * Undefined steps are not detected (by intention).
-                #   * Step skipped remaining scenario.
-                step.status = 'skipped'
+                return DummyCtxManager(runner.context, self)
 
-        if not run_scenario:
-            # -- SPECIAL CASE: Scenario without steps.
-            self._cached_status = 'skipped'
+        with ctx_manager_factory():
+            runner.setup_capture()
 
-        # Attach the stdout and stderr if generate Junit report
-        if runner.config.junit:
-            self.stdout = runner.context.stdout_capture.getvalue()
-            self.stderr = runner.context.stderr_capture.getvalue()
-        runner.teardown_capture()
+            if run_scenario or runner.config.show_skipped:
+                for step in self:
+                    for formatter in runner.formatters:
+                        formatter.step(step)
 
-        if hooks_called:
-            runner.run_hook('after_scenario', runner.context, self)
-            for tag in self.tags:
-                runner.run_hook('after_tag', runner.context, tag)
+            for step in self.all_steps:
+                if run_steps:
+                    if not step.run(runner):
+                        # -- CASE: Failed or undefined step
+                        #    Optionally continue_after_failed_step if enabled.
+                        #    But disable run_steps after undefined-step.
+                        run_steps = (self.continue_after_failed_step and
+                                     step.status == "failed")
+                        failed = True
+                        runner.context._set_root_attribute('failed', True)
+                        self._cached_status = 'failed'
+                    elif self.should_skip:
+                        # -- CASE: Step skipped remaining scenario.
+                        # assert self.status == "skipped", "Status: %s"
+                        #                                           self.status
+                        run_steps = False
+                elif failed or dry_run_scenario:
+                    # -- SKIP STEPS: After failure/undefined-step occurred.
+                    # BUT: Detect all remaining undefined steps.
+                    step.status = 'skipped'
+                    if dry_run_scenario:
+                        step.status = 'untested'
+                    found_step = step_registry.registry.find_match(step)
+                    if not found_step:
+                        step.status = 'undefined'
+                        runner.undefined_steps.append(step)
+                else:
+                    # -- SKIP STEPS: For disabled scenario.
+                    # CASES:
+                    #   * Undefined steps are not detected (by intention).
+                    #   * Step skipped remaining scenario.
+                    step.status = 'skipped'
+
+            if not run_scenario:
+                # -- SPECIAL CASE: Scenario without steps.
+                self._cached_status = 'skipped'
+
+            # Attach the stdout and stderr if generate Junit report
+            if runner.config.junit:
+                self.stdout = runner.context.stdout_capture.getvalue()
+                self.stderr = runner.context.stderr_capture.getvalue()
+            runner.teardown_capture()
+
+            if hooks_called:
+                runner.run_hook('after_scenario', runner.context, self)
+                for tag in self.tags:
+                    runner.run_hook('after_tag', runner.context, tag)
 
         runner.context._pop()
         return failed
