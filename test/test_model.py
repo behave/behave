@@ -22,6 +22,7 @@ class TestFeatureRun(unittest.TestCase):
     def setUp(self):
         self.runner = Mock()
         self.runner.feature.tags = []
+        self.runner.hooks = {}
         self.config = self.runner.config = Mock()
         self.context = self.runner.context = Mock()
         self.formatters = self.runner.formatters = [Mock()]
@@ -135,6 +136,7 @@ class TestScenarioRun(unittest.TestCase):
     def setUp(self):
         self.runner = Mock()
         self.runner.feature.tags = []
+        self.runner.hooks = {}
         self.config = self.runner.config = Mock()
         self.config.dry_run = False
         self.context = self.runner.context = Mock()
@@ -261,6 +263,29 @@ class TestScenarioRun(unittest.TestCase):
         self.config.name_re = Configuration.build_name_re(self.config.name)
 
         assert scenario.should_run_with_name_select(self.config)
+
+    def test_scenario_around_hook(self):
+        class CtxMgr(object):
+            has_entered = has_exited = False
+
+            def __init__(self, *a, **kw):
+                pass
+
+            def __enter__(self):
+                CtxMgr.has_entered = True
+
+            def __exit__(self, *a, **kw):
+                CtxMgr.has_exited = True
+
+        self.runner.hooks['AroundScenario'] = CtxMgr
+
+        scenario_name = u"surrounded_scenario"
+        scenario = model.Scenario("foo.feature", 17, u"Scenario", scenario_name)
+
+        scenario.run(self.runner)
+
+        assert (CtxMgr.has_exited & CtxMgr.has_exited) == True
+
 
 class TestScenarioOutline(unittest.TestCase):
     def test_run_calls_run_on_each_generated_scenario(self):
