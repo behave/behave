@@ -527,6 +527,7 @@ class Feature(TagAndStatusStatement, Replayable):
                     # -- FAIL-EARLY: Stop after first failure.
                     break
 
+        self._cached_status = None  # -- ENFORCE: compute_status() after run.
         if not self.scenarios and not run_feature:
             # -- SPECIAL CASE: Feature without scenarios
             self._cached_status = 'skipped'
@@ -910,6 +911,7 @@ class Scenario(TagAndStatusStatement, Replayable):
                 #   * Step skipped remaining scenario.
                 step.status = 'skipped'
 
+        self._cached_status = None  # -- ENFORCE: compute_status() after run.
         if not run_scenario:
             # -- SPECIAL CASE: Scenario without steps.
             self._cached_status = 'skipped'
@@ -1178,7 +1180,7 @@ class ScenarioOutline(Scenario):
                 return scenario_status
             elif scenario_status == "skipped":
                 skipped_count += 1
-        if skipped_count == len(self._scenarios):
+        if skipped_count > 0 and skipped_count == len(self._scenarios):
             # -- ALL SKIPPED:
             return "skipped"
         # -- OTHERWISE: ALL PASSED
