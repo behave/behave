@@ -11,6 +11,7 @@ Feature: Help Formatter
     And the command output should contain:
       """
       Available formatters:
+        html           Very basic HTML formatter
         json           JSON dump of test run
         json.pretty    JSON dump of test run (human readable)
         null           Provides formatter that does not output anything.
