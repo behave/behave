@@ -94,6 +94,11 @@ options = [
           help="""Don't run feature files matching regular expression
                   PATTERN.""")),
 
+    (('--force-color',),
+     dict(action='store_true', dest='force_color',
+          help="""Force using ANSI color escapes. This is useful mostly in conjunction
+                  with other software such as Jenkins.""")),
+
     (('-i', '--include'),
      dict(metavar="PATTERN", dest='include_re',
           help="Only run feature files matching regular expression PATTERN.")),
@@ -495,6 +500,7 @@ class Configuration(object):
         show_snippets=True,
         show_skipped=True,
         dry_run=False,
+        force_color=False,
         show_source=True,
         show_timings=True,
         stdout_capture=True,
