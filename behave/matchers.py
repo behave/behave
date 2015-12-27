@@ -68,7 +68,7 @@ class Match(Replayable):
             else:
                 args.append(arg.value)
 
-        with context.user_mode():
+        with context.use_with_user_mode():
             self.func(context, *args, **kwargs)
 
     @staticmethod

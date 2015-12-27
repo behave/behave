@@ -123,7 +123,7 @@ class Context(object):
     You may use the "in" operator to test whether a certain value has been set
     on the context, for example:
 
-        'feature' in context
+        "feature" in context
 
     checks whether there is a "feature" value in the context.
 
@@ -134,17 +134,17 @@ class Context(object):
     .. _`configuration file settion names`: behave.html#configuration-files
     """
     # pylint: disable=too-many-instance-attributes
-    BEHAVE = 'behave'
-    USER = 'user'
+    BEHAVE = "behave"
+    USER = "user"
 
     def __init__(self, runner):
         self._runner = weakref.proxy(runner)
         self._config = runner.config
         d = self._root = {
-            'aborted': False,
-            'failed': False,
-            'config': self._config,
-            'active_outline': None,
+            "aborted": False,
+            "failed": False,
+            "config": self._config,
+            "active_outline": None,
         }
         self._stack = [d]
         self._record = {}
@@ -164,42 +164,47 @@ class Context(object):
     def _pop(self):
         self._stack.pop(0)
 
-    @contextlib.contextmanager
+
+    def _use_with_behave_mode(self):
+        """Provides a context manager for using the context in BEHAVE mode."""
+        return use_context_with_mode(self, Context.BEHAVE)
+
+    def use_with_user_mode(self):
+        """Provides a context manager for using the context in USER mode."""
+        return use_context_with_mode(self, Context.USER)
+
     def user_mode(self):
-        try:
-            self._mode = self.USER
-            yield
-        finally:
-            # -- NOTE: Otherwise skipped if AssertionError/Exception is raised.
-            self._mode = self.BEHAVE
+        warnings.warn("Use 'use_with_user_mode()' instead",
+                  PendingDeprecationWarning, stacklevel=2)
+        return self.use_with_user_mode()
 
     def _set_root_attribute(self, attr, value):
-        for frame in self.__dict__['_stack']:
-            if frame is self.__dict__['_root']:
+        for frame in self.__dict__["_stack"]:
+            if frame is self.__dict__["_root"]:
                 continue
             if attr in frame:
-                record = self.__dict__['_record'][attr]
+                record = self.__dict__["_record"][attr]
                 params = {
-                    'attr': attr,
-                    'filename': record[0],
-                    'line': record[1],
-                    'function': record[3],
+                    "attr": attr,
+                    "filename": record[0],
+                    "line": record[1],
+                    "function": record[3],
                 }
                 self._emit_warning(attr, params)
 
-        self.__dict__['_root'][attr] = value
+        self.__dict__["_root"][attr] = value
         if attr not in self._origin:
             self._origin[attr] = self._mode
 
     def _emit_warning(self, attr, params):
-        msg = ''
+        msg = ""
         if self._mode is self.BEHAVE and self._origin[attr] is not self.BEHAVE:
             msg = "behave runner is masking context attribute '%(attr)s' " \
-                  "orignally set in %(function)s (%(filename)s:%(line)s)"
+                  "originally set in %(function)s (%(filename)s:%(line)s)"
         elif self._mode is self.USER:
             if self._origin[attr] is not self.USER:
                 msg = "user code is masking context attribute '%(attr)s' " \
-                      "orignally set by behave"
+                      "originally set by behave"
             elif self._config.verbose:
                 msg = "user code is masking context attribute " \
                     "'%(attr)s'; see the tutorial for what this means"
@@ -209,11 +214,11 @@ class Context(object):
 
     def _dump(self):
         for level, frame in enumerate(self._stack):
-            print('Level %d' % level)
+            print("Level %d" % level)
             print(repr(frame))
 
     def __getattr__(self, attr):
-        if attr[0] == '_':
+        if attr[0] == "_":
             return self.__dict__[attr]
         for frame in self._stack:
             if attr in frame:
@@ -223,7 +228,7 @@ class Context(object):
         raise AttributeError(msg)
 
     def __setattr__(self, attr, value):
-        if attr[0] == '_':
+        if attr[0] == "_":
             self.__dict__[attr] = value
             return
 
@@ -231,10 +236,10 @@ class Context(object):
             if attr in frame:
                 record = self._record[attr]
                 params = {
-                    'attr': attr,
-                    'filename': record[0],
-                    'line': record[1],
-                    'function': record[3],
+                    "attr": attr,
+                    "filename": record[0],
+                    "line": record[1],
+                    "function": record[3],
                 }
                 self._emit_warning(attr, params)
 
@@ -256,7 +261,7 @@ class Context(object):
             raise AttributeError(msg)
 
     def __contains__(self, attr):
-        if attr[0] == '_':
+        if attr[0] == "_":
             return attr in self.__dict__
         for frame in self._stack:
             if attr in frame:
@@ -276,29 +281,58 @@ class Context(object):
         """
         assert isinstance(steps_text, six.text_type), "Steps must be unicode."
         if not self.feature:
-            raise ValueError('execute_steps() called outside of feature')
+            raise ValueError("execute_steps() called outside of feature")
 
         # -- PREPARE: Save original context data for current step.
         # Needed if step definition that called this method uses .table/.text
         original_table = getattr(self, "table", None)
         original_text = getattr(self, "text", None)
 
-        self.feature.parser.variant = 'steps'
+        self.feature.parser.variant = "steps"
         steps = self.feature.parser.parse_steps(steps_text)
-        for step in steps:
-            passed = step.run(self._runner, quiet=True, capture=False)
-            if not passed:
-                # -- ISSUE #96: Provide more substep info to diagnose problem.
-                step_line = u"%s %s" % (step.keyword, step.name)
-                message = "%s SUB-STEP: %s" % (step.status.upper(), step_line)
-                if step.error_message:
-                    message += "\nSubstep info: %s" % step.error_message
-                assert False, message
+        with self._use_with_behave_mode():
+            for step in steps:
+                passed = step.run(self._runner, quiet=True, capture=False)
+                if not passed:
+                    # -- ISSUE #96: Provide more substep info to diagnose problem.
+                    step_line = u"%s %s" % (step.keyword, step.name)
+                    message = "%s SUB-STEP: %s" % (step.status.upper(), step_line)
+                    if step.error_message:
+                        message += "\nSubstep info: %s" % step.error_message
+                    assert False, message
 
-        # -- FINALLY: Restore original context data for current step.
-        self.table = original_table
-        self.text = original_text
+            # -- FINALLY: Restore original context data for current step.
+            self.table = original_table
+            self.text = original_text
         return True
+
+
+@contextlib.contextmanager
+def use_context_with_mode(context, mode):
+    """Switch context to BEHAVE or USER mode.
+    Provides a context manager for switching between the two context modes.
+
+    .. sourcecode:: python
+
+        context = Context()
+        with use_context_with_mode(context, Context.BEHAVE):
+            ...     # Do something
+        # -- POSTCONDITION: Original context._mode is restored.
+
+    :param context:  Context object to use.
+    :param mode:     Mode to apply to context object.
+    """
+    # pylint: disable=protected-access
+    assert mode in (Context.BEHAVE, Context.USER)
+    current_mode = context._mode
+    try:
+        context._mode = mode
+        yield
+    finally:
+        # -- RESTORE: Initial current_mode
+        #    Even if an AssertionError/Exception is raised.
+        context._mode = current_mode
+
 
 
 def exec_file(filename, globals_=None, locals_=None):
@@ -306,13 +340,13 @@ def exec_file(filename, globals_=None, locals_=None):
         globals_ = {}
     if locals_ is None:
         locals_ = globals_
-    locals_['__file__'] = filename
+    locals_["__file__"] = filename
     with open(filename) as f:
         # pylint: disable=exec-used
         # -- FIX issue #80: exec(f.read(), globals_, locals_)
         # try:
         filename2 = os.path.relpath(filename, os.getcwd())
-        code = compile(f.read(), filename2, 'exec')
+        code = compile(f.read(), filename2, "exec")
         exec(code, globals_, locals_)
         # except Exception as e:
         #     e_text = _text(e)
@@ -408,7 +442,7 @@ class ModelRunner(object):
     def _set_aborted(self, value):
         # pylint: disable=protected-access
         assert self.context
-        self.context._set_root_attribute('aborted', bool(value))
+        self.context._set_root_attribute("aborted", bool(value))
 
     aborted = property(_get_aborted, _set_aborted,
                        doc="Indicates that test run is aborted by the user.")
@@ -486,7 +520,7 @@ class ModelRunner(object):
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
         context = self.context
         self.setup_capture()
-        self.run_hook('before_all', context)
+        self.run_hook("before_all", context)
 
         run_feature = not self.aborted
         failed_count = 0
@@ -519,7 +553,7 @@ class ModelRunner(object):
             print("\nABORTED: By user.")
         for formatter in self.formatters:
             formatter.close()
-        self.run_hook('after_all', self.context)
+        self.run_hook("after_all", self.context)
         for reporter in self.config.reporters:
             reporter.end()
         # if self.aborted:
@@ -555,14 +589,14 @@ class Runner(ModelRunner):
         # pylint: disable=too-many-branches, too-many-statements
         if self.config.paths:
             if self.config.verbose:
-                print('Supplied path:', \
-                      ', '.join('"%s"' % path for path in self.config.paths))
+                print("Supplied path:", \
+                      ", ".join('"%s"' % path for path in self.config.paths))
             first_path = self.config.paths[0]
             if hasattr(first_path, "filename"):
                 # -- BETTER: isinstance(first_path, FileLocation):
                 first_path = first_path.filename
             base_dir = first_path
-            if base_dir.startswith('@'):
+            if base_dir.startswith("@"):
                 # -- USE: behave @features.txt
                 base_dir = base_dir[1:]
                 file_locations = self.feature_locations()
@@ -573,14 +607,14 @@ class Runner(ModelRunner):
             # supplied path might be to a feature file
             if os.path.isfile(base_dir):
                 if self.config.verbose:
-                    print('Primary path is to a file so using its directory')
+                    print("Primary path is to a file so using its directory")
                 base_dir = os.path.dirname(base_dir)
         else:
             if self.config.verbose:
                 print('Using default path "./features"')
-            base_dir = os.path.abspath('features')
+            base_dir = os.path.abspath("features")
 
-        # Get the root. This is not guaranteed to be '/' because Windows.
+        # Get the root. This is not guaranteed to be "/" because Windows.
         root_dir = path_getrootdir(base_dir)
         new_base_dir = base_dir
         steps_dir = self.config.steps_dir
@@ -588,7 +622,7 @@ class Runner(ModelRunner):
 
         while True:
             if self.config.verbose:
-                print('Trying base directory:', new_base_dir)
+                print("Trying base directory:", new_base_dir)
 
             if os.path.isdir(os.path.join(new_base_dir, steps_dir)):
                 break
@@ -616,7 +650,7 @@ class Runner(ModelRunner):
         self.config.base_dir = base_dir
 
         for dirpath, dirnames, filenames in os.walk(base_dir):
-            if [fn for fn in filenames if fn.endswith('.feature')]:
+            if [fn for fn in filenames if fn.endswith(".feature")]:
                 break
         else:
             if self.config.verbose:
@@ -650,15 +684,15 @@ class Runner(ModelRunner):
         if os.path.exists(hooks_path):
             exec_file(hooks_path, self.hooks)
 
-        if 'before_all' not in self.hooks:
-            self.hooks['before_all'] = self.before_all_default_hook
+        if "before_all" not in self.hooks:
+            self.hooks["before_all"] = self.before_all_default_hook
 
     def load_step_definitions(self, extra_step_paths=None):
         if extra_step_paths is None:
             extra_step_paths = []
         step_globals = {
-            'use_step_matcher': matchers.use_step_matcher,
-            'step_matcher':     matchers.step_matcher, # -- DEPRECATING
+            "use_step_matcher": matchers.use_step_matcher,
+            "step_matcher":     matchers.step_matcher, # -- DEPRECATING
         }
         setup_step_decorators(step_globals)
 
@@ -670,7 +704,7 @@ class Runner(ModelRunner):
             default_matcher = matchers.current_matcher
             for path in paths:
                 for name in sorted(os.listdir(path)):
-                    if name.endswith('.py'):
+                    if name.endswith(".py"):
                         # -- LOAD STEP DEFINITION:
                         # Reset to default matcher after each step-definition.
                         # A step-definition may change the matcher 0..N times.
@@ -702,7 +736,7 @@ class Runner(ModelRunner):
 
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
         # self.setup_capture()
-        # self.run_hook('before_all', self.context)
+        # self.run_hook("before_all", self.context)
 
         # -- STEP: Parse all feature files (by using their file location).
         feature_locations = [filename for filename in self.feature_locations()
