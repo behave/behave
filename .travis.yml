@@ -5,15 +5,16 @@ python:
   - "2.7"
   - "3.3"
   - "3.4"
-  - "3.5"
   - "3.5.1"
   - "nightly"
   - "pypy"
 
+# -- AVOID:  python: "3.5" => python 3.5.0
+# Seems to have a problem with unit tests in exception traceback.
+# Behaviour is fixed in python 3.5.1
+
 matrix:
   allow_failures:
-    - python: "3.5"
-    - python: "3.5.1"
     - python: "nightly"
 
 cache:
