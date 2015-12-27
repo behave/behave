@@ -49,7 +49,7 @@ You may see the same information presented below at any time using ``behave
 
     Output JUnit-compatible reports. When junit is enabled, all stdout and
     stderr will be redirected and dumped to the junit report,
-    regardless of the '--capture' and '--no-capture' options.
+    regardless of the "--capture" and "--no-capture" options.
 
 .. option:: --junit-directory
 
@@ -58,7 +58,7 @@ You may see the same information presented below at any time using ``behave
 .. option:: -f, --format
 
     Specify a formatter. If none is specified the default formatter is
-    used. Pass '--format help' to get a list of available formatters.
+    used. Pass "--format help" to get a list of available formatters.
 
 .. option:: --steps-catalog
 
@@ -139,7 +139,7 @@ You may see the same information presented below at any time using ``behave
 
     Specify custom format to print statements. Uses the same format as
     used by standard logging handlers. The default is
-    '%(levelname)s:%(name)s:%(message)s'.
+    "%(levelname)s:%(name)s:%(message)s".
 
 .. option:: --logging-datefmt
 
@@ -199,7 +199,7 @@ You may see the same information presented below at any time using ``behave
 .. option:: -t, --tags
 
     Only execute features or scenarios with tags matching TAG_EXPRESSION.
-    Pass '--tags-help' for more information.
+    Pass "--tags-help" for more information.
 
 .. option:: -T, --no-timings
 
@@ -379,7 +379,7 @@ Configuration Parameters
 
     Output JUnit-compatible reports. When junit is enabled, all stdout and
     stderr will be redirected and dumped to the junit report,
-    regardless of the '--capture' and '--no-capture' options.
+    regardless of the "--capture" and "--no-capture" options.
 
 .. index::
     single: configuration param; junit_directory
@@ -401,7 +401,7 @@ Configuration Parameters
 .. describe:: format : sequence<text>
 
     Specify a formatter. If none is specified the default formatter is
-    used. Pass '--format help' to get a list of available formatters.
+    used. Pass "--format help" to get a list of available formatters.
 
 .. index::
     single: configuration param; steps_catalog
@@ -496,7 +496,7 @@ Configuration Parameters
 
     Specify custom format to print statements. Uses the same format as
     used by standard logging handlers. The default is
-    '%(levelname)s:%(name)s:%(message)s'.
+    "%(levelname)s:%(name)s:%(message)s".
 
 .. index::
     single: configuration param; logging_datefmt

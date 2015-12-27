@@ -84,7 +84,7 @@ Feature: Parsing a Feature File without a Feature or with several Features
       Then it should fail with:
         """
         Failed to parse "{__WORKDIR__}/features/only_text.feature":
-        Parser failure in state init, at line 1: 'This File: Contains only text without keywords.'
+        Parser failure in state init, at line 1: "This File: Contains only text without keywords."
         REASON: No feature found.
         """
 
@@ -103,7 +103,7 @@ Feature: Parsing a Feature File without a Feature or with several Features
       Then it should fail with:
         """
         Failed to parse "{__WORKDIR__}/features/naked_scenario_only.feature":
-        Parser failure in state init, at line 1: 'Scenario:'
+        Parser failure in state init, at line 1: "Scenario:"
         REASON: Scenario may not occur before Feature.
         """
 
@@ -139,6 +139,6 @@ Feature: Parsing a Feature File without a Feature or with several Features
           Then it should fail with:
             """
             Failed to parse "{__WORKDIR__}/features/two_features.feature":
-            Parser failure in state steps, at line 7: 'Feature: F2'
+            Parser failure in state steps, at line 7: "Feature: F2"
             REASON: Multiple features in one file are not supported.
             """

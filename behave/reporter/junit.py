@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: UTF-8 -*-
 
 from __future__ import absolute_import
 import os.path
@@ -10,7 +10,6 @@ from behave.model import Scenario, ScenarioOutline, Step
 from behave.formatter import ansi_escapes
 from behave.model_describe import ModelDescriptor
 from behave.textutil import indent, make_indentation, text as _text
-import six
 
 
 def CDATA(text=None):
