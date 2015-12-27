@@ -18,11 +18,12 @@ cache:
 
 install:
   - travis_retry pip install -q mock nose PyHamcrest
+  - travis_retry pip install -q -U pytest
   - python setup.py -q install
 
 script:
   - python --version
-  - py.test
+  - py.test test
   - behave -f progress --junit --tags=~@xfail features/
   - behave -f progress --junit --tags=~@xfail tools/test-features/
   - behave -f progress --junit --tags=~@xfail issue.features/
