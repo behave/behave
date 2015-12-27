@@ -227,7 +227,7 @@ class TestContext(unittest.TestCase):
         warnings.showwarning = old_showwarning
 
         print(repr(warns))
-        assert warns, "warns is empty!"
+        assert warns, "OOPS: warns is empty, but expected non-empty"
         warning = warns[0]
         assert isinstance(warning, runner.ContextMaskWarning), "warning is not a ContextMaskWarning"
         info = warning.args[0]
