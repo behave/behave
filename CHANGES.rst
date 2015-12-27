@@ -10,6 +10,10 @@ GOALS:
 
 DOCUMENTATION:
 
+  * pull #379: Correct wording in README.rst (provided by: franklinchou)
+  * pull #362: docs/tutorial.rst: fixed non-monospace font (provided by: spacediver)
+  * pull #339: Adapt wording in install.rst (provided by: charleswhchan)
+  * pull #338: docs/philosophy.rst: Correct to uppercase in example (provided by: charleswhchan)
   * pull #327: Fix typo in Django doc (provided by: nikolas)
   * pull #321: Update Django integration (provided by: bittner, contains: #315, #316)
   * FIX: cmdline/config-param doc-generator, avoid duplicated param entries (related to: #318)
@@ -30,6 +34,7 @@ CHANGES:
 
 FIXED:
 
+  * pull  #382: fix typo in tag name (provided by: zsoldosp)
   * issue #349: ScenarioOutline skipped with --format=json
   * issue #319: python-version requirements in behave.whl for Python2.6 (submitted by: darkfoxprime)
   * issue #310: Use setuptools_behave.py with behave module
