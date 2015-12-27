@@ -89,7 +89,7 @@ Run behave:
     1 scenario passed, 0 failed, 0 skipped
     3 steps passed, 0 failed, 0 skipped, 0 undefined
 
-Now, continue reading to learn how to the most of *behave*. To get started,
+Now, continue reading to learn how to get the most out of *behave*. To get started,
 we recommend the `tutorial`_ and then the `feature testing language`_ and
 `api`_ references.
 
