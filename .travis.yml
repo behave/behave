@@ -6,11 +6,15 @@ python:
   - "3.3"
   - "3.4"
   - "3.5"
+  - "3.5.1"
+  - "nightly"
   - "pypy"
 
 matrix:
   allow_failures:
     - python: "3.5"
+    - python: "3.5.1"
+    - python: "nightly"
 
 cache:
   directories:
