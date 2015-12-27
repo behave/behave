@@ -182,7 +182,7 @@ Sometimes the difference between the context, events and outcomes is made more e
 
  class TestWindow(object):
     def test_window_close(self):
-        # given
+        # Given
         window = gui.Window("My Window")
         frame = gui.Frame(window)
 
