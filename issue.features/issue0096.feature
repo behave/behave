@@ -136,6 +136,9 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
         Assertion Failed: FAILED SUB-STEP: When a step fails with stderr "STDERR: Alice is alive"
         Substep info: Assertion Failed: EXPECT: Step fails with stderr.
         Captured stderr:
+        """
+    And the command output should contain:
+        """
         STDERR: Alice is alive
         """
 

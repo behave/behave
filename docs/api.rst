@@ -136,9 +136,9 @@ name" to :class:`~behave.matchers.Matcher` class.
 .. autoclass:: behave.matchers.Matcher
    :members:
 
-.. autoclass:: behave.model.Argument
+.. autoclass:: behave.model_core.Argument
 
-.. autoclass:: behave.model.Match
+.. autoclass:: behave.matchers.Match
 
 
 Calling Steps From Other Steps

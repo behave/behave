@@ -1,17 +1,19 @@
-# -*- coding: utf-8 -*-
-
+# -*- coding: UTF-8 -*-
+"""
+This module provides Runner class to run behave feature files (or model elements).
+"""
 from __future__ import absolute_import, print_function, with_statement
 import contextlib
 import os.path
-import six
-from six import StringIO
 import sys
 import traceback
 import warnings
 import weakref
+import six
+from six import StringIO
 
 from behave import matchers
-from behave.step_registry import setup_step_decorators
+from behave.step_registry import setup_step_decorators, registry as the_step_registry
 from behave.formatter._registry import make_formatters
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
@@ -19,19 +21,19 @@ from behave.runner_util import collect_feature_locations, parse_features
 
 
 class ContextMaskWarning(UserWarning):
-    '''Raised if a context variable is being overwritten in some situations.
+    """Raised if a context variable is being overwritten in some situations.
 
     If the variable was originally set by user code then this will be raised if
     *behave* overwites the value.
 
     If the variable was originally set by *behave* then this will be raised if
     user code overwites the value.
-    '''
+    """
     pass
 
 
 class Context(object):
-    '''Hold contextual information during the running of tests.
+    """Hold contextual information during the running of tests.
 
     This object is a place to store information related to the tests you're
     running. You may add arbitrary attributes to it of whatever value you need.
@@ -130,7 +132,8 @@ class Context(object):
     but you can delete a value set for a scenario in that scenario.
 
     .. _`configuration file settion names`: behave.html#configuration-files
-    '''
+    """
+    # pylint: disable=too-many-instance-attributes
     BEHAVE = 'behave'
     USER = 'user'
 
@@ -148,6 +151,12 @@ class Context(object):
         self._origin = {}
         self._mode = self.BEHAVE
         self.feature = None
+        # XXX
+        self.text = None
+        self.table = None
+        self.stdout_capture = None
+        self.stderr_capture = None
+        self.log_capture = None
 
     def _push(self):
         self._stack.insert(0, {})
@@ -255,7 +264,7 @@ class Context(object):
         return False
 
     def execute_steps(self, steps_text):
-        '''The steps identified in the "steps" text string will be parsed and
+        """The steps identified in the "steps" text string will be parsed and
         executed in turn just as though they were defined in a feature file.
 
         If the execute_steps call fails (either through error or failure
@@ -264,7 +273,7 @@ class Context(object):
         ValueError will be raised if this is invoked outside a feature context.
 
         Returns boolean False if the steps are not parseable, True otherwise.
-        '''
+        """
         assert isinstance(steps_text, six.text_type), "Steps must be unicode."
         if not self.feature:
             raise ValueError('execute_steps() called outside of feature')
@@ -272,7 +281,7 @@ class Context(object):
         # -- PREPARE: Save original context data for current step.
         # Needed if step definition that called this method uses .table/.text
         original_table = getattr(self, "table", None)
-        original_text  = getattr(self, "text", None)
+        original_text = getattr(self, "text", None)
 
         self.feature.parser.variant = 'steps'
         steps = self.feature.parser.parse_steps(steps_text)
@@ -288,20 +297,23 @@ class Context(object):
 
         # -- FINALLY: Restore original context data for current step.
         self.table = original_table
-        self.text  = original_text
+        self.text = original_text
         return True
 
 
-def exec_file(filename, globals={}, locals=None):
-    if locals is None:
-        locals = globals
-    locals['__file__'] = filename
+def exec_file(filename, globals_=None, locals_=None):
+    if globals_ is None:
+        globals_ = {}
+    if locals_ is None:
+        locals_ = globals_
+    locals_['__file__'] = filename
     with open(filename) as f:
-        # -- FIX issue #80: exec(f.read(), globals, locals)
+        # pylint: disable=exec-used
+        # -- FIX issue #80: exec(f.read(), globals_, locals_)
         # try:
         filename2 = os.path.relpath(filename, os.getcwd())
         code = compile(f.read(), filename2, 'exec')
-        exec(code, globals, locals)
+        exec(code, globals_, locals_)
         # except Exception as e:
         #     e_text = _text(e)
         #     print("Exception %s: %s" % (e.__class__.__name__, e_text))
@@ -366,13 +378,15 @@ class ModelRunner(object):
           (:exc:`KeyboardInterrupt` exception). Initially: False.
           Stored as derived attribute in :attr:`Context.aborted`.
     """
+    # pylint: disable=too-many-instance-attributes
 
-    def __init__(self, config, features=None):
+    def __init__(self, config, features=None, step_registry=None):
         self.config = config
         self.features = features or []
         self.hooks = {}
         self.formatters = []
         self.undefined_steps = []
+        self.step_registry = step_registry
 
         self.context = None
         self.feature = None
@@ -392,6 +406,7 @@ class ModelRunner(object):
 
     # @aborted.setter
     def _set_aborted(self, value):
+        # pylint: disable=protected-access
         assert self.context
         self.context._set_root_attribute('aborted', bool(value))
 
@@ -460,8 +475,11 @@ class ModelRunner(object):
             self.log_capture.abandon()
 
     def run_model(self, features=None):
+        # pylint: disable=too-many-branches
         if not self.context:
             self.context = Context(self)
+        if self.step_registry is None:
+            self.step_registry = the_step_registry
         if features is None:
             features = self.features
 
@@ -534,6 +552,7 @@ class Runner(ModelRunner):
 
 
     def setup_paths(self):
+        # pylint: disable=too-many-branches, too-many-statements
         if self.config.paths:
             if self.config.verbose:
                 print('Supplied path:', \
@@ -622,6 +641,7 @@ class Runner(ModelRunner):
         Default implementation for :func:`before_all()` hook.
         Setup the logging subsystem based on the configuration data.
         """
+        # pylint: disable=no-self-use
         context.config.setup_logging()
 
     def load_hooks(self, filename=None):
@@ -633,7 +653,9 @@ class Runner(ModelRunner):
         if 'before_all' not in self.hooks:
             self.hooks['before_all'] = self.before_all_default_hook
 
-    def load_step_definitions(self, extra_step_paths=[]):
+    def load_step_definitions(self, extra_step_paths=None):
+        if extra_step_paths is None:
+            extra_step_paths = []
         step_globals = {
             'use_step_matcher': matchers.use_step_matcher,
             'step_matcher':     matchers.step_matcher, # -- DEPRECATING
@@ -659,7 +681,8 @@ class Runner(ModelRunner):
                         matchers.current_matcher = default_matcher
                         # except Exception as e:
                         #     e_text = _text(e)
-                        #     print("Exception %s: %s" % (e.__class__.__name__, e_text))
+                        #     print("Exception %s: %s" % \
+                        #           (e.__class__.__name__, e_text))
                         #     raise
 
     def feature_locations(self):
@@ -682,8 +705,8 @@ class Runner(ModelRunner):
         # self.run_hook('before_all', self.context)
 
         # -- STEP: Parse all feature files (by using their file location).
-        feature_locations = [ filename for filename in self.feature_locations()
-                                    if not self.config.exclude(filename) ]
+        feature_locations = [filename for filename in self.feature_locations()
+                             if not self.config.exclude(filename)]
         features = parse_features(feature_locations, language=self.config.lang)
         self.features.extend(features)
 

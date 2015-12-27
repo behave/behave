@@ -1,11 +1,106 @@
-from __future__ import absolute_import, with_statement
+# -*- coding: utf-8 -*-
+"""
+This module provides the step matchers functionality that matches a
+step definition (as text) with step-functions that implement this step.
+"""
 
+from __future__ import absolute_import, with_statement
+import copy
+import os.path
 import re
 import parse
+import six
+
 from parse_type import cfparse
-from behave import model
+from behave.model_core import Argument, FileLocation, Replayable
 
 
+
+# -----------------------------------------------------------------------------
+# SECTION: Model Elements
+# -----------------------------------------------------------------------------
+class Match(Replayable):
+    """An parameter-matched *feature file* step name extracted using
+    step decorator `parameters`_.
+
+    .. attribute:: func
+
+       The step function that this match will be applied to.
+
+    .. attribute:: arguments
+
+       A list of :class:`~behave.model_core.Argument` instances containing the
+       matched parameters from the step name.
+    """
+    type = "match"
+
+    def __init__(self, func, arguments=None):
+        super(Match, self).__init__()
+        self.func = func
+        self.arguments = arguments
+        self.location = None
+        if func:
+            self.location = self.make_location(func)
+
+    def __repr__(self):
+        if self.func:
+            func_name = self.func.__name__
+        else:
+            func_name = '<no function>'
+        return '<Match %s, %s>' % (func_name, self.location)
+
+    def __eq__(self, other):
+        if not isinstance(other, Match):
+            return False
+        return (self.func, self.location) == (other.func, other.location)
+
+    def with_arguments(self, arguments):
+        match = copy.copy(self)
+        match.arguments = arguments
+        return match
+
+    def run(self, context):
+        args = []
+        kwargs = {}
+        for arg in self.arguments:
+            if arg.name is not None:
+                kwargs[arg.name] = arg.value
+            else:
+                args.append(arg.value)
+
+        with context.user_mode():
+            self.func(context, *args, **kwargs)
+
+    @staticmethod
+    def make_location(step_function):
+        '''
+        Extracts the location information from the step function and builds
+        the location string (schema: "{source_filename}:{line_number}").
+
+        :param step_function: Function whose location should be determined.
+        :return: Step function location as string.
+        '''
+        step_function_code = six.get_function_code(step_function)
+        filename = os.path.relpath(step_function_code.co_filename, os.getcwd())
+        line_number = step_function_code.co_firstlineno
+        return FileLocation(filename, line_number)
+
+
+class NoMatch(Match):
+    """Used for an "undefined step" when it can not be matched with a
+    step definition.
+    """
+
+    def __init__(self):
+        Match.__init__(self, func=None)
+        self.func = None
+        self.arguments = []
+        self.location = None
+
+
+# -----------------------------------------------------------------------------
+# SECTION: Matchers
+# -----------------------------------------------------------------------------
 class Matcher(object):
     """Pull parameters out of step names.
 
@@ -28,7 +123,7 @@ class Matcher(object):
     @property
     def location(self):
         if self._location is None:
-            self._location = model.Match.make_location(self.func)
+            self._location = Match.make_location(self.func)
         return self._location
 
     def describe(self, schema=None):
@@ -47,10 +142,10 @@ class Matcher(object):
         """Match me against the "step" name supplied.
 
         Return None if I don't match otherwise return a list of matches as
-        :class:`behave.model.Argument` instances.
+        :class:`~behave.model_core.Argument` instances.
 
         The return value from this function will be converted into a
-        :class:`behave.model.Match` instance by *behave*.
+        :class:`~behave.matchers.Match` instance by *behave*.
         """
         raise NotImplementedError
 
@@ -58,7 +153,7 @@ class Matcher(object):
         result = self.check_match(step)
         if result is None:
             return None
-        return model.Match(self.func, result)
+        return Match(self.func, result)
 
     def __repr__(self):
         return u"<%s: %r>" % (self.__class__.__name__, self.string)
@@ -79,25 +174,27 @@ class ParseMatcher(Matcher):
         args = []
         for index, value in enumerate(result.fixed):
             start, end = result.spans[index]
-            args.append(model.Argument(start, end, step[start:end], value))
+            args.append(Argument(start, end, step[start:end], value))
         for name, value in result.named.items():
             start, end = result.spans[name]
-            args.append(model.Argument(start, end, step[start:end], value, name))
+            args.append(Argument(start, end, step[start:end], value, name))
         args.sort(key=lambda x: x.start)
         return args
 
 class CFParseMatcher(ParseMatcher):
     """
-    Uses :class:`parse_type.cfparse.Parser` instead of "parse.Parser".
+    Uses :class:`~parse_type.cfparse.Parser` instead of "parse.Parser".
     Provides support for automatic generation of type variants
     for fields with CardinalityField part.
     """
     def __init__(self, func, string, step_type=None):
-        super(ParseMatcher, self).__init__(func, string, step_type)
+        super(CFParseMatcher, self).__init__(func, string, step_type)
         self.parser = cfparse.Parser(self.string, self.custom_types)
 
 
 def register_type(**kw):
+    # pylint: disable=anomalous-backslash-in-string
+    # REQUIRED-BY: code example
     """Registers a custom type that will be available to "parse"
     for type conversion during step matching.
 
@@ -148,8 +245,8 @@ class RegexMatcher(Matcher):
         for index, group in enumerate(m.groups()):
             index += 1
             name = groupindex.get(index, None)
-            args.append(model.Argument(m.start(index), m.end(index), group,
-                                       group, name))
+            args.append(Argument(m.start(index), m.end(index), group,
+                                 group, name))
 
         return args
 
@@ -159,7 +256,7 @@ matcher_mapping = {
     "cfparse": CFParseMatcher,
     "re": RegexMatcher,
 }
-current_matcher = ParseMatcher
+current_matcher = ParseMatcher      # pylint: disable=invalid-name
 
 
 def use_step_matcher(name):
@@ -208,7 +305,7 @@ def use_step_matcher(name):
 
     .. _`define your own matcher`: api.html#step-parameters
     """
-    global current_matcher
+    global current_matcher  # pylint: disable=global-statement
     current_matcher = matcher_mapping[name]
 
 def step_matcher(name):
@@ -223,5 +320,3 @@ def step_matcher(name):
 
 def get_matcher(func, string):
     return current_matcher(func, string)
-
-
