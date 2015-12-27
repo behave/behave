@@ -22,15 +22,15 @@ install:
 
 script:
   - python --version
-  - nosetests
+  - py.test
   - behave -f progress --junit --tags=~@xfail features/
   - behave -f progress --junit --tags=~@xfail tools/test-features/
   - behave -f progress --junit --tags=~@xfail issue.features/
 
 # -- USE: New container-based infrastructure for faster startup.
 #    http://docs.travis-ci.com/user/workers/container-based-infrastructure/
-#    
-# SEE ALSO: 
+#
+# SEE ALSO:
 #   http://lint.travis-ci.org
 #   http://docs.travis-ci.com/user/caching/
 #   http://docs.travis-ci.com/user/multi-os/  (Linux, MACOSX)
