@@ -33,12 +33,12 @@ init:
     - dir C:\Python*
 
 install:
-    - %PYTHON%\python.exe -m pip install pytest mock PyHamcrest nose
-    - %PYTHON%\python.exe setup.py install
+    - "%PYTHON%\\python.exe -m pip install pytest mock PyHamcrest nose"
+    - "%PYTHON%\\python.exe setup.py install"
 
 build: off
 test_script:
-    - %PYTHON%\Scripts\py.test.exe test
-    - %PYTHON%\Scripts\behave.exe features
-    - %PYTHON%\Scripts\behave.exe issue.features
+    - "%PYTHON%\\Scripts\\py.test.exe test"
+    - "%PYTHON%\\Scripts\\behave.exe features"
+    - "%PYTHON%\\Scripts\\behave.exe issue.features"
 
