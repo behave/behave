@@ -7,8 +7,8 @@
 #   * http://www.appveyor.com/docs/installed-software#python
 #   * http://www.appveyor.com/docs/appveyor-yml
 # =============================================================================
-# version: 1.2.6.dev0_{build}-{branch}
 
+# version: 1.2.6.dev0_{build}-{branch}
 clone_folder: C:\projects\behave.ci
 # clone_depth:  2
 # shallow_clone: true
