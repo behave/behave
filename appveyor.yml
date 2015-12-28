@@ -10,7 +10,7 @@
 # https://bootstrap.pypa.io/get-pip.py
 # MAYBE: python2.6:    - choco install pip
 
-# version: 1.2.6.dev0_{build}-{branch}
+version: 1.2.6.dev0_{build}-{branch}
 clone_folder: C:\projects\behave.ci
 # clone_depth:  2
 # shallow_clone: true
@@ -32,7 +32,7 @@ environment:
 #    - PYTHON:  C:\Python35-x64
 
 init:
-    - "@echo TESTING-WITH %PYTHON%"
+    - "echo TESTING-WITH %PYTHON%"
 
 # -- TEMPORARILY DISABLED: Python variants discovery
 #    - @echo INSTALLED PYTHON VERSIONS
