@@ -1,0 +1,44 @@
+# =============================================================================
+# CI-SERVER CONFIGURATION: behave
+# =============================================================================
+# OS: Windows
+# SEE ALSO:
+#   * http://www.appveyor.com/docs/build-configuration
+#   * http://www.appveyor.com/docs/installed-software#python
+#   * http://www.appveyor.com/docs/appveyor-yml
+# =============================================================================
+
+# version: 1.2.6.dev0_{build}-{branch}
+clone_folder: C:\projects\behave.ci
+# clone_depth:  2
+# shallow_clone: true
+
+environment:
+  PYTHONPATH: ".;%CD%"
+  matrix:
+    - PYTHON:  C:\Python26
+    - PYTHON:  C:\Python27
+    - PYTHON:  C:\Python33
+    - PYTHON:  C:\Python34
+    - PYTHON:  C:\Python35
+    - PYTHON:  C:\Python26-x64
+    - PYTHON:  C:\Python27-x64
+    - PYTHON:  C:\Python33-x64
+    - PYTHON:  C:\Python34-x64
+    - PYTHON:  C:\Python35-x64
+
+init:
+    - echo TESTING-WITH: %PYTHON%
+    - echo INSTALLED PYTHON VERSIONS:
+    - dir C:\Python*
+
+install:
+    - %PYTHON%\python.exe -m pip install pytest mock PyHamcrest nose
+    - %PYTHON%\python.exe setup.py install
+
+build: off
+test_script:
+    - %PYTHON%\Scripts\py.test.exe test
+    - %PYTHON%\Scripts\behave.exe features
+    - %PYTHON%\Scripts\behave.exe issue.features
+
