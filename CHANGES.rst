@@ -30,10 +30,11 @@ ENHANCEMENTS:
 
 CHANGES:
 
-  * parser: language comment in feature file has higher priority than --lang option (related to: #334). 
+  * parser: language comment in feature file has higher priority than --lang option (related to: #334).
 
 FIXED:
 
+  * issue #384: Active Tags fail with ScenarioOutline (submitted by: BRevzin)
   * pull  #382: fix typo in tag name (provided by: zsoldosp)
   * issue #349: ScenarioOutline skipped with --format=json
   * issue #319: python-version requirements in behave.whl for Python2.6 (submitted by: darkfoxprime)

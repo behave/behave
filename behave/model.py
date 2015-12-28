@@ -26,7 +26,6 @@ from behave.matchers import NoMatch
 from behave.textutil import text as _text
 
 
-
 class Feature(TagAndStatusStatement, Replayable):
     """A `feature`_ parsed from a *feature file*.
 
@@ -1544,33 +1543,53 @@ class Tag(six.text_type):
 
     See :ref:`controlling things with tags`.
     """
+    allowed_chars = u'._-=:'    # In addition to aplha-numerical chars.
+    quoting_chars = ("'", '"', "<", ">")
+
     def __new__(cls, name, line):
         o = six.text_type.__new__(cls, name)
         o.line = line
         return o
 
-    @staticmethod
-    def make_name(text, unescape=False):
+    @classmethod
+    def make_name(cls, text, unescape=False, allowed_chars=None):
         """Translate text into a "valid tag" without whitespace, etc.
         Translation rules are:
           * alnum chars => same, kept
-          * space chars => '_'
+          * space chars => "_"
           * other chars => deleted
 
+        Preserve following characters (in addition to alnums, like: A-z, 0-9):
+          * dots        => "." (support: dotted-names, active-tag name schema)
+          * minus       => "-" (support: dashed-names)
+          * underscore  => "_"
+          * equal       => "=" (support: active-tag name schema)
+          * colon       => ":" (support: active-tag name schema or similar)
+
         :param text: Unicode text as input for name.
+        :param unescape: Optional flag to unescape some chars (default: false)
+        :param allowed_chars: Optional string with additional preserved chars.
         :return: Unicode name that can be used as tag.
         """
         assert isinstance(text, six.text_type)
+        if allowed_chars is None:
+            allowed_chars = cls.allowed_chars
+
         if unescape:
             # -- UNESCAPE: Some escaped sequences
             text = text.replace("\\t", "\t").replace("\\n", "\n")
-        allowed_chars = u'._-'
         chars = []
         for char in text:
-            if char.isalnum() or char in allowed_chars:
+            if char.isalnum() or (allowed_chars and char in allowed_chars):
                 chars.append(char)
             elif char.isspace():
                 chars.append(u'_')
+            elif char in cls.quoting_chars:
+                pass    # -- NORMALIZE: Remove any quoting chars.
+            # -- MAYBE:
+            # else:
+            #     # -- OTHERWISE: Accept gracefully any other character.
+            #     chars.append(char)
         return u"".join(chars)
 
 
