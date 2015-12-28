@@ -41,3 +41,4 @@ test_script:
     - %PYTHON%\Scripts\py.test.exe test
     - %PYTHON%\Scripts\behave.exe features
     - %PYTHON%\Scripts\behave.exe issue.features
+
