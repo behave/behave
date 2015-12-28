@@ -28,8 +28,8 @@ environment:
     - PYTHON:  C:\Python35-x64
 
 init:
-    - echo TESTING-WITH: %PYTHON%
-    - echo INSTALLED PYTHON VERSIONS:
+    - echo TESTING-WITH %PYTHON%
+    - echo INSTALLED PYTHON VERSIONS
     - dir C:\Python*
 
 install:
