@@ -32,7 +32,7 @@ environment:
 #    - PYTHON:  C:\Python35-x64
 
 init:
-    - @echo TESTING-WITH %PYTHON%
+    - cmd: @echo TESTING-WITH %PYTHON%
 
 # -- TEMPORARILY DISABLED: Python variants discovery
 #    - @echo INSTALLED PYTHON VERSIONS
