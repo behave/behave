@@ -17,7 +17,7 @@ clone_folder: C:\projects\behave.ci
 
 environment:
   PYTHONPATH: ".;%CD%"
-  ROOTDIR_PREFIX: "c:"
+  ROOTDIR_PREFIX: "C:"
   matrix:
     - PYTHON:  C:\Python27
     - PYTHON:  C:\Python34
@@ -34,6 +34,7 @@ environment:
 
 init:
     - "echo TESTING-WITH %PYTHON%"
+    - path
 
 # -- TEMPORARILY DISABLED: Python variants discovery
 #    - @echo INSTALLED PYTHON VERSIONS
@@ -46,6 +47,5 @@ install:
 build: off
 test_script:
     - "%PYTHON%\\Scripts\\py.test.exe test"
-    - "%PYTHON%\\Scripts\\behave.exe features"
-    - "%PYTHON%\\Scripts\\behave.exe issue.features"
-
+    - "%PYTHON%\\Scripts\\behave.exe -f progress3 --junit features"
+    - "%PYTHON%\\Scripts\\behave.exe -f progress3 --junit issue.features"
