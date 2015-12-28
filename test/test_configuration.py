@@ -29,8 +29,8 @@ answer = 42
 
 ROOTDIR_PREFIX = ""
 if sys.platform.startswith("win"):
-    ROOTDIR_PREFIX = os.environ.get("ROOTDIR_PREFIX", "c:")
-    ROOTDIR_PREFIX = os.path.splitdrive(sys.executable)
+    # -- OR: ROOTDIR_PREFIX = os.path.splitdrive(sys.executable)
+    ROOTDIR_PREFIX = os.environ.get("ROOTDIR_PREFIX", "C:")
 
 class TestConfiguration(object):
 

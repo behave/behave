@@ -17,6 +17,7 @@ clone_folder: C:\projects\behave.ci
 
 environment:
   PYTHONPATH: ".;%CD%"
+  ROOTDIR_PREFIX: "c:"
   matrix:
     - PYTHON:  C:\Python27
     - PYTHON:  C:\Python34
