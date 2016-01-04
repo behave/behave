@@ -23,7 +23,7 @@ from setuptools_behave import behave_test
 # CONFIGURATION:
 # -----------------------------------------------------------------------------
 python_version = float("%s.%s" % sys.version_info[:2])
-requirements = ["parse>=1.6.3", "parse_type>=0.3.4", "six"]
+requirements = ["parse>=1.6.3", "parse_type>=0.3.4", "six>=1.9"]
 py26_extra = ["argparse", "importlib", "ordereddict"]
 py33_extra = ["enum34"]
 if python_version < 2.6:
