@@ -4,7 +4,14 @@ Provides textual descriptions for :mod:`behave.model` elements.
 """
 
 from __future__ import absolute_import
-from six.moves import range     # pylint: disable=redefined-builtin
+
+# When importing range from six.moves fails
+# use python's inbuilt range method
+try:
+    from six.moves import range     # pylint: disable=redefined-builtin
+except:
+    pass
+
 from six.moves import zip       # pylint: disable=redefined-builtin
 from behave.textutil import indent
 
