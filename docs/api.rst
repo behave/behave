@@ -64,7 +64,7 @@ will match the "Given" step from the following feature:
    then some observed outcome.
 
 *You don't need to import the decorators*: they're automatically available
-to your step implmentation modules as `global variables`_.
+to your step implementation modules as `global variables`_.
 
 .. _`global variables`: #step-global-variables
 
