@@ -7,7 +7,13 @@ from behave.model_describe import escape_cell, escape_triple_quotes
 from behave.textutil import indent, text as _text
 import sys
 import six
-from six.moves import range
+
+# if importing range from six.moves fails
+# use python inbuilt range method
+try:
+    from six.moves import range
+except:
+    pass
 from six.moves import zip
 
 
