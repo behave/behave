@@ -10,18 +10,19 @@ GOALS:
 
 DOCUMENTATION:
 
-  * pull #379: Correct wording in README.rst (provided by: franklinchou)
-  * pull #362: docs/tutorial.rst: fixed non-monospace font (provided by: spacediver)
-  * pull #339: Adapt wording in install.rst (provided by: charleswhchan)
-  * pull #338: docs/philosophy.rst: Correct to uppercase in example (provided by: charleswhchan)
-  * pull #327: Fix typo in Django doc (provided by: nikolas)
-  * pull #321: Update Django integration (provided by: bittner, contains: #315, #316)
+  * pull  #379: Correct wording in README.rst (provided by: franklinchou)
+  * pull  #362: docs/tutorial.rst: fixed non-monospace font (provided by: spacediver)
+  * issue #356: docs/api.rst: type in implementation (submitted by: tomxtobin)
+  * pull  #339: Adapt wording in install.rst (provided by: charleswhchan)
+  * pull  #338: docs/philosophy.rst: Correct to uppercase in example (provided by: charleswhchan)
+  * pull  #327: Fix typo in Django doc (provided by: nikolas)
+  * pull  #321: Update Django integration (provided by: bittner, contains: #315, #316)
   * FIX: cmdline/config-param doc-generator, avoid duplicated param entries (related to: #318)
   * issue #317: Update comparison: lettuce tags (provided by: ramiabughazaleh)
-  * pull #307: Typo in readme (provided by: dflock)
-  * pull #305: behave.rst related fixes reapplied (provided by: bittner)
-  * pull #292: Use title-cased keywords in tutorial scenario (provided by: neoblackcap)
-  * pull #291: Tiny tweaks in tutorial docs (provided by: bernardpaulus)
+  * pull  #307: Typo in readme (provided by: dflock)
+  * pull  #305: behave.rst related fixes reapplied (provided by: bittner)
+  * pull  #292: Use title-cased keywords in tutorial scenario (provided by: neoblackcap)
+  * pull  #291: Tiny tweaks in tutorial docs (provided by: bernardpaulus)
 
 ENHANCEMENTS:
 
