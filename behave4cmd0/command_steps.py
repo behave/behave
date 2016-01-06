@@ -13,6 +13,8 @@ from __future__ import absolute_import, print_function
 from behave import given, when, then, step, matchers
 from behave4cmd0 import command_shell, command_util, pathutil, textutil
 from behave4cmd0.pathutil import posixpath_normpath
+import contextlib
+import difflib
 import os
 import shutil
 from hamcrest import assert_that, equal_to, is_not, contains_string
@@ -21,8 +23,54 @@ from hamcrest import assert_that, equal_to, is_not, contains_string
 # INIT:
 # -----------------------------------------------------------------------------
 matchers.register_type(int=int)
-DEBUG = True
+DEBUG = False
 
+# -----------------------------------------------------------------------------
+# UTILITIES:
+# -----------------------------------------------------------------------------
+@contextlib.contextmanager
+def on_assert_failed_print_details(actual, expected):
+    """
+    Print text details in case of assertation failed errors.
+
+    .. sourcecode:: python
+
+        with on_assert_failed_print_details(actual_text, expected_text):
+            assert actual == expected
+    """
+    try:
+        yield
+    except AssertionError:
+        # diff = difflib.unified_diff(expected.splitlines(), actual.splitlines(),
+        #                            "expected", "actual")
+        diff = difflib.ndiff(expected.splitlines(), actual.splitlines())
+        diff_text = u"\n".join(diff)
+        print(u"DIFF (+ ACTUAL, - EXPECTED):\n{0}\n".format(diff_text))
+        if DEBUG:
+            print(u"expected:\n{0}\n".format(expected))
+            print(u"actual:\n{0}\n".format(actual))
+        raise
+
+@contextlib.contextmanager
+def on_error_print_details(actual, expected):
+    """
+    Print text details in case of assertation failed errors.
+
+    .. sourcecode:: python
+
+        with on_error_print_details(actual_text, expected_text):
+            ... # Do something
+    """
+    try:
+        yield
+    except Exception:
+        diff = difflib.ndiff(expected.splitlines(), actual.splitlines())
+        diff_text = u"\n".join(diff)
+        print(u"DIFF (+ ACTUAL, - EXPECTED):\n{0}\n".format(diff_text))
+        if DEBUG:
+            print(u"expected:\n{0}\n".format(expected))
+            print(u"actual:\n{0}".format(actual))
+        raise
 
 # -----------------------------------------------------------------------------
 # STEPS: WORKING DIR
@@ -172,10 +220,8 @@ def step_command_output_should_contain_text(context, text):
              __CWD__     = posixpath_normpath(os.getcwd())
         )
     actual_output = context.command_result.output
-    if DEBUG:
-        print(u"expected:\n{0}".format(expected_text))
-        print(u"actual:\n{0}".format(actual_output))
-    textutil.assert_normtext_should_contain(actual_output, expected_text)
+    with on_assert_failed_print_details(actual_output, expected_text):
+        textutil.assert_normtext_should_contain(actual_output, expected_text)
 
 
 @then(u'the command output should not contain "{text}"')
@@ -192,10 +238,8 @@ def step_command_output_should_not_contain_text(context, text):
              __CWD__     = posixpath_normpath(os.getcwd())
         )
     actual_output  = context.command_result.output
-    if DEBUG:
-        print(u"expected:\n{0}".format(expected_text))
-        print(u"actual:\n{0}".format(actual_output))
-    textutil.assert_normtext_should_not_contain(actual_output, expected_text)
+    with on_assert_failed_print_details(actual_output, expected_text):
+        textutil.assert_normtext_should_not_contain(actual_output, expected_text)
 
 
 @then(u'the command output should contain exactly "{text}"')
@@ -389,10 +433,8 @@ def step_file_should_contain_text(context, filename, text):
         )
     file_contents = pathutil.read_file_contents(filename, context=context)
     file_contents = file_contents.rstrip()
-    if DEBUG:
-        print(u"expected:\n{0}".format(expected_text))
-        print(u"actual:\n{0}".format(file_contents))
-    textutil.assert_normtext_should_contain(file_contents, expected_text)
+    with on_assert_failed_print_details(file_contents, expected_text):
+        textutil.assert_normtext_should_contain(file_contents, expected_text)
 
 
 @then(u'the file "{filename}" should not contain "{text}"')

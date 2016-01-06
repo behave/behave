@@ -4,15 +4,41 @@ This module provides the step matchers functionality that matches a
 step definition (as text) with step-functions that implement this step.
 """
 
-from __future__ import absolute_import, with_statement
+from __future__ import absolute_import, print_function, with_statement
 import copy
 import os.path
 import re
 import parse
 import six
-
 from parse_type import cfparse
+from behave._types import ChainedExceptionUtil, ExceptionUtil
 from behave.model_core import Argument, FileLocation, Replayable
+
+
+# -----------------------------------------------------------------------------
+# SECTION: Exceptions
+# -----------------------------------------------------------------------------
+class StepParseError(ValueError):
+    """Exception class, used when step matching fails before a step is run.
+    This is normally the case when an error occurs during the type conversion
+    of step parameters.
+    """
+
+    def __init__(self, text=None, exc_cause=None):
+        if not text and exc_cause:
+            text = six.text_type(exc_cause)
+        if exc_cause and six.PY2:
+            # -- NOTE: Python2 does not show chained-exception causes.
+            #    Therefore, provide some hint (see also: PEP-3134).
+            cause_text = ExceptionUtil.describe(exc_cause,
+                                                use_traceback=True,
+                                                prefix="CAUSED-BY: ")
+            text += u"\n" + cause_text
+
+        ValueError.__init__(self, text)
+        if exc_cause:
+            # -- CHAINED EXCEPTION (see: PEP 3134)
+            ChainedExceptionUtil.set_cause(self, exc_cause)
 
 
 
@@ -98,6 +124,26 @@ class NoMatch(Match):
         self.location = None
 
 
+class MatchWithError(Match):
+    """Match class when error occur during step-matching
+
+    REASON:
+      * Type conversion error occured.
+      * ...
+    """
+    def __init__(self, func, error):
+        if not ExceptionUtil.has_traceback(error):
+            ExceptionUtil.set_traceback(error)
+        Match.__init__(self, func=func)
+        self.stored_error = error
+
+    def run(self, context):
+        """Raises stored error from step matching phase (type conversion)."""
+        raise StepParseError(exc_cause=self.stored_error)
+
+
+
+
 # -----------------------------------------------------------------------------
 # SECTION: Matchers
 # -----------------------------------------------------------------------------
@@ -132,7 +178,7 @@ class Matcher(object):
         :param schema:  Text schema to use.
         :return: Textual description of this step definition (matcher).
         """
-        step_type = self.step_type or 'step'
+        step_type = self.step_type or "step"
         if not schema:
             schema = self.schema
         return schema % (step_type, self.string)
@@ -141,7 +187,7 @@ class Matcher(object):
     def check_match(self, step):
         """Match me against the "step" name supplied.
 
-        Return None if I don't match otherwise return a list of matches as
+        Return None, if I don't match otherwise return a list of matches as
         :class:`~behave.model_core.Argument` instances.
 
         The return value from this function will be converted into a
@@ -150,9 +196,14 @@ class Matcher(object):
         raise NotImplementedError
 
     def match(self, step):
-        result = self.check_match(step)
+        # -- PROTECT AGAINST: Type conversion errors (with ParseMatcher).
+        try:
+            result = self.check_match(step)
+        except Exception as e:  # pylint: disable=broad-except
+            return MatchWithError(self.func, e)
+
         if result is None:
-            return None
+            return None     # -- NO-MATCH
         return Match(self.func, result)
 
     def __repr__(self):
@@ -167,6 +218,8 @@ class ParseMatcher(Matcher):
         self.parser = parse.compile(self.string, self.custom_types)
 
     def check_match(self, step):
+        # -- FAILURE-POINT: Type conversion of parameters may fail here.
+        #    NOTE: Type converter should raise ValueError in case of PARSE ERRORS.
         result = self.parser.parse(step)
         if not result:
             return None

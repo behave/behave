@@ -1189,11 +1189,10 @@ class Step(BasicStatement, Replayable):
 
     def run(self, runner, quiet=False, capture=True):
         # pylint: disable=too-many-branches, too-many-statements
-        # -- RESET: Run information.
+        # -- RESET: Run-time information.
         self.exception = self.exc_traceback = self.error_message = None
-        self.status = 'untested'
+        self.status = "untested"
 
-        # access module var here to allow test mocking to work
         match = runner.step_registry.find_match(self)
         if match is None:
             runner.undefined_steps.append(self)
