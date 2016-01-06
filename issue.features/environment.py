@@ -15,6 +15,7 @@ import sys
 active_tag_value_provider = {
     "python2": str(six.PY2).lower(),
     "python3": str(six.PY3).lower(),
+    "pypy":    str("__pypy__" in sys.modules).lower(),
     "os":      sys.platform,
 }
 active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
@@ -25,7 +26,7 @@ def setup_active_tag_values(userdata):
             active_tag_value_provider[category] = userdata[category]
 
 def before_all(context):
-    # -- SETUP ACTIVE-TAG MATCHER (with userdata): 
+    # -- SETUP ACTIVE-TAG MATCHER (with userdata):
     # USE: behave -D browser=safari ...
     # NOT-NEEDED: setup_active_tag_values(context.config.userdata)
     pass

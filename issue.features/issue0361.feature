@@ -23,6 +23,39 @@ Feature: Issue #361 -- UTF-8 File with BOM
             Then a special step
         """
 
+  @not.with_pypy=true
+  @encoding.UTF-8-sig
+  Scenario: Use step file with UTF-8 encoding and BOM
+    Given a file named "features/steps/my_steps.py" and encoding="UTF-8-sig" with:
+        """
+        # -*- coding: UTF-8-sig -*-
+        '''
+        Ärgernis ist überall.
+        '''
+        from behave import step
+
+        @step(u'a special step')
+        def step_impl(context):
+            pass
+        """
+    When I run "behave -f plain features/passing.feature"
+    Then it should pass with:
+        """
+        1 scenario passed, 0 failed, 0 skipped
+        2 steps passed, 0 failed, 0 skipped, 0 undefined
+        """
+    And the command output should contain:
+        """
+        Feature:
+          Scenario:
+            Given a step passes ... passed
+            Then a special step ... passed
+        """
+    And the command output should not contain:
+        """
+        SyntaxError: invalid character in identifier
+        """
+
   @encoding.<encoding>
   Scenario Outline: Use step file with <case>
     Given a file named "features/steps/my_steps.py" and encoding="<encoding>" with:
@@ -57,7 +90,6 @@ Feature: Issue #361 -- UTF-8 File with BOM
 
     Examples:
       | encoding   | text                 | case                    | Comment |
-      | UTF-8-sig  | Ärgernis ist überall | UTF-8 encoding and BOM  |         |
       | latin1     | Café                 | Latin1 encoding         |         |
       | iso-8859-1 | Ärgernis ist überall | iso-8859-1 encoding     | Alias for latin1 |
       | cp1252     | Ärgernis ist überall | cp1252 encoding         | Windows: Western Europe |
@@ -66,3 +98,7 @@ Feature: Issue #361 -- UTF-8 File with BOM
       | euc_jp     | こんにちは (=hello)   | euc_jp encoding (Japan) | Japanese         |
       | gbk        | 您好 (=hello)        | gbk encoding (China)    | Unified Chinese  |
       | gb2312     | 您好 (=hello)        | gb2312 encoding (China) | Simplified Chinese |
+
+    # HANDLED ABOVE: As special case due to pypy problem with UTF-8 and BOM.
+    # DISABLED-HERE:
+    #  | UTF-8-sig  | Ärgernis ist überall | UTF-8 encoding and BOM  |         |
