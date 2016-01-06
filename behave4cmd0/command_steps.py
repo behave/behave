@@ -95,21 +95,28 @@ def step_use_curdir_as_working_directory(context):
 # -----------------------------------------------------------------------------
 # STEPS: Create files with contents
 # -----------------------------------------------------------------------------
-@given(u'a file named "{filename}" with')
-def step_a_file_named_filename_with(context, filename):
-    """
-    Creates a textual file with the content provided as docstring.
-    """
+@given(u'a file named "{filename}" and encoding="{encoding}" with')
+def step_a_file_named_filename_and_encoding_with(context, filename, encoding):
+    """Creates a textual file with the content provided as docstring."""
+    __encoding_is_valid = True
     assert context.text is not None, "ENSURE: multiline text is provided."
     assert not os.path.isabs(filename)
+    assert __encoding_is_valid
     command_util.ensure_workdir_exists(context)
     filename2 = os.path.join(context.workdir, filename)
-    pathutil.create_textfile_with_contents(filename2, context.text)
+    pathutil.create_textfile_with_contents(filename2, context.text, encoding)
+
+
+@given(u'a file named "{filename}" with')
+def step_a_file_named_filename_with(context, filename):
+    """Creates a textual file with the content provided as docstring."""
+    step_a_file_named_filename_and_encoding_with(context, filename, "UTF-8")
 
     # -- SPECIAL CASE: For usage with behave steps.
     if filename.endswith(".feature"):
         command_util.ensure_context_attribute_exists(context, "features", [])
         context.features.append(filename)
+
 
 @given(u'an empty file named "{filename}"')
 def step_an_empty_file_named_filename(context, filename):

@@ -38,10 +38,12 @@ FIXED:
   * issue #384: Active Tags fail with ScenarioOutline (submitted by: BRevzin)
   * issue #383: Handle (custom) Type parsing errors better (submitted by: zsoldosp)
   * pull  #382: fix typo in tag name (provided by: zsoldosp)
+  * issue #361: utf8 file with BOM (provided by: karulis)
   * issue #349: ScenarioOutline skipped with --format=json
   * issue #319: python-version requirements in behave.whl for Python2.6 (submitted by: darkfoxprime)
   * issue #310: Use setuptools_behave.py with behave module
   * issue #309: behave --lang-list fails on Python3 (and Python2)
+  * issue #288: Use print function instead print statement in environment/steps files
 
 
 Version: 1.2.5 (2015-01-31)

@@ -341,17 +341,11 @@ def exec_file(filename, globals_=None, locals_=None):
     if locals_ is None:
         locals_ = globals_
     locals_["__file__"] = filename
-    with open(filename) as f:
+    with open(filename, "rb") as f:
         # pylint: disable=exec-used
-        # -- FIX issue #80: exec(f.read(), globals_, locals_)
-        # try:
         filename2 = os.path.relpath(filename, os.getcwd())
-        code = compile(f.read(), filename2, "exec")
+        code = compile(f.read(), filename2, "exec", dont_inherit=True)
         exec(code, globals_, locals_)
-        # except Exception as e:
-        #     e_text = _text(e)
-        #     print("Exception %s: %s" % (e.__class__.__name__, e_text))
-        #     raise
 
 
 def path_getrootdir(path):

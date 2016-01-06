@@ -21,7 +21,8 @@ Feature: Issue #383 -- Handle (custom) Type parsing errors better
 
 
   Scenario: Type conversion fails
-    Given a file named "features/steps/bad_type_converter_steps.py" with:
+    Given a new working directory
+    And a file named "features/steps/bad_type_converter_steps.py" with:
         """
         from behave import step, register_type
         import parse
