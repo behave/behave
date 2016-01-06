@@ -36,6 +36,7 @@ CHANGES:
 FIXED:
 
   * issue #384: Active Tags fail with ScenarioOutline (submitted by: BRevzin)
+  * issue #383: Handle (custom) Type parsing errors better (submitted by: zsoldosp)
   * pull  #382: fix typo in tag name (provided by: zsoldosp)
   * issue #349: ScenarioOutline skipped with --format=json
   * issue #319: python-version requirements in behave.whl for Python2.6 (submitted by: darkfoxprime)
