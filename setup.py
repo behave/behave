@@ -76,7 +76,7 @@ setup(
     },
     install_requires=requirements,
     test_suite="nose.collector",
-    tests_require=["nose>=1.3", "mock>=1.0", "PyHamcrest>=1.8", "pytest"],
+    tests_require=["nose>=1.3", "mock>=1.0", "PyHamcrest>=1.8", "pytest>=2.8"],
     cmdclass = {
         "behave_test": behave_test,
     },
