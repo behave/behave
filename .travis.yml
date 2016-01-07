@@ -33,6 +33,13 @@ script:
   - behave -f progress --junit --tags=~@xfail tools/test-features/
   - behave -f progress --junit --tags=~@xfail issue.features/
 
+after_failure:
+  - echo "FAILURE DETAILS (from XML reports):"
+  - bin/behave.junit_filter.py --status=failed reports
+
+# -- ALTERNATIVE:
+#  egrep -L 'errors="0"|failures="0"' reports/*.xml | xargs -t cat
+
 # -- USE: New container-based infrastructure for faster startup.
 #    http://docs.travis-ci.com/user/workers/container-based-infrastructure/
 #
