@@ -41,7 +41,7 @@ FIXED:
   * pull  #382: fix typo in tag name (provided by: zsoldosp)
   * issue #361: utf8 file with BOM (provided by: karulis)
   * issue #349: ScenarioOutline skipped with --format=json
-  * issue #320: Userdata is case-sensitively read from command line but not from config file (provided by: mixxorz)
+  * issue #320: Userdata is case-insensitive when read from config file (provided by: mixxorz)
   * issue #319: python-version requirements in behave.whl for Python2.6 (submitted by: darkfoxprime)
   * issue #310: Use setuptools_behave.py with behave module
   * issue #309: behave --lang-list fails on Python3 (and Python2)
