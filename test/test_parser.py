@@ -529,6 +529,33 @@ Feature: Stuff
             ('then', 'Then', 'stuff is in buckets', None, None),
         ])
 
+    def test_parses_feature_with_table_and_escaped_pipe_in_cell_values(self):
+        doc = u'''
+Feature:
+  Scenario:
+    Given we have special cell values:
+      | name   | value    |
+      | alice  | one\|two |
+      | bob    |\|one     |
+      | charly |     one\||
+      | doro   | one\|two\|three\|four |
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        assert(len(feature.scenarios) == 1)
+        table = model.Table(
+            [u"name", u"value"],
+            0,
+            [
+                [u"alice",  u"one|two"],
+                [u"bob",    u"|one"],
+                [u"charly", u"one|"],
+                [u"doro",   u"one|two|three|four"],
+            ]
+        )
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Given', 'we have special cell values', None, table),
+        ])
+
     def test_parses_feature_with_a_scenario_outline(self):
         doc = u'''
 Feature: Stuff

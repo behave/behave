@@ -2,9 +2,9 @@
 
 from __future__ import absolute_import, with_statement
 import six
+import re
 from behave import model, i18n
 from behave.textutil import text as _text
-
 
 DEFAULT_LANGUAGE = "en"
 
@@ -453,7 +453,10 @@ class Parser(object):
             self.state = "steps"
             return self.action_steps(line)
 
-        cells = [cell.strip() for cell in line.split("|")[1:-1]]
+        # -- SUPPORT: Escaped-pipe(s) in Gherkin cell values.
+        #    Search for pipe(s) that are not preceeded with an escape char.
+        cells = [cell.replace("\\|", "|").strip()
+                 for cell in re.split(r"(?<!\\)\|", line[1:-1])]
         if self.table is None:
             self.table = model.Table(cells, self.line)
         else:

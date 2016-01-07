@@ -26,6 +26,7 @@ DOCUMENTATION:
 
 ENHANCEMENTS:
 
+  * issue #302: Support escaped-pipe in Gherkin table cell value (provided by: connorsml, pull #360)
   * issue #301: Support default tags in configfile
   * issue #299: Runner can continue after a failed step (same as: #314)
 
