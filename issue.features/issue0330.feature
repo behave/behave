@@ -90,7 +90,7 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
     And a file named "test_results/TESTS-charly.xml" exists
     And the file "test_results/TESTS-charly.xml" should contain:
       """
-      <testsuite errors="0" failures="0" name="charly.Charly" skipped="0" tests="1" time="0.0
+      <testsuite errors="0" failures="0" name="charly.Charly" skipped="0" tests="1"
       """
     And the file "test_results/TESTS-charly.xml" should not contain:
       """
@@ -114,7 +114,7 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
       """
     And the file "test_results/TESTS-charly.xml" should contain:
       """
-      <testcase classname="charly.Charly" name="Charly2" status="skipped" time="0.0">
+      <testcase classname="charly.Charly" name="Charly2" status="skipped"
       """
     And note that "Charly2 is the skipped scenarion in charly.feature"
 
