@@ -92,6 +92,7 @@ class JUnitReporter(Reporter):
     show_multiline = True
     show_timings   = True     # -- Show step timings.
     show_tags      = True
+    show_skipped_always = False
 
     def make_feature_filename(self, feature):
         filename = None
@@ -106,8 +107,16 @@ class JUnitReporter(Reporter):
         filename = filename.replace('\\', '/').replace('/', '.')
         return _text(filename)
 
+    @property
+    def show_skipped(self):
+        return self.config.show_skipped or self.show_skipped_always
+
     # -- REPORTER-API:
     def feature(self, feature):
+        if feature.status == "skipped" and not self.show_skipped:
+            # -- SKIP-OUTPUT: If skipped features should not be shown.
+            return
+
         feature_filename  = self.make_feature_filename(feature)
         classname = feature_filename
         report = FeatureReportData(feature, feature_filename)
@@ -237,7 +246,9 @@ class JUnitReporter(Reporter):
         """
         assert isinstance(scenario, Scenario)
         assert not isinstance(scenario, ScenarioOutline)
-        report.counts_tests += 1
+        if scenario.status != "skipped" or self.show_skipped:
+            # -- NOTE: Count only if not-skipped or skipped should be shown.
+            report.counts_tests += 1
         classname = report.classname
         feature   = report.feature
         feature_name = feature.name
@@ -278,7 +289,7 @@ class JUnitReporter(Reporter):
             text += _text(step.error_message)
             failure.append(CDATA(text))
             case.append(failure)
-        elif scenario.status in ('skipped', 'untested') and self.config.show_skipped:
+        elif scenario.status in ("skipped", "untested") and self.show_skipped:
             report.counts_skipped += 1
             step = self.select_step_with_status('undefined', scenario)
             if step:
@@ -311,7 +322,7 @@ class JUnitReporter(Reporter):
             stderr.append(CDATA(text))
             case.append(stderr)
 
-        if scenario.status != 'skipped' or self.config.show_skipped:
+        if scenario.status != "skipped" or self.show_skipped:
             report.testcases.append(case)
 
     def _process_scenario_outline(self, scenario_outline, report):
