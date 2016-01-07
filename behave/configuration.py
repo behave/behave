@@ -368,6 +368,7 @@ raw_value_options = frozenset([
 def read_configuration(path):
     # pylint: disable=too-many-locals, too-many-branches
     config = ConfigParser()
+    config.optionxform = str    # -- SUPPORT: case-sensitive keys
     config.read(path)
     config_dir = os.path.dirname(path)
     result = {}
