@@ -88,18 +88,29 @@ class Feature(TagAndStatusStatement, Replayable):
 
        The line number of the *feature file* where the feature was found.
 
+    .. attribute:: language
+
+       Indicates which spoken language (English, French, German, ..) was used
+       for parsing the feature file and its keywords. The I18N language code
+       indicates which language is used. This corresponds to the language tag
+       at the beginning of the feature file.
+
+       .. versionadded:: 1.2.6
+
     .. _`feature`: gherkin.html#features
     """
 
     type = "feature"
 
     def __init__(self, filename, line, keyword, name, tags=None,
-                 description=None, scenarios=None, background=None):
+                 description=None, scenarios=None, background=None,
+                 language=None):
         tags = tags or []
         super(Feature, self).__init__(filename, line, keyword, name, tags)
         self.description = description or []
         self.scenarios = []
         self.background = background
+        self.language = language
         self.parser = None
         if scenarios:
             for scenario in scenarios:

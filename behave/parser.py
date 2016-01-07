@@ -156,8 +156,9 @@ class Parser(object):
 
     def _build_feature(self, keyword, line):
         name = line[len(keyword) + 1:].strip()
+        language = self.language or DEFAULT_LANGUAGE
         self.feature = model.Feature(self.filename, self.line, keyword,
-                                     name, tags=self.tags)
+                                     name, tags=self.tags, language=language)
         # -- RESET STATE:
         self.tags = []
 
