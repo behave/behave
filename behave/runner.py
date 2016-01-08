@@ -152,7 +152,7 @@ class Context(object):
         self._origin = {}
         self._mode = self.BEHAVE
         self.feature = None
-        # XXX-RECHECK: If needed
+        # -- RECHECK: If needed
         self.text = None
         self.table = None
         self.stdout_capture = None
@@ -176,7 +176,7 @@ class Context(object):
 
     def user_mode(self):
         warnings.warn("Use 'use_with_user_mode()' instead",
-                  PendingDeprecationWarning, stacklevel=2)
+                      PendingDeprecationWarning, stacklevel=2)
         return self.use_with_user_mode()
 
     def _set_root_attribute(self, attr, value):
@@ -452,7 +452,7 @@ class ModelRunner(object):
             #     self.aborted = True
             #     if name not in ("before_all", "after_all"):
             #         raise
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-except
                 # -- HANDLE HOOK ERRORS:
                 use_traceback = False
                 if self.config.verbose:

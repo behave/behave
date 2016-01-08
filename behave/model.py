@@ -256,7 +256,7 @@ class Feature(TagAndStatusStatement, Replayable):
         """
         if reason:
             logger = logging.getLogger("behave")
-            logger.warn(u"SKIP FEATURE %s: %s", self.name, reason)
+            logger.warning(u"SKIP FEATURE %s: %s", self.name, reason)
 
         self._cached_status = None
         self.should_skip = True
@@ -629,7 +629,7 @@ class Scenario(TagAndStatusStatement, Replayable):
         if reason:
             scenario_type = self.__class__.__name__
             logger = logging.getLogger("behave")
-            logger.warn(u"SKIP %s %s: %s", scenario_type, self.name, reason)
+            logger.warning(u"SKIP %s %s: %s", scenario_type, self.name, reason)
 
         self._cached_status = None
         self.should_skip = True
@@ -647,7 +647,7 @@ class Scenario(TagAndStatusStatement, Replayable):
         assert self.status in self.final_status #< skipped, failed or passed
 
     def run(self, runner):
-        # pylint: disable=too-many-branches
+        # pylint: disable=too-many-branches, too-many-statements
         self._cached_status = None
         failed = False
         run_scenario = self.should_run(runner.config)
@@ -1047,7 +1047,7 @@ class ScenarioOutline(Scenario):
         """
         if reason:
             logger = logging.getLogger("behave")
-            logger.warn(u"SKIP ScenarioOutline %s: %s", self.name, reason)
+            logger.warning(u"SKIP ScenarioOutline %s: %s", self.name, reason)
 
         self._cached_status = None
         self.should_skip = True
