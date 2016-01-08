@@ -48,7 +48,7 @@ class ExceptionUtil(object):
     @classmethod
     def describe(cls, exception, use_traceback=False, prefix=""):
         # -- NORMAL CASE:
-        text = u"\n{prefix}{0}: {1}\n".format(exception.__class__.__name__,
+        text = u"{prefix}{0}: {1}\n".format(exception.__class__.__name__,
                                               exception, prefix=prefix)
         if use_traceback:
             exc_traceback = cls.get_traceback(exception)

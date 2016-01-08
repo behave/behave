@@ -74,6 +74,12 @@ class Feature(TagAndStatusStatement, Replayable):
        "failed"
          One or more steps of this feature failed.
 
+    .. attribute:: hook_failed
+
+        Indicates if a hook failure occured while running this feature.
+
+        .. versionadded:: 1.2.6
+
     .. attribute:: duration
 
        The time, in seconds, that it took to test this feature. If read before
@@ -112,6 +118,7 @@ class Feature(TagAndStatusStatement, Replayable):
         self.background = background
         self.language = language
         self.parser = None
+        self.hook_failed = False
         if scenarios:
             for scenario in scenarios:
                 self.add_scenario(scenario)
@@ -119,6 +126,7 @@ class Feature(TagAndStatusStatement, Replayable):
     def reset(self):
         """Reset to clean state before a test run."""
         super(Feature, self).reset()
+        self.hook_failed = False
         for scenario in self.scenarios:
             scenario.reset()
 
@@ -135,10 +143,10 @@ class Feature(TagAndStatusStatement, Replayable):
         self.scenarios.append(scenario)
 
     def compute_status(self):
-        """
-        Compute the status of this feature based on its:
-           * scenarios
-           * scenario outlines
+        """Compute the status of this feature based on its:
+          * scenarios
+          * scenario outlines
+          * hook failures
 
         :return: Computed status (as string-enum).
         """
@@ -146,17 +154,24 @@ class Feature(TagAndStatusStatement, Replayable):
         passed_count = 0
         for scenario in self.scenarios:
             scenario_status = scenario.status
-            if scenario_status == 'failed':
-                return 'failed'
-            elif scenario_status == 'untested':
+            if scenario_status == "failed":
+                return "failed"
+            elif scenario_status == "untested":
                 if passed_count > 0:
-                    return 'failed'  # ABORTED: Some passed, now untested.
-                return 'untested'
-            if scenario_status != 'skipped':
+                    return "failed"  # ABORTED: Some passed, now untested.
+                return "untested"
+            if scenario_status != "skipped":
                 skipped = False
-            if scenario_status == 'passed':
+            if scenario_status == "passed":
                 passed_count += 1
-        return skipped and 'skipped' or 'passed'
+
+        if skipped:
+            return "skipped"
+        elif self.hook_failed:
+            return "failed"
+        else:
+            return "passed"
+
 
     @property
     def duration(self):
@@ -256,6 +271,7 @@ class Feature(TagAndStatusStatement, Replayable):
     def run(self, runner):
         # pylint: disable=too-many-branches
         self._cached_status = None
+        self.hook_failed = False
         runner.context._push()      # pylint: disable=protected-access
         runner.context.feature = self
 
@@ -272,8 +288,8 @@ class Feature(TagAndStatusStatement, Replayable):
         if not runner.config.dry_run and run_feature:
             hooks_called = True
             for tag in self.tags:
-                runner.run_hook('before_tag', runner.context, tag)
-            runner.run_hook('before_feature', runner.context, self)
+                runner.run_hook("before_tag", runner.context, tag)
+            runner.run_hook("before_feature", runner.context, self)
 
             # -- RE-EVALUATE SHOULD-RUN STATE:
             # Hook may call feature.mark_skipped() to exclude it.
@@ -301,12 +317,14 @@ class Feature(TagAndStatusStatement, Replayable):
         self._cached_status = None  # -- ENFORCE: compute_status() after run.
         if not self.scenarios and not run_feature:
             # -- SPECIAL CASE: Feature without scenarios
-            self._cached_status = 'skipped'
+            self._cached_status = "skipped"
 
         if hooks_called:
-            runner.run_hook('after_feature', runner.context, self)
+            runner.run_hook("after_feature", runner.context, self)
+            if self.hook_failed and failed_count == 0:
+                failed_count = 1
             for tag in self.tags:
-                runner.run_hook('after_tag', runner.context, tag)
+                runner.run_hook("after_tag", runner.context, tag)
 
         runner.context._pop()       # pylint: disable=protected-access
 
@@ -420,6 +438,12 @@ class Scenario(TagAndStatusStatement, Replayable):
        "failed"
          One or more steps of this scenario failed.
 
+    .. attribute:: hook_failed
+
+        Indicates if a hook failure occured while running this scenario.
+
+        .. versionadded:: 1.2.6
+
     .. attribute:: duration
 
        The time, in seconds, that it took to test this scenario. If read before
@@ -433,6 +457,7 @@ class Scenario(TagAndStatusStatement, Replayable):
     .. attribute:: line
 
        The line number of the *feature file* where the scenario was found.
+
 
     .. _`scenario`: gherkin.html#scenarios
     """
@@ -448,6 +473,7 @@ class Scenario(TagAndStatusStatement, Replayable):
         self.steps = steps or []
         self.background = None
         self.feature = None  # REFER-TO: owner=Feature
+        self.hook_failed = False
         self._background_steps = None
         self._row = None
         self.was_dry_run = False
@@ -455,10 +481,9 @@ class Scenario(TagAndStatusStatement, Replayable):
         self.stdout = None
 
     def reset(self):
-        '''
-        Reset the internal data to reintroduce new-born state just after the
+        """Reset the internal data to reintroduce new-born state just after the
         ctor was called.
-        '''
+        """
         super(Scenario, self).reset()
         self._row = None
         self.was_dry_run = False
@@ -469,15 +494,14 @@ class Scenario(TagAndStatusStatement, Replayable):
 
     @property
     def background_steps(self):
-        '''
-        Provide background steps if feature has a background.
+        """Provide background steps if feature has a background.
         Lazy init that copies the background steps.
 
         Note that a copy of the background steps is needed to ensure
         that the background step status is specific to the scenario.
 
         :return:  List of background steps or empty list
-        '''
+        """
         if self._background_steps is None:
             # -- LAZY-INIT (need copy of background.steps):
             # Each scenario needs own background.steps status.
@@ -503,28 +527,33 @@ class Scenario(TagAndStatusStatement, Replayable):
         return self.all_steps
 
     def compute_status(self):
-        """Compute the status of the scenario from its steps.
+        """Compute the status of the scenario from its steps
+        (and hook failures).
+
         :return: Computed status (as string).
         """
         for step in self.all_steps:
-            if step.status == 'undefined':
+            if step.status == "undefined":
                 if self.was_dry_run:
                     # -- SPECIAL CASE: In dry-run with undefined-step discovery
                     #    Undefined steps should not cause failed scenario.
-                    return 'untested'
+                    return "untested"
                 else:
                     # -- NORMALLY: Undefined steps cause failed scenario.
-                    return 'failed'
-            elif step.status != 'passed':
-                assert step.status in ('failed', 'skipped', 'untested')
+                    return "failed"
+            elif step.status != "passed":
+                assert step.status in ("failed", "skipped", "untested")
                 return step.status
-            #elif step.status == 'failed':
-            #    return 'failed'
-            #elif step.status == 'skipped':
-            #    return 'skipped'
-            #elif step.status == 'untested':
-            #    return 'untested'
-        return 'passed'
+            #elif step.status == "failed":
+            #    return "failed"
+            #elif step.status == "skipped":
+            #    return "skipped"
+            #elif step.status == "untested":
+            #    return "untested"
+
+        if self.hook_failed:
+            return "failed"
+        return "passed"
 
     @property
     def duration(self):
@@ -638,8 +667,8 @@ class Scenario(TagAndStatusStatement, Replayable):
         if not runner.config.dry_run and run_scenario:
             hooks_called = True
             for tag in self.tags:
-                runner.run_hook('before_tag', runner.context, tag)
-            runner.run_hook('before_scenario', runner.context, self)
+                runner.run_hook("before_tag", runner.context, tag)
+            runner.run_hook("before_scenario", runner.context, self)
 
             # -- RE-EVALUATE SHOULD-RUN STATE:
             # Hook may call scenario.mark_skipped() to exclude it.
@@ -662,8 +691,8 @@ class Scenario(TagAndStatusStatement, Replayable):
                                  step.status == "failed")
                     failed = True
                     # pylint: disable=protected-access
-                    runner.context._set_root_attribute('failed', True)
-                    self._cached_status = 'failed'
+                    runner.context._set_root_attribute("failed", True)
+                    self._cached_status = "failed"
                 elif self.should_skip:
                     # -- CASE: Step skipped remaining scenario.
                     # assert self.status == "skipped", "Status: %s" % self.status
@@ -671,24 +700,24 @@ class Scenario(TagAndStatusStatement, Replayable):
             elif failed or dry_run_scenario:
                 # -- SKIP STEPS: After failure/undefined-step occurred.
                 # BUT: Detect all remaining undefined steps.
-                step.status = 'skipped'
+                step.status = "skipped"
                 if dry_run_scenario:
-                    step.status = 'untested'
+                    step.status = "untested"
                 found_step = runner.step_registry.find_match(step)
                 if not found_step:
-                    step.status = 'undefined'
+                    step.status = "undefined"
                     runner.undefined_steps.append(step)
             else:
                 # -- SKIP STEPS: For disabled scenario.
                 # CASES:
                 #   * Undefined steps are not detected (by intention).
                 #   * Step skipped remaining scenario.
-                step.status = 'skipped'
+                step.status = "skipped"
 
         self._cached_status = None  # -- ENFORCE: compute_status() after run.
         if not run_scenario:
             # -- SPECIAL CASE: Scenario without steps.
-            self._cached_status = 'skipped'
+            self._cached_status = "skipped"
 
         # Attach the stdout and stderr if generate Junit report
         if runner.config.junit:
@@ -697,9 +726,11 @@ class Scenario(TagAndStatusStatement, Replayable):
         runner.teardown_capture()
 
         if hooks_called:
-            runner.run_hook('after_scenario', runner.context, self)
+            runner.run_hook("after_scenario", runner.context, self)
+            if self.hook_failed:
+                failed = True
             for tag in self.tags:
-                runner.run_hook('after_tag', runner.context, tag)
+                runner.run_hook("after_tag", runner.context, tag)
 
         runner.context._pop()       # pylint: disable=protected-access
         return failed
@@ -721,7 +752,7 @@ class ScenarioOutlineBuilder(object):
         :param params:  As additional placeholder provider (as dict).
         :return: Rendered text, known placeholders are substituted w/ values.
         """
-        if not ('<' in text and '>' in text):
+        if not ("<" in text and ">" in text):
             return text
 
         safe_values = False
@@ -729,7 +760,7 @@ class ScenarioOutlineBuilder(object):
             if not placeholders:
                 continue
             for name, value in placeholders.items():
-                if safe_values and ('<' in value and '>' in value):
+                if safe_values and ("<" in value and ">" in value):
                     continue    # -- OOPS, value looks like placeholder.
                 text = text.replace("<%s>" % name, value)
         return text
@@ -776,9 +807,9 @@ class ScenarioOutlineBuilder(object):
 
         tags = []
         for tag in outline_tags:
-            if '<' in tag and '>' in tag:
+            if "<" in tag and ">" in tag:
                 tag = cls.render_template(tag, row, params)
-            if '<' in tag or '>' in tag:
+            if "<" in tag or ">" in tag:
                 # -- OOPS: Unknown placeholder, drop tag.
                 continue
             new_tag = Tag.make_name(tag, unescape=True)
@@ -1033,14 +1064,14 @@ class ScenarioOutline(Scenario):
         self._cached_status = None
         failed_count = 0
         for scenario in self.scenarios:     # -- REQUIRE: BUILD-SCENARIOS
-            runner.context._set_root_attribute('active_outline', scenario._row)
+            runner.context._set_root_attribute("active_outline", scenario._row)
             failed = scenario.run(runner)
             if failed:
                 failed_count += 1
                 if runner.config.stop or runner.aborted:
                     # -- FAIL-EARLY: Stop after first failure.
                     break
-        runner.context._set_root_attribute('active_outline', None)
+        runner.context._set_root_attribute("active_outline", None)
         return failed_count > 0
 
 
@@ -1125,6 +1156,12 @@ class Step(BasicStatement, Replayable):
        "failed"
          The step failed.
 
+    .. attribute:: hook_failed
+
+        Indicates if a hook failure occured while running this step.
+
+        .. versionadded:: 1.2.6
+
     .. attribute:: duration
 
        The time, in seconds, that it took to test this step. If read before the
@@ -1156,6 +1193,7 @@ class Step(BasicStatement, Replayable):
         self.table = table
 
         self.status = "untested"
+        self.hook_failed = False
         self.duration = 0
         self.exception = None
         self.exc_traceback = None
@@ -1164,6 +1202,7 @@ class Step(BasicStatement, Replayable):
     def reset(self):
         """Reset temporary runtime data to reach clean state again."""
         self.status = "untested"
+        self.hook_failed = False
         self.duration = 0
         self.exception = None
         self.exc_traceback = None
@@ -1203,6 +1242,7 @@ class Step(BasicStatement, Replayable):
         # -- RESET: Run-time information.
         self.exception = self.exc_traceback = self.error_message = None
         self.status = "untested"
+        self.hook_failed = False
 
         match = runner.step_registry.find_match(self)
         if match is None:
@@ -1211,20 +1251,20 @@ class Step(BasicStatement, Replayable):
                 for formatter in runner.formatters:
                     formatter.match(NoMatch())
 
-            self.status = 'undefined'
+            self.status = "undefined"
             if not quiet:
                 for formatter in runner.formatters:
                     formatter.result(self)
-
             return False
 
         keep_going = True
+        error = u""
 
         if not quiet:
             for formatter in runner.formatters:
                 formatter.match(match)
 
-        runner.run_hook('before_step', runner.context, self)
+        runner.run_hook("before_step", runner.context, self)
         if capture:
             runner.start_capture()
 
@@ -1236,25 +1276,25 @@ class Step(BasicStatement, Replayable):
             runner.context.text = self.text
             runner.context.table = self.table
             match.run(runner.context)
-            if self.status == 'untested':
+            if self.status == "untested":
                 # -- NOTE: Executed step may have skipped scenario and itself.
-                self.status = 'passed'
+                self.status = "passed"
         except KeyboardInterrupt as e:
             runner.aborted = True
             error = u"ABORTED: By user (KeyboardInterrupt)."
-            self.status = 'failed'
+            self.status = "failed"
             self.store_exception_context(e)
         except AssertionError as e:
-            self.status = 'failed'
+            self.status = "failed"
             self.store_exception_context(e)
             if e.args:
                 message = _text(e)
-                error = u'Assertion Failed: '+ message
+                error = u"Assertion Failed: "+ message
             else:
                 # no assertion text; format the exception
                 error = _text(traceback.format_exc())
         except Exception as e:      # pylint: disable=broad-except
-            self.status = 'failed'
+            self.status = "failed"
             error = _text(traceback.format_exc())
             self.store_exception_context(e)
 
@@ -1262,8 +1302,12 @@ class Step(BasicStatement, Replayable):
         if capture:
             runner.stop_capture()
 
+        runner.run_hook("after_step", runner.context, self)
+        if self.hook_failed:
+            self.status = "failed"
+
         # flesh out the failure with details
-        if self.status == 'failed':
+        if self.status == "failed":
             assert isinstance(error, six.text_type)
             if capture:
                 # -- CAPTURE-ONLY: Non-nested step failures.
@@ -1271,17 +1315,17 @@ class Step(BasicStatement, Replayable):
                     output = runner.stdout_capture.getvalue()
                     if output:
                         output = _text(output)
-                        error += u'\nCaptured stdout:\n' + output
+                        error += u"\nCaptured stdout:\n" + output
                 if runner.config.stderr_capture:
                     output = runner.stderr_capture.getvalue()
                     if output:
                         output = _text(output)
-                        error += u'\nCaptured stderr:\n' + output
+                        error += u"\nCaptured stderr:\n" + output
                 if runner.config.log_capture:
                     output = runner.log_capture.getvalue()
                     if output:
                         output = _text(output)
-                        error += u'\nCaptured logging:\n' + output
+                        error += u"\nCaptured logging:\n" + output
             self.error_message = error
             keep_going = False
 
@@ -1289,7 +1333,6 @@ class Step(BasicStatement, Replayable):
             for formatter in runner.formatters:
                 formatter.result(self)
 
-        runner.run_hook('after_step', runner.context, self)
         return keep_going
 
 
@@ -1472,7 +1515,7 @@ class Row(object):
       Iterating over the Row will yield the individual cells as strings.
 
     **named access**
-      Individual cells may be accessed by heading name; row['name'] would give
+      Individual cells may be accessed by heading name; row["name"] would give
       the cell value for the column with heading "name".
 
     **indexed access**
@@ -1513,7 +1556,7 @@ class Row(object):
         return self.cells[index]
 
     def __repr__(self):
-        return '<Row %r>' % (self.cells,)
+        return "<Row %r>" % (self.cells,)
 
     def __eq__(self, other):
         return self.cells == other.cells
@@ -1553,7 +1596,7 @@ class Tag(six.text_type):
 
     See :ref:`controlling things with tags`.
     """
-    allowed_chars = u'._-=:'    # In addition to aplha-numerical chars.
+    allowed_chars = u"._-=:"    # In addition to aplha-numerical chars.
     quoting_chars = ("'", '"', "<", ">")
 
     def __new__(cls, name, line):
@@ -1593,7 +1636,7 @@ class Tag(six.text_type):
             if char.isalnum() or (allowed_chars and char in allowed_chars):
                 chars.append(char)
             elif char.isspace():
-                chars.append(u'_')
+                chars.append(u"_")
             elif char in cls.quoting_chars:
                 pass    # -- NORMALIZE: Remove any quoting chars.
             # -- MAYBE:
@@ -1644,8 +1687,8 @@ class Text(six.text_type):
                                          expected.splitlines()):
             diff.append(line)
         # strip unnecessary diff prefix
-        diff = ['Text does not match:'] + diff[3:]
-        raise AssertionError('\n'.join(diff))
+        diff = ["Text does not match:"] + diff[3:]
+        raise AssertionError("\n".join(diff))
 
 
 # -----------------------------------------------------------------------------

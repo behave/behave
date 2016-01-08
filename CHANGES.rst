@@ -30,6 +30,7 @@ ENHANCEMENTS:
   * issue #302: Support escaped-pipe in Gherkin table cell value (provided by: connorsml, pull #360)
   * issue #301: Support default tags in configfile
   * issue #299: Runner can continue after a failed step (same as: #314)
+  * issue #197: Hooks processing should be more exception safe (provided by: vrutkovs, jenisys, pull #205)
 
 CHANGES:
 
