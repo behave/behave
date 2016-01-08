@@ -355,6 +355,10 @@ options = [
 
     (("--version",),
      dict(action="store_true", help="Show version.")),
+
+    (('--randomize',),
+     dict(action='store_true',
+          help="Randomize execution of files, features and scenarios.")),
 ]
 
 # -- OPTIONS: With raw value access semantics in configuration file.
