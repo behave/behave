@@ -286,7 +286,21 @@ class Feature(TagAndStatusStatement, Replayable):
 
         # Randomize execution of scenarios
         if runner.config.randomize:
-            shuffle(self.scenarios)
+            randomized_scenarios = set(copy.copy(self.scenarios))
+            setup_tags = []
+            teardown_tags = []
+
+            for scenario in self.scenarios:
+                if "setup" in scenario.tags:
+                    setup_tags.append(scenario)
+                    randomized_scenarios.discard(scenario)
+                if "teardown" in scenario.tags:
+                    teardown_tags.append(scenario)
+                    randomized_scenarios.discard(scenario)
+
+            randomized_scenarios = list(randomized_scenarios)
+            shuffle(randomized_scenarios)
+            self.scenarios = setup_tags + randomized_scenarios + teardown_tags
 
         failed_count = 0
         for scenario in self.scenarios:
