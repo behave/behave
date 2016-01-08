@@ -452,7 +452,7 @@ class ModelRunner(object):
             #     self.aborted = True
             #     if name not in ("before_all", "after_all"):
             #         raise
-            except Exception, e:
+            except Exception as e:
                 # -- HANDLE HOOK ERRORS:
                 use_traceback = False
                 if self.config.verbose:
