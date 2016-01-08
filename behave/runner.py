@@ -18,6 +18,7 @@ from behave.formatter._registry import make_formatters
 from behave.configuration import ConfigError
 from behave.log_capture import LoggingCapture
 from behave.runner_util import collect_feature_locations, parse_features
+from behave._types import ExceptionUtil
 
 
 class ContextMaskWarning(UserWarning):
@@ -151,7 +152,7 @@ class Context(object):
         self._origin = {}
         self._mode = self.BEHAVE
         self.feature = None
-        # XXX
+        # XXX-RECHECK: If needed
         self.text = None
         self.table = None
         self.stdout_capture = None
@@ -418,6 +419,7 @@ class ModelRunner(object):
 
         self.context = None
         self.feature = None
+        self.hook_failures = 0
 
         self.stdout_capture = None
         self.stderr_capture = None
@@ -443,13 +445,41 @@ class ModelRunner(object):
 
     def run_hook(self, name, context, *args):
         if not self.config.dry_run and (name in self.hooks):
-            # try:
-            with context.user_mode():
-                self.hooks[name](context, *args)
+            try:
+                with context.user_mode():
+                    self.hooks[name](context, *args)
             # except KeyboardInterrupt:
             #     self.aborted = True
             #     if name not in ("before_all", "after_all"):
             #         raise
+            except Exception, e:
+                # -- HANDLE HOOK ERRORS:
+                use_traceback = False
+                if self.config.verbose:
+                    use_traceback = True
+                    ExceptionUtil.set_traceback(e)
+                extra = u""
+                if "tag" in name:
+                    extra = "(tag=%s)" % args[0]
+
+                error_text = ExceptionUtil.describe(e, use_traceback)
+                print(u"HOOK-ERROR in %s%s: %s" % (name, extra, error_text))
+                self.hook_failures += 1
+                if "step" in name:
+                    step = args[0]
+                    step.hook_failed = True
+                elif "tag" in name:
+                    # -- FEATURE or SCENARIO => Use Feature as collector.
+                    context.feature.hook_failed = True
+                elif "scenario" in name:
+                    scenario = args[0]
+                    scenario.hook_failed = True
+                elif "feature" in name:
+                    feature = args[0]
+                    feature.hook_failed = True
+                elif "all" in name:
+                    # -- ABORT EXECUTION: For before_all/after_all
+                    self.aborted = True
 
     def setup_capture(self):
         if not self.context:
@@ -513,6 +543,7 @@ class ModelRunner(object):
 
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
         context = self.context
+        self.hook_failures = 0
         self.setup_capture()
         self.run_hook("before_all", context)
 
@@ -550,10 +581,9 @@ class ModelRunner(object):
         self.run_hook("after_all", self.context)
         for reporter in self.config.reporters:
             reporter.end()
-        # if self.aborted:
-        #     print("\nABORTED: By user.")
-        failed = ((failed_count > 0) or self.aborted or
-                  (len(self.undefined_steps) > undefined_steps_initial_size))
+
+        failed = ((failed_count > 0) or self.aborted or (self.hook_failures > 0)
+                  or (len(self.undefined_steps) > undefined_steps_initial_size))
         return failed
 
     def run(self):
