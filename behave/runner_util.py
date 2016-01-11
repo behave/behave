@@ -14,7 +14,7 @@ import sys
 from six import string_types
 from behave import parser
 from behave.model_core import FileLocation
-
+from behave.model import ScenarioOutline
 
 
 # -----------------------------------------------------------------------------
@@ -145,11 +145,10 @@ class FeatureScenarioLocationCollector(object):
             If file location is no exactly correct and strict is true.
         """
         assert self.feature
-        if not self.all_scenarios:
-            self.all_scenarios = self.feature.walk_scenarios()
+        all_scenarios = self.feature.walk_scenarios(with_outlines=True)
 
         # -- STEP: Check if lines are correct.
-        existing_lines = [scenario.line for scenario in self.all_scenarios]
+        existing_lines = [scenario.line for scenario in all_scenarios]
         selected_lines = list(self.scenario_lines)
         for line in selected_lines:
             new_line = self.select_scenario_line_for(line, existing_lines)
@@ -165,9 +164,13 @@ class FeatureScenarioLocationCollector(object):
         # -- STEP: Determine selected scenarios and store them.
         scenario_lines = set(self.scenario_lines)
         selected_scenarios = set()
-        for scenario in self.all_scenarios:
+        for scenario in all_scenarios:
             if scenario.line in scenario_lines:
-                selected_scenarios.add(scenario)
+                if isinstance(scenario, ScenarioOutline):
+                    for s in scenario:
+                        selected_scenarios.add(s)
+                else:
+                    selected_scenarios.add(scenario)
                 scenario_lines.remove(scenario.line)
         # -- CHECK ALL ARE RESOLVED:
         assert not scenario_lines
