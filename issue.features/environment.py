@@ -9,12 +9,15 @@ Functionality:
 from behave.tag_matcher import ActiveTagMatcher
 import six
 import sys
+import platform
 
 # -- MATCHES ANY TAGS: @use.with_{category}={value}
 # NOTE: active_tag_value_provider provides category values for active tags.
 active_tag_value_provider = {
     "python2": str(six.PY2).lower(),
     "python3": str(six.PY3).lower(),
+    # -- python.implementation: cpython, pypy, jython, ironpython
+    "python.implementation": platform.python_implementation().lower(),
     "pypy":    str("__pypy__" in sys.modules).lower(),
     "os":      sys.platform,
 }
