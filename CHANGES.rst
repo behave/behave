@@ -12,7 +12,9 @@ DOCUMENTATION:
 
   * pull  #379: Correct wording in README.rst (provided by: franklinchou)
   * pull  #362: docs/tutorial.rst: fixed non-monospace font (provided by: spacediver)
+  * pull  #326: docs/tutorial.rst: Correct features directory path creation (provided by: memee)
   * issue #356: docs/api.rst: type in implementation (submitted by: tomxtobin)
+  * pull  #335: docs/api.rst: execute_steps() example (provided by: miabbott)
   * pull  #339: Adapt wording in install.rst (provided by: charleswhchan)
   * pull  #338: docs/philosophy.rst: Correct to uppercase in example (provided by: charleswhchan)
   * pull  #327: Fix typo in Django doc (provided by: nikolas)
