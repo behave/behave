@@ -6,7 +6,7 @@ Tutorial
 
 First, :doc:`install behave <install>`.
 
-Now make a directory called "tutorial". In that directory create a file
+Now make a directory called "features". In that directory create a file
 called "tutorial.feature" containing:
 
 .. code-block:: gherkin
@@ -18,7 +18,7 @@ called "tutorial.feature" containing:
        When we implement a test
        Then behave will test it for us!
 
-Make a new directory called "tutorial/steps". In that directory create a
+Make a new directory called "features/steps". In that directory create a
 file called "tutorial.py" containing:
 
 .. code-block:: python
@@ -40,12 +40,12 @@ file called "tutorial.py" containing:
 Run behave::
 
     % behave
-    Feature: showing off behave # tutorial/tutorial.feature:1
+    Feature: showing off behave # features/tutorial.feature:1
 
-      Scenario: run a simple test        # tutorial/tutorial.feature:3
-        Given we have behave installed   # tutorial/steps/tutorial.py:3
-        When we implement a test         # tutorial/steps/tutorial.py:7
-        Then behave will test it for us! # tutorial/steps/tutorial.py:11
+      Scenario: run a simple test        # features/tutorial.feature:3
+        Given we have behave installed   # features/steps/tutorial.py:3
+        When we implement a test         # features/steps/tutorial.py:7
+        Then behave will test it for us! # features/steps/tutorial.py:11
 
     1 feature passed, 0 failed, 0 skipped
     1 scenario passed, 0 failed, 0 skipped
