@@ -37,7 +37,7 @@ Feature: Ensure that BAD/SAD Use cases of Background are detected
       Then it should fail with
         """
         Failed to parse "{__WORKDIR__}/features/syndrome.background_with_tags.feature":
-        Parser failure in state next_scenario, at line 4: "Background: Oops..."
+        Parser failure in state taggable_statement, at line 4: "Background: Oops..."
         REASON: Background does not support tags.
         """
 
