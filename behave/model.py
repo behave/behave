@@ -21,7 +21,8 @@ import time
 import six
 from six.moves import zip       # pylint: disable=redefined-builtin
 
-from behave.model_core import BasicStatement, TagAndStatusStatement, Replayable
+from behave.model_core import \
+        BasicStatement, TagAndStatusStatement, TagStatement, Replayable
 from behave.matchers import NoMatch
 from behave.textutil import text as _text
 
@@ -803,7 +804,7 @@ class ScenarioOutlineBuilder(object):
     @classmethod
     def make_row_tags(cls, outline_tags, row, params=None):
         if not outline_tags:
-            return None
+            return []
 
         tags = []
         for tag in outline_tags:
@@ -852,6 +853,7 @@ class ScenarioOutlineBuilder(object):
                 scenario_name = self.make_scenario_name(scenario_outline.name,
                                                         example, row, params)
                 row_tags = self.make_row_tags(scenario_outline.tags, row, params)
+                row_tags.extend(example.tags)
                 new_steps = []
                 for outline_step in scenario_outline.steps:
                     new_step = self.make_step_for_row(outline_step, row, params)
@@ -1074,8 +1076,7 @@ class ScenarioOutline(Scenario):
         runner.context._set_root_attribute("active_outline", None)
         return failed_count > 0
 
-
-class Examples(BasicStatement, Replayable):
+class Examples(TagStatement, Replayable):
     """A table parsed from a `scenario outline`_ in a *feature file*.
 
     The attributes are:
@@ -1107,8 +1108,8 @@ class Examples(BasicStatement, Replayable):
     """
     type = "examples"
 
-    def __init__(self, filename, line, keyword, name, table=None):
-        super(Examples, self).__init__(filename, line, keyword, name)
+    def __init__(self, filename, line, keyword, name, tags=None, table=None):
+        super(Examples, self).__init__(filename, line, keyword, name, tags)
         self.table = table
         self.index = None
 

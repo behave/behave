@@ -28,6 +28,7 @@ DOCUMENTATION:
 
 ENHANCEMENTS:
 
+  * Tagged Examples: Examples in a ScenarioOutline can now have tags.
   * issue #357: Add language attribute to Feature class
   * pull  #328: Auto-retry failed scenarios in unreliable environment (provided by: MihaiBalint, robertknight)
   * issue #302: Support escaped-pipe in Gherkin table cell value (provided by: connorsml, pull #360)

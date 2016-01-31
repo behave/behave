@@ -231,8 +231,18 @@ class BasicStatement(object):
 class TagStatement(BasicStatement):
 
     def __init__(self, filename, line, keyword, name, tags):
+        if tags is None:
+            tags = []
         super(TagStatement, self).__init__(filename, line, keyword, name)
         self.tags = tags
+
+    def should_run_with_tags(self, tag_expression):
+        """Determines if statement should run when the tag expression is used.
+
+        :param tag_expression:  Runner/config environment tags to use.
+        :return: True, if examples should run. False, otherwise (skip it).
+        """
+        return tag_expression.check(self.tags)
 
 
 class TagAndStatusStatement(BasicStatement):
@@ -244,6 +254,14 @@ class TagAndStatusStatement(BasicStatement):
         self.should_skip = False
         self.skip_reason = None
         self._cached_status = None
+
+    def should_run_with_tags(self, tag_expression):
+        """Determines if statement should run when the tag expression is used.
+
+        :param tag_expression:  Runner/config environment tags to use.
+        :return: True, if examples should run. False, otherwise (skip it).
+        """
+        return tag_expression.check(self.tags)
 
     @property
     def status(self):
