@@ -6,7 +6,7 @@ Functionality:
   * active tags
 """
 
-from behave.tag_matcher import ActiveTagMatcher
+from behave.tag_matcher import ActiveTagMatcher, setup_active_tag_values
 import six
 import sys
 import platform
@@ -23,15 +23,11 @@ active_tag_value_provider = {
 }
 active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
-def setup_active_tag_values(userdata):
-    for category in active_tag_value_provider.keys():
-        if category in userdata:
-            active_tag_value_provider[category] = userdata[category]
-
 def before_all(context):
     # -- SETUP ACTIVE-TAG MATCHER (with userdata):
     # USE: behave -D browser=safari ...
-    # NOT-NEEDED: setup_active_tag_values(context.config.userdata)
+    # NOT-NEEDED: setup_active_tag_values(active_tag_value_provider, 
+    #                                     context.config.userdata)
     pass
 
 def before_feature(context, feature):

@@ -232,6 +232,19 @@ class CompositeTagMatcher(TagMatcher):
         # -- OTHERWISE:
         return False
 
+
+def setup_active_tag_values(active_tag_values, data):
+    """Setup/update active_tag values with dict-like data.
+    Only values for keys that are already present are updated.
+
+    :param active_tag_values:   Data storage for active_tag value (dict-like).
+    :param data:   Data that should be used for active_tag values (dict-like).
+    """
+    for category in active_tag_values.keys():
+        if category in data:
+            active_tag_values[category] = data[category]
+
+
 # -----------------------------------------------------------------------------
 # PROTOTYPING CLASSES:
 # -----------------------------------------------------------------------------

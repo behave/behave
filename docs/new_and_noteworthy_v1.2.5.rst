@@ -700,15 +700,16 @@ Assuming you have scenarios with the following runtime conditions:
     }
     active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
-    def setup_active_tag_values(userdata):
-        for category in active_tag_value_provider.keys():
-            if category in userdata:
-                active_tag_value_provider[category] = userdata[category]
+    # -- BETTER USE: from behave.tag_matcher import setup_active_tag_values
+    def setup_active_tag_values(active_tag_values, data):
+        for category in active_tag_values.keys():
+            if category in data:
+                active_tag_values[category] = data[category]
 
     def before_all(context):
         # -- SETUP ACTIVE-TAG MATCHER (with userdata):
         # USE: behave -D browser=safari ...
-        setup_active_tag_values(context.config.userdata)
+        setup_active_tag_values(active_tag_value_provider, context.config.userdata)
 
     def before_feature(context, feature):
         if active_tag_matcher.should_exclude_with(feature.tags):

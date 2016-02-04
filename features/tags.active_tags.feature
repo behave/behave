@@ -51,7 +51,7 @@ Feature: Active Tags
         """
       And a file named "features/environment.py" with:
         """
-        from behave.tag_matcher import ActiveTagMatcher
+        from behave.tag_matcher import ActiveTagMatcher, setup_active_tag_values
         import sys
 
         # -- ACTIVE TAG SUPPORT: @use.with_{category}={value}, ...
@@ -61,14 +61,9 @@ Feature: Active Tags
         }
         active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
-        def setup_active_tag_values_from_userdata(userdata):
-            for name in active_tag_value_provider.keys():
-                if name in userdata:
-                    value = userdata[name]
-                    active_tag_value_provider[name] = value
-
+        # -- BEHAVE-HOOKS:
         def before_all(context):
-            setup_active_tag_values_from_userdata(context.config.userdata)
+            setup_active_tag_values(active_tag_value_provider, context.config.userdata)
 
         def before_scenario(context, scenario):
             if active_tag_matcher.should_exclude_with(scenario.effective_tags):
