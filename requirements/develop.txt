@@ -3,8 +3,8 @@
 # ============================================================================
 
 # -- BUILD-TOOL:
-# PREPARED: invoke
-invoke >= 0.10.1
+# PREPARE USAGE: invoke
+invoke >= 0.11.1
 path.py >= 7.2
 
 # -- CONFIGURATION MANAGEMENT (helpers):

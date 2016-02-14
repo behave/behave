@@ -48,7 +48,7 @@ class JSONFormatter(Formatter):
             'name': feature.name,
             'tags': list(feature.tags),
             'location': six.text_type(feature.location),
-            'status': feature.status,
+            'status': None,     # Not known before feature run.
         }
         element = self.current_feature_data
         if feature.description:

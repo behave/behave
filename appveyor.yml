@@ -1,0 +1,54 @@
+# =============================================================================
+# CI-SERVER CONFIGURATION: behave
+# =============================================================================
+# OS: Windows
+# SEE ALSO:
+#   * http://www.appveyor.com/docs/build-configuration
+#   * http://www.appveyor.com/docs/installed-software#python
+#   * http://www.appveyor.com/docs/appveyor-yml
+# =============================================================================
+# https://bootstrap.pypa.io/get-pip.py
+# MAYBE: python2.6:    - choco install pip
+
+version: 1.2.6.dev0.{build}-{branch}
+clone_folder: C:\projects\behave.ci
+# clone_depth:  2
+# shallow_clone: true
+
+environment:
+  PYTHONPATH: ".;%CD%"
+  ROOTDIR_PREFIX: "C:"
+  matrix:
+    - PYTHON:  C:\Python27
+      ROOTDIR_PREFIX: "c:"
+    - PYTHON:  C:\Python34
+    - PYTHON:  C:\Python35
+
+# -- TEMPORARILY DISABLED: environment matrix:
+#    - PYTHON:  C:\Python26
+#    - PYTHON:  C:\Python33
+#    - PYTHON:  C:\Python26-x64
+#    - PYTHON:  C:\Python27-x64
+#    - PYTHON:  C:\Python33-x64
+#    - PYTHON:  C:\Python34-x64
+#    - PYTHON:  C:\Python35-x64
+
+init:
+    - "echo TESTING-WITH %PYTHON%"
+
+# -- TEMPORARILY DISABLED: Python variants discovery
+#    - @echo INSTALLED PYTHON VERSIONS
+#    - @dir C:\Python*
+#    - path
+
+install:
+    - "%PYTHON%\\python.exe -m pip install pytest mock PyHamcrest nose"
+    - "%PYTHON%\\python.exe setup.py -q install"
+
+build: off
+test_script:
+    - "%PYTHON%\\Scripts\\py.test.exe test"
+    - "%PYTHON%\\Scripts\\behave -f progress3 --junit issue.features"
+
+# -- TEMPORARILY DISABLED:
+#    - "%PYTHON%\\Scripts\\behave.exe -f progress3 --junit features"

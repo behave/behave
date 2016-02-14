@@ -136,6 +136,9 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
         Assertion Failed: FAILED SUB-STEP: When a step fails with stderr "STDERR: Alice is alive"
         Substep info: Assertion Failed: EXPECT: Step fails with stderr.
         Captured stderr:
+        """
+    And the command output should contain:
+        """
         STDERR: Alice is alive
         """
 
@@ -160,7 +163,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
     When I run "behave -c features/issue96_case5.feature"
     Then it should fail with:
         """
-        AssertionError: FAILED SUB-STEP: Then a step fails
+        HOOK-ERROR in before_scenario: AssertionError: FAILED SUB-STEP: Then a step fails
         Substep info: Assertion Failed: EXPECT: Step fails.
         """
 

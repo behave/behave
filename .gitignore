@@ -9,6 +9,7 @@ __pycache__/
 __WORKDIR__/
 _build/
 _WORKSPACE/
+reports/
 tools/virtualenvs
 .cache/
 .idea/

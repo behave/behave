@@ -37,7 +37,7 @@ Feature: Ensure that BAD/SAD Use cases of Background are detected
       Then it should fail with
         """
         Failed to parse "{__WORKDIR__}/features/syndrome.background_with_tags.feature":
-        Parser failure in state next_scenario, at line 4: 'Background: Oops...'
+        Parser failure in state taggable_statement, at line 4: "Background: Oops..."
         REASON: Background does not support tags.
         """
 
@@ -57,7 +57,7 @@ Feature: Ensure that BAD/SAD Use cases of Background are detected
       Then it should fail with
         """
         Failed to parse "{__WORKDIR__}/features/syndrome.background_after_scenario.feature":
-        Parser failure in state steps, at line 6: 'Background: Oops, too late (after Scenario)'
+        Parser failure in state steps, at line 6: "Background: Oops, too late (after Scenario)"
         REASON: Background may not occur after Scenario/ScenarioOutline.
         """
 
@@ -77,7 +77,7 @@ Feature: Ensure that BAD/SAD Use cases of Background are detected
       When I run "behave -f plain -T features/syndrome.tagged_background_after_scenario.feature"
       Then it should fail with
         """
-        Parser failure in state next_scenario, at line 7: 'Background: Oops, too late (after Scenario)'
+        Parser failure in state taggable_statement, at line 7: "Background: Oops, too late (after Scenario)"
         REASON: Background may not occur after Scenario/ScenarioOutline.
         """
 
@@ -100,7 +100,7 @@ Feature: Ensure that BAD/SAD Use cases of Background are detected
       When I run "behave -f plain -T features/syndrome.background_after_scenario_outline.feature"
       Then it should fail with
         """
-        Parser failure in state steps, at line 10: 'Background: Oops, too late (after Scenario Outline)'
+        Parser failure in state steps, at line 10: "Background: Oops, too late (after Scenario Outline)"
         REASON: Background may not occur after Scenario/ScenarioOutline.
         """
 
@@ -124,6 +124,6 @@ Feature: Ensure that BAD/SAD Use cases of Background are detected
       When I run "behave -f plain -T features/syndrome.background_after_scenario_outline.feature"
       Then it should fail with
         """
-        Parser failure in state next_scenario, at line 11: 'Background: Oops, too late (after Scenario Outline)'
+        Parser failure in state taggable_statement, at line 11: "Background: Oops, too late (after Scenario Outline)"
         REASON: Background may not occur after Scenario/ScenarioOutline.
         """

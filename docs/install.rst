@@ -19,7 +19,7 @@ As an alternative,
 you can also use :pypi:`easy_install <setuptools>` to install :pypi:`behave`::
 
     easy_install behave         # CASE: New installation.
-    easy_install -U behave      # CASE: Upgrade behave.
+    easy_install -U behave      # CASE: Upgrade existing installation.
 
 
 .. hint::

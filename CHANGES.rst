@@ -10,29 +10,50 @@ GOALS:
 
 DOCUMENTATION:
 
-  * pull #327: Fix typo in Django doc (provided by: nikolas)
-  * pull #321: Update Django integration (provided by: bittner, contains: #315, #316)
+  * pull  #379: Correct wording in README.rst (provided by: franklinchou)
+  * pull  #362: docs/tutorial.rst: fixed non-monospace font (provided by: spacediver)
+  * pull  #326: docs/tutorial.rst: Correct features directory path creation (provided by: memee)
+  * issue #356: docs/api.rst: type in implementation (submitted by: tomxtobin)
+  * pull  #335: docs/api.rst: execute_steps() example (provided by: miabbott)
+  * pull  #339: Adapt wording in install.rst (provided by: charleswhchan)
+  * pull  #338: docs/philosophy.rst: Correct to uppercase in example (provided by: charleswhchan)
+  * pull  #327: Fix typo in Django doc (provided by: nikolas)
+  * pull  #321: Update Django integration (provided by: bittner, contains: #315, #316)
   * FIX: cmdline/config-param doc-generator, avoid duplicated param entries (related to: #318)
   * issue #317: Update comparison: lettuce tags (provided by: ramiabughazaleh)
-  * pull #307: Typo in readme (provided by: dflock)
-  * pull #305: behave.rst related fixes reapplied (provided by: bittner)
-  * pull #292: Use title-cased keywords in tutorial scenario (provided by: neoblackcap)
-  * pull #291: Tiny tweaks in tutorial docs (provided by: bernardpaulus)
+  * pull  #307: Typo in readme (provided by: dflock)
+  * pull  #305: behave.rst related fixes reapplied (provided by: bittner)
+  * pull  #292: Use title-cased keywords in tutorial scenario (provided by: neoblackcap)
+  * pull  #291: Tiny tweaks in tutorial docs (provided by: bernardpaulus)
 
 ENHANCEMENTS:
 
+  * Tagged Examples: Examples in a ScenarioOutline can now have tags.
+  * issue #357: Add language attribute to Feature class
+  * pull  #328: Auto-retry failed scenarios in unreliable environment (provided by: MihaiBalint, robertknight)
+  * issue #302: Support escaped-pipe in Gherkin table cell value (provided by: connorsml, pull #360)
   * issue #301: Support default tags in configfile
   * issue #299: Runner can continue after a failed step (same as: #314)
+  * issue #197: Hooks processing should be more exception safe (provided by: vrutkovs, jenisys, pull #205)
 
 CHANGES:
 
-  * parser: language comment in feature file has higher priority than --lang option (related to: #334). 
+  * parser: language comment in feature file has higher priority than --lang option (related to: #334).
 
 FIXED:
 
+  * issue #384: Active Tags fail with ScenarioOutline (submitted by: BRevzin)
+  * issue #383: Handle (custom) Type parsing errors better (submitted by: zsoldosp)
+  * pull  #382: fix typo in tag name (provided by: zsoldosp)
+  * issue #361: utf8 file with BOM (provided by: karulis)
+  * issue #349: ScenarioOutline skipped with --format=json
+  * issue #330: Skipped scenarios are included in junit reports when --no-skipped is specified (provided by: vrutkovs, pull #331)
+  * issue #320: Userdata is case-insensitive when read from config file (provided by: mixxorz)
   * issue #319: python-version requirements in behave.whl for Python2.6 (submitted by: darkfoxprime)
   * issue #310: Use setuptools_behave.py with behave module
   * issue #309: behave --lang-list fails on Python3 (and Python2)
+  * issue #300: UnicodeDecodeError when read steps.py (similar to: #361)
+  * issue #288: Use print function instead print statement in environment/steps files
 
 
 Version: 1.2.5 (2015-01-31)

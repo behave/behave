@@ -362,7 +362,7 @@ Feature: Background
     When I run "behave -f plain -T features/background_sad_example1.feature"
     Then it should fail with:
         """
-        Parser failure in state steps, at line 5: 'Background: B1'
+        Parser failure in state steps, at line 5: "Background: B1"
         REASON: Background may not occur after Scenario/ScenarioOutline.
         """
 
@@ -387,6 +387,6 @@ Feature: Background
     When I run "behave -f plain -T features/background_sad_example2.feature"
     Then it should fail with:
         """
-        Parser failure in state steps, at line 5: 'Background: B2 (XFAIL)'
+        Parser failure in state steps, at line 5: "Background: B2 (XFAIL)"
         REASON: Background should not be used here.
         """
