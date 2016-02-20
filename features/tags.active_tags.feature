@@ -223,11 +223,12 @@ Feature: Active Tags
         | category | value |
         | foo      | xxx   |
       Then the following active tag combinations are enabled:
-        | tags                                      | enabled? |
-        | @use.with_foo=xxx   @use.with_foo=other   |  no      |
-        | @use.with_foo=xxx   @not.with_foo=other   |  yes     |
-        | @use.with_foo=other @not.with_foo=xxx     |  no      |
-        | @not.with_foo=other @not.with_foo=xxx     |  no      |
+        | tags                                      | enabled? | Comment |
+        | @use.with_foo=xxx   @use.with_foo=other   |  yes     | Enabled: tag1 |
+        | @use.with_foo=xxx   @not.with_foo=other   |  yes     | Enabled: tag1, tag2|
+        | @use.with_foo=xxx   @not.with_foo=xxx     |  yes     | Enabled: tag1 (BAD-SPEC) |
+        | @use.with_foo=other @not.with_foo=xxx     |  no      | Enabled: none |
+        | @not.with_foo=other @not.with_foo=xxx     |  yes     | Enabled: tag1 |
 
 
     Scenario: Tag logic with unknown categories (case: ignored)
