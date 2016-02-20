@@ -11,16 +11,30 @@ Feature: Active Tags
   .   * If several active tags are used for a feature/scenario/scenario outline,
   .     the following tag logic is used:
   .
-  .     enabled = enabled1 and enabled2 and ...
+  .     SIMPLIFIED ALGORITHM: For active-tag expression
+  .
+  .       enabled := enabled(active-tag1) and enabled(active-tag2) and ...
+  .
+  .           where all active-tags have a different category.
+  .
+  .     REAL ALGORITHM:
+  .       If multiple active-tags for the same catgory exist,
+  .       then these active-tags need to be merged together into a tag_group.
+  .
+  .     enabled           := enabled(tag_group1) and enabled(tag_group2) and ...
+  .     tag_group.enabled := enabled(tag1) or enabled(tag2) or ...
+  .
+  .           where all the active-tags within a tag-group have the same category.
   .
   . ACTIVE TAG SCHEMA (dialect1):
-  .     @active.with_{category}={value}
-  .     @not_active.with_{category}={value}
-  .
-  . ACTIVE TAG SCHEMA (dialect2):
   .     @use.with_{category}={value}
   .     @not.with_{category}={value}
-  .     @only.with_{category}={value}
+  .
+  .     DEPRECATED: @only.with_{category}={value}
+  .
+  . ACTIVE TAG SCHEMA (dialect2):
+  .     @active.with_{category}={value}
+  .     @not_active.with_{category}={value}
   .
   . RATIONALE:
   .   Some aspects of the runtime environment are only known
