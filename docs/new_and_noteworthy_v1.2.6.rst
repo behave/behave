@@ -90,7 +90,7 @@ Tagged Examples with Active Tags and Userdata
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 An even more natural fit is to use ``tagged examples`` together with
-:ref:`active tags` and :ref:`userdata`:
+``active tags`` and ``userdata``:
 
 .. code-block:: gherkin
 
