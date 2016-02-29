@@ -43,6 +43,7 @@ CHANGES:
 
 FIXED:
 
+  * issue #414: Support for Jython 2.7 (submitted by: gabtwi...)
   * issue #384: Active Tags fail with ScenarioOutline (submitted by: BRevzin)
   * issue #383: Handle (custom) Type parsing errors better (submitted by: zsoldosp)
   * pull  #382: fix typo in tag name (provided by: zsoldosp)

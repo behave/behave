@@ -10,6 +10,7 @@ from behave.model import Scenario, ScenarioOutline, Step
 from behave.formatter import ansi_escapes
 from behave.model_describe import ModelDescriptor
 from behave.textutil import indent, make_indentation, text as _text
+import six
 
 
 def CDATA(text=None):   # pylint: disable=invalid-name
@@ -56,10 +57,10 @@ if hasattr(ElementTree, '_serialize'):
             # python <3.3
             return orig(write, elem, qnames, namespaces)
 
-    if sys.version_info.major == 3:
+    if six.PY3:
         ElementTree._serialize_xml = \
             ElementTree._serialize['xml'] = _serialize_xml3
-    elif sys.version_info.major == 2:
+    elif six.PY2:
         ElementTree._serialize_xml = \
             ElementTree._serialize['xml'] = _serialize_xml2
 
