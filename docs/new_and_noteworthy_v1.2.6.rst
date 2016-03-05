@@ -22,6 +22,9 @@ Summary:
   Hook errors (exception in hook processing) lead now to scenario failures
   (even if no step fails).
 
+* Testing support for asynchronuous frameworks or protocols (:mod:`asyncio` based)
+
+
 
 Scenario Outline Improvements
 -------------------------------------------------------------------------------
@@ -145,4 +148,108 @@ Select the ``Examples`` section now by using:
         if active_tag_matcher.should_exclude_with(scenario.effective_tags):
             sys.stdout.write("ACTIVE-TAG DISABLED: Scenario %s\n" % scenario.name)
             scenario.skip(active_tag_matcher.exclude_reason)
+
+
+Testing asyncio Frameworks
+-------------------------------------------------------------------------------
+
+:Since:  behave 1.2.6.dev0
+
+The following support was added to simplify testing asynchronuous
+framework and protocols that are based on :mod:`asyncio` module
+(since Python 3.4).
+
+There are basically two use cases:
+
+* async-steps (with event_loop.run_until_complete() semantics)
+* async-dispatch step(s) with async-collect step(s) later on
+
+
+Async-steps
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It is now possible to use ``async-steps`` in ``behave``.
+An async-step is basically a coroutine as step-implementation for behave.
+The async-step is wrapped into an ``event_loop.run_until_complete()`` call
+by using the ``@async_run_until_complete`` step-decorator.
+
+This avoids another layer of indirection that would otherwise be necessary,
+to use the coroutine.
+
+A simple example for the implementation of the async-steps is shown for:
+
+* Python 3.5 with new ``async``/``await`` keywords
+* Python 3.4 with ``@asyncio.coroutine`` decorator and ``yield from`` keyword
+
+.. literalinclude:: ../examples/async_step/features/steps/async_steps35.py
+    :language: gherkin
+    :prepend:
+        # -- FILE: features/steps/async_steps35.py
+
+
+.. literalinclude:: ../examples/async_step/features/steps/async_steps34.py
+    :language: gherkin
+    :prepend:
+        # -- FILE: features/steps/async_steps34.py
+
+When you use the async-step from above in a feature file and run it with behave:
+
+.. literalinclude:: ../examples/async_step/testrun_example.async_run.txt
+    :language: gherkin
+    :prepend:
+        # -- TEST-RUN OUTPUT:
+        $ behave -f plain features/async_run.feature
+
+.. hidden:
+
+    .. literalinclude:: ../examples/async_step/features/async_run.feature
+        :language: gherkin
+        :prepend: # -- FILE: features/async_run.feature
+
+.. note::
+
+    The async-step is wrapped with an ``èvent_loop.run_until_complete()`` call.
+    As the timings show, it actually needs approximatly 0.3 seconds to run.
+
+
+
+
+Async-dispatch and async-collect
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The other use case with testing async frameworks is that
+
+* you dispatch one or more async-calls
+* you collect (and verify) the results of the async-calls later-on
+
+A simple example of this approach is shown in the following feature file:
+
+.. literalinclude:: ../examples/async_step/features/async_dispatch.feature
+    :language: gherkin
+    :prepend: # -- FILE: features/async_dispatch.feature
+
+When you run this feature file:
+
+.. literalinclude:: ../examples/async_step/testrun_example.async_dispatch.txt
+    :language: gherkin
+    :prepend:
+        # -- TEST-RUN OUTPUT:
+        $ behave -f plain features/async_dispatch.feature
+
+.. note::
+
+    The final async-collect step needs approx. 0.2 seconds until the two
+    dispatched async-tasks have finished.
+    In contrast, the async-dispatch steps basically need no time at all.
+
+    An :class:`AsyncContext` object is used on the context,
+    to hold the event loop information and the async-tasks that are of interest.
+
+The implementation of the steps from above:
+
+.. literalinclude:: ../examples/async_step/features/steps/async_dispatch_steps.py
+    :language: gherkin
+    :prepend:
+        # -- FILE: features/steps/async_dispatch_steps.py
+        # REQUIRES: Python 3.4 or newer
 
