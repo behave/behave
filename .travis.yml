@@ -1,3 +1,7 @@
+# -- AVOID:  python: "3.5" => python 3.5.0
+# Seems to have a problem with unit tests in exception traceback.
+# Behaviour is fixed in python 3.5.1
+
 language: python
 sudo: false
 python:
@@ -6,16 +10,12 @@ python:
   - "3.3"
   - "3.4"
   - "3.5.1"
-  - "nightly"
   - "pypy"
 
-# -- AVOID:  python: "3.5" => python 3.5.0
-# Seems to have a problem with unit tests in exception traceback.
-# Behaviour is fixed in python 3.5.1
-
-matrix:
-  allow_failures:
-    - python: "nightly"
+# DISABLED: - "nightly"
+# matrix:
+#  allow_failures:
+#    - python: "nightly"
 
 cache:
   directories:
@@ -28,10 +28,10 @@ install:
 
 script:
   - python --version
-  - py.test test
-  - behave -f progress --junit --tags=~@xfail features/
-  - behave -f progress --junit --tags=~@xfail tools/test-features/
-  - behave -f progress --junit --tags=~@xfail issue.features/
+  - py.test test tests
+  - behave -f progress --junit features/
+  - behave -f progress --junit tools/test-features/
+  - behave -f progress --junit issue.features/
 
 after_failure:
   - echo "FAILURE DETAILS (from XML reports):"
