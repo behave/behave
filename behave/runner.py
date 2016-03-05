@@ -213,10 +213,15 @@ class Context(object):
             msg = msg % params
             warnings.warn(msg, ContextMaskWarning, stacklevel=3)
 
-    def _dump(self):
+    def _dump(self, pretty=False, prefix="  "):
         for level, frame in enumerate(self._stack):
-            print("Level %d" % level)
-            print(repr(frame))
+            print("%sLevel %d" % (prefix, level))
+            if pretty:
+                for name in sorted(frame.keys()):
+                    value = frame[name]
+                    print("%s  %-15s = %r" % (prefix, name, value))
+            else:
+                print(prefix + repr(frame))
 
     def __getattr__(self, attr):
         if attr[0] == "_":
@@ -437,7 +442,7 @@ class ModelRunner(object):
     # @aborted.setter
     def _set_aborted(self, value):
         # pylint: disable=protected-access
-        assert self.context
+        assert self.context, "REQUIRE: context, but context=%r" % self.context
         self.context._set_root_attribute("aborted", bool(value))
 
     aborted = property(_get_aborted, _set_aborted,

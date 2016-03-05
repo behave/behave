@@ -1,0 +1,11 @@
+Feature: 
+
+  Scenario: 
+    Given I dispatch an async-call with param "Alice" ... passed in 0.001s
+    And I dispatch an async-call with param "Bob" ... passed in 0.000s
+    Then the collected result of the async-calls is "ALICE, BOB" ... passed in 0.206s
+
+1 feature passed, 0 failed, 0 skipped
+1 scenario passed, 0 failed, 0 skipped
+3 steps passed, 0 failed, 0 skipped, 0 undefined
+Took 0m0.208s

@@ -99,17 +99,13 @@ class Match(Replayable):
 
     @staticmethod
     def make_location(step_function):
-        '''
-        Extracts the location information from the step function and builds
-        the location string (schema: "{source_filename}:{line_number}").
+        """Extracts the location information from the step function and
+        builds a FileLocation object with (filename, line_number) info.
 
         :param step_function: Function whose location should be determined.
-        :return: Step function location as string.
-        '''
-        step_function_code = six.get_function_code(step_function)
-        filename = os.path.relpath(step_function_code.co_filename, os.getcwd())
-        line_number = step_function_code.co_firstlineno
-        return FileLocation(filename, line_number)
+        :return: FileLocation object for step function.
+        """
+        return FileLocation.for_function(step_function)
 
 
 class NoMatch(Match):

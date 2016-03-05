@@ -8,7 +8,6 @@ import os.path
 import six
 from behave.textutil import text as _text
 
-
 # -----------------------------------------------------------------------------
 # GENERIC MODEL CLASSES:
 # -----------------------------------------------------------------------------
@@ -80,8 +79,7 @@ class FileLocation(object):
         return os.path.dirname(self.filename)
 
     def relpath(self, start=os.curdir):
-        """
-        Compute relative path for start to filename.
+        """Compute relative path for start to filename.
 
         :param start: Base path or start directory (default=current dir).
         :return: Relative path from start to filename
@@ -161,6 +159,23 @@ class FileLocation(object):
     if six.PY2:
         __unicode__ = __str__
         __str__ = lambda self: self.__unicode__().encode("utf-8")
+
+    @classmethod
+    def for_function(cls, func, curdir=None):
+        """Extracts the location information from the function and builds
+        the location string (schema: "{source_filename}:{line_number}").
+
+        :param func: Function whose location should be determined.
+        :return: FileLocation object
+        """
+        func = unwrap_function(func)
+        function_code = six.get_function_code(func)
+        filename = function_code.co_filename
+        line_number = function_code.co_firstlineno
+
+        curdir = curdir or os.getcwd()
+        filename = os.path.relpath(filename, curdir)
+        return cls(filename, line_number)
 
 
 # -----------------------------------------------------------------------------
@@ -284,3 +299,18 @@ class Replayable(object):
 
     def replay(self, formatter):
         getattr(formatter, self.type)(self)
+
+
+# -----------------------------------------------------------------------------
+# UTILITY FUNCTIONS:
+# -----------------------------------------------------------------------------
+def unwrap_function(func, max=10):
+    """Unwraps a function that is wrapped with :func:`functools.partial()`"""
+    iteration = 0
+    wrapped =  getattr(func, "__wrapped__", None)
+    while wrapped and iteration < max:
+        func = wrapped
+        wrapped = getattr(func, "__wrapped__", None)
+        iteration += 1
+    return func
+
