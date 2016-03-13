@@ -29,6 +29,8 @@ DOCUMENTATION:
 ENHANCEMENTS:
 
   * Tagged Examples: Examples in a ScenarioOutline can now have tags.
+  * issue #411: Support multiple active-tags with same category (submitted by: Kani999)
+  * issue #409: Support async/@asyncio.coroutine steps (submitted by: dcarp)
   * issue #357: Add language attribute to Feature class
   * pull  #328: Auto-retry failed scenarios in unreliable environment (provided by: MihaiBalint, robertknight)
   * issue #302: Support escaped-pipe in Gherkin table cell value (provided by: connorsml, pull #360)
@@ -42,6 +44,7 @@ CHANGES:
 
 FIXED:
 
+  * issue #414: Support for Jython 2.7 (submitted by: gabtwi...)
   * issue #384: Active Tags fail with ScenarioOutline (submitted by: BRevzin)
   * issue #383: Handle (custom) Type parsing errors better (submitted by: zsoldosp)
   * pull  #382: fix typo in tag name (provided by: zsoldosp)

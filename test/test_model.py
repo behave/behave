@@ -2,7 +2,6 @@
 # pylint: disable=no-self-use, line-too-long
 
 from __future__ import absolute_import, print_function, with_statement
-import sys
 import unittest
 from mock import Mock, patch
 from nose.tools import *  # pylint: disable=wildcard-import, unused-wildcard-import
@@ -162,7 +161,7 @@ class TestScenarioRun(unittest.TestCase):
         for step in steps:
             step.run.assert_called_with(self.runner)
 
-    if sys.version_info[0] == 3:
+    if six.PY3:
         stringio_target = 'io.StringIO'
     else:
         stringio_target = 'StringIO.StringIO'

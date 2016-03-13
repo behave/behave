@@ -214,15 +214,17 @@ class TestActiveTagMatcher1(TestCase):
         self.assertEqual(False, self.tag_matcher.should_exclude_with(tags1))
         self.assertEqual(False, self.tag_matcher.should_exclude_with(tags2))
 
-    def test_should_exclude_with__returns_true_with_disabled_tag_and_more(self):
+    def test_should_exclude_with__returns_false_with_disabled_tag_and_more(self):
+        # -- NOTE: Need 1+ enabled active-tags of same category => ENABLED
         traits = self.traits
         test_patterns = [
             ([ traits.category1_enabled_tag, traits.category1_disabled_tag ], "case: first"),
             ([ traits.category1_disabled_tag, traits.category1_enabled_tag ], "case: last"),
             ([ "foo", traits.category1_enabled_tag, traits.category1_disabled_tag, "bar" ], "case: middle"),
         ]
+        enabled = True  # EXPECTED
         for tags, case in test_patterns:
-            self.assertEqual(True, self.tag_matcher.should_exclude_with(tags),
+            self.assertEqual(not enabled, self.tag_matcher.should_exclude_with(tags),
                              "%s: tags=%s" % (case, tags))
 
     def test_should_exclude_with__returns_true_with_other_tag(self):

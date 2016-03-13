@@ -3,6 +3,7 @@
 
 from __future__ import absolute_import, print_function, with_statement
 from collections import defaultdict
+from platform import python_implementation
 import os.path
 import sys
 import warnings
@@ -234,6 +235,8 @@ class TestContext(unittest.TestCase):
         assert info.startswith("behave runner"), "%r doesn't start with 'behave runner'" % info
         assert "'thing'" in info, "%r not in %r" % ("'thing'", info)
         filename = __file__.rsplit(".", 1)[0]
+        if python_implementation() == "Jython":
+            filename = filename.replace("$py", ".py")
         assert filename in info, "%r not in %r" % (filename, info)
 
     def test_setting_root_attribute_that_masks_existing_causes_warning(self):
@@ -261,6 +264,8 @@ class TestContext(unittest.TestCase):
         assert info.startswith("behave runner"), "%r doesn't start with 'behave runner'" % info
         assert "'thing'" in info, "%r not in %r" % ("'thing'", info)
         filename = __file__.rsplit(".", 1)[0]
+        if python_implementation() == "Jython":
+            filename = filename.replace("$py", ".py")
         assert filename in info, "%r not in %r" % (filename, info)
 
     def test_context_deletable(self):
