@@ -5,7 +5,6 @@ Contains utility functions and classes for Runners.
 
 from __future__ import absolute_import
 from bisect import bisect
-# NOT-NEEDED: import codecs
 import glob
 import os.path
 import re

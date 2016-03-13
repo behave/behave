@@ -10,7 +10,7 @@ REQUIRES:
   * PyYAML
 """
 
-from __future__ import absolute_import, print_function, unicode_literals
+from __future__ import absolute_import, print_function
 import argparse
 import os.path
 import six

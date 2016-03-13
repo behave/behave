@@ -672,7 +672,7 @@ class Runner(ModelRunner):
                     print('ERROR: Could not find "%s" directory in your '\
                         'specified path "%s"' % (steps_dir, base_dir))
 
-            message = 'No %s directory in "%s"' % (steps_dir, base_dir)
+            message = 'No %s directory in %r' % (steps_dir, base_dir)
             raise ConfigError(message)
 
         base_dir = new_base_dir
@@ -689,7 +689,7 @@ class Runner(ModelRunner):
                 else:
                     print('ERROR: Could not find any "<name>.feature" files '\
                         'in your specified path "%s"' % base_dir)
-            raise ConfigError('No feature files in "%s"' % base_dir)
+            raise ConfigError('No feature files in %r' % base_dir)
 
         self.base_dir = base_dir
         self.path_manager.add(base_dir)

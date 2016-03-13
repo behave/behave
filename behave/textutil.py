@@ -4,8 +4,9 @@ Provides some utility functions related to text processing.
 """
 
 from __future__ import absolute_import
-import six
+import codecs
 import sys
+import six
 
 
 def make_indentation(indent_size, part=u" "):
@@ -48,7 +49,21 @@ def compute_words_maxsize(words):
     return max_size
 
 
-# -- MAYBE: def text(value, encoding=None, errors=None):
+def is_ascii_encoding(encoding):
+    """Checks if a given encoding is ascii."""
+    try:
+        return codecs.lookup(encoding).name == "ascii"
+    except LookupError:
+        return False
+
+def select_best_encoding(outstream=None):
+    outstream = outstream or sys.stdout
+    encoding = getattr(outstream, "encoding", None) or sys.getdefaultencoding()
+    if is_ascii_encoding(encoding):
+        return "utf-8"
+    return encoding
+
+
 def text(value, encoding=None, errors=None):
     """Convert into a unicode string.
 
@@ -56,7 +71,7 @@ def text(value, encoding=None, errors=None):
     :return: Unicode string
     """
     if encoding is None:
-        encoding = "unicode-escape"
+        encoding = select_best_encoding()
     if errors is None:
         errors = "replace"
 
