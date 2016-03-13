@@ -8,9 +8,9 @@ and shut it down when done with the test run.  The approach used for integrating
 Django, though, varies slightly.
 
 :pypi:`behave-django`
-    Integrates Django via setup code in your Behave ``environment.py`` file.
-    Behave tests are invoked with a dedicated ``python manage.py behave``
-    command by default.
+    Provides a dedicated management command.  Easy, automatic integration (thanks
+    to monkey patching).  Behave tests are run with ``python manage.py behave``.
+    Allows running tests against an existing database as a special feature.
 
 :pypi:`django-behave`
     Provides a Django-specific TestRunner for Behave, which is set with the
@@ -23,7 +23,7 @@ Django, though, varies slightly.
 
 
 Manual Integration
-================================
+==================
 
 The approach that is shown here provides a manual integration.
 It serves as basic example how such a functionality can be provided.
