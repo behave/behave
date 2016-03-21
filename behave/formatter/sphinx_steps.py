@@ -294,6 +294,13 @@ The following step definitions are provided here.
         self.document.write("%s\n" % step_definition_doc)
         self.document.write("\n")
 
+        # Add step label
+        from docutils.nodes import fully_normalize_name
+        step_text = fully_normalize_name(step_text)
+        step_lable = ".. _" + step_text + ":" + "\n"
+        self.document.write(step_lable)
+        self.document.write("\n")
+
 
 # -----------------------------------------------------------------------------
 # CLASS: SphinxStepsFormatter
