@@ -182,13 +182,13 @@ A simple example for the implementation of the async-steps is shown for:
 * Python 3.4 with ``@asyncio.coroutine`` decorator and ``yield from`` keyword
 
 .. literalinclude:: ../examples/async_step/features/steps/async_steps35.py
-    :language: gherkin
+    :language: python
     :prepend:
         # -- FILE: features/steps/async_steps35.py
 
 
 .. literalinclude:: ../examples/async_step/features/steps/async_steps34.py
-    :language: gherkin
+    :language: python
     :prepend:
         # -- FILE: features/steps/async_steps34.py
 
