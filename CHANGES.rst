@@ -39,6 +39,10 @@ ENHANCEMENTS:
   * issue #299: Runner can continue after a failed step (same as: #314)
   * issue #197: Hooks processing should be more exception safe (provided by: vrutkovs, jenisys, pull #205)
 
+FORMATTERS:
+
+  * pull #423: sphinx.steps: Support ref link for each step (provided by: ZivThaller)
+
 CHANGES:
 
   * parser: language comment in feature file has higher priority than --lang option (related to: #334).
