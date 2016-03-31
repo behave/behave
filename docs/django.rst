@@ -11,13 +11,15 @@ Django, though, varies slightly.
     Provides a dedicated management command.  Easy, automatic integration (thanks
     to monkey patching).  Behave tests are run with ``python manage.py behave``.
     Allows running tests against an existing database as a special feature.
-    `Setup instructions <https://pythonhosted.org/behave-django/installation.html>`_.
+    See `setup <https://pythonhosted.org/behave-django/installation.html>`_
+    and `usage <https://pythonhosted.org/behave-django/usage.html>`_ instructions.
 
 :pypi:`django-behave`
     Provides a Django-specific TestRunner for Behave, which is set with the
     `TEST_RUNNER`_ property in your settings.  Behave tests are run
     with the usual ``python manage.py test <app_name>`` by default.
-    `Setup instructions <https://github.com/django-behave/django-behave/blob/master/README.md#how-to-use>`_.
+    See `setup <https://github.com/django-behave/django-behave/blob/master/README.md#how-to-use>`_
+    instructions.
 
 .. _Django: https://www.djangoproject.com
 .. _LiveServerTestCase: https://docs.djangoproject.com/en/1.8/topics/testing/tools/#liveservertestcase
@@ -50,7 +52,13 @@ To start a web browser for interaction with the front-end using
 
 In your step implementations you can use the ``context.browser`` object to
 access Selenium features.  See the `Selenium docs`_ (``remote.webdriver``) for
-details.
+details.  Example using *behave-django*:
+
+.. code-block:: python
+
+   @when(u'I visit "{url}"')
+   def step_impl(context, url):
+       context.browser.get(context.get_url(url))
 
 .. _Selenium docs: http://selenium.googlecode.com/git/docs/api/py/api.html
 
@@ -72,7 +80,15 @@ To start a web browser for interaction with the front-end using
        context.browser = None
 
 In your step implementations you can use the ``context.browser`` object to
-access Splinter features.  See the `Splinter docs`_ for details.
+access Splinter features.  See the `Splinter docs`_ for details.  Example
+using *behave-django*:
+
+.. code-block:: python
+
+   @when(u'I visit "{url}"')
+   def step_impl(context, url):
+       context.browser.visit(context.get_url(url))
+
 
 .. _Splinter docs: http://splinter.readthedocs.org/en/latest/
 
