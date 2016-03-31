@@ -24,7 +24,7 @@ Web Apps        `django-behave`_  Test Django Web apps with behave.
 Web, SMS, ...   `behaving`_       Test Web Apps, Email, SMS, Personas (step library).
 =============== ================= ===========================================================
 
-.. _behave4cmd:     https://github.com/jenisys/behave4cmd
+.. _behave4cmd:     https://github.com/behave/behave4cmd
 .. _behaving:       https://github.com/ggozad/behaving
 .. _django-behave:  https://github.com/django-behave/django-behave
 
