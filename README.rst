@@ -108,5 +108,5 @@ More Information
 
 .. _behave documentation: http://pythonhosted.org/behave/
 .. _latest changes: https://github.com/behave/behave/blob/master/CHANGES.rst
-.. _behave.example: https://github.com/jenisys/behave.example
+.. _behave.example: https://github.com/behave/behave.example
 
