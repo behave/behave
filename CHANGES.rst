@@ -12,6 +12,7 @@ DOCUMENTATION:
 
   * pull  #379: Correct wording in README.rst (provided by: franklinchou)
   * pull  #362: docs/tutorial.rst: fixed non-monospace font (provided by: spacediver)
+  * pull  #359: Update documentation related to Django (behave-django) (provided by: bittner)
   * pull  #326: docs/tutorial.rst: Correct features directory path creation (provided by: memee)
   * issue #356: docs/api.rst: type in implementation (submitted by: tomxtobin)
   * pull  #335: docs/api.rst: execute_steps() example (provided by: miabbott)
@@ -37,6 +38,10 @@ ENHANCEMENTS:
   * issue #301: Support default tags in configfile
   * issue #299: Runner can continue after a failed step (same as: #314)
   * issue #197: Hooks processing should be more exception safe (provided by: vrutkovs, jenisys, pull #205)
+
+FORMATTERS:
+
+  * pull #423: sphinx.steps: Support ref link for each step (provided by: ZivThaller)
 
 CHANGES:
 
