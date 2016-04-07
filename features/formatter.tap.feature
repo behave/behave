@@ -86,7 +86,7 @@ Feature: Tap Formatter
             1 scenario passed, 0 failed, 0 skipped
             """
         And the tap command output should contain:
-				    """
+            """
              # ... features/scenario_with_steps.feature:1
                # Scenario - Simple scenario with passing steps
                # ... features/scenario_with_steps.feature:2
@@ -167,12 +167,9 @@ Feature: Tap Formatter
                  ok 4 And another step passes                                                     # 
                  not ok 5 But a step raises an error "Error message here"                         # 
                  # Traceback (most recent call last):
-               File "/home/jgowan/opensource/behave/behave/model.py", line 1279, in run
-                 match.run(runner.context)
-               File "/home/jgowan/opensource/behave/behave/matchers.py", line 98, in run
-                 self.func(context, *args, **kwargs)
-               File "features/steps/steps.py", line 13, in step_raises_exception
-                 raise RuntimeError(message)
+            """
+        And the tap command output should contain:
+            """
              RuntimeError: Error message here
              
                  1..5
