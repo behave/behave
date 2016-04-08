@@ -31,8 +31,8 @@ class TapFormatter(Formatter):
         self.index['step'] = 0
         self._feature = feature
 
-        self._indent_print(0, '# Feature - {}'.format(feature.name))
-        self._indent_print(0, '# ... {}'.format(feature.location))
+        self._indent_print(0, '# Feature - {0}'.format(feature.name))
+        self._indent_print(0, '# ... {0}'.format(feature.location))
 
 
     def scenario(self, scenario):
@@ -43,8 +43,8 @@ class TapFormatter(Formatter):
         self.index['scenario'] = self.index['scenario'] + 1
         self.index['step'] = 0
         self._scenario = scenario
-        self._indent_print(1, '# Scenario - {}'.format(scenario.name))
-        self._indent_print(1, '# ... {}'.format(scenario.location))
+        self._indent_print(1, '# Scenario - {0}'.format(scenario.name))
+        self._indent_print(1, '# ... {0}'.format(scenario.location))
 
 
     def result(self, result):
@@ -60,20 +60,20 @@ class TapFormatter(Formatter):
         )
 
         if result.error_message:
-            self._indent_print(2, '# {}'.format(result.error_message))
+            self._indent_print(2, '# {0}'.format(result.error_message))
 
 
     def eof(self):
         self._pop_scenario()
         self._pop_feature()
         if self.index['feature'] > 0:
-            self.stream.write('1..{}'.format(self.index['feature']))
+            self.stream.write('1..{0}'.format(self.index['feature']))
             self.stream.write('\n')
             self.stream.flush()
 
     def _pop_feature(self):
         if self._feature is not None:
-            self._indent_print(1, '1..{}'.format(self.index['scenario']))
+            self._indent_print(1, '1..{0}'.format(self.index['scenario']))
             self._tap_print(
                 indent_level=0,
                 status=self._get_status_prefix(self._feature.status),
@@ -91,7 +91,7 @@ class TapFormatter(Formatter):
             plan_suffix = ''
             if self._scenario.status == 'skipped':
                 plan_suffix = ' # Skipped'
-            self._indent_print(2, '1..{}{}'.format(self.index['step'], plan_suffix))
+            self._indent_print(2, '1..{0}{1}'.format(self.index['step'], plan_suffix))
 
             self._tap_print(
                 indent_level=1,
@@ -124,8 +124,8 @@ class TapFormatter(Formatter):
     def _tap_print(self, indent_level=0, status='not ok', step_number=0, name='UNKNOWN', skipped='', duration=0):
         self._indent_print(
             indent_level,
-            '{:<80} # {}{:0.2f} ms'.format(
-                '{} {} {}'.format(status, step_number, name),
+            '{0:<80} # {1}{2:0.2f} ms'.format(
+                '{0} {1} {2}'.format(status, step_number, name),
                 skipped,
                 duration
             )
