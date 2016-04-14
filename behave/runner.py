@@ -761,7 +761,9 @@ class Runner(ModelRunner):
     def run_with_paths(self):
         self.context = Context(self)
         self.load_hooks()
-        self.load_step_definitions()
+        self.load_step_definitions(
+            extra_step_paths=self.config.extra_step_paths
+        )
 
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
         # self.setup_capture()
