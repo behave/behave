@@ -12,7 +12,19 @@ import sys
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath(".."))
 
-# -- General configuration -----------------------------------------------------
+# -- OPTIONAL EXTENSIONS/PARTS:
+# NOTES:
+# * sphinxcontrib.youtube: Not easily installable
+#   => other package with same name in pypi
+try:
+    import sphinxcontrib.youtube
+    has_extension_sphinxcontrib_youtube = True
+except ImportError:
+    has_extension_sphinxcontrib_youtube = False
+
+# ------------------------------------------------------------------------------
+# GENERAL CONFIGGURATION
+# ------------------------------------------------------------------------------
 # If your documentation needs a minimal Sphinx version, state it here.
 needs_sphinx = "1.3"
 
@@ -20,8 +32,11 @@ needs_sphinx = "1.3"
 # coming with Sphinx (named "sphinx.ext.*") or your custom ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.ifconfig",
     "sphinx.ext.extlinks",
 ]
+if has_extension_sphinxcontrib_youtube:
+    extensions.append("sphinxcontrib.youtube")
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -88,10 +103,22 @@ extlinks = {
     "pypi": ("https://pypi.python.org/pypi/%s", ""),
     "github": ("https://github.com/%s", "github:/"),
     "issue":  ("https://github.com/behave/behave/issue/%s", "issue #"),
+    "youtube": ("https://www.youtube.com/watch?v=%s", "youtube:video="),
 }
 
-# -- Options for HTML output ---------------------------------------------------
 
+# -- SUPPORT: Documentation variation-points with sphinx.ext.ifconfig
+def setup(app):
+    # -- VARIATION-POINT: supports_video
+    # BASED-ON: installed("sphinxcontrib-youtube") and output-mode
+    # TODO: Check for output-mode, too (supported on: HTML, ...)
+    supports_video = has_extension_sphinxcontrib_youtube
+    app.add_config_value("supports_video", supports_video, "env")
+
+
+# ------------------------------------------------------------------------------
+# OPTIONS FOR: HTML OUTPUT
+# ------------------------------------------------------------------------------
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
@@ -191,8 +218,9 @@ html_static_path = ["_static"]
 htmlhelp_basename = "behavedoc"
 
 
-# -- Options for LaTeX output --------------------------------------------------
-
+# ------------------------------------------------------------------------------
+# OPTIONS FOR: LATEX OUTPUT
+# ------------------------------------------------------------------------------
 latex_elements = {
 # The paper size ("letterpaper" or "a4paper").
 #"papersize": "letterpaper",
@@ -231,8 +259,9 @@ latex_documents = [
 #latex_domain_indices = True
 
 
-# -- Options for manual page output --------------------------------------------
-
+# ------------------------------------------------------------------------------
+# OPTIONS FOR: MANUAL PAGE (man page) OUTPUT
+# ------------------------------------------------------------------------------
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
@@ -243,8 +272,9 @@ man_pages = [
 #man_show_urls = False
 
 
-# -- Options for Texinfo output ------------------------------------------------
-
+# ------------------------------------------------------------------------------
+# OPTIONS FOR: Texinfo output
+# ------------------------------------------------------------------------------
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
