@@ -25,6 +25,45 @@ Django, though, varies slightly.
 .. _LiveServerTestCase: https://docs.djangoproject.com/en/1.8/topics/testing/tools/#liveservertestcase
 .. _TEST_RUNNER: https://docs.djangoproject.com/en/1.8/topics/testing/advanced/#using-different-testing-frameworks
 
+Manual Integration
+==================
+
+Alternatively, you can integrate Django using the following boilerplate code
+in your ``environment.py`` file:
+
+.. code-block:: python
+
+   import os
+   import django
+   from django.test.runner import DiscoverRunner
+   from django.test.testcases import LiveServerTestCase
+
+   os.environ['DJANGO_SETTINGS_MODULE'] = 'test_project.settings'
+
+   def before_all(context):
+       django.setup()
+       context.test_runner = DiscoverRunner()
+       context.test_runner.setup_test_environment()
+       context.old_db_config = context.test_runner.setup_databases()
+
+   def before_scenario(context, scenario):
+       context.test_case = LiveServerTestCase
+       context.test_case.setUpClass()
+
+   def after_scenario(context, scenario):
+       context.test_case.tearDownClass()
+       del context.test_case
+
+   def after_all(context):
+       context.test_runner.teardown_databases(context.old_db_config)
+       context.test_runner.teardown_test_environment()
+
+Taken from Andrey Zarubin's blog post `BDD. PyCharm + Python & Django`_.
+
+
+.. _BDD. PyCharm + Python & Django:
+    https://anvileight.com/blog/2016/04/12/behavior-driven-development-pycharm-python-django/
+
 Automation Libraries
 ====================
 
