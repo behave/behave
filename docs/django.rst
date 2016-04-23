@@ -11,27 +11,33 @@ Django, though, varies slightly.
     Provides a dedicated management command.  Easy, automatic integration (thanks
     to monkey patching).  Behave tests are run with ``python manage.py behave``.
     Allows running tests against an existing database as a special feature.
-    See `setup <https://pythonhosted.org/behave-django/installation.html>`_
+    See `setup behave-django <https://pythonhosted.org/behave-django/installation.html>`_
     and `usage <https://pythonhosted.org/behave-django/usage.html>`_ instructions.
 
 :pypi:`django-behave`
     Provides a Django-specific TestRunner for Behave, which is set with the
     `TEST_RUNNER`_ property in your settings.  Behave tests are run
     with the usual ``python manage.py test <app_name>`` by default.
-    See `setup <https://github.com/django-behave/django-behave/blob/master/README.md#how-to-use>`_
+    See `setup django-behave <https://github.com/django-behave/django-behave/blob/master/README.md#how-to-use>`_
     instructions.
 
 .. _Django: https://www.djangoproject.com
 .. _LiveServerTestCase: https://docs.djangoproject.com/en/1.8/topics/testing/tools/#liveservertestcase
 .. _TEST_RUNNER: https://docs.djangoproject.com/en/1.8/topics/testing/advanced/#using-different-testing-frameworks
 
-Automation Libraries
-====================
+
+Test Automation Libraries
+=========================
 
 With *behave* you can test anything on the Django stack: front-end behavior,
 REST APIs, you can even drive your unit tests using Gherkin language.
 Any library that helps you with that you usually integrate by adding start-up
 code in ``before_all()`` and tear-down code in ``after_all()``.
+
+The following examples show you how to interact with your `Django`_ application
+by using the web interface (but see note below why using the user interface (UI)
+as entry point for test automation is not always the best solution).
+
 
 Selenium (Example)
 ------------------
@@ -41,26 +47,32 @@ To start a web browser for interaction with the front-end using
 
 .. code-block:: python
 
-   from selenium.webdriver import Firefox
+    # -- FILE: features/environment.py
+    # CONTAINS: Browser fixture setup and teardown
+    from selenium.webdriver import Firefox
 
-   def before_all(context):
-       context.browser = Firefox()
+    def before_all(context):
+        context.browser = Firefox()
 
-   def after_all(context):
-       context.browser.quit()
-       context.browser = None
+    def after_all(context):
+        context.browser.quit()
+        context.browser = None
 
 In your step implementations you can use the ``context.browser`` object to
 access Selenium features.  See the `Selenium docs`_ (``remote.webdriver``) for
-details.  Example using *behave-django*:
+details. Example using :pypi:`behave-django`:
 
 .. code-block:: python
 
-   @when(u'I visit "{url}"')
-   def step_impl(context, url):
-       context.browser.get(context.get_url(url))
+    # -- FILE: features/steps/browser_steps.py
+    from behave import given, when, then
+
+    @when(u'I visit "{url}"')
+    def step_impl(context, url):
+        context.browser.get(context.get_url(url))
 
 .. _Selenium docs: http://selenium.googlecode.com/git/docs/api/py/api.html
+
 
 Splinter (Example)
 ------------------
@@ -70,14 +82,16 @@ To start a web browser for interaction with the front-end using
 
 .. code-block:: python
 
-   from splinter.browser import Browser
+    # -- FILE: features/environment.py
+    # CONTAINS: Browser fixture setup and teardown
+    from splinter.browser import Browser
 
-   def before_all(context):
-       context.browser = Browser()
+    def before_all(context):
+        context.browser = Browser()
 
-   def after_all(context):
-       context.browser.quit()
-       context.browser = None
+    def after_all(context):
+        context.browser.quit()
+        context.browser = None
 
 In your step implementations you can use the ``context.browser`` object to
 access Splinter features.  See the `Splinter docs`_ for details.  Example
@@ -85,18 +99,45 @@ using *behave-django*:
 
 .. code-block:: python
 
-   @when(u'I visit "{url}"')
-   def step_impl(context, url):
-       context.browser.visit(context.get_url(url))
+    # -- FILE: features/steps/browser_steps.py
+    from behave import given, when, then
+
+    @when(u'I visit "{url}"')
+    def step_impl(context, url):
+        context.browser.visit(context.get_url(url))
 
 
 .. _Splinter docs: http://splinter.readthedocs.org/en/latest/
+
+.. hint::
+
+    While you can use :pypi:`behave` to drive the "user interface" (UI) or front-end,
+    interacting with the model layer or the business logic, for example by using a REST API,
+    is often the better choice.
+
+    And keep in mind, BDD advises your to test **WHAT** your application should do
+    and not **HOW** it is done.
+
+    If you want to test/exercise also the "user interface", it may be a good idea
+    to reuse the feature files, that test the model layer, by just replacing the
+    test automation layer (meaning mostly the step implementations).
+    This approach ensures that your feature files are technology-agnostic,
+    meaning they are independent how you interact with "system under test" (SUT) or
+    "application under test" (AUT).
+
+    For example, if you want to use the feature files in the same directory
+    for testing the model layer and the UI layer, this can be done by using the
+    ``--stage`` option, like with::
+
+        behave --stage=model features/
+        behave --stage=ui    features/     # NOTE: Normally used on a subset of features.
+
 
 Visual Testing
 --------------
 
 Visually checking your front-end on regression is integrated into *behave* in
-a straightforward manner, too.  Basically, what you do is drive your
+a straight-forward manner, too.  Basically, what you do is drive your
 application using the front-end automation library of your choice (such as
 Selenium, Splinter, etc.) to the test location, take a screenshot and compare
 it with an earlier, approved screenshot (your "baseline").
