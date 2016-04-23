@@ -10,6 +10,7 @@ GOALS:
 
 DOCUMENTATION:
 
+  * pull  #429: Replace "Manual Integration" by "Automation Libraries" section (provided by: bittner)
   * pull  #379: Correct wording in README.rst (provided by: franklinchou)
   * pull  #362: docs/tutorial.rst: fixed non-monospace font (provided by: spacediver)
   * pull  #359: Update documentation related to Django (behave-django) (provided by: bittner)
