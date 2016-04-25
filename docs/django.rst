@@ -26,8 +26,49 @@ Django, though, varies slightly.
 .. _TEST_RUNNER: https://docs.djangoproject.com/en/1.8/topics/testing/advanced/#using-different-testing-frameworks
 
 
-Test Automation Libraries
-=========================
+Manual Integration
+==================
+
+Alternatively, you can integrate Django using the following boilerplate code
+in your ``environment.py`` file:
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    import os
+    import django
+    from django.test.runner import DiscoverRunner
+    from django.test.testcases import LiveServerTestCase
+
+    os.environ["DJANGO_SETTINGS_MODULE"] = "test_project.settings"
+
+    def before_all(context):
+        django.setup()
+        context.test_runner = DiscoverRunner()
+        context.test_runner.setup_test_environment()
+        context.old_db_config = context.test_runner.setup_databases()
+
+    def before_scenario(context, scenario):
+        context.test_case = LiveServerTestCase
+        context.test_case.setUpClass()
+
+    def after_scenario(context, scenario):
+        context.test_case.tearDownClass()
+        del context.test_case
+
+    def after_all(context):
+        context.test_runner.teardown_databases(context.old_db_config)
+        context.test_runner.teardown_test_environment()
+
+Taken from Andrey Zarubin's blog post "`BDD. PyCharm + Python & Django`_".
+
+
+.. _`BDD. PyCharm + Python & Django`:
+    https://anvileight.com/blog/2016/04/12/behavior-driven-development-pycharm-python-django/
+
+
+Automation Libraries
+====================
 
 With *behave* you can test anything on the Django stack: front-end behavior,
 REST APIs, you can even drive your unit tests using Gherkin language.
@@ -37,6 +78,29 @@ code in ``before_all()`` and tear-down code in ``after_all()``.
 The following examples show you how to interact with your `Django`_ application
 by using the web interface (but see note below why using the user interface (UI)
 as entry point for test automation is not always the best solution).
+
+.. hint::
+
+    While you can use :pypi:`behave` to drive the "user interface" (UI) or front-end,
+    interacting with the model layer or the business logic, for example by using a REST API,
+    is often the better choice.
+
+    And keep in mind, BDD advises your to test **WHAT** your application should do
+    and not **HOW** it is done.
+
+    If you want to test/exercise also the "user interface", it may be a good idea
+    to reuse the feature files, that test the model layer, by just replacing the
+    test automation layer (meaning mostly the step implementations).
+    This approach ensures that your feature files are technology-agnostic,
+    meaning they are independent how you interact with "system under test" (SUT) or
+    "application under test" (AUT).
+
+    For example, if you want to use the feature files in the same directory
+    for testing the model layer and the UI layer, this can be done by using the
+    ``--stage`` option, like with::
+
+        behave --stage=model features/
+        behave --stage=ui    features/     # NOTE: Normally used on a subset of features.
 
 
 Selenium (Example)
@@ -109,28 +173,6 @@ using *behave-django*:
 
 .. _Splinter docs: http://splinter.readthedocs.org/en/latest/
 
-.. hint::
-
-    While you can use :pypi:`behave` to drive the "user interface" (UI) or front-end,
-    interacting with the model layer or the business logic, for example by using a REST API,
-    is often the better choice.
-
-    And keep in mind, BDD advises your to test **WHAT** your application should do
-    and not **HOW** it is done.
-
-    If you want to test/exercise also the "user interface", it may be a good idea
-    to reuse the feature files, that test the model layer, by just replacing the
-    test automation layer (meaning mostly the step implementations).
-    This approach ensures that your feature files are technology-agnostic,
-    meaning they are independent how you interact with "system under test" (SUT) or
-    "application under test" (AUT).
-
-    For example, if you want to use the feature files in the same directory
-    for testing the model layer and the UI layer, this can be done by using the
-    ``--stage`` option, like with::
-
-        behave --stage=model features/
-        behave --stage=ui    features/     # NOTE: Normally used on a subset of features.
 
 
 Visual Testing
