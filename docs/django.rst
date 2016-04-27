@@ -79,29 +79,6 @@ The following examples show you how to interact with your `Django`_ application
 by using the web interface (but see note below why using the user interface (UI)
 as entry point for test automation is not always the best solution).
 
-.. hint::
-
-    While you can use :pypi:`behave` to drive the "user interface" (UI) or front-end,
-    interacting with the model layer or the business logic, for example by using a REST API,
-    is often the better choice.
-
-    And keep in mind, BDD advises your to test **WHAT** your application should do
-    and not **HOW** it is done.
-
-    If you want to test/exercise also the "user interface", it may be a good idea
-    to reuse the feature files, that test the model layer, by just replacing the
-    test automation layer (meaning mostly the step implementations).
-    This approach ensures that your feature files are technology-agnostic,
-    meaning they are independent how you interact with "system under test" (SUT) or
-    "application under test" (AUT).
-
-    For example, if you want to use the feature files in the same directory
-    for testing the model layer and the UI layer, this can be done by using the
-    ``--stage`` option, like with::
-
-        behave --stage=model features/
-        behave --stage=ui    features/     # NOTE: Normally used on a subset of features.
-
 
 Selenium (Example)
 ------------------
@@ -190,3 +167,26 @@ A list of visual testing tools and services is available from Dave Haeffner's
 
 .. _How to Do Visual Testing:
     http://testautomation.applitools.com/post/105435804567/how-to-do-visual-testing-with-selenium
+
+.. hint::
+
+    While you can use :pypi:`behave` to drive the "user interface" (UI) or front-end,
+    interacting with the model layer or the business logic, for example by using a REST API,
+    is often the better choice.
+
+    And keep in mind, BDD advises your to test **WHAT** your application should do
+    and not **HOW** it is done.
+
+    If you want to test/exercise also the "user interface", it may be a good idea
+    to reuse the feature files, that test the model layer, by just replacing the
+    test automation layer (meaning mostly the step implementations).
+    This approach ensures that your feature files are technology-agnostic,
+    meaning they are independent how you interact with "system under test" (SUT) or
+    "application under test" (AUT).
+
+    For example, if you want to use the feature files in the same directory
+    for testing the model layer and the UI layer, this can be done by using the
+    ``--stage`` option, like with::
+
+        behave --stage=model features/
+        behave --stage=ui    features/     # NOTE: Normally used on a subset of features.
