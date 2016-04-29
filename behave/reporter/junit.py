@@ -287,8 +287,6 @@ class JUnitReporter(Reporter):
             step_text = self.describe_step(step).rstrip()
             text = u"\nFailing step: %s\nLocation: %s\n" % (step_text, step.location)
             message = _text(step.exception)
-            if len(message) > 80:
-                message = message[:80] + "..."
             failure.set(u'type', step.exception.__class__.__name__)
             failure.set(u'message', message)
             text += _text(step.error_message)
