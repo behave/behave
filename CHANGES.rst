@@ -51,6 +51,7 @@ CHANGES:
 
 FIXED:
 
+  * issue #416: JUnit report messages cut off (submitted by: remcowesterhoud, provided by: bittner)
   * issue #414: Support for Jython 2.7 (submitted by: gabtwi...)
   * issue #384: Active Tags fail with ScenarioOutline (submitted by: BRevzin)
   * issue #383: Handle (custom) Type parsing errors better (submitted by: zsoldosp)
