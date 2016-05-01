@@ -30,13 +30,13 @@ directory will be imported to find step implementations. They are all
 loaded before *behave* starts executing your feature tests.
 
 Step functions are identified using step decorators. All step
-implementations **must** start with the import line:
+implementations **should normally** start with the import line:
 
 .. code-block:: python
 
    from behave import *
 
-This imports several decorators defined by *behave* to allow you to
+This line imports several decorators defined by *behave* to allow you to
 identify your step functions. These are available in both PEP-8 (all
 lowercase) and traditional (title case) versions: "given", "when", "then"
 and the generic "step". See the `full list of variables imported`_ in the

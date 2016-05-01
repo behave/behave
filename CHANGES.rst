@@ -11,6 +11,7 @@ GOALS:
 DOCUMENTATION:
 
   * pull  #443: Fixing grammar in philosophy.rst (provided by: jamesroutley)
+  * pull  #441: Integrate hint on testing more nicely (provided by: bittner)
   * pull  #429: Replace "Manual Integration" by "Automation Libraries" section (provided by: bittner)
   * pull  #379: Correct wording in README.rst (provided by: franklinchou)
   * pull  #362: docs/tutorial.rst: fixed non-monospace font (provided by: spacediver)
@@ -20,6 +21,7 @@ DOCUMENTATION:
   * pull  #335: docs/api.rst: execute_steps() example (provided by: miabbott)
   * pull  #339: Adapt wording in install.rst (provided by: charleswhchan)
   * pull  #338: docs/philosophy.rst: Correct to uppercase in example (provided by: charleswhchan)
+  * issue #323: Update Django Example to work with version >=1.7 (submitted by: mpetyx, provided by: bittner)
   * pull  #327: Fix typo in Django doc (provided by: nikolas)
   * pull  #321: Update Django integration (provided by: bittner, contains: #315, #316)
   * FIX: cmdline/config-param doc-generator, avoid duplicated param entries (related to: #318)
@@ -28,6 +30,10 @@ DOCUMENTATION:
   * pull  #305: behave.rst related fixes reapplied (provided by: bittner)
   * pull  #292: Use title-cased keywords in tutorial scenario (provided by: neoblackcap)
   * pull  #291: Tiny tweaks in tutorial docs (provided by: bernardpaulus)
+
+SITE:
+
+  * pull #343: Update/fix badges in README (provided by: mixxorx)
 
 ENHANCEMENTS:
 

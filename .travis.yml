@@ -8,7 +8,7 @@ python:
   - "3.5.1"
   - "pypy"
   - "3.5"
-  
+
 # DISABLED: - "nightly"
 # -- AVOID:  python: "3.5" => python 3.5.0
 # Seems to have a problem with unit tests in exception traceback.
