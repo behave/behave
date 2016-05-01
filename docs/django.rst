@@ -62,7 +62,6 @@ in your ``environment.py`` file:
 
 Taken from Andrey Zarubin's blog post "`BDD. PyCharm + Python & Django`_".
 
-
 .. _`BDD. PyCharm + Python & Django`:
     https://anvileight.com/blog/2016/04/12/behavior-driven-development-pycharm-python-django/
 
@@ -76,8 +75,8 @@ Any library that helps you with that you usually integrate by adding start-up
 code in ``before_all()`` and tear-down code in ``after_all()``.
 
 The following examples show you how to interact with your `Django`_ application
-by using the web interface (but see note below why using the user interface (UI)
-as entry point for test automation is not always the best solution).
+by using the web interface (see `A Note on Testing`_ below to learn about entry
+points for test automation that may be better suited for your use case).
 
 
 Selenium (Example)
@@ -147,9 +146,7 @@ using *behave-django*:
     def step_impl(context, url):
         context.browser.visit(context.get_url(url))
 
-
 .. _Splinter docs: http://splinter.readthedocs.org/en/latest/
-
 
 
 Visual Testing
@@ -164,29 +161,32 @@ it with an earlier, approved screenshot (your "baseline").
 A list of visual testing tools and services is available from Dave Haeffner's
 `How to Do Visual Testing`_ blog post.
 
-
 .. _How to Do Visual Testing:
     http://testautomation.applitools.com/post/105435804567/how-to-do-visual-testing-with-selenium
 
-.. hint::
 
-    While you can use :pypi:`behave` to drive the "user interface" (UI) or front-end,
-    interacting with the model layer or the business logic, for example by using a REST API,
-    is often the better choice.
+A Note on Testing
+-----------------
 
-    And keep in mind, BDD advises your to test **WHAT** your application should do
-    and not **HOW** it is done.
+While you can use :pypi:`behave` to drive the "user interface" (UI) or front-end,
+interacting with the model layer or the business logic, e.g. by using a REST API,
+is often the better choice.
 
-    If you want to test/exercise also the "user interface", it may be a good idea
-    to reuse the feature files, that test the model layer, by just replacing the
-    test automation layer (meaning mostly the step implementations).
-    This approach ensures that your feature files are technology-agnostic,
-    meaning they are independent how you interact with "system under test" (SUT) or
-    "application under test" (AUT).
+And keep in mind, BDD advises your to test **WHAT** your application should do
+and not **HOW** it is done.
 
-    For example, if you want to use the feature files in the same directory
-    for testing the model layer and the UI layer, this can be done by using the
-    ``--stage`` option, like with::
+If you want to test/exercise also the "user interface", it may be a good idea
+to reuse the feature files, that test the model layer, by just replacing the
+test automation layer (meaning mostly the step implementations).
+This approach ensures that your feature files are technology-agnostic,
+meaning they are independent how you interact with "system under test" (SUT) or
+"application under test" (AUT).
 
-        behave --stage=model features/
-        behave --stage=ui    features/     # NOTE: Normally used on a subset of features.
+For example, if you want to use the feature files in the same directory for
+testing the model layer and the UI layer, this can be done by using the
+``--stage`` option, like with:
+
+.. code-block:: bash
+
+    $ behave --stage=model features/
+    $ behave --stage=ui    features/  # NOTE: Normally used on a subset of features.
