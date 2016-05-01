@@ -67,7 +67,7 @@ Feature: Issue #148: Substeps do not fail
     And the command output should contain:
         """
         ParserError: Failed to parse <string>:
-        Parser failure in state steps, at line 2: 'I do something stupid'
+        Parser failure in state steps, at line 2: "I do something stupid"
         """
 
 

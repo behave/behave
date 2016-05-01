@@ -4,6 +4,7 @@ from __future__ import absolute_import, unicode_literals
 import re
 import operator
 import warnings
+import six
 
 
 class TagMatcher(object):
@@ -42,9 +43,14 @@ class ActiveTagMatcher(TagMatcher):
     TAG LOGIC
     ----------
 
-    Logical-and is applied to the sequence of "active tags".
-    All active tags must be turned "on".
-    Otherwise, the model element should be exclude.
+    Determine active-tag groups by grouping active-tags
+    with same category together::
+
+        active_group.enabled := enabled(group.tag1) or enabled(group.tag2) or ...
+        active_tags.enabled  := enabled(group1) and enabled(group2) and ...
+
+    All active-tag groups must be turned "on".
+    Otherwise, the model element should be excluded.
 
     CONCEPT: ValueProvider
     ------------------------------
@@ -149,51 +155,110 @@ class ActiveTagMatcher(TagMatcher):
         value = value or ""
         return "%s.with_%s%s%s" % (tag_prefix, category, value_sep, value)
 
-    def is_tag_negated(self, tag):
+    def is_tag_negated(self, tag):      # pylint: disable=no-self-use
         return tag.startswith("not")
 
-    def should_exclude_with(self, tags):
-        exclude_decision_map = {}
-        exclude_reasons = []
-        for category_tag, tag_match in self.select_active_tags(tags):
-            # -- FASTER: tag_prefix, category, _, tag_value = tag_match.groups()
+    def is_tag_group_enabled(self, group_category, group_tag_pairs):
+        """Provides boolean logic to determine if all active-tags
+        which use the same category result in a enabled value.
+
+        Use LOGICAL-OR expression for active-tags with same category::
+
+            category_tag_group.enabled := enabled(tag1) or enabled(tag2) or ...
+
+        .. code-block:: gherkin
+
+            @use.with_xxx=alice
+            @use.with_xxx=bob
+            @not.with_xxx=charly
+            Scenario:
+                Given a step passes
+                ...
+
+        :param group_category:      Category for this tag-group (as string).
+        :param category_tag_group:  List of active-tag match-pairs.
+        :return: True, if tag-group is enabled.
+        """
+        if not group_tag_pairs:
+            # -- CASE: Empty group is always enabled (CORNER-CASE).
+            return True
+
+        current_value = self.value_provider.get(group_category, None)
+        if current_value is None and self.ignore_unknown_categories:
+            # -- CASE: Unknown category, ignore it.
+            return True
+
+        tags_enabled = []
+        for category_tag, tag_match in group_tag_pairs:
             tag_prefix = tag_match.group("prefix")
             category = tag_match.group("category")
             tag_value = tag_match.group("value")
+            assert category == group_category
+
             is_category_tag_switched_on = operator.eq       # equal_to
             if self.is_tag_negated(tag_prefix):
                 is_category_tag_switched_on = operator.ne   # not_equal_to
 
-            current_value = self.value_provider.get(category, None)
-            if current_value is None and self.ignore_unknown_categories:
-                # -- CASE: Unknown category, ignore it.
-                continue
-            elif is_category_tag_switched_on(tag_value, current_value):
-                # -- CASE: Active tag is switched ON, decision: should run.
-                # NOTE: No change, if category is already in exclusion map:
-                #   disabled_result  := not enabled_result = not (e1 and e2 ...)
-                #                    := (not e1) or (not e2) ...
-                #
-                #   disabled_result1 := True  or False = True
-                #   disabled_result2 := False or False = False  (same tag twice)
-                if category not in exclude_decision_map:
-                    exclude_decision_map[category] = False
-            else:
-                # -- CASE: Active tag is switched OFF, decision: exclude it.
-                #   disabled_result1 := True  or True = True
-                #   disabled_result2 := False or True = True
-                exclude_decision_map[category] = True
-                if self.use_exclude_reason:
-                    reason = "%s (but: %s)" % (category_tag, current_value)
-                    exclude_reasons.append(reason)
+            tag_enabled = is_category_tag_switched_on(tag_value, current_value)
+            tags_enabled.append(tag_enabled)
+        return any(tags_enabled)    # -- PROVIDES: LOGICAL-OR expression
 
-        self.exclude_reason = None
-        if exclude_reasons:
-            # -- DIAGNOSTICS:
-            self.exclude_reason = ", ".join(exclude_reasons)
-        # -- EXCLUDE-DECISION:
-        #    disabled_result := (not e1) or (not e2) ... = not (e1 and e2 ...)
-        return any(exclude_decision_map.values())
+    def should_exclude_with(self, tags):
+        group_categories = self.group_active_tags_by_category(tags)
+        for group_category, category_tag_pairs in group_categories:
+            if not self.is_tag_group_enabled(group_category, category_tag_pairs):
+                # -- LOGICAL-AND SHORTCUT: Any false => Makes everything false
+                if self.use_exclude_reason:
+                    current_value = self.value_provider.get(group_category, None)
+                    reason = "%s (but: %s)" % (group_category, current_value)
+                    self.exclude_reason = reason
+                return True     # SHOULD-EXCLUDE: not enabled = not False
+        # -- LOGICAL-AND: All parts are True
+        return False    # SHOULD-EXCLUDE: not enabled = not True
+
+    # -- OLD-IMPLEMENTATION:
+    # def should_exclude_with(self, tags):
+    #     exclude_decision_map = {}
+    #     exclude_reasons = []
+    #     for category_tag, tag_match in self.select_active_tags(tags):
+    #         # -- FASTER: tag_prefix, category, _, tag_value = tag_match.groups()
+    #         tag_prefix = tag_match.group("prefix")
+    #         category = tag_match.group("category")
+    #         tag_value = tag_match.group("value")
+    #         is_category_tag_switched_on = operator.eq       # equal_to
+    #         if self.is_tag_negated(tag_prefix):
+    #             is_category_tag_switched_on = operator.ne   # not_equal_to
+    #
+    #         current_value = self.value_provider.get(category, None)
+    #         if current_value is None and self.ignore_unknown_categories:
+    #             # -- CASE: Unknown category, ignore it.
+    #             continue
+    #         elif is_category_tag_switched_on(tag_value, current_value):
+    #             # -- CASE: Active tag is switched ON, decision: should run.
+    #             # NOTE: No change, if category is already in exclusion map:
+    #             #   disabled_result  := not enabled_result = not (e1 and e2 ...)
+    #             #                    := (not e1) or (not e2) ...
+    #             #
+    #             #   disabled_result1 := True  or False = True
+    #             #   disabled_result2 := False or False = False  (same tag twice)
+    #             if category not in exclude_decision_map:
+    #                 exclude_decision_map[category] = False
+    #         else:
+    #             # -- CASE: Active tag is switched OFF, decision: exclude it.
+    #             #   disabled_result1 := True  or True = True
+    #             #   disabled_result2 := False or True = True
+    #             exclude_decision_map[category] = True
+    #             if self.use_exclude_reason:
+    #                 reason = "%s (but: %s)" % (category_tag, current_value)
+    #                 exclude_reasons.append(reason)
+    #
+    #     self.exclude_reason = None
+    #     if exclude_reasons:
+    #         # -- DIAGNOSTICS:
+    #         self.exclude_reason = ", ".join(exclude_reasons)
+    #     # -- EXCLUDE-DECISION:
+    #     #    disabled_result := (not e1) or (not e2) ... = not (e1 and e2 ...)
+    #     return any(exclude_decision_map.values())
 
     def select_active_tags(self, tags):
         """Select all active tags that match the tag schema pattern.
@@ -206,6 +271,27 @@ class ActiveTagMatcher(TagMatcher):
             if match_object:
                 yield (tag, match_object)
 
+    def group_active_tags_by_category(self, tags):
+        """Select all active tags that match the tag schema pattern
+        and returns groups of active-tags, each group with tags
+        of the same category.
+
+        :param tags: List of tags (as string).
+        :return: List of tag-groups (as generator), each tag-group is a
+                list of (tag1, match1) pairs for the same category.
+        """
+        category_tag_groups = {}
+        for tag in tags:
+            match_object = self.tag_pattern.match(tag)
+            if match_object:
+                category = match_object.group("category")
+                category_tag_pairs = category_tag_groups.get(category, None)
+                if category_tag_pairs is None:
+                    category_tag_pairs = category_tag_groups[category] = []
+                category_tag_pairs.append((tag, match_object))
+
+        for category, category_tag_pairs in six.iteritems(category_tag_groups):
+            yield (category, category_tag_pairs)
 
 
 class PredicateTagMatcher(TagMatcher):
@@ -231,6 +317,19 @@ class CompositeTagMatcher(TagMatcher):
                 return True
         # -- OTHERWISE:
         return False
+
+
+def setup_active_tag_values(active_tag_values, data):
+    """Setup/update active_tag values with dict-like data.
+    Only values for keys that are already present are updated.
+
+    :param active_tag_values:   Data storage for active_tag value (dict-like).
+    :param data:   Data that should be used for active_tag values (dict-like).
+    """
+    for category in list(active_tag_values.keys()):
+        if category in data:
+            active_tag_values[category] = data[category]
+
 
 # -----------------------------------------------------------------------------
 # PROTOTYPING CLASSES:

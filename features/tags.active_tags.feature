@@ -11,16 +11,30 @@ Feature: Active Tags
   .   * If several active tags are used for a feature/scenario/scenario outline,
   .     the following tag logic is used:
   .
-  .     enabled = enabled1 and enabled2 and ...
+  .     SIMPLIFIED ALGORITHM: For active-tag expression
+  .
+  .       enabled := enabled(active-tag1) and enabled(active-tag2) and ...
+  .
+  .           where all active-tags have a different category.
+  .
+  .     REAL ALGORITHM:
+  .       If multiple active-tags for the same catgory exist,
+  .       then these active-tags need to be merged together into a tag_group.
+  .
+  .     enabled           := enabled(tag_group1) and enabled(tag_group2) and ...
+  .     tag_group.enabled := enabled(tag1) or enabled(tag2) or ...
+  .
+  .           where all the active-tags within a tag-group have the same category.
   .
   . ACTIVE TAG SCHEMA (dialect1):
-  .     @active.with_{category}={value}
-  .     @not_active.with_{category}={value}
-  .
-  . ACTIVE TAG SCHEMA (dialect2):
   .     @use.with_{category}={value}
   .     @not.with_{category}={value}
-  .     @only.with_{category}={value}
+  .
+  .     DEPRECATED: @only.with_{category}={value}
+  .
+  . ACTIVE TAG SCHEMA (dialect2):
+  .     @active.with_{category}={value}
+  .     @not_active.with_{category}={value}
   .
   . RATIONALE:
   .   Some aspects of the runtime environment are only known
@@ -45,10 +59,13 @@ Feature: Active Tags
         @step('{word:w} step passes')
         def step_passes(context, word):
             pass
+
+        # -- REUSE: Step definitions.
+        from behave4cmd0 import note_steps
         """
       And a file named "features/environment.py" with:
         """
-        from behave.tag_matcher import ActiveTagMatcher
+        from behave.tag_matcher import ActiveTagMatcher, setup_active_tag_values
         import sys
 
         # -- ACTIVE TAG SUPPORT: @use.with_{category}={value}, ...
@@ -58,21 +75,25 @@ Feature: Active Tags
         }
         active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
-        def setup_active_tag_values(userdata):
-            for key in active_tag_value_provider.keys():
-                if key in userdata:
-                    active_tag_value_provider[key] = userdata[key]
-
+        # -- BEHAVE-HOOKS:
         def before_all(context):
-            setup_active_tag_values(context.config.userdata)
+            setup_active_tag_values(active_tag_value_provider, context.config.userdata)
 
         def before_scenario(context, scenario):
             if active_tag_matcher.should_exclude_with(scenario.effective_tags):
                 sys.stdout.write("ACTIVE-TAG DISABLED: Scenario %s\n" % scenario.name)
                 scenario.skip(active_tag_matcher.exclude_reason)
         """
+      And a file named "behave.ini" with:
+        """
+        [behave]
+        default_format = pretty
+        show_timings = no
+        show_skipped = no
+        color = no
+        """
 
-    Scenario: Use tag schema dialect2 with one category
+    Scenario: Use active-tag with Scenario and one category (tag schema dialect2)
       Given a file named "features/e1.active_tags.feature" with:
         """
         Feature:
@@ -86,7 +107,7 @@ Feature: Active Tags
           Scenario: Bob (Run only with Web-Browser Safari)
             Given some step passes
         """
-      When I run "behave -f plain -T features/e1.active_tags.feature"
+      When I run "behave -f plain features/e1.active_tags.feature"
       Then it should pass with:
         """
         1 scenario passed, 0 failed, 1 skipped
@@ -100,7 +121,6 @@ Feature: Active Tags
         """
         ACTIVE-TAG DISABLED: Scenario Alice
         """
-
 
     Scenario: Use tag schema dialect1 with several categories
       Given a file named "features/e2.active_tags.feature" with:
@@ -212,6 +232,19 @@ Feature: Active Tags
         | @not.with_foo=other @not.with_bar=other   |  yes      |
 
 
+  Scenario: Tag logic with two active tags of same category
+      Given I setup the current values for active tags with:
+        | category | value |
+        | foo      | xxx   |
+      Then the following active tag combinations are enabled:
+        | tags                                      | enabled? | Comment |
+        | @use.with_foo=xxx   @use.with_foo=other   |  yes     | Enabled: tag1 |
+        | @use.with_foo=xxx   @not.with_foo=other   |  yes     | Enabled: tag1, tag2|
+        | @use.with_foo=xxx   @not.with_foo=xxx     |  yes     | Enabled: tag1 (BAD-SPEC) |
+        | @use.with_foo=other @not.with_foo=xxx     |  no      | Enabled: none |
+        | @not.with_foo=other @not.with_foo=xxx     |  yes     | Enabled: tag1 |
+
+
     Scenario: Tag logic with unknown categories (case: ignored)
 
       Unknown categories (where a value is missing) are ignored by default.
@@ -246,3 +279,109 @@ Feature: Active Tags
         | @not.with_unknown=xxx  |  yes     |
         | @not.with_unknown=zzz  |  yes     |
       But note that "the active tag with the unknown category is disabled"
+
+
+    Scenario: ScenarioOutline with enabled active-tag is executed
+      Given a file named "features/outline1.active_tags.feature" with:
+        """
+        Feature:
+
+          @use.with_browser=chrome
+          Scenario Outline: Alice -- <name>, <language>
+            Given a step passes
+            But note that "<name> can speak <language>"
+
+            Examples:
+              | name     | language |
+              | Anna     | German   |
+              | Arabella | English  |
+        """
+      When I run "behave -D browser=chrome features/outline1.active_tags.feature"
+      Then it should pass with:
+        """
+        2 scenarios passed, 0 failed, 0 skipped
+        4 steps passed, 0 failed, 0 skipped, 0 undefined
+        """
+      And the command output should contain:
+        """
+        @use.with_browser=chrome
+        Scenario Outline: Alice -- Anna, German -- @1.1   # features/outline1.active_tags.feature:10
+          Given a step passes                             # features/steps/pass_steps.py:3
+          But note that "Anna can speak German"           # ../behave4cmd0/note_steps.py:15
+
+        @use.with_browser=chrome
+        Scenario Outline: Alice -- Arabella, English -- @1.2   # features/outline1.active_tags.feature:11
+          Given a step passes                                  # features/steps/pass_steps.py:3
+          But note that "Arabella can speak English"           # ../behave4cmd0/note_steps.py:15
+        """
+      And the command output should not contain "ACTIVE-TAG DISABLED: Scenario Alice"
+      But note that "we check now that tags for example rows are generated correctly"
+      And the command output should not contain "@use.with_browserchrome"
+      But the command output should contain "@use.with_browser=chrome"
+
+
+    Scenario: ScenarioOutline with disabled active-tag is skipped
+      Given a file named "features/outline2.active_tags.feature" with:
+        """
+        Feature:
+
+          @use.with_browser=chrome
+          Scenario Outline: Bob -- <name>, <language>
+            Given some step passes
+            But note that "<name> can speak <language>"
+
+            Examples:
+              | name     | language |
+              | Bernhard | French   |
+        """
+      When I run "behave -D browser=other features/outline2.active_tags.feature"
+      Then it should pass with:
+        """
+        0 scenarios passed, 0 failed, 1 skipped
+        0 steps passed, 0 failed, 2 skipped, 0 undefined
+        """
+      And the command output should contain:
+        """
+        ACTIVE-TAG DISABLED: Scenario Bob -- Bernhard, French -- @1.1
+        """
+
+    Scenario: ScenarioOutline with generated active-tag
+      Given a file named "features/outline3.active_tags.feature" with:
+        """
+        Feature:
+
+          @use.with_browser=<browser>
+          Scenario Outline: Charly -- <name>, <language>, <browser>
+            Given a step passes
+            But note that "<name> can speak <language>"
+
+            Examples:
+              | name     | language | browser | Comment |
+              | Anna     | German   | firefox | Should be skipped  when browser=chrome |
+              | Arabella | English  | chrome  | Should be executed when browser=chrome |
+        """
+      When I run "behave -D browser=chrome features/outline3.active_tags.feature"
+      Then it should pass with:
+        """
+        1 scenario passed, 0 failed, 1 skipped
+        2 steps passed, 0 failed, 2 skipped, 0 undefined
+        """
+      And the command output should contain:
+        """
+        ACTIVE-TAG DISABLED: Scenario Charly -- Anna, German, firefox -- @1.1
+        """
+      And the command output should not contain:
+        """
+        ACTIVE-TAG DISABLED: Scenario Charly -- Arabella, English, chrome -- @1.2
+        """
+      And the command output should contain:
+        """
+        ACTIVE-TAG DISABLED: Scenario Charly -- Anna, German, firefox -- @1.1
+        @use.with_browser=firefox
+        Scenario Outline: Charly -- Anna, German, firefox -- @1.1   # features/outline3.active_tags.feature:10
+
+        @use.with_browser=chrome
+        Scenario Outline: Charly -- Arabella, English, chrome -- @1.2   # features/outline3.active_tags.feature:11
+          Given a step passes                                           # features/steps/pass_steps.py:3
+          But note that "Arabella can speak English"                    # ../behave4cmd0/note_steps.py:15
+        """

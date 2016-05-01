@@ -5,8 +5,19 @@ python:
   - "2.7"
   - "3.3"
   - "3.4"
-  - "3.5"
+  - "3.5.1"
   - "pypy"
+  - "3.5"
+
+# DISABLED: - "nightly"
+# -- AVOID:  python: "3.5" => python 3.5.0
+# Seems to have a problem with unit tests in exception traceback.
+# Behaviour is fixed in python 3.5.1
+
+# -- TEST-BALLON: Check if Python 3.5 is actually Python 3.5.1 or newer
+matrix:
+  allow_failures:
+    - python: "3.5"
 
 cache:
   directories:
@@ -14,19 +25,27 @@ cache:
 
 install:
   - travis_retry pip install -q mock nose PyHamcrest
+  - travis_retry pip install -q -U pytest
   - python setup.py -q install
 
 script:
   - python --version
-  - nosetests
-  - behave -f progress --junit --tags=~@xfail features/
-  - behave -f progress --junit --tags=~@xfail tools/test-features/
-  - behave -f progress --junit --tags=~@xfail issue.features/
+  - py.test test tests
+  - behave -f progress --junit features/
+  - behave -f progress --junit tools/test-features/
+  - behave -f progress --junit issue.features/
+
+after_failure:
+  - echo "FAILURE DETAILS (from XML reports):"
+  - bin/behave.junit_filter.py --status=failed reports
+
+# -- ALTERNATIVE:
+#  egrep -L 'errors="0"|failures="0"' reports/*.xml | xargs -t cat
 
 # -- USE: New container-based infrastructure for faster startup.
 #    http://docs.travis-ci.com/user/workers/container-based-infrastructure/
-#    
-# SEE ALSO: 
+#
+# SEE ALSO:
 #   http://lint.travis-ci.org
 #   http://docs.travis-ci.com/user/caching/
 #   http://docs.travis-ci.com/user/multi-os/  (Linux, MACOSX)

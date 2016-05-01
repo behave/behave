@@ -6,8 +6,8 @@ REQUIRES: importlib (provided in Python2.7, Python3.2...)
 """
 
 from __future__ import absolute_import
-from behave._types import Unknown
 import importlib
+from behave._types import Unknown
 
 def parse_scoped_name(scoped_name):
     """
@@ -39,7 +39,7 @@ class LazyObject(object):
         self.object_name = object_name
         self.resolved_object = None
 
-    def __get__(self, obj=None, type=None):
+    def __get__(self, obj=None, type=None):     # pylint: disable=redefined-builtin
         """
         Implement descriptor protocol,
         useful if this class is used as attribute.

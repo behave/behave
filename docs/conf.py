@@ -3,41 +3,57 @@
 # SPHINX CONFIGURATION: behave documentation build configuration file
 # =============================================================================
 
-import sys, os
-import six
+import os.path
+import sys
 
+# -- ENSURE: Local workspace is used (for sphinx apidocs).
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath(".."))
 
-# -- General configuration -----------------------------------------------------
+# -- OPTIONAL EXTENSIONS/PARTS:
+# NOTES:
+# * sphinxcontrib.youtube: Not easily installable
+#   => other package with same name in pypi
+try:
+    import sphinxcontrib.youtube
+    has_extension_sphinxcontrib_youtube = True
+except ImportError:
+    has_extension_sphinxcontrib_youtube = False
+
+# ------------------------------------------------------------------------------
+# GENERAL CONFIGGURATION
+# ------------------------------------------------------------------------------
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = '1.2'
+needs_sphinx = "1.3"
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
-# coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
+# coming with Sphinx (named "sphinx.ext.*") or your custom ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.ifconfig",
     "sphinx.ext.extlinks",
 ]
+if has_extension_sphinxcontrib_youtube:
+    extensions.append("sphinxcontrib.youtube")
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The encoding of source files.
-#source_encoding = 'utf-8-sig'
+source_encoding = "utf-8"
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = u'behave'
-authors = u'Benno Rice, Richard Jones and Jens Engel'
-copyright = u'2012-2015, %s' % authors
+project = u"behave"
+authors = u"Benno Rice, Richard Jones and Jens Engel"
+copyright = u"2012-2016, %s" % authors
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -55,18 +71,18 @@ release = __version__
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
-#today = ''
+#today = ""
 # Else, today_fmt is used as the format for a strftime call.
-#today_fmt = '%B %d, %Y'
+#today_fmt = "%B %d, %Y"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ["_build"]
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
 
-# If true, '()' will be appended to :func: etc. cross-reference text.
+# If true, "()" will be appended to :func: etc. cross-reference text.
 #add_function_parentheses = True
 
 # If true, the current module name will be prepended to all description
@@ -78,7 +94,7 @@ exclude_patterns = ['_build']
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -87,13 +103,29 @@ extlinks = {
     "pypi": ("https://pypi.python.org/pypi/%s", ""),
     "github": ("https://github.com/%s", "github:/"),
     "issue":  ("https://github.com/behave/behave/issue/%s", "issue #"),
+    "youtube": ("https://www.youtube.com/watch?v=%s", "youtube:video="),
 }
 
-# -- Options for HTML output ---------------------------------------------------
 
+# -- SUPPORT: Documentation variation-points with sphinx.ext.ifconfig
+def setup(app):
+    # -- VARIATION-POINT: supports_video
+    # BASED-ON: installed("sphinxcontrib-youtube") and output-mode
+    # TODO: Check for output-mode, too (supported on: HTML, ...)
+    supports_video = has_extension_sphinxcontrib_youtube
+    app.add_config_value("supports_video", supports_video, "env")
+
+
+# ------------------------------------------------------------------------------
+# OPTIONS FOR: HTML OUTPUT
+# ------------------------------------------------------------------------------
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'kr'
+on_rtd = os.environ.get("READTHEDOCS", None) == "True"
+if on_rtd:
+    html_theme = "default"
+else:
+    html_theme = "kr"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -113,12 +145,12 @@ html_theme = 'kr'
 # textalign (CSS text-align value): Text alignment for the body, default is justify.
 
 html_theme_options = {
- #'bodyfont': '"Ubuntu", sans-serif', # (CSS font family): Font for normal text.
-  #'github_fork': 'behave/behave'
+ #"bodyfont": '"Ubuntu", sans-serif', # (CSS font family): Font for normal text.
+  #"github_fork": "behave/behave"
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ['_themes']
+html_theme_path = ["_themes"]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -139,11 +171,11 @@ html_logo = "_static/behave_logo1.png"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
-# If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
+# If not "", a "Last updated on:" timestamp is inserted at every page bottom,
 # using the given strftime format.
-#html_last_updated_fmt = '%b %d, %Y'
+#html_last_updated_fmt = "%b %d, %Y"
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
@@ -177,32 +209,33 @@ html_static_path = ['_static']
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
 # base URL from which the finished HTML is served.
-#html_use_opensearch = ''
+#html_use_opensearch = ""
 
 # This is the file name suffix for HTML files (e.g. ".xhtml").
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'behavedoc'
+htmlhelp_basename = "behavedoc"
 
 
-# -- Options for LaTeX output --------------------------------------------------
-
+# ------------------------------------------------------------------------------
+# OPTIONS FOR: LATEX OUTPUT
+# ------------------------------------------------------------------------------
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+# The paper size ("letterpaper" or "a4paper").
+#"papersize": "letterpaper",
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+# The font size ("10pt", "11pt" or "12pt").
+#"pointsize": "10pt",
 
 # Additional stuff for the LaTeX preamble.
-#'preamble': '',
+#"preamble": "",
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'behave.tex', u'behave Documentation', authors, 'manual'),
+  ("index", "behave.tex", u"behave Documentation", authors, "manual"),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -226,26 +259,28 @@ latex_documents = [
 #latex_domain_indices = True
 
 
-# -- Options for manual page output --------------------------------------------
-
+# ------------------------------------------------------------------------------
+# OPTIONS FOR: MANUAL PAGE (man page) OUTPUT
+# ------------------------------------------------------------------------------
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'behave', u'behave Documentation', [authors], 1)
+    ("index", "behave", u"behave Documentation", [authors], 1)
 ]
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
 
 
-# -- Options for Texinfo output ------------------------------------------------
-
+# ------------------------------------------------------------------------------
+# OPTIONS FOR: Texinfo output
+# ------------------------------------------------------------------------------
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'behave', u'behave Documentation', authors,
-   'behave', 'A test runner for behave (feature tests).', 'Miscellaneous'),
+  ("index", "behave", u"behave Documentation", authors,
+   "behave", "A test runner for behave (feature tests).", "Miscellaneous"),
 ]
 
 # Documents to append as an appendix to all manuals.
@@ -254,5 +289,5 @@ texinfo_documents = [
 # If false, no module index is generated.
 #texinfo_domain_indices = True
 
-# How to display URL addresses: 'footnote', 'no', or 'inline'.
-#texinfo_show_urls = 'footnote'
+# How to display URL addresses: "footnote", "no", or "inline".
+#texinfo_show_urls = "footnote"

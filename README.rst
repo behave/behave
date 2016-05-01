@@ -6,19 +6,19 @@ Behave
    :alt: Join the chat at https://gitter.im/behave/behave
    :target: https://gitter.im/behave/behave?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-.. image:: https://travis-ci.org/behave/behave.png?branch=master
+.. image:: https://img.shields.io/travis/behave/behave/master.svg
     :target: https://travis-ci.org/behave/behave
     :alt: Travis CI Build Status
 
-.. image:: https://pypip.in/v/behave/badge.png
+.. image:: https://img.shields.io/pypi/v/behave.svg
     :target: https://pypi.python.org/pypi/behave
     :alt: Latest Version
 
-.. image:: https://pypip.in/d/behave/badge.png
+.. image:: https://img.shields.io/pypi/dm/behave.svg
     :target: https://pypi.python.org/pypi/behave
     :alt: Downloads
 
-.. image:: https://pypip.in/license/behave/badge.png
+.. image:: https://img.shields.io/pypi/l/behave.svg
     :target: https://pypi.python.org/pypi/behave/
     :alt: License
 
@@ -89,7 +89,7 @@ Run behave:
     1 scenario passed, 0 failed, 0 skipped
     3 steps passed, 0 failed, 0 skipped, 0 undefined
 
-Now, continue reading to learn how to the most of *behave*. To get started,
+Now, continue reading to learn how to get the most out of *behave*. To get started,
 we recommend the `tutorial`_ and then the `feature testing language`_ and
 `api`_ references.
 
@@ -108,5 +108,5 @@ More Information
 
 .. _behave documentation: http://pythonhosted.org/behave/
 .. _latest changes: https://github.com/behave/behave/blob/master/CHANGES.rst
-.. _behave.example: https://github.com/jenisys/behave.example
+.. _behave.example: https://github.com/behave/behave.example
 

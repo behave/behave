@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: UTF-8 -*-
 
 from __future__ import absolute_import
 import os.path
@@ -13,7 +13,7 @@ from behave.textutil import indent, make_indentation, text as _text
 import six
 
 
-def CDATA(text=None):
+def CDATA(text=None):   # pylint: disable=invalid-name
     # -- issue #70: remove_ansi_escapes(text)
     element = ElementTree.Element('![CDATA[')
     element.text = ansi_escapes.strip_escapes(text)
@@ -21,6 +21,7 @@ def CDATA(text=None):
 
 
 class ElementTreeWithCDATA(ElementTree.ElementTree):
+    # pylint: disable=redefined-builtin
     def _write(self, file, node, encoding, namespaces):
         """This method is for ElementTree <= 1.2.6"""
 
@@ -28,15 +29,17 @@ class ElementTreeWithCDATA(ElementTree.ElementTree):
             text = node.text.encode(encoding)
             file.write("\n<![CDATA[%s]]>\n" % text)
         else:
+             # pylint: disable=no-member
             ElementTree.ElementTree._write(self, file, node, encoding,
                                            namespaces)
 
 if hasattr(ElementTree, '_serialize'):
-
+    # pylint: disable=protected-access
     def _serialize_xml2(write, elem, encoding, qnames, namespaces,
                         orig=ElementTree._serialize_xml):
         if elem.tag == '![CDATA[':
-            write("\n<%s%s]]>\n" % (elem.tag, elem.text.encode(encoding, "xmlcharrefreplace")))
+            write("\n<%s%s]]>\n" % \
+                  (elem.tag, elem.text.encode(encoding, "xmlcharrefreplace")))
             return
         return orig(write, elem, encoding, qnames, namespaces)
 
@@ -54,10 +57,10 @@ if hasattr(ElementTree, '_serialize'):
             # python <3.3
             return orig(write, elem, qnames, namespaces)
 
-    if sys.version_info.major == 3:
+    if six.PY3:
         ElementTree._serialize_xml = \
             ElementTree._serialize['xml'] = _serialize_xml3
-    elif sys.version_info.major == 2:
+    elif six.PY2:
         ElementTree._serialize_xml = \
             ElementTree._serialize['xml'] = _serialize_xml2
 
@@ -91,8 +94,9 @@ class JUnitReporter(Reporter):
     Generates JUnit-like XML test report for behave.
     """
     show_multiline = True
-    show_timings   = True     # -- Show step timings.
-    show_tags      = True
+    show_timings = True     # -- Show step timings.
+    show_tags = True
+    show_skipped_always = False
 
     def make_feature_filename(self, feature):
         filename = None
@@ -107,9 +111,17 @@ class JUnitReporter(Reporter):
         filename = filename.replace('\\', '/').replace('/', '.')
         return _text(filename)
 
+    @property
+    def show_skipped(self):
+        return self.config.show_skipped or self.show_skipped_always
+
     # -- REPORTER-API:
     def feature(self, feature):
-        feature_filename  = self.make_feature_filename(feature)
+        if feature.status == "skipped" and not self.show_skipped:
+            # -- SKIP-OUTPUT: If skipped features should not be shown.
+            return
+
+        feature_filename = self.make_feature_filename(feature)
         classname = feature_filename
         report = FeatureReportData(feature, feature_filename)
 
@@ -179,7 +191,7 @@ class JUnitReporter(Reporter):
         status = _text(step.status)
         if cls.show_timings:
             status += u" in %0.3fs" % step.duration
-        text  = u'%s %s ... ' % (step.keyword, step.name)
+        text = u'%s %s ... ' % (step.keyword, step.name)
         text += u'%s\n' % status
         if cls.show_multiline:
             prefix = make_indentation(2)
@@ -236,11 +248,14 @@ class JUnitReporter(Reporter):
         :param scenario:  Scenario to process.
         :param report:    Context object to store/add info to (outgoing param).
         """
+        # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         assert isinstance(scenario, Scenario)
         assert not isinstance(scenario, ScenarioOutline)
-        report.counts_tests += 1
+        if scenario.status != "skipped" or self.show_skipped:
+            # -- NOTE: Count only if not-skipped or skipped should be shown.
+            report.counts_tests += 1
         classname = report.classname
-        feature   = report.feature
+        feature = report.feature
         feature_name = feature.name
         if not feature_name:
             feature_name = self.make_feature_filename(feature)
@@ -272,14 +287,12 @@ class JUnitReporter(Reporter):
             step_text = self.describe_step(step).rstrip()
             text = u"\nFailing step: %s\nLocation: %s\n" % (step_text, step.location)
             message = _text(step.exception)
-            if len(message) > 80:
-                message = message[:80] + "..."
             failure.set(u'type', step.exception.__class__.__name__)
             failure.set(u'message', message)
             text += _text(step.error_message)
             failure.append(CDATA(text))
             case.append(failure)
-        elif scenario.status in ('skipped', 'untested'):
+        elif scenario.status in ("skipped", "untested") and self.show_skipped:
             report.counts_skipped += 1
             step = self.select_step_with_status('undefined', scenario)
             if step:
@@ -312,7 +325,8 @@ class JUnitReporter(Reporter):
             stderr.append(CDATA(text))
             case.append(stderr)
 
-        report.testcases.append(case)
+        if scenario.status != "skipped" or self.show_skipped:
+            report.testcases.append(case)
 
     def _process_scenario_outline(self, scenario_outline, report):
         assert isinstance(scenario_outline, ScenarioOutline)

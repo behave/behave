@@ -136,9 +136,9 @@ name" to :class:`~behave.matchers.Matcher` class.
 .. autoclass:: behave.matchers.Matcher
    :members:
 
-.. autoclass:: behave.model.Argument
+.. autoclass:: behave.model_core.Argument
 
-.. autoclass:: behave.model.Match
+.. autoclass:: behave.matchers.Match
 
 
 Calling Steps From Other Steps
@@ -154,7 +154,7 @@ This function allows you to, for example:
 
     @when('I do the same thing as before')
     def step_impl(context):
-        context.execute_steps('''
+        context.execute_steps(u'''
             when I press the big red button
              and I duck
         ''')

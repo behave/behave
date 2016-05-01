@@ -20,11 +20,13 @@ Support of the following testing domains is currently known:
 Testing Domain   Name              Description
 =============== ================= ===========================================================
 Command-line    `behave4cmd`_     Test command-line tools, like behave, etc. (coming soon).
-Web Apps        `django-behave`_  Test Django Web apps with behave.
+Web Apps        `behave-django`_  Test Django Web apps with behave (solution 1).
+Web Apps        `django-behave`_  Test Django Web apps with behave (solution 2).
 Web, SMS, ...   `behaving`_       Test Web Apps, Email, SMS, Personas (step library).
 =============== ================= ===========================================================
 
-.. _behave4cmd:     https://github.com/jenisys/behave4cmd
+.. _behave4cmd:     https://github.com/behave/behave4cmd
+.. _behave-django: https://github.com/behave/behave-django
 .. _behaving:       https://github.com/ggozad/behaving
 .. _django-behave:  https://github.com/django-behave/django-behave
 

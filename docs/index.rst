@@ -36,6 +36,7 @@ Contents
    django
    comparison
    new_and_noteworthy
+   more_info
    appendix
 
 .. seealso::
@@ -43,8 +44,8 @@ Contents
     * `behave.example`_: `Behave Examples and Tutorials`_ (HTML)
     * Peter Parente: `BDD and Behave <http://tott-meetup.readthedocs.org/en/latest/sessions/behave.html>`_ (tutorial)
 
-.. _behave.example: https://github.com/jenisys/behave.example
-.. _`Behave Examples and Tutorials`: http://jenisys.github.io/behave.example/
+.. _behave.example: https://github.com/behave/behave.example
+.. _`Behave Examples and Tutorials`: http://behave.github.io/behave.example/
 
 
 Indices and tables

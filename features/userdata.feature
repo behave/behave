@@ -302,3 +302,30 @@ Feature: User-specific Configuration Data (userdata)
         4 steps passed, 0 failed, 0 skipped, 0 undefined
         """
     But note that "modifying userdata is BAD-PRACTICE, except in before_all() hook"
+
+  @userdata.case_sensitive
+  Scenario: Loaded user-data from configuration should have case-sensitive keys
+
+    Given a file named "features/userdata_case_sensitive.feature" with:
+        """
+        Feature:
+          Scenario:
+            Given the following user-data is provided:
+              | name            | value |
+              | CamelCaseKey    | 1     |
+              | CAPS_SNAKE_KEY  | 2     |
+              | lower_snake_key | 3     |
+        """
+    And a file named "behave.ini" with:
+        """
+        [behave.userdata]
+        CamelCaseKey = 1
+        CAPS_SNAKE_KEY = 2
+        lower_snake_key = 3
+        """
+    When I run "behave features/userdata_case_sensitive.feature"
+    Then it should pass with:
+        """
+        1 scenario passed, 0 failed, 0 skipped
+        1 step passed, 0 failed, 0 skipped, 0 undefined
+        """

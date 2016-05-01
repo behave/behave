@@ -48,7 +48,8 @@ class CommandResult(object):
         if self._output is None:
             output = self.stdout
             if self.stderr:
-                output += "\n"
+                if self.stdout:
+                    output += "\n"
                 output += self.stderr
             self._output = output
         return self._output
@@ -76,6 +77,7 @@ class Command(object):
     }
     PREPROCESSOR_MAP = {}
     POSTPROCESSOR_MAP = {}
+    USE_SHELL = sys.platform.startswith("win")
 
     @staticmethod
     def preprocess_command(preprocessors, cmdargs, command=None, cwd="."):
@@ -103,6 +105,9 @@ class Command(object):
         assert isinstance(command, six.string_types)
         command_result = CommandResult()
         command_result.command = command
+        use_shell = cls.USE_SHELL
+        if "shell" in kwargs:
+            use_shell = kwargs.pop("shell")
 
         # -- BUILD COMMAND ARGS:
         if six.PY2 and isinstance(command, six.text_type):
@@ -129,6 +134,7 @@ class Command(object):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             universal_newlines=True,
+                            shell=use_shell,
                             cwd=cwd, **kwargs)
             out, err = process.communicate()
             if six.PY2: # py3: we get unicode strings, py2 not

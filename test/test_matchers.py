@@ -1,18 +1,21 @@
+# -*- coding: UTF-8 -*-
 from __future__ import absolute_import, with_statement
-
 from mock import Mock, patch
-from nose.tools import *
+from nose.tools import *  # pylint: disable=wildcard-import, unused-wildcard-import
 import parse
+from behave.matchers import Match, Matcher, ParseMatcher, RegexMatcher
+from behave import matchers, runner
 
-from behave import matchers, model, runner
 
-class DummyMatcher(matchers.Matcher):
+class DummyMatcher(Matcher):
     desired_result = None
 
     def check_match(self, step):
         return DummyMatcher.desired_result
 
 class TestMatcher(object):
+    # pylint: disable=invalid-name, no-self-use
+
     def setUp(self):
         DummyMatcher.desired_result = None
 
@@ -28,11 +31,13 @@ class TestMatcher(object):
         matcher = DummyMatcher(func, None)
 
         match = matcher.match('just a random step')
-        assert isinstance(match, model.Match)
+        assert isinstance(match, Match)
         assert match.func is func
         assert match.arguments == arguments
 
 class TestParseMatcher(object):
+    # pylint: disable=invalid-name, no-self-use
+
     def setUp(self):
         self.recorded_args = None
 
@@ -40,14 +45,16 @@ class TestParseMatcher(object):
         self.recorded_args = (args, kwargs)
 
     def test_returns_none_if_parser_does_not_match(self):
-        matcher = matchers.ParseMatcher(None, 'a string')
+        # pylint: disable=redefined-outer-name
+        # REASON: parse
+        matcher = ParseMatcher(None, 'a string')
         with patch.object(matcher.parser, 'parse') as parse:
             parse.return_value = None
             assert matcher.match('just a random step') is None
 
     def test_returns_arguments_based_on_matches(self):
         func = lambda x: -x
-        matcher = matchers.ParseMatcher(func, 'foo')
+        matcher = ParseMatcher(func, 'foo')
 
         results = parse.Result([1, 2, 3], {'foo': 'bar', 'baz': -45.3},
                                {
@@ -76,7 +83,7 @@ class TestParseMatcher(object):
 
     def test_named_arguments(self):
         text = "has a {string}, an {integer:d} and a {decimal:f}"
-        matcher = matchers.ParseMatcher(self.record_args, text)
+        matcher = ParseMatcher(self.record_args, text)
         context = runner.Context(Mock())
 
         m = matcher.match("has a foo, an 11 and a 3.14159")
@@ -89,7 +96,7 @@ class TestParseMatcher(object):
 
     def test_positional_arguments(self):
         text = "has a {}, an {:d} and a {:f}"
-        matcher = matchers.ParseMatcher(self.record_args, text)
+        matcher = ParseMatcher(self.record_args, text)
         context = runner.Context(Mock())
 
         m = matcher.match("has a foo, an 11 and a 3.14159")
@@ -97,8 +104,10 @@ class TestParseMatcher(object):
         eq_(self.recorded_args, ((context, 'foo', 11, 3.14159), {}))
 
 class TestRegexMatcher(object):
+    # pylint: disable=invalid-name, no-self-use
+
     def test_returns_none_if_regex_does_not_match(self):
-        matcher = matchers.RegexMatcher(None, 'a string')
+        matcher = RegexMatcher(None, 'a string')
         regex = Mock()
         regex.match.return_value = None
         matcher.regex = regex
@@ -106,7 +115,7 @@ class TestRegexMatcher(object):
 
     def test_returns_arguments_based_on_groups(self):
         func = lambda x: -x
-        matcher = matchers.RegexMatcher(func, 'foo')
+        matcher = RegexMatcher(func, 'foo')
 
         regex = Mock()
         regex.groupindex = {'foo': 4, 'baz': 5}
@@ -142,10 +151,12 @@ class TestRegexMatcher(object):
 
     def test_steps_with_same_prefix_are_not_ordering_sensitive(self):
         # -- RELATED-TO: issue #280
-        def step_func1(context): pass
-        def step_func2(context): pass
-        matcher1 = matchers.RegexMatcher(step_func1, "I do something")
-        matcher2 = matchers.RegexMatcher(step_func2, "I do something more")
+        # pylint: disable=unused-argument
+        def step_func1(context): pass   # pylint: disable=multiple-statements
+        def step_func2(context): pass   # pylint: disable=multiple-statements
+        # pylint: enable=unused-argument
+        matcher1 = RegexMatcher(step_func1, "I do something")
+        matcher2 = RegexMatcher(step_func2, "I do something more")
 
         # -- CHECK: ORDERING SENSITIVITY
         matched1 = matcher1.match(matcher2.string)
@@ -156,25 +167,24 @@ class TestRegexMatcher(object):
         # -- CHECK: Can match itself (if step text is simple)
         matched1 = matcher1.match(matcher1.string)
         matched2 = matcher2.match(matcher2.string)
-        assert isinstance(matched1, model.Match)
-        assert isinstance(matched2, model.Match)
+        assert isinstance(matched1, Match)
+        assert isinstance(matched2, Match)
 
     @raises(AssertionError)
     def test_step_should_not_use_regex_begin_marker(self):
-        matchers.RegexMatcher(None, "^I do something")
+        RegexMatcher(None, "^I do something")
 
     @raises(AssertionError)
     def test_step_should_not_use_regex_end_marker(self):
-        matchers.RegexMatcher(None, "I do something$")
+        RegexMatcher(None, "I do something$")
 
     @raises(AssertionError)
     def test_step_should_not_use_regex_begin_and_end_marker(self):
-        matchers.RegexMatcher(None, "^I do something$")
+        RegexMatcher(None, "^I do something$")
 
 
 def test_step_matcher_current_matcher():
     current_matcher = matchers.current_matcher
-    # XXX-CHECK-PY23: If list() is needed.
     for name, klass in list(matchers.matcher_mapping.items()):
         matchers.use_step_matcher(name)
         matcher = matchers.get_matcher(lambda x: -x, 'foo')

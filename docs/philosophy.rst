@@ -90,7 +90,7 @@ The requirements of a retail application might be, "Refunded or exchanged
 items should be returned to stock." In BDD, a developer or QA engineer
 might clarify the requirements by breaking this down into specific
 examples. The language of the examples below is called Gherkin and is used
-*behave* as well as many other tools.
+by *behave* as well as many other tools.
 
 .. code-block:: gherkin
 
@@ -182,7 +182,7 @@ Sometimes the difference between the context, events and outcomes is made more e
 
  class TestWindow(object):
     def test_window_close(self):
-        # given
+        # Given
         window = gui.Window("My Window")
         frame = gui.Frame(window)
 

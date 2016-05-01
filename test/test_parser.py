@@ -529,6 +529,33 @@ Feature: Stuff
             ('then', 'Then', 'stuff is in buckets', None, None),
         ])
 
+    def test_parses_feature_with_table_and_escaped_pipe_in_cell_values(self):
+        doc = u'''
+Feature:
+  Scenario:
+    Given we have special cell values:
+      | name   | value    |
+      | alice  | one\|two |
+      | bob    |\|one     |
+      | charly |     one\||
+      | doro   | one\|two\|three\|four |
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        assert(len(feature.scenarios) == 1)
+        table = model.Table(
+            [u"name", u"value"],
+            0,
+            [
+                [u"alice",  u"one|two"],
+                [u"bob",    u"|one"],
+                [u"charly", u"one|"],
+                [u"doro",   u"one|two|three|four"],
+            ]
+        )
+        self.compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Given', 'we have special cell values', None, table),
+        ])
+
     def test_parses_feature_with_a_scenario_outline(self):
         doc = u'''
 Feature: Stuff
@@ -662,6 +689,100 @@ Feature: Stuff
         )
         eq_(feature.scenarios[0].examples[0].name, 'Some stuff')
         eq_(feature.scenarios[0].examples[0].table, table)
+
+    def test_parses_scenario_outline_with_tagged_examples1(self):
+        # -- CASE: Examples with 1 tag-line (= 1 tag)
+        doc = u'''
+Feature: Alice
+
+  @foo
+  Scenario Outline: Bob
+    Given we have <Stuff>
+
+    @bar
+    Examples: Charly
+      | Stuff      | Things   |
+      | wool       | felt     |
+      | cotton     | thread   |
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Alice")
+
+        assert(len(feature.scenarios) == 1)
+        scenario_outline = feature.scenarios[0]
+        eq_(scenario_outline.name, "Bob")
+        eq_(scenario_outline.tags, [model.Tag(u"foo", 1)])
+        self.compare_steps(scenario_outline.steps, [
+            ("given", "Given", "we have <Stuff>", None, None),
+        ])
+
+        table = model.Table(
+            [u"Stuff", u"Things"], 0,
+            [
+                [u"wool", u"felt"],
+                [u"cotton", u"thread"],
+            ]
+        )
+        eq_(scenario_outline.examples[0].name, "Charly")
+        eq_(scenario_outline.examples[0].table, table)
+        eq_(scenario_outline.examples[0].tags, [model.Tag(u"bar", 1)])
+
+        # -- ScenarioOutline.scenarios:
+        # Inherit tags from ScenarioOutline and Examples element.
+        eq_(len(scenario_outline.scenarios), 2)
+        expected_tags = [model.Tag(u"foo", 1), model.Tag(u"bar", 1)]
+        eq_(set(scenario_outline.scenarios[0].tags), set(expected_tags))
+        eq_(set(scenario_outline.scenarios[1].tags), set(expected_tags))
+
+    def test_parses_scenario_outline_with_tagged_examples2(self):
+        # -- CASE: Examples with multiple tag-lines (= 2 tag-lines)
+        doc = u'''
+Feature: Alice
+
+  @foo
+  Scenario Outline: Bob
+    Given we have <Stuff>
+
+    @bar
+    @baz
+    Examples: Charly
+      | Stuff      | Things   |
+      | wool       | felt     |
+      | cotton     | thread   |
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Alice")
+
+        assert(len(feature.scenarios) == 1)
+        scenario_outline = feature.scenarios[0]
+        eq_(scenario_outline.name, "Bob")
+        eq_(scenario_outline.tags, [model.Tag(u"foo", 1)])
+        self.compare_steps(scenario_outline.steps, [
+            ("given", "Given", "we have <Stuff>", None, None),
+        ])
+
+        table = model.Table(
+            [u"Stuff", u"Things"], 0,
+            [
+                [u"wool", u"felt"],
+                [u"cotton", u"thread"],
+            ]
+        )
+        eq_(scenario_outline.examples[0].name, "Charly")
+        eq_(scenario_outline.examples[0].table, table)
+        expected_tags = [model.Tag(u"bar", 1), model.Tag(u"baz", 1)]
+        eq_(scenario_outline.examples[0].tags, expected_tags)
+
+        # -- ScenarioOutline.scenarios:
+        # Inherit tags from ScenarioOutline and Examples element.
+        eq_(len(scenario_outline.scenarios), 2)
+        expected_tags = [
+            model.Tag(u"foo", 1),
+            model.Tag(u"bar", 1),
+            model.Tag(u"baz", 1)
+        ]
+        eq_(set(scenario_outline.scenarios[0].tags), set(expected_tags))
+        eq_(set(scenario_outline.scenarios[1].tags), set(expected_tags))
 
     def test_parses_feature_with_the_lot(self):
         doc = u'''

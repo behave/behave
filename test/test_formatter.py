@@ -1,15 +1,18 @@
+# -*- coding: UTF-8 -*-
 from __future__ import absolute_import
 import struct
 import sys
 import tempfile
 import unittest
+import six
 from mock import Mock, patch
-from nose.tools import *
+from nose.tools import *    # pylint: disable=wildcard-import, unused-wildcard-import
 
 from behave.formatter._registry import make_formatters
 from behave.formatter import pretty
 from behave.formatter.base import StreamOpener
-from behave.model import Tag, Feature, Match, Scenario, Step
+from behave.model import Tag, Feature, Scenario, Step
+from behave.matchers import Match
 
 
 class TestGetTerminalSize(unittest.TestCase):
@@ -26,7 +29,7 @@ class TestGetTerminalSize(unittest.TestCase):
         if self.ioctl_patch:
             self.ioctl_patch.stop()
 
-    def test_windows_fallback(self):
+    def test_windows_fallback(self):    # pylint: disable=no-self-use
         platform = sys.platform
         sys.platform = 'windows'
 
@@ -34,7 +37,7 @@ class TestGetTerminalSize(unittest.TestCase):
 
         sys.platform = platform
 
-    def test_termios_fallback(self):
+    def test_termios_fallback(self):    # pylint: disable=no-self-use
         try:
             import termios
             return
@@ -49,7 +52,7 @@ class TestGetTerminalSize(unittest.TestCase):
         except ImportError:
             return
 
-        def raiser(*args, **kwargs):
+        def raiser(*args, **kwargs):    # pylint: disable=unused-argument
             raise Exception('yeehar!')
 
         self.ioctl.side_effect = raiser
@@ -81,9 +84,8 @@ class TestGetTerminalSize(unittest.TestCase):
 
 
 def _tf():
-    '''Open a temp file that looks a bunch like stdout.
-    '''
-    if sys.version_info[0] == 3:
+    """Open a temp file that looks a bunch like stdout."""
+    if six.PY3:
         # in python3 it's got an encoding and accepts new-style strings
         return tempfile.TemporaryFile(mode='w', encoding='UTF-8')
 
@@ -98,7 +100,7 @@ class FormatterTests(unittest.TestCase):
     def setUp(self):
         self.config = Mock()
         self.config.color = True
-        self.config.outputs = [ StreamOpener(stream=sys.stdout) ]
+        self.config.outputs = [StreamOpener(stream=sys.stdout)]
         self.config.format = [self.formatter_name]
 
     _line = 0
@@ -107,22 +109,32 @@ class FormatterTests(unittest.TestCase):
         self._line += 1
         return self._line
 
-    def _formatter(self, file, config):
-        stream_opener = StreamOpener(stream=file)
+    def _formatter(self, file_object, config):  # pylint: disable=no-self-use
+        stream_opener = StreamOpener(stream=file_object)
         f = make_formatters(config, [stream_opener])[0]
         f.uri('<string>')
         return f
 
-    def _feature(self, keyword=u'k\xe9yword', name=u'name', tags=[u'spam', u'ham'],
-            location=u'location', description=[u'description'], scenarios=[],
-            background=None):
+    def _feature(self, keyword=u'k\xe9yword', name=u'name', tags=None,
+                 location=u'location', # pylint: disable=unused-argument
+                 description=None, scenarios=None, background=None):
+        if tags is None:
+            tags = [u'spam', u'ham']
+        if description is None:
+            description = [u'description']
+        if scenarios is None:
+            scenarios = []
         line = self.line
         tags = [Tag(name, line) for name in tags]
         return Feature('<string>', line, keyword, name, tags=tags,
-            description=description, scenarios=scenarios,
-            background=background)
+                       description=description, scenarios=scenarios,
+                       background=background)
 
-    def _scenario(self, keyword=u'k\xe9yword', name=u'name', tags=[], steps=[]):
+    def _scenario(self, keyword=u'k\xe9yword', name=u'name', tags=None, steps=None):
+        if tags is None:
+            tags = []
+        if steps is None:
+            steps = []
         line = self.line
         tags = [Tag(name, line) for name in tags]
         return Scenario('<string>', line, keyword, name, tags=tags, steps=steps)
@@ -133,7 +145,7 @@ class FormatterTests(unittest.TestCase):
         return Step('<string>', line, keyword, step_type, name, text=text,
                     table=table)
 
-    def _match(self, arguments=None):
+    def _match(self, arguments=None):   # pylint: disable=no-self-use
         def dummy():
             pass
 
@@ -158,8 +170,8 @@ class FormatterTests(unittest.TestCase):
         p = self._formatter(_tf(), self.config)
         f = self._feature()
         p.feature(f)
-        s = self._scenario()
-        p.scenario(s)
+        scenario = self._scenario()
+        p.scenario(scenario)
         s = self._step()
         p.step(s)
         p.match(self._match([]))
@@ -190,7 +202,7 @@ class TestTagsCount(FormatterTests):
         p.feature(f)
         p.scenario(s)
 
-        eq_(p.tag_counts, {'ham': [ f, s ], 'spam': [ f ], 'foo': [ s ]})
+        eq_(p.tag_counts, {'ham': [f, s], 'spam': [f], 'foo': [s]})
 
 
 class MultipleFormattersTests(FormatterTests):
@@ -199,41 +211,41 @@ class MultipleFormattersTests(FormatterTests):
     def setUp(self):
         self.config = Mock()
         self.config.color = True
-        self.config.outputs = [ StreamOpener(stream=sys.stdout)
-                                for i in self.formatters ]
+        self.config.outputs = [StreamOpener(stream=sys.stdout)
+                               for i in self.formatters]
         self.config.format = self.formatters
 
-    def _formatters(self, file, config):
-        stream_opener = StreamOpener(stream=file)
-        fs = make_formatters(config, [stream_opener])
-        for f in fs:
+    def _formatters(self, file_object, config): # pylint: disable=no-self-use
+        stream_opener = StreamOpener(stream=file_object)
+        formatters = make_formatters(config, [stream_opener])
+        for f in formatters:
             f.uri('<string>')
-        return fs
+        return formatters
 
     def test_feature(self):
         # this test does not actually check the result of the formatting; it
         # just exists to make sure that formatting doesn't explode in the face of
         # unicode and stuff
-        ps = self._formatters(_tf(), self.config)
+        formatters = self._formatters(_tf(), self.config)
         f = self._feature()
-        for p in ps:
+        for p in formatters:
             p.feature(f)
 
     def test_scenario(self):
-        ps = self._formatters(_tf(), self.config)
+        formatters = self._formatters(_tf(), self.config)
         f = self._feature()
-        for p in ps:
+        for p in formatters:
             p.feature(f)
             s = self._scenario()
             p.scenario(s)
 
     def test_step(self):
-        ps = self._formatters(_tf(), self.config)
+        formatters = self._formatters(_tf(), self.config)
         f = self._feature()
-        for p in ps:
+        for p in formatters:
             p.feature(f)
-            s = self._scenario()
-            p.scenario(s)
+            scenario = self._scenario()
+            p.scenario(scenario)
             s = self._step()
             p.step(s)
             p.match(self._match([]))

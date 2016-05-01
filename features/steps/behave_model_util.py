@@ -1,8 +1,7 @@
-from __future__ import absolute_import
-# -*- coding: utf-8 -*-
+# -*- coding: UTF-8 -*-
 
 from __future__ import absolute_import
-from behave.model import reset_model, Feature, Scenario
+from behave.model import Feature, Scenario, reset_model
 from behave.runner import ModelRunner
 from behave.parser import parse_tags
 from behave.configuration import Configuration
@@ -56,6 +55,7 @@ class BehaveModelBuilder(object):
         return scenario
 
     def build_unknown(self, statement, name=u"", row_index=None):
+        # pylint: disable=no-self-use
         assert False, u"UNSUPPORTED: statement=%s, name=%s (row=%s)" % \
                       (statement, name, row_index)
 
@@ -81,14 +81,14 @@ def run_model_with_cmdline(model, cmdline):
     command_args = cmdline
     config = Configuration(command_args,
                            load_config=False,
-                            default_format="null",
-                            stdout_capture=False,
-                            stderr_capture=False,
-                            log_capture=False)
+                           default_format="null",
+                           stdout_capture=False,
+                           stderr_capture=False,
+                           log_capture=False)
     model_runner = ModelRunner(config, model.features)
     return model_runner.run()
 
-def collect_selected_and_skipped_scenarios(model):
+def collect_selected_and_skipped_scenarios(model):  # pylint: disable=invalid-name
     selected = []
     skipped = []
     for feature in model.features:

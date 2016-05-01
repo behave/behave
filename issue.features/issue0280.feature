@@ -18,7 +18,7 @@ Feature: Issue #280: AmbiguousStep error with similar step definitions and use_s
   . SOLUTION: Add regex begin-/end-markers around the step text( '^'+ step + '$')
   . NOTE: Only RegexMatcher is affected.
 
-  @setuo
+  @setup
   Scenario: Feature Setup
     Given a new working directory
     And   a file named "features/steps/calculator_steps1.py" with:

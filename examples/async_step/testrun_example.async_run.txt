@@ -1,0 +1,9 @@
+Feature: 
+
+  Scenario: 
+    Given an async-step waits 0.3 seconds ... passed in 0.307s
+
+1 feature passed, 0 failed, 0 skipped
+1 scenario passed, 0 failed, 0 skipped
+1 step passed, 0 failed, 0 skipped, 0 undefined
+Took 0m0.307s
