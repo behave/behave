@@ -16,6 +16,7 @@ from behave.reporter.junit import JUnitReporter
 from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import TagExpression
 from behave.formatter.base import StreamOpener
+from behave.formatter.pretty import TermColor
 from behave.formatter import _registry as _format_registry
 from behave.userdata import UserData, parse_user_define
 from behave._types import Unknown
@@ -69,13 +70,16 @@ class ConfigError(Exception):
 # -----------------------------------------------------------------------------
 # CONFIGURATION SCHEMA:
 # -----------------------------------------------------------------------------
+
 options = [
     (("-c", "--no-color"),
-     dict(action="store_false", dest="color",
+     dict(action="store_const", dest="color", default=argparse.SUPPRESS,
+          const=TermColor.never,
           help="Disable the use of ANSI color escapes.")),
 
     (("--color",),
-     dict(action="store_true", dest="color",
+     dict(action="store", dest="color", nargs='?', type=TermColor.from_str,
+          const=TermColor.auto,
           help="""Use ANSI color escapes. This is the default
                   behaviour. This switch is used to override a
                   configuration file setting.""")),
@@ -492,7 +496,7 @@ class Configuration(object):
     """Configuration object for behave and behave runners."""
     # pylint: disable=too-many-instance-attributes
     defaults = dict(
-        color=sys.platform != "win32",
+        color=TermColor.auto if sys.platform != "win32" else TermColor.never,
         show_snippets=True,
         show_skipped=True,
         dry_run=False,
