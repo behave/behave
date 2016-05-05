@@ -10,6 +10,7 @@ from nose.tools import *    # pylint: disable=wildcard-import, unused-wildcard-i
 
 from behave.formatter._registry import make_formatters
 from behave.formatter import pretty
+from behave.formatter.pretty import TermColor
 from behave.formatter.base import StreamOpener
 from behave.model import Tag, Feature, Scenario, Step
 from behave.matchers import Match
@@ -99,7 +100,7 @@ class FormatterTests(unittest.TestCase):
 
     def setUp(self):
         self.config = Mock()
-        self.config.color = True
+        self.config.color = TermColor.auto
         self.config.outputs = [StreamOpener(stream=sys.stdout)]
         self.config.format = [self.formatter_name]
 
@@ -210,7 +211,7 @@ class MultipleFormattersTests(FormatterTests):
 
     def setUp(self):
         self.config = Mock()
-        self.config.color = True
+        self.config.color = TermColor.auto
         self.config.outputs = [StreamOpener(stream=sys.stdout)
                                for i in self.formatters]
         self.config.format = self.formatters
