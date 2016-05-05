@@ -8,6 +8,7 @@ import re
 import sys
 import shlex
 import six
+from enum import Enum
 from six.moves import configparser
 
 from behave.model import ScenarioOutline
@@ -69,13 +70,31 @@ class ConfigError(Exception):
 # -----------------------------------------------------------------------------
 # CONFIGURATION SCHEMA:
 # -----------------------------------------------------------------------------
+
+class TermColor(Enum):
+    never = 0
+    always  = 1
+    auto = 2
+
+    @staticmethod
+    def from_str(name):
+        try:
+            name = name.strip().lower()
+            return TermColor.__members__[name]
+        except KeyError:
+            allowed = ", ".join(TermColor.__members__.keys())
+            raise ValueError("INVALID COLOR: %s (allowed: %s)" % (name, allowed))
+
+
 options = [
     (("-c", "--no-color"),
-     dict(action="store_false", dest="color",
+     dict(action="store_const", dest="color", default=argparse.SUPPRESS,
+          const=TermColor.never,
           help="Disable the use of ANSI color escapes.")),
 
     (("--color",),
-     dict(action="store_true", dest="color",
+     dict(action="store", dest="color", nargs='?', type=TermColor.from_str,
+          const=TermColor.auto,
           help="""Use ANSI color escapes. This is the default
                   behaviour. This switch is used to override a
                   configuration file setting.""")),
