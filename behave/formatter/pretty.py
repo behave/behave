@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 
 from __future__ import absolute_import, division
+from enum import Enum
 from behave.formatter.ansi_escapes import escapes, up
 from behave.formatter.base import Formatter
 from behave.model_describe import escape_cell, escape_triple_quotes
@@ -10,6 +11,20 @@ import six
 from six.moves import range
 from six.moves import zip
 
+
+class TermColor(Enum):
+    never = 0
+    always  = 1
+    auto = 2
+
+    @staticmethod
+    def from_str(name):
+        try:
+            name = name.strip().lower()
+            return TermColor.__members__[name]
+        except KeyError:
+            allowed = ", ".join(TermColor.__members__.keys())
+            raise ValueError("INVALID COLOR: %s (allowed: %s)" % (name, allowed))
 
 # -----------------------------------------------------------------------------
 # TERMINAL SUPPORT:

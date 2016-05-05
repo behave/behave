@@ -8,7 +8,6 @@ import re
 import sys
 import shlex
 import six
-from enum import Enum
 from six.moves import configparser
 
 from behave.model import ScenarioOutline
@@ -17,6 +16,7 @@ from behave.reporter.junit import JUnitReporter
 from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import TagExpression
 from behave.formatter.base import StreamOpener
+from behave.formatter.pretty import TermColor
 from behave.formatter import _registry as _format_registry
 from behave.userdata import UserData, parse_user_define
 from behave._types import Unknown
@@ -70,21 +70,6 @@ class ConfigError(Exception):
 # -----------------------------------------------------------------------------
 # CONFIGURATION SCHEMA:
 # -----------------------------------------------------------------------------
-
-class TermColor(Enum):
-    never = 0
-    always  = 1
-    auto = 2
-
-    @staticmethod
-    def from_str(name):
-        try:
-            name = name.strip().lower()
-            return TermColor.__members__[name]
-        except KeyError:
-            allowed = ", ".join(TermColor.__members__.keys())
-            raise ValueError("INVALID COLOR: %s (allowed: %s)" % (name, allowed))
-
 
 options = [
     (("-c", "--no-color"),
