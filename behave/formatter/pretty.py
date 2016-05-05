@@ -81,9 +81,17 @@ class PrettyFormatter(Formatter):
         super(PrettyFormatter, self).__init__(stream_opener, config)
         # -- ENSURE: Output stream is open.
         self.stream = self.open()
-        isatty = getattr(self.stream, "isatty", lambda: True)
-        stream_supports_colors = isatty()
-        self.monochrome = not config.color or not stream_supports_colors
+
+        if config.color == TermColor.always:
+            self.monochrome = False
+        elif config.color == TermColor.never:
+            self.monochrome = True
+        else:
+            assert config.color == TermColor.auto
+            isatty = getattr(self.stream, "isatty", lambda: True)
+            stream_supports_colors = isatty()
+            self.monochrome = not config.color or not stream_supports_colors
+
         self.show_source = config.show_source
         self.show_timings = config.show_timings
         self.show_multiline = config.show_multiline
