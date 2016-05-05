@@ -496,7 +496,7 @@ class Configuration(object):
     """Configuration object for behave and behave runners."""
     # pylint: disable=too-many-instance-attributes
     defaults = dict(
-        color=sys.platform != "win32",
+        color=TermColor.auto if sys.platform != "win32" else TermColor.never,
         show_snippets=True,
         show_skipped=True,
         dry_run=False,
