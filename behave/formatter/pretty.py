@@ -14,7 +14,7 @@ from six.moves import zip
 
 class TermColor(Enum):
     never = 0
-    always  = 1
+    always = 1
     auto = 2
 
     @staticmethod
