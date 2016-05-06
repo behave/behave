@@ -164,9 +164,6 @@ class Formatter(object):
         """
         pass
 
-    def scenario_outline(self, outline):
-        pass
-
     def examples(self, examples):
         pass
 

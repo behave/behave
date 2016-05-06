@@ -83,20 +83,6 @@ class JSONFormatter(Formatter):
             element['description'] = scenario.description
         self._step_index = 0
 
-    def scenario_outline(self, scenario_outline):
-        element = self.add_feature_element({
-            'type': 'scenario_outline',
-            'keyword': scenario_outline.keyword,
-            'name': scenario_outline.name,
-            'tags': scenario_outline.tags,
-            'location': six.text_type(scenario_outline.location),
-            'steps': [],
-            'examples': [],
-        })
-        if scenario_outline.description:
-            element['description'] = scenario_outline.description
-        self._step_index = 0
-
     @classmethod
     def make_table(cls, table):
         table_data = {

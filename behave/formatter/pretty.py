@@ -116,10 +116,6 @@ class PrettyFormatter(Formatter):
         self.replay()
         self.statement = scenario
 
-    def scenario_outline(self, scenario_outline):
-        self.replay()
-        self.statement = scenario_outline
-
     def replay(self):
         self.print_statement()
         self.print_steps()
