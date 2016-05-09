@@ -445,7 +445,7 @@ def config_filenames():
         paths.append(os.path.join(os.environ["APPDATA"]))
 
     for path in reversed(paths):
-        for filename in reversed(("behave.ini", ".behaverc", "setup.cfg")):
+        for filename in reversed(("behave.ini", ".behaverc", "setup.cfg", "tox.ini")):
             filename = os.path.join(path, filename)
             if os.path.isfile(filename):
                 yield filename
