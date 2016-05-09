@@ -26,6 +26,7 @@ ConfigParser = configparser.ConfigParser
 if six.PY2:
     ConfigParser = configparser.SafeConfigParser
 
+
 # -----------------------------------------------------------------------------
 # CONFIGURATION DATA TYPES:
 # -----------------------------------------------------------------------------
@@ -62,8 +63,6 @@ class LogLevel(object):
 
 class ConfigError(Exception):
     pass
-
-
 
 
 # -----------------------------------------------------------------------------
@@ -445,7 +444,8 @@ def config_filenames():
         paths.append(os.path.join(os.environ["APPDATA"]))
 
     for path in reversed(paths):
-        for filename in reversed(("behave.ini", ".behaverc", "setup.cfg", "tox.ini")):
+        for filename in reversed(
+                ("behave.ini", ".behaverc", "setup.cfg", "tox.ini")):
             filename = os.path.join(path, filename)
             if os.path.isfile(filename):
                 yield filename
@@ -465,7 +465,7 @@ def load_configuration(defaults, verbose=False):
 
 def setup_parser():
     # construct the parser
-    #usage = "%(prog)s [options] [ [FILE|DIR|URL][:LINE[:LINE]*] ]+"
+    # usage = "%(prog)s [options] [ [FILE|DIR|URL][:LINE[:LINE]*] ]+"
     usage = "%(prog)s [options] [ [DIR|FILE|FILE:LINE] ]+"
     description = """\
     Run a number of feature tests with behave."""
@@ -487,6 +487,7 @@ def setup_parser():
     parser.add_argument("paths", nargs="*",
                         help="Feature directory, file or file location (FILE:LINE).")
     return parser
+
 
 class Configuration(object):
     """Configuration object for behave and behave runners."""
