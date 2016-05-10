@@ -14,6 +14,7 @@ from behave.formatter import _registry
 _BUILTIN_FORMATS = [
     # pylint: disable=bad-whitespace
     ("plain",   "behave.formatter.plain:PlainFormatter"),
+    ("plain.color", "behave.formatter.plain_color:PlainColorFormatter"),
     ("pretty",  "behave.formatter.pretty:PrettyFormatter"),
     ("json",    "behave.formatter.json:JSONFormatter"),
     ("json.pretty", "behave.formatter.json:PrettyJSONFormatter"),

@@ -15,6 +15,7 @@ Feature: Help Formatter
         json.pretty    JSON dump of test run (human readable)
         null           Provides formatter that does not output anything.
         plain          Very basic formatter with maximum compatibility
+        plain.color    For environments with ANSI color support but wihtout terminal support
         pretty         Standard colourised pretty formatter
         progress       Shows dotted progress for each executed scenario.
         progress2      Shows dotted progress for each executed step.
