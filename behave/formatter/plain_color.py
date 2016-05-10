@@ -19,8 +19,12 @@ class PlainColorFormatter(PlainFormatter):
     SHOW_ALIGNED_KEYWORDS = True
     SHOW_TAGS = True
 
-    def result(self, result):
+    def result(self, result_step):
         step = self.steps.pop(0)
+        assert step == result_step
+        self.print_step(result_step)
+
+    def print_step(self, step, executed=True):
         indent = make_indentation(2 * self.indent_size)
 
         if self.show_aligned_keywords:
@@ -29,21 +33,33 @@ class PlainColorFormatter(PlainFormatter):
         else:
             plain_text = u"%s%s %s " % (indent, step.keyword, step.name)
 
-        text = escapes[result.status] + plain_text + escapes['reset']
-        self.stream.write(text)
+        # pretty formater prints not executed steps as skipped
+        status = step.status if executed else 'skipped'
 
-        status = result.status
+        self.stream.write(
+            escapes[status] + plain_text + escapes['reset']
+        )
+
+        status_text = status
         if self.show_timings:
-            status += " in %0.3fs" % step.duration
+            if executed:
+                status_text += " in %0.3fs" % step.duration
+            else:
+                status_text += " in -.---s"
 
-        term_width = 80
-        text_width = term_width - len(plain_text) - len(status) - len('... ')
-        whitespace_len = max(1, text_width)
-        whitespace = ' ' * whitespace_len
-        self.stream.write(u"%s... %s\n" % (whitespace, status))
+        # creates nice indentation between end of step description and status
+        whitespace_width = 80
+        whitespace_width -= len(plain_text)
+        whitespace_width -= len(status_text)
+        whitespace_width -= len('... ')
 
-        if result.error_message:
-            self.stream.write(u"%s\n" %result.error_message)
+        self.stream.write(u" " * max(1, whitespace_width))
+        self.stream.write(u"... ")
+        self.stream.write(status_text)
+        self.stream.write('\n')
+
+        if step.error_message:
+            self.stream.write(u"%s\n" %step.error_message)
 
         if self.show_multiline:
             if step.text:
