@@ -4,7 +4,14 @@ from behave.textutil import make_indentation
 
 
 class PlainColorFormatter(PlainFormatter):
-    """For environments with ansi color support but wihtout terminal support"""
+    """For environments with ansi color support but wihtout terminal support
+
+    Use case examples that support ansi colors:
+
+       * Emacs compilation buffer.
+       * Jenkins build output.
+       * less.
+    """
 
     name = 'plain.color'
     description = "Plain formater with ansi colors."
