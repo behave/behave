@@ -66,3 +66,11 @@ class PlainColorFormatter(PlainFormatter):
                 self.doc_string(step.text)
             if step.table:
                 self.table(step.table)
+
+    def print_not_executed_steps(self):
+        for step in self.steps:
+            self.print_step(step, executed=False)
+
+    def eof(self, *args, **kwargs):
+        self.print_not_executed_steps()
+        return super().eof(*args, **kwargs)
