@@ -12,5 +12,6 @@ Feature: Issue #31 "behave --format help" raises an error
         json.pretty    JSON dump of test run (human readable)
         null           Provides formatter that does not output anything.
         plain          Very basic formatter with maximum compatibility
+        plain.color    Plain formater with ansi colors.
         pretty         Standard colourised pretty formatter
       """
