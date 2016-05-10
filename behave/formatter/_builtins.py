@@ -13,6 +13,7 @@ from behave.formatter import _registry
 # SCHEMA: formatter.name, formatter.class(_name)
 _BUILTIN_FORMATS = [
     ("plain",   "behave.formatter.plain:PlainFormatter"),
+    ("plain.color", "behave.formatter.plain_color:PlainColorFormatter"),
     ("pretty",  "behave.formatter.pretty:PrettyFormatter"),
     ("json",    "behave.formatter.json:JSONFormatter"),
     ("json.pretty", "behave.formatter.json:PrettyJSONFormatter"),
