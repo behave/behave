@@ -7,6 +7,7 @@ class PlainColorFormatter(PlainFormatter):
     """For environments with ansi color support but wihtout terminal support"""
 
     name = 'plain.color'
+    description = "Plain formater with ansi colors."
 
     SHOW_ALIGNED_KEYWORDS = True
     SHOW_TAGS = True
