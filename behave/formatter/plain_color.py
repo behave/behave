@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from behave.formatter.ansi_escapes import escapes
 from behave.formatter.plain import PlainFormatter
 from behave.textutil import make_indentation
