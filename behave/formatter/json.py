@@ -30,6 +30,7 @@ class JSONFormatter(Formatter):
         self.current_feature = None
         self.current_feature_data = None
         self._step_index = 0
+        self.previous_scenario = None
 
     def reset(self):
         self.current_feature = None
@@ -71,6 +72,10 @@ class JSONFormatter(Formatter):
             self.step(step_)
 
     def scenario(self, scenario):
+        if self.previous_scenario:
+            self.current_feature_element['status'] = self.previous_scenario.status
+        self.previous_scenario = scenario
+
         element = self.add_feature_element({
             'type': 'scenario',
             'keyword': scenario.keyword,
@@ -78,6 +83,7 @@ class JSONFormatter(Formatter):
             'tags': scenario.tags,
             'location': six.text_type(scenario.location),
             'steps': [],
+            'status': scenario.status
         })
         if scenario.description:
             element['description'] = scenario.description
@@ -193,6 +199,10 @@ class JSONFormatter(Formatter):
         """
         if not self.current_feature_data:
             return
+
+        # -- Update status of last scenario
+        if self.previous_scenario:
+            self.current_feature_element['status'] = self.previous_scenario.status
 
         # -- NORMAL CASE: Write collected data of current feature.
         self.update_status_data()
