@@ -170,8 +170,13 @@ class FileLocation(object):
         """
         func = unwrap_function(func)
         function_code = six.get_function_code(func)
-        filename = function_code.co_filename
-        line_number = function_code.co_firstlineno
+
+        # if decorating functions then setting _co_filename and _co_firstlinno
+        # will locate the original function and not the decoration
+        filename = os.path.relpath(getattr(function_code, '_co_filename',
+                                       function_code.co_filename))
+        line_number = getattr(function_code, '_co_firstlineno',
+                          function_code.co_firstlineno)
 
         curdir = curdir or os.getcwd()
         filename = os.path.relpath(filename, curdir)
