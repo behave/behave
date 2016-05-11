@@ -82,7 +82,10 @@ class PlainColorFormatter(PlainFormatter):
         self.stream.write('\n')
 
         if step.error_message:
-            self.stream.write(u"%s\n" %step.error_message)
+            for line in step.error_message.split('\n'):
+                self.stream.write(make_indentation(self.indent_size * 4))
+                self.stream.write(line)
+                self.stream.write('\n')
 
         if self.show_multiline:
             if step.text:
