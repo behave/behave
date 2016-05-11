@@ -797,9 +797,8 @@ class ScenarioOutlineBuilder(object):
                 self.id = name      # pylint: disable=invalid-name
 
         example_data = Data(examples_name, example.index)
-        row_data = Data(row.id, row.index)
-        return self.annotation_schema.format(name=scenario_name,
-                                             examples=example_data, row=row_data)
+        return self.annotation_schema.replace('{row.name}', '{row.id}').format(
+            name=scenario_name, examples=example_data, row=row)
 
     @classmethod
     def make_row_tags(cls, outline_tags, row, params=None):
