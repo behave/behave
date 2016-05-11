@@ -3,7 +3,6 @@
 from behave.formatter.ansi_escapes import escapes
 from behave.formatter.plain import PlainFormatter
 from behave.textutil import make_indentation
-from behave.textutil import make_indentation
 
 
 class PlainColorFormatter(PlainFormatter):
@@ -22,9 +21,9 @@ class PlainColorFormatter(PlainFormatter):
     SHOW_ALIGNED_KEYWORDS = True
     SHOW_TAGS = True
 
-
     def __init__(self, stream_opener, config, **kwargs):
-        super(PlainColorFormatter, self).__init__(stream_opener, config, **kwargs)
+        super(PlainColorFormatter, self).__init__(
+            stream_opener, config, **kwargs)
         self.step_format = u"%s%s %s "
 
         if self.show_aligned_keywords:
