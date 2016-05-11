@@ -19,6 +19,14 @@ class PlainColorFormatter(PlainFormatter):
     SHOW_ALIGNED_KEYWORDS = True
     SHOW_TAGS = True
 
+
+    def __init__(self, stream_opener, config, **kwargs):
+        super(PlainColorFormatter, self).__init__(stream_opener, config, **kwargs)
+        self.step_format = u"%s%s %s "
+
+        if self.show_aligned_keywords:
+            self.step_format = u"%s%6s %s "
+
     def result(self, result_step):
         step = self.steps.pop(0)
         assert step == result_step
@@ -26,12 +34,7 @@ class PlainColorFormatter(PlainFormatter):
 
     def print_step(self, step, executed=True):
         indent = make_indentation(2 * self.indent_size)
-
-        if self.show_aligned_keywords:
-            # -- RIGHT-ALIGN KEYWORDS (max. keyword width: 6):
-            plain_text = u"%s%6s %s " % (indent, step.keyword, step.name)
-        else:
-            plain_text = u"%s%s %s " % (indent, step.keyword, step.name)
+        plain_text = self.step_format % (indent, step.keyword, step.name)
 
         # pretty formater prints not executed steps as skipped
         status = step.status if executed else 'skipped'
