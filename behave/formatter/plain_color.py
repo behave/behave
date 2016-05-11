@@ -3,6 +3,7 @@
 from behave.formatter.ansi_escapes import escapes
 from behave.formatter.plain import PlainFormatter
 from behave.textutil import make_indentation
+from behave.textutil import make_indentation
 
 
 class PlainColorFormatter(PlainFormatter):
@@ -33,6 +34,17 @@ class PlainColorFormatter(PlainFormatter):
         step = self.steps.pop(0)
         assert step == result_step
         self.print_step(result_step)
+
+    def feature(self, feature):
+        super(PlainColorFormatter, self).feature(feature)
+
+        if feature.description:
+            self.stream.write('\n')
+
+        for line in feature.description:
+            self.stream.write(make_indentation(self.indent_size))
+            self.stream.write(line)
+            self.stream.write('\n')
 
     def eof(self, *args, **kwargs):
         self.print_not_executed_steps()
