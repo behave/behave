@@ -41,9 +41,11 @@ class PlainColorFormatter(PlainFormatter):
         if feature.description:
             self.stream.write('\n')
 
-        for line in feature.description:
-            self.stream.write(make_indentation(self.indent_size))
-            self.stream.write(line)
+            for line in feature.description:
+                self.stream.write(make_indentation(self.indent_size))
+                self.stream.write(line)
+                self.stream.write('\n')
+
             self.stream.write('\n')
 
     def eof(self, *args, **kwargs):
