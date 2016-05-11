@@ -32,6 +32,10 @@ class PlainColorFormatter(PlainFormatter):
         assert step == result_step
         self.print_step(result_step)
 
+    def eof(self, *args, **kwargs):
+        self.print_not_executed_steps()
+        return super().eof(*args, **kwargs)
+
     def print_step(self, step, executed=True):
         indent = make_indentation(2 * self.indent_size)
         plain_text = self.step_format % (indent, step.keyword, step.name)
@@ -73,7 +77,3 @@ class PlainColorFormatter(PlainFormatter):
     def print_not_executed_steps(self):
         for step in self.steps:
             self.print_step(step, executed=False)
-
-    def eof(self, *args, **kwargs):
-        self.print_not_executed_steps()
-        return super().eof(*args, **kwargs)
