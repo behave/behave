@@ -708,7 +708,7 @@ class Scenario(TagAndStatusStatement, Replayable):
                 if not found_step:
                     step.status = "undefined"
                     runner.undefined_steps.append(step)
-                elif dry_run_scenario:                    
+                elif dry_run_scenario:
                     for formatter in runner.formatters:
                         formatter.match(found_step)
             else:
