@@ -209,6 +209,9 @@ class JSONFormatter(Formatter):
         self.feature_count += 1
 
     def close(self):
+        if self.feature_count == 0:
+            # -- FIRST FEATURE: Corner case when no features are provided.
+            self.write_json_header()
         self.write_json_footer()
         self.close_stream()
 
