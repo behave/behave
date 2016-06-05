@@ -49,6 +49,7 @@ ENHANCEMENTS:
 
 FORMATTERS:
 
+  * issue #462: json: Invalid JSON output when no features are selected (submitted by: remcowesterhoud)
   * pull #423: sphinx.steps: Support ref link for each step (provided by: ZivThaller)
 
 CHANGES:
