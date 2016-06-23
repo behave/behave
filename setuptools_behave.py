@@ -16,13 +16,14 @@ Setuptools command for behave.
     * http://github.com/behave/behave
 """
 
-from setuptools import Command
-from distutils import dir_util
-from fnmatch import fnmatch
 import os.path
-import sys
 import shlex
 import subprocess
+import sys
+
+from distutils import dir_util
+from fnmatch import fnmatch
+from setuptools import Command
 
 
 class behave_test(Command):
@@ -114,7 +115,10 @@ class behave_test(Command):
         return returncode
 
     def behave(self, path):
-        behave = os.path.join("bin", "behave")
+        binpath = "bin"
+        if "VIRTUAL_ENV" in os.environ:
+            binpath = "{0}/bin".format(os.environ.get("VIRTUAL_ENV"))
+        behave = os.path.join(binpath, "behave")
         if not os.path.exists(behave):
             # -- ALTERNATIVE: USE: behave script: behave = "behave"
             # -- USE: behave module (main)
