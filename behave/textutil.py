@@ -75,8 +75,11 @@ def text(value, encoding=None, errors=None):
         # -- CONVERT OBJECT TO TEXT:
         try:
             if six.PY2:
-                data = str(value)
-                text = six.text_type(data, "unicode-escape", "replace")
+                try:
+                    text = six.text_type(value)
+                except UnicodeError:
+                    data = str(value)
+                    text = six.text_type(data, "unicode-escape", "replace")
             else:
                 text = six.text_type(value)
         except UnicodeError as e:
