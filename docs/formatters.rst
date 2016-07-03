@@ -41,7 +41,7 @@ tags.location  dry-run  Shows tags and the location where they are used.
 
 .. note::
 
-    You can use more that one formatter during a test run.
+    You can use more than one formatter during a test run.
     But in general you have only one formatter that writes to ``stdout``.
 
     The "Mode" column indicates if a formatter is intended to be used in
