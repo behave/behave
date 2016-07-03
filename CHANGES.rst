@@ -10,6 +10,7 @@ GOALS:
 
 DOCUMENTATION:
 
+  * pull  #469: Fix typo in "formatters.rst" (provided by: ab9-er)
   * pull  #443: Fixing grammar in philosophy.rst (provided by: jamesroutley)
   * pull  #441: Integrate hint on testing more nicely (provided by: bittner)
   * pull  #429: Replace "Manual Integration" by "Automation Libraries" section (provided by: bittner)
