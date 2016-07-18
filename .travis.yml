@@ -5,19 +5,22 @@ python:
   - "2.7"
   - "3.3"
   - "3.4"
-  - "3.5.1"
-  - "pypy"
   - "3.5"
+  - "pypy"
+  - "nightly"
+
+# NOW SUPPORTED: "3.5" => python 3.5.2 (>= 3.5.1)
+# NOTE: Python 3.5.0 is broken (for some tests).
 
 # DISABLED: - "nightly"
 # -- AVOID:  python: "3.5" => python 3.5.0
 # Seems to have a problem with unit tests in exception traceback.
 # Behaviour is fixed in python 3.5.1
 
-# -- TEST-BALLON: Check if Python 3.5 is actually Python 3.5.1 or newer
+# -- TEST-BALLON: Check if Python 3.6 is actually Python 3.5.1 or newer
 matrix:
   allow_failures:
-    - python: "3.5"
+    - python: "nightly"
 
 cache:
   directories:
