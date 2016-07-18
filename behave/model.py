@@ -704,10 +704,18 @@ class Scenario(TagAndStatusStatement, Replayable):
                 step.status = "skipped"
                 if dry_run_scenario:
                     step.status = "untested"
-                found_step = runner.step_registry.find_match(step)
-                if not found_step:
+                found_step_match = runner.step_registry.find_match(step)
+                if not found_step_match:
                     step.status = "undefined"
                     runner.undefined_steps.append(step)
+                elif dry_run_scenario:
+                    # -- BETTER DIAGNOSTICS: Provide step file location
+                    # (when --format=pretty is used).
+                    assert step.status == "untested"
+                    for formatter in runner.formatters:
+                        # -- EMULATE: Step.run() protocol w/o step execution.
+                        formatter.match(found_step_match)
+                        formatter.result(step)
             else:
                 # -- SKIP STEPS: For disabled scenario.
                 # CASES:

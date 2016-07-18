@@ -52,6 +52,7 @@ FORMATTERS:
 
   * issue #462: json: Invalid JSON output when no features are selected (submitted by: remcowesterhoud)
   * pull #423: sphinx.steps: Support ref link for each step (provided by: ZivThaller)
+  * pull #460: pretty: Print the step implementation location when dry-run (provided by: unklhe, jenisys)
 
 CHANGES:
 

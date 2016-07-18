@@ -206,12 +206,10 @@ Feature: Select Scenarios by File Location
             0 features passed, 0 failed, 0 skipped, 1 untested
             0 scenarios passed, 0 failed, 0 skipped, 2 untested
             """
-        And the command output should contain:
-            """
-            Feature: Alice
-              Scenario: Alice First
-              Scenario: Alice Last
-            """
+        And the command output should contain "Scenario: Alice First"
+        And the command output should contain "Scenario: Alice Last"
+        But note that "all scenarios of this features are selected"
+
 
     @file_location.select
     @with.feature_configfile
@@ -246,17 +244,10 @@ Feature: Select Scenarios by File Location
             0 features passed, 0 failed, 0 skipped, 1 untested
             0 scenarios passed, 0 failed, 1 skipped, 3 untested
             """
-        And the command output should contain:
-            """
-            Feature: Bob
-              Scenario: Setup Bob
-              Scenario: Bob in Berlin
-              Scenario: Teardown Bob
-            """
-        But the command output should not contain:
-            """
-            Scenario: Bob in Paris
-            """
+        And the command output should contain "Scenario: Setup Bob"
+        And the command output should contain "Scenario: Bob in Berlin"
+        And the command output should contain "Scenario: Teardown Bob"
+        But the command output should not contain "Scenario: Bob in Paris"
 
     @merge.file_locations
     Scenario: Merge 2 adjacent file locations that refer to the same file
@@ -270,16 +261,22 @@ Feature: Select Scenarios by File Location
             """
             Feature: Alice
               Scenario: Alice First
+                When a step passes ... untested
+
               Scenario: Alice Last
+                Then a step passes ... untested
             """
         But the command output should not contain:
             """
             Feature: Alice
               Scenario: Alice First
+                When a step passes ... untested
 
             Feature: Alice
               Scenario: Alice Last
             """
+        And note that "both file locations are merged"
+
 
     @merge.file_locations
     @file_location.select_all
@@ -294,21 +291,30 @@ Feature: Select Scenarios by File Location
             """
             Feature: Alice
               Scenario: Alice First
+                When a step passes ... untested
+
               Scenario: Alice Last
+                Then a step passes ... untested
             """
         But the command output should not contain:
             """
             Feature: Alice
               Scenario: Alice First
+                When a step passes ... untested
 
             Feature: Alice
               Scenario: Alice First
+                When a step passes ... untested
+
               Scenario: Alice Last
+                Then a step passes ... untested
             """
+        And note that "duplicated file locations are removed in the merge"
+
 
     @merge.file_locations
-    @with.feature_configfile
-    Scenario: Merge 2 adjacent file locations to same file from features configfile
+    @with.feature_listfile
+    Scenario: Merge 2 adjacent file locations to same file from features-listfile
         Given a file named "alice1_and_alice2.txt" with:
             """
             # -- FEATURES CONFIGFILE:
@@ -326,19 +332,24 @@ Feature: Select Scenarios by File Location
             """
             Feature: Alice
               Scenario: Alice First
+                When a step passes ... untested
+
               Scenario: Alice Last
+                Then a step passes ... untested
             """
         But the command output should not contain:
             """
             Feature: Alice
               Scenario: Alice First
+                When a step passes ... untested
 
             Feature: Alice
               Scenario: Alice Last
+                Then a step passes ... untested
             """
 
     @no_merge.file_locations
-    @with.feature_configfile
+    @with.feature_listfile
     Scenario: No merge occurs if file locations to same file are not adjacent
         Given a file named "alice1_bob2_and_alice2.txt" with:
             """
@@ -358,18 +369,29 @@ Feature: Select Scenarios by File Location
             """
             Feature: Alice
               Scenario: Alice First
+                When a step passes ... untested
 
             Feature: Bob
               Scenario: Setup Bob
+                Given a step passes ... untested
+
               Scenario: Bob in Paris
+                Then a step passes ... untested
+
               Scenario: Teardown Bob
+                Then a step passes ... untested
 
             Feature: Alice
               Scenario: Alice Last
+                Then a step passes ... untested
             """
         But the command output should not contain:
             """
             Feature: Alice
               Scenario: Alice First
+                When a step passes ... untested
+
               Scenario: Alice Last
+                Then a step passes ... untested
             """
+        And note that "non-adjacent file locations to the same file are not merged"

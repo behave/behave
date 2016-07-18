@@ -215,8 +215,11 @@ Feature: Select scenarios by using tags
           """
           Feature: Alice
             Scenario: Alice in Wonderland
+              Given a step passes ... untested
             Scenario: Alice in Florida
+              When hotter step passes ... untested
 
           Feature: Bob
             Scenario: Bob in Florida
+              When freaky step passes ... untested
           """

@@ -21,6 +21,7 @@ colors = {
 }
 
 aliases = {
+    'untested':     'cyan',     # SAME-COLOR AS: skipped
     'undefined':    'yellow',
     'pending':      'yellow',
     'executing':    'grey',
