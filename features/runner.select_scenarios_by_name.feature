@@ -60,12 +60,16 @@ Feature: Select named scenarios to run
         And the command output should contain:
             """
             Feature: Alice
-                Scenario: Alice in Wonderland
-                Scenario: Alice in Florida
-                Scenario: Alice in Antarctica
+              Scenario: Alice in Wonderland
+                  Given a step passes ... untested
+              Scenario: Alice in Florida
+                  When a step passes ... untested
+              Scenario: Alice in Antarctica
+                  Then a step passes ... untested
 
             Feature: Bob
-                Scenario: Alice and Bob
+              Scenario: Alice and Bob
+                Then a step passes ... untested
             """
 
     Scenario: Select scenarios with name="Alice" and run them
@@ -102,9 +106,12 @@ Feature: Select named scenarios to run
         And the command output should contain:
             """
             Feature: Bob
-                Scenario: Bob in Berlin
-                Scenario: Bob in Florida
-                Scenario: Alice and Bob
+              Scenario: Bob in Berlin
+                Given a step passes ... untested
+              Scenario: Bob in Florida
+                When a step passes ... untested
+              Scenario: Alice and Bob
+                Then a step passes ... untested
             """
 
     Scenario: Select scenarios with name="Florida"
@@ -118,10 +125,12 @@ Feature: Select named scenarios to run
         And the command output should contain:
             """
             Feature: Alice
-                Scenario: Alice in Florida
+              Scenario: Alice in Florida
+                When a step passes ... untested
 
             Feature: Bob
-                Scenario: Bob in Florida
+              Scenario: Bob in Florida
+                When a step passes ... untested
             """
 
     Scenario: Select scenarios with name that consists of multiple words
@@ -149,12 +158,17 @@ Feature: Select named scenarios to run
             """
             Feature: Alice
               Scenario: Alice in Wonderland
+                Given a step passes ... untested
               Scenario: Alice in Florida
+                When a step passes ... untested
               Scenario: Alice in Antarctica
+                Then a step passes ... untested
 
             Feature: Bob
               Scenario: Bob in Florida
+                When a step passes ... untested
               Scenario: Alice and Bob
+                Then a step passes ... untested
             """
 
     Scenario: Select scenarios by using a regular expression
@@ -168,8 +182,11 @@ Feature: Select named scenarios to run
             """
             Feature: Alice
               Scenario: Alice in Wonderland
+                Given a step passes ... untested
               Scenario: Alice in Florida
+                When a step passes ... untested
               Scenario: Alice in Antarctica
+                Then a step passes ... untested
             """
         But the command output should not contain:
             """
@@ -187,12 +204,17 @@ Feature: Select named scenarios to run
             """
             Feature: Alice
               Scenario: Alice in Wonderland
+                Given a step passes ... untested
               Scenario: Alice in Florida
+                When a step passes ... untested
               Scenario: Alice in Antarctica
+                Then a step passes ... untested
 
             Feature: Bob
-                Scenario: Bob in Berlin
-                Scenario: Bob in Florida
+              Scenario: Bob in Berlin
+                Given a step passes ... untested
+              Scenario: Bob in Florida
+                When a step passes ... untested
             """
         But the command output should not contain:
             """
@@ -210,12 +232,17 @@ Feature: Select named scenarios to run
             """
             Feature: Alice
               Scenario: Alice in Wonderland
+                Given a step passes ... untested
               Scenario: Alice in Florida
+                When a step passes ... untested
               Scenario: Alice in Antarctica
+                Then a step passes ... untested
 
             Feature: Bob
-                Scenario: Bob in Berlin
-                Scenario: Bob in Florida
+              Scenario: Bob in Berlin
+                Given a step passes ... untested
+              Scenario: Bob in Florida
+                When a step passes ... untested
             """
         But the command output should not contain:
             """
