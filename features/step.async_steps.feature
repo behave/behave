@@ -30,6 +30,7 @@ Feature: Async-Test Support (async-step, ...)
 
 
     @use.with_python.version=3.5
+    @use.with_python.version=3.6
     Scenario: Use async-step with @async_run_until_complete (async)
       Given a new working directory
       And a file named "features/steps/async_steps35.py" with:
@@ -60,6 +61,7 @@ Feature: Async-Test Support (async-step, ...)
 
     @use.with_python.version=3.4
     @use.with_python.version=3.5
+    @use.with_python.version=3.6
     Scenario: Use async-step with @async_run_until_complete (@coroutine)
       Given a new working directory
       And a file named "features/steps/async_steps34.py" with:
@@ -89,6 +91,7 @@ Feature: Async-Test Support (async-step, ...)
         """
 
     @use.with_python.version=3.5
+    @use.with_python.version=3.6
     Scenario: Use @async_run_until_complete(timeout=...) and TIMEOUT occurs (async)
       Given a new working directory
       And a file named "features/steps/async_steps_timeout35.py" with:
@@ -160,6 +163,7 @@ Feature: Async-Test Support (async-step, ...)
 
     @use.with_python.version=3.4
     @use.with_python.version=3.5
+    @use.with_python.version=3.6
     Scenario: Use async-dispatch and async-collect concepts
       Given a new working directory
       And a file named "features/steps/async_dispatch_steps.py" with:
