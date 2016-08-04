@@ -658,14 +658,15 @@ class Configuration(object):
     def setup_reports(self, reporter_class_names):
         reporter_class_names = reporter_class_names or []
 
-        if self.junit:
-            # Buffer the output (it will be put into Junit report)
-            self.stdout_capture = True
-            self.stderr_capture = True
-            self.log_capture = True
-            self.reporters.append(JUnitReporter(self))
-        if self.summary:
-            self.reporters.append(SummaryReporter(self))
+        if not reporter_class_names:
+            if self.junit:
+                # Buffer the output (it will be put into Junit report)
+                self.stdout_capture = True
+                self.stderr_capture = True
+                self.log_capture = True
+                self.reporters.append(JUnitReporter(self))
+            if self.summary:
+                self.reporters.append(SummaryReporter(self))
 
         for repoter_scoped_class_name in reporter_class_names:
             reporter_class = load_class(repoter_scoped_class_name)
