@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from behave.formatter.base import Formatter, StreamOpener
-from behave.importer import LazyDict, LazyObject, parse_scoped_name, load_module
+from behave.importer import LazyDict, LazyObject, load_class
 import six
 import sys
 import warnings
@@ -57,24 +57,6 @@ def register_formats(format_items):
     for formatter_name, formatter_class_name in format_items:
         register_as(formatter_name, formatter_class_name)
 
-def load_formatter_class(scoped_class_name):
-    """Load a formatter class by using its scoped class name.
-
-    :param scoped_class_name:  Formatter module and class name (as string).
-    :return: Formatter class.
-    :raises: ValueError, if scoped_class_name is invalid.
-    :raises: ImportError, if module cannot be loaded or class is not in module.
-    """
-    if ":" not in scoped_class_name:
-        message = 'REQUIRE: "module:class", but was: "%s"' % scoped_class_name
-        raise ValueError(message)
-    module_name, class_name = parse_scoped_name(scoped_class_name)
-    formatter_module = load_module(module_name)
-    formatter_class = getattr(formatter_module, class_name, None)
-    if formatter_class is None:
-        raise ImportError("CLASS NOT FOUND: %s" % scoped_class_name)
-    return formatter_class
-
 
 def select_formatter_class(formatter_name):
     """Resolve the formatter class by:
@@ -96,7 +78,7 @@ def select_formatter_class(formatter_name):
             raise
         # -- OTHERWISE: SCOPED-NAME, try to load a user-specific formatter.
         # MAY RAISE: ImportError
-        return load_formatter_class(formatter_name)
+        return load_class(formatter_name)
 
 
 def is_formatter_valid(formatter_name):

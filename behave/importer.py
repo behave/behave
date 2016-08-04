@@ -26,6 +26,28 @@ def load_module(module_name):
     return importlib.import_module(module_name)
 
 
+def load_class(scoped_class_name):
+    """Load a class by using its scoped class name.
+
+    >>> load_class('behave.formatters.pretty:PrettyFormatter')
+    <class 'behave.formatters.pretty.PrettyFormatter'>
+
+    :param scoped_class_name: python module and class name (as string).
+    :return: Class (or any other value from module).
+    :raises: ValueError, if scoped_class_name is invalid.
+    :raises: ImportError, if module cannot be loaded or class is not in module.
+    """
+    if ":" not in scoped_class_name:
+        message = 'REQUIRE: "module:class", but was: "%s"' % scoped_class_name
+        raise ValueError(message)
+    module_name, class_name = parse_scoped_name(scoped_class_name)
+    module = load_module(module_name)
+    class_ = getattr(module, class_name, None)
+    if class_ is None:
+        raise ImportError("CLASS NOT FOUND: %s" % scoped_class_name)
+    return class_
+
+
 class LazyObject(object):
     """
     Provides a placeholder for an object that should be loaded lazily.
