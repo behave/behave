@@ -12,6 +12,7 @@ from six.moves import configparser
 
 from behave.model import ScenarioOutline
 from behave.model_core import FileLocation
+from behave.reporter import load_reporter_class
 from behave.reporter.junit import JUnitReporter
 from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import TagExpression
@@ -126,6 +127,10 @@ options = [
           help="""Specify a formatter. If none is specified the default
                   formatter is used. Pass "--format help" to get a
                   list of available formatters.""")),
+
+    (("-r", "--report"),
+     dict(action="append",
+          help="""Specify a reporter.""")),
 
     (("--steps-catalog",),
      dict(action="store_true", dest="steps_catalog",
@@ -622,15 +627,7 @@ class Configuration(object):
             # -- SELECT: Scenario-by-name, build regular expression.
             self.name_re = self.build_name_re(self.name)
 
-        if self.junit:
-            # Buffer the output (it will be put into Junit report)
-            self.stdout_capture = True
-            self.stderr_capture = True
-            self.log_capture = True
-            self.reporters.append(JUnitReporter(self))
-        if self.summary:
-            self.reporters.append(SummaryReporter(self))
-
+        self.setup_reports(args.report)
         self.setup_formats()
         unknown_formats = self.collect_unknown_formats()
         if unknown_formats:
@@ -657,6 +654,23 @@ class Configuration(object):
                     self.outputs.append(StreamOpener(outfile))
                 else:
                     self.outputs.append(StreamOpener(stream=sys.stdout))
+
+    def setup_reports(self, reporter_class_names):
+        reporter_class_names = reporter_class_names or []
+
+        if not reporter_class_names:
+            if self.junit:
+                # Buffer the output (it will be put into Junit report)
+                self.stdout_capture = True
+                self.stderr_capture = True
+                self.log_capture = True
+                self.reporters.append(JUnitReporter(self))
+            if self.summary:
+                self.reporters.append(SummaryReporter(self))
+
+        for repoter_scoped_class_name in reporter_class_names:
+            reporter_class = load_reporter_class(repoter_scoped_class_name)
+            self.reporters.append(reporter_class(self))
 
     def setup_formats(self):
         """Register more, user-defined formatters by name."""
