@@ -12,6 +12,7 @@ from six.moves import configparser
 
 from behave.model import ScenarioOutline
 from behave.model_core import FileLocation
+from behave.reporter import load_reporter_class
 from behave.reporter.junit import JUnitReporter
 from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import TagExpression
@@ -19,7 +20,6 @@ from behave.formatter.base import StreamOpener
 from behave.formatter import _registry as _format_registry
 from behave.userdata import UserData, parse_user_define
 from behave._types import Unknown
-from behave.importer import load_class
 
 # -- PYTHON 2/3 COMPATIBILITY:
 # SINCE Python 3.2: ConfigParser = SafeConfigParser
@@ -669,7 +669,7 @@ class Configuration(object):
                 self.reporters.append(SummaryReporter(self))
 
         for repoter_scoped_class_name in reporter_class_names:
-            reporter_class = load_class(repoter_scoped_class_name)
+            reporter_class = load_reporter_class(repoter_scoped_class_name)
             self.reporters.append(reporter_class(self))
 
     def setup_formats(self):
