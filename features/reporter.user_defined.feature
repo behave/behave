@@ -50,12 +50,12 @@ Feature: Use a user-defined Reporter
               self.status = 'passed'
 
           def feature(self, feature):
-              print('feature:', feature.status)
+              print('feature: %s' % feature.status)
               if feature.status == 'failed':
                   self.status = 'failed'
 
           def end(self):
-              print('all tests:', self.status)
+              print('all tests: %s' % self.status)
       """
 
   Scenario: Use a known, valid user-defined reporter with scoped class name
