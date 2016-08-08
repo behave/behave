@@ -12,11 +12,13 @@ class PlainColorFormatter(PlainFormatter):
 
        * Emacs compilation buffer.
        * Jenkins build output.
-       * less.
+       * less -R|--RAW-CONTROL-CHARS.
     """
 
     name = 'plain.color'
-    description = "Plain formater with ansi colors."
+    description = (
+        'For environments with ANSI color support but wihtout terminal support'
+    )
 
     SHOW_ALIGNED_KEYWORDS = True
     SHOW_TAGS = True
