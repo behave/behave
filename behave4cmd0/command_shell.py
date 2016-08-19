@@ -19,6 +19,7 @@ import six
 import subprocess
 import sys
 import shlex
+from six.moves import shlex_quote
 if six.PY2:
     import codecs
 
@@ -210,6 +211,6 @@ def behave(cmdline, cwd=".", **kwargs):
 # TEST MAIN:
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
-    command = " ".join(sys.argv[1:])
+    command = " ".join(shlex_quote(x) for x in sys.argv[1:])
     output = Command.run(command)
     print("command: {0}\n{1}\n".format(command, output))
