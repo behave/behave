@@ -211,5 +211,5 @@ def behave(cmdline, cwd=".", **kwargs):
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
     command = " ".join(sys.argv[1:])
-    output = Command.run(sys.argv[1:])
+    output = Command.run(command)
     print("command: {0}\n{1}\n".format(command, output))
