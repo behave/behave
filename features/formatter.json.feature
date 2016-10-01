@@ -129,6 +129,7 @@ Feature: JSON Formatter
                     "keyword": "Scenario",
                     "location": "features/simple_scenario.feature:2",
                     "name": "Simple scenario without steps",
+                    "status": "passed",
                     "steps": [],
                     "tags": [],
                     "type": "scenario"
@@ -174,6 +175,7 @@ Feature: JSON Formatter
                     "keyword": "Scenario",
                     "location": "features/simple_scenario_with_description.feature:2",
                     "name": "Simple scenario with description but without steps",
+                    "status": "passed",
                     "steps": [],
                     "tags": [],
                     "type": "scenario"
@@ -212,6 +214,7 @@ Feature: JSON Formatter
                     "keyword": "Scenario",
                     "location": "features/simple_scenario_with_tags.feature:5",
                     "name": "Simple scenario with tags but without steps",
+                    "status": "passed",
                     "steps": [],
                     "tags": [
                       "foo",

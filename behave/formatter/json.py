@@ -29,11 +29,13 @@ class JSONFormatter(Formatter):
         self.feature_count = 0
         self.current_feature = None
         self.current_feature_data = None
+        self.current_scenario = None
         self._step_index = 0
 
     def reset(self):
         self.current_feature = None
         self.current_feature_data = None
+        self.current_scenario = None
         self._step_index = 0
 
     # -- FORMATTER API:
@@ -71,6 +73,9 @@ class JSONFormatter(Formatter):
             self.step(step_)
 
     def scenario(self, scenario):
+        self.finish_current_scenario()
+        self.current_scenario = scenario
+
         element = self.add_feature_element({
             'type': 'scenario',
             'keyword': scenario.keyword,
@@ -78,18 +83,21 @@ class JSONFormatter(Formatter):
             'tags': scenario.tags,
             'location': six.text_type(scenario.location),
             'steps': [],
+            'status': None,
         })
         if scenario.description:
             element['description'] = scenario.description
         self._step_index = 0
 
     def scenario_outline(self, scenario_outline):
+        self.finish_current_scenario()
         element = self.add_feature_element({
             'type': 'scenario_outline',
             'keyword': scenario_outline.keyword,
             'name': scenario_outline.name,
             'tags': scenario_outline.tags,
             'location': six.text_type(scenario_outline.location),
+            'status': None,
             'steps': [],
             'examples': [],
         })
@@ -195,6 +203,7 @@ class JSONFormatter(Formatter):
             return
 
         # -- NORMAL CASE: Write collected data of current feature.
+        self.finish_current_scenario()
         self.update_status_data()
 
         if self.feature_count == 0:
@@ -205,7 +214,7 @@ class JSONFormatter(Formatter):
             self.write_json_feature_separator()
 
         self.write_json_feature(self.current_feature_data)
-        self.current_feature_data = None
+        self.reset()
         self.feature_count += 1
 
     def close(self):
@@ -232,6 +241,10 @@ class JSONFormatter(Formatter):
         assert self.current_feature
         assert self.current_feature_data
         self.current_feature_data['status'] = self.current_feature.status
+
+    def finish_current_scenario(self):
+        if self.current_scenario:
+            self.current_feature_element["status"] = self.current_scenario.status
 
     # -- JSON-WRITER:
     def write_json_header(self):
