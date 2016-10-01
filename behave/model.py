@@ -10,7 +10,7 @@ This module provides the model element class that represent a behave model:
 * ...
 """
 
-from __future__ import absolute_import, with_statement, unicode_literals
+from __future__ import absolute_import, with_statement
 import copy
 import difflib
 import logging
