@@ -538,7 +538,7 @@ class Parser(object):
           * End-of-line comment is stripped.
 
         :param line:   Line with one/more tags to process.
-        :raise ParseError: If syntax error is detected.
+        :raise ParserError: If syntax error is detected.
         """
         assert line.startswith("@")
         tags = []

@@ -114,7 +114,7 @@ def main(args=None):
     try:
         failed = runner.run()
     except ParserError as e:
-        print(u"ParseError: %s" % e)
+        print(u"ParserError: %s" % e)
     except ConfigError as e:
         print(u"ConfigError: %s" % e)
     except FileNotFoundError as e:
