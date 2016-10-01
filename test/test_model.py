@@ -127,6 +127,41 @@ class TestFeatureRun(unittest.TestCase):
         scenarios[0].should_run_with_name_select.assert_called_with(self.config)
         scenarios[1].should_run_with_name_select.assert_called_with(self.config)
 
+    # @prepared
+    def test_run_exclude_named_scenarios_with_regexp(self):
+        # -- NOTE: Works here only because it is run against Mocks.
+        scenarios = [Mock(), Mock(), Mock()]
+        scenarios[0].name = "Alice in Florida"
+        scenarios[1].name = "Alice and Bob"
+        scenarios[2].name = "Bob in Paris"
+        scenarios[0].tags = []
+        scenarios[1].tags = []
+        scenarios[2].tags = []
+        # -- FAKE-CHECK:
+        scenarios[0].should_run_with_name_select.return_value = False
+        scenarios[1].should_run_with_name_select.return_value = False
+        scenarios[2].should_run_with_name_select.return_value = True
+
+        for scenario in scenarios:
+            scenario.run.return_value = False
+
+        self.config.tags.check.return_value = True  # pylint: disable=no-member
+        self.config.name = ["(?!Alice)"]    # Exclude all scenarios with "Alice"
+        self.config.name_re = Configuration.build_name_re(self.config.name)
+
+        feature = Feature('foo.feature', 1, u'Feature', u'foo',
+                          scenarios=scenarios)
+
+        feature.run(self.runner)
+
+        assert not scenarios[0].run.called
+        scenarios[0].should_run_with_name_select.assert_called_with(self.config)
+        scenarios[1].should_run_with_name_select.assert_called_with(self.config)
+        scenarios[2].should_run_with_name_select.assert_called_with(self.config)
+        scenarios[0].run.assert_not_called()
+        scenarios[1].run.assert_not_called()
+        scenarios[2].run.assert_called_with(self.runner)
+
     def test_feature_hooks_not_run_if_feature_not_being_run(self):
         self.config.tags.check.return_value = False  # pylint: disable=no-member
 
