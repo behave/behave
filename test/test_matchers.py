@@ -3,7 +3,8 @@ from __future__ import absolute_import, with_statement
 from mock import Mock, patch
 from nose.tools import *  # pylint: disable=wildcard-import, unused-wildcard-import
 import parse
-from behave.matchers import Match, Matcher, ParseMatcher, RegexMatcher
+from behave.matchers import Match, Matcher, ParseMatcher, RegexMatcher, \
+    SimplifiedRegexMatcher, CucumberRegexMatcher
 from behave import matchers, runner
 
 
@@ -105,8 +106,10 @@ class TestParseMatcher(object):
 
 class TestRegexMatcher(object):
     # pylint: disable=invalid-name, no-self-use
+    MATCHER_CLASS = RegexMatcher
 
     def test_returns_none_if_regex_does_not_match(self):
+        RegexMatcher = self.MATCHER_CLASS
         matcher = RegexMatcher(None, 'a string')
         regex = Mock()
         regex.match.return_value = None
@@ -114,6 +117,7 @@ class TestRegexMatcher(object):
         assert matcher.match('just a random step') is None
 
     def test_returns_arguments_based_on_groups(self):
+        RegexMatcher = self.MATCHER_CLASS
         func = lambda x: -x
         matcher = RegexMatcher(func, 'foo')
 
@@ -149,14 +153,19 @@ class TestRegexMatcher(object):
         have = [(a.start, a.end, a.original, a.value, a.name) for a in args]
         eq_(have, expected)
 
+
+
+class TestSimplifiedRegexMatcher(TestRegexMatcher):
+    MATCHER_CLASS = SimplifiedRegexMatcher
+
     def test_steps_with_same_prefix_are_not_ordering_sensitive(self):
         # -- RELATED-TO: issue #280
         # pylint: disable=unused-argument
         def step_func1(context): pass   # pylint: disable=multiple-statements
         def step_func2(context): pass   # pylint: disable=multiple-statements
         # pylint: enable=unused-argument
-        matcher1 = RegexMatcher(step_func1, "I do something")
-        matcher2 = RegexMatcher(step_func2, "I do something more")
+        matcher1 = SimplifiedRegexMatcher(step_func1, "I do something")
+        matcher2 = SimplifiedRegexMatcher(step_func2, "I do something more")
 
         # -- CHECK: ORDERING SENSITIVITY
         matched1 = matcher1.match(matcher2.string)
@@ -172,15 +181,49 @@ class TestRegexMatcher(object):
 
     @raises(AssertionError)
     def test_step_should_not_use_regex_begin_marker(self):
-        RegexMatcher(None, "^I do something")
+        SimplifiedRegexMatcher(None, "^I do something")
 
     @raises(AssertionError)
     def test_step_should_not_use_regex_end_marker(self):
-        RegexMatcher(None, "I do something$")
+        SimplifiedRegexMatcher(None, "I do something$")
 
     @raises(AssertionError)
     def test_step_should_not_use_regex_begin_and_end_marker(self):
-        RegexMatcher(None, "^I do something$")
+        SimplifiedRegexMatcher(None, "^I do something$")
+
+
+class TestCucumberRegexMatcher(TestRegexMatcher):
+    MATCHER_CLASS = CucumberRegexMatcher
+
+    def test_steps_with_same_prefix_are_not_ordering_sensitive(self):
+        # -- RELATED-TO: issue #280
+        # pylint: disable=unused-argument
+        def step_func1(context): pass   # pylint: disable=multiple-statements
+        def step_func2(context): pass   # pylint: disable=multiple-statements
+        # pylint: enable=unused-argument
+        matcher1 = CucumberRegexMatcher(step_func1, "^I do something$")
+        matcher2 = CucumberRegexMatcher(step_func2, "^I do something more$")
+
+        # -- CHECK: ORDERING SENSITIVITY
+        matched1 = matcher1.match(matcher2.string[1:-1])
+        matched2 = matcher2.match(matcher1.string[1:-1])
+        assert matched1 is None
+        assert matched2 is None
+
+        # -- CHECK: Can match itself (if step text is simple)
+        matched1 = matcher1.match(matcher1.string[1:-1])
+        matched2 = matcher2.match(matcher2.string[1:-1])
+        assert isinstance(matched1, Match)
+        assert isinstance(matched2, Match)
+
+    def test_step_should_use_regex_begin_marker(self):
+        CucumberRegexMatcher(None, "^I do something")
+
+    def test_step_should_use_regex_end_marker(self):
+        CucumberRegexMatcher(None, "I do something$")
+
+    def test_step_should_use_regex_begin_and_end_marker(self):
+        CucumberRegexMatcher(None, "^I do something$")
 
 
 def test_step_matcher_current_matcher():
