@@ -133,6 +133,7 @@ def step_an_empty_file_named_filename(context, filename):
 # STEPS: Run commands
 # -----------------------------------------------------------------------------
 @when(u'I run "{command}"')
+@when(u'I run `{command}`')
 def step_i_run_command(context, command):
     """
     Run a command as subprocess, collect its output and returncode.
@@ -145,6 +146,7 @@ def step_i_run_command(context, command):
         print(u"run_command.output {0}".format(context.command_result.output))
 
 @when(u'I successfully run "{command}"')
+@when(u'I successfully run `{command}`')
 def step_i_successfully_run_command(context, command):
     step_i_run_command(context, command)
     step_it_should_pass(context)
