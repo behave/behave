@@ -193,6 +193,31 @@ Feature: Select named scenarios to run
             Scenario: Bob in
             """
 
+    Scenario: Exclude scenarios by using a regular expression (not-pattern)
+
+        Select all scenarios that do not start with "Alice" in its name.
+        Exclude all scenarios that start with "Alice" in its name.
+        NOTE: Seems to work only for not-start-with idiom.
+
+        When I run "behave -f plain --name='^(?!Alice)' --dry-run features/"
+        Then it should pass with:
+            """
+            0 features passed, 0 failed, 1 skipped, 1 untested
+            0 scenarios passed, 0 failed, 4 skipped, 2 untested
+            """
+        And the command output should contain:
+            """
+            Feature: Bob
+                Scenario: Bob in Berlin
+                  Given a step passes ... untested
+                Scenario: Bob in Florida
+                  When a step passes ... untested
+            """
+        But the command output should not contain:
+            """
+            Scenario: Alice
+            """
+
     Scenario: Select scenarios by using another regular expression
         When I run "behave -f plain --name=".* in .*" --dry-run features/"
         Then it should pass with:
