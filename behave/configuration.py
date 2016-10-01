@@ -683,8 +683,10 @@ class Configuration(object):
         :param names: List of name parts or regular expressions (as text).
         :return: Compiled regular expression to use.
         """
+        # -- NOTE: re.LOCALE is removed in Python 3.6 (deprecated in Python 3.5)
+        # flags = (re.UNICODE | re.LOCALE)
         pattern = u"|".join(names)
-        return re.compile(pattern, flags=(re.UNICODE | re.LOCALE))
+        return re.compile(pattern, flags=re.UNICODE)
 
     def exclude(self, filename):
         if isinstance(filename, FileLocation):
