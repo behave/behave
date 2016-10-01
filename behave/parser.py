@@ -2,9 +2,11 @@
 
 from __future__ import absolute_import, with_statement
 import re
+import sys
 import six
 from behave import model, i18n
 from behave.textutil import text as _text
+
 
 DEFAULT_LANGUAGE = "en"
 
@@ -62,9 +64,9 @@ def parse_tags(text):
 class ParserError(Exception):
     def __init__(self, message, line, filename=None, line_text=None):
         if line:
-            message += " at line %d" % line
+            message += u" at line %d" % line
             if line_text:
-                message += ': "%s"' % line_text.strip()
+                message += u': "%s"' % line_text.strip()
         super(ParserError, self).__init__(message)
         self.line = line
         self.line_text = line_text
@@ -73,7 +75,7 @@ class ParserError(Exception):
     def __str__(self):
         arg0 = _text(self.args[0])
         if self.filename:
-            filename = _text(self.filename)
+            filename = _text(self.filename, sys.getfilesystemencoding())
             return u'Failed to parse "%s": %s' % (filename, arg0)
         else:
             return u"Failed to parse <string>: %s" % arg0
@@ -164,7 +166,7 @@ class Parser(object):
 
     def _build_background_statement(self, keyword, line):
         if self.tags:
-            msg = "Background supports no tags: @%s" % (" @".join(self.tags))
+            msg = u"Background supports no tags: @%s" % (u" @".join(self.tags))
             raise ParserError(msg, self.line, self.filename, line)
         name = line[len(keyword) + 1:].strip()
         statement = model.Background(self.filename, self.line, keyword, name)
@@ -191,7 +193,7 @@ class Parser(object):
 
     def _build_examples(self, keyword, line):
         if not isinstance(self.statement, model.ScenarioOutline):
-            message = "Examples must only appear inside scenario outline"
+            message = u"Examples must only appear inside scenario outline"
             raise ParserError(message, self.line, self.filename, line)
         name = line[len(keyword) + 1:].strip()
         self.examples = model.Examples(self.filename, self.line,
@@ -276,7 +278,7 @@ class Parser(object):
         func = getattr(self, "action_" + self.state, None)
         if func is None:
             line = line.strip()
-            msg = "Parser in unknown state %s;" % self.state
+            msg = u"Parser in unknown state %s;" % self.state
             raise ParserError(msg, self.line, self.filename, line)
         if not func(line):
             line = line.strip()
@@ -485,8 +487,8 @@ class Parser(object):
         # -- BETTER DIAGNOSTICS: May remove non-whitespace in execute_steps()
         removed_line_prefix = line[:self.multiline_leading]
         if removed_line_prefix.strip():
-            message = "BAD-INDENT in multiline text: "
-            message += "Line '%s' would strip leading '%s'" % \
+            message = u"BAD-INDENT in multiline text: "
+            message += u"Line '%s' would strip leading '%s'" % \
                         (line, removed_line_prefix)
             raise ParserError(message, self.line, self.filename)
         return True
@@ -515,7 +517,7 @@ class Parser(object):
             self.table = model.Table(cells, self.line)
         else:
             if len(cells) != len(self.table.headings):
-                raise ParserError("Malformed table", self.line)
+                raise ParserError(u"Malformed table", self.line)
             self.table.add_row(cells, self.line)
         return True
 
@@ -549,7 +551,7 @@ class Parser(object):
                 break   # -- COMMENT: Skip rest of line.
             else:
                 # -- BAD-TAG: Abort here.
-                raise ParserError("tag: %s (line: %s)" % (word, line),
+                raise ParserError(u"tag: %s (line: %s)" % (word, line),
                                   self.line, self.filename)
         return tags
 
@@ -571,7 +573,7 @@ class Parser(object):
                 name = line[len(kw):].strip()
                 if step_type in ("and", "but"):
                     if not self.last_step:
-                        raise ParserError("No previous step", self.line)
+                        raise ParserError(u"No previous step", self.line)
                     step_type = self.last_step
                 else:
                     self.last_step = step_type
