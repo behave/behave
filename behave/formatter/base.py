@@ -164,12 +164,6 @@ class Formatter(object):
         """
         pass
 
-    def scenario_outline(self, outline):
-        pass
-
-    def examples(self, examples):
-        pass
-
     def step(self, step):
         """
         Called before a step is executed (and matched).

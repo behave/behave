@@ -51,6 +51,7 @@ ENHANCEMENTS:
 
 FORMATTERS:
 
+  * pull  #446: Remove Formatter scenario_outline(), examples() method (provided by:  aisbaa, jenisys)
   * pull  #448: json: Add status to scenarios in JSON report (provided by: remcowesterhoud)
   * issue #462: json: Invalid JSON output when no features are selected (submitted by: remcowesterhoud)
   * pull  #423: sphinx.steps: Support ref link for each step (provided by: ZivThaller)
