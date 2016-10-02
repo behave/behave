@@ -622,6 +622,15 @@ class Configuration(object):
             # -- SELECT: Scenario-by-name, build regular expression.
             self.name_re = self.build_name_re(self.name)
 
+        if self.stage is None:  # pylint: disable=access-member-before-definition
+            # -- USE ENVIRONMENT-VARIABLE, if stage is undefined.
+            self.stage = os.environ.get("BEHAVE_STAGE", None)
+        self.setup_stage(self.stage)
+        self.setup_model()
+        self.setup_userdata()
+
+        # -- FINALLY: Setup Reporters and Formatters
+        # NOTE: Reporters and Formatters can now use userdata information.
         if self.junit:
             # Buffer the output (it will be put into Junit report)
             self.stdout_capture = True
@@ -636,12 +645,6 @@ class Configuration(object):
         if unknown_formats:
             parser.error("format=%s is unknown" % ", ".join(unknown_formats))
 
-        if self.stage is None:  # pylint: disable=access-member-before-definition
-            # -- USE ENVIRONMENT-VARIABLE, if stage is undefined.
-            self.stage = os.environ.get("BEHAVE_STAGE", None)
-        self.setup_stage(self.stage)
-        self.setup_model()
-        self.setup_userdata()
 
     def setup_outputs(self, args_outfiles=None):
         if self.outputs:

@@ -46,6 +46,10 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
       [behave]
       default_format  = plain
       junit_directory = test_results
+
+      [behave.userdata]
+      behave.reporter.junit.show_timestamp = false
+      behave.reporter.junit.show_hostname = false
       """
 
   Scenario: Junit report for skipped feature is not created with --no-skipped
