@@ -46,17 +46,6 @@ class AbstractTagsFormatter(Formatter):
             tags.update(self._feature_tags)
         self.record_tags(tags, scenario)
 
-    def scenario_outline(self, scenario_outline):
-        self._scenario_outline_tags = scenario_outline.tags
-        self.record_tags(scenario_outline.tags, scenario_outline)
-
-    def examples(self, examples):
-        tags = set(examples.tags)
-        if self.with_tag_inheritance:
-            tags.update(self._scenario_outline_tags)
-            tags.update(self._feature_tags)
-        self.record_tags(tags, examples)
-
     def close(self):
         """Emit tag count reports."""
         # -- ENSURE: Output stream is open.

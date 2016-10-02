@@ -79,13 +79,6 @@ class PlainFormatter(Formatter):
         self.write_tags(scenario.tags, indent)
         self.stream.write(text)
 
-    def scenario_outline(self, outline):
-        self.reset_steps()
-        indent = make_indentation(self.indent_size)
-        text = u"%s%s: %s\n" % (indent, outline.keyword, outline.name)
-        self.write_tags(outline.tags, indent)
-        self.stream.write(text)
-
     def step(self, step):
         self.steps.append(step)
 

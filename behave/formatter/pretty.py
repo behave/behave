@@ -116,23 +116,9 @@ class PrettyFormatter(Formatter):
         self.replay()
         self.statement = scenario
 
-    def scenario_outline(self, scenario_outline):
-        self.replay()
-        self.statement = scenario_outline
-
     def replay(self):
         self.print_statement()
         self.print_steps()
-        self.stream.flush()
-
-    def examples(self, examples):
-        self.replay()
-        self.stream.write("\n")
-        self.print_comments(examples.comments, '    ')
-        self.print_tags(examples.tags, '    ')
-        self.stream.write('    %s: %s\n' % (examples.keyword, examples.name))
-        self.print_description(examples.description, '      ')
-        self.table(examples.rows)
         self.stream.flush()
 
     def step(self, step):

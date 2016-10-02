@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+"""
+This module provides `JSON`_ formatters for :mod:`behave`:
+
+* json: Generates compact JSON output
+* json.pretty: Generates readable JSON output
+
+.. _JSON: http://json.org
+"""
 
 from __future__ import absolute_import
 from behave.formatter.base import Formatter
@@ -89,22 +97,6 @@ class JSONFormatter(Formatter):
             element['description'] = scenario.description
         self._step_index = 0
 
-    def scenario_outline(self, scenario_outline):
-        self.finish_current_scenario()
-        element = self.add_feature_element({
-            'type': 'scenario_outline',
-            'keyword': scenario_outline.keyword,
-            'name': scenario_outline.name,
-            'tags': scenario_outline.tags,
-            'location': six.text_type(scenario_outline.location),
-            'status': None,
-            'steps': [],
-            'examples': [],
-        })
-        if scenario_outline.description:
-            element['description'] = scenario_outline.description
-        self._step_index = 0
-
     @classmethod
     def make_table(cls, table):
         table_data = {
@@ -112,20 +104,6 @@ class JSONFormatter(Formatter):
             'rows': [ list(row) for row in table.rows ]
         }
         return table_data
-
-    def examples(self, examples):
-        e = {
-            'type': 'examples',
-            'keyword': examples.keyword,
-            'name': examples.name,
-            'location': six.text_type(examples.location),
-        }
-
-        if examples.table:
-            e['table'] = self.make_table(examples.table)
-
-        element = self.current_feature_element
-        element['examples'].append(e)
 
     def step(self, step):
         s = {
