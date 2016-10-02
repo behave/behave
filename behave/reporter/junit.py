@@ -1,10 +1,79 @@
 # -*- coding: UTF-8 -*-
+"""
+This module provides a reporter with JUnit XML output.
+
+Mapping of behave model elements to XML elements::
+
+    feature     -> xml_element:testsuite
+    scenario    -> xml_element:testcase
+
+XML document structure::
+
+    # -- XML elements:
+    # CARDINALITY SUFFIX:
+    #   ?   optional (zero or one)
+    #   *   many0 (zero or more)
+    #   +   many (one or more)
+    testsuites := sequence<testsuite>
+    testsuite:
+        properties? : sequence<property>
+        testcase* :
+            error?      : text
+            failure?    : text
+            system-out  : text
+            system-err  : text
+
+    testsuite:
+        @name       : TokenString
+        @tests      : int
+        @failures   : int
+        @errors     : int
+        @skipped    : int
+        @time       : Decimal       # Duration in seconds
+        # -- SINCE: behave-1.2.6
+        @timestamp  : IsoDateTime
+        @hostname   : string
+
+    testcase:
+        @name       : TokenString
+        @classname  : TokenString
+        @status     : string        # Status enum
+        @time       : Decimal       # Elapsed seconds
+
+    error:
+        @message    : string
+        @type       : string
+
+    failure:
+        @message    : string
+        @type       : string
+
+    # -- HINT: Not used
+    property:
+        @name  : TokenString
+        @value : string
+
+    type Status : Enum("passed", "failed", "skipped", "untested")
+
+Note that a spec for JUnit XML output was not clearly defined.
+Best sources are:
+
+* `JUnit XML`_ (for PDF)
+* JUnit XML (`ant spec 1`_, `ant spec 2`_)
+
+
+.. _`JUnit XML`:  http://junitpdfreport.sourceforge.net/managedcontent/PdfTranslation
+.. _`ant spec 1`: https://github.com/windyroad/JUnit-Schema
+.. _`ant spec 2`: http://svn.apache.org/repos/asf/ant/core/trunk/src/main/org/apache/tools/ant/taskdefs/optional/junit/XMLJUnitResultFormatter.java
+
+"""
 
 from __future__ import absolute_import
 import os.path
 import codecs
 import sys
 from xml.etree import ElementTree
+from datetime import datetime
 from behave.reporter.base import Reporter
 from behave.model import Scenario, ScenarioOutline, Step
 from behave.formatter import ansi_escapes
@@ -90,13 +159,46 @@ class FeatureReportData(object):
 
 
 class JUnitReporter(Reporter):
+    """Generates JUnit-like XML test report for behave.
     """
-    Generates JUnit-like XML test report for behave.
-    """
-    show_multiline = True
+    # -- XML REPORT:
+    userdata_scope = "behave.reporter.junit"
     show_timings = True     # -- Show step timings.
-    show_tags = True
     show_skipped_always = False
+    show_timestamp = True
+    show_hostname = True
+    # -- XML REPORT PART: Describe scenarios
+    show_scenarios = True   # Show scenario descriptions.
+    show_tags = True
+    show_multiline = True
+
+    def __init__(self, config):
+        super(JUnitReporter, self).__init__(config)
+        self.setup_with_userdata(config.userdata)
+
+    def setup_with_userdata(self, userdata):
+        """Setup JUnit reporter with userdata information.
+        A user can now tweak the output format of this reporter.
+
+        EXAMPLE:
+        .. code-block:: ini
+
+            # -- FILE: behave.ini
+            [behave.userdata]
+            behave.reporter.junit.show_hostname = false
+        """
+        # -- EXPERIMENTAL:
+        option_names = [
+            "show_timings", "show_skipped_always",
+            "show_timestamp", "show_hostname",
+            "show_scenarios", "show_tags", "show_multiline",
+        ]
+        for option_name in option_names:
+            name = "%s.%s" % (self.userdata_scope, option_name)
+            default_value = getattr(self, option_name)
+            value = userdata.getbool(name, default_value)
+            if value != default_value:
+                setattr(self, option_name, value)
 
     def make_feature_filename(self, feature):
         filename = None
@@ -124,6 +226,7 @@ class JUnitReporter(Reporter):
         feature_filename = self.make_feature_filename(feature)
         classname = feature_filename
         report = FeatureReportData(feature, feature_filename)
+        now = datetime.now()
 
         suite = ElementTree.Element(u'testsuite')
         feature_name = feature.name or feature_filename
@@ -146,6 +249,11 @@ class JUnitReporter(Reporter):
         suite.set(u'failures', _text(report.counts_failed))
         suite.set(u'skipped', _text(report.counts_skipped))  # WAS: skips
         suite.set(u'time', _text(round(feature.duration, 6)))
+        # -- SINCE: behave-1.2.6.dev0
+        if self.show_timestamp:
+            suite.set(u'timestamp', _text(now.isoformat()))
+        if self.show_hostname:
+            suite.set(u'hostname', _text(gethostname()))
 
         if not os.path.exists(self.config.junit_directory):
             # -- ENSURE: Create multiple directory levels at once.
@@ -160,8 +268,8 @@ class JUnitReporter(Reporter):
     # -- MORE:
     @staticmethod
     def select_step_with_status(status, steps):
-        """
-        Helper function to find the first step that has the given step.status.
+        """Helper function to find the first step that has the given
+        step.status.
 
         EXAMPLE: Search for a failing step in a scenario (all steps).
             >>> scenario = ...
@@ -186,14 +294,13 @@ class JUnitReporter(Reporter):
         # KeyError("Step with status={0} not found".format(status))
         return None
 
-    @classmethod
-    def describe_step(cls, step):
+    def describe_step(self, step):
         status = _text(step.status)
-        if cls.show_timings:
+        if self.show_timings:
             status += u" in %0.3fs" % step.duration
         text = u'%s %s ... ' % (step.keyword, step.name)
         text += u'%s\n' % status
-        if cls.show_multiline:
+        if self.show_multiline:
             prefix = make_indentation(2)
             if step.text:
                 text += ModelDescriptor.describe_docstring(step.text, prefix)
@@ -208,29 +315,26 @@ class JUnitReporter(Reporter):
             text = u'@'+ u' @'.join(tags)
         return text
 
-    @classmethod
-    def describe_scenario(cls, scenario):
-        """
-        Describe the scenario and the test status.
+    def describe_scenario(self, scenario):
+        """Describe the scenario and the test status.
         NOTE: table, multiline text is missing in description.
 
         :param scenario:  Scenario that was tested.
         :return: Textual description of the scenario.
         """
         header_line = u'\n@scenario.begin\n'
-        if cls.show_tags and scenario.tags:
-            header_line += u'\n  %s\n' % cls.describe_tags(scenario.tags)
+        if self.show_tags and scenario.tags:
+            header_line += u'\n  %s\n' % self.describe_tags(scenario.tags)
         header_line += u'  %s: %s\n' % (scenario.keyword, scenario.name)
         footer_line = u'\n@scenario.end\n' + u'-' * 80 + '\n'
         text = u''
         for step in scenario:
-            text += cls.describe_step(step)
+            text += self.describe_step(step)
         step_indentation = make_indentation(4)
         return header_line + indent(text, step_indentation) + footer_line
 
     def _process_scenario(self, scenario, report):
-        """
-        Process a scenario and append information to JUnit report object.
+        """Process a scenario and append information to JUnit report object.
         This corresponds to a JUnit testcase:
 
           * testcase.@classname = f(filename) +'.'+ feature.name
@@ -267,6 +371,7 @@ class JUnitReporter(Reporter):
         case.set(u'time', _text(round(scenario.duration, 6)))
 
         step = None
+        failing_step = None
         if scenario.status == 'failed':
             for status in ('failed', 'undefined'):
                 step = self.select_step_with_status(status, scenario)
@@ -308,7 +413,9 @@ class JUnitReporter(Reporter):
 
         # Create stdout section for each test case
         stdout = ElementTree.Element(u'system-out')
-        text = self.describe_scenario(scenario)
+        text = u""
+        if self.show_scenarios:
+            text = self.describe_scenario(scenario)
 
         # Append the captured standard output
         if scenario.stdout:
@@ -333,3 +440,11 @@ class JUnitReporter(Reporter):
         for scenario in scenario_outline:
             assert isinstance(scenario, Scenario)
             self._process_scenario(scenario, report)
+
+# -----------------------------------------------------------------------------
+# SUPPORT:
+# -----------------------------------------------------------------------------
+def gethostname():
+    """Return hostname of local host (as string)"""
+    import socket
+    return socket.gethostname()

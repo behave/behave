@@ -57,6 +57,11 @@ FORMATTERS:
   * pull  #423: sphinx.steps: Support ref link for each step (provided by: ZivThaller)
   * pull  #460: pretty: Print the step implementation location when dry-run (provided by: unklhe, jenisys)
 
+REPORTERS:
+
+  * junit: Add timestamp and hostname attributes to testsuite XML element.
+  * junit: Support to tweak output with userdata (experimental).
+
 CHANGES:
 
   * parser: language comment in feature file has higher priority than --lang option (related to: #334).
