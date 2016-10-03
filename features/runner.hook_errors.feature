@@ -246,7 +246,11 @@ Feature: Hooks processing in case of errors (exceptions)
           """
 
     @skipped.hook.after_feature
-    Scenario: Skipped feature with hook error
+    Scenario: Skipped feature with potential hook error (hooks are not run)
+
+      This goes unnoticed because hooks are not run for a skipped feature/scenario.
+      NOTE: Except if before_feature(), before_scenario() hook skips the feature/scenario. 
+
       When I run "behave -f plain -D HOOK_ERROR_LOC=after_feature -t ~@foo features/passing.feature"
       Then it should pass with:
           """

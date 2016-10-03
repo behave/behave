@@ -1182,6 +1182,8 @@ class Step(BasicStatement, Replayable):
        If the step failed then this will hold any error information, as a
        single string. It will otherwise be None.
 
+       .. versionmodified:: 1.2.6 (moved to base class)
+
     .. attribute:: filename
 
        The file name (or "<string>") of the *feature file* where the step was
@@ -1205,22 +1207,13 @@ class Step(BasicStatement, Replayable):
         self.status = "untested"
         self.hook_failed = False
         self.duration = 0
-        self.exception = None
-        self.exc_traceback = None
-        self.error_message = None
 
     def reset(self):
         """Reset temporary runtime data to reach clean state again."""
+        super(Step, self).reset()
         self.status = "untested"
         self.hook_failed = False
         self.duration = 0
-        self.exception = None
-        self.exc_traceback = None
-        self.error_message = None
-
-    def store_exception_context(self, exception):
-        self.exception = exception
-        self.exc_traceback = sys.exc_info()[2]
 
     def __repr__(self):
         return '<%s "%s">' % (self.step_type, self.name)
@@ -1250,9 +1243,10 @@ class Step(BasicStatement, Replayable):
     def run(self, runner, quiet=False, capture=True):
         # pylint: disable=too-many-branches, too-many-statements
         # -- RESET: Run-time information.
-        self.exception = self.exc_traceback = self.error_message = None
-        self.status = "untested"
-        self.hook_failed = False
+        # self.exception = self.exc_traceback = self.error_message = None
+        # self.status = "untested"
+        # self.hook_failed = False
+        self.reset()
 
         match = runner.step_registry.find_match(self)
         if match is None:

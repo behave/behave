@@ -2,6 +2,7 @@
 """
 This module provides Runner class to run behave feature files (or model elements).
 """
+
 from __future__ import absolute_import, print_function, with_statement
 import contextlib
 import os.path
@@ -467,24 +468,26 @@ class ModelRunner(object):
                 if "tag" in name:
                     extra = "(tag=%s)" % args[0]
 
-                error_text = ExceptionUtil.describe(e, use_traceback)
-                print(u"HOOK-ERROR in %s%s: %s" % (name, extra, error_text))
+                error_text = ExceptionUtil.describe(e, use_traceback).rstrip()
+                error_message = u"HOOK-ERROR in %s%s: %s" % (name, extra, error_text)
+                print(error_message)
                 self.hook_failures += 1
-                if "step" in name:
-                    step = args[0]
-                    step.hook_failed = True
-                elif "tag" in name:
-                    # -- FEATURE or SCENARIO => Use Feature as collector.
-                    context.feature.hook_failed = True
-                elif "scenario" in name:
-                    scenario = args[0]
-                    scenario.hook_failed = True
-                elif "feature" in name:
-                    feature = args[0]
-                    feature.hook_failed = True
+                if "tag" in name:
+                    # -- SCENARIO or FEATURE
+                    statement = getattr(context, "scenario", context.feature)
                 elif "all" in name:
                     # -- ABORT EXECUTION: For before_all/after_all
                     self.aborted = True
+                    statement = None
+                else:
+                    # -- CASE: feature, scenario, step
+                    statement = args[0]
+
+                if statement:
+                    # -- CASE: feature, scenario, step
+                    statement.hook_failed = True
+                    statement.store_exception_context(e)
+                    statement.error_message = error_message
 
     def setup_capture(self):
         if not self.context:

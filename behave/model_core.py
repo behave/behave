@@ -5,8 +5,10 @@ for the model elements in behave.
 """
 
 import os.path
+import sys
 import six
 from behave.textutil import text as _text
+
 
 # -----------------------------------------------------------------------------
 # GENERIC MODEL CLASSES:
@@ -190,6 +192,10 @@ class BasicStatement(object):
         assert isinstance(name, six.text_type)
         self.keyword = keyword
         self.name = name
+        # -- ERROR CONTEXT INFO:
+        self.exception = None
+        self.exc_traceback = None
+        self.error_message = None
 
     @property
     def filename(self):
@@ -200,10 +206,15 @@ class BasicStatement(object):
     def line(self):
         return self.location.line
 
-    # @property
-    # def location(self):
-    #     p = os.path.relpath(self.filename, os.getcwd())
-    #     return '%s:%d' % (p, self.line)
+    def reset(self):
+        # -- RESET: ERROR CONTEXT INFO
+        self.exception = None
+        self.exc_traceback = None
+        self.error_message = None
+
+    def store_exception_context(self, exception):
+        self.exception = exception
+        self.exc_traceback = sys.exc_info()[2]
 
     def __hash__(self):
         # -- NEEDED-FOR: PYTHON3
@@ -304,13 +315,12 @@ class Replayable(object):
 # -----------------------------------------------------------------------------
 # UTILITY FUNCTIONS:
 # -----------------------------------------------------------------------------
-def unwrap_function(func, max=10):
+def unwrap_function(func, max_depth=10):
     """Unwraps a function that is wrapped with :func:`functools.partial()`"""
     iteration = 0
-    wrapped =  getattr(func, "__wrapped__", None)
-    while wrapped and iteration < max:
+    wrapped = getattr(func, "__wrapped__", None)
+    while wrapped and iteration < max_depth:
         func = wrapped
         wrapped = getattr(func, "__wrapped__", None)
         iteration += 1
     return func
-

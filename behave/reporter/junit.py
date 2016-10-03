@@ -72,6 +72,7 @@ from __future__ import absolute_import
 import os.path
 import codecs
 import sys
+import traceback
 from xml.etree import ElementTree
 from datetime import datetime
 from behave.reporter.base import Reporter
@@ -377,11 +378,11 @@ class JUnitReporter(Reporter):
                 step = self.select_step_with_status(status, scenario)
                 if step:
                     break
-            assert step, "OOPS: No failed step found in scenario: %s" % scenario.name
-            assert step.status in ('failed', 'undefined')
+            # -- NOTE: Scenario may fail now due to hook-errors.
             element_name = 'failure'
-            if isinstance(step.exception, (AssertionError, type(None))):
+            if step and isinstance(step.exception, (AssertionError, type(None))):
                 # -- FAILURE: AssertionError
+                assert step.status in ('failed', 'undefined')
                 report.counts_failed += 1
             else:
                 # -- UNEXPECTED RUNTIME-ERROR:
@@ -389,12 +390,23 @@ class JUnitReporter(Reporter):
                 element_name = 'error'
             # -- COMMON-PART:
             failure = ElementTree.Element(element_name)
-            step_text = self.describe_step(step).rstrip()
-            text = u"\nFailing step: %s\nLocation: %s\n" % (step_text, step.location)
-            message = _text(step.exception)
-            failure.set(u'type', step.exception.__class__.__name__)
-            failure.set(u'message', message)
-            text += _text(step.error_message)
+            if step:
+                step_text = self.describe_step(step).rstrip()
+                text = u"\nFailing step: %s\nLocation: %s\n" % (step_text, step.location)
+                message = _text(step.exception)
+                failure.set(u'type', step.exception.__class__.__name__)
+                failure.set(u'message', message)
+                text += _text(step.error_message)
+            else:
+                # -- MAYBE: Hook failure before any step is executed.
+                failure_type = "UnknownError"
+                if scenario.exception:
+                    failure_type = scenario.exception.__class__.__name__
+                failure.set(u'type', failure_type)
+                failure.set(u'message', scenario.error_message or "")
+                traceback_lines = traceback.format_tb(scenario.exc_traceback)
+                traceback_lines.insert(0, u"Traceback:\n")
+                text = _text(u"".join(traceback_lines))
             failure.append(CDATA(text))
             case.append(failure)
         elif scenario.status in ("skipped", "untested") and self.show_skipped:

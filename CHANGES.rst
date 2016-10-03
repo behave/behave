@@ -61,6 +61,7 @@ REPORTERS:
 
   * junit: Add timestamp and hostname attributes to testsuite XML element.
   * junit: Support to tweak output with userdata (experimental).
+  * junit: Support scenario hook-errors with JUnitReporter (related to: #466)
 
 CHANGES:
 
@@ -70,6 +71,7 @@ FIXED:
 
   * pull  #476: scenario.status when scenario without steps is skipped (provided by: ar45, jenisys)
   * issue #455: Restore backward compatibility to Cucumber style RegexMatcher (submitted by:  avabramov)
+  * issue #446: after_scenario HOOK-ERROR asserts with jUnit reporter (submitted by: lagin)
   * issue #416: JUnit report messages cut off (submitted by: remcowesterhoud, provided by: bittner)
   * issue #414: Support for Jython 2.7 (submitted by: gabtwi...)
   * issue #384: Active Tags fail with ScenarioOutline (submitted by: BRevzin)
