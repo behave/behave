@@ -251,6 +251,26 @@ def step_command_output_should_not_contain_text(context, text):
         textutil.assert_normtext_should_not_contain(actual_output, expected_text)
 
 
+@then(u'the command output should contain "{text}" {count:d} times')
+def step_command_output_should_contain_text_multiple_times(context, text, count):
+    '''
+    EXAMPLE:
+        ...
+        Then the command output should contain "TEXT" 3 times
+    '''
+    assert count >= 0
+    expected_text = text
+    if "{__WORKDIR__}" in expected_text or "{__CWD__}" in expected_text:
+        expected_text = textutil.template_substitute(text,
+             __WORKDIR__ = posixpath_normpath(context.workdir),
+             __CWD__     = posixpath_normpath(os.getcwd())
+        )
+    actual_output = context.command_result.output
+    with on_assert_failed_print_details(actual_output, expected_text):
+        textutil.assert_normtext_should_contain_multiple_times(actual_output,
+                                                               expected_text,
+                                                               count)
+
 @then(u'the command output should contain exactly "{text}"')
 def step_command_output_should_contain_exactly_text(context, text):
     """
@@ -315,6 +335,21 @@ def step_command_output_should_not_contain(context):
     assert context.text is not None, "REQUIRE: multi-line text"
     step_command_output_should_not_contain_text(context, context.text.strip())
 
+@then(u'the command output should contain {count:d} times')
+def step_command_output_should_contain_multiple_times(context, count):
+    '''
+    EXAMPLE:
+        ...
+        when I run "behave ..."
+        then it should pass
+        and  the command output should contain 2 times:
+            """
+            TEXT
+            """
+    '''
+    assert context.text is not None, "REQUIRE: multi-line text"
+    step_command_output_should_contain_text_multiple_times(context,
+                                                           context.text, count)
 
 @then(u'the command output should contain exactly')
 def step_command_output_should_contain_exactly_with_multiline_text(context):
