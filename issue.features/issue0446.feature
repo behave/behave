@@ -9,6 +9,7 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
   .
   . a sanity check in the JUnitReporter prevents sane JUnit XML output.
 
+
     @setup
     Scenario: Skip scenario without steps
       Given a new working directory
@@ -37,7 +38,7 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
       And a file named "features/environment.py" with:
         """
         def cause_hook_failure():
-            1 / 0   # CAUSE: ZeroDivisionError
+            raise RuntimeError("OOPS")
 
         def before_scenario(context, scenario):
             if "hook_failure.before_scenario" in scenario.tags:
@@ -63,7 +64,7 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
       And the command output should contain:
         """
           Scenario: A1
-        HOOK-ERROR in before_scenario: ZeroDivisionError: integer division or modulo by zero
+        HOOK-ERROR in before_scenario: RuntimeError: OOPS 
         """
       And the file "reports/TESTS-before_scenario_failure.xml" should contain:
         """
@@ -71,14 +72,14 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         """
       And the file "reports/TESTS-before_scenario_failure.xml" should contain:
         """
-        <error message="HOOK-ERROR in before_scenario: ZeroDivisionError: integer division or modulo by zero" type="ZeroDivisionError">
+        <error message="HOOK-ERROR in before_scenario: RuntimeError: OOPS" type="RuntimeError">
         """
       And the file "reports/TESTS-before_scenario_failure.xml" should contain:
         """
         File "features/environment.py", line 6, in before_scenario
           cause_hook_failure()
         File "features/environment.py", line 2, in cause_hook_failure
-          1 / 0   # CAUSE: ZeroDivisionError
+          raise RuntimeError("OOPS")
         """
       And note that "the traceback is contained in the XML element <error/>"
 
@@ -93,7 +94,7 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         """
           Scenario: B1
             Given another step passes ... passed
-        HOOK-ERROR in after_scenario: ZeroDivisionError: integer division or modulo by zero
+        HOOK-ERROR in after_scenario: RuntimeError: OOPS
         """
       And the file "reports/TESTS-after_scenario_failure.xml" should contain:
         """
@@ -101,14 +102,13 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         """
       And the file "reports/TESTS-after_scenario_failure.xml" should contain:
         """
-        <error message="HOOK-ERROR in after_scenario: ZeroDivisionError: integer division or modulo by zero" type="ZeroDivisionError">
+        <error message="HOOK-ERROR in after_scenario: RuntimeError: OOPS" type="RuntimeError">
         """
       And the file "reports/TESTS-after_scenario_failure.xml" should contain:
         """
         File "features/environment.py", line 10, in after_scenario
           cause_hook_failure()
         File "features/environment.py", line 2, in cause_hook_failure
-          1 / 0   # CAUSE: ZeroDivisionError
+          raise RuntimeError("OOPS")
         """
       And note that "the traceback is contained in the XML element <error/>"
-        
