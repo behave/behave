@@ -4,10 +4,10 @@ python:
   - "3.5"
   - "2.7"
   - "2.6"
+  - "pypy"
   - "nightly"
   - "3.4"
   - "3.3"
-  - "pypy"
 
 # NOW SUPPORTED: "3.5" => python 3.5.2 (>= 3.5.1)
 # NOTE: Python 3.5.0 is broken (for some tests).
