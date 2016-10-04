@@ -365,6 +365,7 @@ class Parser(object):
         if examples_kwd:
             self._build_examples(examples_kwd, line)
             self.state = "table"
+            return True
 
         examples_file_kwd = self.match_keyword("examples_file", line)
         if examples_file_kwd:
