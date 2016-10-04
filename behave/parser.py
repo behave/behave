@@ -10,7 +10,7 @@ import json
 
 DEFAULT_LANGUAGE = "en"
 
-2def parse_file(filename, language=None):
+def parse_file(filename, language=None):
     with open(filename, "rb") as f:
         # file encoding is assumed to be utf8. Oh, yes.
         data = f.read().decode("utf8")
