@@ -20,6 +20,7 @@ import sys
 import time
 import six
 from six.moves import zip       # pylint: disable=redefined-builtin
+from random import shuffle
 
 from behave.model_core import \
         BasicStatement, TagAndStatusStatement, TagStatement, Replayable
@@ -299,6 +300,24 @@ class Feature(TagAndStatusStatement, Replayable):
         if self.background and (run_feature or runner.config.show_skipped):
             for formatter in runner.formatters:
                 formatter.background(self.background)
+
+        # Randomize execution of scenarios
+        if runner.config.randomize:
+            randomized_scenarios = set(copy.copy(self.scenarios))
+            setup_tags = []
+            teardown_tags = []
+
+            for scenario in self.scenarios:
+                if "setup" in scenario.tags:
+                    setup_tags.append(scenario)
+                    randomized_scenarios.discard(scenario)
+                if "teardown" in scenario.tags:
+                    teardown_tags.append(scenario)
+                    randomized_scenarios.discard(scenario)
+
+            randomized_scenarios = list(randomized_scenarios)
+            shuffle(randomized_scenarios)
+            self.scenarios = setup_tags + randomized_scenarios + teardown_tags
 
         failed_count = 0
         for scenario in self.scenarios:
@@ -1074,6 +1093,11 @@ class ScenarioOutline(Scenario):
         # REASON: context._set_root_attribute(), scenario._row
         self._cached_status = None
         failed_count = 0
+
+        # Randomize execution of scenario outline examples
+        if runner.config.randomize:
+            shuffle(self.scenarios)
+
         for scenario in self.scenarios:     # -- REQUIRE: BUILD-SCENARIOS
             runner.context._set_root_attribute("active_outline", scenario._row)
             failed = scenario.run(runner)

@@ -708,6 +708,7 @@ class TestRunWithPaths(unittest.TestCase):
         self.config.exclude = lambda s: False
         self.config.junit = False
         self.config.summary = False
+        self.config.randomize = False
         parse_file.return_value = feature
 
         self.runner.run_with_paths()
@@ -1068,4 +1069,3 @@ class TestFeatureDirectoryLayout2(object):
                 assert_raises(ConfigError, r.setup_paths)
 
         ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
-

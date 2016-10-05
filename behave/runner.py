@@ -12,6 +12,7 @@ import warnings
 import weakref
 import six
 from six import StringIO
+from random import shuffle
 
 from behave import matchers
 from behave.step_registry import setup_step_decorators, registry as the_step_registry
@@ -773,6 +774,11 @@ class Runner(ModelRunner):
         # -- STEP: Parse all feature files (by using their file location).
         feature_locations = [filename for filename in self.feature_locations()
                              if not self.config.exclude(filename)]
+
+        # Randomize the execution of files
+        if self.config.randomize:
+            shuffle(feature_locations)
+
         features = parse_features(feature_locations, language=self.config.lang)
         self.features.extend(features)
 
@@ -780,7 +786,3 @@ class Runner(ModelRunner):
         stream_openers = self.config.outputs
         self.formatters = make_formatters(self.config, stream_openers)
         return self.run_model()
-
-
-
-
