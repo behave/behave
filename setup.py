@@ -24,12 +24,15 @@ from setuptools_behave import behave_test
 # -----------------------------------------------------------------------------
 python_version = float("%s.%s" % sys.version_info[:2])
 requirements = ["parse>=1.6.3", "parse_type>=0.3.4", "six>=1.9"]
-py26_extra = ["argparse", "importlib", "ordereddict"]
+py26_extra = ["argparse", "importlib", "ordereddict", "traceback2"]
+py27_extra = ["traceback2"]
 py33_extra = ["enum34"]
 if python_version < 2.6:
     requirements.append("simplejson")
 if python_version < 2.7:
     requirements.extend(py26_extra)
+if python_version < 3:
+    requirements.extend(py27_extra)
 if python_version < 3.4:
     requirements.extend(py33_extra)
 
@@ -84,6 +87,7 @@ setup(
         # -- SUPPORT-WHEELS: Extra packages for Python2.6
         # SEE: https://bitbucket.org/pypa/wheel/ , CHANGES.txt (v0.24.0)
         ':python_version=="2.6"': py26_extra,
+        ':python_version=="2.7"': py27_extra,
         ':python_version=="3.3"': py33_extra,
     },
     # MAYBE-DISABLE: use_2to3

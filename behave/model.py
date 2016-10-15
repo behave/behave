@@ -14,18 +14,21 @@ from __future__ import absolute_import, with_statement
 import copy
 import difflib
 import logging
-import traceback
 import itertools
 import sys
 import time
 import six
 from six.moves import zip       # pylint: disable=redefined-builtin
+if six.PY2:
+    # -- USE PYTHON3 BACKPORT: With unicode traceback support.
+    import traceback2 as traceback
+else:
+    import traceback
 
 from behave.model_core import \
         BasicStatement, TagAndStatusStatement, TagStatement, Replayable
 from behave.matchers import NoMatch
 from behave.textutil import text as _text
-
 
 class Feature(TagAndStatusStatement, Replayable):
     """A `feature`_ parsed from a *feature file*.

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import
 import re
 import operator
 import warnings
@@ -215,50 +215,6 @@ class ActiveTagMatcher(TagMatcher):
                 return True     # SHOULD-EXCLUDE: not enabled = not False
         # -- LOGICAL-AND: All parts are True
         return False    # SHOULD-EXCLUDE: not enabled = not True
-
-    # -- OLD-IMPLEMENTATION:
-    # def should_exclude_with(self, tags):
-    #     exclude_decision_map = {}
-    #     exclude_reasons = []
-    #     for category_tag, tag_match in self.select_active_tags(tags):
-    #         # -- FASTER: tag_prefix, category, _, tag_value = tag_match.groups()
-    #         tag_prefix = tag_match.group("prefix")
-    #         category = tag_match.group("category")
-    #         tag_value = tag_match.group("value")
-    #         is_category_tag_switched_on = operator.eq       # equal_to
-    #         if self.is_tag_negated(tag_prefix):
-    #             is_category_tag_switched_on = operator.ne   # not_equal_to
-    #
-    #         current_value = self.value_provider.get(category, None)
-    #         if current_value is None and self.ignore_unknown_categories:
-    #             # -- CASE: Unknown category, ignore it.
-    #             continue
-    #         elif is_category_tag_switched_on(tag_value, current_value):
-    #             # -- CASE: Active tag is switched ON, decision: should run.
-    #             # NOTE: No change, if category is already in exclusion map:
-    #             #   disabled_result  := not enabled_result = not (e1 and e2 ...)
-    #             #                    := (not e1) or (not e2) ...
-    #             #
-    #             #   disabled_result1 := True  or False = True
-    #             #   disabled_result2 := False or False = False  (same tag twice)
-    #             if category not in exclude_decision_map:
-    #                 exclude_decision_map[category] = False
-    #         else:
-    #             # -- CASE: Active tag is switched OFF, decision: exclude it.
-    #             #   disabled_result1 := True  or True = True
-    #             #   disabled_result2 := False or True = True
-    #             exclude_decision_map[category] = True
-    #             if self.use_exclude_reason:
-    #                 reason = "%s (but: %s)" % (category_tag, current_value)
-    #                 exclude_reasons.append(reason)
-    #
-    #     self.exclude_reason = None
-    #     if exclude_reasons:
-    #         # -- DIAGNOSTICS:
-    #         self.exclude_reason = ", ".join(exclude_reasons)
-    #     # -- EXCLUDE-DECISION:
-    #     #    disabled_result := (not e1) or (not e2) ... = not (e1 and e2 ...)
-    #     return any(exclude_decision_map.values())
 
     def select_active_tags(self, tags):
         """Select all active tags that match the tag schema pattern.

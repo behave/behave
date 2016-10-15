@@ -8,6 +8,12 @@ from nose.tools import *  # pylint: disable=wildcard-import, unused-wildcard-imp
 import six
 from six.moves import range     # pylint: disable=redefined-builtin
 from six.moves import zip       # pylint: disable=redefined-builtin
+if six.PY2:
+    import traceback2 as traceback
+    traceback_modname = "traceback2"
+else:
+    import traceback
+    traceback_modname = "traceback"
 
 from behave.model_core import FileLocation
 from behave.model import Feature, Scenario, ScenarioOutline, Step
@@ -542,7 +548,7 @@ class TestStepRun(unittest.TestCase):
         eq_(step.status, 'failed')
         assert step.error_message.startswith('Assertion Failed')
 
-    @patch('traceback.format_exc')
+    @patch('%s.format_exc' % traceback_modname)
     def test_run_sets_status_to_failed_on_exception(self, format_exc):
         step = Step('foo.feature', 17, u'Given', 'given', u'foo')
         step.error_message = None

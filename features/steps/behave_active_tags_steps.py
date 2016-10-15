@@ -13,7 +13,6 @@
 
 """
 
-# XXX-AVOID: from __future__ import unicode_literals
 from behave import given, when, then, step
 from behave.tag_matcher import ActiveTagMatcher
 from behave.tag_expression import TagExpression
