@@ -1,0 +1,11 @@
+run:
+    echo: true
+    pty: true
+
+behave_test:
+    scopes:
+      - features
+      - tools/test-features
+      - issue.features
+    args: features tools/test-features issue.features
+
