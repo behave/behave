@@ -4,8 +4,11 @@
 
 # -- BUILD-TOOL:
 # PREPARE USAGE: invoke
-invoke >= 0.11.1
+# ALREADY: six >= 1.10.0
+invoke >= 0.13.0
 path.py >= 7.2
+pathlib;    python_version <= '3.4'
+pycmd
 
 # -- CONFIGURATION MANAGEMENT (helpers):
 bumpversion >= 0.4.0

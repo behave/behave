@@ -1,0 +1,16 @@
+# ============================================================================
+# INVOKE PYTHON PACKAGE REQUIREMENTS: For tasks
+# ============================================================================
+# DESCRIPTION:
+#    pip install -r <THIS_FILE>
+#
+# SEE ALSO:
+#  * http://www.pip-installer.org/
+# ============================================================================
+
+invoke >= 0.13.0
+six >= 1.10.0
+pathlib;    python_version <= '3.4'
+
+# For cleanup of python files: py.cleanup
+pycmd
