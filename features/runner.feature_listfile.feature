@@ -172,7 +172,7 @@ Feature: Feature Listfile (List of feature filenames/directories)
     When I run "behave -f plain --no-timings @with_wildcard_location.txt"
     Then it should fail with:
       """
-      ConfigError: No steps directory in "{__WORKDIR__}"
+      ConfigError: No steps directory in '{__WORKDIR__}'
       """
 
 
@@ -181,7 +181,7 @@ Feature: Feature Listfile (List of feature filenames/directories)
     When I run "behave @empty.txt"
     Then it should fail with:
       """
-      No steps directory in "{__WORKDIR__}"
+      No steps directory in '{__WORKDIR__}'
       """
 
   Scenario: Use empty @feature_listfile in features subdirectory (Case 2)

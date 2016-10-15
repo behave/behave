@@ -70,8 +70,13 @@ CHANGES:
 FIXED:
 
   * pull  #476: scenario.status when scenario without steps is skipped (provided by: ar45, jenisys)
+  * pull  #471: convert an object to unicode (py2) using __unicode__ method first  unicode (provided by: ftartaggia)
+  * issue #458: UnicodeEncodeError inside naked except block in __main__.py (submitted by: 	mseery)
+  * issue #453: Unicode chars are broken in stacktrace (submitted by: throwable-one)
   * issue #455: Restore backward compatibility to Cucumber style RegexMatcher (submitted by:  avabramov)
+  * issue #449: Unicode is processed incorrectly for Py2 in "textutil.text" (submitted by: throwable-one)
   * issue #446: after_scenario HOOK-ERROR asserts with jUnit reporter (submitted by: lagin)
+  * issue #424: Exception message with unicode characters in nested steps (submitted by: yucer)
   * issue #416: JUnit report messages cut off (submitted by: remcowesterhoud, provided by: bittner)
   * issue #414: Support for Jython 2.7 (submitted by: gabtwi...)
   * issue #384: Active Tags fail with ScenarioOutline (submitted by: BRevzin)
@@ -79,6 +84,7 @@ FIXED:
   * pull  #382: fix typo in tag name (provided by: zsoldosp)
   * issue #361: utf8 file with BOM (provided by: karulis)
   * issue #349: ScenarioOutline skipped with --format=json
+  * issue #336: Stacktrace contents getting illegal characters inserted with text function (submited by: fj40bryan)
   * issue #330: Skipped scenarios are included in junit reports when --no-skipped is specified (provided by: vrutkovs, pull #331)
   * issue #320: Userdata is case-insensitive when read from config file (provided by: mixxorz)
   * issue #319: python-version requirements in behave.whl for Python2.6 (submitted by: darkfoxprime)

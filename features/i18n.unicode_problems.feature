@@ -1,4 +1,3 @@
-@unicode
 Feature: Internationalization (i18n) and Problems with Unicode Strings
 
   . POTENTIAL PROBLEM AREAS:
@@ -27,38 +26,39 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
         """
       And a file named "features/steps/passing_steps.py" with:
         """
-        from __future__ import unicode_literals
+        # -*- coding: UTF-8 -*-
         from behave import step
 
-        @step('{word:w} step passes')
+        @step(u'{word:w} step passes')
         def step_passes(context, word):
             pass
 
-        @step('{word:w} step passes with "{text}"')
+        @step(u'{word:w} step passes with "{text}"')
         def step_passes_with_text(context, word, text):
             pass
 
-        @step('{word:w} step fails')
+        @step(u'{word:w} step fails')
         def step_fails(context, word):
             assert False, "XFAIL"
 
-        @step('{word:w} step fails with "{text}"')
+        @step(u'{word:w} step fails with "{text}"')
         def step_fails_with_text(context, word, text):
-            assert False, "XFAIL: "+ text
+            assert False, u"XFAIL: "+ text
         """
       And a file named "features/steps/step_write_output.py" with:
         """
-        from __future__ import print_function, unicode_literals
+        # -*- coding: UTF-8 -*-
+        from __future__ import print_function
         from behave import step
         import six
 
-        @step('I write text "{text}" to stdout')
+        @step(u'I write text "{text}" to stdout')
         def step_write_text(context, text):
             if six.PY2 and isinstance(text, six.text_type):
                 text = text.encode("utf-8", "replace")
             print(text)
 
-        @step('I write bytes "{data}" to stdout')
+        @step(u'I write bytes "{data}" to stdout')
         def step_write_bytes(context, data):
             if isinstance(data, six.text_type):
                 data = data.encode("unicode-escape", "replace")
@@ -362,14 +362,17 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
   Scenario Outline: Step assert fails with problematic chars (case: <format>)
 
     NOTE: Python2 fails silently without showing the failed step.
+    HINT: Use unicode string when you use, special non-ASCII characters.
+    HINT: Use encoding-hint in python file header.
 
       Given a file named "features/steps/problematic_steps.py" with:
         """
+        # -*- coding: UTF-8 -*-
         from behave import step
 
         @step(u'{word:w} step fails with assert and non-ASCII text')
         def step_fails_with_assert_and_problematic_text(context, word):
-            assert False, "XFAIL:"+ chr(190) +";"
+            assert False, u"XFAIL:¾;"
         """
       And a file named "features/assert_with_ptext.feature" with:
         """
@@ -397,13 +400,24 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
   @issue_0226
   Scenario Outline: Step raises exception with problematic chars (case: <format>)
 
+      In Python2: When an exception is raised with unicode argument,
+      (and special non-ASCII chars) the conversion of the exception into
+      a unicode string causes implicit conversion into a normal string
+      by using the default encoding (normally: ASCII).
+      Therefore, the implicit encoding into a normal string often fails.
+
+      SEE ALSO: http://bugs.python.org/issue2517
+      NOTE: Better if encoding hint is provided in python file header.
+
       Given a file named "features/steps/problematic_steps.py" with:
         """
+        # -*- coding: UTF-8 -*-
         from behave import step
 
         @step(u'{word:w} step fails with exception and non-ASCII text')
         def step_fails_with_exception_and_problematic_text(context, word):
-            raise RuntimeError("FAIL:"+ chr(190) +";")
+            # -- REQUIRE: UNICODE STRING, when special, non-ASCII chars are used.
+            raise RuntimeError(u"FAIL:¾;")
         """
       And a file named "features/exception_with_ptext.feature" with:
         """

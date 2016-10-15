@@ -7,11 +7,15 @@ from __future__ import absolute_import, print_function, with_statement
 import contextlib
 import os.path
 import sys
-import traceback
 import warnings
 import weakref
 import six
 from six import StringIO
+if six.PY2:
+    # -- USE PYTHON3 BACKPORT: With unicode traceback support.
+    import traceback2 as traceback
+else:
+    import traceback
 
 from behave import matchers
 from behave.step_registry import setup_step_decorators, registry as the_step_registry
@@ -166,7 +170,6 @@ class Context(object):
     def _pop(self):
         self._stack.pop(0)
 
-
     def _use_with_behave_mode(self):
         """Provides a context manager for using the context in BEHAVE mode."""
         return use_context_with_mode(self, Context.BEHAVE)
@@ -250,7 +253,10 @@ class Context(object):
                 }
                 self._emit_warning(attr, params)
 
-        stack_frame = traceback.extract_stack(limit=2)[0]
+        stack_limit = 2
+        if six.PY2:
+            stack_limit += 1     # Due to traceback2 usage.
+        stack_frame = traceback.extract_stack(limit=stack_limit)[0]
         self._record[attr] = stack_frame
         frame = self._stack[0]
         frame[attr] = value
@@ -675,7 +681,7 @@ class Runner(ModelRunner):
                     print('ERROR: Could not find "%s" directory in your '\
                         'specified path "%s"' % (steps_dir, base_dir))
 
-            message = 'No %s directory in "%s"' % (steps_dir, base_dir)
+            message = 'No %s directory in %r' % (steps_dir, base_dir)
             raise ConfigError(message)
 
         base_dir = new_base_dir
@@ -692,7 +698,7 @@ class Runner(ModelRunner):
                 else:
                     print('ERROR: Could not find any "<name>.feature" files '\
                         'in your specified path "%s"' % base_dir)
-            raise ConfigError('No feature files in "%s"' % base_dir)
+            raise ConfigError('No feature files in %r' % base_dir)
 
         self.base_dir = base_dir
         self.path_manager.add(base_dir)

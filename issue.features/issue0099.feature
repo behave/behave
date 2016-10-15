@@ -11,8 +11,8 @@ Feature: Issue #99: Layout variation "a directory containing your feature files"
     .    Primary path is to a file so using its directory
     .    Trying base directory: .../tests/feature/webui/features
     .    Trying base directory: .../tests/feature/webui
-    .    ERROR: Could not find "steps" directory in your specified path ".../tests/feature/webui/features"
-    .    No steps directory in ".../tests/feature/webui/features"
+    .    ERROR: Could not find "steps" directory in your specified path '.../tests/feature/webui/features'
+    .    No steps directory in '.../tests/feature/webui/features'
     .
     . My directory layout is as follows:
     .

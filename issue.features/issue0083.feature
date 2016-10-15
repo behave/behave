@@ -65,5 +65,5 @@ Feature: Issue #83: behave.__main__:main() Various sys.exit issues
     And  the command returncode is non-zero
     And  the command output should contain:
         """
-        No steps directory in "{__WORKDIR__}/features"
+        No steps directory in '{__WORKDIR__}/features'
         """

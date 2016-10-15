@@ -50,7 +50,7 @@ Feature: Basic directory layout (Variant 1B)
         When I run "behave -f progress testing/"
         Then it should fail with:
             """
-            ConfigError: No steps directory in "{__WORKDIR__}/testing"
+            ConfigError: No steps directory in '{__WORKDIR__}/testing'
             """
 
     Scenario: Run behave with feature subdirectory

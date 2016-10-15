@@ -19,3 +19,4 @@ tools/virtualenvs
 .coverage
 .ropeproject
 nosetests.xml
+rerun.txt

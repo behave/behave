@@ -20,7 +20,7 @@ Feature: Issue #72: Using 'GHERKIN_COLORS' fails with Exception
     When I run "behave"
     Then it should fail with:
       """
-      No steps directory in "{__WORKDIR__}/features"
+      No steps directory in '{__WORKDIR__}/features'
       """
      But the command output should not contain:
       """
