@@ -25,7 +25,7 @@ Feature: Issue #487 -- UnicodeEncodeError with ZBSP in multi-line text
         def step_passes(context, word):
             pass
         """
-      And a file named "features/steps/pass_steps.py" with:
+      And a file named "features/steps/steps.py" with:
         """
         # -*- coding: latin-1 -*-
         from __future__ import print_function
