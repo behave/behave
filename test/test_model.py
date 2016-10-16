@@ -181,6 +181,7 @@ class TestScenarioRun(unittest.TestCase):
 
     def setUp(self):
         self.runner = Mock()
+        self.runner.aborted = False
         self.runner.feature.tags = []
         self.config = self.runner.config = Mock()
         self.config.dry_run = False

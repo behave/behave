@@ -99,18 +99,5 @@ Feature: Issue #384 -- Active Tags fail with ScenarioOutline
       And the command output should contain:
         """
         ACTIVE-TAG DISABLED: Scenario Alice -- Anna, German -- @1.1
-        @use.with_browser=chrome
-        Scenario Outline: Alice -- Anna, German -- @1.1   # features/outline.active_tags.feature:10
-
-        ACTIVE-TAG DISABLED: Scenario Alice -- Arabella, English -- @1.2
-        @use.with_browser=chrome
-        Scenario Outline: Alice -- Arabella, English -- @1.2   # features/outline.active_tags.feature:11
-        """
-      And the command output should contain:
-        """
-        ACTIVE-TAG DISABLED: Scenario Alice -- Anna, German -- @1.1
-        """
-      And the command output should contain:
-        """
         ACTIVE-TAG DISABLED: Scenario Alice -- Arabella, English -- @1.2
         """

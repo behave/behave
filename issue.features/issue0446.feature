@@ -63,8 +63,7 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         """
       And the command output should contain:
         """
-          Scenario: A1
-        HOOK-ERROR in before_scenario: RuntimeError: OOPS 
+        HOOK-ERROR in before_scenario: RuntimeError: OOPS
         """
       And the file "reports/TESTS-before_scenario_failure.xml" should contain:
         """

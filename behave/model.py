@@ -154,6 +154,9 @@ class Feature(TagAndStatusStatement, Replayable):
 
         :return: Computed status (as string-enum).
         """
+        if self.hook_failed:
+            return "failed"
+
         skipped = True
         passed_count = 0
         for scenario in self.scenarios:
@@ -171,8 +174,6 @@ class Feature(TagAndStatusStatement, Replayable):
 
         if skipped:
             return "skipped"
-        elif self.hook_failed:
-            return "failed"
         else:
             return "passed"
 
@@ -247,7 +248,7 @@ class Feature(TagAndStatusStatement, Replayable):
         Note this function may be called before the feature is executed.
         """
         self.skip(require_not_executed=True)
-        assert self.status == "skipped"
+        assert self.status == "skipped" or self.hook_failed
 
     def skip(self, reason=None, require_not_executed=False):
         """Skip executing this feature or the remaining parts of it.
@@ -276,34 +277,35 @@ class Feature(TagAndStatusStatement, Replayable):
         # pylint: disable=too-many-branches
         self._cached_status = None
         self.hook_failed = False
+
         runner.context._push()      # pylint: disable=protected-access
         runner.context.feature = self
-
-        # run this feature if the tags say so or any one of its scenarios
-        run_feature = self.should_run(runner.config)
-        if run_feature or runner.config.show_skipped:
-            for formatter in runner.formatters:
-                formatter.feature(self)
-
-        # current tags as a set
         runner.context.tags = set(self.tags)
 
+        run_feature = self.should_run(runner.config) and not runner.aborted
+        failed_count = 0
         hooks_called = False
         if not runner.config.dry_run and run_feature:
             hooks_called = True
             for tag in self.tags:
                 runner.run_hook("before_tag", runner.context, tag)
             runner.run_hook("before_feature", runner.context, self)
+            if self.hook_failed:
+                # PREPARED: self.mark_skipped()
+                failed_count += 1
 
             # -- RE-EVALUATE SHOULD-RUN STATE:
             # Hook may call feature.mark_skipped() to exclude it.
-            run_feature = self.should_run()
+            run_feature = self.should_run()  and not runner.aborted
 
-        if self.background and (run_feature or runner.config.show_skipped):
+        # run this feature if the tags say so or any one of its scenarios
+        if run_feature or runner.config.show_skipped:
             for formatter in runner.formatters:
-                formatter.background(self.background)
+                formatter.feature(self)
+            if self.background:
+                for formatter in runner.formatters:
+                    formatter.background(self.background)
 
-        failed_count = 0
         for scenario in self.scenarios:
             # -- OPTIONAL: Select scenario by name (regular expressions).
             if (runner.config.name and
@@ -325,10 +327,10 @@ class Feature(TagAndStatusStatement, Replayable):
 
         if hooks_called:
             runner.run_hook("after_feature", runner.context, self)
-            if self.hook_failed and failed_count == 0:
-                failed_count = 1
             for tag in self.tags:
                 runner.run_hook("after_tag", runner.context, tag)
+            if self.hook_failed:
+                failed_count += 1
 
         runner.context._pop()       # pylint: disable=protected-access
 
@@ -536,6 +538,9 @@ class Scenario(TagAndStatusStatement, Replayable):
 
         :return: Computed status (as string).
         """
+        if self.hook_failed:
+            return "failed"
+
         for step in self.all_steps:
             if step.status == "undefined":
                 if self.was_dry_run:
@@ -554,9 +559,6 @@ class Scenario(TagAndStatusStatement, Replayable):
             #    return "skipped"
             #elif step.status == "untested":
             #    return "untested"
-
-        if self.hook_failed:
-            return "failed"
         return "passed"
 
     @property
@@ -621,7 +623,8 @@ class Scenario(TagAndStatusStatement, Replayable):
         Note that this method can be called before the scenario is executed.
         """
         self.skip(require_not_executed=True)
-        assert self.status == "skipped", "OOPS: scenario.status=%s" % self.status
+        assert self.status == "skipped" or self.hook_failed, \
+               "OOPS: scenario.status=%s" % self.status
 
     def skip(self, reason=None, require_not_executed=False):
         """Skip from executing this scenario or the remaining parts of it.
@@ -654,15 +657,12 @@ class Scenario(TagAndStatusStatement, Replayable):
     def run(self, runner):
         # pylint: disable=too-many-branches, too-many-statements
         self._cached_status = None
+        self.hook_failed = False
         failed = False
-        run_scenario = self.should_run(runner.config)
+        run_scenario = self.should_run(runner.config) and not runner.aborted
         run_steps = run_scenario and not runner.config.dry_run
         dry_run_scenario = run_scenario and runner.config.dry_run
         self.was_dry_run = dry_run_scenario
-
-        if run_scenario or runner.config.show_skipped:
-            for formatter in runner.formatters:
-                formatter.scenario(self)
 
         runner.context._push()      # pylint: disable=protected-access
         runner.context.scenario = self
@@ -674,11 +674,19 @@ class Scenario(TagAndStatusStatement, Replayable):
             for tag in self.tags:
                 runner.run_hook("before_tag", runner.context, tag)
             runner.run_hook("before_scenario", runner.context, self)
+            if self.hook_failed:
+                # PREPARED: self.mark_skipped()
+                failed = True
 
             # -- RE-EVALUATE SHOULD-RUN STATE:
             # Hook may call scenario.mark_skipped() to exclude it.
-            run_scenario = run_steps = self.should_run()
+            run_scenario = run_steps = self.should_run() and not runner.aborted
 
+        if run_scenario or runner.config.show_skipped:
+            for formatter in runner.formatters:
+                formatter.scenario(self)
+
+        # TODO: Reevaluate location => Move in front of hook-calls
         runner.setup_capture()
 
         if run_scenario or runner.config.show_skipped:
@@ -736,14 +744,15 @@ class Scenario(TagAndStatusStatement, Replayable):
         if runner.config.junit:
             self.stdout = runner.context.stdout_capture.getvalue()
             self.stderr = runner.context.stderr_capture.getvalue()
+        # TODO: Reevaluate location => Move behind hook-calls
         runner.teardown_capture()
 
         if hooks_called:
             runner.run_hook("after_scenario", runner.context, self)
-            if self.hook_failed:
-                failed = True
             for tag in self.tags:
                 runner.run_hook("after_tag", runner.context, tag)
+            if self.hook_failed:
+                failed = True
 
         runner.context._pop()       # pylint: disable=protected-access
         return failed

@@ -377,8 +377,6 @@ Feature: Active Tags
       And the command output should contain:
         """
         ACTIVE-TAG DISABLED: Scenario Charly -- Anna, German, firefox -- @1.1
-        @use.with_browser=firefox
-        Scenario Outline: Charly -- Anna, German, firefox -- @1.1   # features/outline3.active_tags.feature:10
 
         @use.with_browser=chrome
         Scenario Outline: Charly -- Arabella, English, chrome -- @1.2   # features/outline3.active_tags.feature:11
