@@ -66,6 +66,7 @@ REPORTERS:
 CHANGES:
 
   * parser: language comment in feature file has higher priority than --lang option (related to: #334).
+  * issue #385: before_scenario/before_feature called too late (submitted by: BRevzin)
 
 FIXED:
 
