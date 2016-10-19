@@ -74,6 +74,10 @@ class SummaryReporter(Reporter):
                     scenario.location, scenario.name))
             self.stream.write("\n")
 
+        if self.config.order[0] == 'random':
+            randomized = "Randomized with seed: %d\n" % self.config.order[1]
+            self.stream.write(randomized)
+
         # -- SHOW SUMMARY COUNTS:
         self.stream.write(format_summary("feature", self.feature_summary))
         self.stream.write(format_summary("scenario", self.scenario_summary))

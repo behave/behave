@@ -38,6 +38,7 @@ class TestFeatureRun(unittest.TestCase):
         self.runner.aborted = False
         self.runner.feature.tags = []
         self.config = self.runner.config = Mock()
+        self.config.order = ('defined', None)
         self.context = self.runner.context = Mock()
         self.formatters = self.runner.formatters = [Mock()]
         self.run_hook = self.runner.run_hook = Mock()
