@@ -17,6 +17,7 @@ from six.moves import zip
 DEFAULT_WIDTH = 80
 DEFAULT_HEIGHT = 24
 
+
 def get_terminal_size():
     if sys.platform == 'windows':
         # Autodetecting the size of a Windows command window is left as an
@@ -83,7 +84,6 @@ class PrettyFormatter(Formatter):
         self.indentations = []
         self.step_lines = 0
 
-
     def reset(self):
         # -- UNUSED: self.tag_statement = None
         self.steps = []
@@ -128,7 +128,7 @@ class PrettyFormatter(Formatter):
         self._match = match
         self.print_statement()
         self.print_step('executing', self._match.arguments,
-                        self._match.location, self.monochrome)
+                        self._match.location, False)
         self.stream.flush()
 
     def result(self, result):
@@ -140,12 +140,12 @@ class PrettyFormatter(Formatter):
                 if result.text:
                     lines += len(result.text.splitlines()) + 2
             self.stream.write(up(lines))
-            arguments = []
-            location = None
-            if self._match:
-                arguments = self._match.arguments
-                location = self._match.location
-            self.print_step(result.status, arguments, location, True)
+        arguments = []
+        location = None
+        if self._match:
+            arguments = self._match.arguments
+            location = self._match.location
+        self.print_step(result.status, arguments, location, True)
         if result.error_message:
             self.stream.write(indent(result.error_message.strip(), u'      '))
             self.stream.write('\n\n')
@@ -273,6 +273,18 @@ class PrettyFormatter(Formatter):
         else:
             step = self.steps[0]
 
+        if self.monochrome:
+            if not proceed:
+                self.ll = self._print_first_half(step, status, arguments, location,
+                                                 proceed)
+            else:
+                self._print_second_half(step, status, arguments, location, proceed,
+                                        self.ll)
+        else:
+            ll = self._print_first_half(step, status, arguments, location, proceed)
+            self._print_second_half(step, status, arguments, location, proceed, ll)
+
+    def _print_first_half(self, step, status, arguments, location, proceed):
         text_format = self.format(status)
         arg_format = self.arg_format(status)
 
@@ -303,7 +315,10 @@ class PrettyFormatter(Formatter):
             text = step_name[text_start:]
             self.stream.write(text_format.text(text))
             line_length += (len(text))
+        return line_length
 
+    def _print_second_half(self, step, status, arguments, location, proceed,
+                           line_length):
         if self.show_source:
             location = six.text_type(location)
             if self.show_timings and status in ('passed', 'failed'):
