@@ -296,10 +296,16 @@ class TagAndStatusStatement(BasicStatement):
             self._cached_status = self.compute_status()
         return self._cached_status
 
+    def set_status(self, value):
+        self._cached_status = value
+
+    def clear_status(self):
+        self._cached_status = None
+
     def reset(self):
         self.should_skip = False
         self.skip_reason = None
-        self._cached_status = None
+        self.clear_status()
 
     def compute_status(self):
         raise NotImplementedError

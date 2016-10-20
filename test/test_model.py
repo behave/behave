@@ -33,6 +33,7 @@ class TestFeatureRun(unittest.TestCase):
 
     def setUp(self):
         self.runner = Mock()
+        self.runner.aborted = False
         self.runner.feature.tags = []
         self.config = self.runner.config = Mock()
         self.context = self.runner.context = Mock()
