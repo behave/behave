@@ -1,14 +1,16 @@
 Feature: Hooks processing in case of errors (exceptions)
 
   . SPECIFICATION:
-  .   * Hook errors in before_all/after_all hook abort the test run.
-  .   * Hook errors in before_feature/after_feature mark feature as failed.
-  .   * Hook errors in before_feature hooks causes the feature to be skipped (untested).
-  .   * Hook errors in before_scenario/after_scenario mark scenario as failed.
-  .   * Hook errors in before_scenario hooks causes the feature to be skipped (untested).
-  .   * Hook errors in before_step/after_step mark step as failed.
-  .   * Hook errors in before_step hooks causes the step to be skipped (untested).
-  .   * Hook errors in before_tag/after_tag mark current feature or scenario as failed.
+  .   * Hook errors in before_all/after_all hook aborts the test run (and fail).
+  .   * Hook errors in before_feature/after_feature causes the feature to fail.
+  .   * Hook errors in before_feature causes feature scenarios to be skipped (untested).
+  .   * Hook errors in before_scenario/after_scenario causes the scenario to fail.
+  .   * Hook errors in before_scenario causes scenario steps to be skipped (untested).
+  .   * Hook errors in before_step/after_step causes step to fail.
+  .   * Hook errors in before_tag/after_tag of a feature  causes feature  to fail.
+  .   * Hook errors in before_tag/after_tag of a scenario causes scenario to fail.
+  .   * If a hook error occurs in a "before_xxx" hook,
+  .     then the "after_xxx" hook will also be called (to cleanup some stuff).
   .
   . NOTE:
   . The --verbose flag can be used to show the exception traceback.
@@ -71,7 +73,7 @@ Feature: Hooks processing in case of errors (exceptions)
         def after_scenario(context, scenario):
             userdata = context.config.userdata
             if userdata.get("HOOK_ERROR_LOC") == "before_scenario":
-                print("called_hook:before_scenario")
+                print("called_hook:after_scenario")
             if userdata.get("HOOK_ERROR_LOC") == "after_scenario":
                 cause_hook_to_fail()
 
@@ -82,6 +84,8 @@ Feature: Hooks processing in case of errors (exceptions)
 
         def after_step(context, step):
             userdata = context.config.userdata
+            if userdata.get("HOOK_ERROR_LOC") == "before_step":
+                print("called_hook:after_step")
             if userdata.get("HOOK_ERROR_LOC") == "after_step":
                 cause_hook_to_fail()
 
@@ -97,7 +101,7 @@ Feature: Hooks processing in case of errors (exceptions)
             if userdata.get("HOOK_ERROR_LOC") == "before_tag":
                 error_tag = userdata.get("HOOK_ERROR_TAG")
                 if tag == error_tag:
-                  print("called_hook:after_tag: tag=%s" % tag)
+                    print("called_hook:after_tag: tag=%s" % tag)
             if userdata.get("HOOK_ERROR_LOC") == "after_tag":
                 error_tag = userdata.get("HOOK_ERROR_TAG")
                 if not error_tag or tag == error_tag:
@@ -108,6 +112,7 @@ Feature: Hooks processing in case of errors (exceptions)
         [behave]
         show_skipped = false
         """
+
 
     @hook.before_all
     Scenario: Hook error in before_all
@@ -122,6 +127,8 @@ Feature: Hooks processing in case of errors (exceptions)
           0 scenarios passed, 0 failed, 0 skipped, 1 untested
           0 steps passed, 0 failed, 0 skipped, 0 undefined, 1 untested
           """
+      But note that "the after_all hook is called, too"
+
 
     @hook.after_all
     Scenario: Hook error in after_all
@@ -153,9 +160,8 @@ Feature: Hooks processing in case of errors (exceptions)
           0 scenarios passed, 0 failed, 0 skipped, 1 untested
           0 steps passed, 0 failed, 0 skipped, 0 undefined, 1 untested
           """
-      And the command output should contain:
-          """
-          """
+      But note that "the after_feature hook is called, too."
+
 
     @hook.after_feature
     Scenario: Hook error in after_feature
@@ -178,6 +184,12 @@ Feature: Hooks processing in case of errors (exceptions)
       When I run "behave -f plain -D HOOK_ERROR_LOC=before_scenario features/passing.feature"
       Then it should fail with:
           """
+          Feature: Alice
+
+          HOOK-ERROR in before_scenario: RuntimeError: FAIL
+            Scenario: A1
+          called_hook:after_scenario
+
           Failing scenarios:
             features/passing.feature:4  A1
 
@@ -185,10 +197,8 @@ Feature: Hooks processing in case of errors (exceptions)
           0 scenarios passed, 1 failed, 0 skipped
           0 steps passed, 0 failed, 0 skipped, 0 undefined, 1 untested
           """
-      And the command output should contain:
-          """
-          HOOK-ERROR in before_scenario: RuntimeError: FAIL
-          """
+      But note that "the after_scenario hook is called, too."
+
 
     @hook.after_scenario
     Scenario: Hook error in after_scenario
@@ -221,7 +231,8 @@ Feature: Hooks processing in case of errors (exceptions)
               Given a step passes ... failed
 
           Captured stdout:
-          HOOK-ERROR in before_step: RuntimeError: FAIL
+            HOOK-ERROR in before_step: RuntimeError: FAIL
+            called_hook:after_step
 
           Failing scenarios:
             features/passing.feature:4  A1
@@ -230,6 +241,8 @@ Feature: Hooks processing in case of errors (exceptions)
           0 scenarios passed, 1 failed, 0 skipped
           0 steps passed, 1 failed, 0 skipped, 0 undefined
           """
+      But note that "the after_step hook is called, too."
+
 
     @hook.after_step
     Scenario: Hook error in after_step
@@ -242,7 +255,7 @@ Feature: Hooks processing in case of errors (exceptions)
               Given a step passes ... failed
 
           Captured stdout:
-          HOOK-ERROR in after_step: RuntimeError: FAIL
+            HOOK-ERROR in after_step: RuntimeError: FAIL
 
           Failing scenarios:
             features/passing.feature:4  A1
@@ -266,7 +279,13 @@ Feature: Hooks processing in case of errors (exceptions)
           0 scenarios passed, 0 failed, 0 skipped, 1 untested
           0 steps passed, 0 failed, 0 skipped, 0 undefined, 1 untested
           """
+      And the command output should contain:
+          """
+          HOOK-ERROR in before_tag(tag=foo): RuntimeError: FAIL
+          Feature: Alice
+          """
       But note that "the hook-error in before_tag of the feature causes it to fail and be skipped (untested)"
+      And note that "the after_tag hook is still called"
 
 
     @hook.after_tag
@@ -305,6 +324,8 @@ Feature: Hooks processing in case of errors (exceptions)
           0 steps passed, 0 failed, 0 skipped, 0 undefined, 1 untested
           """
       But note that "the hook-error in before_tag of the scenario causes it to fail and be skipped (untested)"
+      And note that "the after_tag hook is still called"
+
 
     @hook.after_tag
     Scenario: Hook error in after_tag for scenario

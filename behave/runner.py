@@ -309,7 +309,8 @@ class Context(object):
                 if not passed:
                     # -- ISSUE #96: Provide more substep info to diagnose problem.
                     step_line = u"%s %s" % (step.keyword, step.name)
-                    message = "%s SUB-STEP: %s" % (step.status.upper(), step_line)
+                    message = "%s SUB-STEP: %s" % \
+                              (step.status.name.upper(), step_line)
                     if step.error_message:
                         message += "\nSubstep info: %s" % step.error_message
                     assert False, message

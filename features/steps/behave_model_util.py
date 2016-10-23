@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import
 from behave.model import Feature, Scenario, reset_model
+from behave.model_core import Status
 from behave.runner import ModelRunner
 from behave.parser import parse_tags
 from behave.configuration import Configuration
@@ -94,10 +95,10 @@ def collect_selected_and_skipped_scenarios(model):  # pylint: disable=invalid-na
     for feature in model.features:
         scenarios = feature.scenarios
         for scenario in scenarios:
-            if scenario.status == "skipped":
+            if scenario.status == Status.skipped:
                 skipped.append(scenario)
             else:
-                assert scenario.status != "untested"
+                assert scenario.status != Status.untested
                 selected.append(scenario)
     return (selected, skipped)
 

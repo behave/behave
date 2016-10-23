@@ -3,7 +3,6 @@
 import codecs
 import os.path
 import six
-import sys
 
 
 class StreamOpener(object):
@@ -102,7 +101,7 @@ class Formatter(object):
                     if step_match:
                         step_match.run()
                     else:
-                        step.status = "undefined"
+                        step.status = Status.undefined
                     formatter.result(step.status)
             formatter.eof() # -- FEATURE-END
         formatter.close()

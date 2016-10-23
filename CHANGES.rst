@@ -65,6 +65,8 @@ REPORTERS:
 
 CHANGES:
 
+  * status: Use Status enum-class for feature/scenario/step.status (was: string)
+  * hook-processing: Skips now feature/scenario/step if before-hook fails (related to: #454)
   * parser: language comment in feature file has higher priority than --lang option (related to: #334).
   * issue #385: before_scenario/before_feature called too late (submitted by: BRevzin)
 

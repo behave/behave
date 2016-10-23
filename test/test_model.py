@@ -15,7 +15,7 @@ else:
     import traceback
     traceback_modname = "traceback"
 
-from behave.model_core import FileLocation
+from behave.model_core import FileLocation, Status
 from behave.model import Feature, Scenario, ScenarioOutline, Step
 from behave.model import Table, Row
 from behave.matchers import NoMatch
@@ -242,7 +242,7 @@ class TestScenarioRun(unittest.TestCase):
 
         with patch("behave.step_registry.registry", my_step_registry):
             assert scenario.run(self.runner)
-            eq_(steps[1].status, 'skipped')
+            eq_(steps[1].status, Status.skipped)
 
     def test_failed_step_causes_context_failure_to_be_set(self):
         self.config.stdout_capture = False
@@ -259,7 +259,7 @@ class TestScenarioRun(unittest.TestCase):
 
         assert scenario.run(self.runner)
         # pylint: disable=protected-access
-        self.context._set_root_attribute.assert_called_with('failed', True)
+        self.context._set_root_attribute.assert_called_with("failed", True)
 
     def test_undefined_step_causes_failed_scenario_status(self):
         self.config.stdout_capture = False
@@ -273,15 +273,15 @@ class TestScenarioRun(unittest.TestCase):
         scenario = Scenario('foo.feature', 17, u'Scenario', u'foo',
                             steps=steps)
         passed_step.run.return_value = True
-        passed_step.status = 'passed'
+        passed_step.status = Status.passed
         undefined_step.run.return_value = False
-        undefined_step.status = 'undefined'
+        undefined_step.status = Status.undefined
 
         assert scenario.run(self.runner)
-        eq_(undefined_step.status, 'undefined')
-        eq_(scenario.status, 'failed')
+        eq_(undefined_step.status, Status.undefined)
+        eq_(scenario.status, Status.failed)
         # pylint: disable=protected-access
-        self.context._set_root_attribute.assert_called_with('failed', True)
+        self.context._set_root_attribute.assert_called_with("failed", True)
 
     def test_skipped_steps_set_step_status_and_scenario_status_if_not_set(self):
         self.config.stdout_capture = False
@@ -294,8 +294,8 @@ class TestScenarioRun(unittest.TestCase):
 
         scenario.run(self.runner)
 
-        assert False not in [s.status == 'skipped' for s in steps]
-        eq_(scenario.status, 'skipped')
+        assert False not in [s.status == Status.skipped for s in steps]
+        eq_(scenario.status, Status.skipped)
 
     def test_scenario_hooks_not_run_if_scenario_not_being_run(self):
         self.config.tags.check.return_value = False  # pylint: disable=no-member
@@ -474,7 +474,7 @@ class TestStepRun(unittest.TestCase):
         assert not step.run(self.runner)
 
         assert step in self.runner.undefined_steps
-        eq_(step.status, 'undefined')
+        eq_(step.status, Status.undefined)
 
     def test_run_reports_undefined_step_via_formatter_when_not_quiet(self):
         step = Step('foo.feature', 17, u'Given', 'given', u'foo')
@@ -571,7 +571,7 @@ class TestStepRun(unittest.TestCase):
         self.runner.step_registry.find_match.return_value = Mock()
         step.run(self.runner)
 
-        eq_(step.status, 'passed')
+        eq_(step.status, Status.passed)
         eq_(step.error_message, None)
 
     def test_run_sets_status_to_failed_on_assertion_error(self):
@@ -582,7 +582,7 @@ class TestStepRun(unittest.TestCase):
         self.runner.step_registry.find_match.return_value = match
         step.run(self.runner)
 
-        eq_(step.status, 'failed')
+        eq_(step.status, Status.failed)
         assert step.error_message.startswith('Assertion Failed')
 
     @patch('%s.format_exc' % traceback_modname)
@@ -595,7 +595,7 @@ class TestStepRun(unittest.TestCase):
         format_exc.return_value = 'something to do with an exception'
 
         step.run(self.runner)
-        eq_(step.status, 'failed')
+        eq_(step.status, Status.failed)
         eq_(step.error_message, format_exc.return_value)
 
     @patch('time.time')

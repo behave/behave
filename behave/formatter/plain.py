@@ -97,14 +97,14 @@ class PlainFormatter(Formatter):
             text = u"%s%s %s ... " % (indent, step.keyword, step.name)
         self.stream.write(text)
 
-        status = result.status
+        status_text = result.status.name
         if self.show_timings:
-            status += " in %0.3fs" % step.duration
+            status_text += " in %0.3fs" % step.duration
 
         if result.error_message:
-            self.stream.write(u"%s\n%s\n" % (status, result.error_message))
+            self.stream.write(u"%s\n%s\n" % (status_text, result.error_message))
         else:
-            self.stream.write(u"%s\n" % status)
+            self.stream.write(u"%s\n" % status_text)
 
         if self.show_multiline:
             if step.text:

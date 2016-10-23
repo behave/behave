@@ -3,6 +3,7 @@
 from __future__ import absolute_import, division
 from behave.formatter.ansi_escapes import escapes, up
 from behave.formatter.base import Formatter
+from behave.model_core import Status
 from behave.model_describe import escape_cell, escape_triple_quotes
 from behave.textutil import indent, text as _text
 import sys
@@ -52,7 +53,7 @@ class ColorFormat(object):
 
     def text(self, text):
         assert isinstance(text, six.text_type)
-        return escapes[self.status] + text + escapes['reset']
+        return escapes[self.status] + text + escapes["reset"]
 
 
 # -----------------------------------------------------------------------------
@@ -127,7 +128,7 @@ class PrettyFormatter(Formatter):
     def match(self, match):
         self._match = match
         self.print_statement()
-        self.print_step('executing', self._match.arguments,
+        self.print_step(Status.executing, self._match.arguments,
                         self._match.location, self.monochrome)
         self.stream.flush()
 
@@ -265,7 +266,7 @@ class PrettyFormatter(Formatter):
 
     def print_steps(self):
         while self.steps:
-            self.print_step('skipped', [], None, True)
+            self.print_step(Status.skipped, [], None, True)
 
     def print_step(self, status, arguments, location, proceed):
         if proceed:
@@ -273,8 +274,8 @@ class PrettyFormatter(Formatter):
         else:
             step = self.steps[0]
 
-        text_format = self.format(status)
-        arg_format = self.arg_format(status)
+        text_format = self.format(status.name)
+        arg_format = self.arg_format(status.name)
 
         #self.print_comments(step.comments, '    ')
         self.stream.write('    ')
@@ -306,15 +307,15 @@ class PrettyFormatter(Formatter):
 
         if self.show_source:
             location = six.text_type(location)
-            if self.show_timings and status in ('passed', 'failed'):
-                location += ' %0.3fs' % step.duration
+            if self.show_timings and status in (Status.passed, Status.failed):
+                location += " %0.3fs" % step.duration
             location = self.indented_text(location, proceed)
-            self.stream.write(self.format('comments').text(location))
+            self.stream.write(self.format("comments").text(location))
             line_length += len(location)
-        elif self.show_timings and status in ('passed', 'failed'):
-            timing = '%0.3fs' % step.duration
+        elif self.show_timings and status in (Status.passed, Status.failed):
+            timing = "%0.3fs" % step.duration
             timing = self.indented_text(timing, proceed)
-            self.stream.write(self.format('comments').text(timing))
+            self.stream.write(self.format("comments").text(timing))
             line_length += len(timing)
         self.stream.write("\n")
 

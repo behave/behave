@@ -6,7 +6,7 @@
 # PREPARE USAGE: invoke
 # ALREADY: six >= 1.10.0
 invoke >= 0.13.0
-path.py >= 7.2
+path.py >= 8.1.2
 pathlib;    python_version <= '3.4'
 pycmd
 

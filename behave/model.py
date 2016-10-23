@@ -19,7 +19,7 @@ import time
 import six
 from six.moves import zip       # pylint: disable=redefined-builtin
 from behave.model_core import \
-        BasicStatement, TagAndStatusStatement, TagStatement, Replayable
+        Status, BasicStatement, TagAndStatusStatement, TagStatement, Replayable
 from behave.matchers import NoMatch
 from behave.textutil import text as _text
 if six.PY2:
@@ -27,7 +27,6 @@ if six.PY2:
     import traceback2 as traceback
 else:
     import traceback
-
 
 
 class Feature(TagAndStatusStatement, Replayable):
@@ -69,6 +68,7 @@ class Feature(TagAndStatusStatement, Replayable):
        feature is fully tested it will return "untested" otherwise it will
        return one of:
 
+       XXX-TODO:
        "untested"
          The feature was has not been completely tested yet.
        "skipped"
@@ -155,27 +155,27 @@ class Feature(TagAndStatusStatement, Replayable):
         :return: Computed status (as string-enum).
         """
         if self.hook_failed:
-            return "failed"
+            return Status.failed
 
         skipped = True
         passed_count = 0
         for scenario in self.scenarios:
             scenario_status = scenario.status
-            if scenario_status == "failed":
-                return "failed"
-            elif scenario_status == "untested":
+            if scenario_status == Status.failed:
+                return Status.failed
+            elif scenario_status == Status.untested:
                 if passed_count > 0:
-                    return "failed"  # ABORTED: Some passed, now untested.
-                return "untested"
-            if scenario_status != "skipped":
+                    return Status.failed  # ABORTED: Some passed, now untested.
+                return Status.untested
+            if scenario_status != Status.skipped:
                 skipped = False
-            if scenario_status == "passed":
+            if scenario_status == Status.passed:
                 passed_count += 1
 
         if skipped:
-            return "skipped"
+            return Status.skipped
         else:
-            return "passed"
+            return Status.passed
 
 
     @property
@@ -248,7 +248,7 @@ class Feature(TagAndStatusStatement, Replayable):
         Note this function may be called before the feature is executed.
         """
         self.skip(require_not_executed=True)
-        assert self.status == "skipped" or self.hook_failed
+        assert self.status == Status.skipped or self.hook_failed
 
     def skip(self, reason=None, require_not_executed=False):
         """Skip executing this feature or the remaining parts of it.
@@ -270,7 +270,7 @@ class Feature(TagAndStatusStatement, Replayable):
             scenario.skip(reason, require_not_executed)
         if not self.scenarios:
             # -- SPECIAL CASE: Feature without scenarios
-            self.set_status("skipped")
+            self.set_status(Status.skipped)
         assert self.status in self.final_status #< skipped, failed or passed.
 
     def run(self, runner):
@@ -438,6 +438,7 @@ class Scenario(TagAndStatusStatement, Replayable):
        scenario is fully tested it will return "untested" otherwise it will
        return one of:
 
+        XXX-TODO
        "untested"
          The scenario was has not been completely tested yet.
        "skipped"
@@ -540,24 +541,24 @@ class Scenario(TagAndStatusStatement, Replayable):
         """Compute the status of the scenario from its steps
         (and hook failures).
 
-        :return: Computed status (as string).
+        :return: Computed status (as enum value).
         """
         if self.hook_failed:
-            return "failed"
+            return Status.failed
 
         for step in self.all_steps:
-            if step.status == "undefined":
+            if step.status == Status.undefined:
                 if self.was_dry_run:
                     # -- SPECIAL CASE: In dry-run with undefined-step discovery
                     #    Undefined steps should not cause failed scenario.
-                    return "untested"
+                    return Status.untested
                 else:
                     # -- NORMALLY: Undefined steps cause failed scenario.
-                    return "failed"
-            elif step.status != "passed":
-                assert step.status in ("failed", "skipped", "untested")
+                    return Status.failed
+            elif step.status != Status.passed:
+                assert step.status in (Status.failed, Status.skipped, Status.untested)
                 return step.status
-        return "passed"
+        return Status.passed
 
     @property
     def duration(self):
@@ -621,8 +622,8 @@ class Scenario(TagAndStatusStatement, Replayable):
         Note that this method can be called before the scenario is executed.
         """
         self.skip(require_not_executed=True)
-        assert self.status == "skipped" or self.hook_failed, \
-               "OOPS: scenario.status=%s" % self.status
+        assert self.status == Status.skipped or self.hook_failed, \
+               "OOPS: scenario.status=%s" % self.status.name
 
     def skip(self, reason=None, require_not_executed=False):
         """Skip from executing this scenario or the remaining parts of it.
@@ -640,16 +641,16 @@ class Scenario(TagAndStatusStatement, Replayable):
         self.should_skip = True
         self.skip_reason = reason
         for step in self.all_steps:
-            not_executed = step.status in ("untested", "skipped")
+            not_executed = step.status in (Status.untested, Status.skipped)
             if not_executed:
-                step.status = "skipped"
+                step.status = Status.skipped
             else:
                 assert not require_not_executed, \
                     "REQUIRE NOT-EXECUTED, but step is %s" % step.status
 
         scenario_without_steps = not self.steps and not self.background_steps
         if scenario_without_steps:
-            self.set_status("skipped")
+            self.set_status(Status.skipped)
         assert self.status in self.final_status #< skipped, failed or passed
 
     def run(self, runner):
@@ -703,29 +704,30 @@ class Scenario(TagAndStatusStatement, Replayable):
                         #    Optionally continue_after_failed_step if enabled.
                         #    But disable run_steps after undefined-step.
                         run_steps = (self.continue_after_failed_step and
-                                     step.status == "failed")
+                                     step.status == Status.failed)
                         failed = True
                         # pylint: disable=protected-access
                         runner.context._set_root_attribute("failed", True)
-                        self.set_status("failed")
+                        self.set_status(Status.failed)
                     elif self.should_skip:
                         # -- CASE: Step skipped remaining scenario.
-                        # assert self.status == "skipped
+                        # assert self.status == Status.skipped
                         run_steps = False
                 elif failed or dry_run_scenario:
                     # -- SKIP STEPS: After failure/undefined-step occurred.
                     # BUT: Detect all remaining undefined steps.
-                    step.status = "skipped"
+                    step.status = Status.skipped
                     if dry_run_scenario:
-                        step.status = "untested"
+                        # pylint: disable=redefined-variable-type
+                        step.status = Status.untested
                     found_step_match = runner.step_registry.find_match(step)
                     if not found_step_match:
-                        step.status = "undefined"
+                        step.status = Status.undefined
                         runner.undefined_steps.append(step)
                     elif dry_run_scenario:
                         # -- BETTER DIAGNOSTICS: Provide step file location
                         # (when --format=pretty is used).
-                        assert step.status == "untested"
+                        assert step.status == Status.untested
                         for formatter in runner.formatters:
                             # -- EMULATE: Step.run() protocol w/o step execution.
                             formatter.match(found_step_match)
@@ -735,12 +737,12 @@ class Scenario(TagAndStatusStatement, Replayable):
                     # CASES:
                     #   * Undefined steps are not detected (by intention).
                     #   * Step skipped remaining scenario.
-                    step.status = "skipped"
+                    step.status = Status.skipped
 
         self.clear_status()  # -- ENFORCE: compute_status() after run.
         if not run_scenario and not self.steps:
             # -- SPECIAL CASE: Scenario without steps.
-            self.set_status("skipped")
+            self.set_status(Status.skipped)
 
         # Attach the stdout and stderr if generate Junit report
         if runner.config.junit:
@@ -755,7 +757,7 @@ class Scenario(TagAndStatusStatement, Replayable):
                 runner.run_hook("after_tag", runner.context, tag)
             if self.hook_failed:
                 failed = True
-                self.set_status("failed")
+                self.set_status(Status.failed)
 
         runner.context._pop()       # pylint: disable=protected-access
         return failed
@@ -943,6 +945,7 @@ class ScenarioOutline(Scenario):
        before the scenario is fully tested it will return "untested" otherwise
        it will return one of:
 
+        XXX-TODO
        "untested"
          The scenario was has not been completely tested yet.
        "skipped"
@@ -1007,15 +1010,15 @@ class ScenarioOutline(Scenario):
         skipped_count = 0
         for scenario in self._scenarios:    # -- AVOID: BUILD-SCENARIOS
             scenario_status = scenario.status
-            if scenario_status in ("failed", "untested"):
+            if scenario_status in (Status.failed, Status.untested):
                 return scenario_status
-            elif scenario_status == "skipped":
+            elif scenario_status == Status.skipped:
                 skipped_count += 1
         if skipped_count > 0 and skipped_count == len(self._scenarios):
             # -- ALL SKIPPED:
-            return "skipped"
-        # -- OTHERWISE: ALL PASSED
-        return "passed"
+            return Status.skipped
+        # -- OTHERWISE: ALL PASSED (some scenarios may have been excluded)
+        return Status.passed
 
     @property
     def duration(self):
@@ -1062,7 +1065,7 @@ class ScenarioOutline(Scenario):
         is executed.
         """
         self.skip(require_not_executed=True)
-        assert self.status == "skipped"
+        assert self.status == Status.skipped
 
     def skip(self, reason=None, require_not_executed=False):
         """Skip from executing this scenario outline or its remaining parts.
@@ -1081,7 +1084,7 @@ class ScenarioOutline(Scenario):
             scenario.skip(reason, require_not_executed)
         if not self.scenarios:
             # -- SPECIAL CASE: ScenarioOutline without scenarios/examples
-            self.set_status("skipped")
+            self.set_status(Status.skipped)
         assert self.status in self.final_status #< skipped, failed or passed
 
     def run(self, runner):
@@ -1174,6 +1177,9 @@ class Step(BasicStatement, Replayable):
        step is tested it will return "untested" otherwise it will
        return one of:
 
+       .. versionmodified:: 1.2.6
+
+       XXX-TODO
        "skipped"
          This step was passed over during testing.
        "passed"
@@ -1219,14 +1225,14 @@ class Step(BasicStatement, Replayable):
         self.text = text
         self.table = table
 
-        self.status = "untested"
+        self.status = Status.untested
         self.hook_failed = False
         self.duration = 0
 
     def reset(self):
         """Reset temporary runtime data to reach clean state again."""
         super(Step, self).reset()
-        self.status = "untested"
+        self.status = Status.untested
         self.hook_failed = False
         self.duration = 0
 
@@ -1259,7 +1265,7 @@ class Step(BasicStatement, Replayable):
         # pylint: disable=too-many-branches, too-many-statements
         # -- RESET: Run-time information.
         # self.exception = self.exc_traceback = self.error_message = None
-        # self.status = "untested"
+        # self.status = Status.untested
         # self.hook_failed = False
         self.reset()
 
@@ -1270,7 +1276,7 @@ class Step(BasicStatement, Replayable):
                 for formatter in runner.formatters:
                     formatter.match(NoMatch())
 
-            self.status = "undefined"
+            self.status = Status.undefined
             if not quiet:
                 for formatter in runner.formatters:
                     formatter.result(self)
@@ -1300,16 +1306,17 @@ class Step(BasicStatement, Replayable):
                 runner.context.text = self.text
                 runner.context.table = self.table
                 match.run(runner.context)
-                if self.status in ("undefined", "untested"):
+                if self.status == Status.untested:
                     # -- NOTE: Executed step may have skipped scenario and itself.
-                    self.status = "passed"
+                    # pylint: disable=redefined-variable-type
+                    self.status = Status.passed
             except KeyboardInterrupt as e:
                 runner.aborted = True
                 error = u"ABORTED: By user (KeyboardInterrupt)."
-                self.status = "failed"
+                self.status = Status.failed
                 self.store_exception_context(e)
             except AssertionError as e:
-                self.status = "failed"
+                self.status = Status.failed
                 self.store_exception_context(e)
                 if e.args:
                     message = _text(e)
@@ -1318,21 +1325,20 @@ class Step(BasicStatement, Replayable):
                     # no assertion text; format the exception
                     error = _text(traceback.format_exc())
             except Exception as e:      # pylint: disable=broad-except
-                self.status = "failed"
+                self.status = Status.failed
                 error = _text(traceback.format_exc())
                 self.store_exception_context(e)
 
         self.duration = time.time() - start
         runner.run_hook("after_step", runner.context, self)
         if self.hook_failed:
-            self.status = "failed"
+            self.status = Status.failed
 
         if capture:
             runner.stop_capture()
 
-
         # flesh out the failure with details
-        if self.status == "failed":
+        if self.status == Status.failed:
             assert isinstance(error, six.text_type)
             if capture:
                 # -- CAPTURE-ONLY: Non-nested step failures.

@@ -10,6 +10,7 @@ REQUIRES: Python >= 2.6 (json module is part of Python standard library)
 
 from __future__ import absolute_import
 from behave import model
+from behave.model_core import Status
 import codecs
 try:
     import json
@@ -202,16 +203,16 @@ class JsonParser(object):
         """
         steps = self.current_feature_element['steps']
         steps[self._step_index]['result'] = {
-            'status': result.status,
+            'status': result.status.name,
             'duration': result.duration,
         }
         """
-        status   = json_result.get("status", u"")
+        status_name = json_result.get("status", u"")
         duration = json_result.get("duration", 0)
         error_message = json_result.get("error_message", None)
         if isinstance(error_message, list):
             error_message = "\n".join(error_message)
-        step.status = status
+        step.status = Status.from_name(status_name)
         step.duration = duration
         step.error_message = error_message
 

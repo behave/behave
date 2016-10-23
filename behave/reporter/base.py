@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from behave.model_core import Status
+
 class Reporter(object):
     """
     Base class for all reporters.
@@ -32,7 +34,7 @@ class Reporter(object):
 
         :param feature:  Feature object (as :class:`behave.model.Feature`)
         """
-        assert feature.status in ("skipped", "passed", "failed")
+        assert feature.status != Status.undefined
         raise NotImplementedError
 
     def end(self):

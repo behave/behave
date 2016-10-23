@@ -11,6 +11,7 @@ executing a scope item.
 
 from __future__ import absolute_import
 from behave.formatter.base import Formatter
+from behave.model_core import Status
 import os
 import os.path
 import six
@@ -156,9 +157,9 @@ class ScenarioProgressFormatter(ProgressFormatterBase):
         if not self.current_scenario:
             return  # SKIP: No results to report for first scenario.
         # -- NORMAL-CASE:
-        status = self.current_scenario.status
-        dot_status = self.dot_status[status]
-        if status == "failed":
+        status_name = self.current_scenario.status.name
+        dot_status = self.dot_status[status_name]
+        if status_name == "failed":
             # MAYBE TODO: self.failures.append(result)
             pass
         self.stream.write(dot_status)
@@ -181,8 +182,8 @@ class StepProgressFormatter(ProgressFormatterBase):
         """
         Report the progress for each step.
         """
-        dot_status = self.dot_status[result.status]
-        if result.status == "failed":
+        dot_status = self.dot_status[result.status.name]
+        if result.status == Status.failed:
             if (result.exception and
                 not isinstance(result.exception, AssertionError)):
                 # -- ISA-ERROR: Some Exception
