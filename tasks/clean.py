@@ -54,9 +54,9 @@ from invoke.executor import Executor
 from invoke.exceptions import Failure
 import os.path
 import sys
-import shutil
-from pathlib import Path
-import six
+from path import Path
+import pathlib
+
 
 # -----------------------------------------------------------------------------
 # TASKS:
@@ -87,10 +87,9 @@ def clean_all(ctx, dry_run=False):
     """Clean up everything, even the precious stuff.
     NOTE: clean task is executed first.
     """
-    # print("clean-all:")
-    # BAD: clean(ctx, dry_run=dry_run)
     cleanup_dirs(ctx.clean_all.directories or [], dry_run=dry_run)
     cleanup_files(ctx.clean_all.files or [], dry_run=dry_run)
+    execute_cleanup_tasks(ctx, cleanup_all_tasks, dry_run=dry_run)
     clean(ctx, dry_run=dry_run)
 
 
@@ -111,6 +110,8 @@ def clean_python(ctx, dry_run=False):
 def execute_cleanup_tasks(ctx, cleanup_tasks, dry_run=False):
     """Execute several cleanup tasks as part of the cleanup.
 
+    REQUIRES: ``clean(ctx, dry_run=False)`` signature in cleanup tasks.
+
     :param ctx:             Context object for the tasks.
     :param cleanup_tasks:   Collection of cleanup tasks (as Collection).
     :param dry_run:         Indicates dry-run mode (bool)
@@ -130,17 +131,17 @@ def cleanup_dirs(patterns, dry_run=False, workdir="."):
     :param workdir:     Current work directory (default=".")
     """
     current_dir = Path(workdir)
-    python_basedir = str(Path(sys.executable).parent.parent)
+    python_basedir = Path(Path(sys.executable).dirname()).joinpath("..").abspath()
     warn2_counter = 0
     for dir_pattern in patterns:
-        for directory in current_dir.glob(dir_pattern):
-            if sys.executable.startswith(str(directory.absolute())):
+        for directory in path_glob(dir_pattern, current_dir):
+            directory2 = directory.abspath()
+            if sys.executable.startswith(directory2):
                 print("SKIP-SUICIDE: '%s' contains current python executable" % directory)
                 continue
-            elif str(directory.absolute()).startswith(python_basedir):
+            elif directory2.startswith(python_basedir):
                 # -- PROTECT CURRENTLY USED VIRTUAL ENVIRONMENT:
                 if warn2_counter <= 4:
-                    python_basedir2 = os.path.relpath(python_basedir)
                     print("SKIP-SUICIDE: '%s'" % directory)
                 warn2_counter += 1
                 continue
@@ -149,7 +150,7 @@ def cleanup_dirs(patterns, dry_run=False, workdir="."):
                 print("RMTREE: %s (dry-run)" % directory)
             else:
                 print("RMTREE: %s" % directory)
-                shutil.rmtree(str(directory))
+                directory.rmtree_p()
 
 def cleanup_files(patterns, dry_run=False, workdir="."):
     """Remove files or files selected by file patterns.
@@ -160,12 +161,12 @@ def cleanup_files(patterns, dry_run=False, workdir="."):
     :param workdir:     Current work directory (default=".")
     """
     current_dir = Path(workdir)
-    python_basedir = str(Path(sys.executable).parent.parent)
+    python_basedir = Path(Path(sys.executable).dirname()).joinpath("..").abspath()
     error_message = None
     error_count = 0
     for file_pattern in patterns:
-        for file_ in current_dir.glob(file_pattern):
-            if str(file_.absolute()).startswith(python_basedir):
+        for file_ in path_glob(file_pattern, current_dir):
+            if file_.abspath().startswith(python_basedir):
                 # -- PROTECT CURRENTLY USED VIRTUAL ENVIRONMENT:
                 continue
 
@@ -174,7 +175,7 @@ def cleanup_files(patterns, dry_run=False, workdir="."):
             else:
                 print("REMOVE: %s" % file_)
                 try:
-                    file_.unlink()
+                    file_.remove_p()
                 except os.error as e:
                     message = "%s: %s" % (e.__class__.__name__, e)
                     print(message + " basedir: "+ python_basedir)
@@ -184,6 +185,22 @@ def cleanup_files(patterns, dry_run=False, workdir="."):
     if False and error_message:
         class CleanupError(RuntimeError): pass
         raise CleanupError(error_message)
+
+def path_glob(pattern, current_dir=None):
+    """Use pathlib for ant-like patterns, like: "**/*.py"
+
+    :param pattern:      File/directory pattern to use (as string).
+    :param current_dir:  Current working directory (as Path, pathlib.Path, str)
+    :return Resolved Path (as path.Path).
+    """
+    if not current_dir:
+        current_dir = pathlib.Path.cwd()
+    elif not isinstance(current_dir, pathlib.Path):
+        # -- CASE: string, path.Path (string-like)
+        current_dir = pathlib.Path(str(current_dir))
+
+    for p in current_dir.glob(pattern):
+        yield Path(str(p))
 
 
 # -----------------------------------------------------------------------------
@@ -206,11 +223,11 @@ namespace.configure({
     },
 })
 
-# -- SUPPORT ADDITIONAL CLEANUP TASKS:
+# -- SUPPORT ADDITIONAL CLEANUP TASKS (which are called by ``clean`` task)
 cleanup_tasks = Collection("cleanup_tasks")
 cleanup_tasks.add_task(clean_python)
-# NOT-NEEDED HERE:
-# cleanup_tasks.configure(namespace.configuration())
+
+cleanup_all_tasks = Collection("cleanup_all_tasks")
 
 # -----------------------------------------------------------------------------
 # TASK CONFIGURATION HELPERS: Can be used from other task modules

@@ -1,19 +1,15 @@
 # -*- coding: UTF-8 -*-
 """
-Invoke build script (python based).
-
-.. seealso:: https://github.com/pyinvoke/invoke
+Invoke test tasks.
 """
 
 from __future__ import print_function
 from invoke import task, Collection
-from pathlib import Path
 import os.path
 import sys
 
 # -- TASK-LIBRARY:
 from .clean import cleanup_tasks, cleanup_dirs, cleanup_files
-# NOT-USED: config_add_cleanup_dirs, config_add_cleanup_files
 
 
 # ---------------------------------------------------------------------------
@@ -66,7 +62,7 @@ def behave(ctx, args="", format="", options=""):
     format  = format or ctx.behave_test.format
     options = options or ctx.behave_test.options
     args = args or ctx.behave_test.args
-    if Path("bin/behave").exists():
+    if os.path.exists("bin/behave"):
         behave = "{python} bin/behave".format(python=sys.executable)
     else:
         behave = "{python} -m behave".format(python=sys.executable)
@@ -143,10 +139,6 @@ namespace.configure({
         "options":  "",  # -- NOTE:  Overide in configfile "invoke.yaml"
     },
 })
-
-# -- SETUP: Add test cleanup configuration to global cleanup configuration
-# config_add_cleanup_dirs(namespace.configuration()["test"]["clean"]["directories"])
-# config_add_cleanup_files(namespace.configuration()["test"]["clean"]["files"])
 
 # -- ADD CLEANUP TASK:
 cleanup_tasks.add_task(clean, "clean_test")
