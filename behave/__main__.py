@@ -8,7 +8,7 @@ from behave import __version__
 from behave.configuration import Configuration, ConfigError
 from behave.parser import ParserError
 from behave.runner import Runner
-from behave.runner_util import print_undefined_step_snippets, \
+from behave.runner_util import print_undefined_step_snippets, reset_runtime, \
     InvalidFileLocationError, InvalidFilenameError, FileNotFoundError
 from behave.textutil import compute_words_maxsize, text as _text
 
@@ -51,9 +51,19 @@ you have to use logical AND::
 # """.strip()
 
 
-def main(args=None):
+def run_behave(config, runner_class=None):
+    """Run behave with configuration.
+
+    :param config:          Configuration object for behave.
+    :param runner_class:    Runner class to use or none (use Runner class).
+    :return:    0, if successful. Non-zero on failure.
+
+    .. note:: BEST EFFORT, not intended for multi-threaded usage.
+    """
     # pylint: disable=too-many-branches, too-many-statements, too-many-return-statements
-    config = Configuration(args)
+    if runner_class is None:
+        runner_class = Runner
+
     if config.version:
         print("behave " + __version__)
         return 0
@@ -109,9 +119,11 @@ def main(args=None):
               (len(config.outputs), len(config.format)))
         return 1
 
+    # -- MAIN PART:
     failed = True
-    runner = Runner(config)
     try:
+        reset_runtime()
+        runner = runner_class(config)
         failed = runner.run()
     except ParserError as e:
         print(u"ParserError: %s" % e)
@@ -139,8 +151,7 @@ def main(args=None):
     return return_code
 
 def print_formatters(title=None, stream=None):
-    """
-    Prints the list of available formatters and their description.
+    """Prints the list of available formatters and their description.
 
     :param title:   Optional title (as string).
     :param stream:  Optional, output stream to use (default: sys.stdout).
@@ -161,6 +172,15 @@ def print_formatters(title=None, stream=None):
         formatter_description = getattr(formatter_class, "description", "")
         stream.write(schema % (name, formatter_description))
 
+
+def main(args=None):
+    """Main function to run behave (as program).
+
+    :param args:    Command-line args (or string) to use.
+    :return: 0, if successful. Non-zero, in case of errors/failures.
+    """
+    config = Configuration(args)
+    return run_behave(config)
 
 if __name__ == "__main__":
     # -- EXAMPLE: main("--version")

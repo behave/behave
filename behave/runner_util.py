@@ -402,3 +402,16 @@ def print_undefined_step_snippets(undefined_steps, stream=None, colored=True):
         msg = escapes['undefined'] + msg + escapes['reset']
     stream.write(msg)
     stream.flush()
+
+def reset_runtime():
+    """Reset runtime environment.
+    Best effort to reset module data to initial state.
+    """
+    from behave import step_registry
+    from behave import matchers
+    # -- RESET 1: behave.step_registry
+    step_registry.registry = step_registry.StepRegistry()
+    step_registry.setup_step_decorators(None, step_registry.registry)
+    # -- RESET 2: behave.matchers
+    matchers.ParseMatcher.custom_types = {}
+    matchers.current_matcher = matchers.ParseMatcher
