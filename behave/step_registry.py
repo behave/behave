@@ -22,6 +22,7 @@ class StepRegistry(object):
             "then": [],
             "step": [],
         }
+        self.scenarios = {}
 
     @staticmethod
     def same_step_definition(step, other_string, other_location):
@@ -74,6 +75,18 @@ class StepRegistry(object):
             if result:
                 return result
 
+        if step.step_type == 'given':
+            # lookup scenario named with this step name
+            from behave import model
+            if step.name in self.scenarios:
+                scenario = self.scenarios[step.name]
+                to_exec = ['{step_type} {name}'.format(
+                    step_type=s.step_type,
+                    name=s.name)
+                           for s in scenario.steps]
+                def new_given_step(context):
+                    context.execute_steps(u'\n'.join(to_exec))
+                return model.Match(new_given_step, [])
         return None
 
     def make_decorator(self, step_type):
@@ -83,7 +96,6 @@ class StepRegistry(object):
                 return func
             return wrapper
         return decorator
-
 
 registry = StepRegistry()
 

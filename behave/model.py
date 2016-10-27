@@ -489,6 +489,7 @@ class Scenario(TagAndStatusStatement, Replayable):
         self.was_dry_run = False
         self.stderr = None
         self.stdout = None
+        step_registry.registry.scenarios[name] = self
 
     def reset(self):
         """Reset the internal data to reintroduce new-born state just after the
