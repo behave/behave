@@ -1,0 +1,19 @@
+# ============================================================================
+# BEHAVE: PYTHON PACKAGE REQUIREMENTS: Normal usage/installation (minimal)
+# ============================================================================
+# DESCRIPTION:
+#    pip install -r <THIS_FILE>
+#
+# SEE ALSO:
+#  * http://www.pip-installer.org/
+# ============================================================================
+
+parse >= 1.6.3
+parse_type >= 0.3.4
+six >= 1.9
+
+# -- FOR PYTHON 2.6:
+# REQUIRES: pip >= 6.0
+argparse;    python_version <= '2.6'
+ordereddict; python_version <= '2.6'
+importlib;   python_version <= '2.6'

@@ -21,6 +21,6 @@ recursive-include tools         *.feature *.py *.yml *.sh
 recursive-include features      *.feature *.py *.txt
 recursive-include issue.features  *.feature *.py *.txt
 recursive-include more.features *.feature *.py *.txt
-recursive-include requirements  *.txt
+recursive-include py.requirements  *.txt
 prune .tox
 prune .venv*

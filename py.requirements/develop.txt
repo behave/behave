@@ -1,0 +1,28 @@
+# ============================================================================
+# PYTHON PACKAGE REQUIREMENTS FOR: behave -- For development only
+# ============================================================================
+
+# -- BUILD-TOOL:
+# PREPARE USAGE: invoke
+# ALREADY: six >= 1.10.0
+invoke >= 0.13.0
+path.py >= 8.1.2
+pathlib;    python_version <= '3.4'
+pycmd
+
+# -- CONFIGURATION MANAGEMENT (helpers):
+bumpversion >= 0.4.0
+
+# -- DEVELOPMENT SUPPORT:
+# PREPARED: nose-cov >= 1.4
+tox   >= 1.8.1
+coverage >= 3.7
+pytest-cov
+
+# -- PYTHON2/3 COMPATIBILITY: pypa/modernize
+# python-futurize
+modernize >= 0.4
+
+# -- REQUIRES: testing, docs
+-r testing.txt
+-r docs.txt
