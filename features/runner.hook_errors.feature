@@ -111,6 +111,7 @@ Feature: Hooks processing in case of errors (exceptions)
         """
         [behave]
         show_skipped = false
+        show_timings = false
         """
 
 

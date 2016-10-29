@@ -30,6 +30,11 @@ Feature: Issue #424 -- Unicode output problem when fails in nested steps
         def step_press_red_button(context):
             context.execute_steps(u'When I press the big red button')
         """
+      And a file named "behave.ini" with:
+          """
+          [behave]
+          show_timings = false
+          """
       And a file named "features/alice.feature" with:
         """
         Feature:

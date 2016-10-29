@@ -53,6 +53,12 @@ Feature: ScenarioOutline with tagged Examples
             | variant | Comment |
             | weird   | First case |
       """
+    And a file named "behave.ini" with:
+        """
+        [behave]
+        show_skipped = false
+        show_timings = false
+        """
 
   Scenario: Use all Examples (and Scenarios)
     When I run "behave -f plain features/tagged_examples.feature"

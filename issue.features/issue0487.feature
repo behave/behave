@@ -36,6 +36,11 @@ Feature: Issue #487 -- UnicodeEncodeError with ZBSP in multi-line text
             assert context.text
             print(u"TEXT: %s" % context.text)
         """
+      And a file named "behave.ini" with:
+          """
+          [behave]
+          show_timings = false
+          """
       And a file named "features/syndrome.feature" with:
         """
         Feature:

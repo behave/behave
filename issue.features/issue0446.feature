@@ -50,6 +50,9 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         """
       And a file named "behave.ini" with:
         """
+        [behave]
+        show_timings = false
+
         [behave.userdata]
         behave.reporter.junit.show_timestamp = False
         behave.reporter.junit.show_hostname = False

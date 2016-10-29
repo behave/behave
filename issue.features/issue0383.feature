@@ -41,6 +41,11 @@ Feature: Issue #383 -- Handle (custom) Type parsing errors better
         """
         from behave4cmd0 import passing_steps
         """
+    And a file named "behave.ini" with:
+        """
+        [behave]
+        show_timings = false
+        """
     And a file named "features/example.type_conversion_fails.feature" with:
         """
         Feature: Type Conversion Fails

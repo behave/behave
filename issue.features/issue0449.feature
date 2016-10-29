@@ -18,6 +18,11 @@ Feature: Issue #449 -- Unicode output problem when fails with Russion text
       def step_russian_text(stop):
           assert_that(False, equal_to(True), u"Всё очень плохо") # cyrillic
       """
+    And a file named "behave.ini" with:
+        """
+        [behave]
+        show_timings = false
+        """
     And a file named "features/syndrome.feature" with:
       """
       Feature:

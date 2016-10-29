@@ -47,7 +47,12 @@ Feature: Select named scenarios to run
                 Scenario: Alice and Bob
                     Then a step passes
             """
-
+        And a file named "behave.ini" with:
+            """
+            [behave]
+            show_skipped = false
+            show_timings = false
+            """
 
     Scenario: Select scenarios with name="Alice" and inspect list
         When I run "behave -f plain --name="Alice" --dry-run features/"

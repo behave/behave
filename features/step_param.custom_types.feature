@@ -50,6 +50,12 @@ Feature: Parse custom data types in step parameters (type transformation)
         """
         from behave4cmd0 import passing_steps
         """
+    And a file named "behave.ini" with:
+        """
+        [behave]
+        show_skipped = false
+        show_timings = false
+        """
 
 
   Scenario: Use own custom type for numbers

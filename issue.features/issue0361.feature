@@ -23,6 +23,11 @@ Feature: Issue #361 -- UTF-8 File with BOM
             Given a step passes
             Then a special step
         """
+    And a file named "behave.ini" with:
+        """
+        [behave]
+        show_timings = false
+        """
 
 
   @encoding.<encoding>

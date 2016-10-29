@@ -90,6 +90,12 @@ Feature: Select Scenarios by File Location
               Scenario: Teardown Bob
                 Then a step passes
             """
+        And a file named "behave.ini" with:
+            """
+            [behave]
+            show_skipped = false
+            show_timings = false
+            """
 
 
     @file_location.select
