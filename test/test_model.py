@@ -19,6 +19,8 @@ from behave.model_core import FileLocation, Status
 from behave.model import Feature, Scenario, ScenarioOutline, Step
 from behave.model import Table, Row
 from behave.matchers import NoMatch
+from behave.runner import Context
+from behave.capture import CaptureController
 from behave.configuration import Configuration
 from behave.compat.collections import OrderedDict
 from behave import step_registry
@@ -453,17 +455,20 @@ class TestStepRun(unittest.TestCase):
     def setUp(self):
         self.step_registry = Mock()
         self.runner = Mock()
+        # self.capture_controller = self.runner.capture_controller = Mock()
+        self.capture_controller = CaptureController(self.runner.config)
+        self.runner.capture_controller = self.capture_controller
         self.runner.step_registry = self.step_registry
         self.config = self.runner.config = Mock()
         self.config.outputs = [None]
         self.context = self.runner.context = Mock()
         print('context is %s' % self.context)
         self.formatters = self.runner.formatters = [Mock()]
-        self.stdout_capture = self.runner.stdout_capture = Mock()
+        self.stdout_capture = self.capture_controller.stdout_capture = Mock()
         self.stdout_capture.getvalue.return_value = ''
-        self.stderr_capture = self.runner.stderr_capture = Mock()
+        self.stderr_capture = self.capture_controller.stderr_capture = Mock()
         self.stderr_capture.getvalue.return_value = ''
-        self.log_capture = self.runner.log_capture = Mock()
+        self.log_capture = self.capture_controller.log_capture = Mock()
         self.log_capture.getvalue.return_value = ''
         self.run_hook = self.runner.run_hook = Mock()
 
@@ -550,6 +555,7 @@ class TestStepRun(unittest.TestCase):
                 (('after_step', self.context, step), {}),
             ])
 
+
     def test_run_sets_table_if_present(self):
         step = Step('foo.feature', 17, u'Given', 'given', u'foo',
                     table=Mock())
@@ -576,6 +582,11 @@ class TestStepRun(unittest.TestCase):
 
     def test_run_sets_status_to_failed_on_assertion_error(self):
         step = Step('foo.feature', 17, u'Given', 'given', u'foo')
+        self.runner.context = Context(self.runner)
+        self.runner.config.stdout_capture = True
+        self.runner.config.log_capture = False
+        self.runner.capture_controller = CaptureController(self.runner.config)
+        self.runner.capture_controller.setup_capture(self.runner.context)
         step.error_message = None
         match = Mock()
         match.run.side_effect = raiser(AssertionError('whee'))

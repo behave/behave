@@ -275,6 +275,7 @@ class Feature(TagAndStatusStatement, Replayable):
 
     def run(self, runner):
         # pylint: disable=too-many-branches
+        # MAYBE: self.reset()
         self.clear_status()
         self.hook_failed = False
 
@@ -487,8 +488,6 @@ class Scenario(TagAndStatusStatement, Replayable):
         self._background_steps = None
         self._row = None
         self.was_dry_run = False
-        self.stderr = None
-        self.stdout = None
 
     def reset(self):
         """Reset the internal data to reintroduce new-born state just after the
@@ -498,8 +497,6 @@ class Scenario(TagAndStatusStatement, Replayable):
         self.hook_failed = False
         self._row = None
         self.was_dry_run = False
-        self.stderr = None
-        self.stdout = None
         for step in self.all_steps:
             step.reset()
 
@@ -656,6 +653,7 @@ class Scenario(TagAndStatusStatement, Replayable):
     def run(self, runner):
         # pylint: disable=too-many-branches, too-many-statements
         self.clear_status()
+        self.captured.reset()
         self.hook_failed = False
         failed = False
         skip_scenario_untested = runner.aborted
@@ -744,12 +742,6 @@ class Scenario(TagAndStatusStatement, Replayable):
             # -- SPECIAL CASE: Scenario without steps.
             self.set_status(Status.skipped)
 
-        # Attach the stdout and stderr if generate Junit report
-        if runner.config.junit:
-            self.stdout = runner.context.stdout_capture.getvalue()
-            self.stderr = runner.context.stderr_capture.getvalue()
-        # TODO: Reevaluate location => Move behind hook-calls
-        runner.teardown_capture()
 
         if hooks_called:
             runner.run_hook("after_scenario", runner.context, self)
@@ -759,6 +751,12 @@ class Scenario(TagAndStatusStatement, Replayable):
                 failed = True
                 self.set_status(Status.failed)
 
+        # -- CAPTURED-OUTPUT:
+        store_captured = (runner.config.junit or self.status == Status.failed)
+        if store_captured:
+            self.captured = runner.capture_controller.captured
+
+        runner.teardown_capture()
         runner.context._pop()       # pylint: disable=protected-access
         return failed
 
@@ -1235,6 +1233,7 @@ class Step(BasicStatement, Replayable):
         self.status = Status.untested
         self.hook_failed = False
         self.duration = 0
+        # -- POSTCONDITION: assert self.status == Status.untested
 
     def __repr__(self):
         return '<%s "%s">' % (self.step_type, self.name)
@@ -1264,7 +1263,6 @@ class Step(BasicStatement, Replayable):
     def run(self, runner, quiet=False, capture=True):
         # pylint: disable=too-many-branches, too-many-statements
         # -- RESET: Run-time information.
-        # self.exception = self.exc_traceback = self.error_message = None
         # self.status = Status.untested
         # self.hook_failed = False
         self.reset()
@@ -1338,27 +1336,20 @@ class Step(BasicStatement, Replayable):
             runner.stop_capture()
 
         # flesh out the failure with details
+        store_captured_always = False   # PREPARED
+        store_captured = self.status == Status.failed or store_captured_always
         if self.status == Status.failed:
             assert isinstance(error, six.text_type)
             if capture:
                 # -- CAPTURE-ONLY: Non-nested step failures.
-                if runner.config.stdout_capture:
-                    output = runner.stdout_capture.getvalue()
-                    if output:
-                        output = _text(output)
-                        error += u"\nCaptured stdout:\n" + output
-                if runner.config.stderr_capture:
-                    output = runner.stderr_capture.getvalue()
-                    if output:
-                        output = _text(output)
-                        error += u"\nCaptured stderr:\n" + output
-                if runner.config.log_capture:
-                    output = runner.log_capture.getvalue()
-                    if output:
-                        output = _text(output)
-                        error += u"\nCaptured logging:\n" + output
+                self.captured = runner.capture_controller.captured
+                error2 = self.captured.make_report()
+                if error2:
+                    error += "\n" + error2
             self.error_message = error
             keep_going = False
+        elif store_captured and capture:
+            self.captured = runner.capture_controller.captured
 
         if not quiet:
             for formatter in runner.formatters:

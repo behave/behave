@@ -7,6 +7,7 @@ for the model elements in behave.
 import os.path
 import sys
 import six
+from behave.capture import Captured
 from behave.textutil import text as _text
 from enum import Enum
 
@@ -268,6 +269,8 @@ class BasicStatement(object):
         assert isinstance(name, six.text_type)
         self.keyword = keyword
         self.name = name
+        # -- SINCE: 1.2.6
+        self.captured = Captured()
         # -- ERROR CONTEXT INFO:
         self.exception = None
         self.exc_traceback = None
@@ -283,6 +286,8 @@ class BasicStatement(object):
         return self.location.line
 
     def reset(self):
+        # -- RESET: Captured output data
+        self.captured.reset()
         # -- RESET: ERROR CONTEXT INFO
         self.exception = None
         self.exc_traceback = None

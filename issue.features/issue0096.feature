@@ -114,9 +114,13 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
         """
         Assertion Failed: FAILED SUB-STEP: When a step fails with stdout "STDOUT: Alice is alive"
         Substep info: Assertion Failed: EXPECT: Step fails with stdout.
+        """
+    And the command output should contain:
+        """
         Captured stdout:
         STDOUT: Alice is alive
         """
+
 
   Scenario: Execute steps and one fails with stderr capture
     Given a file named "features/issue96_case4.feature" with:
@@ -135,10 +139,10 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
         """
         Assertion Failed: FAILED SUB-STEP: When a step fails with stderr "STDERR: Alice is alive"
         Substep info: Assertion Failed: EXPECT: Step fails with stderr.
-        Captured stderr:
         """
     And the command output should contain:
         """
+        Captured stderr:
         STDERR: Alice is alive
         """
 

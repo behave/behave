@@ -31,15 +31,7 @@ Feature: Issue #125: Duplicate "Captured stdout" if substep has failed
       0 scenarios passed, 1 failed, 0 skipped
       0 steps passed, 1 failed, 0 skipped, 0 undefined
       """
-    And the command output should not contain:
-      """
-      Captured stdout:
-      Hello
-
-      Captured stdout:
-      Hello
-      """
-    But the command output should contain:
+    And the command output should contain:
       """
       Feature:
           Scenario:
@@ -47,7 +39,11 @@ Feature: Issue #125: Duplicate "Captured stdout" if substep has failed
 
       Assertion Failed: FAILED SUB-STEP: When a step fails with stdout "Hello"
       Substep info: Assertion Failed: EXPECT: Step fails with stdout.
+      """
+    And the command output should contain 1 times:
+      """
       Captured stdout:
       Hello
       """
+    But note that "the captured output should not be contained multiple times"
 

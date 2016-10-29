@@ -438,16 +438,16 @@ class JUnitReporter(Reporter):
             text = self.describe_scenario(scenario)
 
         # Append the captured standard output
-        if scenario.stdout:
-            output = _text(scenario.stdout)
+        if scenario.captured.stdout:
+            output = _text(scenario.captured.stdout)
             text += u"\nCaptured stdout:\n%s\n" % output
         stdout.append(CDATA(text))
         case.append(stdout)
 
         # Create stderr section for each test case
-        if scenario.stderr:
+        if scenario.captured.stderr:
             stderr = ElementTree.Element(u"system-err")
-            output = _text(scenario.stderr)
+            output = _text(scenario.captured.stderr)
             text = u"\nCaptured stderr:\n%s\n" % output
             stderr.append(CDATA(text))
             case.append(stderr)

@@ -1,6 +1,13 @@
 # -*- coding: UTF-8 -*-
 """Basic types (helper classes)."""
+
 import sys
+import six
+if six.PY2:
+    # -- USE PYTHON2 BACKPORT: With unicode support
+    import traceback2 as traceback
+else:
+    import traceback
 
 
 class Unknown(object):
@@ -54,7 +61,6 @@ class ExceptionUtil(object):
             exc_traceback = cls.get_traceback(exception)
             if exc_traceback:
                 # -- NOTE: Chained-exception cause (see: PEP-3134).
-                import traceback
                 text += u"".join(traceback.format_tb(exc_traceback))
         return text
 
