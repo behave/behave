@@ -1,7 +1,8 @@
 # -*- coding: UTF -*-
+# pylint: disable=line-too-long
 """
-Provides support functionality to retry scenarios a number of times before 
-their failure is accepted. This functionality can be helpful when you use 
+Provides support functionality to retry scenarios a number of times before
+their failure is accepted. This functionality can be helpful when you use
 behave tests in a unreliable server/network infrastructure.
 
 EXAMPLE:
@@ -27,19 +28,19 @@ EXAMPLE:
             if "autoretry" in scenario.effective_tags:
                 patch_scenario_with_autoretry(scenario, max_attempts=2)
 
-.. seealso:: 
+.. seealso::
     * https://github.com/behave/behave/pull/328
     * https://github.com/hypothesis/smokey/blob/sauce-reliability/smokey/features/environment.py
 """
 
 from __future__ import print_function
-from behave.model import ScenarioOutline
 import functools
+from behave.model import ScenarioOutline
 
 
 def patch_scenario_with_autoretry(scenario, max_attempts=3):
-    """Monkey-patches :func:`~behave.model.Scenario.run()` to auto-retry a 
-    scenario that fails. The scenario is retried a number of times 
+    """Monkey-patches :func:`~behave.model.Scenario.run()` to auto-retry a
+    scenario that fails. The scenario is retried a number of times
     before its failure is accepted.
 
     This is helpful when the test infrastructure (server/network environment)
@@ -52,12 +53,14 @@ def patch_scenario_with_autoretry(scenario, max_attempts=3):
         for attempt in range(1, max_attempts+1):
             if not scenario_run(*args, **kwargs):
                 if attempt > 1:
-                    print(u"AUTO-RETRY SCENARIO PASSED (after {0} attempts)".format(attempt))
+                    message = u"AUTO-RETRY SCENARIO PASSED (after {0} attempts)"
+                    print(message.format(attempt))
                 return False    # -- NOT-FAILED = PASSED
             # -- SCENARIO FAILED:
             if attempt < max_attempts:
                 print(u"AUTO-RETRY SCENARIO (attempt {0})".format(attempt))
-        print(u"AUTO-RETRY SCENARIO FAILED (after {0} attempts)".format(max_attempts))
+        message = u"AUTO-RETRY SCENARIO FAILED (after {0} attempts)"
+        print(message.format(max_attempts))
         return True
 
     if isinstance(scenario, ScenarioOutline):

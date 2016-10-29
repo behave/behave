@@ -5,7 +5,7 @@ Compatibility of :module:`collections` between different Python versions.
 
 from __future__ import absolute_import
 import warnings
-
+# pylint: disable=unused-import
 try:
     # -- SINCE: Python2.7
     from collections import OrderedDict

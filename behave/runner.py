@@ -10,13 +10,6 @@ import sys
 import warnings
 import weakref
 import six
-from six import StringIO
-if six.PY2:
-    # -- USE PYTHON3 BACKPORT: With unicode traceback support.
-    import traceback2 as traceback
-else:
-    import traceback
-
 from behave import matchers
 from behave.step_registry import setup_step_decorators, registry as the_step_registry
 from behave.formatter._registry import make_formatters
@@ -24,6 +17,12 @@ from behave.configuration import ConfigError
 from behave.capture import CaptureController
 from behave.runner_util import collect_feature_locations, parse_features
 from behave._types import ExceptionUtil
+if six.PY2:
+    # -- USE PYTHON3 BACKPORT: With unicode traceback support.
+    import traceback2 as traceback
+else:
+    import traceback
+
 
 
 class ContextMaskWarning(UserWarning):
@@ -752,4 +751,3 @@ class Runner(ModelRunner):
         stream_openers = self.config.outputs
         self.formatters = make_formatters(self.config, stream_openers)
         return self.run_model()
-

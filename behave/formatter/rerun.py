@@ -23,11 +23,11 @@ Normally, you put the RerunFormatter into the behave configuration file:
 """
 
 from __future__ import absolute_import
-from behave.formatter.base import Formatter
-from behave.model_core import Status
 from datetime import datetime
 from os.path import relpath
 import os
+from behave.formatter.base import Formatter
+from behave.model_core import Status
 
 
 # -----------------------------------------------------------------------------

@@ -5,14 +5,14 @@ Provides a formatter that provides an overview of available step definitions
 """
 
 from __future__ import absolute_import
+from operator import attrgetter
+import inspect
+from six.moves import zip
 from behave.formatter.base import Formatter
 from behave.step_registry import StepRegistry, registry
 from behave.textutil import \
     compute_words_maxsize, indent, make_indentation, text as _text
 from behave import i18n
-from operator import attrgetter
-import inspect
-from six.moves import zip
 
 
 # -----------------------------------------------------------------------------
@@ -42,7 +42,7 @@ class AbstractStepsFormatter(Formatter):
         if self.step_registry is None:
             self.step_registry = StepRegistry()
 
-        for step_type in registry.steps.keys():
+        for step_type in registry.steps:
             step_definitions = tuple(registry.steps[step_type])
             for step_definition in step_definitions:
                 step_definition.step_type = step_type
@@ -76,6 +76,7 @@ class AbstractStepsFormatter(Formatter):
     def report(self):
         raise NotImplementedError()
 
+    # pylint: disable=no-self-use
     def describe_step_definition(self, step_definition, step_type=None):
         if not step_type:
             step_type = step_definition.step_type
@@ -137,9 +138,9 @@ class StepsFormatter(AbstractStepsFormatter):
         self.report_steps_by_type()
 
     def report_steps_by_type(self):
+        """Show an overview of the existing step implementations per step type.
         """
-        Show an overview of the existing step implementations per step type.
-        """
+        # pylint: disable=too-many-branches
         assert set(self.step_types) == set(self.step_registry.steps.keys())
         language = self.config.lang or "en"
         language_keywords = i18n.languages[language]
@@ -354,6 +355,7 @@ class StepsUsageFormatter(AbstractStepsFormatter):
         self.step_usage_database = {}
         self.undefined_steps = []
 
+    # pylint: disable=invalid-name
     def get_step_type_for_step_definition(self, step_definition):
         step_type = step_definition.step_type
         if not step_type:
@@ -365,6 +367,7 @@ class StepsUsageFormatter(AbstractStepsFormatter):
             # -- OTHERWISE:
             step_type = "step"
         return step_type
+    # pylint: enable=invalid-name
 
     def select_unused_step_definitions(self):
         step_definitions = set()
@@ -392,6 +395,7 @@ class StepsUsageFormatter(AbstractStepsFormatter):
             # -- AVOID DUPLICATES: From Scenario Outlines
             self.undefined_steps.append(step)
 
+    # pylint: disable=invalid-name
     def update_usage_database_for_feature(self, feature):
         # -- PROCESS BACKGROUND (if exists): Use Background steps only once.
         if feature.background:
@@ -402,6 +406,7 @@ class StepsUsageFormatter(AbstractStepsFormatter):
         for scenario in feature.walk_scenarios():
             for step in scenario.steps:
                 self.update_usage_database_for_step(step)
+    # pylint: enable=invalid-name
 
     # -- FORMATTER API:
     def feature(self, feature):

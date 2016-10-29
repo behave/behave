@@ -3,18 +3,11 @@
 Provides some utility functions related to text processing.
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 import codecs
 import os
 import sys
 import six
-if six.PY2:
-    # -- PYTHON2 BACKPORT: Unicode based tracebacks
-    # NOTE: filename lines and file content lines may need different encoding.
-    import traceback2 as traceback
-else:
-    import traceback
 
 # -----------------------------------------------------------------------------
 # CONSTANTS:
@@ -31,7 +24,7 @@ def make_indentation(indent_size, part=u" "):
     return indent_size * part
 
 
-def indent(text, prefix):
+def indent(text, prefix):   # pylint: disable=redefined-outer-name
     """Indent text or a number of text lines (with newline).
 
     :param lines:  Text lines to indent (as string or list of strings).
@@ -45,7 +38,7 @@ def indent(text, prefix):
     elif lines and not lines[0].endswith("\n"):
         # -- TEXT LINES: Without trailing new-line.
         newline = u"\n"
-    # XXX return newline.join([prefix + six.text_type(line, errors="replace")
+    # MAYBE: return newline.join([prefix + six.text_type(line, errors="replace")
     return newline.join([prefix + six.text_type(line)  for line in lines])
 
 
@@ -123,22 +116,22 @@ def text(value, encoding=None, errors=None):
     #     try:
     #         return value.decode(sys.getfilesystemencoding())
     #     except UnicodeError:
-    #         return value.decode("utf-8", "replace") # XXX-MAYBE: "ignore"
+    #         return value.decode("utf-8", "replace") # MAYBE: "ignore"
     else:
         # -- CASE: CONVERT/CAST OBJECT TO TEXT/STRING
         try:
             if six.PY2:
                 try:
-                    text = six.text_type(value)
+                    text2 = six.text_type(value)
                 except UnicodeError as e:
                     # -- NOTE: value has no sane unicode conversion
                     #  encoding=unicode-escape helps recover from errors.
                     data = str(value)
-                    text = six.text_type(data, "unicode-escape", "replace")
+                    text2 = six.text_type(data, "unicode-escape", "replace")
             else:
                 # PY3: Cast to string/unicode
-                text = six.text_type(value)
+                text2 = six.text_type(value)
         except UnicodeError as e:
             # Python3: multi-arg call supports only string-like object: str, bytes
-            text = six.text_type(e)
-        return text
+            text2 = six.text_type(e)
+        return text2

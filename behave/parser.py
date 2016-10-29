@@ -323,6 +323,7 @@ class Parser(object):
     #     # -- OTHERWISE:
     #     return False
 
+    # pylint: disable=invalid-name
     def subaction_detect_taggable_statement(self, line):
         """Subaction is used after first tag line is detected.
         Additional lines with tags or taggable_statement follow.
@@ -357,6 +358,7 @@ class Parser(object):
 
         # -- OTHERWISE:
         return False
+    # pylint: enable=invalid-name
 
     def action_feature(self, line):
         line = line.strip()
@@ -611,4 +613,3 @@ class Parser(object):
             self.action_table("")
         steps = self.statement.steps
         return steps
-

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import sys
+import warnings
 from behave.formatter.base import Formatter, StreamOpener
 from behave.importer import LazyDict, LazyObject, parse_scoped_name, load_module
 import six
-import sys
-import warnings
 
 
 # -----------------------------------------------------------------------------
@@ -33,7 +33,8 @@ def register_as(name, formatter_class):
     """
     if not isinstance(name, six.string_types):
         # -- REORDER-PARAMS: Used old ordering before behave-1.2.5 (2015).
-        warnings.warn("Use parameter ordering: name, formatter_class (for: %s)" % formatter_class)
+        warnings.warn("Use parameter ordering: name, formatter_class (for: %s)"\
+                      % formatter_class)
         _formatter_class = name
         name = formatter_class
         formatter_class = _formatter_class
@@ -49,12 +50,12 @@ def register_as(name, formatter_class):
 def register(formatter_class):
     register_as(formatter_class.name, formatter_class)
 
-def register_formats(format_items):
+def register_formats(formats):
     """Register many format items into the registry.
 
-    :param format_items:  List of format items (as: (name, class|class_name)).
+    :param formats:  List of format items (as: (name, class|class_name)).
     """
-    for formatter_name, formatter_class_name in format_items:
+    for formatter_name, formatter_class_name in formats:
         register_as(formatter_name, formatter_class_name)
 
 def load_formatter_class(scoped_class_name):

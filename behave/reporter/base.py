@@ -25,10 +25,11 @@ class Reporter(object):
     An existing formatter can be reused as reporter by using
     :class:`behave.report.formatter_reporter.FormatterAsReporter`.
     """
+
     def __init__(self, config):
         self.config = config
 
-    def feature(self, feature):
+    def feature(self, feature):     # pylint: disable=no-self-use
         """
         Called after a feature was processed.
 

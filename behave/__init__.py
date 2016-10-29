@@ -20,6 +20,7 @@ from __future__ import absolute_import
 from behave.step_registry import *      # pylint: disable=wildcard-import
 from behave.matchers import use_step_matcher, step_matcher, register_type
 
+# pylint: disable=undefined-all-variable
 __all__ = [
     "given", "when", "then", "step", "use_step_matcher", "register_type",
     "Given", "When", "Then", "Step",

@@ -56,7 +56,7 @@ class ExceptionUtil(object):
     def describe(cls, exception, use_traceback=False, prefix=""):
         # -- NORMAL CASE:
         text = u"{prefix}{0}: {1}\n".format(exception.__class__.__name__,
-                                              exception, prefix=prefix)
+                                            exception, prefix=prefix)
         if use_traceback:
             exc_traceback = cls.get_traceback(exception)
             if exc_traceback:
@@ -84,6 +84,7 @@ class ChainedExceptionUtil(ExceptionUtil):
         assert isinstance(exc_cause, Exception) or exc_cause is None
         exception.__cause__ = exc_cause
 
+    # pylint: disable=arguments-differ
     @classmethod
     def describe(cls, exception, use_traceback=False, prefix="", style="reversed"):
         """Describes an exception, optionally together with its traceback info.

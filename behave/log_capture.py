@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import, print_function
+from logging.handlers import BufferingHandler
 import logging
 import functools
-from logging.handlers import BufferingHandler
 import re
 
 
 class RecordFilter(object):
-    '''Implement logging record filtering as per the configuration
+    """Implement logging record filtering as per the configuration
     --logging-filter option.
-    '''
+    """
     def __init__(self, names):
         self.include = set()
         self.exclude = set()
@@ -28,7 +28,7 @@ class RecordFilter(object):
 
 # originally from nostetsts logcapture plugin
 class LoggingCapture(BufferingHandler):
-    '''Capture logging events in a memory buffer for later display or query.
+    """Capture logging events in a memory buffer for later display or query.
 
     Captured logging events are stored on the attribute
     :attr:`~LoggingCapture.buffer`:
@@ -55,8 +55,8 @@ class LoggingCapture(BufferingHandler):
     configuration variable ``logging_filter``.
 
     .. __: behave.html#command-line-arguments
+    """
 
-    '''
     def __init__(self, config, level=None):
         BufferingHandler.__init__(self, 1000)
         self.config = config
@@ -64,15 +64,15 @@ class LoggingCapture(BufferingHandler):
         self.old_level = None
 
         # set my formatter
-        fmt = datefmt = None
+        log_format = datefmt = None
         if config.logging_format:
-            fmt = config.logging_format
+            log_format = config.logging_format
         else:
-            fmt = '%(levelname)s:%(name)s:%(message)s'
+            log_format = '%(levelname)s:%(name)s:%(message)s'
         if config.logging_datefmt:
             datefmt = config.logging_datefmt
-        fmt = logging.Formatter(fmt, datefmt)
-        self.setFormatter(fmt)
+        formatter = logging.Formatter(log_format, datefmt)
+        self.setFormatter(formatter)
 
         # figure the level we're logging at
         if level is not None:
@@ -98,12 +98,12 @@ class LoggingCapture(BufferingHandler):
     def getvalue(self):
         return '\n'.join(self.formatter.format(r) for r in self.buffer)
 
-    def findEvent(self, pattern):
-        '''Search through the buffer for a message that matches the given
+    def find_event(self, pattern):
+        """Search through the buffer for a message that matches the given
         regular expression.
 
         Returns boolean indicating whether a match was found.
-        '''
+        """
         pattern = re.compile(pattern)
         for record in self.buffer:
             if pattern.search(record.getMessage()) is not None:
@@ -111,15 +111,15 @@ class LoggingCapture(BufferingHandler):
         return False
 
     def any_errors(self):
-        '''Search through the buffer for any ERROR or CRITICAL events.
+        """Search through the buffer for any ERROR or CRITICAL events.
 
         Returns boolean indicating whether a match was found.
-        '''
+        """
         return any(record for record in self.buffer
                    if record.levelname in ('ERROR', 'CRITICAL'))
 
     def inveigle(self):
-        '''Turn on logging capture by replacing all existing handlers
+        """Turn on logging capture by replacing all existing handlers
         configured in the logging module.
 
         If the config var logging_clear_handlers is set then we also remove
@@ -128,7 +128,7 @@ class LoggingCapture(BufferingHandler):
         We also set the level of the root logger.
 
         The opposite of this is :meth:`~LoggingCapture.abandon`.
-        '''
+        """
         root_logger = logging.getLogger()
         if self.config.logging_clear_handlers:
             # kill off all the other log handlers
@@ -154,11 +154,11 @@ class LoggingCapture(BufferingHandler):
         root_logger.setLevel(self.level)
 
     def abandon(self):
-        '''Turn off logging capture.
+        """Turn off logging capture.
 
         If other handlers were removed by :meth:`~LoggingCapture.inveigle` then
         they are reinstated.
-        '''
+        """
         root_logger = logging.getLogger()
         for handler in root_logger.handlers[:]:
             if handler is self:
@@ -178,7 +178,7 @@ MemoryHandler = LoggingCapture
 
 
 def capture(*args, **kw):
-    '''Decorator to wrap an *environment file function* in log file capture.
+    """Decorator to wrap an *environment file function* in log file capture.
 
     It configures the logging capture using the *behave* context - the first
     argument to the function being decorated (so don't use this to decorate
@@ -212,7 +212,7 @@ def capture(*args, **kw):
 
     This would limit the logging captured to just ERROR and above, and thus
     only display logged events if they are interesting.
-    '''
+    """
     def create_decorator(func, level=None):
         def f(context, *args):
             h = LoggingCapture(context.config, level=level)
@@ -223,11 +223,11 @@ def capture(*args, **kw):
                 h.abandon()
             v = h.getvalue()
             if v:
-                print('Captured Logging:')
+                print("Captured Logging:")
                 print(v)
         return f
 
     if not args:
-        return functools.partial(create_decorator, level=kw.get('level'))
+        return functools.partial(create_decorator, level=kw.get("level"))
     else:
         return create_decorator(args[0])

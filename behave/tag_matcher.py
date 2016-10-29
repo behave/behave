@@ -463,4 +463,3 @@ class OnlyWithAnyCategoryTagMatcher(TagMatcher):
             category = category_value
             value = None
         return category, value
-

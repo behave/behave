@@ -9,8 +9,9 @@ Deprecated module. Functionality was split-up into:
     Deprecated, use "behave.formatter._registry" or "behave.formatter._builtin".
 """
 
-from behave.formatter import _registry
+from __future__ import absolute_import
 import warnings
+from behave.formatter import _registry
 
 warnings.simplefilter("once", DeprecationWarning)
 warnings.warn("Use 'behave.formatter._registry' instead.", DeprecationWarning)

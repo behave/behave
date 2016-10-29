@@ -9,6 +9,16 @@ from __future__ import absolute_import
 from behave.matchers import Match, get_matcher
 from behave.textutil import text as _text
 
+# limit import * to just the decorators
+# pylint: disable=undefined-all-variable
+# names = "given when then step"
+# names = names + " " + names.title()
+# __all__ = names.split()
+__all__ = [
+    "given", "when", "then", "step",    # PREFERRED.
+    "Given", "When", "Then", "Step"     # Also possible.
+]
+
 
 class AmbiguousStep(ValueError):
     pass
@@ -100,14 +110,3 @@ def setup_step_decorators(run_context=None, registry=registry):
 # MODULE INIT:
 # -----------------------------------------------------------------------------
 setup_step_decorators()
-
-# limit import * to just the decorators
-# pylint: disable=undefined-all-variable
-# names = "given when then step"
-# names = names + " " + names.title()
-# __all__ = names.split()
-__all__ = [
-    "given", "when", "then", "step",    # PREFERRED.
-    "Given", "When", "Then", "Step"     # Also possible.
-]
-

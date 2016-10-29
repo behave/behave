@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+# pylint: disable=line-too-long
 """
 This module provides a reporter with JUnit XML output.
 
@@ -65,13 +66,12 @@ Best sources are:
 .. _`JUnit XML`:  http://junitpdfreport.sourceforge.net/managedcontent/PdfTranslation
 .. _`ant spec 1`: https://github.com/windyroad/JUnit-Schema
 .. _`ant spec 2`: http://svn.apache.org/repos/asf/ant/core/trunk/src/main/org/apache/tools/ant/taskdefs/optional/junit/XMLJUnitResultFormatter.java
-
 """
+# pylint: enable=line-too-long
 
 from __future__ import absolute_import
 import os.path
 import codecs
-import sys
 from xml.etree import ElementTree
 from datetime import datetime
 from behave.reporter.base import Reporter
@@ -96,7 +96,7 @@ def CDATA(text=None):   # pylint: disable=invalid-name
 
 
 class ElementTreeWithCDATA(ElementTree.ElementTree):
-    # pylint: disable=redefined-builtin
+    # pylint: disable=redefined-builtin, no-member
     def _write(self, file, node, encoding, namespaces):
         """This method is for ElementTree <= 1.2.6"""
 
@@ -104,7 +104,6 @@ class ElementTreeWithCDATA(ElementTree.ElementTree):
             text = node.text.encode(encoding)
             file.write("\n<![CDATA[%s]]>\n" % text)
         else:
-             # pylint: disable=no-member
             ElementTree.ElementTree._write(self, file, node, encoding,
                                            namespaces)
 
@@ -272,6 +271,7 @@ class JUnitReporter(Reporter):
         tree.write(codecs.open(report_filename, "wb"), "UTF-8")
 
     # -- MORE:
+    # pylint: disable=line-too-long
     @staticmethod
     def select_step_with_status(status, steps):
         """Helper function to find the first step that has the given
@@ -291,7 +291,8 @@ class JUnitReporter(Reporter):
         :returns: Step object, if found.
         :returns: None, otherwise.
 
-        XXX-MODIFIED: Use enum value instead of string
+        .. versionchanged:: 1.2.6
+            status: Use enum value instead of string (or string).
         """
         for step in steps:
             assert isinstance(step, Step), \
@@ -301,6 +302,7 @@ class JUnitReporter(Reporter):
         # -- OTHERWISE: No step with the given status found.
         # KeyError("Step with status={0} not found".format(status))
         return None
+    # pylint: enable=line-too-long
 
     def describe_step(self, step):
         status_text = _text(step.status.name)
@@ -399,7 +401,8 @@ class JUnitReporter(Reporter):
             failure = ElementTree.Element(element_name)
             if step:
                 step_text = self.describe_step(step).rstrip()
-                text = u"\nFailing step: %s\nLocation: %s\n" % (step_text, step.location)
+                text = u"\nFailing step: %s\nLocation: %s\n" % \
+                       (step_text, step.location)
                 message = _text(step.exception)
                 failure.set(u'type', step.exception.__class__.__name__)
                 failure.set(u'message', message)

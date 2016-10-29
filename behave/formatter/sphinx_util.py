@@ -4,8 +4,8 @@ Provides utility function for generating Sphinx-based documentation.
 """
 
 from __future__ import absolute_import
-from behave.textutil import compute_words_maxsize, text as _text
 import codecs
+from behave.textutil import compute_words_maxsize, text as _text
 import six
 
 
@@ -65,7 +65,7 @@ class DocumentWriter(object):
 
     def write_toctree(self, entries, title=None, maxdepth=2):
         if title is None:
-            title  = self.default_toctree_title
+            title = self.default_toctree_title
         line_prefix = " " * 4
         if title:
             self.stream.write("%s\n\n" % title)

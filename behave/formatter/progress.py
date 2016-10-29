@@ -10,11 +10,9 @@ executing a scope item.
 """
 
 from __future__ import absolute_import
+import six
 from behave.formatter.base import Formatter
 from behave.model_core import Status
-import os
-import os.path
-import six
 
 
 # -----------------------------------------------------------------------------
@@ -43,14 +41,14 @@ class ProgressFormatterBase(Formatter):
         self.stream = self.open()
         self.steps = []
         self.failures = []
-        self.current_feature  = None
+        self.current_feature = None
         self.current_scenario = None
         self.show_timings = config.show_timings and self.show_timings
 
     def reset(self):
         self.steps = []
         self.failures = []
-        self.current_feature  = None
+        self.current_feature = None
         self.current_scenario = None
 
     # -- FORMATTER API:
@@ -184,10 +182,10 @@ class StepProgressFormatter(ProgressFormatterBase):
         dot_status = self.dot_status[result.status.name]
         if result.status == Status.failed:
             if (result.exception and
-                not isinstance(result.exception, AssertionError)):
+                    not isinstance(result.exception, AssertionError)):
                 # -- ISA-ERROR: Some Exception
                 dot_status = self.dot_status["error"]
-            result.feature  = self.current_feature
+            result.feature = self.current_feature
             result.scenario = self.current_scenario
             self.failures.append(result)
         self.stream.write(dot_status)

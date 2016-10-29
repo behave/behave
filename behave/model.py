@@ -558,6 +558,7 @@ class Scenario(TagAndStatusStatement, Replayable):
                     # -- NORMALLY: Undefined steps cause failed scenario.
                     return Status.failed
             elif step.status != Status.passed:
+                # pylint: disable=line-too-long
                 assert step.status in (Status.failed, Status.skipped, Status.untested)
                 return step.status
         return Status.passed

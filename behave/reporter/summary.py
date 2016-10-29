@@ -4,11 +4,11 @@ Provides a summary after each test run.
 """
 
 from __future__ import absolute_import, division
+import sys
 from behave.model import ScenarioOutline
 from behave.model_core import Status
 from behave.reporter.base import Reporter
 from behave.formatter.base import StreamOpener
-import sys
 
 
 # -- DISABLED: optional_steps = ('untested', 'undefined')

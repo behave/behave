@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+# pylint: disable=line-too-long
 """
 This module provides functionality to support "async steps" (coroutines)
 in a step-module with behave. This functionality simplifies to test
@@ -40,13 +41,18 @@ EXAMPLE:
 
 .. _asyncio.coroutines: https://docs.python.org/3/library/asyncio-task.html#coroutines
 """
+# pylint: enable=line-too-long
 
 from __future__ import print_function
 # -- REQUIRES: Python >= 3.4
 # MAYBE BACKPORT: trollius
-import asyncio
 import functools
 from six import string_types
+try:
+    import asyncio
+    has_asyncio = True
+except ImportError:
+    has_asyncio = False
 
 # -----------------------------------------------------------------------------
 # ASYNC STEP DECORATORS:
@@ -121,7 +127,7 @@ def async_run_until_complete(astep_func=None, loop=None, timeout=None,
                 # MAYBE: should_close = True
                 task = loop.create_task(astep_func(context, *args, **kwargs))
                 done, pending = loop.run_until_complete(
-                        asyncio.wait([task], timeout=timeout))
+                    asyncio.wait([task], timeout=timeout))
                 assert not pending, "TIMEOUT-OCCURED: timeout=%s" % timeout
         finally:
             if loop and should_close:
@@ -135,11 +141,10 @@ def async_run_until_complete(astep_func=None, loop=None, timeout=None,
             @functools.wraps(astep_func)
             def wrapped_decorator2(context, *args, **kwargs):
                 return step_decorator(astep_func, context, *args,
-                                 _loop=loop,
-                                  _timeout=timeout,
-                                 _async_context=async_context,
-                                 _should_close=should_close,
-                                 **kwargs)
+                                      _loop=loop,
+                                      _timeout=timeout,
+                                      _async_context=async_context,
+                                      _should_close=should_close, **kwargs)
             assert callable(astep_func)
             return wrapped_decorator2
         return wrapped_decorator1
@@ -159,6 +164,7 @@ run_until_complete = async_run_until_complete
 # ASYNC STEP UTILITY CLASSES:
 # -----------------------------------------------------------------------------
 class AsyncContext(object):
+    # pylint: disable=line-too-long
     """Provides a context object for "async steps" to keep track:
 
     * which event loop is used
@@ -210,6 +216,7 @@ class AsyncContext(object):
             await asyncio.sleep(0.5)
             return param.upper()
     """
+    # pylint: enable=line-too-long
     default_name = "async_context"
 
     def __init__(self, loop=None, name=None, should_close=False, tasks=None):
@@ -274,5 +281,3 @@ def use_or_create_async_context(context, name=None, loop=None, **kwargs):
     assert isinstance(async_context, AsyncContext)
     assert getattr(context, async_context.name) is async_context
     return async_context
-
-

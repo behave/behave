@@ -9,9 +9,9 @@ This module provides `JSON`_ formatters for :mod:`behave`:
 """
 
 from __future__ import absolute_import
+import base64
 from behave.formatter.base import Formatter
 from behave.model_core import Status
-import base64
 import six
 try:
     import json
@@ -102,7 +102,7 @@ class JSONFormatter(Formatter):
     def make_table(cls, table):
         table_data = {
             "headings": table.headings,
-            "rows": [ list(row) for row in table.rows ]
+            "rows": [list(row) for row in table.rows]
         }
         return table_data
 
@@ -250,4 +250,4 @@ class PrettyJSONFormatter(JSONFormatter):
     """
     name = "json.pretty"
     description = "JSON dump of test run (human readable)"
-    dumps_kwargs = { "indent": 2, "sort_keys": True }
+    dumps_kwargs = {"indent": 2, "sort_keys": True}

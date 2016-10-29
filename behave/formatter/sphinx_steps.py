@@ -16,21 +16,17 @@ TODO:
 """
 
 from __future__ import absolute_import, print_function
-from behave.formatter.steps import AbstractStepsFormatter
-from behave.formatter import sphinx_util
-from behave.model import Table
 from operator import attrgetter
 import inspect
 import os.path
 import sys
-
+from behave.formatter.steps import AbstractStepsFormatter
+from behave.formatter import sphinx_util
+from behave.model import Table
 try:
-    # -- SAFETY-NET:
-    import docutils
-    has_docutils = True
-
     # -- NEEDED FOR: step-labels (and step-refs)
     from docutils.nodes import fully_normalize_name
+    has_docutils = True
 except ImportError:
     has_docutils = False
 
@@ -146,7 +142,7 @@ class SphinxStepsDocumentGenerator(object):
         # -- ESCAPE: Some chars required for ReST documents (like backticks)
         step_text = step_definition.string
         if "`" in step_text:
-            step_text = step_text.replace("`", "\`")
+            step_text = step_text.replace("`", r"\`")
         return u"%s %s" % (step_type_text, step_text)
 
     def ensure_destdir_exists(self):
@@ -252,6 +248,7 @@ The following step definitions are provided here.
         headings = [u"Step Definition", u"Given", u"When", u"Then", u"Step"]
         table = Table(headings)
         step_type_cols = {
+            # -- pylint: disable=bad-whitespace
             "given": [u"  x", u"  ",  u"  ",  u"  "],
             "when":  [u"  ",  u"  x", u"  ",  u"  "],
             "then":  [u"  ",  u"  ",  u"  x", u"  "],
@@ -309,7 +306,7 @@ The following step definitions are provided here.
             # EXAMPLE: See also :ref:`When my step does "{something}"`.
             step_label = fully_normalize_name(step_text)
             # SKIP-HERE: self.document.write(".. _%s:\n\n" % step_label)
-        self.document.write_heading(heading, level=2, index_id=index_id, 
+        self.document.write_heading(heading, level=2, index_id=index_id,
                                     label=step_label)
         step_definition_doc = self.make_step_definition_doc(step_definition)
         self.document.write("%s\n" % step_definition_doc)
