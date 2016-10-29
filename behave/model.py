@@ -68,15 +68,17 @@ class Feature(TagAndStatusStatement, Replayable):
        feature is fully tested it will return "untested" otherwise it will
        return one of:
 
-       XXX-TODO:
-       "untested"
+       Status.untested
          The feature was has not been completely tested yet.
-       "skipped"
+       Status.skipped
          One or more steps of this feature was passed over during testing.
-       "passed"
+       Status.passed
          The feature was tested successfully.
-       "failed"
+       Status.failed
          One or more steps of this feature failed.
+
+       .. versionchanged:: 1.2.6
+            Use Status enum class (was: string).
 
     .. attribute:: hook_failed
 
@@ -439,15 +441,18 @@ class Scenario(TagAndStatusStatement, Replayable):
        scenario is fully tested it will return "untested" otherwise it will
        return one of:
 
-        XXX-TODO
-       "untested"
+
+       Status.untested
          The scenario was has not been completely tested yet.
-       "skipped"
+       Status.skipped
          One or more steps of this scenario was passed over during testing.
-       "passed"
+       Status.passed
          The scenario was tested successfully.
-       "failed"
+       Status.failed
          One or more steps of this scenario failed.
+
+       .. versionchanged:: 1.2.6
+            Use Status enum class (was: string)
 
     .. attribute:: hook_failed
 
@@ -943,15 +948,17 @@ class ScenarioOutline(Scenario):
        before the scenario is fully tested it will return "untested" otherwise
        it will return one of:
 
-        XXX-TODO
-       "untested"
+       Status.untested
          The scenario was has not been completely tested yet.
-       "skipped"
+       Status.skipped
          One or more scenarios of this outline was passed over during testing.
-       "passed"
+       Status.passed
          The scenario was tested successfully.
-       "failed"
+       Status.failed
          One or more scenarios of this outline failed.
+
+        .. versionchanged:: 1.2.6
+            Use Status enum class (was: string)
 
     .. attribute:: duration
 
@@ -1175,15 +1182,19 @@ class Step(BasicStatement, Replayable):
        step is tested it will return "untested" otherwise it will
        return one of:
 
-       .. versionmodified:: 1.2.6
-
-       XXX-TODO
-       "skipped"
-         This step was passed over during testing.
-       "passed"
+       Status.untested
+         This step was not run (yet).
+       Status.skipped
+         This step was skipped during testing.
+       Status.passed
          The step was tested successfully.
-       "failed"
+       Status.failed
          The step failed.
+       Status.undefined
+         The step has no matching step implementation.
+
+       .. versionchanged::
+            Use Status enum class (was: string).
 
     .. attribute:: hook_failed
 
@@ -1201,7 +1212,7 @@ class Step(BasicStatement, Replayable):
        If the step failed then this will hold any error information, as a
        single string. It will otherwise be None.
 
-       .. versionmodified:: 1.2.6 (moved to base class)
+       .. versionchanged:: 1.2.6 (moved to base class)
 
     .. attribute:: filename
 
