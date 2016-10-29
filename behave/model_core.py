@@ -11,6 +11,11 @@ from behave.textutil import text as _text
 from enum import Enum
 
 
+PLATFORM_WIN = sys.platform.startswith("win")
+def posixpath_normalize(path):
+    return path.replace("\\", "/")
+
+
 # -----------------------------------------------------------------------------
 # GENERIC MODEL CLASSES:
 # -----------------------------------------------------------------------------
@@ -134,6 +139,8 @@ class FileLocation(object):
     __pychecker__ = "missingattrs=line"     # -- Ignore warnings for 'line'.
 
     def __init__(self, filename, line=None):
+        if PLATFORM_WIN:
+            filename = posixpath_normalize(filename)
         self.filename = filename
         self.line = line
 

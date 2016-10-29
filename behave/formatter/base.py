@@ -6,8 +6,7 @@ import six
 
 
 class StreamOpener(object):
-    """
-    Provides a transport vehicle to open the formatter output stream
+    """Provides a transport vehicle to open the formatter output stream
     when the formatter needs it.
     In addition, it provides the formatter with more control:
 
@@ -130,24 +129,21 @@ class Formatter(object):
         return self.stream
 
     def uri(self, uri):
-        """
-        Called before processing a file (normally a feature file).
+        """Called before processing a file (normally a feature file).
 
         :param uri:  URI or filename (as string).
         """
         pass
 
     def feature(self, feature):
-        """
-        Called before a feature is executed.
+        """Called before a feature is executed.
 
         :param feature:  Feature object (as :class:`behave.model.Feature`)
         """
         pass
 
     def background(self, background):
-        """
-        Called when a (Feature) Background is provided.
+        """Called when a (Feature) Background is provided.
         Called after :method:`feature()` is called.
         Called before processing any scenarios or scenario outlines.
 
@@ -156,51 +152,45 @@ class Formatter(object):
         pass
 
     def scenario(self, scenario):
-        """
-        Called before a scenario is executed (or an example of ScenarioOutline).
+        """Called before a scenario is executed (or ScenarioOutline scenarios).
 
         :param scenario:  Scenario object (as :class:`behave.model.Scenario`)
         """
         pass
 
     def step(self, step):
-        """
-        Called before a step is executed (and matched).
+        """Called before a step is executed (and matched).
+        NOTE: Normally called before scenario is executed for all its steps.
 
         :param step: Step object (as :class:`behave.model.Step`)
         """
 
     def match(self, match):
-        """
-        Called when a step was matched against its step implementation.
+        """Called when a step was matched against its step implementation.
 
         :param match:  Registered step (as Match), undefined step (as NoMatch).
         """
         pass
 
     def result(self, step_result):
-        """
-        Called after processing a step (when the step result is known).
+        """Called after processing a step (when the step result is known).
 
         :param step_result:  Step result (as string-enum).
         """
         pass
 
     def eof(self):
-        """
-        Called after processing a feature (or a feature file).
-        """
+        """Called after processing a feature (or a feature file)."""
         pass
 
     def close(self):
-        """
-        Called before the formatter is no longer used (stream/io compatibility).
+        """Called before the formatter is no longer used
+        (stream/io compatibility).
         """
         self.close_stream()
 
     def close_stream(self):
-        """
-        Close the stream, but only if this is needed.
+        """Close the stream, but only if this is needed.
         This step is skipped if the stream is sys.stdout.
         """
         if self.stream:

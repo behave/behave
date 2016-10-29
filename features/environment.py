@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from behave.tag_matcher import ActiveTagMatcher, setup_active_tag_values
+from behave4cmd0.setup_command_shell import setup_command_shell_processors4behave
 import platform
 import sys
 import six
@@ -28,6 +29,7 @@ def before_all(context):
     setup_active_tag_values(active_tag_value_provider, context.config.userdata)
     setup_python_path()
     setup_context_with_global_params_test(context)
+    setup_command_shell_processors4behave()
 
 def before_feature(context, feature):
     if active_tag_matcher.should_exclude_with(feature.tags):

@@ -1,7 +1,5 @@
 @issue
 @unicode
-@wip
-@bad_fail
 Feature: UnicodeDecodeError in tracebacks (when an exception in a step implementation)
 
   . Exception with non-ASCII character is raised in a step implementation.

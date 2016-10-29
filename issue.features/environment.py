@@ -7,6 +7,7 @@ Functionality:
 """
 
 from behave.tag_matcher import ActiveTagMatcher, setup_active_tag_values
+from behave4cmd0.setup_command_shell import setup_command_shell_processors4behave
 import six
 import sys
 import platform
@@ -26,9 +27,9 @@ active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 def before_all(context):
     # -- SETUP ACTIVE-TAG MATCHER (with userdata):
     # USE: behave -D browser=safari ...
-    # NOT-NEEDED: setup_active_tag_values(active_tag_value_provider, 
+    # NOT-NEEDED: setup_active_tag_values(active_tag_value_provider,
     #                                     context.config.userdata)
-    pass
+    setup_command_shell_processors4behave()
 
 def before_feature(context, feature):
     if active_tag_matcher.should_exclude_with(feature.tags):

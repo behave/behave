@@ -72,7 +72,6 @@ from __future__ import absolute_import
 import os.path
 import codecs
 import sys
-import traceback
 from xml.etree import ElementTree
 from datetime import datetime
 from behave.reporter.base import Reporter
@@ -82,6 +81,11 @@ from behave.formatter import ansi_escapes
 from behave.model_describe import ModelDescriptor
 from behave.textutil import indent, make_indentation, text as _text
 import six
+if six.PY2:
+    # -- USE: Python3 backport for better unicode compatibility.
+    import traceback2 as traceback
+else:
+    import traceback
 
 
 def CDATA(text=None):   # pylint: disable=invalid-name

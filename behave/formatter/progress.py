@@ -56,8 +56,7 @@ class ProgressFormatterBase(Formatter):
     # -- FORMATTER API:
     def feature(self, feature):
         self.current_feature = feature
-        short_filename = os.path.relpath(feature.filename, os.getcwd())
-        self.stream.write("%s  " % six.text_type(short_filename))
+        self.stream.write("%s  " % six.text_type(feature.filename))
         self.stream.flush()
 
     def background(self, background):
@@ -226,8 +225,7 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
     # -- FORMATTER API:
     def feature(self, feature):
         self.current_feature = feature
-        short_filename = os.path.relpath(feature.filename, os.getcwd())
-        self.stream.write(u"%s    # %s" % (feature.name, short_filename))
+        self.stream.write(u"%s    # %s" % (feature.name, feature.filename))
 
     def scenario(self, scenario):
         """Process the next scenario."""
