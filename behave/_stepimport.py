@@ -54,7 +54,7 @@ class StepRegistryModule(FakeModule):
     ]
 
     def __init__(self, step_registry):
-        super(StepRegistryModule, self).__init__()
+        super(StepRegistryModule, self).__init__("behave.step_registry")
         self.registry = step_registry
         setup_api_with_step_decorators(self, step_registry)
 
@@ -63,7 +63,7 @@ class StepMatchersModule(FakeModule):
     __all__ = ["use_step_matcher", "register_type", "step_matcher"]
 
     def __init__(self, matcher_factory):
-        super(StepMatchersModule, self).__init__()
+        super(StepMatchersModule, self).__init__("behave.matchers")
         self.matcher_factory = matcher_factory
         setup_api_with_matcher_functions(self, matcher_factory)
         self.use_default_step_matcher = matcher_factory.use_default_step_matcher
@@ -103,7 +103,7 @@ class BehaveModule(FakeModule):
         if matcher_factory is None:
             matcher_factory = step_registry.step_matcher_factory
         assert matcher_factory is not None
-        super(BehaveModule, self).__init__()
+        super(BehaveModule, self).__init__("behave")
         setup_api_with_step_decorators(self, step_registry)
         setup_api_with_matcher_functions(self, matcher_factory)
         self.use_default_step_matcher = matcher_factory.use_default_step_matcher
