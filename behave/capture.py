@@ -6,7 +6,7 @@ Capture output (stdout, stderr), logs, etc.
 from __future__ import absolute_import
 from contextlib import contextmanager
 import sys
-from six import StringIO
+from six import StringIO, PY2
 from behave.log_capture import LoggingCapture
 from behave.textutil import text as _text
 
@@ -37,9 +37,12 @@ class Captured(object):
         self.log_output = self.empty
 
     # -- PYTHON2:
-    def __nonzero__(self):
-        return bool(self.stdout or self.stderr or self.log_output)
-    __bool__ = __nonzero__     # -- FOR: PYTHON3
+    if PY2:
+        def __nonzero__(self):
+            return bool(self.stdout or self.stderr or self.log_output)
+    else:
+        def __bool__(self):
+            return bool(self.stdout or self.stderr or self.log_output)
 
     @property
     def output(self):
