@@ -183,8 +183,8 @@ class FileLocation(object):
         elif isinstance(other, six.string_types):
             return self.filename == other
         else:
-            raise AttributeError("Cannot compare FileLocation with %s:%s" % \
-                                 (type(other), other))
+            raise TypeError("Cannot compare FileLocation with %s:%s" % \
+                            (type(other), other))
 
     def __ne__(self, other):
         # return not self == other    # pylint: disable=unneeded-not
@@ -203,8 +203,8 @@ class FileLocation(object):
         elif isinstance(other, six.string_types):
             return self.filename < other
         else:
-            raise AttributeError("Cannot compare FileLocation with %s:%s" % \
-                                 (type(other), other))
+            raise TypeError("Cannot compare FileLocation with %s:%s" % \
+                            (type(other), other))
 
     def __le__(self, other):
         # -- SEE ALSO: python2.7, functools.total_ordering
