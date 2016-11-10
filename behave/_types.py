@@ -83,6 +83,10 @@ class ChainedExceptionUtil(ExceptionUtil):
         assert isinstance(exception, Exception)
         assert isinstance(exc_cause, Exception) or exc_cause is None
         exception.__cause__ = exc_cause
+        if exc_cause and not hasattr(exc_cause, "__traceback__"):
+            # -- NEEDED-FOR: Python2
+            # Otherwise, traceback formatting tries to access missing attribute.
+            exc_cause.__traceback__ = None
 
     # pylint: disable=arguments-differ
     @classmethod
