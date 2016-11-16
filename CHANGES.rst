@@ -40,6 +40,7 @@ SITE:
 ENHANCEMENTS:
 
   * Tagged Examples: Examples in a ScenarioOutline can now have tags.
+  * pull  #447: behave settings from tox.ini (provided by: bittner)
   * issue #411: Support multiple active-tags with same category (submitted by: Kani999)
   * issue #409: Support async/@asyncio.coroutine steps (submitted by: dcarp)
   * issue #357: Add language attribute to Feature class
