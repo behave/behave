@@ -328,7 +328,7 @@ class Feature(TagAndStatusStatement, Replayable):
         self.clear_status()  # -- ENFORCE: compute_status() after run.
         if not self.scenarios and not run_feature:
             # -- SPECIAL CASE: Feature without scenarios
-            self.set_status("skipped")
+            self.set_status(Status.skipped)
 
         if hooks_called:
             runner.run_hook("after_feature", runner.context, self)
@@ -336,7 +336,7 @@ class Feature(TagAndStatusStatement, Replayable):
                 runner.run_hook("after_tag", runner.context, tag)
             if self.hook_failed:
                 failed_count += 1
-                self.set_status("failed")
+                self.set_status(Status.failed)
 
         runner.context._pop()       # pylint: disable=protected-access
 
