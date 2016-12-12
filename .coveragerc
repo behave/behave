@@ -8,8 +8,9 @@
 # =========================================================================
 
 [run]
-append  = .coverage
-include = behave*
+# append  = .coverage
+# include = behave*
+source = behave
 branch  = True
 parallel = True
 
@@ -38,5 +39,5 @@ ignore_errors = True
 directory = build/coverage.html
 
 [xml]
-outfile = build/coverage.xml
+output = build/coverage.xml
 
