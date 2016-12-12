@@ -72,6 +72,47 @@ def behave(ctx, args="", format="", options=""):
             behave=behave, format=format, options=options, args=group_args))
 
 
+@task(help={
+    "args":     "Tests to run (empty: all)",
+    "report":   "Coverage report format to use (report, html, xml)",
+})
+def coverage(ctx, args="", report="report", append=False):
+    """Determine test coverage (run pytest, behave)"""
+    append = append or ctx.coverage.append
+    report_formats = ctx.coverage.report_formats or []
+    if report not in report_formats:
+        report_formats.insert(0, report)
+    opts = []
+    if append:
+        opts.append("--append")
+
+    pytest_args = select_by_prefix(args, ctx.pytest.scopes)
+    behave_args = select_by_prefix(args, ctx.behave_test.scopes)
+    pytest_should_run = not args or (args and pytest_args)
+    behave_should_run = not args or (args and behave_args)
+    if not args:
+        behave_args = ctx.behave_test.args or "features"
+    if isinstance(pytest_args, list):
+        pytest_args = " ".join(pytest_args)
+    if isinstance(behave_args, list):
+        behave_args = " ".join(behave_args)
+
+    # -- RUN TESTS WITH COVERAGE:
+    if pytest_should_run:
+        ctx.run("coverage run {options} -m pytest {args}".format(
+                args=pytest_args, options=" ".join(opts)))
+    if behave_should_run:
+        behave_options = ctx.behave_test.coverage_options or ""
+        os.environ["COVERAGE_PROCESS_START"] = os.path.abspath(".coveragerc")
+        behave(ctx, args=behave_args, options=behave_options)
+        del os.environ["COVERAGE_PROCESS_START"]
+
+    # -- POST-PROCESSING:
+    ctx.run("coverage combine")
+    for report_format in report_formats:
+        ctx.run("coverage {report_format}".format(report_format=report_format))
+
+
 # ---------------------------------------------------------------------------
 # UTILITIES:
 # ---------------------------------------------------------------------------
@@ -111,7 +152,7 @@ def grouped_by_prefix(args, prefixes):
 # ---------------------------------------------------------------------------
 # TASK MANAGEMENT / CONFIGURATION
 # ---------------------------------------------------------------------------
-namespace = Collection(clean, unittest, pytest, behave)
+namespace = Collection(clean, unittest, pytest, behave, coverage)
 namespace.add_task(test_all, default=True)
 namespace.configure({
     "test": {
@@ -122,6 +163,7 @@ namespace.configure({
             ],
             "files": [
                 ".coverage", ".coverage.*",
+                "report.html",
                 "rerun*.txt", "rerun*.featureset", "testrun*.json",
             ],
         },
@@ -137,6 +179,11 @@ namespace.configure({
         "args":     "features issue.features",
         "format":   "progress",
         "options":  "",  # -- NOTE:  Overide in configfile "invoke.yaml"
+        "coverage_options": "",
+    },
+    "coverage": {
+        "append":   False,
+        "report_formats": ["report", "html"],
     },
 })
 

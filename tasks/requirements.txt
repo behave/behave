@@ -8,7 +8,7 @@
 #  * http://www.pip-installer.org/
 # ============================================================================
 
-invoke >= 0.13.0
+invoke >= 0.14.0
 six >= 1.10.0
 path.py >= 8.2.1
 pathlib;    python_version <= '3.4'

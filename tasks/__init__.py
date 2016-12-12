@@ -16,7 +16,7 @@ from __future__ import absolute_import
 # -----------------------------------------------------------------------------
 # BOOTSTRAP PATH: Use provided vendor bundle if "invoke" is not installed
 # -----------------------------------------------------------------------------
-INVOKE_MINVERSION = "0.13.0"
+INVOKE_MINVERSION = "0.14.0"
 from . import _setup
 _setup.setup_path()
 _setup.require_invoke_minversion(INVOKE_MINVERSION)
