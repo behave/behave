@@ -19,36 +19,36 @@ environment:
   PYTHONPATH: ".;%CD%"
   BEHAVE_ROOTDIR_PREFIX: "C:"
   matrix:
-    - PYTHON:  C:\Python27
+    - PYTHON_DIR:  C:\Python27
       BEHAVE_ROOTDIR_PREFIX: "c:"
-    - PYTHON:  C:\Python34
-    - PYTHON:  C:\Python35
+    - PYTHON_DIR:  C:\Python35
 
 # -- TEMPORARILY DISABLED: environment matrix:
-#    - PYTHON:  C:\Python26
-#    - PYTHON:  C:\Python33
-#    - PYTHON:  C:\Python26-x64
-#    - PYTHON:  C:\Python27-x64
-#    - PYTHON:  C:\Python33-x64
-#    - PYTHON:  C:\Python34-x64
-#    - PYTHON:  C:\Python35-x64
+#    - PYTHON_DIR:  C:\Python34
+#    - PYTHON_DIR:  C:\Python26
+#    - PYTHON_DIR:  C:\Python33
+#    - PYTHON_DIR:  C:\Python26-x64
+#    - PYTHON_DIR:  C:\Python27-x64
+#    - PYTHON_DIR:  C:\Python33-x64
+#    - PYTHON_DIR:  C:\Python34-x64
+#    - PYTHON_DIR:  C:\Python35-x64
 
 init:
-    - "echo TESTING-WITH %PYTHON%"
+    - "echo TESTING-WITH %PYTHON_DIR%"
 
 # -- TEMPORARILY DISABLED: Python variants discovery
-#    - @echo INSTALLED PYTHON VERSIONS
+#    - @echo INSTALLED PYTHON_DIR VERSIONS
 #    - @dir C:\Python*
 #    - path
 
 install:
-    - "%PYTHON%\\python.exe -m pip install pytest mock PyHamcrest nose"
-    - "%PYTHON%\\python.exe -m pip install ."
+    - "%PYTHON_DIR%\\python.exe -m pip install pytest mock PyHamcrest nose"
+    - "%PYTHON_DIR%\\python.exe -m pip install ."
 
 build: off
 test_script:
-    - "%PYTHON%\\Scripts\\py.test.exe test tests"
-    - "%PYTHON%\\Scripts\\behave -f progress3 --junit issue.features"
+    - "%PYTHON_DIR%\\Scripts\\py.test.exe test tests"
+    - "%PYTHON_DIR%\\Scripts\\behave -f progress3 --junit issue.features"
 
 # -- TEMPORARILY DISABLED:
-#    - "%PYTHON%\\Scripts\\behave.exe -f progress3 --junit features"
+#    - "%PYTHON_DIR%\\Scripts\\behave.exe -f progress3 --junit features"
