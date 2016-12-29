@@ -1,6 +1,16 @@
+# =====================================================
+# INVOKE CONFIGURATION:
+# =====================================================
+# -- ON WINDOWS:
+# run:
+#   echo: true
+#   pty:  false
+#   shell: C:\Windows\System32\cmd.exe
+# =====================================================
+
 run:
     echo: true
-    pty: true
+    pty:  true
 
 behave_test:
     scopes:

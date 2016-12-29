@@ -12,6 +12,8 @@ parse >= 1.6.3
 parse_type >= 0.3.4
 six >= 1.9
 
+traceback2;  python_version <= '3.0'
+
 # -- FOR PYTHON 2.6:
 # REQUIRES: pip >= 6.0
 argparse;    python_version <= '2.6'

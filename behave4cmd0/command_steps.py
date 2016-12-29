@@ -77,12 +77,13 @@ def on_error_print_details(actual, expected):
 # -----------------------------------------------------------------------------
 @given(u'a new working directory')
 def step_a_new_working_directory(context):
-    """
-    Creates a new, empty working directory
-    """
+    """Creates a new, empty working directory."""
     command_util.ensure_context_attribute_exists(context, "workdir", None)
+    # MAYBE: command_util.ensure_workdir_not_exists(context)
     command_util.ensure_workdir_exists(context)
+    # OOPS:
     shutil.rmtree(context.workdir, ignore_errors=True)
+    command_util.ensure_workdir_exists(context)
 
 @given(u'I use the current directory as working directory')
 def step_use_curdir_as_working_directory(context):

@@ -14,12 +14,11 @@ Support functionality to simplify the setup for behave tests.
 
 from __future__ import absolute_import
 from .command_shell import Command
-from .command_shell_proc import TracebackNormalizer
+from .command_shell_proc import BehaveWinCommandOutputProcessor
 
 def setup_command_shell_processors4behave():
     Command.POSTPROCESSOR_MAP["behave"] = []
-    for processor_class in [TracebackNormalizer]:
+    for processor_class in [BehaveWinCommandOutputProcessor]:
         if processor_class.enabled:
             processor = processor_class()
             Command.POSTPROCESSOR_MAP["behave"].append(processor)
-

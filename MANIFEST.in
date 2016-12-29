@@ -5,22 +5,33 @@ include LICENSE
 include .coveragerc
 include .editorconfig
 include .pycheckrc
-include pylintrc
+include .pylintrc
 include *.cfg
 include *.ini
+include *.py
 include *.rst
 include *.txt
+include *.yml
+include *.yaml
 include bin/behave*
-recursive-include bin           *.py *.cmd *.sh *.zip
+include bin/invoke*
+recursive-include .ci           *.yml
+recursive-include bin           *.py *.cmd *.sh *.zip *.yml
 recursive-include behave4cmd0   *.py
 recursive-include etc           *.xsd *.txt *.json-schema
+recursive-include examples      *.py *.feature *.txt *.rst *.ini
 recursive-include docs          *.rst *.txt *.css *.py *.html *.rst-* *.png Makefile
 recursive-include docs/_themes  *.html *.conf *.css *.css_t LICENSE*
 recursive-include test          *.py
+recursive-include tests         *.py *.txt
+recursive-include tasks         *.py *.zip *.txt *.rst
 recursive-include tools         *.feature *.py *.yml *.sh
 recursive-include features      *.feature *.py *.txt
 recursive-include issue.features  *.feature *.py *.txt
 recursive-include more.features *.feature *.py *.txt
 recursive-include py.requirements  *.txt
+
 prune .tox
 prune .venv*
+prune paver_ext
+exclude pavement.py
