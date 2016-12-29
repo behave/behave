@@ -47,7 +47,7 @@ install:
 
 build: off
 test_script:
-    - "%PYTHON%\\Scripts\\py.test.exe test"
+    - "%PYTHON%\\Scripts\\py.test.exe test tests"
     - "%PYTHON%\\Scripts\\behave -f progress3 --junit issue.features"
 
 # -- TEMPORARILY DISABLED:
