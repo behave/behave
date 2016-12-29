@@ -43,7 +43,7 @@ init:
 
 install:
     - "%PYTHON%\\python.exe -m pip install pytest mock PyHamcrest nose"
-    - "%PYTHON%\\python.exe setup.py -q install"
+    - "%PYTHON%\\python.exe -m pip install ."
 
 build: off
 test_script:
