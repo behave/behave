@@ -61,7 +61,7 @@ line_processor_ioerrors = [
 
 line_processor_traceback = [
     ExceptionWithPathNormalizer(
-        '^\s+File "(?P<path>.*)", line \d+, in ',
+        '^\s*File "(?P<path>.*)", line \d+, in ',
         '  File "'),
     BehaveWinCommandOutputProcessor.line_processors[4],
 ]

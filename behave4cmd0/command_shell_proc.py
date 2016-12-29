@@ -229,6 +229,6 @@ class BehaveWinCommandOutputProcessor(LineCommandOutputProcessor):
             "No such file or directory: '(?P<path>.*)'",
             "[Errno 2] No such file or directory:"),  # IOError
         ExceptionWithPathNormalizer(
-            '^\s+File "(?P<path>.*)", line \d+, in ',
-            '  File "'),
+            '^\s*File "(?P<path>.*)", line \d+, in ',
+            'File "'),
     ]
