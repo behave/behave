@@ -807,7 +807,7 @@ class Runner(ModelRunner):
 
         if not self.parallel_element:
             self.parallel_element = 'scenario'
-            print "INFO: Without giving --parallel-element, defaulting to 'scenario'..."
+            print("INFO: Without giving --parallel-element, defaulting to 'scenario'...")
         else:
             if self.parallel_element != 'feature' and \
                 self.parallel_element != 'scenario':
@@ -878,16 +878,19 @@ class Runner(ModelRunner):
 
             stream_openers = self.config.outputs
 
-            self.formatters = formatters.get_formatter(self.config, stream_openers)
+            self.formatters = make_formatters(self.config, stream_openers)
 
             for formatter in self.formatters:
                 formatter.uri(current_job.filename)
+
+            if self.step_registry is None:
+                self.step_registry = the_step_registry
 
             start_time = time.strftime("%Y-%m-%d %H:%M:%S")
             current_job.run(self)
             end_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
-            sys.stderr.write(current_job.status[0]+" ")
+            #sys.stderr.write(current_job.status.name + " ")
 
             if current_job.type == 'feature':
                 for reporter in self.config.reporters:
@@ -932,10 +935,10 @@ class Runner(ModelRunner):
             return ""
 
         reportheader = start_time + "|WORKER" + str(proc_number) + " START|" + \
-        "status:" + current_job.status + "|" + current_job.filename + "\n"
+        "status:" + current_job.status.name + "|" + current_job.filename + "\n"
 
         reportfooter = end_time + "|WORKER" + str(proc_number) + " END|" + \
-        "status:" + current_job.status + "|" + current_job.filename + \
+        "status:" + current_job.status.name + "|" + current_job.filename + \
         "|Duration:" + str(current_job.duration)
 
         if self.config.format[0] == 'plain' and len(current_job.tags):
@@ -944,18 +947,18 @@ class Runner(ModelRunner):
                 tags += tag + " "
             reportheader += "\n" + tags + "\n"
 
-        if current_job.status == 'failed':
+        if current_job.status.name == 'failed':
             self.getskippedsteps(current_job, writebuf)
 
         writebuf.seek(0)
-        return reportheader + writebuf.read() + "\n" + reportfooter
+        return reportheader + writebuf.read().decode("utf-8") + "\n" + reportfooter
 
     def getskippedsteps(self, current_job, writebuf):
         if current_job.type != 'scenario':
             [self.getskippedsteps(s, writebuf) for s in current_job.scenarios]
         else:
             for step in current_job.steps:
-                if step.status == 'skipped':
+                if step.status.name == 'skipped':
                     writebuf.write("Skipped step because of previous error"
                                    " - Scenario:{0}|step:{1}\n"
                                    .format(current_job.name, step.name))
@@ -965,14 +968,14 @@ class Runner(ModelRunner):
             [self.countscenariostatus(
                 s, results) for s in current_job.scenarios]
         else:
-            results['scenarios_' + current_job.status] += 1
+            results['scenarios_' + current_job.status.name] += 1
 
     def countstepstatus(self, current_job, results):
         if current_job.type != 'scenario':
             [self.countstepstatus(s, results) for s in current_job.scenarios]
         else:
             for step in current_job.all_steps:
-                results['steps_' + step.status] += 1
+                results['steps_' + step.status.name] += 1
 
     def multiproc_fullreport(self):
         metrics = collections.defaultdict(int)
@@ -980,18 +983,18 @@ class Runner(ModelRunner):
             lambda: '')
         junit_report_objs = [] 
         while not self.resultsqueue.empty():
-            print "\n" * 3
-            print "_" * 75
+            print ("\n" * 3)
+            print ("_" * 75)
             jobresult = self.resultsqueue.get()
-            print jobresult['reportinginfo']
+            print (jobresult['reportinginfo'])
             if 'junit_report' in jobresult:
                 junit_report_objs.append(jobresult['junit_report'])
             if jobresult['jobtype'] != 'feature':
                 combined_features_from_scenarios_results[
-                    jobresult['uniquekey']] += '|' + jobresult['status']
-                metrics['scenarios_' + jobresult['status']] += 1
+                    jobresult['uniquekey']] += '|' + jobresult['status'].name
+                metrics['scenarios_' + jobresult['status'].name] += 1
             else:
-                metrics['features_' + jobresult['status']] += 1
+                metrics['features_' + jobresult['status'].name] += 1
 
             metrics['steps_passed'] += jobresult['steps_passed']
             metrics['steps_failed'] += jobresult['steps_failed']
@@ -1011,15 +1014,15 @@ class Runner(ModelRunner):
             else:
                 metrics['features_skipped'] += 1
 
-        print "\n" * 3
-        print "_" * 75
+        print ("\n" * 3)
+        print ("_" * 75)
         print ("{0} features passed, {1} features failed, {2} features skipped\n"
                "{3} scenarios passed, {4} scenarios failed, {5} scenarios skipped\n"
-               "{6} steps passed, {7} steps failed, {8} steps skipped, {9} steps undefined\n")\
+               "{6} steps passed, {7} steps failed, {8} steps skipped, {9} steps undefined\n"\
                 .format(
                 metrics['features_passed'], metrics['features_failed'], metrics['features_skipped'],
                 metrics['scenarios_passed'], metrics['scenarios_failed'], metrics['scenarios_skipped'],
-                metrics['steps_passed'], metrics['steps_failed'], metrics['steps_skipped'], metrics['steps_undefined'])
+                metrics['steps_passed'], metrics['steps_failed'], metrics['steps_skipped'], metrics['steps_undefined']))
         if getattr(self.config,'junit'):
             self.write_paralleltestresults_to_junitfile(junit_report_objs)
         return metrics['features_failed']
@@ -1029,15 +1032,15 @@ class Runner(ModelRunner):
         report_string = ""
         report_obj['filebasename'] = cj.location.basename()[:-8]
         report_obj['feature_name'] = cj.feature.name        
-        report_obj['status'] = cj.status
+        report_obj['status'] = cj.status.name
         report_obj['duration'] = round(cj.duration,4)
         report_string += '<testcase classname="'
         report_string += report_obj['filebasename']+'.'
         report_string += report_obj['feature_name']+'" '
         report_string += 'name="'+cj.name+'" '
-        report_string += 'status="'+cj.status+'" '
+        report_string += 'status="'+cj.status.name+'" '
         report_string += 'time="'+str(round(cj.duration,4))+'">'
-        if cj.status == 'failed':
+        if cj.status.name == 'failed':
             report_string += self.get_junit_error(cj, writebuf)
         report_string += "<system-out>\n<![CDATA[\n"
         report_string += "@scenario.begin\n"   
@@ -1048,7 +1051,7 @@ class Runner(ModelRunner):
             report_string += " "*4
             report_string += step.keyword + " "
             report_string += step.name + " ... "
-            report_string += step.status + " in "
+            report_string += step.status.name + " in "
             report_string += str(round(step.duration,4)) + "s\n"
         report_string += "\n@scenario.end\n"
         report_string += "-"*80 
@@ -1061,22 +1064,21 @@ class Runner(ModelRunner):
 
     def get_junit_stdoutstderr(self, cj, loglines):
         substring = ""
-        if cj.status == 'passed':
+        if cj.status.name == 'passed':
             substring += "\nCaptured stdout:\n"
-            substring += cj.stdout
+            substring += cj.captured.stdout
             substring += "\n]]>\n</system-out>"
-            if cj.stderr:
+            if cj.captured.stderr:
                 substring += "<system-err>\n<![CDATA[\n"
                 substring += "Captured stderr:\n"
-                substring += cj.stderr
+                substring += cj.captured.stderr
                 substring += "\n]]>\n</system-err>"
             return substring
 
         q = 0
         while q < len(loglines):
             if loglines[q] == "Captured stdout:\n":
-                while loglines[q] != "Captured stderr:\n" and \
-                q < len(loglines):
+                while q < len(loglines) and loglines[q] != "Captured stderr:\n":
                     substring += loglines[q]
                     q = q + 1
                 break       
@@ -1099,10 +1101,10 @@ class Runner(ModelRunner):
         error_string = ""
         error_string += '<error message="'
         for step in cj.steps:
-            if step.status == 'failed':
+            if step.status.name == 'failed':
                 failed_step = step
                 break
-        error_string += failed_step.exception[0]+'" '
+        error_string += str(failed_step.exception.message)+'" '
         error_string += 'type="'
         error_string += re.sub(".*?\.(.*?)\'.*","\\1",\
         str(type(failed_step.exception)))+'">\n'
@@ -1168,35 +1170,15 @@ class Runner(ModelRunner):
             fd.close() 
 
     def setup_capture(self):
-        if self.config.stdout_capture:
-            self.stdout_capture = StringIO.StringIO()
-            self.context.stdout_capture = self.stdout_capture
-
-        if self.config.stderr_capture:
-            self.stderr_capture = StringIO.StringIO()
-            self.context.stderr_capture = self.stderr_capture
-
-        if self.config.log_capture:
-            self.log_capture = CaptureController(self.config)
-            self.log_capture.inveigle()
-            self.context.log_capture = self.log_capture
+        if not self.context:
+            self.context = Context(self)
+        self.capture_controller.setup_capture(self.context)
 
     def start_capture(self):
-        if self.config.stdout_capture:
-            self.old_stdout = sys.stdout
-            sys.stdout = self.stdout_capture
-
-        if self.config.stderr_capture:
-            self.old_stderr = sys.stderr
-            sys.stderr = self.stderr_capture
+        self.capture_controller.start_capture()
 
     def stop_capture(self):
-        if self.config.stdout_capture:
-            sys.stdout = self.old_stdout
-
-        if self.config.stderr_capture:
-            sys.stderr = self.old_stderr
+        self.capture_controller.stop_capture()
 
     def teardown_capture(self):
-        if self.config.log_capture:
-            self.log_capture.abandon()
+        self.capture_controller.teardown_capture()
