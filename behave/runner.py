@@ -821,6 +821,8 @@ class Runner(ModelRunner):
             pass
         self.context._emit_warning = do_nothing
 
+        self.setup_capture()
+        self.run_hook("before_all", self.context)
 
         self.joblist_index_queue = multiprocessing.Manager().JoinableQueue()
         self.resultsqueue = multiprocessing.Manager().JoinableQueue()
@@ -986,7 +988,7 @@ class Runner(ModelRunner):
             print ("\n" * 3)
             print ("_" * 75)
             jobresult = self.resultsqueue.get()
-            print (jobresult['reportinginfo'])
+            print (jobresult['reportinginfo'].encode('utf-8'))
             if 'junit_report' in jobresult:
                 junit_report_objs.append(jobresult['junit_report'])
             if jobresult['jobtype'] != 'feature':
