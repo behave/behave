@@ -1,11 +1,12 @@
 language: python
 sudo: false
 python:
-  - "3.5"
+  - "3.6"
   - "2.7"
+  - "3.5"
   - "2.6"
   - "pypy"
-  - "3.6-dev"
+  - "3.7-dev"
   - "nightly"
   - "3.4"
   - "3.3"
