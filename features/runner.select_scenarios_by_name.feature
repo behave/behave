@@ -198,6 +198,7 @@ Feature: Select named scenarios to run
             Scenario: Bob in
             """
 
+    @not.with_os=win32
     Scenario: Exclude scenarios by using a regular expression (not-pattern)
 
         Select all scenarios that do not start with "Alice" in its name.

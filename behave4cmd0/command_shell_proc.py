@@ -7,6 +7,8 @@ This module provides pre-/post-processors for the mod:`behave4cmd0.command_shell
 from __future__ import absolute_import, print_function
 import re
 import sys
+from six import string_types
+
 
 # -----------------------------------------------------------------------------
 # UTILITY:
@@ -209,6 +211,26 @@ class LineCommandOutputProcessor(CommandOutputProcessor):
         if changed:
             text = "\n".join(new_lines) + "\n"
         return changed, text
+
+class TextProcessor(CommandOutputProcessor):
+    """Provides an adapter that uses an :class:`CommandOutputProcessor`
+    as text processor (normalizer).
+    """
+
+    def __init__(self, command_output_processor):
+        self.command_output_processor = command_output_processor
+        self.enabled = self.command_output_processor.enabled
+        self.output_parts = self.command_output_processor.output_parts
+
+    def process_output(self, text):
+        return self.command_output_processor.process_output(text)
+
+    def __call__(self, command_result):
+        if isinstance(command_result, string_types):
+            text = command_result
+            return self.command_output_processor.process_output(text)[1]
+        else:
+            return self.command_output_processor(command_result)
 
 
 class BehaveWinCommandOutputProcessor(LineCommandOutputProcessor):

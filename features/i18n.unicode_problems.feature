@@ -157,6 +157,7 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
 
 
   @problematic.feature_filename
+  @not.with_os=win32
   Scenario Outline: Problematic feature filename: <name> (case: pass, <format>)
       Given a file named "features/<name>_and_pass.feature" with:
         """
@@ -178,6 +179,7 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
 
 
   @problematic.feature_filename
+  @not.with_os=win32
   Scenario Outline: Problematic feature filename: <name> (case: fail, <format>)
       Given a file named "features/<name>_and_fail.feature" with:
         """

@@ -39,7 +39,7 @@ class Status(Enum):
         file-location arg, select-by-name, etc.
 
     * passed: A model element was executed and passed (without failures).
-    * failed: Failures occured while executing it.
+    * failed: Failures occurred while executing it.
     * undefined: Used for undefined-steps (no step implementation was found).
     * executing: Marks the steps during execution (used in a formatter)
 

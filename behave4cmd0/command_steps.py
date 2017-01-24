@@ -13,6 +13,8 @@ from __future__ import absolute_import, print_function
 from behave import given, when, then, step, matchers
 from behave4cmd0 import command_shell, command_util, pathutil, textutil
 from behave4cmd0.pathutil import posixpath_normpath
+from behave4cmd0.command_shell_proc import \
+    TextProcessor, BehaveWinCommandOutputProcessor
 import contextlib
 import difflib
 import os
@@ -24,6 +26,10 @@ from hamcrest import assert_that, equal_to, is_not, contains_string
 # -----------------------------------------------------------------------------
 matchers.register_type(int=int)
 DEBUG = False
+file_contents_normalizer = None
+if BehaveWinCommandOutputProcessor.enabled:
+    file_contents_normalizer = TextProcessor(BehaveWinCommandOutputProcessor())
+
 
 # -----------------------------------------------------------------------------
 # UTILITIES:
@@ -478,6 +484,9 @@ def step_file_should_contain_text(context, filename, text):
         )
     file_contents = pathutil.read_file_contents(filename, context=context)
     file_contents = file_contents.rstrip()
+    if file_contents_normalizer:
+        # -- HACK: Inject TextProcessor as text normalizer
+        file_contents = file_contents_normalizer(file_contents)
     with on_assert_failed_print_details(file_contents, expected_text):
         textutil.assert_normtext_should_contain(file_contents, expected_text)
 
