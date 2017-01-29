@@ -47,6 +47,9 @@ init:
     - cmd: "echo TESTING-WITH %PYTHON_DIR%, %PYTHON%"
     - cmd: "%PYTHON_DIR%\\python.exe --version"
     - cmd: "%PYTHON% --version"
+    - cmd: "%PYTHON_DIR%\\python.exe bin\\explore_platform_encoding.py"
+    - cmd: "echo CD=%CD%"
+    - cmd: "echo PYTHONPATH=%PYTHONPATH%"
     - cmd: set
 
 # -- TEMPORARILY DISABLED: Python variants discovery
@@ -56,8 +59,9 @@ init:
 
 install:
     - cmd: "%PYTHON_DIR%\\python.exe -m pip install pytest mock PyHamcrest nose"
-    - cmd: "%PYTHON_DIR%\\python.exe -m pip install parse"
     - cmd: "%PYTHON_DIR%\\python.exe -m pip install ."
+
+# NOT-NEEDED:   - cmd: "%PYTHON_DIR%\\python.exe -m pip install parse"
 
 build: off
 test_script:
