@@ -102,7 +102,13 @@ class PlainFormatter(Formatter):
             status_text += " in %0.3fs" % step.duration
 
         if result.error_message:
-            self.stream.write(u"%s\n%s\n" % (status_text, result.error_message))
+            try:
+                self.stream.write(u"%s\n%s\n" % (status_text, result.error_message))
+            except UnicodeError as e:
+                self.stream.write(u"%s\n" % status_text)
+                self.stream.write(u"%s while writing error message: %s\n" % \
+                                  (e.__class__.__name__, e))
+
         else:
             self.stream.write(u"%s\n" % status_text)
 
