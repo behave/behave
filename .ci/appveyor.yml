@@ -57,6 +57,7 @@ init:
 #    - path
 
 install:
+    - cmd: "%PYTHON_DIR%\\python.exe bin/explore_platform_encoding.py"
     - cmd: "%PYTHON_DIR%\\python.exe -m pip install pytest mock PyHamcrest nose"
     - cmd: "%PYTHON_DIR%\\python.exe -m pip install ."
 
@@ -64,7 +65,6 @@ install:
 
 build: off
 test_script:
-    - cmd: "%PYTHON_DIR%\\python.exe bin/explore_platform_encoding.py"
     - cmd: "%PYTHON_DIR%\\Scripts\\py.test.exe test tests"
     - cmd: "%PYTHON_DIR%\\Scripts\\behave.exe -f progress3 --junit features"
     - cmd: "%PYTHON_DIR%\\Scripts\\behave.exe -f progress3 --junit issue.features"
