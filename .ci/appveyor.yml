@@ -21,7 +21,7 @@ environment:
   PYTHONPATH: ".;%CD%"
   BEHAVE_ROOTDIR_PREFIX: "C:"
   matrix:
-    - PYTHON_DIR:  C:\Python35-x64
+    - PYTHON_DIR:  C:\Python36-x64
 
 # -- TEMPORARILY DISABLED: environment matrix:
 #    - PYTHON_DIR:  C:\Python27-x64
@@ -39,7 +39,7 @@ environment:
 #    - PYTHON_DIR:  C:\Python35-x64
 
 init:
-    - cmd: "@echo TESTING-WITH %PYTHON_DIR%"
+    - cmd: "echo TESTING-WITH %PYTHON_DIR%"
     - cmd: "%PYTHON_DIR%\\python.exe --version"
 
 # -- TEMPORARILY DISABLED: Python variants discovery
@@ -56,4 +56,4 @@ build: off
 test_script:
     - cmd: "%PYTHON_DIR%\\Scripts\\py.test.exe test tests"
     - cmd: "%PYTHON_DIR%\\Scripts\\behave.exe -f progress3 --junit features"
-    - cmd: "%PYTHON_DIR%\\Scripts\\behave -f progress3 --junit issue.features"
+    - cmd: "%PYTHON_DIR%\\Scripts\\behave.exe -f progress3 --junit issue.features"
