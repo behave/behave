@@ -4,6 +4,8 @@ Feature: Command-line options: Use behave --lang-list
   I want to determine which languages are supported by behave
   So that I can use the language code in feature files or command lines
 
+  @problematic
+  @not.with_os=win32
   Scenario: Use behave --lang-list
     When I run "behave --lang-list"
     Then it should pass with:
