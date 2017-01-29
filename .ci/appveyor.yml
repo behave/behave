@@ -21,10 +21,12 @@ environment:
   PYTHONPATH: ".;%CD%"
   BEHAVE_ROOTDIR_PREFIX: "C:"
   matrix:
-    - PYTHON_DIR:  C:\Python27-x64
-      BEHAVE_ROOTDIR_PREFIX: "c:"
-    - PYTHON_DIR:  C:\Python36-x64
     - PYTHON_DIR:  C:\Python35-x64
+
+# -- TEMPORARILY DISABLED: environment matrix:
+#    - PYTHON_DIR:  C:\Python27-x64
+#      BEHAVE_ROOTDIR_PREFIX: "c:"
+#    - PYTHON_DIR:  C:\Python36-x64
 
 # -- TEMPORARILY DISABLED: environment matrix:
 #    - PYTHON_DIR:  C:\Python34
