@@ -34,7 +34,7 @@ environment:
 #    - PYTHON_DIR:  C:\Python35-x64
 
 init:
-    - "echo TESTING-WITH %PYTHON_DIR%"
+    - cmd: "echo TESTING-WITH %PYTHON_DIR%"
 
 # -- TEMPORARILY DISABLED: Python variants discovery
 #    - @echo INSTALLED PYTHON_DIR VERSIONS
@@ -42,13 +42,14 @@ init:
 #    - path
 
 install:
-    - "%PYTHON_DIR%\\python.exe -m pip install pytest mock PyHamcrest nose"
-    - "%PYTHON_DIR%\\python.exe -m pip install ."
+    - cmd: "%PYTHON_DIR%\\python.exe -m pip install pytest mock PyHamcrest nose"
+    - cmd: "%PYTHON_DIR%\\python.exe -m pip install ."
 
 build: off
 test_script:
-    - "%PYTHON_DIR%\\Scripts\\py.test.exe test tests"
-    - "%PYTHON_DIR%\\Scripts\\behave -f progress3 --junit issue.features"
+    - cmd: "%PYTHON_DIR%\\Scripts\\py.test.exe test tests"
+    - cmd: "%PYTHON_DIR%\\Scripts\\behave.exe -f progress3 --junit features"
+    - cmd: "%PYTHON_DIR%\\Scripts\\behave -f progress3 --junit issue.features"
 
 # -- TEMPORARILY DISABLED:
 #    - "%PYTHON_DIR%\\Scripts\\behave.exe -f progress3 --junit features"
