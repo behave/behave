@@ -22,7 +22,7 @@ environment:
   BEHAVE_ROOTDIR_PREFIX: "C:"
   matrix:
     - PYTHON_DIR:  C:\Python36-x64
-  PYTHON: %PYTHON_DIR%\python.exe
+  PYTHON: $PYTHON_DIR\python.exe
 
 # -- TEMPORARILY DISABLED: environment matrix:
 #    - PYTHON_DIR:  C:\Python27-x64
