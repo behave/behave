@@ -57,9 +57,9 @@ init:
 #    - path
 
 install:
-    - cmd: "%PYTHON_DIR%\\python.exe bin/explore_platform_encoding.py"
     - cmd: "%PYTHON_DIR%\\python.exe -m pip install pytest mock PyHamcrest nose"
     - cmd: "%PYTHON_DIR%\\python.exe -m pip install ."
+    - cmd: "%PYTHON_DIR%\\python.exe bin/explore_platform_encoding.py"
 
 # NOT-NEEDED:   - cmd: "%PYTHON_DIR%\\python.exe -m pip install parse"
 
