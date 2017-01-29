@@ -48,6 +48,20 @@ def as_bool_string(value):
     else:
         return "no"
 
+def select_ci_server():
+    ci_server = "none"
+    CI = os.environ.get("CI").lower() == "true"
+    APPVEYOR = os.environ.get("APPVEYOR").lower() == "true"
+    TRAVIS = os.environ.get("TRAVIS").lower() == "true"
+    if CI:
+        if APPVEYOR:
+            ci_server = "appveyor"
+        elif TRAVIS:
+            ci_server = "travis"
+        else:
+            ci_server = "unknown"
+    return ci_server
+
 
 # -- MATCHES ANY TAGS: @use.with_{category}={value}
 # NOTE: active_tag_value_provider provides category values for active tags.
@@ -59,6 +73,7 @@ active_tag_value_provider = {
     "pypy":    str("__pypy__" in sys.modules).lower(),
     "os":      sys.platform,
     "xmllint": as_bool_string(require_tool("xmllint")),
+    "ci": select_ci_server()
 }
 active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 

@@ -15,6 +15,7 @@ Feature: Issue #487 -- UnicodeEncodeError with ZBSP in multi-line text
     .   ParseError indicates that the problem occured while parsing the
     .   feature file. Feature file encoding is assumed
 
+    @not.with_ci=appveyor
     Scenario:
       Given a new working directory
       And a file named "features/steps/pass_steps.py" with:
