@@ -101,10 +101,12 @@ class PlainFormatter(Formatter):
         if self.show_timings:
             status_text += " in %0.3fs" % step.duration
 
+        unicode_errors = 0
         if result.error_message:
             try:
                 self.stream.write(u"%s\n%s\n" % (status_text, result.error_message))
             except UnicodeError as e:
+                unicode_errors += 1
                 self.stream.write(u"%s\n" % status_text)
                 self.stream.write(u"%s while writing error message: %s\n" % \
                                   (e.__class__.__name__, e))
@@ -114,7 +116,12 @@ class PlainFormatter(Formatter):
 
         if self.show_multiline:
             if step.text:
-                self.doc_string(step.text)
+                try:
+                    self.doc_string(step.text)
+                except UnicodeError as e:
+                    unicode_errors += 1
+                    self.stream.write(u"%s while writing docstring: %s\n" % \
+                                      (e.__class__.__name__, e))
             if step.table:
                 self.table(step.table)
 
