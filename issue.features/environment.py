@@ -50,9 +50,9 @@ def as_bool_string(value):
 
 def select_ci_server():
     ci_server = "none"
-    CI = os.environ.get("CI").lower() == "true"
-    APPVEYOR = os.environ.get("APPVEYOR").lower() == "true"
-    TRAVIS = os.environ.get("TRAVIS").lower() == "true"
+    CI = os.environ.get("CI", "false").lower() == "true"
+    APPVEYOR = os.environ.get("APPVEYOR", "false").lower() == "true"
+    TRAVIS = os.environ.get("TRAVIS", "false").lower() == "true"
     if CI:
         if APPVEYOR:
             ci_server = "appveyor"
