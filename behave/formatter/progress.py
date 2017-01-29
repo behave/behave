@@ -276,7 +276,7 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
                     self.stream.write(u"%s\n" % separator)
                 except UnicodeError as e:
                     self.stream.write(u"%s while reporting failure in %s\n" % \
-                                      e.__class__.__name__, failure.location)
+                                      (e.__class__.__name__, failure.location))
                     self.stream.write(u"ERROR: %s\n" % \
                                       _text(e, encoding=self.stream.encoding))
                     unicode_errors += 1
