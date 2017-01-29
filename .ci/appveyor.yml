@@ -40,9 +40,9 @@ environment:
 #    - PYTHON_DIR:  C:\Python35-x64
 
 init:
-    - cmd: set PYTHON=%PYTHONDIR%\python.exe
     - cmd: "echo TESTING-WITH %PYTHON_DIR%, %PYTHON%"
     - cmd: "%PYTHON_DIR%\\python.exe --version"
+    - cmd: "%PYTHON% --version"
 
 # -- TEMPORARILY DISABLED: Python variants discovery
 #    - cmd: "@echo AVAILABLE PYTHON VERSIONS"
