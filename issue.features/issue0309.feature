@@ -23,6 +23,8 @@ Feature: Issue #309 -- behave --lang-list fails on Python3
   .
 
 
+  @problematic
+  @not.with_os=win32
   Scenario: Use behave --lang-list
     When I run "behave --lang-list"
     Then it should pass with:
