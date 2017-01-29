@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 # FILE: features/environment.py
+# pylint: disable=unused-argument
 """
 Functionality:
 
@@ -7,12 +8,14 @@ Functionality:
 """
 
 from __future__ import print_function
-from behave.tag_matcher import ActiveTagMatcher, setup_active_tag_values
-from behave4cmd0.setup_command_shell import setup_command_shell_processors4behave
-import six
 import sys
 import platform
 import os.path
+import six
+from behave.tag_matcher import ActiveTagMatcher
+from behave4cmd0.setup_command_shell import setup_command_shell_processors4behave
+# PREPARED:
+# from behave.tag_matcher import setup_active_tag_values
 
 
 def require_tool(tool_name):
@@ -48,7 +51,8 @@ def as_bool_string(value):
     else:
         return "no"
 
-def select_ci_server():
+def discover_ci_server():
+    # pylint: disable=invalid-name
     ci_server = "none"
     CI = os.environ.get("CI", "false").lower() == "true"
     APPVEYOR = os.environ.get("APPVEYOR", "false").lower() == "true"
@@ -73,7 +77,7 @@ active_tag_value_provider = {
     "pypy":    str("__pypy__" in sys.modules).lower(),
     "os":      sys.platform,
     "xmllint": as_bool_string(require_tool("xmllint")),
-    "ci": select_ci_server()
+    "ci": discover_ci_server()
 }
 active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
@@ -91,4 +95,3 @@ def before_feature(context, feature):
 def before_scenario(context, scenario):
     if active_tag_matcher.should_exclude_with(scenario.effective_tags):
         scenario.skip(reason=active_tag_matcher.exclude_reason)
-
