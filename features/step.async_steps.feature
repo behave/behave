@@ -127,6 +127,7 @@ Feature: Async-Test Support (async-step, ...)
 
     @use.with_python.version=3.4
     @use.with_python.version=3.5
+    @use.with_python.version=3.6
     Scenario: Use @async_run_until_complete(timeout=...) and TIMEOUT occurs (@coroutine)
       Given a new working directory
       And a file named "features/steps/async_steps_timeout34.py" with:
