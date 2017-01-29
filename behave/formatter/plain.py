@@ -25,6 +25,7 @@ class PlainFormatter(Formatter):
     SHOW_TAGS = False
     SHOW_ALIGNED_KEYWORDS = False
     DEFAULT_INDENT_SIZE = 2
+    RAISE_OUTPUT_ERRORS = True
 
     def __init__(self, stream_opener, config, **kwargs):
         super(PlainFormatter, self).__init__(stream_opener, config)
@@ -110,7 +111,8 @@ class PlainFormatter(Formatter):
                 self.stream.write(u"%s\n" % status_text)
                 self.stream.write(u"%s while writing error message: %s\n" % \
                                   (e.__class__.__name__, e))
-
+                if self.RAISE_OUTPUT_ERRORS:
+                    raise
         else:
             self.stream.write(u"%s\n" % status_text)
 
@@ -122,6 +124,8 @@ class PlainFormatter(Formatter):
                     unicode_errors += 1
                     self.stream.write(u"%s while writing docstring: %s\n" % \
                                       (e.__class__.__name__, e))
+                    if self.RAISE_OUTPUT_ERRORS:
+                        raise
             if step.table:
                 self.table(step.table)
 
