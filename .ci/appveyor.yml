@@ -47,9 +47,9 @@ init:
     - cmd: "echo TESTING-WITH %PYTHON_DIR%, %PYTHON%"
     - cmd: "%PYTHON_DIR%\\python.exe --version"
     - cmd: "%PYTHON% --version"
-    - cmd: "%PYTHON_DIR%\\python.exe bin\\explore_platform_encoding.py"
     - cmd: "echo CD=%CD%"
     - cmd: "echo PYTHONPATH=%PYTHONPATH%"
+    - cmd: "%PYTHON_DIR%\\python.exe C:\\projects\\behave.ci\\bin\\explore_platform_encoding.py"
     - cmd: set
 
 # -- TEMPORARILY DISABLED: Python variants discovery
