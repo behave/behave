@@ -1106,7 +1106,7 @@ class Runner(ModelRunner):
             if step.status.name == 'failed':
                 failed_step = step
                 break
-        error_string += str(failed_step.exception.message)+'" '
+        error_string += str(failed_step.exception.message).replace('"', "&quot;")+'" '
         error_string += 'type="'
         error_string += re.sub(".*?\.(.*?)\'.*","\\1",\
         str(type(failed_step.exception)))+'">\n'
