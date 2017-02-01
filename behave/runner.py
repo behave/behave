@@ -1106,15 +1106,19 @@ class Runner(ModelRunner):
             if step.status.name == 'failed':
                 failed_step = step
                 break
-        error_string += str(failed_step.exception.message).replace('"', "&quot;")+'" '
+        error_string += str(failed_step.exception.message) \
+                                .replace('"', "&quot;") \
+                                .replace("<", "&lt;") \
+                                .replace(">", "&gt;") \
+                                .replace("&", "&amp;") + '" '
         error_string += 'type="'
         error_string += re.sub(".*?\.(.*?)\'.*","\\1",\
         str(type(failed_step.exception)))+'">\n'
+        error_string += "<![CDATA[\n"
         error_string += "Failing step: "
         error_string += failed_step.name + " ... failed in "
         error_string += str(round(failed_step.duration,4))+"s\n"
         error_string += "Location: " + str(failed_step.location)
-        error_string += "<![CDATA[\n"
         error_string += failed_step.error_message 
         error_string += "]]>\n</error>"
         return error_string
