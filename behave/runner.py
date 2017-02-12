@@ -9,6 +9,7 @@ import os.path
 import StringIO
 import re
 import os
+import codecs
 
 import sys
 import warnings
@@ -1171,7 +1172,7 @@ class Runner(ModelRunner):
             filename = outputdir+"/"+"TESTS-"
             filename += feature_reports[uniquekey]['filebasename']
             filename += ".xml"
-            fd = open(filename,"w")
+            fd = codecs.open(filename,"w", "utf-8")
             fd.write(filedata)
             fd.close() 
 
