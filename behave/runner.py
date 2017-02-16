@@ -962,9 +962,9 @@ class Runner(ModelRunner):
         else:
             for step in current_job.steps:
                 if step.status.name == 'skipped':
-                    writebuf.write("Skipped step because of previous error"
-                                   " - Scenario:{0}|step:{1}\n"
-                                   .format(current_job.name, step.name))
+                    skipped_step = u"Skipped step because of previous error - Scenario:{0}|step:{1}\n"\
+                        .format(current_job.name, step.name)
+                    writebuf.write(skipped_step.encode('utf-8'))
 
     def countscenariostatus(self, current_job, results):
         if current_job.type != 'scenario':
@@ -1060,7 +1060,7 @@ class Runner(ModelRunner):
         report_string += "-"*80 
         report_string += "\n"
 
-        report_string += self.get_junit_stdoutstderr(cj,loglines)
+        report_string += self.get_junit_stdoutstderr(cj,loglines).decode('utf-8')
         report_string += "</testcase>"
         report_obj['report_string'] = report_string
         return report_obj
