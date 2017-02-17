@@ -140,6 +140,20 @@ class TestContext(unittest.TestCase):
         assert self.context.other_thing == "more stuff"
         assert self.context.third_thing == "wombats"
 
+    def test_as_flat_returns_flattened_context(self):
+        self.context.thing = "stuff"
+
+        flat = self.context.as_flat()
+        assert flat["thing"] == "stuff"
+
+        self.context.thing = "new stuff"
+        self.context.other_thing = "wombats"
+        self.context._push()
+
+        flat = self.context.as_flat()
+        assert flat["thing"] == "new stuff"
+        assert flat["other_thing"] == "wombats"
+
     def test_attributes_set_at_lower_level_not_visible_at_upper_level(self):
         self.context.thing = "stuff"
 

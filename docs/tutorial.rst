@@ -433,6 +433,31 @@ The *context* variable in all cases is an instance of
 
 .. _docid.tutorial.environmental-controls:
 
+Using Context data in steps
+---------------------------
+
+Like shown above, you can use the data in "context" to pass data between steps.
+Variables stored there can also be used in a scenario like so:
+
+.. code-block:: python
+
+    @given('I request a new widget for an account via SOAP')
+    def step_impl(context):
+        client = Client("http://127.0.0.1:8000/soap/")
+        response = client.Allocate(first='Firstname', last='Lastname')
+        context.widget_id = response['id']
+
+    @then('I delete the widget with ID "{id}"')
+    def step_impl(context, id):
+        client = Client("http://127.0.0.1:8000/soap/")
+        client.delete(id)
+
+.. code-block:: gherkin
+
+  Scenario: request and delete widget
+    Given I request a new widget for an account via SOAP
+    When I delete the widget with ID "<widget_id>"
+
 Environmental Controls
 ======================
 

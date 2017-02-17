@@ -461,6 +461,7 @@ class TestStepRun(unittest.TestCase):
         self.config = self.runner.config = Mock()
         self.config.outputs = [None]
         self.context = self.runner.context = Mock()
+        self.context.as_flat = lambda: {'thing': 'wombats'}
         print("context is %s" % self.context)
         self.formatters = self.runner.formatters = [Mock()]
         self.stdout_capture = self.capture_controller.stdout_capture = Mock()
@@ -660,6 +661,15 @@ class TestStepRun(unittest.TestCase):
         assert not step.run(self.runner)
         assert "Captured logging:" in step.error_message
         assert "toads" in step.error_message
+
+    def test_run_replaces_variables(self):
+        self.runner.step_registry.find_match.return_value = Mock()
+
+        step = Step("foo.feature", 17, u"Given", "given", u"some <thing> name", u"some <thing> text")
+        assert step.run(self.runner)
+
+        assert step.name == "some wombats name"
+        assert step.text == "some wombats text"
 
 
 class TestTableModel(unittest.TestCase):

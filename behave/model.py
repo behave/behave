@@ -1767,6 +1767,19 @@ class Step(BasicStatement, Replayable):
         # self.hook_failed = False
         self.reset()
 
+        flat_context = runner.context.as_flat()
+
+        for k in list(flat_context.keys()):
+            try:
+                flat_context[k] = str(k)
+            except:
+                del flat_context[k]
+
+        self.name = ScenarioOutlineBuilder.render_template(self.name, params=flat_context)
+
+        if self.text:
+            self.text = ScenarioOutlineBuilder.render_template(self.text, params=flat_context)
+
         match = runner.step_registry.find_match(self)
         if match is None:
             runner.undefined_steps.append(self)

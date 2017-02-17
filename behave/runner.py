@@ -324,6 +324,15 @@ class Context(object):
             else:
                 print(prefix + repr(frame))
 
+    def as_flat(self):
+        variables = {}
+
+        for frame in self._stack:
+            for k, v in frame.items():
+                variables[k] = str(v)
+
+        return variables
+
     def __getattr__(self, attr):
         if attr[0] == "_":
             try:
