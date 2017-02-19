@@ -248,6 +248,14 @@ class TestCaptureController(object):
         assert capture_controller.captured.output == "HELLO\nSam\nAlice\nBob\n"
 
 
+    def test_capturing__write_to_buffer(self, capture_controller):
+        capture_controller.start_capture()
+        print('Hello')
+        getattr(sys.stdout, 'buffer', sys.stdout).write(b'World!\n')
+        capture_controller.stop_capture()
+        assert capture_controller.captured.output == 'Hello\nWorld!\n'
+
+
     def test_capturing__with_several_start_stop_cycles(self, capture_controller):
         capture_controller.start_capture()
         sys.stdout.write("HELLO\n")
