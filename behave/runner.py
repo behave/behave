@@ -1169,7 +1169,7 @@ class Runner(ModelRunner):
                 outputdir = custdir
             if not os.path.exists(outputdir):
                 os.makedirs(outputdir)
-            filename = outputdir+"/"+"TESTS-"
+            filename = outputdir+"/"+"TESTS-behave_parallel."
             filename += feature_reports[uniquekey]['filebasename']
             filename += ".xml"
             fd = codecs.open(filename,"w", "utf-8")
