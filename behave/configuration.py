@@ -161,6 +161,12 @@ options = [
           default="reports",
           help="""Directory in which to store JUnit reports.""")),
 
+    (("--junit-xml-prefix",),
+     dict(metavar="STRING", dest='junit_xml_prefix',
+          help="""If junit option is used, you can use this option to specify the prefix of
+                  junit output xml file.
+               """)),
+
     ((),  # -- CONFIGFILE only
      dict(dest="default_format",
           help="Specify default formatter (default: pretty).")),
