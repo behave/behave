@@ -98,6 +98,12 @@ options = [
      dict(metavar="PATTERN", dest="include_re",
           help="Only run feature files matching regular expression PATTERN.")),
 
+    (("--extra-steps",),
+     dict(metavar="PATH", action="append", dest="extra_step_paths",
+          help="""Load extra step definitions from given path (directory). Can
+                  be specified multiple times.
+                  """)),
+
     (("--no-junit",),
      dict(action="store_false", dest="junit",
           help="Don't output JUnit-compatible reports.")),
@@ -570,6 +576,7 @@ class Configuration(object):
         self.exclude_re = None
         self.scenario_outline_annotation_schema = None  # pylint: disable=invalid-name
         self.steps_dir = "steps"
+        self.extra_step_paths = []
         self.environment_file = "environment.py"
         self.userdata_defines = None
         self.more_formatters = None
