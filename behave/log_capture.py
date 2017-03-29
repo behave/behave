@@ -80,7 +80,7 @@ class LoggingCapture(BufferingHandler):
         elif config.logging_level:
             self.level = config.logging_level
         else:
-            self.level = logging.NOTSET
+            self.level = logging.INFO
 
         # construct my filter
         if config.logging_filter:
