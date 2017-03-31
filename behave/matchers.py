@@ -236,7 +236,7 @@ class CFParseMatcher(ParseMatcher):
     for fields with CardinalityField part.
     """
     def __init__(self, func, string, step_type=None):
-        super(CFParseMatcher, self).__init__(func, string, step_type)
+        super(ParseMatcher, self).__init__(func, string, step_type)
         self.parser = cfparse.Parser(self.string, self.custom_types)
 
 
