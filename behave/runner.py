@@ -1107,6 +1107,8 @@ class Runner(ModelRunner):
             if step.status.name == 'failed':
                 failed_step = step
                 break
+            elif step.status.name == 'undefined':
+                return 'Step Undefined'
         error_string += str(failed_step.exception.message) \
                                 .replace('"', "&quot;") \
                                 .replace("<", "&lt;") \
@@ -1169,7 +1171,7 @@ class Runner(ModelRunner):
                 outputdir = custdir
             if not os.path.exists(outputdir):
                 os.makedirs(outputdir)
-            filename = outputdir+"/"+getattr(self.config, 'junit_xml_prefix', 'TESTS-')
+            filename = outputdir+"/"+(getattr(self.config, 'junit_xml_prefix') or 'TESTS-')
             filename += feature_reports[uniquekey]['filebasename']
             filename += ".xml"
             fd = codecs.open(filename,"w", "utf-8")
