@@ -1106,6 +1106,9 @@ class ScenarioOutline(Scenario):
                 if runner.config.stop or runner.aborted:
                     # -- FAIL-EARLY: Stop after first failure.
                     break
+        if not self.scenarios and runner.config.fail_on_empty_outline:
+            self.set_status(Status.failed)
+            failed_count += 1
         runner.context._set_root_attribute("active_outline", None)
         return failed_count > 0
 
