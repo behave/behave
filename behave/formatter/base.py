@@ -164,6 +164,7 @@ class Formatter(object):
 
         :param step: Step object (as :class:`behave.model.Step`)
         """
+        pass
 
     def match(self, match):
         """Called when a step was matched against its step implementation.
