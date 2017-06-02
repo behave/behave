@@ -98,3 +98,32 @@ Feature: Issue #187 ScenarioOutline uses wrong return value when if fails
       0 features passed, 1 failed, 0 skipped
       2 scenarios passed, 1 failed, 0 skipped
       """
+
+  Scenario: Empty scenario outline passes
+    Given a file named "features/example.scenario_outline_empty_passes.feature" with:
+      """
+      Feature:  Empty scenario outline passes
+        Scenario Outline:
+          Given a step passes
+      """
+    When I run "behave -f plain features/example.scenario_outline_empty_passes.feature"
+    Then it should pass with:
+      """
+      1 feature passed, 0 failed, 0 skipped
+      0 scenarios passed, 0 failed, 0 skipped
+      """
+
+  @scenario_outline.fails
+  Scenario: Empty scenario outline fails
+    Given a file named "features/example.scenario_outline_empty_fails.feature" with:
+      """
+      Feature:  Empty scenario outline fails
+        Scenario Outline:
+          Given a step passes
+      """
+    When I run "behave --fail-on-empty-scenario-outline -f plain features/example.scenario_outline_empty_passes.feature"
+    Then it should fail with:
+      """
+      0 features passed, 1 failed, 0 skipped
+      0 scenarios passed, 0 failed, 0 skipped
+      """
