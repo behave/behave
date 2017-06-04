@@ -359,16 +359,14 @@ def make_undefined_step_snippet(step, language=None):
         steps = parser.parse_steps(step_text, language=language)
         step = steps[0]
         assert step, "ParseError: %s" % step_text
-    # prefix = u""
-    # if sys.version_info[0] == 2:
-    #    prefix = u"u"
-    prefix = u"u"
+
+    prefix = u"u" if sys.version_info[0] == 2 else ""
     single_quote = "'"
     if single_quote in step.name:
         step.name = step.name.replace(single_quote, r"\'")
 
     schema = u"@%s(%s'%s')\ndef step_impl(context):\n"
-    schema += u"    raise NotImplementedError(%s'STEP: %s %s')\n\n"
+    schema += u"    raise NotImplementedError(%s'STEP: %s %s')\n\n\n"
     snippet = schema % (step.step_type, prefix, step.name,
                         prefix, step.step_type.title(), step.name)
     return snippet
