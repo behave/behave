@@ -50,7 +50,9 @@ Books
 
 `Behave`_ is covered in the following books:
 
-.. [TDD-Python] Harry Percival,
+..
+
+    [TDD-Python] Harry Percival,
     `Test-Driven Web Development with Python`_, O'Reilly, June 2014,
     `Appendix E: BDD <http://chimera.labs.oreilly.com/books/1234000000754/ape.html>`_
     (covers behave)
