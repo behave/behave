@@ -30,8 +30,7 @@ IDE             Plugin              Description
 .. _Eclipse:        http://eclipse.org/
 .. _VisualStudio:   http://www.visualstudio.com/
 
-.. _`PyCharm BDD`:  http://www.jetbrains.com/pycharm/whatsnew/#BDD
-.. _`PyCharm BDD details`: http://blog.jetbrains.com/pycharm/2014/09/feature-spotlight-behavior-driven-development-in-pycharm/
+.. _`PyCharm BDD`: http://blog.jetbrains.com/pycharm/2014/09/feature-spotlight-behavior-driven-development-in-pycharm/
 .. _`Cucumber-Eclipse`: http://cucumber.github.io/cucumber-eclipse/
 .. _cuke4vs:        https://github.com/henritersteeg/cuke4vs
 
@@ -58,9 +57,9 @@ Editor              Plugin                  Description
 .. _`Sublime Text`:    http://www.sublimetext.com
 
 .. _`Gherkin editor`: http://gherkineditor.codeplex.com
-.. _gedit_behave:   https://gitorious.org/cucutags/gedit_behave
+.. _gedit_behave:   https://gitlab.com/mcepl/gedit_behave
 .. _`NP++ gherkin`: http://productive.me/develop/cucumbergherkin-syntax-highlighting-for-notepad
-.. _vim-behave:     https://gitorious.org/cucutags/vim-behave
+.. _vim-behave:     https://github.com/rooprob/vim-behave
 .. _vim-cucumber:   https://github.com/tpope/vim-cucumber
 .. _`Cucumber (ST Bundle)`:    https://packagecontrol.io/packages/Cucumber
 .. _Behave Step Finder: https://packagecontrol.io/packages/Behave%20Step%20Finder
@@ -76,6 +75,6 @@ Tool                        Description
                             for Gherkin feature files and behave step definitions.
 =========================== ===========================================================================
 
-.. _cucutags:   https://gitorious.org/cucutags/cucutags/
+.. _cucutags:   https://pypi.python.org/pypi/cucutags/
 .. _ctags:      http://ctags.sourceforge.net/
 
