@@ -278,6 +278,14 @@ or "then". The "and" and "but" step types are renamed internally to take
 the preceding step's keyword (so an "and" following a "given" will become a
 "given" internally and use a **given** decorated step).
 
+.. note::
+
+  Step function names do not need to have a unique symbol name, because the
+  text matching selects the step function from the step registry before it is
+  called as anonymous function.  Hence, when *behave* prints out the missing
+  step implementations in a test run, it uses "step_impl" for all functions
+  by default.
+
 If you find you'd like your step implementation to invoke another step you
 may do so with the :class:`~behave.runner.Context` method
 :func:`~behave.runner.Context.execute_steps`.
