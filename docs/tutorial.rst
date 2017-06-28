@@ -23,19 +23,19 @@ file called "tutorial.py" containing:
 
 .. code-block:: python
 
-  from behave import *
+    from behave import *
 
-  @given('we have behave installed')
-  def step_impl(context):
-      pass
+    @given('we have behave installed')
+    def step_impl(context):
+        pass
 
-  @when('we implement a test')
-  def step_impl(context):
-      assert True is not False
+    @when('we implement a test')
+    def step_impl(context):
+        assert True is not False
 
-  @then('behave will test it for us!')
-  def step_impl(context):
-      assert context.failed is False
+    @then('behave will test it for us!')
+    def step_impl(context):
+        assert context.failed is False
 
 Run behave::
 
@@ -219,10 +219,10 @@ function. The table for the example above could be accessed like so:
 
 .. code-block:: python
 
-  @given('a set of specific users')
-  def step_impl(context):
-      for row in context.table:
-          model.add_user(name=row['name'], department=row['department'])
+    @given('a set of specific users')
+    def step_impl(context):
+        for row in context.table:
+            model.add_user(name=row['name'], department=row['department'])
 
 There's a variety of ways to access the table data - see the
 :class:`~behave.model.Table` API documentation for the full details.
@@ -258,20 +258,20 @@ Step code implementing the two steps here might look like
 
 .. code-block:: python
 
- @given('I search for a valid account')
- def step_impl(context):
-    context.browser.get('http://localhost:8000/index')
-    form = get_element(context.browser, tag='form')
-    get_element(form, name="msisdn").send_keys('61415551234')
-    form.submit()
+    @given('I search for a valid account')
+    def step_impl(context):
+        context.browser.get('http://localhost:8000/index')
+        form = get_element(context.browser, tag='form')
+        get_element(form, name="msisdn").send_keys('61415551234')
+        form.submit()
 
- @then('I will see the account details')
- def step_impl(context):
-    elements = find_elements(context.browser, id='no-account')
-    eq_(elements, [], 'account not found')
-    h = get_element(context.browser, id='account-head')
-    ok_(h.text.startswith("Account 61415551234"),
-        'Heading %r has wrong text' % h.text)
+    @then('I will see the account details')
+    def step_impl(context):
+        elements = find_elements(context.browser, id='no-account')
+        eq_(elements, [], 'account not found')
+        h = get_element(context.browser, id='account-head')
+        ok_(h.text.startswith("Account 61415551234"),
+            'Heading %r has wrong text' % h.text)
 
 The ``step`` decorator matches the step to *any* step type, "given", "when"
 or "then". The "and" and "but" step types are renamed internally to take
@@ -319,10 +319,10 @@ clauses (with a Given step that puts some text into
 
 .. code-block:: python
 
- @then('the result page will include "{text}"')
- def step_impl(context, text):
-    if text not in context.response:
-        fail('%r not in %r' % (text, context.response))
+    @then('the result page will include "{text}"')
+    def step_impl(context, text):
+        if text not in context.response:
+            fail('%r not in %r' % (text, context.response))
 
 There are several parsers available in *behave* (by default):
 
@@ -391,15 +391,15 @@ steps you define you might have:
 
 .. code-block:: python
 
-  @given('I request a new widget for an account via SOAP')
-  def step_impl(context):
-      client = Client("http://127.0.0.1:8000/soap/")
-      context.response = client.Allocate(customer_first='Firstname',
-          customer_last='Lastname', colour='red')
+    @given('I request a new widget for an account via SOAP')
+    def step_impl(context):
+        client = Client("http://127.0.0.1:8000/soap/")
+        context.response = client.Allocate(customer_first='Firstname',
+            customer_last='Lastname', colour='red')
 
-  @then('I should receive an OK SOAP response')
-  def step_impl(context):
-      eq_(context.response['ok'], 1)
+    @then('I should receive an OK SOAP response')
+    def step_impl(context):
+        eq_(context.response['ok'], 1)
 
 There's also some values added to the context by *behave* itself:
 
@@ -457,26 +457,26 @@ server and browser to run all your tests in. For example:
 
 .. code-block:: python
 
-  import threading
-  from wsgiref import simple_server
-  from selenium import webdriver
-  from my_application import model
-  from my_application import web_app
+    import threading
+    from wsgiref import simple_server
+    from selenium import webdriver
+    from my_application import model
+    from my_application import web_app
 
-  def before_all(context):
-      context.server = simple_server.WSGIServer(('', 8000))
-      context.server.set_app(web_app.main(environment='test'))
-      context.thread = threading.Thread(target=context.server.serve_forever)
-      context.thread.start()
-      context.browser = webdriver.Chrome()
+    def before_all(context):
+        context.server = simple_server.WSGIServer(('', 8000))
+        context.server.set_app(web_app.main(environment='test'))
+        context.thread = threading.Thread(target=context.server.serve_forever)
+        context.thread.start()
+        context.browser = webdriver.Chrome()
 
-  def after_all(context):
-      context.server.shutdown()
-      context.thread.join()
-      context.browser.quit()
+    def after_all(context):
+        context.server.shutdown()
+        context.thread.join()
+        context.browser.quit()
 
-  def before_feature(context, feature):
-      model.init(environment='test')
+    def before_feature(context, feature):
+        model.init(environment='test')
 
 Of course if you wish you could have a new browser for each feature, or to
 retain the database state between features or even initialise the database
@@ -549,20 +549,20 @@ browser and web server then you could tag them ``@browser``:
 
 .. code-block:: python
 
-  def before_feature(context, feature):
-      model.init(environment='test')
-      if 'browser' in feature.tags:
-          context.server = simple_server.WSGIServer(('', 8000))
-          context.server.set_app(web_app.main(environment='test'))
-          context.thread = threading.Thread(target=context.server.serve_forever)
-          context.thread.start()
-          context.browser = webdriver.Chrome()
+    def before_feature(context, feature):
+        model.init(environment='test')
+        if 'browser' in feature.tags:
+            context.server = simple_server.WSGIServer(('', 8000))
+            context.server.set_app(web_app.main(environment='test'))
+            context.thread = threading.Thread(target=context.server.serve_forever)
+            context.thread.start()
+            context.browser = webdriver.Chrome()
 
-  def after_feature(context, feature):
-      if 'browser' in feature.tags:
-          context.server.shutdown()
-          context.thread.join()
-          context.browser.quit()
+    def after_feature(context, feature):
+        if 'browser' in feature.tags:
+            context.server.shutdown()
+            context.thread.join()
+            context.browser.quit()
 
 
 Works In Progress
@@ -632,5 +632,3 @@ by using the user-specific configuration data. A user can:
             # NOTE: Use IPython debugger, same for pdb (basic python debugger).
             import ipdb
             ipdb.post_mortem(step.exc_traceback)
-
-
