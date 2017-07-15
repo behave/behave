@@ -15,6 +15,7 @@ import copy
 import difflib
 import logging
 import itertools
+import random
 import time
 import six
 from six.moves import zip       # pylint: disable=redefined-builtin
@@ -309,6 +310,8 @@ class Feature(TagAndStatusStatement, Replayable):
             if self.background:
                 for formatter in runner.formatters:
                     formatter.background(self.background)
+
+        order_list_by_config(runner.config, self.scenarios)
 
         if not skip_feature_untested:
             for scenario in self.scenarios:
@@ -1735,3 +1738,12 @@ def reset_model(model_elements):
     """
     for model_element in model_elements:
         model_element.reset()
+
+
+def order_list_by_config(config, iterable):
+    order_type, seed = config.order
+    if order_type != "random":
+        return iterable
+    r = random.Random(seed)
+    r.shuffle(iterable)
+    return iterable

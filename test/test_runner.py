@@ -657,6 +657,7 @@ class TestRunWithPaths(unittest.TestCase):
         self.config.logging_filter = None
         self.config.outputs = [Mock(), StreamOpener(stream=sys.stdout)]
         self.config.format = ["plain", "progress"]
+        self.config.order = ('defined', None)
         self.runner = runner.Runner(self.config)
         self.load_hooks = self.runner.load_hooks = Mock()
         self.load_step_definitions = self.runner.load_step_definitions = Mock()
@@ -1071,4 +1072,3 @@ class TestFeatureDirectoryLayout2(object):
                 assert_raises(ConfigError, r.setup_paths)
 
         ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
-

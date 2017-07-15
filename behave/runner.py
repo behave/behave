@@ -17,6 +17,7 @@ from behave.configuration import ConfigError
 from behave.capture import CaptureController
 from behave.runner_util import collect_feature_locations, parse_features
 from behave._types import ExceptionUtil
+from behave.model import order_list_by_config
 if six.PY2:
     # -- USE PYTHON3 BACKPORT: With unicode traceback support.
     import traceback2 as traceback
@@ -531,6 +532,9 @@ class ModelRunner(object):
         run_feature = not self.aborted
         failed_count = 0
         undefined_steps_initial_size = len(self.undefined_steps)
+
+        order_list_by_config(self.config, features)
+
         for feature in features:
             if run_feature:
                 try:

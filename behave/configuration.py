@@ -4,6 +4,7 @@ from __future__ import print_function
 import argparse
 import logging
 import os
+import random
 import re
 import sys
 import shlex
@@ -322,6 +323,10 @@ options = [
                   switch is used to override a configuration file
                   setting.""")),
 
+    (("--order",),
+     dict(dest="order", metavar="TYPE[:SEED]",
+          help="""Change the order in which the scenarios are run.""")),
+
     (("-v", "--verbose"),
      dict(action="store_true",
           help="Show the files and features loaded.")),
@@ -506,6 +511,7 @@ class Configuration(object):
         logging_level=logging.INFO,
         steps_catalog=False,
         summary=True,
+        order="defined",
         junit=False,
         stage=None,
         userdata={},
@@ -609,6 +615,23 @@ class Configuration(object):
             self.stdout_capture = False
 
         self.tags = TagExpression(self.tags or self.default_tags.split())
+
+        if self.order:
+            order_type = self.order
+            seed = None
+            if ":" in self.order:
+                order_type, seed = self.order.split(":", 1)
+            if order_type not in ("defined", "random"):
+                parser.error('order_type "%s" not implemented' % order_type)
+
+            try:
+                seed = int(seed)
+            except (ValueError, TypeError):
+                if order_type == "random":
+                    seed = random.randint(0, 100000)
+                else:
+                    seed = None
+            self.order = (order_type, seed)
 
         if self.quiet:
             self.show_source = False
