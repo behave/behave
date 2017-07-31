@@ -98,3 +98,16 @@ Feature: Steps Catalog Formatter
           """
         But note that "the step definitions are ordered by step type"
         And note that "'When I visit {person}' has no doc-string"
+
+
+    Scenario: Steps catalog formatter is used for output even when other formatter is specified
+        When I run "behave --steps-catalog -f plain features/"
+        Then it should pass with:
+          """
+          Given {person} lives in {city}
+              Setup the data where a person lives and store in the database.
+
+              :param person:  Person's name (as string).
+              :param city:    City where the person lives (as string).
+          """
+
