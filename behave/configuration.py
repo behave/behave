@@ -83,7 +83,7 @@ options = [
 
     (("--color",),
      dict(dest="color", choices=["never", "always", "auto"],
-          default=None, const="auto", nargs="?",
+          default=os.getenv('BEHAVE_COLOR'), const="auto", nargs="?",
           help="""Use ANSI color escapes. Defaults to %(const)r.
                   This switch is used to override a
                   configuration file setting.""")),
@@ -507,7 +507,7 @@ class Configuration(object):
     """Configuration object for behave and behave runners."""
     # pylint: disable=too-many-instance-attributes
     defaults = dict(
-        color=sys.platform != "win32",
+        color='never' if sys.platform == "win32" else os.getenv('BEHAVE_COLOR', 'auto'),
         show_snippets=True,
         show_skipped=True,
         dry_run=False,
