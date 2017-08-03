@@ -82,9 +82,10 @@ options = [
           help="Disable the use of ANSI color escapes.")),
 
     (("--color",),
-     dict(action="store_true", dest="color",
-          help="""Use ANSI color escapes. This is the default
-                  behaviour. This switch is used to override a
+     dict(dest="color", choices=["never", "always", "auto"],
+          default="auto", const="auto", nargs="?",
+          help="""Use ANSI color escapes. Defaults to %(const)r.
+                  This switch is used to override a
                   configuration file setting.""")),
 
     (("-d", "--dry-run"),
