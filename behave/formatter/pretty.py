@@ -66,9 +66,7 @@ class PrettyFormatter(Formatter):
         super(PrettyFormatter, self).__init__(stream_opener, config)
         # -- ENSURE: Output stream is open.
         self.stream = self.open()
-        isatty = getattr(self.stream, "isatty", lambda: True)
-        stream_supports_colors = isatty()
-        self.monochrome = not config.color or not stream_supports_colors
+        self.monochrome = self._get_monochrome(config)
         self.show_source = config.show_source
         self.show_timings = config.show_timings
         self.show_multiline = config.show_multiline
@@ -83,6 +81,14 @@ class PrettyFormatter(Formatter):
         self.indentations = []
         self.step_lines = 0
 
+    def _get_monochrome(self, config):
+        isatty = getattr(self.stream, "isatty", lambda: True)
+        if config.color == 'always':
+            return False
+        elif config.color == 'never':
+            return True
+        else:
+            return not isatty()
 
     def reset(self):
         # -- UNUSED: self.tag_statement = None
