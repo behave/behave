@@ -511,7 +511,7 @@ class Configuration(object):
         stage=None,
         userdata={},
         # -- SPECIAL:
-        default_format="pretty",    # -- Used when no formatters are configured.
+        default_format=os.getenv("BEHAVE_FORMATTER", "pretty"),    # -- Used when no formatters are configured.
         default_tags="",            # -- Used when no tags are defined.
         scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}"
     )
