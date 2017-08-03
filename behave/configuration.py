@@ -83,7 +83,7 @@ options = [
 
     (("--color",),
      dict(dest="color", choices=["never", "always", "auto"],
-          default="auto", const="auto", nargs="?",
+          default=None, const="auto", nargs="?",
           help="""Use ANSI color escapes. Defaults to %(const)r.
                   This switch is used to override a
                   configuration file setting.""")),
@@ -561,6 +561,16 @@ class Configuration(object):
         if verbose is None:
             # -- AUTO-DISCOVER: Verbose mode from command-line args.
             verbose = ("-v" in command_args) or ("--verbose" in command_args)
+
+        # Allow commands like `--color features/whizbang.feature` to work
+        # Without this, argparse will treat the positional arg as the value to
+        # --color and we'd get:
+        #   argument --color: invalid choice: 'features/whizbang.feature'
+        #   (choose from 'never', 'always', 'auto')
+        if '--color' in command_args:
+            color_arg_pos = command_args.index('--color')
+            if os.path.exists(command_args[color_arg_pos + 1]):
+                command_args.insert(color_arg_pos + 1, '--')
 
         self.version = None
         self.tags_help = None
