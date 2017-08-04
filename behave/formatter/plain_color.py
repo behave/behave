@@ -7,7 +7,7 @@ from behave.textutil import make_indentation
 
 
 class PlainColorFormatter(PlainFormatter):
-    """For environments with ansi color support but wihtout terminal support
+    """For environments with ansi color support but without terminal support
 
     Use case examples that support ansi colors:
 
@@ -18,7 +18,7 @@ class PlainColorFormatter(PlainFormatter):
 
     name = 'plain.color'
     description = (
-        'For environments with ANSI color support but wihtout terminal support'
+        'For environments with ANSI color support but without terminal support'
     )
 
     SHOW_ALIGNED_KEYWORDS = True
