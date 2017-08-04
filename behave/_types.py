@@ -55,8 +55,15 @@ class ExceptionUtil(object):
     @classmethod
     def describe(cls, exception, use_traceback=False, prefix=""):
         # -- NORMAL CASE:
-        text = u"{prefix}{0}: {1}\n".format(exception.__class__.__name__,
-                                            exception, prefix=prefix)
+        try:
+            text = u"{prefix}{0}: {1}\n".format(exception.__class__.__name__,
+                                                exception, prefix=prefix)
+        except UnicodeDecodeError:
+            # Avoid UnicodeDecodeError in Python 2 when 'exception' is a system
+            # error thrown by a Windows host configured in a non-ascii language
+            exc_message = str(exception).decode('cp1252', 'ignore')
+            text = u"{prefix}{0}: {1}\n".format(exception.__class__.__name__,
+                                                exc_message, prefix=prefix)
         if use_traceback:
             exc_traceback = cls.get_traceback(exception)
             if exc_traceback:
