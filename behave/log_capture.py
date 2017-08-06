@@ -96,7 +96,13 @@ class LoggingCapture(BufferingHandler):
         self.buffer = []
 
     def getvalue(self):
-        return '\n'.join(self.formatter.format(r) for r in self.buffer)
+        try:
+            return '\n'.join(self.formatter.format(r) for r in self.buffer)
+        except UnicodeDecodeError:
+            # Avoid UnicodeDecodeError in Python 2 when captured logs contain
+            # utf-8 characters
+            return '\n'.join(self.formatter.format(r).decode('utf-8', 'ignore')
+                             for r in self.buffer)
 
     def find_event(self, pattern):
         """Search through the buffer for a message that matches the given
