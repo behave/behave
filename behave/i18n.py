@@ -46,7 +46,7 @@ languages = \
         'but': [u'*', u'Ale'],
         'examples': [u'P\u0159\xedklady'],
         'feature': [u'Po\u017eadavek'],
-        'given': [u'*', u'Pokud'],
+        'given': [u'*', u'Pokud', u'Za p\u0159edpokladu'],
         'name': [u'Czech'],
         'native': [u'\u010cesky'],
         'scenario': [u'Sc\xe9n\xe1\u0159'],
