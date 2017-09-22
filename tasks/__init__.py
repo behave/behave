@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+# pylint: disable=wrong-import-position, wrong-import-order
 """
 Invoke build script.
 Show all tasks with::
@@ -16,16 +17,16 @@ from __future__ import absolute_import
 # -----------------------------------------------------------------------------
 # BOOTSTRAP PATH: Use provided vendor bundle if "invoke" is not installed
 # -----------------------------------------------------------------------------
+from . import _setup    # pylint: disable=wrong-import-order
 INVOKE_MINVERSION = "0.14.0"
-from . import _setup
 _setup.setup_path()
 _setup.require_invoke_minversion(INVOKE_MINVERSION)
 
 # -----------------------------------------------------------------------------
 # IMPORTS:
 # -----------------------------------------------------------------------------
-from invoke import Collection
 import sys
+from invoke import Collection
 
 # -- TASK-LIBRARY:
 from . import clean
@@ -51,5 +52,6 @@ namespace.add_collection(Collection.from_module(test))
 namespace.configure(clean.namespace.configuration())
 if sys.platform.startswith("win"):
     # -- OVERRIDE SETTINGS: For platform=win32, ... (Windows)
-    run_settings = dict(echo=True, pty=False, shell="C:/Windows/System32/cmd.exe")
+    from ._compat_shutil import which
+    run_settings = dict(echo=True, pty=False, shell=which("cmd"))
     namespace.configure({"run": run_settings})
