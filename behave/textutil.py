@@ -135,3 +135,19 @@ def text(value, encoding=None, errors=None):
             # Python3: multi-arg call supports only string-like object: str, bytes
             text2 = six.text_type(e)
         return text2
+
+
+def ensure_stream_with_encoder(stream, encoding=None):
+    if not encoding:
+        encoding = select_best_encoding(stream)
+
+    if six.PY3:
+        return stream
+    elif hasattr(stream, "stream"):
+        return stream    # Already wrapped with a codecs.StreamWriter
+    else:
+        assert six.PY2
+        # py2 does, however, sometimes declare an encoding on sys.stdout,
+        # even if it doesn't use it (or it might be explicitly None)
+        stream = codecs.getwriter(encoding)(stream)
+        return stream

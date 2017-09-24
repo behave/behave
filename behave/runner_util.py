@@ -9,11 +9,11 @@ import glob
 import os.path
 import re
 import sys
-
+import six
 from six import string_types
 from behave import parser
 from behave.model_core import FileLocation
-
+from behave.textutil import select_best_encoding, ensure_stream_with_encoder
 
 
 # -----------------------------------------------------------------------------
@@ -400,6 +400,8 @@ def print_undefined_step_snippets(undefined_steps, stream=None, colored=True):
         # -- OOPS: Unclear if stream supports ANSI coloring.
         from behave.formatter.ansi_escapes import escapes
         msg = escapes['undefined'] + msg + escapes['reset']
+
+    stream = ensure_stream_with_encoder(stream)
     stream.write(msg)
     stream.flush()
 

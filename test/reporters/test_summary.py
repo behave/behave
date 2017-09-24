@@ -1,12 +1,13 @@
 # -*- coding: UTF-8 -*-
 
 from __future__ import absolute_import, division
+import sys
 from mock import Mock, patch
 from nose.tools import *
-
 from behave.model import ScenarioOutline, Scenario
 from behave.model_core import Status
 from behave.reporter.summary import SummaryReporter, format_summary
+
 
 class TestFormatStatus(object):
     def test_passed_entry_contains_label(self):
@@ -74,6 +75,7 @@ class TestSummaryReporter(object):
         features[3].__iter__ = Mock(return_value=iter([]))
 
         config = Mock()
+        sys.stdout.encoding = "UTF-8"
         reporter = SummaryReporter(config)
 
         [reporter.feature(f) for f in features]
@@ -109,6 +111,7 @@ class TestSummaryReporter(object):
         features[4].__iter__ = Mock(return_value=iter([]))
 
         config = Mock()
+        sys.stdout.encoding = "UTF-8"
         reporter = SummaryReporter(config)
 
         [reporter.feature(f) for f in features]
@@ -144,6 +147,7 @@ class TestSummaryReporter(object):
         feature.__iter__ = Mock(return_value=iter(scenarios))
 
         config = Mock()
+        sys.stdout.encoding = "UTF-8"
         reporter = SummaryReporter(config)
 
         reporter.feature(feature)
@@ -186,6 +190,7 @@ class TestSummaryReporter(object):
         feature.__iter__ = Mock(return_value=iter(scenarios))
 
         config = Mock()
+        sys.stdout.encoding = "UTF-8"
         reporter = SummaryReporter(config)
 
         reporter.feature(feature)
@@ -224,6 +229,7 @@ class TestSummaryReporter(object):
         scenario.__iter__ = Mock(return_value=iter(steps))
 
         config = Mock()
+        sys.stdout.encoding = "UTF-8"
         reporter = SummaryReporter(config)
 
         reporter.feature(feature)
