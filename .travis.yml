@@ -29,8 +29,7 @@ cache:
     - $HOME/.cache/pip
 
 install:
-  - travis_retry pip install -q mock nose PyHamcrest
-  - travis_retry pip install -q -U pytest>=3.0
+  - travis_retry pip install -q -r py.requirements/ci.travis.txt
   - python setup.py -q install
 
 script:
