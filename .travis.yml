@@ -6,11 +6,14 @@ python:
   - "3.5"
   - "2.6"
   - "pypy"
+  - "pypy3"
   - "3.7-dev"
-  - "nightly"
-  - "3.4"
-  - "3.3"
 
+# -- DISABLED:
+#  - "nightly"
+#  - "3.4"
+#  - "3.3"
+#
 # NOW SUPPORTED: "3.5" => python 3.5.2 (>= 3.5.1)
 # NOTE: Python 3.5.0 is broken (for some tests).
 # NOTE: nightly = 3.7-dev
@@ -18,7 +21,7 @@ python:
 # -- TEST-BALLON: Check if Python 3.6 is actually Python 3.5.1 or newer
 matrix:
   allow_failures:
-    - python: "3.6-dev"
+    - python: "3.7-dev"
     - python: "nightly"
 
 cache:
@@ -27,12 +30,12 @@ cache:
 
 install:
   - travis_retry pip install -q mock nose PyHamcrest
-  - travis_retry pip install -q -U pytest
+  - travis_retry pip install -q -U pytest>=3.0
   - python setup.py -q install
 
 script:
   - python --version
-  - py.test test tests
+  - pytest test tests
   - behave -f progress --junit features/
   - behave -f progress --junit tools/test-features/
   - behave -f progress --junit issue.features/
