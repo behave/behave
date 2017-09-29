@@ -92,7 +92,7 @@ setup(
         'develop': [
             "coverage", "pytest >= 3.0", "pytest-cov", "tox",
             "invoke >= 0.21.0", "path.py >= 8.1.2", "pycmd",
-            "pathlib; python_version <= '3.4'",
+            "pathlib",
             "modernize >= 0.5",
             "pylint",
         ],
