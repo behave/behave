@@ -168,14 +168,14 @@ class TestSimplifiedRegexMatcher(TestRegexMatcher):
         matcher2 = SimplifiedRegexMatcher(step_func2, "I do something more")
 
         # -- CHECK: ORDERING SENSITIVITY
-        matched1 = matcher1.match(matcher2.string)
-        matched2 = matcher2.match(matcher1.string)
+        matched1 = matcher1.match(matcher2.pattern)
+        matched2 = matcher2.match(matcher1.pattern)
         assert matched1 is None
         assert matched2 is None
 
         # -- CHECK: Can match itself (if step text is simple)
-        matched1 = matcher1.match(matcher1.string)
-        matched2 = matcher2.match(matcher2.string)
+        matched1 = matcher1.match(matcher1.pattern)
+        matched2 = matcher2.match(matcher2.pattern)
         assert isinstance(matched1, Match)
         assert isinstance(matched2, Match)
 
@@ -205,14 +205,14 @@ class TestCucumberRegexMatcher(TestRegexMatcher):
         matcher2 = CucumberRegexMatcher(step_func2, "^I do something more$")
 
         # -- CHECK: ORDERING SENSITIVITY
-        matched1 = matcher1.match(matcher2.string[1:-1])
-        matched2 = matcher2.match(matcher1.string[1:-1])
+        matched1 = matcher1.match(matcher2.pattern[1:-1])
+        matched2 = matcher2.match(matcher1.pattern[1:-1])
         assert matched1 is None
         assert matched2 is None
 
         # -- CHECK: Can match itself (if step text is simple)
-        matched1 = matcher1.match(matcher1.string[1:-1])
-        matched2 = matcher2.match(matcher2.string[1:-1])
+        matched1 = matcher1.match(matcher1.pattern[1:-1])
+        matched2 = matcher2.match(matcher2.pattern[1:-1])
         assert isinstance(matched1, Match)
         assert isinstance(matched2, Match)
 
