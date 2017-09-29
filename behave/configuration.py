@@ -61,6 +61,39 @@ class LogLevel(object):
         return logging.getLevelName(level)
 
 
+class Unknown(object): pass
+
+class LogLevel(object):
+    names = [
+         "NOTSET", "CRITICAL", "FATAL", "ERROR",
+         "WARNING", "WARN", "INFO", "DEBUG",
+    ]
+
+    @staticmethod
+    def parse(levelname, unknown_level=None):
+        """
+        Convert levelname into a numeric log level.
+
+        :param levelname: Logging levelname (as string)
+        :param unknown_level: Used if levelname is unknown (optional).
+        :return: Numeric log-level or unknown_level, if levelname is unknown.
+        """
+        return getattr(logging, levelname.upper(), unknown_level)
+
+    @classmethod
+    def parse_type(cls, levelname):
+        level = cls.parse(levelname, Unknown)
+        if level is Unknown:
+            message = "%s is unknown, use: %s" % \
+                      (levelname, ", ".join(cls.names[1:]))
+            raise argparse.ArgumentTypeError(message)
+        return level
+
+    @staticmethod
+    def to_string(level):
+        return logging.getLevelName(level)
+
+
 class ConfigError(Exception):
     pass
 
@@ -82,6 +115,19 @@ options = [
     (("-d", "--dry-run"),
      dict(action="store_true",
           help="Invokes formatters without executing the steps.")),
+
+    (("--processes",),
+     dict(metavar="NUMBER", dest='proc_count',
+          help="""Use multiple pids to do the work faster.
+		Not all options work properly under parallel mode. See README.md 
+		""")),
+
+    (("--parallel-element",),
+     dict(metavar="STRING", dest='parallel_element',
+          help="""If you used the --processes option, then this will control how the tests get parallelized.
+		Valid values are 'feature' or 'scenario'. Anything else will error. See readme for more
+		info on how this works.
+		""")),
 
     (("-D", "--define"),
      dict(dest="userdata_defines", type=parse_user_define, action="append",
@@ -114,6 +160,12 @@ options = [
      dict(metavar="PATH", dest="junit_directory",
           default="reports",
           help="""Directory in which to store JUnit reports.""")),
+
+    (("--junit-xml-prefix",),
+     dict(metavar="STRING", dest='junit_xml_prefix',
+          help="""If junit option is used, you can use this option to specify the prefix of
+                  junit output xml file.
+               """)),
 
     ((),  # -- CONFIGFILE only
      dict(dest="default_format",
@@ -493,6 +545,7 @@ class Configuration(object):
     """Configuration object for behave and behave runners."""
     # pylint: disable=too-many-instance-attributes
     defaults = dict(
+
         color=sys.platform != "win32",
         show_snippets=True,
         show_skipped=True,
@@ -515,6 +568,7 @@ class Configuration(object):
         scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}"
     )
     cmdline_only_options = set("userdata_defines")
+
 
     def __init__(self, command_args=None, load_config=True, verbose=None,
                  **kwargs):

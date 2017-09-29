@@ -405,6 +405,7 @@ def print_undefined_step_snippets(undefined_steps, stream=None, colored=True):
     stream.write(msg)
     stream.flush()
 
+
 def reset_runtime():
     """Reset runtime environment.
     Best effort to reset module data to initial state.
