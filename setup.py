@@ -70,7 +70,7 @@ setup(
     install_requires=[
         "parse >= 1.8.2",
         "parse_type >= 0.4.2",
-        "six >= 1.10",
+        "six >= 1.11",
         "argparse; python_version < '2.7'",
         "importlib; python_version < '2.7'",
         "ordereddict; python_version < '2.7'",
