@@ -23,19 +23,6 @@ from setuptools_behave import behave_test
 # CONFIGURATION:
 # -----------------------------------------------------------------------------
 python_version = float("%s.%s" % sys.version_info[:2])
-requirements = ["parse>=1.6.3", "parse_type>=0.3.4", "six>=1.9"]
-py26_extra = ["argparse", "importlib", "ordereddict", "enum34", "traceback2"]
-py27_extra = ["enum34", "traceback2"]
-py33_extra = ["enum34"]
-if python_version < 2.6:
-    requirements.append("simplejson")
-if python_version < 2.7:
-    requirements.extend(py26_extra)
-if python_version < 3:
-    requirements.extend(py27_extra)
-if python_version >= 3.0 and python_version < 3.4:
-    requirements.extend(py33_extra)
-
 BEHAVE = os.path.join(HERE, "behave")
 README = os.path.join(HERE, "README.rst")
 description = "".join(open(README).readlines()[4:])
@@ -77,18 +64,38 @@ setup(
             "behave_test = setuptools_behave:behave_test"
         ]
     },
-    install_requires=requirements,
+    # -- REQUIREMENTS:
+    # SUPPORT: python2.6, python2.7, python3.3 (or higher)
+    python_requires=">=2.6, !=3.0.*, !=3.1.*, !=3.2.*",
+    install_requires=[
+        "parse >= 1.8.2",
+        "parse_type >= 0.4.2",
+        "six >= 1.11",
+        "argparse; python_version < '2.7'",
+        "importlib; python_version < '2.7'",
+        "ordereddict; python_version < '2.7'",
+        "traceback2; python_version < '3.0'",
+        "enum34; python_version < '3.4'",
+    ],
     test_suite="nose.collector",
-    tests_require=["nose>=1.3", "mock>=1.0", "PyHamcrest>=1.8", "pytest>=2.8"],
+    tests_require=[
+        "pytest >= 3.0",
+        "nose >= 1.3",
+        "mock >= 1.1",
+        "PyHamcrest >= 1.8",
+    ],
     cmdclass = {
         "behave_test": behave_test,
     },
     extras_require={
-        # -- SUPPORT-WHEELS: Extra packages for Python2.6
-        # SEE: https://bitbucket.org/pypa/wheel/ , CHANGES.txt (v0.24.0)
-        ':python_version=="2.6"': py26_extra,
-        ':python_version=="2.7"': py27_extra,
-        ':python_version=="3.3"': py33_extra,
+        'docs': ["sphinx >= 1.5"],
+        'develop': [
+            "coverage", "pytest >= 3.0", "pytest-cov", "tox",
+            "invoke >= 0.21.0", "path.py >= 8.1.2", "pycmd",
+            "pathlib",
+            "modernize >= 0.5",
+            "pylint",
+        ],
     },
     # MAYBE-DISABLE: use_2to3
     use_2to3= bool(python_version >= 3.0),

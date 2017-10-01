@@ -316,8 +316,8 @@ class ExampleSteps(object):
             ("step", "a step with text",     cls.step_with_text),
             ("step", "a step with a table",  cls.step_with_table),
         ]
-        for keyword, string, func in step_definitions:
-            step_registry.add_step_definition(keyword, string, func)
+        for keyword, pattern, func in step_definitions:
+            step_registry.add_step_definition(keyword, pattern, func)
 
 class TestContext_ExecuteSteps(unittest.TestCase):
     """

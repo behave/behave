@@ -1,0 +1,8 @@
+mock
+nose
+PyHamcrest >= 1.8
+pytest >= 3.0
+
+# -- NOTE: Travis.CI tweak related w/ invalid linecache2 tests.
+#    This problem does not exist if you use pip.
+linecache2 >= 1.0; python_version < '3.0'

@@ -34,8 +34,8 @@ class StepRegistry(object):
         }
 
     @staticmethod
-    def same_step_definition(step, other_string, other_location):
-        return (step.string == other_string and
+    def same_step_definition(step, other_pattern, other_location):
+        return (step.pattern == other_pattern and
                 step.location == other_location and
                 other_location.filename != "<string>")
 
@@ -49,7 +49,7 @@ class StepRegistry(object):
                 # -- EXACT-STEP: Same step function is already registered.
                 # This may occur when a step module imports another one.
                 return
-            elif existing.match(step_text):
+            elif existing.match(step_text):     # -- SIMPLISTIC
                 message = u"%s has already been defined in\n  existing step %s"
                 new_step = u"@%s('%s')" % (step_type, step_text)
                 existing.step_type = step_type

@@ -81,7 +81,7 @@ class AbstractStepsFormatter(Formatter):
         if not step_type:
             step_type = step_definition.step_type
         assert step_type
-        return u"@%s('%s')" % (step_type, step_definition.string)
+        return u"@%s('%s')" % (step_type, step_definition.pattern)
 
 
 # -----------------------------------------------------------------------------
@@ -166,7 +166,7 @@ class StepsFormatter(AbstractStepsFormatter):
                 else:
                     step_keyword = keywords[0]
 
-            steps_text = [u"%s %s" % (step_keyword, step.string)
+            steps_text = [u"%s %s" % (step_keyword, step.pattern)
                           for step in steps]
             if self.shows_location:
                 max_size = compute_words_maxsize(steps_text)
@@ -318,10 +318,10 @@ class StepsCatalogFormatter(StepsDocFormatter):
         desc = []
         if step_type == 'step':
             for step_type in self.step_types[:-1]:
-                text = u"%5s %s" % (step_type.title(), step_definition.string)
+                text = u"%5s %s" % (step_type.title(), step_definition.pattern)
                 desc.append(text)
         else:
-            desc.append(u"%s %s" % (step_type.title(), step_definition.string))
+            desc.append(u"%s %s" % (step_type.title(), step_definition.pattern))
 
         return '\n'.join(desc)
 
