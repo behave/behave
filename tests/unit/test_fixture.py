@@ -544,7 +544,7 @@ class TestUseFixtureByTag(object):
                 use_fixture_by_tag("UNKNOWN_FIXTURE", context, fixture_registry)
 
         # -- VERIFY:
-        assert "Unknown fixture-tag: UNKNOWN_FIXTURE" in exc_info.value.message
+        assert "Unknown fixture-tag: UNKNOWN_FIXTURE" in str(exc_info.value)
 
     def test_invalid_data_schema_raises_value_error(self):
         @fixture
@@ -568,9 +568,9 @@ class TestUseFixtureByTag(object):
                 use_fixture_by_tag("fixture.foo", context, fixture_registry)
 
         # -- VERIFY:
-        expected = "fixture_data: Expected tuple or fixture-func, " + \
-                    "but is: <tests.unit.test_fixture.BadFixtureData object"
-        assert exc_info.value.message.startswith(expected)
+        expected = "fixture_data: Expected tuple or fixture-func, but is:"
+        assert expected in str(exc_info.value)
+        assert "BadFixtureData object" in str(exc_info.value)
 
 
 class TestCompositeFixture(object):
