@@ -10,7 +10,7 @@ The following tools and extensions try to simplify the work with `behave`_.
 .. seealso::
 
     * `Are there any non-developer tools for writing Gherkin files ?
-      <http://stackoverflow.com/questions/8275026/are-there-any-non-developer-tools-to-edit-gherkin-files>`_
+      <https://stackoverflow.com/questions/8275026/are-there-any-non-developer-tools-to-edit-gherkin-files>`_
       (``*.feature`` files)
 
 
@@ -26,15 +26,25 @@ IDE             Plugin              Description
 `VisualStudio`_ `cuke4vs`_          VisualStudio plugin with editor support for Gherkin.
 =============== =================== ======================================================================================
 
-.. _PyCharm:        http://www.jetbrains.com/pycharm/
-.. _Eclipse:        http://eclipse.org/
-.. _VisualStudio:   http://www.visualstudio.com/
+.. _PyCharm:        https://www.jetbrains.com/pycharm/
+.. _Eclipse:        http://www.eclipse.org/
+.. _VisualStudio:   https://www.visualstudio.com/
 
-.. _`PyCharm BDD`:  http://www.jetbrains.com/pycharm/whatsnew/#BDD
-.. _`PyCharm BDD details`: http://blog.jetbrains.com/pycharm/2014/09/feature-spotlight-behavior-driven-development-in-pycharm/
+.. _`PyCharm BDD`: https://blog.jetbrains.com/pycharm/2014/09/feature-spotlight-behavior-driven-development-in-pycharm/
 .. _`Cucumber-Eclipse`: http://cucumber.github.io/cucumber-eclipse/
 .. _cuke4vs:        https://github.com/henritersteeg/cuke4vs
 
+.. hidden_BROKEN:
+
+    https://www.jetbrains.com/pycharm/whatsnew/#BDD
+
+.. hidden_NEW:
+
+
+    https://blog.jetbrains.com/pycharm/2017/06/upgrade-your-testing-with-behavior-driven-development/
+    https://anvileight.com/blog/2016/04/12/behavior-driven-development-pycharm-python-django/
+
+    https://www.udemy.com/bdd-testing-with-python/
 
 
 
@@ -52,7 +62,7 @@ Editor              Plugin                  Description
 `vim`_              `vim-behave`_           `vim`_ plugin: Port of `vim-cucumber`_ to Python `behave`_.
 =================== ======================= =============================================================================
 
-.. _`Notepad++`: http://www.notepad-plus-plus.org
+.. _`Notepad++`: https://notepad-plus-plus.org/
 .. _gedit:  https://wiki.gnome.org/Apps/Gedit
 .. _vim:    http://www.vim.org/
 .. _`Sublime Text`:    http://www.sublimetext.com
@@ -72,10 +82,10 @@ Tools
 =========================== ===========================================================================
 Tool                        Description
 =========================== ===========================================================================
-`cucutags`_                 Generate `ctags`_-like information (cross-reference index)
+:pypi:`cucutags`            Generate `ctags`_-like information (cross-reference index)
                             for Gherkin feature files and behave step definitions.
 =========================== ===========================================================================
 
-.. _cucutags:   https://gitorious.org/cucutags/cucutags/
+.. _gitlab_cucutags:   https://gitlab.com/mcepl/cucutags
 .. _ctags:      http://ctags.sourceforge.net/
 

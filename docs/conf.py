@@ -34,6 +34,8 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.ifconfig",
     "sphinx.ext.extlinks",
+    "sphinx.ext.todo",
+    "sphinx.ext.intersphinx",
 ]
 if has_extension_sphinxcontrib_youtube:
     extensions.append("sphinxcontrib.youtube")
@@ -53,7 +55,7 @@ master_doc = "index"
 # General information about the project.
 project = u"behave"
 authors = u"Benno Rice, Richard Jones and Jens Engel"
-copyright = u"2012-2016, %s" % authors
+copyright = u"2012-2017, %s" % authors
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -104,8 +106,12 @@ extlinks = {
     "github": ("https://github.com/%s", "github:/"),
     "issue":  ("https://github.com/behave/behave/issue/%s", "issue #"),
     "youtube": ("https://www.youtube.com/watch?v=%s", "youtube:video="),
+    "behave": ("https://github.com/behave/behave", None),
 }
 
+intersphinx_mapping = {
+    "python": ('https://docs.python.org/3', None)
+}
 
 # -- SUPPORT: Documentation variation-points with sphinx.ext.ifconfig
 def setup(app):

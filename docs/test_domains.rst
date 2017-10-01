@@ -54,8 +54,8 @@ Web             `pycabara-tutorial`_ Use pycabara (with `behave`_ and `Selenium`
 
 
 .. _behave4poppy:   https://github.com/chbrun/behave4poppy
-.. _`Squish test`:  http://www.froglogic.com/squish/gui-testing/
-.. _`Squish and Behave`: http://kb.froglogic.com/display/KB/BDD+with+Squish+and+Behave
+.. _`Squish test`:  https://www.froglogic.com/squish/
+.. _`Squish and Behave`: https://kb.froglogic.com/display/KB/BDD+with+Squish+and+Behave
 .. _pycabara-tutorial:  https://github.com/excellaco/pycabara-tutorial
 .. _pypot:          https://github.com/poppy-project/pypot
 .. _pyramid_behave: https://github.com/wwitzel3/pyramid_behave

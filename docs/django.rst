@@ -83,7 +83,7 @@ Selenium (Example)
 ------------------
 
 To start a web browser for interaction with the front-end using
-:pypi:`Selenium` your ``environment.py`` may look like this:
+:pypi:`selenium` your ``environment.py`` may look like this:
 
 .. code-block:: python
 
@@ -118,7 +118,7 @@ Splinter (Example)
 ------------------
 
 To start a web browser for interaction with the front-end using
-:pypi:`Splinter` your ``environment.py`` may look like this:
+:pypi:`splinter` your ``environment.py`` may look like this:
 
 .. code-block:: python
 
@@ -146,7 +146,7 @@ using *behave-django*:
     def step_impl(context, url):
         context.browser.visit(context.get_url(url))
 
-.. _Splinter docs: http://splinter.readthedocs.org/en/latest/
+.. _Splinter docs: http://splinter.readthedocs.io/en/latest/
 
 
 Visual Testing

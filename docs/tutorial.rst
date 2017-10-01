@@ -591,6 +591,29 @@ command-line flag. This flag:
 5. stops at the first error
 
 
+Fixtures
+===================================
+
+Fixtures simplify the setup/cleanup tasks that are often needed during test execution.
+
+.. code-block:: python
+
+    # -- FILE: behave4my_project/fixtures.py  (or in: features/environment.py)
+    from behave import fixture
+    from somewhere.browser.firefox import FirefoxBrowser
+
+    # -- FIXTURE: Use generator-function
+    @fixture
+    def browser_firefox(context, timeout=30, **kwargs):
+        # -- SETUP-FIXTURE PART:
+        context.browser = FirefoxBrowser(timeout, **kwargs)
+        yield context.browser
+        # -- CLEANUP-FIXTURE PART:
+        context.browser.shutdown()
+
+See :ref:`docid.fixtures` for more information.
+
+
 .. index::
     single: debug-on-error
 

@@ -220,7 +220,7 @@ namespace.configure({
         "extra_files": [],
     },
     "clean_all": {
-        "directories": [".venv*", ".tox", "downloads", "tmp"],
+        "directories": [".venv*", ".tox", ".eggs", "downloads", "tmp"],
         "files": [],
         "extra_directories": [],
         "extra_files": [],

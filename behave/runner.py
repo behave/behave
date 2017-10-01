@@ -24,6 +24,7 @@ else:
     import traceback
 
 
+class CleanupError(RuntimeError): pass
 
 class ContextMaskWarning(UserWarning):
     """Raised if a context variable is being overwritten in some situations.
@@ -141,6 +142,7 @@ class Context(object):
     # pylint: disable=too-many-instance-attributes
     BEHAVE = "behave"
     USER = "user"
+    FAIL_ON_CLEANUP_ERRORS = True
 
     def __init__(self, runner):
         self._runner = weakref.proxy(runner)
@@ -150,6 +152,9 @@ class Context(object):
             "failed": False,
             "config": self._config,
             "active_outline": None,
+            "cleanup_errors": 0,
+            "@cleanups": [],    # -- REQUIRED-BY: before_all() hook
+            "@layer": "testrun",
         }
         self._stack = [d]
         self._record = {}
@@ -162,12 +167,83 @@ class Context(object):
         self.stdout_capture = None
         self.stderr_capture = None
         self.log_capture = None
+        self.fail_on_cleanup_errors = self.FAIL_ON_CLEANUP_ERRORS
 
-    def _push(self):
-        self._stack.insert(0, {})
+    @staticmethod
+    def ignore_cleanup_error(context, cleanup_func, exception):
+        pass
+
+    @staticmethod
+    def print_cleanup_error(context, cleanup_func, exception):
+        cleanup_func_name = getattr(cleanup_func, "__name__", None)
+        if not cleanup_func_name:
+            cleanup_func_name = "%r" % cleanup_func
+        print(u"CLEANUP-ERROR in %s: %s: %s" %
+              (cleanup_func_name, exception.__class__.__name__, exception))
+        traceback.print_exc(file=sys.stdout)
+        # MAYBE: context._dump(pretty=True, prefix="Context: ")
+        # -- MARK: testrun as FAILED
+        # context._set_root_attribute("failed", True)
+
+    def _do_cleanups(self):
+        """Execute optional cleanup functions when stack frame is popped.
+        A user can add a user-specified handler for cleanup errors.
+
+        .. code-block:: python
+
+            # -- FILE: features/environment.py
+            def cleanup_database(database):
+                pass
+
+            def handle_cleanup_error(context, cleanup_func, exception):
+                pass
+
+            def before_all(context):
+                context.on_cleanup_error = handle_cleanup_error
+                context.add_cleanup(cleanup_database, the_database)
+        """
+        # -- BEST-EFFORT ALGORITHM: Tries to perform all cleanups.
+        assert self._stack, "REQUIRE: Non-empty stack"
+        current_layer = self._stack[0]
+        cleanup_funcs = current_layer.get("@cleanups", [])
+        on_cleanup_error = getattr(self, "on_cleanup_error",
+                                   self.print_cleanup_error)
+        context = self
+        cleanup_errors = []
+        for cleanup_func in reversed(cleanup_funcs):
+            try:
+                cleanup_func()
+            except Exception as e:
+                context._root["cleanup_errors"] += 1
+                cleanup_errors.append(sys.exc_info())
+                on_cleanup_error(context, cleanup_func, e)
+
+        if self.fail_on_cleanup_errors and cleanup_errors:
+            first_cleanup_erro_info = cleanup_errors[0]
+            del cleanup_errors  # -- ENSURE: Release other exception frames.
+            six.reraise(*first_cleanup_erro_info)
+
+
+    def _push(self, layer_name=None):
+        """Push a new layer on the context stack.
+        HINT: Use layer_name values: "scenario", "feature", "testrun".
+
+        :param layer_name:   Layer name to use (or None).
+        """
+        initial_data = {"@cleanups": []}
+        if layer_name:
+            initial_data["@layer"] = layer_name
+        self._stack.insert(0, initial_data)
 
     def _pop(self):
-        self._stack.pop(0)
+        """Pop the current layer from the context stack.
+        Performs any pending cleanups, registered for this layer.
+        """
+        try:
+            self._do_cleanups()
+        finally:
+            # -- ENSURE: Layer is removed even if cleanup-errors occur.
+            self._stack.pop(0)
 
     def _use_with_behave_mode(self):
         """Provides a context manager for using the context in BEHAVE mode."""
@@ -322,6 +398,28 @@ class Context(object):
             self.text = original_text
         return True
 
+    def add_cleanup(self, cleanup_func, *args, **kwargs):
+        """Adds a cleanup function that is called when :meth:`Context._pop()`
+        is called. This is intended for user-cleanups.
+
+        :param cleanup_func:    Callable function
+        :param args:            Args for cleanup_func() call (optional).
+        :param kwargs:          Kwargs for cleanup_func() call (optional).
+        """
+        # MAYBE:
+        assert callable(cleanup_func), "REQUIRES: callable(cleanup_func)"
+        assert self._stack
+        if args or kwargs:
+            def internal_cleanup_func():
+                cleanup_func(*args, **kwargs)
+        else:
+            internal_cleanup_func = cleanup_func
+
+        current_frame = self._stack[0]
+        if cleanup_func not in current_frame["@cleanups"]:
+            # -- AVOID DUPLICATES:
+            current_frame["@cleanups"].append(internal_cleanup_func)
+
 
 @contextlib.contextmanager
 def use_context_with_mode(context, mode):
@@ -348,6 +446,23 @@ def use_context_with_mode(context, mode):
         # -- RESTORE: Initial current_mode
         #    Even if an AssertionError/Exception is raised.
         context._mode = current_mode
+
+
+@contextlib.contextmanager
+def scoped_context_layer(context, layer_name=None):
+    """Provides context manager for context layer (push/do-something/pop cycle).
+
+    .. code-block::
+
+        with scoped_context_layer(context):
+            the_fixture = use_fixture(foo, context, name="foo_42")
+    """
+    try:
+        context._push(layer_name)
+        yield context
+    finally:
+        context._pop()
+
 
 
 
@@ -555,16 +670,24 @@ class ModelRunner(object):
                 reporter.feature(feature)
 
         # -- AFTER-ALL:
+        cleanups_failed = False
+        self.run_hook("after_all", self.context)
+        try:
+            self.context._do_cleanups()   # Without dropping the last context layer.
+        except Exception:
+            cleanups_failed = True
+
         if self.aborted:
             print("\nABORTED: By user.")
         for formatter in self.formatters:
             formatter.close()
-        self.run_hook("after_all", self.context)
         for reporter in self.config.reporters:
             reporter.end()
 
         failed = ((failed_count > 0) or self.aborted or (self.hook_failures > 0)
-                  or (len(self.undefined_steps) > undefined_steps_initial_size))
+                  or (len(self.undefined_steps) > undefined_steps_initial_size)
+                  or cleanups_failed)
+                  # XXX-MAYBE: or context.failed)
         return failed
 
     def run(self):

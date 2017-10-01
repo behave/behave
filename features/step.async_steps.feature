@@ -1,3 +1,4 @@
+@not.with_python2=true
 Feature: Async-Test Support (async-step, ...)
 
   As a test writer and step provider

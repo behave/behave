@@ -10,7 +10,7 @@ development (TDD), including acceptance test or customer test driven
 development practices as found in extreme programming. It has `evolved over
 the last few years`__.
 
-__ http://dannorth.net/introducing-bdd
+__ https://dannorth.net/introducing-bdd
 __ https://forums.pragprog.com/forums/95/topics/3035
 
 On the "Agile specifications, BDD and Testing eXchange" in November 2009 in
@@ -67,7 +67,7 @@ which accrues once the application is in production. The only way in which
 this benefit can be realized is through the user interface(s) to the
 application, usually (but not always) a GUI.
 
-__ http://lizkeogh.com/2007/06/13/bdd-tdd-done-well/
+__ https://lizkeogh.com/2007/06/13/bdd-tdd-done-well/
 
 In the same way, each piece of code, starting with the UI, can be
 considered a stakeholder of the other modules of code which it uses. Each
@@ -117,7 +117,7 @@ requirements`__. For instance, a domain expert noticing that refunded items
 are not always returned to stock might reword the requirements as "Refunded
 or replaced items should be returned to stock, unless faulty.".
 
-__ http://dannorth.net/whats-in-a-story
+__ https://dannorth.net/whats-in-a-story
 
 This in turn helps participants to pin down the scope of requirements,
 which leads to better estimates of how long those requirements will take to
@@ -231,5 +231,5 @@ This text is partially taken from the wikipedia text on `Behavior Driven
 Development`_ with modifications where appropriate to be more specific to
 *behave* and Python.
 
-.. _`Behavior Driven Development`: http://en.wikipedia.org/wiki/Behavior_Driven_Development
+.. _`Behavior Driven Development`: https://en.wikipedia.org/wiki/Behavior_Driven_Development
 

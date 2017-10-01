@@ -121,9 +121,9 @@ Feature: Hooks processing in case of errors (exceptions)
       Then it should fail with
           """
           HOOK-ERROR in before_all: RuntimeError: FAIL
+          called_hook:after_all
 
           ABORTED: By user.
-          called_hook:after_all
           0 features passed, 0 failed, 0 skipped, 1 untested
           0 scenarios passed, 0 failed, 0 skipped, 1 untested
           0 steps passed, 0 failed, 0 skipped, 0 undefined, 1 untested
@@ -142,6 +142,7 @@ Feature: Hooks processing in case of errors (exceptions)
               Given a step passes ... passed
 
           HOOK-ERROR in after_all: RuntimeError: FAIL
+          ABORTED: By user.
           1 feature passed, 0 failed, 0 skipped
           1 scenario passed, 0 failed, 0 skipped
           1 step passed, 0 failed, 0 skipped, 0 undefined

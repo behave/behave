@@ -224,6 +224,7 @@ events during your testing:
 **before_all(context), after_all(context)**
   These run before and after the whole shooting match.
 
+
 Some Useful Environment Ideas
 -----------------------------
 
@@ -277,6 +278,28 @@ The *context* variable in all cases is an instance of
    :members:
 
 .. autoclass:: behave.runner.ContextMaskWarning
+
+
+Fixtures
+================
+
+.. excluded:
+
+    .. automodule:: behave.fixture
+
+Provide a Fixture
+------------------
+
+.. autofunction:: behave.fixture.fixture
+
+Use Fixtures
+------------------
+
+.. autofunction:: behave.fixture.use_fixture
+
+.. autofunction:: behave.fixture.use_fixture_by_tag
+
+.. autofunction:: behave.fixture.use_composite_fixture_with
 
 
 Runner Operation
@@ -406,3 +429,5 @@ intended to be used on your `environment file functions`_.
 
 .. autofunction:: behave.log_capture.capture
 
+
+.. include:: _common_extlinks.rst

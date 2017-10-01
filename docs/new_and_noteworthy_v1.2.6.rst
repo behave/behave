@@ -24,6 +24,11 @@ Summary:
 
 * Testing support for asynchronuous frameworks or protocols (:mod:`asyncio` based)
 
+* :ref:`docid.fixtures`: Simplify setup/cleanup in scenario, feature or test-run
+
+* Context-cleanups: Register cleanup functions that are executed at the end
+  of the test-scope (scenario, feature or test-run) via
+  :func:`~behave.runner.Context.add_cleanup()`.
 
 
 Scenario Outline Improvements
@@ -208,7 +213,7 @@ When you use the async-step from above in a feature file and run it with behave:
 
 .. note::
 
-    The async-step is wrapped with an ``èvent_loop.run_until_complete()`` call.
+    The async-step is wrapped with an ``event_loop.run_until_complete()`` call.
     As the timings show, it actually needs approximatly 0.3 seconds to run.
 
 

@@ -4,8 +4,8 @@
 
 # -- BUILD-TOOL:
 # PREPARE USAGE: invoke
-# ALREADY: six >= 1.10.0
-invoke >= 0.13.0
+# ALREADY: six >= 1.11.0
+invoke >= 0.21.0
 path.py >= 8.1.2
 pathlib;    python_version <= '3.4'
 pycmd
@@ -21,8 +21,12 @@ pytest-cov
 
 # -- PYTHON2/3 COMPATIBILITY: pypa/modernize
 # python-futurize
-modernize >= 0.4
+modernize >= 0.5
 
-# -- REQUIRES: testing, docs
+# -- STATIC CODE ANALYSIS:
+pylint
+
+# -- REQUIRES: testing, docs, invoke-task requirements
 -r testing.txt
 -r docs.txt
+-r ../tasks/py.requirements.txt

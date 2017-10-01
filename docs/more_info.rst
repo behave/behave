@@ -165,7 +165,7 @@ JetBrains PyCharm:
 
 .. _`Getting Started with PyCharm`: https://www.youtube.com/playlist?list=PLQ176FUIyIUZ1mwB-uImQE-gmkwzjNLjP
 .. _`PyCharm In-Depth: Testing`: https://youtu.be/nmBbR97Vsv8?list=PLQ176FUIyIUZ1mwB-uImQE-gmkwzjNLjP
-.. _`In-Depth Screencast on Testing`: http://blog.jetbrains.com/pycharm/2016/04/in-depth-screencast-on-testing/
+.. _`In-Depth Screencast on Testing`: https://blog.jetbrains.com/pycharm/2016/04/in-depth-screencast-on-testing/
 
 
 

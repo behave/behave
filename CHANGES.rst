@@ -40,6 +40,8 @@ SITE:
 
 ENHANCEMENTS:
 
+  * fixtures: Add concept to simplify setup/cleanup tasks for scenario/feature/test-run
+  * context-cleanups: Use context.add_cleanup() to perform cleanups after scenario/feature/test-run.
   * Tagged Examples: Examples in a ScenarioOutline can now have tags.
   * pull  #447: behave settings from tox.ini (provided by: bittner)
   * issue #411: Support multiple active-tags with same category (submitted by: Kani999)

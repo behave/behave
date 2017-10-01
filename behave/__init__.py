@@ -19,11 +19,13 @@ To get started, we recommend the `tutorial`_ and then the `test language`_ and
 from __future__ import absolute_import
 from behave.step_registry import *      # pylint: disable=wildcard-import
 from behave.matchers import use_step_matcher, step_matcher, register_type
+from behave.fixture import fixture, use_fixture
 
 # pylint: disable=undefined-all-variable
 __all__ = [
     "given", "when", "then", "step", "use_step_matcher", "register_type",
     "Given", "When", "Then", "Step",
+    "fixture", "use_fixture",
     # -- DEPRECATING:
     "step_matcher"
 ]
