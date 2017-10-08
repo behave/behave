@@ -3,6 +3,8 @@ Welcome to behave!
 
 behave is behaviour-driven development, Python style.
 
+|behave_logo|
+
 Behavior-driven development (or BDD) is an agile software development
 technique that encourages collaboration between developers, QA and
 non-technical or business participants in a software project. We have
@@ -13,11 +15,11 @@ backed up by Python code.
 
 Once you've :doc:`installed <install>` *behave*, we recommend reading the
 
-  * :doc:`tutorial <tutorial>` first and then
-  * :doc:`feature test setup <gherkin>`,
-  * :doc:`behave API <api>` and
-  * :doc:`related software <related>` (things that you can combine with :pypi:`behave`)
-  * finally: :doc:`how to use and configure <behave>` the :pypi:`behave` tool.
+* :doc:`tutorial <tutorial>` first and then
+* :doc:`feature test setup <gherkin>`,
+* :doc:`behave API <api>` and
+* :doc:`related software <related>` (things that you can combine with :pypi:`behave`)
+* finally: :doc:`how to use and configure <behave>` the :pypi:`behave` tool.
 
 There is also a :doc:`comparison <comparison>` with the other tools available.
 
@@ -56,4 +58,5 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. |behave_logo| image:: _static/behave_logo1.png
 .. include:: _common_extlinks.rst

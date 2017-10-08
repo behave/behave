@@ -88,7 +88,7 @@ setup(
         "behave_test": behave_test,
     },
     extras_require={
-        'docs': ["sphinx >= 1.5"],
+        'docs': ["sphinx >= 1.6", "sphinx_bootstrap_theme >= 0.6"],
         'develop': [
             "coverage", "pytest >= 3.0", "pytest-cov", "tox",
             "invoke >= 0.21.0", "path.py >= 8.1.2", "pycmd",
