@@ -107,7 +107,7 @@
   scenario: Scénář
   scenario_outline: Náčrt Scénáře|Osnova scénáře
   examples: Příklady
-  given: "*|Pokud"
+  given: "*|Pokud|Za předpokladu"
   when: "*|Když"
   then: "*|Pak"
   and: "*|A|A také"
