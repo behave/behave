@@ -1,6 +1,7 @@
 import os.path
 import sys
 import tempfile
+import six
 from nose.tools import *
 from behave import configuration
 from behave.configuration import Configuration, UserData
@@ -30,7 +31,10 @@ ROOTDIR_PREFIX = ""
 if sys.platform.startswith("win"):
     # -- OR: ROOTDIR_PREFIX = os.path.splitdrive(sys.executable)
     # NOTE: python2 requires lower-case drive letter.
-    ROOTDIR_PREFIX = os.environ.get("BEHAVE_ROOTDIR_PREFIX", "c:")
+    ROOTDIR_PREFIX_DEFAULT = "C:"
+    if six.PY2:
+        ROOTDIR_PREFIX_DEFAULT = ROOTDIR_PREFIX_DEFAULT.lower()
+    ROOTDIR_PREFIX = os.environ.get("BEHAVE_ROOTDIR_PREFIX", ROOTDIR_PREFIX_DEFAULT)
 
 class TestConfiguration(object):
 
