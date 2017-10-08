@@ -258,3 +258,106 @@ The implementation of the steps from above:
         # -- FILE: features/steps/async_dispatch_steps.py
         # REQUIRES: Python 3.4 or newer
 
+
+Context-based Cleanups
+-------------------------------------------------------------------------------
+
+It is now possible to register cleanup functions with the context object.
+This functionality is normally used in:
+
+* hooks (:func:`before_all()`, :func:`before_feature()`, :func:`before_scenario()`, ...)
+* step implementations
+* ...
+
+.. code-block:: python
+
+    # -- SIGNATURE: Context.add_cleanup(cleanup_func, *args, **kwargs)
+    # CLEANUP CALL EXAMPLES:
+    context.add_cleanup(cleanup0)                       # CALLS LATER: cleanup0()
+    context.add_cleanup(cleanup1, 1, 2)                 # CALLS LATER: cleanup1(1, 2)
+    context.add_cleanup(cleanup2, name="Alice")         # CALLS LATER: cleanup2(name="Alice")
+    context.add_cleanup(cleanup3, 1, 2, name="Bob")     # CALLS LATER: cleanup3(1, 2, name="Bob")
+
+The registered cleanup will be performed when the context layer is removed.
+This depends on the the context layer when the cleanup function was registered
+(test-run, feature, scenario).
+
+Example:
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    def before_all(context):
+        context.add_cleanup(cleanup_me)
+        # -- ON CLEANUP: Calls cleanup_me()
+        # Called after test-run.
+
+    def before_tag(context, tag):
+        if tag == "foo":
+            context.foo = setup_foo()
+            context.add_cleanup(cleanup_foo, context.foo)
+            # -- ON CLEANUP: Calls cleanup_foo(context.foo)
+            # CASE scenario tag: cleanup_foo() will be called after this scenario.
+            # CASE feature  tag: cleanup_foo() will be called after this feature.
+
+.. seealso::
+
+    For more details, see `features/runner.context_cleanup.feature`_ .
+
+.. _`features/runner.context_cleanup.feature`: https://github.com/behave/behave/blob/master/features/runner.context_cleanup.feature
+
+
+Fixtures
+-------------------------------------------------------------------------------
+
+Fixtures simplify setup/cleanup tasks that are often needed for testing.
+
+Providing a Fixture
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    # -- FILE: behave4my_project/fixtures.py  (or in: features/environment.py)
+    from behave import fixture
+    from somewhere.browser.firefox import FirefoxBrowser
+
+    # -- FIXTURE-VARIANT 1: Use generator-function
+    @fixture
+    def browser_firefox(context, timeout=30, **kwargs):
+        # -- SETUP-FIXTURE PART:
+        context.browser = FirefoxBrowser(timeout, **kwargs)
+        yield context.browser
+        # -- CLEANUP-FIXTURE PART:
+        context.browser.shutdown()
+
+Using a Fixture
+~~~~~~~~~~~~~~~
+
+.. code-block:: Gherkin
+
+    # -- FILE: features/use_fixture1.feature
+    Feature: Use Fixture on Scenario Level
+
+        @fixture.browser.firefox
+        Scenario: Use Web Browser Firefox
+            Given I load web page "https://somewhere.web"
+            ...
+        # -- AFTER-SCENARIO: Cleanup fixture.browser.firefox
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    from behave import use_fixture
+    from behave4my_project.fixtures import browser_firefox
+
+    def before_tag(context, tag):
+        if tag == "fixture.browser.firefox":
+            use_fixture(browser_firefox, context, timeout=10)
+
+
+.. seealso::
+
+    * :ref:`docid.fixtures` description for details
+    * `features/fixture.feature`_
+
+.. _`features/fixture.feature`: https://github.com/behave/behave/blob/master/features/fixture.feature
