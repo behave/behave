@@ -10,6 +10,9 @@ GOALS:
 
 DOCUMENTATION:
 
+  * pull  #580: Fix some dead ecosystem links (provided by: smadness)
+  * pull  #579: Add explanation for step_impl function name (provided by: bittner)
+  * issue #574: flake8 reports F811 redefinition of unused 'step_impl' (fixed by #579).
   * pull  #545: Spell "section" correctly (provided by: chelmertz)
   * pull  #489: Fix link to Selenium docs in Django chapter (provided by: bittner)
   * pull  #469: Fix typo in "formatters.rst" (provided by: ab9-er)
@@ -76,9 +79,12 @@ CHANGES:
 
 FIXED:
 
+  * issue #547: Crash when using step definition with optional cfparse parts (provided by: ftartaggia, jenisys)
+  * pull  #599: Steps from another Windows drive (provided by: psicopep)
+  * issue #582: behave emitting PendingDeprecationWarning messages (submitted by: adamjcooper)
   * pull  #476: scenario.status when scenario without steps is skipped (provided by: ar45, jenisys)
   * pull  #471: convert an object to unicode (py2) using __unicode__ method first  unicode (provided by: ftartaggia)
-  * issue #458: UnicodeEncodeError inside naked except block in __main__.py (submitted by: 	mseery)
+  * issue #458: UnicodeEncodeError inside naked except block in __main__.py (submitted by: mseery)
   * issue #453: Unicode chars are broken in stacktrace (submitted by: throwable-one)
   * issue #455: Restore backward compatibility to Cucumber style RegexMatcher (submitted by:  avabramov)
   * issue #449: Unicode is processed incorrectly for Py2 in "textutil.text" (submitted by: throwable-one)
