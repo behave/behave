@@ -253,11 +253,12 @@ class FileLocation(object):
         line_number = function_code.co_firstlineno
 
         curdir = curdir or os.getcwd()
-        # If a function (step) comes from a different disk drive in Windows a
-        # relative path will fail. In that case just keep the absolute path.
         try:
             filename = os.path.relpath(filename, curdir)
         except ValueError:
+            # WINDOWS-SPECIFIC (#599):
+            # If a step-function comes from a different disk drive,
+            # a relative path will fail: Keep the absolute path.
             pass
         return cls(filename, line_number)
 
