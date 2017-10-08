@@ -268,6 +268,20 @@
   then: "*|Alors"
   and: "*|Et"
   but: "*|Mais"
+"gl":
+  name: Galician
+  native: galego
+  feature: Característica
+  background: Contexto
+  scenario: Escenario
+  scenario_outline: "Esbozo do escenario"
+  examples: Exemplos
+  given: "*|Dado|Dada|Dados|Dadas"
+  when: "*|Cando"
+  then: "*|Entón|Logo"
+  and: "*|E"
+  but: "*|Mais|Pero"
+
 "he":
   name: Hebrew
   native: עברית
