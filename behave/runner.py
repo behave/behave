@@ -712,8 +712,7 @@ class Runner(ModelRunner):
         self.path_manager = PathManager()
         self.base_dir = None
 
-
-    def setup_paths(self):
+    def get_base_dir(self):
         # pylint: disable=too-many-branches, too-many-statements
         if self.config.paths:
             if self.config.verbose:
@@ -774,9 +773,6 @@ class Runner(ModelRunner):
             message = 'No %s directory in %r' % (steps_dir, base_dir)
             raise ConfigError(message)
 
-        base_dir = new_base_dir
-        self.config.base_dir = base_dir
-
         for dirpath, dirnames, filenames in os.walk(base_dir):
             if [fn for fn in filenames if fn.endswith(".feature")]:
                 break
@@ -798,6 +794,15 @@ class Runner(ModelRunner):
         if base_dir != os.getcwd():
             self.path_manager.add(os.getcwd())
 
+        return new_base_dir
+
+    def setup_paths(self):
+        base_dir = os.getcwd()
+        if not self.config.steps_directories or not self.config.environment_file:
+            base_dir = get_base_dir()
+
+        self.config.base_dir = base_dir
+
     def before_all_default_hook(self, context):
         """
         Default implementation for :func:`before_all()` hook.
@@ -806,9 +811,12 @@ class Runner(ModelRunner):
         # pylint: disable=no-self-use
         context.config.setup_logging()
 
-    def load_hooks(self, filename=None):
+    def load_hooks(self, filename=None, path=None):
         filename = filename or self.config.environment_file
-        hooks_path = os.path.join(self.base_dir, filename)
+        if path != None:
+            hooks_path = path
+        else:
+            hooks_path = os.path.join(self.base_dir, filename)
         if os.path.exists(hooks_path):
             exec_file(hooks_path, self.hooks)
 
@@ -826,8 +834,10 @@ class Runner(ModelRunner):
 
         # -- Allow steps to import other stuff from the steps dir
         # NOTE: Default matcher can be overridden in "environment.py" hook.
-        steps_dir = os.path.join(self.base_dir, self.config.steps_dir)
-        paths = [steps_dir] + list(extra_step_paths)
+        if extra_step_paths:
+            paths = extra_step_paths
+        else:
+            paths = [ os.path.join(self.base_dir, self.config.steps_dir) ]
         with PathManager(paths):
             default_matcher = matchers.current_matcher
             for path in paths:
@@ -857,8 +867,8 @@ class Runner(ModelRunner):
 
     def run_with_paths(self):
         self.context = Context(self)
-        self.load_hooks()
-        self.load_step_definitions()
+        self.load_hooks(path=self.config.environment_path)
+        self.load_step_definitions(extra_step_paths=self.config.steps_directories)
 
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
         # self.setup_capture()

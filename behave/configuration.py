@@ -352,8 +352,14 @@ options = [
      dict(action="store_true",
           help="Show help for tag expressions.")),
 
-    (("--version",),
-     dict(action="store_true", help="Show version.")),
+    (('--version',),
+     dict(action='store_true', help="Show version.")),
+
+    (('--steps-directory',),
+     dict(action='append', dest='steps_directories', help="extra steps directories")),
+
+    (('--environment-path',),
+     dict(action='store', dest='environment_path', help="environment file path")),
 ]
 
 # -- OPTIONS: With raw value access semantics in configuration file.
@@ -512,7 +518,9 @@ class Configuration(object):
         # -- SPECIAL:
         default_format="pretty",    # -- Used when no formatters are configured.
         default_tags="",            # -- Used when no tags are defined.
-        scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}"
+        scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}",
+        steps_directories=[],
+        environment_path=None,
     )
     cmdline_only_options = set("userdata_defines")
 
