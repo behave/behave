@@ -30,7 +30,7 @@ ROOTDIR_PREFIX = ""
 if sys.platform.startswith("win"):
     # -- OR: ROOTDIR_PREFIX = os.path.splitdrive(sys.executable)
     # NOTE: python2 requires lower-case drive letter.
-    ROOTDIR_PREFIX = os.environ.get("BEHAVE_ROOTDIR_PREFIX", "c:")
+    ROOTDIR_PREFIX = os.environ.get("BEHAVE_ROOTDIR_PREFIX", "C:")
 
 class TestConfiguration(object):
 
