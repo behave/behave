@@ -105,7 +105,7 @@ today_fmt = "%Y-%m-%d"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ["_build"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
@@ -123,7 +123,10 @@ exclude_patterns = ["_build"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
-pygments_style = "friendly"
+# MAYBE STYLES: friendly, vs, xcode, vs, tango
+
+# If true, `todo` and `todoList` produce output, else they produce nothing.
+todo_include_todos = False
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -161,24 +164,8 @@ elif html_theme in ("default", "kr"):
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-
-# agogo options:
-# headerfont (CSS font family): Font for headings.
-# pagewidth (CSS length): Width of the page content, default 70em.
-# documentwidth (CSS length): Width of the document (without sidebar), default 50em.
-# sidebarwidth (CSS length): Width of the sidebar, default 20em.
-# bgcolor (CSS color): Background color.
-# headerbg (CSS value for “background”): background for the header area, default a grayish gradient.
-# footerbg (CSS value for “background”): background for the footer area, default a light gray gradient.
-# linkcolor (CSS color): Body link color.
-# headercolor1, headercolor2 (CSS color): colors for <h1> and <h2> headings.
-# headerlinkcolor (CSS color): Color for the backreference link in headings.
-# textalign (CSS text-align value): Text alignment for the body, default is justify.
-
-# html_theme_options = {
- #"bodyfont": '"Ubuntu", sans-serif', # (CSS font family): Font for normal text.
-  #"github_fork": "behave/behave"
-# }
+#
+# html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
 
@@ -219,19 +206,19 @@ html_last_updated_fmt = "%Y-%m-%d"
 #html_additional_pages = {}
 
 # If false, no module index is generated.
-#html_domain_indices = True
+# html_domain_indices = True
 
 # If false, no index is generated.
-#html_use_index = True
+# html_use_index = True
 
 # If true, the index is split into individual pages for each letter.
-#html_split_index = False
+# html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-#html_show_sourcelink = True
+# html_show_sourcelink = True
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
-#html_show_sphinx = True
+# html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
 html_show_copyright = True
@@ -244,6 +231,9 @@ html_show_copyright = True
 # This is the file name suffix for HTML files (e.g. ".xhtml").
 html_file_suffix = ".html"
 
+# ------------------------------------------------------------------------------
+# OPTIONS FOR: HTML HELP
+# ------------------------------------------------------------------------------
 # Output file base name for HTML help builder.
 htmlhelp_basename = "behavedoc"
 
@@ -252,14 +242,14 @@ htmlhelp_basename = "behavedoc"
 # OPTIONS FOR: LATEX OUTPUT
 # ------------------------------------------------------------------------------
 latex_elements = {
-# The paper size ("letterpaper" or "a4paper").
-#"papersize": "letterpaper",
+    # The paper size ("letterpaper" or "a4paper").
+    # "papersize": "letterpaper",
 
-# The font size ("10pt", "11pt" or "12pt").
-#"pointsize": "10pt",
+    # The font size ("10pt", "11pt" or "12pt").
+    # "pointsize": "10pt",
 
-# Additional stuff for the LaTeX preamble.
-#"preamble": "",
+    # Additional stuff for the LaTeX preamble.
+    # "preamble": "",
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
@@ -268,26 +258,7 @@ latex_documents = [
   ("index", "behave.tex", u"behave Documentation", authors, "manual"),
 ]
 
-# The name of an image file (relative to this directory) to place at the top of
-# the title page.
-#latex_logo = None
-
-# For "manual" documents, if this is true, then toplevel headings are parts,
-# not chapters.
-#latex_use_parts = False
-
-# If true, show page references after internal links.
-#latex_show_pagerefs = False
-
-# If true, show URL addresses after external links.
-#latex_show_urls = False
-
-# Documents to append as an appendix to all manuals.
-#latex_appendices = []
-
-# If false, no module index is generated.
-#latex_domain_indices = True
-
+# latex_logo = None
 
 # ------------------------------------------------------------------------------
 # OPTIONS FOR: MANUAL PAGE (man page) OUTPUT
@@ -298,8 +269,6 @@ man_pages = [
     ("index", "behave", u"behave Documentation", [authors], 1)
 ]
 
-# If true, show URL addresses after external links.
-#man_show_urls = False
 
 
 # ------------------------------------------------------------------------------
@@ -312,12 +281,3 @@ texinfo_documents = [
   ("index", "behave", u"behave Documentation", authors,
    "behave", "A test runner for behave (feature tests).", "Miscellaneous"),
 ]
-
-# Documents to append as an appendix to all manuals.
-#texinfo_appendices = []
-
-# If false, no module index is generated.
-#texinfo_domain_indices = True
-
-# How to display URL addresses: "footnote", "no", or "inline".
-#texinfo_show_urls = "footnote"
