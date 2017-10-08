@@ -108,10 +108,15 @@ we recommend the `tutorial`_ and then the `feature testing language`_ and
 More Information
 -------------------------------------------------------------------------------
 
-* `behave documentation`_ (`latest changes`_)
+* `behave documentation`_ (`latest edition`_, `stable edition`_, `PDF`_)
+* `changelog`_ (latest changes)
 * `behave.example`_: Behave Examples and Tutorials (docs, executable examples).
 
-.. _behave documentation: http://pythonhosted.org/behave/
-.. _latest changes: https://github.com/behave/behave/blob/master/CHANGES.rst
+
+.. _behave documentation: http://behave.readthedocs.io/
+.. _changelog:      https://github.com/behave/behave/blob/master/CHANGES.rst
 .. _behave.example: https://github.com/behave/behave.example
 
+.. _`latest edition`: http://behave.readthedocs.io/en/latest/
+.. _`stable edition`: http://behave.readthedocs.io/en/stable/
+.. _PDF:              https://media.readthedocs.org/pdf/behave/latest/behave.pdf
