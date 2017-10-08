@@ -571,7 +571,7 @@ class ModelRunner(object):
     def run_hook(self, name, context, *args):
         if not self.config.dry_run and (name in self.hooks):
             try:
-                with context.user_mode():
+                with context.use_with_user_mode():
                     self.hooks[name](context, *args)
             # except KeyboardInterrupt:
             #     self.aborted = True

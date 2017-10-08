@@ -39,7 +39,7 @@ class TestContext(unittest.TestCase):
         # -- CASE: No exception is raised.
         initial_mode = runner.Context.BEHAVE
         eq_(self.context._mode, initial_mode)
-        with self.context.user_mode():
+        with self.context.use_with_user_mode():
             eq_(self.context._mode, runner.Context.USER)
             self.context.thing = "stuff"
         eq_(self.context._mode, initial_mode)
@@ -48,7 +48,7 @@ class TestContext(unittest.TestCase):
         initial_mode = runner.Context.BEHAVE
         eq_(self.context._mode, initial_mode)
         try:
-            with self.context.user_mode():
+            with self.context.use_with_user_mode():
                 eq_(self.context._mode, runner.Context.USER)
                 assert False, "XFAIL"
         except AssertionError:
@@ -58,7 +58,7 @@ class TestContext(unittest.TestCase):
         initial_mode = runner.Context.BEHAVE
         eq_(self.context._mode, initial_mode)
         try:
-            with self.context.user_mode():
+            with self.context.use_with_user_mode():
                 eq_(self.context._mode, runner.Context.USER)
                 raise RuntimeError("XFAIL")
         except RuntimeError:
