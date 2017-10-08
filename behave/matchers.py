@@ -220,11 +220,15 @@ class Matcher(object):
 
 
 class ParseMatcher(Matcher):
+    """Uses :class:`~parse.Parser` class to be able to use simpler
+    parse expressions compared to normal regular expressions.
+    """
     custom_types = {}
+    parser_class = parse.Parser
 
     def __init__(self, func, pattern, step_type=None):
         super(ParseMatcher, self).__init__(func, pattern, step_type)
-        self.parser = parse.compile(self.pattern, self.custom_types)
+        self.parser = self.parser_class(pattern, self.custom_types)
 
     @property
     def regex_pattern(self):
@@ -248,15 +252,13 @@ class ParseMatcher(Matcher):
         args.sort(key=lambda x: x.start)
         return args
 
+
 class CFParseMatcher(ParseMatcher):
-    """
-    Uses :class:`~parse_type.cfparse.Parser` instead of "parse.Parser".
+    """Uses :class:`~parse_type.cfparse.Parser` instead of "parse.Parser".
     Provides support for automatic generation of type variants
     for fields with CardinalityField part.
     """
-    def __init__(self, func, pattern, step_type=None):
-        super(CFParseMatcher, self).__init__(func, pattern, step_type)
-        self.parser = cfparse.Parser(self.pattern, self.custom_types)
+    parser_class = cfparse.Parser
 
 
 def register_type(**kw):
