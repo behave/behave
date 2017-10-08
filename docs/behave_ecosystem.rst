@@ -68,9 +68,9 @@ Editor              Plugin                  Description
 .. _`Sublime Text`:    http://www.sublimetext.com
 
 .. _`Gherkin editor`: http://gherkineditor.codeplex.com
-.. _gedit_behave:   https://gitorious.org/cucutags/gedit_behave
+.. _gedit_behave:   https://gitlab.com/mcepl/gedit_behave
 .. _`NP++ gherkin`: http://productive.me/develop/cucumbergherkin-syntax-highlighting-for-notepad
-.. _vim-behave:     https://gitorious.org/cucutags/vim-behave
+.. _vim-behave:     https://github.com/rooprob/vim-behave
 .. _vim-cucumber:   https://github.com/tpope/vim-cucumber
 .. _`Cucumber (ST Bundle)`:    https://packagecontrol.io/packages/Cucumber
 .. _Behave Step Finder: https://packagecontrol.io/packages/Behave%20Step%20Finder
