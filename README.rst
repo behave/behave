@@ -108,9 +108,9 @@ we recommend the `tutorial`_ and then the `feature testing language`_ and
 More Information
 -------------------------------------------------------------------------------
 
-* `behave documentation`_ (`latest edition`_, `stable edition`_, `PDF`_)
-* `changelog`_ (latest changes)
+* `behave documentation`_: `latest edition`_, `stable edition`_, `PDF`_
 * `behave.example`_: Behave Examples and Tutorials (docs, executable examples).
+* `changelog`_ (latest changes)
 
 
 .. _behave documentation: http://behave.readthedocs.io/
