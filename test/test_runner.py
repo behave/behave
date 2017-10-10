@@ -10,11 +10,11 @@ import warnings
 import tempfile
 import unittest
 import six
-from six import StringIO
 
 from mock import Mock, patch
 from nose.tools import *  # pylint: disable=wildcard-import, unused-wildcard-import
 
+from behave.capture import CaptureIO
 from behave.model import Table
 from behave.step_registry import StepRegistry
 from behave import parser, runner
@@ -536,7 +536,7 @@ class TestRunner(object):
         r.setup_capture()
 
         assert r.capture_controller.stdout_capture is not None
-        assert isinstance(r.capture_controller.stdout_capture, StringIO)
+        assert isinstance(r.capture_controller.stdout_capture, CaptureIO)
 
     def test_setup_capture_does_not_create_stringio_if_not_wanted(self):
         r = runner.Runner(Mock())

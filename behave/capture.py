@@ -5,6 +5,7 @@ Capture output (stdout, stderr), logs, etc.
 
 from __future__ import absolute_import
 from contextlib import contextmanager
+import io
 import sys
 from six import StringIO, PY2
 from behave.log_capture import LoggingCapture
@@ -19,6 +20,20 @@ def add_text_to(value, more_text, separator="\n"):
         else:
             value = more_text
     return value
+
+
+if PY2:
+    CaptureIO = StringIO
+else:
+    class CaptureIO(io.TextIOWrapper):
+        def __init__(self):
+            super(CaptureIO, self).__init__(
+                io.BytesIO(),
+                encoding='UTF-8', newline='', write_through=True,
+            )
+
+        def getvalue(self):
+            return self.buffer.getvalue().decode('UTF-8')
 
 
 class Captured(object):
@@ -136,11 +151,11 @@ class CaptureController(object):
     def setup_capture(self, context):
         assert context is not None
         if self.config.stdout_capture:
-            self.stdout_capture = StringIO()
+            self.stdout_capture = CaptureIO()
             context.stdout_capture = self.stdout_capture
 
         if self.config.stderr_capture:
-            self.stderr_capture = StringIO()
+            self.stderr_capture = CaptureIO()
             context.stderr_capture = self.stderr_capture
 
         if self.config.log_capture:
