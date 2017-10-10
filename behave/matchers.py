@@ -387,9 +387,9 @@ def use_step_matcher(name):
         as long as a type converter for cardinality=1 is provided.
         Supports parse expressions like:
 
-            * ``{values:Type+}`` (cardinality=1..N, many)
-            * ``{values:Type*}`` (cardinality=0..N, many0)
-            * ``{value:Type?}``  (cardinality=0..1, optional)
+        * ``{values:Type+}`` (cardinality=1..N, many)
+        * ``{values:Type*}`` (cardinality=0..N, many0)
+        * ``{value:Type?}``  (cardinality=0..1, optional)
 
         Supports type conversions (as above).
 
