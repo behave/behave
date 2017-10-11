@@ -83,6 +83,7 @@ setup(
         "nose >= 1.3",
         "mock >= 1.1",
         "PyHamcrest >= 1.8",
+        "path.py >= 10.1"
     ],
     cmdclass = {
         "behave_test": behave_test,

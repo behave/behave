@@ -4,19 +4,24 @@ This module provides Runner class to run behave feature files (or model elements
 """
 
 from __future__ import absolute_import, print_function, with_statement
+
 import contextlib
 import os.path
 import sys
 import warnings
 import weakref
+
 import six
-from behave import matchers
-from behave.step_registry import setup_step_decorators, registry as the_step_registry
-from behave.formatter._registry import make_formatters
-from behave.configuration import ConfigError
-from behave.capture import CaptureController
-from behave.runner_util import collect_feature_locations, parse_features
+
 from behave._types import ExceptionUtil
+from behave.capture import CaptureController
+from behave.configuration import ConfigError
+from behave.formatter._registry import make_formatters
+from behave.runner_util import \
+    collect_feature_locations, parse_features, \
+    exec_file, load_step_modules, PathManager
+from behave.step_registry import registry as the_step_registry
+
 if six.PY2:
     # -- USE PYTHON3 BACKPORT: With unicode traceback support.
     import traceback2 as traceback
@@ -24,7 +29,9 @@ else:
     import traceback
 
 
-class CleanupError(RuntimeError): pass
+class CleanupError(RuntimeError):
+    pass
+
 
 class ContextMaskWarning(UserWarning):
     """Raised if a context variable is being overwritten in some situations.
@@ -213,7 +220,8 @@ class Context(object):
         for cleanup_func in reversed(cleanup_funcs):
             try:
                 cleanup_func()
-            except Exception as e:
+            except Exception as e: # pylint: disable=broad-except
+                # pylint: disable=protected-access
                 context._root["cleanup_errors"] += 1
                 cleanup_errors.append(sys.exc_info())
                 on_cleanup_error(context, cleanup_func, e)
@@ -457,26 +465,12 @@ def scoped_context_layer(context, layer_name=None):
         with scoped_context_layer(context):
             the_fixture = use_fixture(foo, context, name="foo_42")
     """
+    # pylint: disable=protected-access
     try:
         context._push(layer_name)
         yield context
     finally:
         context._pop()
-
-
-
-
-def exec_file(filename, globals_=None, locals_=None):
-    if globals_ is None:
-        globals_ = {}
-    if locals_ is None:
-        locals_ = globals_
-    locals_["__file__"] = filename
-    with open(filename, "rb") as f:
-        # pylint: disable=exec-used
-        filename2 = os.path.relpath(filename, os.getcwd())
-        code = compile(f.read(), filename2, "exec", dont_inherit=True)
-        exec(code, globals_, locals_)
 
 
 def path_getrootdir(path):
@@ -497,32 +491,6 @@ def path_getrootdir(path):
         return drive + os.path.sep
     # -- POSIX:
     return os.path.sep
-
-
-class PathManager(object):
-    """
-    Context manager to add paths to sys.path (python search path) within a scope
-    """
-    def __init__(self, paths=None):
-        self.initial_paths = paths or []
-        self.paths = None
-
-    def __enter__(self):
-        self.paths = list(self.initial_paths)
-        sys.path = self.paths + sys.path
-
-    def __exit__(self, *crap):
-        for path in self.paths:
-            sys.path.remove(path)
-        self.paths = None
-
-    def add(self, path):
-        if self.paths is None:
-            # -- CALLED OUTSIDE OF CONTEXT:
-            self.initial_paths.append(path)
-        else:
-            sys.path.insert(0, path)
-            self.paths.append(path)
 
 
 class ModelRunner(object):
@@ -670,6 +638,7 @@ class ModelRunner(object):
                 reporter.feature(feature)
 
         # -- AFTER-ALL:
+        # pylint: disable=protected-access, broad-except
         cleanups_failed = False
         self.run_hook("after_all", self.context)
         try:
@@ -818,34 +787,11 @@ class Runner(ModelRunner):
     def load_step_definitions(self, extra_step_paths=None):
         if extra_step_paths is None:
             extra_step_paths = []
-        step_globals = {
-            "use_step_matcher": matchers.use_step_matcher,
-            "step_matcher":     matchers.step_matcher, # -- DEPRECATING
-        }
-        setup_step_decorators(step_globals)
-
         # -- Allow steps to import other stuff from the steps dir
         # NOTE: Default matcher can be overridden in "environment.py" hook.
         steps_dir = os.path.join(self.base_dir, self.config.steps_dir)
-        paths = [steps_dir] + list(extra_step_paths)
-        with PathManager(paths):
-            default_matcher = matchers.current_matcher
-            for path in paths:
-                for name in sorted(os.listdir(path)):
-                    if name.endswith(".py"):
-                        # -- LOAD STEP DEFINITION:
-                        # Reset to default matcher after each step-definition.
-                        # A step-definition may change the matcher 0..N times.
-                        # ENSURE: Each step definition has clean globals.
-                        # try:
-                        step_module_globals = step_globals.copy()
-                        exec_file(os.path.join(path, name), step_module_globals)
-                        matchers.current_matcher = default_matcher
-                        # except Exception as e:
-                        #     e_text = _text(e)
-                        #     print("Exception %s: %s" % \
-                        #           (e.__class__.__name__, e_text))
-                        #     raise
+        step_paths = [steps_dir] + list(extra_step_paths)
+        load_step_modules(step_paths)
 
     def feature_locations(self):
         return collect_feature_locations(self.config.paths)

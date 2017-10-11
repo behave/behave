@@ -15,6 +15,7 @@ from six import StringIO
 from mock import Mock, patch
 from nose.tools import *  # pylint: disable=wildcard-import, unused-wildcard-import
 
+from behave import runner_util
 from behave.model import Table
 from behave.step_registry import StepRegistry
 from behave import parser, runner
@@ -623,7 +624,7 @@ class TestRunner(object):
             f.write("spam = __file__\n")
         g = {}
         l = {}
-        runner.exec_file(fn, g, l)
+        runner_util.exec_file(fn, g, l)
         assert "__file__" in l
         # pylint: disable=too-many-format-args
         assert "spam" in l, '"spam" variable not set in locals (%r)' % (g, l)
