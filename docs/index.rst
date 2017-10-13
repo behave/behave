@@ -37,6 +37,7 @@ Contents
    api
    fixtures
    django
+   flask
    comparison
    new_and_noteworthy
    more_info
