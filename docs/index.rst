@@ -38,6 +38,7 @@ Contents
    fixtures
    django
    flask
+   practical_tips
    comparison
    new_and_noteworthy
    more_info

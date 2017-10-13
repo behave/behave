@@ -41,3 +41,10 @@ Taken and adapted from Ismail Dhorat's `BDD testing example on Flaskr`_.
 
 .. _Flaskr sample application: http://flask.pocoo.org/docs/latest/tutorial/introduction/
 .. _BDD testing example on Flaskr: https://github.com/ismaild/flaskr-bdd
+
+
+Strategies and Tooling
+======================
+
+See :ref:`id.practicaltips` for automation libraries and implementation tips
+on your BDD tests.
