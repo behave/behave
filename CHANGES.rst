@@ -81,6 +81,7 @@ CHANGES:
 
 FIXED:
 
+  * issue #606: Using name option w/ special unicode chars (submitted by: alluir42)
   * issue #547: Crash when using step definition with optional cfparse parts (provided by: ftartaggia, jenisys)
   * pull  #599: Steps from another Windows drive (provided by: psicopep)
   * issue #582: behave emitting PendingDeprecationWarning messages (submitted by: adamjcooper)

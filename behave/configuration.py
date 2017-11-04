@@ -19,6 +19,7 @@ from behave.formatter.base import StreamOpener
 from behave.formatter import _registry as _format_registry
 from behave.userdata import UserData, parse_user_define
 from behave._types import Unknown
+from behave.textutil import select_best_encoding, to_texts
 
 # -- PYTHON 2/3 COMPATIBILITY:
 # SINCE Python 3.2: ConfigParser = SafeConfigParser
@@ -535,11 +536,15 @@ class Configuration(object):
         if command_args is None:
             command_args = sys.argv[1:]
         elif isinstance(command_args, six.string_types):
+            encoding = select_best_encoding() or "utf-8"
             if six.PY2 and isinstance(command_args, six.text_type):
-                command_args = command_args.encode("utf-8")
+                command_args = command_args.encode(encoding)
             elif six.PY3 and isinstance(command_args, six.binary_type):
-                command_args = command_args.decode("utf-8")
+                command_args = command_args.decode(encoding)
             command_args = shlex.split(command_args)
+        elif isinstance(command_args, (list, tuple)):
+            command_args = to_texts(command_args)
+
         if verbose is None:
             # -- AUTO-DISCOVER: Verbose mode from command-line args.
             verbose = ("-v" in command_args) or ("--verbose" in command_args)
@@ -689,6 +694,8 @@ class Configuration(object):
         """
         # -- NOTE: re.LOCALE is removed in Python 3.6 (deprecated in Python 3.5)
         # flags = (re.UNICODE | re.LOCALE)
+        # -- ENSURE: Names are all unicode/text values (for issue #606).
+        names = to_texts(names)
         pattern = u"|".join(names)
         return re.compile(pattern, flags=re.UNICODE)
 
