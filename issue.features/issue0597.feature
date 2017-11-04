@@ -1,6 +1,4 @@
 @issue
-@wip
-Feature:
 Feature: Issue #597 -- Steps with accented letters doesn't seem to work
 
 
