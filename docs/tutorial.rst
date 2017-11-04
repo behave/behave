@@ -486,9 +486,9 @@ server and browser to run all your tests in. For example:
     def before_feature(context, feature):
         model.init(environment='test')
 
-Of course if you wish you could have a new browser for each feature, or to
+Of course, if you wish, you could have a new browser for each feature, or to
 retain the database state between features or even initialise the database
-for to each scenario.
+for each scenario.
 
 
 .. _`controlling things with tags`:
