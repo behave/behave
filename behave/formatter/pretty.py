@@ -242,7 +242,9 @@ class PrettyFormatter(Formatter):
     def calculate_location_indentations(self):
         line_widths = []
         for s in [self.statement] + self.steps:
-            string = s.keyword + " " + s.name
+            # where 5 is the length of the longest keyword 'Given'
+            step_keyword = (' ' * (5 - len(s.keyword))) + s.keyword
+            string = step_keyword + " " + s.name
             line_widths.append(len(string))
         max_line_width = max(line_widths)
         self.indentations = [max_line_width - width for width in line_widths]
@@ -252,7 +254,7 @@ class PrettyFormatter(Formatter):
             return
 
         self.calculate_location_indentations()
-        self.stream.write(u"\n")
+        self.stream.write(u"\n\n")
         #self.print_comments(self.statement.comments, "  ")
         if hasattr(self.statement, "tags"):
             self.print_tags(self.statement.tags, u"  ")
@@ -281,8 +283,11 @@ class PrettyFormatter(Formatter):
 
         #self.print_comments(step.comments, "    ")
         self.stream.write("    ")
-        self.stream.write(text_format.text(step.keyword + " "))
-        line_length = 5 + len(step.keyword)
+
+        # where 5 is the length of the longest keyword 'Given'
+        step_keyword = (' ' * (5 - len(step.keyword))) + step.keyword
+        self.stream.write(text_format.text(step_keyword + " "))
+        line_length = 6 + len(step_keyword)
 
         step_name = six.text_type(step.name)
 
