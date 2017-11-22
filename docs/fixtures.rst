@@ -172,16 +172,16 @@ The point when a fixture-cleanup is performed depends on the scope where
 :func:`~behave.use_fixture()` is called (and the fixture-setup is performed).
 
 
-=========== =========================== ==========================================================================================
-Layer       Fixture-Setup Point         Fixture-Cleanup Point
-=========== =========================== ==========================================================================================
-test run    In ``before_all()`` hook    After ``after_all()``       at end of test-run.
-feature     In ``before_feature()``     After ``after_feature()``,  at end of feature.
-feature     In ``before_tag()``         After ``after_feature()``   for feature tag.
-scenario    In ``before_scenario()``    After ``after_scenario()``, at end of scenario.
-scenario    In ``before_tag()``         After ``after_scenario()``  for scenario tag.
-scenario    In a step                   After ``after_scenario()``. Fixture is usable until end of scenario.
-=========== =========================== ==========================================================================================
+============= =========================== ==========================================================================================
+Context Layer Fixture-Setup Point         Fixture-Cleanup Point
+============= =========================== ==========================================================================================
+test run      In ``before_all()`` hook    After ``after_all()``       at end of test-run.
+feature       In ``before_feature()``     After ``after_feature()``,  at end of feature.
+feature       In ``before_tag()``         After ``after_feature()``   for feature tag.
+scenario      In ``before_scenario()``    After ``after_scenario()``, at end of scenario.
+scenario      In ``before_tag()``         After ``after_scenario()``  for scenario tag.
+scenario      In a step                   After ``after_scenario()``. Fixture is usable until end of scenario.
+============= =========================== ==========================================================================================
 
 
 Fixture Setup/Cleanup Semantics
