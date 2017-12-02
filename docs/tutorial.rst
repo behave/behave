@@ -465,26 +465,49 @@ server and browser to run all your tests in. For example:
 
 .. code-block:: python
 
-    import threading
-    from wsgiref import simple_server
+    # -- FILE: features/environment.py
+    from behave import fixture, use_fixture
+    from behave4my_project.fixtures import wsgi_server
     from selenium import webdriver
-    from my_application import model
-    from my_application import web_app
+
+    @fixture
+    def selenium_browser_chrome(context):
+        # -- HINT: @behave.fixture is similar to @contextlib.contextmanager
+        context.browser = webdriver.Chrome()
+        yield context.browser
+        # -- CLEANUP-FIXTURE PART:
+        context.browser.quit()
 
     def before_all(context):
-        context.server = simple_server.WSGIServer(('', 8000))
-        context.server.set_app(web_app.main(environment='test'))
-        context.thread = threading.Thread(target=context.server.serve_forever)
-        context.thread.start()
-        context.browser = webdriver.Chrome()
-
-    def after_all(context):
-        context.server.shutdown()
-        context.thread.join()
-        context.browser.quit()
+        use_fixture(wsgi_server, context, port=8000)
+        use_fixture(selenium_browser_chrome, context)
+        # -- HINT: CLEANUP-FIXTURE is performed after after_all() hook is called.
 
     def before_feature(context, feature):
         model.init(environment='test')
+
+
+.. code-block:: python
+
+    # -- FILE: behave4my_project/fixtures.py
+    # ALTERNATIVE: Place fixture in "features/environment.py" (but reuse is harder)
+    from behave import fixture
+    import threading
+    from wsgiref import simple_server
+    from my_application import model
+    from my_application import web_app
+
+    @fixture
+    def wsgi_server(context, port=8000):
+        context.server = simple_server.WSGIServer(('', port))
+        context.server.set_app(web_app.main(environment='test'))
+        context.thread = threading.Thread(target=context.server.serve_forever)
+        context.thread.start()
+        yield context.server
+        # -- CLEANUP-FIXTURE PART:
+        context.server.shutdown()
+        context.thread.join()
+
 
 Of course, if you wish, you could have a new browser for each feature, or to
 retain the database state between features or even initialise the database
@@ -557,20 +580,15 @@ browser and web server then you could tag them ``@browser``:
 
 .. code-block:: python
 
+    # -- FILE: features/environment.py
+    # HINT: Reusing some code parts from above.
+    ...
+
     def before_feature(context, feature):
         model.init(environment='test')
         if 'browser' in feature.tags:
-            context.server = simple_server.WSGIServer(('', 8000))
-            context.server.set_app(web_app.main(environment='test'))
-            context.thread = threading.Thread(target=context.server.serve_forever)
-            context.thread.start()
-            context.browser = webdriver.Chrome()
-
-    def after_feature(context, feature):
-        if 'browser' in feature.tags:
-            context.server.shutdown()
-            context.thread.join()
-            context.browser.quit()
+            use_fixture(wsgi_server, context)
+            use_fixture(selenium_browser_chrome, context)
 
 
 Works In Progress
