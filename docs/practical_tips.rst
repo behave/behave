@@ -61,14 +61,20 @@ To start a web browser for interaction with the front-end using
 
     # -- FILE: features/environment.py
     # CONTAINS: Browser fixture setup and teardown
+    from behave import fixture, use_fixture
     from selenium.webdriver import Firefox
 
-    def before_all(context):
+    @fixture
+    def browser_firefox(context):
+        # -- BEHAVE-FIXTURE: Similar to @contextlib.contextmanager
         context.browser = Firefox()
-
-    def after_all(context):
+        yield context.browser
+        # -- CLEANUP-FIXTURE PART:
         context.browser.quit()
-        context.browser = None
+
+    def before_all(context):
+        use_fixture(browser_firefox, context)
+        # -- NOTE: CLEANUP-FIXTURE is called after after_all() hook.
 
 In your step implementations you can use the ``context.browser`` object to
 access Selenium features.  See the `Selenium docs`_ (``remote.webdriver``) for
@@ -96,14 +102,18 @@ To start a web browser for interaction with the front-end using
 
     # -- FILE: features/environment.py
     # CONTAINS: Browser fixture setup and teardown
+    from behave import fixture, use_fixture
     from splinter.browser import Browser
 
-    def before_all(context):
+    @fixture
+    def splinter_browser(context):
         context.browser = Browser()
-
-    def after_all(context):
+        yield context.browser
         context.browser.quit()
-        context.browser = None
+
+    def before_all(context):
+        use_fixture(splinter_browser, context)
+
 
 In your step implementations you can use the ``context.browser`` object to
 access Splinter features.  See the `Splinter docs`_ for details.  Example
