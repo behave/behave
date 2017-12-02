@@ -10,6 +10,7 @@ GOALS:
 
 DOCUMENTATION:
 
+  * pull  #609: Describe execute_steps() behaviour correctly (provided by: mixxorz)
   * pull  #603: Update typo tutorial.rst (provided by: fnaval)
   * pull  #580: Fix some dead ecosystem links (provided by: smadness)
   * pull  #579: Add explanation for step_impl function name (provided by: bittner)
@@ -40,7 +41,7 @@ DOCUMENTATION:
 
 SITE:
 
-  * pull #343: Update/fix badges in README (provided by: mixxorx)
+  * pull #343: Update/fix badges in README (provided by: mixxorz)
 
 ENHANCEMENTS:
 
