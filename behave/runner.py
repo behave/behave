@@ -372,9 +372,10 @@ class Context(object):
         assertion) then the step invoking it will need to catch the resulting
         exceptions.
 
-        Returns True if the steps executed correctly.
-
-        ValueError will be raised if this is invoked outside a feature context.
+        :param steps_text:  Text with the Gherkin steps to execute (as string).
+        :returns: True, if the steps executed successfully.
+        :raises: AssertionError, if a step failure occurs.
+        :raises: ValueError, if invoked without a feature context.
         """
         assert isinstance(steps_text, six.text_type), "Steps must be unicode."
         if not self.feature:
