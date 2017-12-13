@@ -805,6 +805,9 @@ class Runner(ModelRunner):
             return 1
         self.config.format = ['plain']
         self.parallel_element = getattr(self.config, 'parallel_element')
+        self.parallel_profile = getattr(self.config, 'parallel_profile')
+        self.start_time = time.time()
+        proc_count = int(getattr(self.config, 'proc_count'))
 
         if not self.parallel_element:
             self.parallel_element = 'scenario'
@@ -817,6 +820,14 @@ class Runner(ModelRunner):
                     str(self.parallel_element)+"', which isn't valid.")
                     return 1
 
+        if self.parallel_profile:
+            import json
+            json_data = json.loads(open(os.path.join(self.base_dir, self.parallel_profile)).read())
+            try:
+                self.parallel_profile = json_data[str(proc_count)]
+            except:
+                self.parallel_profile = json_data['default']
+
         # -- Prevent context warnings.
         def do_nothing(obj2, obj3):
             pass
@@ -825,7 +836,12 @@ class Runner(ModelRunner):
         self.setup_capture()
         self.run_hook("before_all", self.context)
 
-        self.joblist_index_queue = multiprocessing.Manager().JoinableQueue()
+        joblist_index_lists = dict()
+        joblist_index_lists['default'] = []
+        priority_tag_list = []
+        for k, v in self.parallel_profile.items():
+            joblist_index_lists[k] = []
+            priority_tag_list.append(k)
         self.resultsqueue = multiprocessing.Manager().JoinableQueue()
 
         self.joblist = []
@@ -834,32 +850,59 @@ class Runner(ModelRunner):
         for feature in self.features:
             if self.parallel_element == 'feature' or 'serial' in feature.tags:
                 self.joblist.append(feature)
-                self.joblist_index_queue.put(feature_count + scenario_count)
+                priority_index = {'index': feature_count + scenario_count,
+                                  'priority': feature.priority }
+                joblist_index_lists['default'].append(priority_index)
                 feature_count += 1
                 continue
             for scenario in feature.scenarios:
+                tag = set(scenario.effective_tags) & set(priority_tag_list)
                 if scenario.type == 'scenario':
                     self.joblist.append(scenario)
-                    self.joblist_index_queue.put(
-                        feature_count + scenario_count)
+                    priority_index = {'index': feature_count + scenario_count,
+                                      'priority': scenario.priority }
+                    if tag:
+                        joblist_index_lists[list(tag)[0]].append(priority_index)
+                    else:
+                        joblist_index_lists['default'].append(priority_index)
                     scenario_count += 1
                 else:
                     for subscenario in scenario.scenarios:
                         self.joblist.append(subscenario)
-                        self.joblist_index_queue.put(
-                            feature_count + scenario_count)
+                        priority_index = {'index': feature_count + scenario_count,
+                                          'priority': scenario.priority}
+                        if tag:
+                            joblist_index_lists[list(tag)[0]].append(priority_index)
+                        else:
+                            joblist_index_lists['default'].append(priority_index)
                         scenario_count += 1
 
-        proc_count = int(getattr(self.config, 'proc_count'))
+        self.joblist_index_queues = dict()
+        for k,v in joblist_index_lists.items():
+            # sort on priority
+            self.joblist_index_queues[k] = multiprocessing.Manager().JoinableQueue()
+            v.sort(key=lambda x: x['priority'], reverse=True)
+            for i in v:
+                self.joblist_index_queues[k].put(i['index'])
+
+
         print ("INFO: {0} scenario(s) and {1} feature(s) queued for"
                 " consideration by {2} workers. Some may be skipped if the"
                 " -t option was given..."
                .format(scenario_count, feature_count, proc_count))
-        time.sleep(2)
+        #time.sleep(2)
 
         procs = []
-        for i in range(proc_count):
-            p = multiprocessing.Process(target=self.worker, args=(i, ))
+        for k, v in self.parallel_profile.items():
+            if v <= proc_count:
+                for i in range(v):
+                    p = multiprocessing.Process(target=self.worker, args=(proc_count, k, ))
+                    procs.append(p)
+                    p.start()
+                    proc_count -= 1
+
+        for i in range(proc_count, 0, -1):
+            p = multiprocessing.Process(target=self.worker, args=(i, 'default', ))
             procs.append(p)
             p.start()
         [p.join() for p in procs]
@@ -867,12 +910,18 @@ class Runner(ModelRunner):
         self.run_hook('after_all', self.context)
         return self.multiproc_fullreport()
 
-    def worker(self, proc_number):
+    def worker(self, proc_number, tag):
         while 1:
             try:
-                joblist_index = self.joblist_index_queue.get_nowait()
+                joblist_index = self.joblist_index_queues[tag].get_nowait()
             except Exception, e:
-                break
+                if tag == 'default':
+                    break
+                try:
+                    joblist_index = self.joblist_index_queues['default'].get_nowait()
+                except Exception, e:
+                    break
+
             current_job = self.joblist[joblist_index]
             writebuf = StringIO.StringIO()
             self.setfeature(current_job)
@@ -903,6 +952,10 @@ class Runner(ModelRunner):
             current_job, start_time, end_time, writebuf)
 
             if job_report_text:
+                print("\n" * 3)
+                print("_" * 75)
+                print(job_report_text.encode('utf-8'))
+                sys.stdout.flush()
                 results = {}
                 results['steps_passed'] = 0
                 results['steps_failed'] = 0
@@ -984,12 +1037,10 @@ class Runner(ModelRunner):
         metrics = collections.defaultdict(int)
         combined_features_from_scenarios_results = collections.defaultdict(
             lambda: '')
-        junit_report_objs = [] 
+        junit_report_objs = []
         while not self.resultsqueue.empty():
-            print ("\n" * 3)
-            print ("_" * 75)
             jobresult = self.resultsqueue.get()
-            print (jobresult['reportinginfo'].encode('utf-8'))
+            #print (jobresult['reportinginfo'].encode('utf-8'))
             if 'junit_report' in jobresult:
                 junit_report_objs.append(jobresult['junit_report'])
             if jobresult['jobtype'] != 'feature':
@@ -1019,22 +1070,24 @@ class Runner(ModelRunner):
 
         print ("\n" * 3)
         print ("_" * 75)
+        duration = time.time() - self.start_time
         print ("{0} features passed, {1} features failed, {2} features skipped\n"
                "{3} scenarios passed, {4} scenarios failed, {5} scenarios skipped\n"
-               "{6} steps passed, {7} steps failed, {8} steps skipped, {9} steps undefined\n"\
-                .format(
+               "{6} steps passed, {7} steps failed, {8} steps skipped, {9} steps undefined\n"
+               "Duration: {10}\n".format(
                 metrics['features_passed'], metrics['features_failed'], metrics['features_skipped'],
                 metrics['scenarios_passed'], metrics['scenarios_failed'], metrics['scenarios_skipped'],
-                metrics['steps_passed'], metrics['steps_failed'], metrics['steps_skipped'], metrics['steps_undefined']))
+                metrics['steps_passed'], metrics['steps_failed'], metrics['steps_skipped'], metrics['steps_undefined'],
+                duration))
         if getattr(self.config,'junit'):
             self.write_paralleltestresults_to_junitfile(junit_report_objs)
         return metrics['features_failed']
 
     def generate_junit_report(self, cj, writebuf):
-        report_obj = {} 
+        report_obj = {}
         report_string = ""
         report_obj['filebasename'] = cj.location.basename()[:-8]
-        report_obj['feature_name'] = cj.feature.name        
+        report_obj['feature_name'] = cj.feature.name
         report_obj['status'] = cj.status.name
         report_obj['duration'] = round(cj.duration,4)
         report_string += '<testcase classname="'
@@ -1046,7 +1099,7 @@ class Runner(ModelRunner):
         if cj.status.name == 'failed':
             report_string += self.get_junit_error(cj, writebuf)
         report_string += "<system-out>\n<![CDATA[\n"
-        report_string += "@scenario.begin\n"   
+        report_string += "@scenario.begin\n"
         writebuf.seek(0)
         loglines = writebuf.readlines()
         report_string += loglines[1]
@@ -1057,7 +1110,7 @@ class Runner(ModelRunner):
             report_string += step.status.name + " in "
             report_string += str(round(step.duration,4)) + "s\n"
         report_string += "\n@scenario.end\n"
-        report_string += "-"*80 
+        report_string += "-"*80
         report_string += "\n"
 
         report_string += self.get_junit_stdoutstderr(cj,loglines).decode('utf-8')
@@ -1084,8 +1137,8 @@ class Runner(ModelRunner):
                 while q < len(loglines) and loglines[q] != "Captured stderr:\n":
                     substring += loglines[q]
                     q = q + 1
-                break       
-            q = q + 1 
+                break
+            q = q + 1
 
         substring += "]]>\n</system-out>"
 
@@ -1095,10 +1148,10 @@ class Runner(ModelRunner):
                 substring += loglines[q]
                 q = q + 1
             substring += "]]>\n</system-err>"
-            
+
         return substring
 
-        
+
     def get_junit_error(self, cj, writebuf):
         failed_step = None
         error_string = ""
@@ -1122,11 +1175,11 @@ class Runner(ModelRunner):
         error_string += failed_step.name + " ... failed in "
         error_string += str(round(failed_step.duration,4))+"s\n"
         error_string += "Location: " + str(failed_step.location)
-        error_string += failed_step.error_message 
+        error_string += failed_step.error_message
         error_string += "]]>\n</error>"
         return error_string
 
-    def write_paralleltestresults_to_junitfile(self,junit_report_objs): 
+    def write_paralleltestresults_to_junitfile(self,junit_report_objs):
         feature_reports = {}
         for jro in junit_report_objs:
             #NOTE: There's an edge-case where this key would not be unique
@@ -1140,14 +1193,14 @@ class Runner(ModelRunner):
                 newfeature['filebasename'] = jro['filebasename']
                 newfeature['total_scenarios'] = 1
                 newfeature['data'] = jro['report_string']
-                feature_reports[uniquekey] = newfeature 
+                feature_reports[uniquekey] = newfeature
             else:
                 feature_reports[uniquekey]['duration'] += float(jro['duration'])
                 feature_reports[uniquekey]['statuses'] += jro['status']
                 feature_reports[uniquekey]['total_scenarios'] += 1
                 feature_reports[uniquekey]['data'] += jro['report_string']
 
-        for uniquekey in feature_reports.keys(): 
+        for uniquekey in feature_reports.keys():
             filedata = "<?xml version='1.0' encoding='UTF-8'?>\n"
             filedata += '<testsuite errors="'
             filedata += str(len(re.findall\
@@ -1176,7 +1229,7 @@ class Runner(ModelRunner):
             filename += ".xml"
             fd = codecs.open(filename,"w", "utf-8")
             fd.write(filedata)
-            fd.close() 
+            fd.close()
 
     def setup_capture(self):
         if not self.context:

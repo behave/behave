@@ -129,6 +129,12 @@ options = [
 		info on how this works.
 		""")),
 
+    (("--parallel-profile",),
+     dict(metavar="STRING", dest='parallel_profile',
+          help="""If you used the --processes option, then this will control how the tests get parallelized.
+		Use this parameter to specifiy the parallel profile filename.
+		""")),
+
     (("-D", "--define"),
      dict(dest="userdata_defines", type=parse_user_define, action="append",
           metavar="NAME=VALUE",
