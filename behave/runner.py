@@ -9,6 +9,7 @@ import os.path
 import StringIO
 import re
 import os
+import subprocess
 import codecs
 
 import sys
@@ -788,7 +789,7 @@ class Runner(ModelRunner):
         self.features.extend(features)
 
         # -- STEP: Multi-processing!
-        if getattr(self.config, 'proc_count'):
+        if getattr(self.config, 'proc_count') or getattr(self.config, 'parallel_profile'):
             return self.run_multiproc()
 
         # -- STEP: Run all features.
@@ -807,7 +808,6 @@ class Runner(ModelRunner):
         self.parallel_element = getattr(self.config, 'parallel_element')
         self.parallel_profile = getattr(self.config, 'parallel_profile')
         self.start_time = time.time()
-        proc_count = int(getattr(self.config, 'proc_count'))
 
         if not self.parallel_element:
             self.parallel_element = 'scenario'
@@ -822,11 +822,15 @@ class Runner(ModelRunner):
 
         if self.parallel_profile:
             import json
+            nproc = subprocess.check_output(['nproc']).strip()
             json_data = json.loads(open(os.path.join(self.base_dir, self.parallel_profile)).read())
             try:
-                self.parallel_profile = json_data[str(proc_count)]
+                self.parallel_profile = json_data[str(nproc)]
             except:
                 self.parallel_profile = json_data['default']
+
+        ## --processes overwrites the total proc number defined in profile
+        proc_count = int(getattr(self.config, 'proc_count') or self.parallel_profile["total"])
 
         # -- Prevent context warnings.
         def do_nothing(obj2, obj3):
@@ -911,6 +915,7 @@ class Runner(ModelRunner):
         return self.multiproc_fullreport()
 
     def worker(self, proc_number, tag):
+        print("Worker{} started with tag {}...".format(proc_number, tag))
         while 1:
             try:
                 joblist_index = self.joblist_index_queues[tag].get_nowait()
