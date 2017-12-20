@@ -893,7 +893,6 @@ class Runner(ModelRunner):
             pass
         self.context._emit_warning = do_nothing
 
-
         self.joblist_index_queue = multiprocessing.Manager().JoinableQueue()
         self.resultsqueue = multiprocessing.Manager().JoinableQueue()
 
@@ -1116,10 +1115,10 @@ class Runner(ModelRunner):
         return metrics['features_failed']
 
     def generate_junit_report(self, cj, writebuf):
-        report_obj = {} 
+        report_obj = {}
         report_string = u""
         report_obj['filebasename'] = cj.location.basename()[:-8]
-        report_obj['feature_name'] = cj.feature.name        
+        report_obj['feature_name'] = cj.feature.name
         report_obj['status'] = cj.status.name
         report_obj['duration'] = round(cj.duration,4)
         report_string += '<testcase classname="'
@@ -1131,7 +1130,7 @@ class Runner(ModelRunner):
         if cj.status == 'failed':
             report_string += self.get_junit_error(cj, writebuf)
         report_string += "<system-out>\n<![CDATA[\n"
-        report_string += "@scenario.begin\n"   
+        report_string += "@scenario.begin\n"
         writebuf.seek(0)
         loglines = writebuf.readlines()
         report_string += loglines[1]
@@ -1142,7 +1141,7 @@ class Runner(ModelRunner):
             report_string += step.status.name + " in "
             report_string += str(round(step.duration,4)) + "s\n"
         report_string += "\n@scenario.end\n"
-        report_string += "-"*80 
+        report_string += "-"*80
         report_string += "\n"
 
         report_string += self.get_junit_stdoutstderr(cj,loglines)
@@ -1170,7 +1169,7 @@ class Runner(ModelRunner):
                         loglines[q] != "Captured stderr:\n":
                     substring += loglines[q]
                     q += 1
-                break       
+                break
             q += 1
 
         substring += "]]>\n</system-out>"
@@ -1181,10 +1180,9 @@ class Runner(ModelRunner):
                 substring += loglines[q]
                 q = q + 1
             substring += "]]>\n</system-err>"
-            
+
         return substring
 
-        
     def get_junit_error(self, cj, writebuf):
         failed_step = None
         error_string = u""
@@ -1213,10 +1211,11 @@ class Runner(ModelRunner):
         error_string += str(round(failed_step.duration,4))+"s\n"
         error_string += "Location: " + str(failed_step.location)
         error_string += "<![CDATA[\n"
-        error_string += failed_step.error_message 
+        error_string += failed_step.error_message
         error_string += "]]>\n</error>"
         return error_string
-    def write_paralleltestresults_to_junitfile(self,junit_report_objs): 
+
+    def write_paralleltestresults_to_junitfile(self,junit_report_objs):
         feature_reports = {}
         for jro in junit_report_objs:
             #NOTE: There's an edge-case where this key would not be unique
@@ -1230,14 +1229,14 @@ class Runner(ModelRunner):
                 newfeature['filebasename'] = jro['filebasename']
                 newfeature['total_scenarios'] = 1
                 newfeature['data'] = jro['report_string']
-                feature_reports[uniquekey] = newfeature 
+                feature_reports[uniquekey] = newfeature
             else:
                 feature_reports[uniquekey]['duration'] += float(jro['duration'])
                 feature_reports[uniquekey]['statuses'] += jro['status']
                 feature_reports[uniquekey]['total_scenarios'] += 1
                 feature_reports[uniquekey]['data'] += jro['report_string']
 
-        for uniquekey in feature_reports.keys(): 
+        for uniquekey in feature_reports.keys():
             filedata = u"<?xml version='1.0' encoding='UTF-8'?>\n"
             filedata += '<testsuite errors="'
             filedata += unicode(len(re.findall\
@@ -1266,16 +1265,14 @@ class Runner(ModelRunner):
             filename += ".xml"
             fd = open(filename,"w")
             fd.write(filedata.encode('utf8'))
-            fd.close() 
-
-
+            fd.close()
 
     def clean_buffer(self, buf):
         for i in range(len(buf.buflist)):
             buf.buflist[i] = self.to_unicode(buf.buflist[i])
 
-
     @staticmethod
     def to_unicode(var):
         string = str(var) if isinstance(var, int) else var
         return unicode(string, "utf-8",  errors='replace') if isinstance(string, str) else string
+
