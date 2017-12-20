@@ -867,6 +867,8 @@ class Runner(ModelRunner):
         return self.run_model()
 
     def run_multiproc(self):
+        if self.step_registry is None:
+            self.step_registry = the_step_registry
         self.setup_capture()
         self.run_hook('before_all', self.context)
 
