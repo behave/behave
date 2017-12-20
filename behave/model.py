@@ -390,7 +390,10 @@ class Feature(TagAndStatusStatement, Replayable):
     @property
     def duration(self):
         # -- NEW: Background is executed N times, now part of scenarios.
-        feature_duration = 0.0
+        if self.background:
+            feature_duration = self.background.duration or 0.0
+        else:
+            feature_duration = 0.0
         for scenario in self.scenarios:
             feature_duration += scenario.duration
         return feature_duration

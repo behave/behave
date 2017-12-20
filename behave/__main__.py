@@ -132,6 +132,7 @@ def main(args=None):
         return_code = 1
     return return_code
 
+
 def print_formatters(title=None, stream=None):
     """
     Prints the list of available formatters and their description.

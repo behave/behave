@@ -14,7 +14,8 @@ tools/virtualenvs
 .idea/
 .tox/
 .venv*/
-.DS_Store
 .coverage
 .ropeproject
 nosetests.xml
+.idea
+*.DS_Store

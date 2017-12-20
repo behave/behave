@@ -55,7 +55,7 @@ def find_packages_by_root_package(where):
 # SETUP:
 # -----------------------------------------------------------------------------
 setup(
-    name="behave",
+    name='behave-parallel',
     version="1.2.5",
     description="behave is behaviour-driven development, Python style",
     long_description=description,
@@ -67,7 +67,7 @@ setup(
     py_modules = ["setuptools_behave"],
     entry_points={
         "console_scripts": [
-            "behave = behave.__main__:main"
+            "behave-parallel = behave.__main__:main"
         ],
         "distutils.commands": [
             "behave_test = setuptools_behave:behave_test"
