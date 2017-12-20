@@ -14,6 +14,7 @@ and running features, etc.
 
 from __future__ import absolute_import, print_function, with_statement
 from behave4cmd0.__setup import TOP
+from behave.textutil import text as _text
 import os.path
 import six
 import subprocess
@@ -48,7 +49,8 @@ class CommandResult(object):
         if self._output is None:
             output = self.stdout
             if self.stderr:
-                output += "\n"
+                if self.stdout:
+                    output += "\n"
                 output += self.stderr
             self._output = output
         return self._output
@@ -74,6 +76,26 @@ class Command(object):
     COMMAND_MAP = {
         "behave": os.path.normpath("{0}/bin/behave".format(TOP))
     }
+    PREPROCESSOR_MAP = {}
+    POSTPROCESSOR_MAP = {}
+    USE_SHELL = sys.platform.startswith("win")
+
+    @staticmethod
+    def preprocess_command(preprocessors, cmdargs, command=None, cwd="."):
+        if not os.path.isdir(cwd):
+            return cmdargs
+        elif not command:
+            command = " ".join(cmdargs)
+
+        for preprocess in preprocessors:
+            cmdargs = preprocess(command, cmdargs, cwd)
+        return cmdargs
+
+    @staticmethod
+    def postprocess_command(postprocessors, command_result):
+        for postprocess in postprocessors:
+            command_result = postprocess(command_result)
+        return command_result
 
     @classmethod
     def run(cls, command, cwd=".", **kwargs):
@@ -84,6 +106,9 @@ class Command(object):
         assert isinstance(command, six.string_types)
         command_result = CommandResult()
         command_result.command = command
+        use_shell = cls.USE_SHELL
+        if "shell" in kwargs:
+            use_shell = kwargs.pop("shell")
 
         # -- BUILD COMMAND ARGS:
         if six.PY2 and isinstance(command, six.text_type):
@@ -94,9 +119,15 @@ class Command(object):
         cmdargs = shlex.split(command)
 
         # -- TRANSFORM COMMAND (optional)
-        real_command = cls.COMMAND_MAP.get(cmdargs[0], None)
+        command0 = cmdargs[0]
+        real_command = cls.COMMAND_MAP.get(command0, None)
         if real_command:
-            cmdargs[0] = real_command
+            cmdargs0 = real_command.split()
+            cmdargs = cmdargs0 + cmdargs[1:]
+        preprocessors = cls.PREPROCESSOR_MAP.get(command0)
+        if preprocessors:
+            cmdargs = cls.preprocess_command(preprocessors, cmdargs, command, cwd)
+
 
         # -- RUN COMMAND:
         try:
@@ -104,12 +135,13 @@ class Command(object):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             universal_newlines=True,
+                            shell=use_shell,
                             cwd=cwd, **kwargs)
             out, err = process.communicate()
             if six.PY2: # py3: we get unicode strings, py2 not
-                default_encoding = 'UTF-8'
-                out = six.text_type(out, process.stdout.encoding or default_encoding)
-                err = six.text_type(err, process.stderr.encoding or default_encoding)
+                # default_encoding = "UTF-8"
+                out = _text(out, process.stdout.encoding)
+                err = _text(err, process.stderr.encoding)
             process.poll()
             assert process.returncode is not None
             command_result.stdout = out
@@ -123,9 +155,43 @@ class Command(object):
             command_result.stderr = u"OSError: %s" % e
             command_result.returncode = e.errno
             assert e.errno != 0
+
+        postprocessors = cls.POSTPROCESSOR_MAP.get(command0)
+        if postprocessors:
+            command_result = cls.postprocess_command(postprocessors, command_result)
         return command_result
 
 
+# -----------------------------------------------------------------------------
+# PREPROCESSOR:
+# -----------------------------------------------------------------------------
+def path_glob(command, cmdargs, cwd="."):
+    import glob
+    if not glob.has_magic(command):
+        return cmdargs
+
+    assert os.path.isdir(cwd)
+    try:
+        current_cwd = os.getcwd()
+        os.chdir(cwd)
+        new_cmdargs = []
+        for cmdarg in cmdargs:
+            if not glob.has_magic(cmdarg):
+                new_cmdargs.append(cmdarg)
+                continue
+
+            more_args = glob.glob(cmdarg)
+            if more_args:
+                new_cmdargs.extend(more_args)
+            else:
+                # -- BAD-CASE: Require at least one match.
+                # Otherwise, restore original arg.
+                new_cmdargs.append(cmdarg)
+
+        cmdargs = new_cmdargs
+    finally:
+        os.chdir(current_cwd)
+    return cmdargs
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS:

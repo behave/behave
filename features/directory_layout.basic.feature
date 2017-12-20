@@ -4,14 +4,14 @@ Feature: Basic directory layout (Variant 1)
   I want a simple, non-deep directory structure
   So that I can easily get an overview which stories/tests exist
 
-  | BASIC DIRECTORY LAYOUT STRUCTURE:
-  |     features/
-  |       +-- steps/*.py          # Step definitions or step-library imports.
-  |       +-- *.feature           # Feature files.
-  |       +-- environment.py      # OPTIONAL: environment setup/hooks.
-  |
-  | SEE ALSO:
-  |   * http://pythonhosted.org/behave/gherkin.html#layout-variations
+  . BASIC DIRECTORY LAYOUT STRUCTURE:
+  .     features/
+  .       +-- steps/*.py          # Step definitions or step-library imports.
+  .       +-- *.feature           # Feature files.
+  .       +-- environment.py      # OPTIONAL: environment setup/hooks.
+  .
+  . SEE ALSO:
+  .   * http://pythonhosted.org/behave/gherkin.html#layout-variations
 
 
     @setup

@@ -513,9 +513,10 @@ data in the ``userdata`` dictionary.
             # -- NOTE: Reapplies userdata_defines from command-line, too.
 
 
+Provide the file "userconfig.json" with:
+
 .. code-block:: json
 
-    # -- FILE: userconfig.json
     {
         "browser": "firefox",
         "server":  "asterix",
@@ -546,13 +547,13 @@ The runtime decision is based on which:
   * runtime environment resources are available (by querying the "testbed")
   * runtime environment resources should be used (via `userdata`_ or ...)
 
-Therefore, for *active tags* it is decided at runtime if a tag is enabled or 
-disabled. The runtime decision logic excludes features/scenarios with disabled 
-active tags before they are run. 
+Therefore, for *active tags* it is decided at runtime if a tag is enabled or
+disabled. The runtime decision logic excludes features/scenarios with disabled
+active tags before they are run.
 
 .. note::
-  
-  The active tag mechanism is applied after the normal tag filtering 
+
+  The active tag mechanism is applied after the normal tag filtering
   that is configured on the command-line.
 
   The active tag mechanism uses  the :class:`~behave.tag_matcher.ActiveTagMatcher`
@@ -565,10 +566,10 @@ active tags before they are run.
 Active Tag Logic
 ~~~~~~~~~~~~~~~~~
 
-  * A (positive) active tag is enabled, 
+  * A (positive) active tag is enabled,
     if its value matches the current value of its category.
 
-  * A negated active tag (starting with "not") is enabled, 
+  * A negated active tag (starting with "not") is enabled,
     if its value does not match the current value of its category.
 
   * A sequence of active tags is enabled,
@@ -641,7 +642,7 @@ Assuming you have the feature file where:
     active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
     def before_all(context):
-        # -- SETUP ACTIVE-TAG MATCHER VALUE(s): 
+        # -- SETUP ACTIVE-TAG MATCHER VALUE(s):
         active_tag_value_provider["browser"] = os.environ.get("BROWSER", "chrome")
 
     def before_scenario(context, scenario):
@@ -699,15 +700,16 @@ Assuming you have scenarios with the following runtime conditions:
     }
     active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
-    def setup_active_tag_values(userdata):
-        for category in active_tag_value_provider.keys():
-            if category in userdata:
-                active_tag_value_provider[category] = userdata[category]
+    # -- BETTER USE: from behave.tag_matcher import setup_active_tag_values
+    def setup_active_tag_values(active_tag_values, data):
+        for category in active_tag_values.keys():
+            if category in data:
+                active_tag_values[category] = data[category]
 
     def before_all(context):
-        # -- SETUP ACTIVE-TAG MATCHER (with userdata): 
+        # -- SETUP ACTIVE-TAG MATCHER (with userdata):
         # USE: behave -D browser=safari ...
-        setup_active_tag_values(context.config.userdata)
+        setup_active_tag_values(active_tag_value_provider, context.config.userdata)
 
     def before_feature(context, feature):
         if active_tag_matcher.should_exclude_with(feature.tags):

@@ -1,0 +1,7 @@
+# ============================================================================
+# BEHAVE: PYTHON PACKAGE REQUIREMENTS: For documentation generation
+# ============================================================================
+# REQUIRES: pip >= 8.0
+
+Sphinx >= 1.6
+sphinx_bootstrap_theme >= 0.6.0

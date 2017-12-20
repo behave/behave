@@ -1,28 +1,28 @@
 @issue
 Feature: Issue #99: Layout variation "a directory containing your feature files" is broken for running single features
 
-    | When I use a layout as described in the 1.2.2 documentation,
-    | I can only specify a whole directory of feature files to run.
-    | Specifying a single feature file results in an error from behave:
-    |
-    |   $ behave -v tests/feature/webui/features/feature_under_test.feature
-    |    ...
-    |    Supplied path: "tests/feature/webui/features/feature_under_test.feature"
-    |    Primary path is to a file so using its directory
-    |    Trying base directory: .../tests/feature/webui/features
-    |    Trying base directory: .../tests/feature/webui
-    |    ERROR: Could not find "steps" directory in your specified path ".../tests/feature/webui/features"
-    |    No steps directory in ".../tests/feature/webui/features"
-    |
-    | My directory layout is as follows:
-    |
-    |   .../tests/feature/webui/
-    |       +-- features/
-    |       +-- steps/
-    |       +-- environment.py
-    |
-    | SEE ALSO:
-    |   * http://packages.python.org/behave/gherkin.html#layout-variations
+    . When I use a layout as described in the 1.2.2 documentation,
+    . I can only specify a whole directory of feature files to run.
+    . Specifying a single feature file results in an error from behave:
+    .
+    .   $ behave -v tests/feature/webui/features/feature_under_test.feature
+    .    ...
+    .    Supplied path: "tests/feature/webui/features/feature_under_test.feature"
+    .    Primary path is to a file so using its directory
+    .    Trying base directory: .../tests/feature/webui/features
+    .    Trying base directory: .../tests/feature/webui
+    .    ERROR: Could not find "steps" directory in your specified path '.../tests/feature/webui/features'
+    .    No steps directory in '.../tests/feature/webui/features'
+    .
+    . My directory layout is as follows:
+    .
+    .   .../tests/feature/webui/
+    .       +-- features/
+    .       +-- steps/
+    .       +-- environment.py
+    .
+    . SEE ALSO:
+    .   * http://packages.python.org/behave/gherkin.html#layout-variations
 
 
   Background:

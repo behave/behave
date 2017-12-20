@@ -4,7 +4,8 @@ Provides step definitions that test tag expressions (and tag logic).
 
 .. code-block:: gherkin
 
-    Given the tag expression "@foo"
+    Given the default tags "-@foo"
+    And   the tag expression "@foo"
     Then the tag expression selects elements with tags:
         | tags         | selected? |
         | @foo         |   yes     |
@@ -65,6 +66,20 @@ def step_given_the_tag_expression(context, tag_expression):
         Given the tag expression "@foo"
     """
     context.tag_expression = tag_expression
+
+@given('the default tags "{default_tags:TagExpression}"')
+def step_given_the_tag_expression(context, default_tags):
+    """
+    Define a tag expression that is used later-on.
+
+    .. code-block:: gherkin
+
+        Given the tag expression "@foo"
+    """
+    context.default_tags = default_tags
+    tag_expression = getattr(context, "tag_expression", None)
+    if tag_expression is None:
+        context.tag_expression = default_tags
 
 @then('the tag expression selects elements with tags')
 def step_then_tag_expression_selects_elements_with_tags(context):

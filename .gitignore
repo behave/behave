@@ -9,13 +9,15 @@ __pycache__/
 __WORKDIR__/
 _build/
 _WORKSPACE/
+reports/
 tools/virtualenvs
 .cache/
 .idea/
 .tox/
 .venv*/
+*.DS_Store
 .coverage
 .ropeproject
 nosetests.xml
 .idea
-*.DS_Store
+rerun.txt

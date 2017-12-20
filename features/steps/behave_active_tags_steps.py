@@ -13,7 +13,6 @@
 
 """
 
-from __future__ import unicode_literals
 from behave import given, when, then, step
 from behave.tag_matcher import ActiveTagMatcher
 from behave.tag_expression import TagExpression
@@ -32,7 +31,7 @@ def normalize_tags(tags):
 # -----------------------------------------------------------------------------
 # STEP DEFINITIONS:
 # -----------------------------------------------------------------------------
-@given('I setup the current values for active tags with')
+@given(u'I setup the current values for active tags with')
 def step_given_setup_the_current_values_for_active_tags_with(context):
     assert context.table, "REQUIRE: table"
     context.table.require_columns(["category", "value"])
@@ -48,7 +47,7 @@ def step_given_setup_the_current_values_for_active_tags_with(context):
         active_values[category] = value
 
 
-@then('the following active tag combinations are enabled')
+@then(u'the following active tag combinations are enabled')
 def step_then_following_active_tags_combinations_are_enabled(context):
     assert context.table, "REQUIRE: table"
     assert context.active_value_provider, "REQUIRE: active_value_provider"
@@ -78,10 +77,10 @@ def step_then_following_active_tags_combinations_are_enabled(context):
     assert_that(mismatched_rows, equal_to([]), "No mismatched rows:")
 
 
-@step('unknown categories are ignored in active tags')
+@step(u'unknown categories are ignored in active tags')
 def step_unknown_categories_are_ignored_in_active_tags(context):
     context.active_tags_ignore_unknown_categories = True
 
-@step('unknown categories are not ignored in active tags')
+@step(u'unknown categories are not ignored in active tags')
 def step_unknown_categories_are_not_ignored_in_active_tags(context):
     context.active_tags_ignore_unknown_categories = False

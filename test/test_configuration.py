@@ -1,14 +1,15 @@
-from __future__ import absolute_import, with_statement
-from unittest import TestCase
 import os.path
+import sys
 import tempfile
+import six
 from nose.tools import *
 from behave import configuration
 from behave.configuration import Configuration, UserData
+from unittest import TestCase
 
 
 # one entry of each kind handled
-TEST_CONFIG='''[behave]
+TEST_CONFIG="""[behave]
 outfiles= /absolute/path1
           relative/path2
 paths = /absolute/path3
@@ -23,30 +24,41 @@ bogus=spam
 [behave.userdata]
 foo    = bar
 answer = 42
-'''
+"""
+
+
+ROOTDIR_PREFIX = ""
+if sys.platform.startswith("win"):
+    # -- OR: ROOTDIR_PREFIX = os.path.splitdrive(sys.executable)
+    # NOTE: python2 requires lower-case drive letter.
+    ROOTDIR_PREFIX_DEFAULT = "C:"
+    if six.PY2:
+        ROOTDIR_PREFIX_DEFAULT = ROOTDIR_PREFIX_DEFAULT.lower()
+    ROOTDIR_PREFIX = os.environ.get("BEHAVE_ROOTDIR_PREFIX", ROOTDIR_PREFIX_DEFAULT)
 
 class TestConfiguration(object):
 
     def test_read_file(self):
         tn = tempfile.mktemp()
         tndir = os.path.dirname(tn)
-        with open(tn, 'w') as f:
+        with open(tn, "w") as f:
             f.write(TEST_CONFIG)
 
+        # -- WINDOWS-REQUIRES: normpath
         d = configuration.read_configuration(tn)
-        eq_(d['outfiles'], [
-            os.path.normpath('/absolute/path1'),
-            os.path.normpath(os.path.join(tndir, 'relative/path2')),
+        eq_(d["outfiles"], [
+            os.path.normpath(ROOTDIR_PREFIX + "/absolute/path1"),
+            os.path.normpath(os.path.join(tndir, "relative/path2")),
         ])
-        eq_(d['paths'], [
-            os.path.normpath('/absolute/path3'),  # -- WINDOWS-REQUIRES: normpath
-            os.path.normpath(os.path.join(tndir, 'relative/path4')),
+        eq_(d["paths"], [
+            os.path.normpath(ROOTDIR_PREFIX + "/absolute/path3"),
+            os.path.normpath(os.path.join(tndir, "relative/path4")),
             ])
-        eq_(d['format'], ['pretty', 'tag-counter'])
-        eq_(d['tags'], ['@foo,~@bar', '@zap'])
-        eq_(d['stdout_capture'], False)
-        ok_('bogus' not in d)
-        eq_(d['userdata'], {'foo': 'bar', 'answer': '42'})
+        eq_(d["format"], ["pretty", "tag-counter"])
+        eq_(d["tags"], ["@foo,~@bar", "@zap"])
+        eq_(d["stdout_capture"], False)
+        ok_("bogus" not in d)
+        eq_(d["userdata"], {"foo": "bar", "answer": "42"})
 
     def ensure_stage_environment_is_not_set(self):
         if "BEHAVE_STAGE" in os.environ:
@@ -56,7 +68,7 @@ class TestConfiguration(object):
         # -- OR: Setup with default, unnamed stage.
         self.ensure_stage_environment_is_not_set()
         assert "BEHAVE_STAGE" not in os.environ
-        config = Configuration()
+        config = Configuration("")
         eq_("steps", config.steps_dir)
         eq_("environment.py", config.environment_file)
 
@@ -74,7 +86,7 @@ class TestConfiguration(object):
 
     def test_settings_with_stage_from_envvar(self):
         os.environ["BEHAVE_STAGE"] = "STAGE2"
-        config = Configuration()
+        config = Configuration("")
         eq_("STAGE2_steps", config.steps_dir)
         eq_("STAGE2_environment.py", config.environment_file)
         del os.environ["BEHAVE_STAGE"]

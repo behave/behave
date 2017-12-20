@@ -1,10 +1,10 @@
 @issue
 Feature: Issue #216: ANSI escape sequences are used while using --wip option
 
-  | ENSURE THAT:
-  |   * Coloring is disabled when --wip option is used.
-  |   * In addition, no colouring is used when using --show-skipped option
-  |   * Undefined step snippets are not "colored".
+  . ENSURE THAT:
+  .   * Coloring is disabled when --wip option is used.
+  .   * In addition, no colouring is used when using --show-skipped option
+  .   * Undefined step snippets are not "colored".
 
   @setup
   Scenario: Feature Setup

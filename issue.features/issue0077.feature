@@ -1,13 +1,13 @@
 @issue
 Feature: Issue #77: Does not capture stdout from sub-processes
 
-    | My step functions are using wrapper objects to interact with SUT.
-    | Those wrappers use this kind of thing to invoke executables:
-    |
-    |   subprocess.check_call('myprog', ..., stderr=subprocess.STDOUT)
-    |
-    | However, the output from those calls does not appear in the stdout
-    | captured by behave when a step fails.
+  . My step functions are using wrapper objects to interact with SUT.
+  . Those wrappers use this kind of thing to invoke executables:
+  .
+  .   subprocess.check_call('myprog', ..., stderr=subprocess.STDOUT)
+  .
+  . However, the output from those calls does not appear in the stdout
+  . captured by behave when a step fails.
 
 
   Background: Test Setup

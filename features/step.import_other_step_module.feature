@@ -4,14 +4,14 @@ Feature: Ensure that a step module can import another step module
   I want to import step definitions from another module in a step module
   So that I can reuse other steps and call them directly.
 
-  | When a step module imports another step module
-  | this should not cause AmbiguousStep errors
-  | due to duplicated registration of the same step functions.
-  |
-  | NOTES:
-  |   * In general you should avoid this case (provided as example here).
-  |   * Use "context.execute_steps(...)" to avoid importing other step modules
-  |   * Use step-libraries; this will in general use sane imports of other step modules
+  . When a step module imports another step module
+  . this should not cause AmbiguousStep errors
+  . due to duplicated registration of the same step functions.
+  .
+  . NOTES:
+  .   * In general you should avoid this case (provided as example here).
+  .   * Use "context.execute_steps(...)" to avoid importing other step modules
+  .   * Use step-libraries; this will in general use sane imports of other step modules
 
 
   Scenario: Step module that imports another step module

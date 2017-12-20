@@ -59,7 +59,7 @@ def unqote(text):
     """Strip pair of leading and trailing quotes from text."""
     # -- QUOTED: Strip single-quote or double-quote pair.
     if ((text.startswith('"') and text.endswith('"')) or
-        (text.startswith("'") and text.endswith("'"))):
+            (text.startswith("'") and text.endswith("'"))):
         text = text[1:-1]
     return text
 

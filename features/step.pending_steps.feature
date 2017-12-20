@@ -1,13 +1,13 @@
 Feature: Pending Step (Exists with NotImplementedError Marker)
 
-    | Terminology:
-    |  * An undefined step is a step without matching step implementation.
-    |  * A pending step exists,
-    |    but contains only the undefined step snippet as implementation,
-    |    that marks it as NotImplemented.
-    |
-    | RELATED TO:
-    |  * step.undefined_steps.feature
+   . TERMINOLOGY:
+   .  * An undefined step is a step without matching step implementation.
+   .  * A pending step exists,
+   .    but contains only the undefined step snippet as implementation,
+   .    that marks it as NotImplemented.
+   .
+   . RELATED TO:
+   .  * step.undefined_steps.feature
 
 
     @setup

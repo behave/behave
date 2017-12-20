@@ -85,7 +85,7 @@ line:
 
   Note that with this approach, if you want to execute *behave* without having
   to explicitly specify the directory (first option) you can set the ``paths``
-  setting in your `configuration file`_ (e.g. ``paths=tests/features``).
+  setting in your `configuration file`_ (e.g. ``paths=tests``).
 
 If you're having trouble setting things up and want to see what *behave* is
 doing in attempting to find your features use the "-v" (verbose)
@@ -422,7 +422,7 @@ Or you can make it read more fluently by writing:
      Then I see something
       But I don't see something else
 
-The two scenarios are identical to *bevave* - steps beginning with "and" or
+The two scenarios are identical to *behave* - steps beginning with "and" or
 "but" are exactly the same kind of steps as all the others. They simply
 mimic the step that preceeds them.
 

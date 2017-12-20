@@ -6,7 +6,7 @@ TODO:
   matcher that ignores empty lines and whitespace and has contains comparison
 """
 
-from __future__ import absolute_import, print_function, unicode_literals
+from __future__ import absolute_import, print_function
 from hamcrest import assert_that, is_not, equal_to, contains_string
 # DISABLED: from behave4cmd.hamcrest_text import matches_regexp
 import codecs
@@ -190,6 +190,43 @@ def text_normalize(text):
 # -----------------------------------------------------------------------------
 # ASSERTIONS:
 # -----------------------------------------------------------------------------
+from hamcrest.library.text.substringmatcher import SubstringMatcher
+from hamcrest.core.helpers.hasmethod import hasmethod
+
+class StringContainsMultipleTimes(SubstringMatcher):
+
+    def __init__(self, substring, expected_count):
+        super(StringContainsMultipleTimes, self).__init__(substring)
+        self.expected_count = expected_count
+        self.actual_count = 0
+
+    def describe_to(self, description):
+        description.append_text('a string ') \
+            .append_text(self.relationship()) \
+            .append_text(" ") \
+            .append_description_of(self.substring) \
+            .append_text(" ") \
+            .append_description_of(self.expected_count) \
+            .append_text(" times instead of ") \
+            .append_description_of(self.actual_count)
+
+    def _matches(self, item):
+        if not hasmethod(item, "count"):
+            return False
+        self.actual_count = item.count(self.substring)
+        return self.actual_count == self.expected_count
+
+    def relationship(self):
+        return "containing"
+
+
+def contains_substring_multiple_times(substring, expected_count):
+    return StringContainsMultipleTimes(substring, expected_count)
+
+
+# -----------------------------------------------------------------------------
+# ASSERTIONS:
+# -----------------------------------------------------------------------------
 def assert_text_should_equal(actual_text, expected_text):
     assert_that(actual_text, equal_to(expected_text))
 
@@ -204,6 +241,9 @@ def assert_text_should_not_contain_exactly(text, expected_part):
 
 def assert_text_should_contain(text, expected_part):
     assert_that(text, contains_string(expected_part))
+
+def assert_normtext_should_contain_multiple_times(text, expected_text, count):
+    assert_that(text, contains_substring_multiple_times(expected_text, count))
 
 def assert_text_should_not_contain(text, unexpected_part):
     assert_that(text, is_not(contains_string(unexpected_part)))

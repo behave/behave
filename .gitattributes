@@ -1,0 +1,11 @@
+# Set default behaviour, in case users don't have core.autocrlf set.
+* text=auto
+
+*.py   text eol=lf
+*.cmd  text eolf=crlf
+*.bat  text eolf=crlf
+
+*.png binary
+*.jpg binary
+*.pdf binary
+*.zip binary

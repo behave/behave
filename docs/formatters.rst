@@ -14,6 +14,19 @@ The ``Formatter`` is informed about each step that is taken.
 The ``Reporter`` has a more coarse-grained API.
 
 
+Reporters
+------------------------------------------------------------------------------
+
+The following reporters are currently supported:
+
+============== ================================================================
+Name            Description
+============== ================================================================
+junit           Provides JUnit XML-like output.
+summary         Provides a summary of the test run.
+============== ================================================================
+
+
 Formatters
 ------------------------------------------------------------------------------
 
@@ -41,21 +54,55 @@ tags.location  dry-run  Shows tags and the location where they are used.
 
 .. note::
 
-    You can use more that one formatter during a test run.
+    You can use more than one formatter during a test run.
     But in general you have only one formatter that writes to ``stdout``.
 
     The "Mode" column indicates if a formatter is intended to be used in
     dry-run (``--dry-run`` command-line option) or normal mode.
 
 
-Reporters
+User-Defined Formatters
 ------------------------------------------------------------------------------
 
-The following reporters are currently supported:
+Behave allows you to provide your own formatter (class)::
 
-============== ================================================================
-Name            Description
-============== ================================================================
-junit           Provides JUnit XML-like output.
-summary         Provides a summary of the test run.
-============== ================================================================
+    # -- USE: Formatter class "Json2Formatter" in python module "foo.bar"
+    # NOTE: Formatter must be importable from python search path.
+    behave -f foo.bar:Json2Formatter ...
+
+The usage of a user-defined formatter can be simplified by providing an
+alias name for it in the configuration file::
+
+    # -- FILE: behave.ini
+    # ALIAS SUPPORTS: behave -f json2 ...
+    # NOTE: Formatter aliases may override builtin formatters.
+    [behave.formatters]
+    json2 = foo.bar:Json2Formatter
+
+If your formatter can be configured, you should use the userdata concept
+to provide them. The formatter should use the attribute schema::
+
+    # -- FILE: behave.ini
+    # SCHEMA: behave.formatter.<FORMATTER_NAME>.<ATTRIBUTE_NAME>
+    [behave.userdata]
+    behave.formatter.json2.use_pretty = true
+
+    # -- SUPPORTS ALSO:
+    #    behave -f json2 -D behave.formatter.json2.use_pretty ...
+
+
+More Formatters
+------------------------------------------------------------------------------
+
+The following formatters are currently known:
+
+============== =========================================================================
+Name           Description
+============== =========================================================================
+allure         :pypi:`allure-behave`, an Allure formatter for behave:
+               ``allure_behave.formatter:AllureFormatter``
+teamcity       :pypi:`behave-teamcity`, a formatter for Jetbrains TeamCity CI testruns
+               with behave.
+============== =========================================================================
+
+

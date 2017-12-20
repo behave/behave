@@ -7,7 +7,7 @@ Feature: Issue #30 "behave --version" runs features and shows no version
     Then it should fail
     And the command output should contain:
       """
-      No steps directory in "{__WORKDIR__}/features"
+      No steps directory in '{__WORKDIR__}/features'
       """
 
   Scenario: Ensure --version option is processed correctly
@@ -16,6 +16,6 @@ Feature: Issue #30 "behave --version" runs features and shows no version
     Then it should pass
     And the command output should not contain:
       """
-      No steps directory in "{__WORKDIR__}/features"
+      No steps directory in '{__WORKDIR__}/features'
       """
 

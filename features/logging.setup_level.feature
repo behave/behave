@@ -8,10 +8,10 @@ Feature: Setup logging_level
   I want to configure the logging_level for --nologcapture mode
   So that I see only the important log-records up to this level.
 
-  | SPECIFICATION:
-  |  * logging_level can be defined on command-line
-  |  * logging_level can be defined in behave configuration file
-  |  * logging_level should be applied in before_all() hook in --nologcapture mode
+  . SPECIFICATION:
+  .  * logging_level can be defined on command-line
+  .  * logging_level can be defined in behave configuration file
+  .  * logging_level should be applied in before_all() hook in --nologcapture mode
 
 
   @setup

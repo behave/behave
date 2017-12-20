@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
+import sys
 import codecs
 import os.path
 import six
-import sys
+from behave.textutil import select_best_encoding, \
+    ensure_stream_with_encoder as _ensure_stream_with_encoder
 
 
 class StreamOpener(object):
-    """
-    Provides a transport vehicle to open the formatter output stream
+    """Provides a transport vehicle to open the formatter output stream
     when the formatter needs it.
     In addition, it provides the formatter with more control:
 
@@ -17,7 +18,8 @@ class StreamOpener(object):
       * the name (filename/dirname) of the output stream
       * let it decide if directory mode is used instead of file mode
     """
-    default_encoding = "UTF-8"
+    # FORMER: default_encoding = "UTF-8"
+    default_encoding = select_best_encoding()
 
     def __init__(self, filename=None, stream=None, encoding=None):
         if not encoding:
@@ -36,23 +38,7 @@ class StreamOpener(object):
 
     @classmethod
     def ensure_stream_with_encoder(cls, stream, encoding=None):
-        if not encoding:
-            encoding = cls.default_encoding
-
-        if six.PY3:
-            return stream
-        elif hasattr(stream, "stream"):
-            return stream    # Already wrapped with a codecs.StreamWriter
-        else:
-            assert six.PY2
-            # py2 does, however, sometimes declare an encoding on sys.stdout,
-            # even if it doesn't use it (or it might be explicitly None)
-            stream = codecs.getwriter(encoding)(stream)
-        # elif not getattr(stream, 'encoding', None):
-        #     # -- TODO: POTENTIAL DEAD-CODE: Inspect and cleanup later.
-        #     # ok, so the stream doesn't have an encoding at all so add one
-        #     stream = codecs.getwriter(encoding)(stream)
-        return stream
+        return _ensure_stream_with_encoder(stream, encoding)
 
     def open(self):
         if not self.stream or self.stream.closed:
@@ -102,7 +88,7 @@ class Formatter(object):
                     if step_match:
                         step_match.run()
                     else:
-                        step.status = "undefined"
+                        step.status = Status.undefined
                     formatter.result(step.status)
             formatter.eof() # -- FEATURE-END
         formatter.close()
@@ -131,24 +117,21 @@ class Formatter(object):
         return self.stream
 
     def uri(self, uri):
-        """
-        Called before processing a file (normally a feature file).
+        """Called before processing a file (normally a feature file).
 
         :param uri:  URI or filename (as string).
         """
         pass
 
     def feature(self, feature):
-        """
-        Called before a feature is executed.
+        """Called before a feature is executed.
 
         :param feature:  Feature object (as :class:`behave.model.Feature`)
         """
         pass
 
     def background(self, background):
-        """
-        Called when a (Feature) Background is provided.
+        """Called when a (Feature) Background is provided.
         Called after :method:`feature()` is called.
         Called before processing any scenarios or scenario outlines.
 
@@ -157,57 +140,46 @@ class Formatter(object):
         pass
 
     def scenario(self, scenario):
-        """
-        Called before a scenario is executed (or an example of ScenarioOutline).
+        """Called before a scenario is executed (or ScenarioOutline scenarios).
 
         :param scenario:  Scenario object (as :class:`behave.model.Scenario`)
         """
         pass
 
-    def scenario_outline(self, outline):
-        pass
-
-    def examples(self, examples):
-        pass
-
     def step(self, step):
-        """
-        Called before a step is executed (and matched).
+        """Called before a step is executed (and matched).
+        NOTE: Normally called before scenario is executed for all its steps.
 
         :param step: Step object (as :class:`behave.model.Step`)
         """
+        pass
 
     def match(self, match):
-        """
-        Called when a step was matched against its step implementation.
+        """Called when a step was matched against its step implementation.
 
         :param match:  Registered step (as Match), undefined step (as NoMatch).
         """
         pass
 
     def result(self, step_result):
-        """
-        Called after processing a step (when the step result is known).
+        """Called after processing a step (when the step result is known).
 
         :param step_result:  Step result (as string-enum).
         """
         pass
 
     def eof(self):
-        """
-        Called after processing a feature (or a feature file).
-        """
+        """Called after processing a feature (or a feature file)."""
         pass
 
     def close(self):
-        """
-        Called before the formatter is no longer used (stream/io compatibility).
+        """Called before the formatter is no longer used
+        (stream/io compatibility).
         """
         self.close_stream()
 
     def close_stream(self):
-        """
-        Close the stream, but only if this is needed.
+        """Close the stream, but only if this is needed.
         This step is skipped if the stream is sys.stdout.
         """
         if self.stream:

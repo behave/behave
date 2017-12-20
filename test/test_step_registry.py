@@ -1,27 +1,31 @@
+# -*- coding: UTF-8 -*-
+# pylint: disable=unused-wildcard-import
 from __future__ import absolute_import, with_statement
-
 from mock import Mock, patch
-from nose.tools import *
+from nose.tools import *        # pylint: disable=wildcard-import
+from six.moves import range     # pylint: disable=redefined-builtin
 from behave import step_registry
-from six.moves import range
+
 
 class TestStepRegistry(object):
+    # pylint: disable=invalid-name, no-self-use
+
     def test_add_step_definition_adds_to_lowercased_keyword(self):
         registry = step_registry.StepRegistry()
-        with patch('behave.matchers.get_matcher') as get_matcher:
+        # -- MONKEYPATCH-PROBLEM:
+        #  with patch('behave.matchers.get_matcher') as get_matcher:
+        with patch('behave.step_registry.get_matcher') as get_matcher:
             func = lambda x: -x
-            string = 'just a test string'
+            pattern = 'just a test string'
             magic_object = object()
             get_matcher.return_value = magic_object
 
-            # XXX-CHECK-PY23: if list() is needed.
             for step_type in list(registry.steps.keys()):
                 l = []
                 registry.steps[step_type] = l
 
-                registry.add_step_definition(step_type.upper(), string, func)
-
-                get_matcher.assert_called_with(func, string)
+                registry.add_step_definition(step_type.upper(), pattern, func)
+                get_matcher.assert_called_with(func, pattern)
                 eq_(l, [magic_object])
 
     def test_find_match_with_specific_step_type_also_searches_generic(self):
@@ -78,14 +82,15 @@ class TestStepRegistry(object):
         for mock in step_defs[6:]:
             eq_(mock.match.call_count, 0)
 
+    # pylint: disable=line-too-long
     @patch.object(step_registry.registry, 'add_step_definition')
     def test_make_step_decorator_ends_up_adding_a_step_definition(self, add_step_definition):
         step_type = object()
-        string = object()
+        step_pattern = object()
         func = object()
 
         decorator = step_registry.registry.make_decorator(step_type)
-        wrapper = decorator(string)
+        wrapper = decorator(step_pattern)
         assert wrapper(func) is func
-        add_step_definition.assert_called_with(step_type, string, func)
+        add_step_definition.assert_called_with(step_type, step_pattern, func)
 

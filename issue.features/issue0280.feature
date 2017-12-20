@@ -1,24 +1,24 @@
 @issue
 Feature: Issue #280: AmbiguousStep error with similar step definitions and use_step_matcher("re")
 
-  | While using the RegexMatcher with steps that have the same step prefix
-  | an AmbiguousStep exception occurs if the shorter step is registered first.
-  |
-  | EXAMPLE:
-  | Two steps with definitions that have the same step prefix:
-  |
-  |   * I do something
-  |   * I do something more
-  |
-  | cause an AmbiguousStep error to be thrown:
-  |
-  |   behave.step_registry.AmbiguousStep: @when('I do something more') has already
-  |   been defined in existing step @when('I do something') at ...
-  |
-  | SOLUTION: Add regex begin-/end-markers around the step text( '^'+ step + '$')
-  | NOTE: Only RegexMatcher is affected.
+  . While using the RegexMatcher with steps that have the same step prefix
+  . an AmbiguousStep exception occurs if the shorter step is registered first.
+  .
+  . EXAMPLE:
+  . Two steps with definitions that have the same step prefix:
+  .
+  .   * I do something
+  .   * I do something more
+  .
+  . cause an AmbiguousStep error to be thrown:
+  .
+  .   behave.step_registry.AmbiguousStep: @when('I do something more') has already
+  .   been defined in existing step @when('I do something') at ...
+  .
+  . SOLUTION: Add regex begin-/end-markers around the step text( '^'+ step + '$')
+  . NOTE: Only RegexMatcher is affected.
 
-  @setuo
+  @setup
   Scenario: Feature Setup
     Given a new working directory
     And   a file named "features/steps/calculator_steps1.py" with:

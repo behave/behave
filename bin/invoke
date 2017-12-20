@@ -1,0 +1,8 @@
+#!/bin/sh
+#!/bin/bash
+# RUN INVOKE: From bundled ZIP file.
+
+HERE=$(dirname $0)
+export INVOKE_TASKS_USE_VENDOR_BUNDLES="yes"
+
+python ${HERE}/../tasks/_vendor/invoke.zip $*

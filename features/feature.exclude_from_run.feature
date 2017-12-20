@@ -6,35 +6,35 @@ Feature: Exclude Feature from Test Run
     So that the command-line configuration becomes simpler
     (and auto-configuration is supported).
 
-    | MECHANISM:
-    |   The "before_feature()" hook can decide just before a feature should run
-    |   that the feature should be excluded from the test-run.
-    |   NOTE: Hooks are not called in dry-run mode.
-    |
-    | RATIONALE:
-    |   There are certain situations where it is better to skip a feature
-    |   than to run and fail the feature.
-    |
-    |   Reasons for these cases are of often test environment related:
-    |     * test environment does not fulfill the desired criteria
-    |     * used testbed does not fulfill test requirements
-    |
-    |   Instead of providing the exclude-feature selection on the command-line,
-    |   the test (environment) and configuration logic should determine
-    |   if a test should be excluded (as auto-configuration functionality).
-    |
-    | EXAMPLE:
-    |   Certain features should not run on Windows (or Linux, ...).
-    |
-    | EVALUATION ORDER:
-    |   Before the user can exclude a feature from a test-run,
-    |   additional mechanisms decide, if the feature is part of the selected run-set.
-    |   These are:
-    |     * tags
-    |     * ...
-    |
-    | RELATED:
-    |   * features/scenario.exclude_from_run.feature
+    . MECHANISM:
+    .   The "before_feature()" hook can decide just before a feature should run
+    .   that the feature should be excluded from the test-run.
+    .   NOTE: Hooks are not called in dry-run mode.
+    .
+    . RATIONALE:
+    .   There are certain situations where it is better to skip a feature
+    .   than to run and fail the feature.
+    .
+    .   Reasons for these cases are of often test environment related:
+    .     * test environment does not fulfill the desired criteria
+    .     * used testbed does not fulfill test requirements
+    .
+    .   Instead of providing the exclude-feature selection on the command-line,
+    .   the test (environment) and configuration logic should determine
+    .   if a test should be excluded (as auto-configuration functionality).
+    .
+    . EXAMPLE:
+    .   Certain features should not run on Windows (or Linux, ...).
+    .
+    . EVALUATION ORDER:
+    .   Before the user can exclude a feature from a test-run,
+    .   additional mechanisms decide, if the feature is part of the selected run-set.
+    .   These are:
+    .     * tags
+    .     * ...
+    .
+    . RELATED:
+    .   * features/scenario.exclude_from_run.feature
 
 
     @setup

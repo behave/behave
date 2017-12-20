@@ -6,8 +6,8 @@ Feature: Select scenarios by using tags
     (for selecting/including them or excluding them)
     So that I run only a subset of scenarios.
 
-    | RELATED:
-    |   * runner.tag_logic.feature
+    . RELATED:
+    .   * runner.tag_logic.feature
 
 
     @setup
@@ -215,8 +215,11 @@ Feature: Select scenarios by using tags
           """
           Feature: Alice
             Scenario: Alice in Wonderland
+              Given a step passes ... untested
             Scenario: Alice in Florida
+              When hotter step passes ... untested
 
           Feature: Bob
             Scenario: Bob in Florida
+              When freaky step passes ... untested
           """

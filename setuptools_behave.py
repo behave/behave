@@ -6,6 +6,9 @@ Setuptools command for behave.
 .. code-block:: console
 
     python setup.py behave_test
+    python setup.py behave_test --format=progress3
+    python setup.py behave_test --args=features/one.feature
+    python setup.py behave_test --tags=-xfail --args=features
 
 .. seealso::
 
@@ -113,12 +116,15 @@ class behave_test(Command):
     def behave(self, path):
         behave = os.path.join("bin", "behave")
         if not os.path.exists(behave):
-            behave = "behave"
+            # -- ALTERNATIVE: USE: behave script: behave = "behave"
+            # -- USE: behave module (main)
+            behave = "-m behave"
         cmd_options = ""
         if self.tags:
             cmd_options = "--tags=" + " --tags=".join(self.tags)
         if self.dry_run:
             cmd_options += " --dry-run"
         cmd_options += " --format=%s %s" % (self.format, path)
-        self.announce("CMDLINE: %s %s" % (behave, cmd_options), level=3)
-        return subprocess.call([sys.executable, behave] + shlex.split(cmd_options))
+        self.announce("CMDLINE: python %s %s" % (behave, cmd_options), level=3)
+        behave_cmd = shlex.split(behave)
+        return subprocess.call([sys.executable] + behave_cmd + shlex.split(cmd_options))

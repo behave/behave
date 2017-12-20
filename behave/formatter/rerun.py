@@ -23,10 +23,11 @@ Normally, you put the RerunFormatter into the behave configuration file:
 """
 
 from __future__ import absolute_import
-from behave.formatter.base import Formatter
 from datetime import datetime
 from os.path import relpath
 import os
+from behave.formatter.base import Formatter
+from behave.model_core import Status
 
 
 # -----------------------------------------------------------------------------
@@ -59,10 +60,10 @@ class RerunFormatter(Formatter):
 
     def eof(self):
         """Called at end of a feature."""
-        if self.current_feature and self.current_feature.status == "failed":
+        if self.current_feature and self.current_feature.status == Status.failed:
             # -- COLLECT SCENARIO FAILURES:
             for scenario in self.current_feature.walk_scenarios():
-                if scenario.status == "failed":
+                if scenario.status == Status.failed:
                     self.failed_scenarios.append(scenario)
 
         # -- RESET:

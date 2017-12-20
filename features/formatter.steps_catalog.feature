@@ -8,9 +8,9 @@ Feature: Steps Catalog Formatter
     source location and step function names.
     Also, I would prefer to view the step as they appear in a feature file.
 
-    | SOLUTION: Use StepsDocFormatter in dry-run mode, like:
-    |
-    |       behave --dry-run -f steps.catalog features/
+    . SOLUTION: Use StepsDocFormatter in dry-run mode, like:
+    .
+    .       behave --dry-run -f steps.catalog features/
 
 
     @setup

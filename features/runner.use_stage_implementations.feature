@@ -4,32 +4,33 @@ Feature: Use Alternate Step Implementations for Each Test Stage
   I want to run the same feature with other step implementations during different testing stages
   So I can run quick checks in a development environment and detailed checks in a testlab.
 
-  | CONCEPT: TEST STAGE
-  |   A test stage allows you to use different step/environment implementations
-  |   compared to other test stage or the default, unnamed test stage.
-  |
-  |   Examples for test stages are:
-  |     * develop (using the development environment with more diagnostics)
-  |     * product (using the product database, ...)
-  |     * systemtest
-  |     * systemint (system integration)
-  |     * ...
-  |
-  |   NOTE:
-  |   Test stages can be used to adapt to different test environments
-  |   while using these test stages.
-  |
-  |
-  | EXAMPLE DIRECTORY LAYOUT (with default stage and stage=testlab):
-  |
-  |   features/
-  |       +-- steps/                # -- Step implementations for default stage.
-  |       |   +-- foo_steps.py
-  |       +-- testlab_steps/        # -- Step implementations for stage=testlab.
-  |       |   +-- foo_steps.py
-  |       +-- *.feature
-  |       +-- environment.py          # -- Environment for default stage.
-  |       +-- testlab_environment.py  # -- Environment for stage=testlab.
+  . CONCEPT: TEST STAGE
+  .   A test stage allows you to use different step/environment implementations
+  .   compared to other test stage or the default, unnamed test stage.
+  .
+  .   Examples for test stages are:
+  .     * develop (using the development environment with more diagnostics)
+  .     * product (using the product database, ...)
+  .     * systemtest
+  .     * systemint (system integration)
+  .     * ...
+  .
+  .   NOTE:
+  .   Test stages can be used to adapt to different test environments
+  .   while using these test stages.
+  .
+  .
+  . EXAMPLE DIRECTORY LAYOUT (with default stage and stage=testlab):
+  .
+  .   features/
+  .       +-- steps/                # -- Step implementations for default stage.
+  .       |   +-- foo_steps.py
+  .       +-- testlab_steps/        # -- Step implementations for stage=testlab.
+  .       |   +-- foo_steps.py
+  .       +-- *.feature
+  .       +-- environment.py          # -- Environment for default stage.
+  .       +-- testlab_environment.py  # -- Environment for stage=testlab.
+
 
   @setup
   Scenario: Feature Setup

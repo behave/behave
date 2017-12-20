@@ -4,11 +4,11 @@ Feature: Runner Tag logic
   I want to select scenarios using logical AND/OR of tags
   In order to conveniently run subsets of these scenarios
 
-  | SPECIFICATION: Tag logic
-  |   See "tag_expression.feature" description.
-  |
-  | RELATED:
-  |  * tag_expression.feature
+  . SPECIFICATION: Tag logic
+  .   See "tag_expression.feature" description.
+  .
+  . RELATED:
+  .  * tag_expression.feature
 
   Scenario: Select scenarios with 1 tag (@foo)
     Given a behave model with:

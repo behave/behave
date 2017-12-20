@@ -6,13 +6,13 @@ Feature: Runner should support a --dry-run option
     And all step definitions exist
     Before I actually run the tests (by executing steps).
 
-    | Specification: Dry-run mode
-    |   * Undefined steps are detected
-    |   * Marks steps as "untested" or "undefined"
-    |   * Marks scenarios as "untested"
-    |   * Marks features as "untested"
-    |   * Causes no failed scenarios, features
-    |   * Causes failed test-run when undefined steps are found.
+    . SPECIFICATION: Dry-run mode
+    .   * Undefined steps are detected
+    .   * Marks steps as "untested" or "undefined"
+    .   * Marks scenarios as "untested"
+    .   * Marks features as "untested"
+    .   * Causes no failed scenarios, features
+    .   * Causes failed test-run when undefined steps are found.
 
     @setup
     Scenario: Feature Setup
@@ -93,14 +93,23 @@ Feature: Runner should support a --dry-run option
             0 scenarios passed, 0 failed, 0 skipped, 4 untested
             0 steps passed, 0 failed, 0 skipped, 0 undefined, 8 untested
             """
+        And the command output should contain
+            """
+            Scenario: A1
+            """
         And the command output should contain:
             """
-            Feature: Alice
-                Scenario: A1
-                Scenario: A2
-                Scenario: A3
-                Scenario: A4
+            Scenario: A2
             """
+        And the command output should contain:
+            """
+            Scenario: A3
+            """
+        And the command output should contain:
+            """
+            Scenario: A4
+            """
+        And note that "all scenarios of this feature are contained"
 
     Scenario: Dry-run one feature with tags should mark skipped scenario/steps as skipped
         When I run "behave -f plain --dry-run --tags=@selected --no-skipped features/alice.feature"
@@ -112,11 +121,21 @@ Feature: Runner should support a --dry-run option
             """
         And the command output should contain:
             """
-            Feature: Alice
-                Scenario: A1
-                Scenario: A3
-                Scenario: A4
+            Scenario: A1
             """
+        And the command output should contain:
+            """
+            Scenario: A3
+            """
+        And the command output should contain:
+            """
+            Scenario: A4
+            """
+        But the command output should not contain:
+            """
+            Scenario: A2
+            """
+        And note that "only tagged scenarios of this feature are contained (3 of 4)"
 
 
     Scenario: Dry-run two features

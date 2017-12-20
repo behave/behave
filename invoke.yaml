@@ -1,0 +1,25 @@
+# =====================================================
+# INVOKE CONFIGURATION:
+# =====================================================
+# -- ON WINDOWS:
+# run:
+#   echo: true
+#   pty:  false
+#   shell: C:\Windows\System32\cmd.exe
+# =====================================================
+# MAYBE: tasks: auto_dash_names: false
+
+project:
+    name: behave
+
+run:
+    echo: true
+    pty:  true
+
+behave_test:
+    scopes:
+      - features
+      - tools/test-features
+      - issue.features
+    args: features tools/test-features issue.features
+

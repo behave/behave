@@ -4,8 +4,8 @@ Provides utility function for generating Sphinx-based documentation.
 """
 
 from __future__ import absolute_import
-from behave.textutil import compute_words_maxsize, text as _text
 import codecs
+from behave.textutil import compute_words_maxsize, text as _text
 import six
 
 
@@ -40,7 +40,7 @@ class DocumentWriter(object):
             self.stream.close()
         self.stream = None
 
-    def write_heading(self, heading, level=0, index_id=None):
+    def write_heading(self, heading, level=0, index_id=None, label=None):
         assert self.stream
         assert heading, "Heading should not be empty"
         assert 0 <= level < len(self.heading_styles)
@@ -55,6 +55,8 @@ class DocumentWriter(object):
             if isinstance(index_id, (list, tuple)):
                 index_id = ", ".join(index_id)
             self.stream.write(".. index:: %s\n\n" % index_id)
+        if label:
+            self.stream.write(".. _%s:\n\n" % label)
         if level == 0:
             self.stream.write("%s\n" % separator)
         self.stream.write("%s\n" % heading)
@@ -63,7 +65,7 @@ class DocumentWriter(object):
 
     def write_toctree(self, entries, title=None, maxdepth=2):
         if title is None:
-            title  = self.default_toctree_title
+            title = self.default_toctree_title
         line_prefix = " " * 4
         if title:
             self.stream.write("%s\n\n" % title)

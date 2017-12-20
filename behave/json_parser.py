@@ -9,16 +9,17 @@ REQUIRES: Python >= 2.6 (json module is part of Python standard library)
 """
 
 from __future__ import absolute_import
-from behave import model
 import codecs
+from behave import model
+from behave.model_core import Status
 try:
     import json
 except ImportError:
     # -- PYTHON 2.5 backward compatible: Use simplejson module.
     import simplejson as json
 
-__author__    = "Jens Engel"
 
+__author__ = "Jens Engel"
 
 
 # ----------------------------------------------------------------------------
@@ -32,8 +33,8 @@ def parse(json_filename, encoding="UTF-8"):
     :param json_filename:  JSON filename to process.
     :return: List of feature objects.
     """
-    with codecs.open(json_filename, "rU", encoding=encoding) as fp:
-        json_data = json.load(fp, encoding=encoding)
+    with codecs.open(json_filename, "rU", encoding=encoding) as input_file:
+        json_data = json.load(input_file, encoding=encoding)
         json_processor = JsonParser()
         features = json_processor.parse_features(json_data)
         return features
@@ -43,6 +44,9 @@ def parse(json_filename, encoding="UTF-8"):
 # CLASSES:
 # ----------------------------------------------------------------------------
 class JsonParser(object):
+
+    def __init__(self):
+        self.current_scenario_outline = None
 
     def parse_features(self, json_data):
         assert isinstance(json_data, list)
@@ -97,7 +101,7 @@ class JsonParser(object):
         })
         """
         keyword = json_element.get("keyword", u"")
-        name    = json_element.get("name", u"")
+        name = json_element.get("name", u"")
         location = json_element.get("location", u"")
         json_steps = json_element.get("steps", [])
         steps = self.parse_steps(json_steps)
@@ -116,9 +120,9 @@ class JsonParser(object):
         })
         """
         keyword = json_element.get("keyword", u"")
-        name    = json_element.get("name", u"")
+        name = json_element.get("name", u"")
         description = json_element.get("description", [])
-        tags    = json_element.get("tags", [])
+        tags = json_element.get("tags", [])
         location = json_element.get("location", u"")
         json_steps = json_element.get("steps", [])
         steps = self.parse_steps(json_steps)
@@ -139,19 +143,21 @@ class JsonParser(object):
         })
         """
         keyword = json_element.get("keyword", u"")
-        name    = json_element.get("name", u"")
+        name = json_element.get("name", u"")
         description = json_element.get("description", [])
-        tags    = json_element.get("tags", [])
+        tags = json_element.get("tags", [])
         location = json_element.get("location", u"")
         json_steps = json_element.get("steps", [])
         json_examples = json_element.get("examples", [])
         steps = self.parse_steps(json_steps)
         examples = []
         if json_examples:
+            # pylint: disable=redefined-variable-type
             examples = self.parse_examples(json_examples)
         filename, line = location.split(":")
         scenario_outline = model.ScenarioOutline(filename, line, keyword, name,
-                                tags=tags, steps=steps, examples=examples)
+                                                 tags=tags, steps=steps,
+                                                 examples=examples)
         scenario_outline.description = description
         return scenario_outline
 
@@ -179,7 +185,7 @@ class JsonParser(object):
         element['steps'].append(s)
         """
         keyword = json_element.get("keyword", u"")
-        name    = json_element.get("name", u"")
+        name = json_element.get("name", u"")
         step_type = json_element.get("step_type", u"")
         location = json_element.get("location", u"")
         text = json_element.get("text", None)
@@ -198,24 +204,26 @@ class JsonParser(object):
             self.add_step_result(step, json_result)
         return step
 
-    def add_step_result(self, step, json_result):
+    @staticmethod
+    def add_step_result(step, json_result):
         """
         steps = self.current_feature_element['steps']
         steps[self._step_index]['result'] = {
-            'status': result.status,
+            'status': result.status.name,
             'duration': result.duration,
         }
         """
-        status   = json_result.get("status", u"")
+        status_name = json_result.get("status", u"")
         duration = json_result.get("duration", 0)
         error_message = json_result.get("error_message", None)
         if isinstance(error_message, list):
             error_message = "\n".join(error_message)
-        step.status = status
+        step.status = Status.from_name(status_name)
         step.duration = duration
         step.error_message = error_message
 
-    def parse_table(self, json_table):
+    @staticmethod
+    def parse_table(json_table):
         """
         table_data = {
             'headings': table.headings,
@@ -224,7 +232,7 @@ class JsonParser(object):
         return table_data
         """
         headings = json_table.get("headings", [])
-        rows    = json_table.get("rows", [])
+        rows = json_table.get("rows", [])
         table = model.Table(headings, rows=rows)
         return table
 
@@ -244,7 +252,7 @@ class JsonParser(object):
         element['examples'].append(e)
         """
         keyword = json_element.get("keyword", u"")
-        name    = json_element.get("name", u"")
+        name = json_element.get("name", u"")
         location = json_element.get("location", u"")
 
         table = None
@@ -254,5 +262,3 @@ class JsonParser(object):
         filename, line = location.split(":")
         examples = model.Examples(filename, line, keyword, name, table)
         return examples
-
-

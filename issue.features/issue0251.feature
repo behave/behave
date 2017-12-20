@@ -2,10 +2,10 @@
 @unicode
 Feature: UnicodeDecodeError in model.Step (when step fails)
 
-  | Output of failing step contains non-ASCII characters.
-  |
-  | RELATED:
-  |   * features/i18n.unicode_problems.feature
+  . Output of failing step contains non-ASCII characters.
+  .
+  . RELATED:
+  .   * features/i18n.unicode_problems.feature
 
 
   @reuse.colocated_test

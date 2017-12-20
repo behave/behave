@@ -4,17 +4,17 @@ Feature: User-specific Configuration Data (userdata)
   I want to provide my own configuration data
   So that the test suite and/or the environment can be adapted to its needs.
 
-  | MECHANISM:
-  |   * Use -D name=value (--define) option to specify user data on command-line.
-  |   * Specify user data in section "behave.userdata" of "behave.ini"
-  |   * Load/setup user data in before_all() hook (advanced cases)
-  |
-  | USING USER DATA:
-  |   * context.config.userdata (as dict)
-  |
-  | SUPPORTED DATA TYPES (from "behave.ini" and command-line):
-  |   * string
-  |   * bool-like (= "true", if definition has no value)
+  . MECHANISM:
+  .   * Use -D name=value (--define) option to specify user data on command-line.
+  .   * Specify user data in section "behave.userdata" of "behave.ini"
+  .   * Load/setup user data in before_all() hook (advanced cases)
+  .
+  . USING USER DATA:
+  .   * context.config.userdata (as dict)
+  .
+  . SUPPORTED DATA TYPES (from "behave.ini" and command-line):
+  .   * string
+  .   * bool-like (= "true", if definition has no value)
 
   @setup
   Scenario: Feature Setup
@@ -302,3 +302,30 @@ Feature: User-specific Configuration Data (userdata)
         4 steps passed, 0 failed, 0 skipped, 0 undefined
         """
     But note that "modifying userdata is BAD-PRACTICE, except in before_all() hook"
+
+  @userdata.case_sensitive
+  Scenario: Loaded user-data from configuration should have case-sensitive keys
+
+    Given a file named "features/userdata_case_sensitive.feature" with:
+        """
+        Feature:
+          Scenario:
+            Given the following user-data is provided:
+              | name            | value |
+              | CamelCaseKey    | 1     |
+              | CAPS_SNAKE_KEY  | 2     |
+              | lower_snake_key | 3     |
+        """
+    And a file named "behave.ini" with:
+        """
+        [behave.userdata]
+        CamelCaseKey = 1
+        CAPS_SNAKE_KEY = 2
+        lower_snake_key = 3
+        """
+    When I run "behave features/userdata_case_sensitive.feature"
+    Then it should pass with:
+        """
+        1 scenario passed, 0 failed, 0 skipped
+        1 step passed, 0 failed, 0 skipped, 0 undefined
+        """

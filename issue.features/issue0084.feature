@@ -1,14 +1,14 @@
 @issue
 Feature: Issue #84: behave.runner behave does not reliably detected failed test runs
 
-    | Behave does currently not reliably detected failed test runs and
-    | therefore returns not sys.exit(1) at end of main().
-    |
-    | 1. behave.runner:Runner.run_with_paths() returns failed==True
-    |    if last feature was successful and test runner does not stop
-    |    after first failing feature.
-    |
-    | 2. Issue #64: Same problem in behave.model.Feature.run() with scenarios
+  . Behave does currently not reliably detected failed test runs and
+  . therefore returns not sys.exit(1) at end of main().
+  .
+  . 1. behave.runner:Runner.run_with_paths() returns failed==True
+  .    if last feature was successful and test runner does not stop
+  .    after first failing feature.
+  .
+  . 2. Issue #64: Same problem in behave.model.Feature.run() with scenarios
 
   Scenario: Test Setup
     Given a new working directory

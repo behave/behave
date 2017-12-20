@@ -4,9 +4,9 @@ Feature: Test run can be aborted by the user
   I want sometimes to abort a test run (because it is anyway failing, etc.)
   So that I am more productive.
 
-  | NOTES:
-  |  * The test runner should fail gracefully (most of the times)
-  |  * At least some cleanup hooks should be called (in general)
+  . NOTES:
+  .  * The test runner should fail gracefully (most of the times)
+  .  * At least some cleanup hooks should be called (in general)
 
 
   @setup
@@ -89,25 +89,28 @@ Feature: Test run can be aborted by the user
   Scenario: Abort test run in before_scenario hook
     Given a file named "features/aborting_in_before_scenario_hook.feature" with:
         """
-        Feature: User aborts test run in before_scenario hook
-          Scenario:
+        Feature: User aborts test run in before_scenario hook of S2
+          Scenario: S1
             Given a step passes
             When another step passes
 
           @user.aborts.before_scenario
-          Scenario: User aborts here
+          Scenario: S2 -- User aborts here
             Given first step passes
             When second step passes
             Then third step passes
 
-          Scenario:
+          Scenario: S3
             Then last step passes
         """
     And a file named "features/environment.py" with:
         """
         def before_scenario(context, scenario):
             if "user.aborts.before_scenario" in scenario.tags:
-                raise KeyboardInterrupt()
+                user_aborts_testrun_here()
+
+        def user_aborts_testrun_here():
+            raise KeyboardInterrupt()
         """
     When I run "behave -f plain -T features/aborting_in_before_scenario_hook.feature"
     Then it should fail with:
@@ -119,24 +122,15 @@ Feature: Test run can be aborted by the user
         """
     And the command output should contain:
         """
-        Feature: User aborts test run in before_scenario hook
+        Feature: User aborts test run in before_scenario hook of S2
 
-          Scenario:
+          Scenario: S1
             Given a step passes ... passed
             When another step passes ... passed
-
-            Scenario: User aborts here
         """
-    But the command output should not contain:
-        """
-            Given first step passes ... passed
-            When second step passes ... passed
-            Then third step passes ... passed
-
-          Scenario:
-            Then last step passes ... passed
-        """
-    And note that "the second snd third/last scenario is not run"
+    But the command output should not contain "Scenario: S2 -- User aborts here"
+    But the command output should not contain "Scenario: S3"
+    And note that "the second and third scenario is not run"
 
 
   Scenario: Abort test run in after_scenario hook
@@ -210,21 +204,25 @@ Feature: Test run can be aborted by the user
         """
     And a file named "features/environment.py" with:
         """
+        from __future__ import print_function
+
         def before_feature(context, feature):
             if "user.aborts.before_feature" in feature.tags:
+                print("ABORTED in before_feature: %s" % feature.location)
                 raise KeyboardInterrupt()
         """
     When I run "behave -f plain -T features/aborting_in_before_feature_hook.feature"
     Then it should fail with:
         """
-        Feature: User aborts test HERE
+        ABORTED in before_feature: features/aborting_in_before_feature_hook.feature:2
 
         ABORTED: By user.
         0 features passed, 0 failed, 0 skipped, 1 untested
         0 scenarios passed, 0 failed, 0 skipped, 3 untested
         0 steps passed, 0 failed, 0 skipped, 0 undefined, 6 untested
         """
-    And note that "the feature is not run"
+    But note that "the feature is not run"
+    And note that "the formatters are not informed of this feature"
 
 
   Scenario: Abort test run in after_feature hook

@@ -1,12 +1,12 @@
 @issue
 Feature: Issue #92: Output from --format=plain shows skipped steps in next scenario
 
-    | DUPLICATED, FIXED-BY: issue #35 solution.
-    |
-    | Given a feature has more than one scenario
-    | When the --format=plain option is used
-    |   and a middle step of a scenario fails
-    | Then the skipped steps appear under the next scenario
+    . DUPLICATED, FIXED-BY: issue #35 solution.
+    .
+    . Given a feature has more than one scenario
+    . When the --format=plain option is used
+    .   and a middle step of a scenario fails
+    . Then the skipped steps appear under the next scenario
 
 
   Scenario:

@@ -5,30 +5,30 @@ Feature: Background
   And I want to avoid duplicating these steps for each scenario
   So that I write these steps only once (DRY principle).
 
-  | SPECIFICATION:
-  |   * A feature can have an optional "Background" section
-  |   * The Background must be specified before any Scenario/ScenarioOutline
-  |   * The Background may occur at most once
-  |   * The Background steps are executed in each Scenario/ScenarioOutline
-  |   * The Background steps are executed before any Scenario steps
-  |   * If a Background step fails then the is marked as scenario failed
-  |   * If a Background fails in a scenario then other scenarios are still executed.
-  |
-  | RELATED:
-  |   * parser.background.sad_cases.feature
-  |
-  | NOTE:
-  |   Cucumber has a slightly different runtime behaviour.
-  |   When a background step fails the first scenario is marked as failed.
-  |   But the remaining scenarios are marked as skipped.
-  |
-  |   This can lead to problems when you have sporadic background step failures.
-  |   For this reason, behave retries the background steps for each scenario.
-  |   But this may lead to an increased test duration if a systematic failure
-  |   occurs in the failing background step.
-  |
-  | SEE ALSO:
-  |   * https://github.com/cucumber/cucumber/blob/master/features/docs/gherkin/background.feature
+  . SPECIFICATION:
+  .   * A feature can have an optional "Background" section
+  .   * The Background must be specified before any Scenario/ScenarioOutline
+  .   * The Background may occur at most once
+  .   * The Background steps are executed in each Scenario/ScenarioOutline
+  .   * The Background steps are executed before any Scenario steps
+  .   * If a Background step fails then the is marked as scenario failed
+  .   * If a Background fails in a scenario then other scenarios are still executed.
+  .
+  . RELATED:
+  .   * parser.background.sad_cases.feature
+  .
+  . NOTE:
+  .   Cucumber has a slightly different runtime behaviour.
+  .   When a background step fails the first scenario is marked as failed.
+  .   But the remaining scenarios are marked as skipped.
+  .
+  .   This can lead to problems when you have sporadic background step failures.
+  .   For this reason, behave retries the background steps for each scenario.
+  .   But this may lead to an increased test duration if a systematic failure
+  .   occurs in the failing background step.
+  .
+  . SEE ALSO:
+  .   * https://github.com/cucumber/cucumber/blob/master/features/docs/gherkin/background.feature
 
   @setup
   Scenario: Feature Setup
@@ -362,7 +362,7 @@ Feature: Background
     When I run "behave -f plain -T features/background_sad_example1.feature"
     Then it should fail with:
         """
-        Parser failure in state steps, at line 5: 'Background: B1'
+        Parser failure in state steps, at line 5: "Background: B1"
         REASON: Background may not occur after Scenario/ScenarioOutline.
         """
 
@@ -387,6 +387,6 @@ Feature: Background
     When I run "behave -f plain -T features/background_sad_example2.feature"
     Then it should fail with:
         """
-        Parser failure in state steps, at line 5: 'Background: B2 (XFAIL)'
+        Parser failure in state steps, at line 5: "Background: B2 (XFAIL)"
         REASON: Background should not be used here.
         """

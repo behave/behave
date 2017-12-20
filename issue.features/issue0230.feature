@@ -2,11 +2,11 @@
 @unicode
 Feature: Assert with non-ASCII char causes UnicodeDecodeError
 
-  | Failing assert with non-ASCII character in its message
-  | causes UnicodeDecodeError and silent exit in Python2.
-  |
-  | RELATED:
-  |   * features/i18n.unicode_problems.feature
+  . Failing assert with non-ASCII character in its message
+  . causes UnicodeDecodeError and silent exit in Python2.
+  .
+  . RELATED:
+  .   * features/i18n.unicode_problems.feature
 
   @setup
   Scenario: Feature Setup

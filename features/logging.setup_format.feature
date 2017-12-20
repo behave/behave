@@ -7,13 +7,13 @@ Feature: Setup logging_format
   As a tester
   I want to configure the logging_format for logging mode (no-log_capture)
   So that log-records are shown in my preferred format.
-
-  | SPECIFICATION:
-  |  * logging_format can be defined on command-line
-  |  * logging_format can be defined in behave configuration file
-  |
-  | NOTE:
-  |  The log record format can also be defined in a logging configuration file.
+  
+  . SPECIFICATION:
+  .  * logging_format can be defined on command-line
+  .  * logging_format can be defined in behave configuration file
+  .
+  . NOTE:
+  .  The log record format can also be defined in a logging configuration file.
 
   @setup
   Scenario: Feature Setup

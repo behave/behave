@@ -5,11 +5,11 @@ Feature: Select named scenarios to run
     I want to select a subset of all scenarios
     By using their name or parts of the scenario name.
 
-    | SPECIFICATION: When --name option is provided
-    |   * Name selection is applied only to scenarios (currently)
-    |   * A scenario is selected when scenario name part matches one of the provided names
-    |   * Regular expressions can be used to match parts
-    |   * If a scenario is not selected, it should be marked as skipped
+    . SPECIFICATION: When --name option is provided
+    .   * Name selection is applied only to scenarios (currently)
+    .   * A scenario is selected when scenario name part matches one of the provided names
+    .   * Regular expressions can be used to match parts
+    .   * If a scenario is not selected, it should be marked as skipped
 
 
     @setup
@@ -47,7 +47,12 @@ Feature: Select named scenarios to run
                 Scenario: Alice and Bob
                     Then a step passes
             """
-
+        And a file named "behave.ini" with:
+            """
+            [behave]
+            show_skipped = false
+            show_timings = false
+            """
 
     Scenario: Select scenarios with name="Alice" and inspect list
         When I run "behave -f plain --name="Alice" --dry-run features/"
@@ -60,12 +65,16 @@ Feature: Select named scenarios to run
         And the command output should contain:
             """
             Feature: Alice
-                Scenario: Alice in Wonderland
-                Scenario: Alice in Florida
-                Scenario: Alice in Antarctica
+              Scenario: Alice in Wonderland
+                  Given a step passes ... untested
+              Scenario: Alice in Florida
+                  When a step passes ... untested
+              Scenario: Alice in Antarctica
+                  Then a step passes ... untested
 
             Feature: Bob
-                Scenario: Alice and Bob
+              Scenario: Alice and Bob
+                Then a step passes ... untested
             """
 
     Scenario: Select scenarios with name="Alice" and run them
@@ -102,9 +111,12 @@ Feature: Select named scenarios to run
         And the command output should contain:
             """
             Feature: Bob
-                Scenario: Bob in Berlin
-                Scenario: Bob in Florida
-                Scenario: Alice and Bob
+              Scenario: Bob in Berlin
+                Given a step passes ... untested
+              Scenario: Bob in Florida
+                When a step passes ... untested
+              Scenario: Alice and Bob
+                Then a step passes ... untested
             """
 
     Scenario: Select scenarios with name="Florida"
@@ -118,10 +130,12 @@ Feature: Select named scenarios to run
         And the command output should contain:
             """
             Feature: Alice
-                Scenario: Alice in Florida
+              Scenario: Alice in Florida
+                When a step passes ... untested
 
             Feature: Bob
-                Scenario: Bob in Florida
+              Scenario: Bob in Florida
+                When a step passes ... untested
             """
 
     Scenario: Select scenarios with name that consists of multiple words
@@ -149,12 +163,17 @@ Feature: Select named scenarios to run
             """
             Feature: Alice
               Scenario: Alice in Wonderland
+                Given a step passes ... untested
               Scenario: Alice in Florida
+                When a step passes ... untested
               Scenario: Alice in Antarctica
+                Then a step passes ... untested
 
             Feature: Bob
               Scenario: Bob in Florida
+                When a step passes ... untested
               Scenario: Alice and Bob
+                Then a step passes ... untested
             """
 
     Scenario: Select scenarios by using a regular expression
@@ -168,12 +187,41 @@ Feature: Select named scenarios to run
             """
             Feature: Alice
               Scenario: Alice in Wonderland
+                Given a step passes ... untested
               Scenario: Alice in Florida
+                When a step passes ... untested
               Scenario: Alice in Antarctica
+                Then a step passes ... untested
             """
         But the command output should not contain:
             """
             Scenario: Bob in
+            """
+
+    @not.with_os=win32
+    Scenario: Exclude scenarios by using a regular expression (not-pattern)
+
+        Select all scenarios that do not start with "Alice" in its name.
+        Exclude all scenarios that start with "Alice" in its name.
+        NOTE: Seems to work only for not-start-with idiom.
+
+        When I run "behave -f plain --name='^(?!Alice)' --dry-run features/"
+        Then it should pass with:
+            """
+            0 features passed, 0 failed, 1 skipped, 1 untested
+            0 scenarios passed, 0 failed, 4 skipped, 2 untested
+            """
+        And the command output should contain:
+            """
+            Feature: Bob
+                Scenario: Bob in Berlin
+                  Given a step passes ... untested
+                Scenario: Bob in Florida
+                  When a step passes ... untested
+            """
+        But the command output should not contain:
+            """
+            Scenario: Alice
             """
 
     Scenario: Select scenarios by using another regular expression
@@ -187,12 +235,17 @@ Feature: Select named scenarios to run
             """
             Feature: Alice
               Scenario: Alice in Wonderland
+                Given a step passes ... untested
               Scenario: Alice in Florida
+                When a step passes ... untested
               Scenario: Alice in Antarctica
+                Then a step passes ... untested
 
             Feature: Bob
-                Scenario: Bob in Berlin
-                Scenario: Bob in Florida
+              Scenario: Bob in Berlin
+                Given a step passes ... untested
+              Scenario: Bob in Florida
+                When a step passes ... untested
             """
         But the command output should not contain:
             """
@@ -210,12 +263,17 @@ Feature: Select named scenarios to run
             """
             Feature: Alice
               Scenario: Alice in Wonderland
+                Given a step passes ... untested
               Scenario: Alice in Florida
+                When a step passes ... untested
               Scenario: Alice in Antarctica
+                Then a step passes ... untested
 
             Feature: Bob
-                Scenario: Bob in Berlin
-                Scenario: Bob in Florida
+              Scenario: Bob in Berlin
+                Given a step passes ... untested
+              Scenario: Bob in Florida
+                When a step passes ... untested
             """
         But the command output should not contain:
             """
@@ -229,3 +287,28 @@ Feature: Select named scenarios to run
             0 features passed, 0 failed, 2 skipped
             0 scenarios passed, 0 failed, 6 skipped
             """
+
+    Scenario: Select scenarios with special unicode names
+        Given a file named "features/xantippe.feature" with:
+          """
+          Feature: Use special unicode names
+
+            Scenario: Ärgernis is everywhere
+              Given a step passes
+
+            Scenario: Second Ärgernis
+              Then a step passes
+
+            Scenario: Something else
+              When a step passes
+          """
+        When I run "behave -f plain --name="Ärgernis" --dry-run features/xantippe.feature"
+        Then it should pass with:
+          """
+          0 features passed, 0 failed, 0 skipped, 1 untested
+          0 scenarios passed, 0 failed, 1 skipped, 2 untested
+          """
+        But the command output should not contain:
+          """
+          UnicodeDecodeError: 'ascii' codec can't decode byte
+          """

@@ -8,9 +8,9 @@ EXAMPLE:
 """
 
 from __future__ import absolute_import
+import six
 from behave.formatter.base import Formatter
 from behave.textutil import compute_words_maxsize, text as _text
-import six
 
 
 # -----------------------------------------------------------------------------
@@ -45,17 +45,6 @@ class AbstractTagsFormatter(Formatter):
         if self.with_tag_inheritance:
             tags.update(self._feature_tags)
         self.record_tags(tags, scenario)
-
-    def scenario_outline(self, scenario_outline):
-        self._scenario_outline_tags = scenario_outline.tags
-        self.record_tags(scenario_outline.tags, scenario_outline)
-
-    def examples(self, examples):
-        tags = set(examples.tags)
-        if self.with_tag_inheritance:
-            tags.update(self._scenario_outline_tags)
-            tags.update(self._feature_tags)
-        self.record_tags(tags, examples)
 
     def close(self):
         """Emit tag count reports."""
@@ -112,7 +101,7 @@ class TagsFormatter(AbstractTagsFormatter):
         if len(details) == 1:
             parts.append(list(details.keys())[0])
         else:
-            for category in sorted(details.keys()):
+            for category in sorted(details):
                 text = u"%s: %d" % (category, details[category])
                 parts.append(text)
         return ", ".join(parts)
@@ -180,7 +169,7 @@ class TagsLocationFormatter(AbstractTagsFormatter):
 
         # -- EMIT REPORT:
         self.stream.write("TAG LOCATIONS (alphabetically ordered):\n")
-        for tag in sorted(self.tag_counts.keys()):
+        for tag in sorted(self.tag_counts):
             self.stream.write("  @%s:\n" % tag)
             for element in self.tag_counts[tag]:
                 info = u"%s: %s" % (element.keyword, element.name)

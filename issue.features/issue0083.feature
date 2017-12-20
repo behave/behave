@@ -1,15 +1,15 @@
 @issue
 Feature: Issue #83: behave.__main__:main() Various sys.exit issues
 
-    | Currently, the main function has several issues related
-    | to sys.exit() returncode usage:
-    |
-    | 1. sys.exit("string") is invalid, a number must be used:
-    |    => Used in exception cases after run (ParseError, ConfigError)
-    |
-    | 2. On success, the main() function returns implicitly None
-    |    instead of using sys.exit(0)
-    |    => No statement at end of function after failed case.
+  . Currently, the main function has several issues related
+  . to sys.exit() returncode usage:
+  .
+  . 1. sys.exit("string") is invalid, a number must be used:
+  .    => Used in exception cases after run (ParseError, ConfigError)
+  .
+  . 2. On success, the main() function returns implicitly None
+  .    instead of using sys.exit(0)
+  .    => No statement at end of function after failed case.
 
   @setup
   Scenario: Feature Setup
@@ -65,5 +65,5 @@ Feature: Issue #83: behave.__main__:main() Various sys.exit issues
     And  the command returncode is non-zero
     And  the command output should contain:
         """
-        No steps directory in "{__WORKDIR__}/features"
+        No steps directory in '{__WORKDIR__}/features'
         """

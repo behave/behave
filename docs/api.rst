@@ -14,7 +14,7 @@ The model stuff is for people getting really *serious* about their step
 implementations.
 
 .. note::
-   
+
    Anywhere this document says "string" it means "unicode string" in
    Python 2.x
 
@@ -30,13 +30,13 @@ directory will be imported to find step implementations. They are all
 loaded before *behave* starts executing your feature tests.
 
 Step functions are identified using step decorators. All step
-implementations **must** start with the import line:
+implementations **should normally** start with the import line:
 
 .. code-block:: python
 
-   from behave import *
+    from behave import *
 
-This imports several decorators defined by *behave* to allow you to
+This line imports several decorators defined by *behave* to allow you to
 identify your step functions. These are available in both PEP-8 (all
 lowercase) and traditional (title case) versions: "given", "when", "then"
 and the generic "step". See the `full list of variables imported`_ in the
@@ -50,9 +50,9 @@ implementation code:
 
 .. code-block:: python
 
-   @given('some known state')
-   def step_impl(context):
-       set_up(some, state)
+    @given('some known state')
+    def step_impl(context):
+        set_up(some, state)
 
 
 will match the "Given" step from the following feature:
@@ -64,7 +64,7 @@ will match the "Given" step from the following feature:
    then some observed outcome.
 
 *You don't need to import the decorators*: they're automatically available
-to your step implmentation modules as `global variables`_.
+to your step implementation modules as `global variables`_.
 
 .. _`global variables`: #step-global-variables
 
@@ -84,10 +84,10 @@ will look for a step implementation decorated with either "given" or "step":
 
 .. code-block:: python
 
-  @given('some other known state')
-  def step_impl(context):
-     set_up(some, other, state)
-      
+    @given('some other known state')
+    def step_impl(context):
+        set_up(some, other, state)
+
 and similarly the "but" would be renamed internally to "then". Multiple
 "and" or "but" steps in a row would inherit the non-"and" or "but" keyword.
 
@@ -109,7 +109,7 @@ if you invoke :func:`~behave.use_step_matcher`.
 
 .. autofunction:: behave.use_step_matcher
 
-You may add new types to the default parser by invoking 
+You may add new types to the default parser by invoking
 :func:`~behave.register_type`.
 
 .. autofunction:: behave.register_type
@@ -136,9 +136,9 @@ name" to :class:`~behave.matchers.Matcher` class.
 .. autoclass:: behave.matchers.Matcher
    :members:
 
-.. autoclass:: behave.model.Argument
+.. autoclass:: behave.model_core.Argument
 
-.. autoclass:: behave.model.Match
+.. autoclass:: behave.matchers.Match
 
 
 Calling Steps From Other Steps
@@ -154,7 +154,7 @@ This function allows you to, for example:
 
     @when('I do the same thing as before')
     def step_impl(context):
-        context.execute_steps('''
+        context.execute_steps(u'''
             when I press the big red button
              and I duck
         ''')
@@ -170,17 +170,17 @@ The import statement:
 
 .. code-block:: python
 
-  from behave import *
+    from behave import *
 
 is written to introduce a restricted set of variables into your code:
 
- =========================== =========== ===========================================
- Name                        Kind        Description
- =========================== =========== ===========================================
- given, when, then, step     Decorator   Decorators for step implementations.
- use_step_matcher(name)      Function    Selects current step matcher (parser).
- register_type(Type=func)    Function    Registers a type converter.
- =========================== =========== ===========================================
+=========================== =========== ===========================================
+Name                        Kind        Description
+=========================== =========== ===========================================
+given, when, then, step     Decorator   Decorators for step implementations.
+use_step_matcher(name)      Function    Selects current step matcher (parser).
+register_type(Type=func)    Function    Registers a type converter.
+=========================== =========== ===========================================
 
 See also the description in `step parameters`_.
 
@@ -213,16 +213,17 @@ events during your testing:
 
   .. code-block:: python
 
-     # -- ASSUMING: tags @browser.chrome or @browser.any are used.
-     if tag.startswith("browser."):
-         browser_type = tag.replace("browser.", "", 1)
-         if browser_type == "chrome":
-            context.browser = webdriver.Chrome()
-         else:
-            context.browser = webdriver.PlainVanilla()
+      # -- ASSUMING: tags @browser.chrome or @browser.any are used.
+      if tag.startswith("browser."):
+          browser_type = tag.replace("browser.", "", 1)
+          if browser_type == "chrome":
+              context.browser = webdriver.Chrome()
+          else:
+              context.browser = webdriver.PlainVanilla()
 
 **before_all(context), after_all(context)**
   These run before and after the whole shooting match.
+
 
 Some Useful Environment Ideas
 -----------------------------
@@ -279,6 +280,28 @@ The *context* variable in all cases is an instance of
 .. autoclass:: behave.runner.ContextMaskWarning
 
 
+Fixtures
+================
+
+.. excluded:
+
+    .. automodule:: behave.fixture
+
+Provide a Fixture
+------------------
+
+.. autofunction:: behave.fixture.fixture
+
+Use Fixtures
+------------------
+
+.. autofunction:: behave.fixture.use_fixture
+
+.. autofunction:: behave.fixture.use_fixture_by_tag
+
+.. autofunction:: behave.fixture.use_composite_fixture_with
+
+
 Runner Operation
 ================
 
@@ -297,10 +320,10 @@ which that code is invoked (if they exist.)
                     step.run()
                 after_step
             after_scenario
-        after_feature         
+        after_feature
     after_all
-  
-If the feature contains scenario outlines then there is an addtional loop
+
+If the feature contains scenario outlines then there is an additional loop
 over all the scenarios in the outline making the running look like this:
 
 .. parsed-literal::
@@ -316,7 +339,7 @@ over all the scenarios in the outline making the running look like this:
                         step.run()
                     after_step
                 after_scenario
-        after_feature         
+        after_feature
     after_all
 
 
@@ -396,7 +419,7 @@ Logging Capture
 ===============
 
 The logging capture *behave* uses by default is implemented by the class
-:class:`~behave.log_capture.LoggingCapture`. It has methods 
+:class:`~behave.log_capture.LoggingCapture`. It has methods
 
 .. autoclass:: behave.log_capture.LoggingCapture
    :members:
@@ -406,3 +429,5 @@ intended to be used on your `environment file functions`_.
 
 .. autofunction:: behave.log_capture.capture
 
+
+.. include:: _common_extlinks.rst

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from behave.model_core import Status
+
 class Reporter(object):
     """
     Base class for all reporters.
@@ -23,16 +25,17 @@ class Reporter(object):
     An existing formatter can be reused as reporter by using
     :class:`behave.report.formatter_reporter.FormatterAsReporter`.
     """
+
     def __init__(self, config):
         self.config = config
 
-    def feature(self, feature):
+    def feature(self, feature):     # pylint: disable=no-self-use
         """
         Called after a feature was processed.
 
         :param feature:  Feature object (as :class:`behave.model.Feature`)
         """
-        assert feature.status in ("skipped", "passed", "failed")
+        assert feature.status != Status.undefined
         raise NotImplementedError
 
     def end(self):

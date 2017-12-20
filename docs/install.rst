@@ -1,10 +1,6 @@
 Installation
 ============
 
-.. pypi-release:: behave
-   :prefix: Download
-   :class: note
-
 Using pip (or ...)
 ------------------
 
@@ -23,14 +19,14 @@ As an alternative,
 you can also use :pypi:`easy_install <setuptools>` to install :pypi:`behave`::
 
     easy_install behave         # CASE: New installation.
-    easy_install -U behave      # CASE: Upgrade behave.
+    easy_install -U behave      # CASE: Upgrade existing installation.
 
 
 .. hint::
 
     See also `pip related information`_ for installing Python packages.
 
-.. _`pip related information`:  https://pip.pypa.io/en/latest/installing.html
+.. _`pip related information`:  https://pip.pypa.io/en/latest/installing/
 
 
 Using a Source Distribution

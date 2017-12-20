@@ -4,24 +4,24 @@ Feature: Scenario Outline -- Scenario Name Annotations
   I want to know in the current example/row combination
   So that I know the context of success/failure within a test run (without details).
 
-  | REQUIREMENTS:
-  |   * generated scenario name should better indicate row/example combination.
-  |   * name annotation schema for generated scenario names should be configurable.
-  |
-  | IMPROVEMENTS:
-  |   * annotate Scenario Outline name (with row.id, examples.name, ...)
-  |
-  |
-  | SCENARIO OUTLINE NAME ANNOTATION SCHEMA:
-  |
-  |   scenario_outline_annotation_schema = "{name} -- @{row.id} {examples.name}"
-  |
-  |   | Placeholder     | Description |
-  |   |  name           |  Name of the Scenario Outline.                 |
-  |   |  examples.name  |  Name of the examples group (or empty string). |
-  |   |  examples.index |  Index of examples group (range: 1..N).        |
-  |   |  row.index      |  Index of row in examples group (range: 1..R). |
-  |   |  row.id         |  Same as: "{example.index}.{row.index}"        |
+  . REQUIREMENTS:
+  .   * generated scenario name should better indicate row/example combination.
+  .   * name annotation schema for generated scenario names should be configurable.
+  .
+  . IMPROVEMENTS:
+  .   * annotate Scenario Outline name (with row.id, examples.name, ...)
+  .
+  .
+  . SCENARIO OUTLINE NAME ANNOTATION SCHEMA:
+  .
+  .   scenario_outline_annotation_schema = "{name} -- @{row.id} {examples.name}"
+  .
+  .   | Placeholder     | Description |
+  .   |  name           |  Name of the Scenario Outline.                 |
+  .   |  examples.name  |  Name of the examples group (or empty string). |
+  .   |  examples.index |  Index of examples group (range: 1..N).        |
+  .   |  row.index      |  Index of row in examples group (range: 1..R). |
+  .   |  row.id         |  Same as: "{example.index}.{row.index}"        |
 
 
   @setup

@@ -5,11 +5,11 @@ Feature: Steps Usage Formatter
     I want to get an overview which step definitions are used and where
     To simplify the refactoring of step definitions (and features).
 
-    | SOLUTION: Use StepsUsageFormatter in dry-run mode, like:
-    |
-    |       behave --dry-run -f steps.usage features/
-    |
-    | NOTE: This formatter corresponds to the "usage" formatter in cucumber.
+    . SOLUTION: Use StepsUsageFormatter in dry-run mode, like:
+    .
+    .       behave --dry-run -f steps.usage features/
+    .
+    . NOTE: This formatter corresponds to the "usage" formatter in cucumber.
 
 
     @setup

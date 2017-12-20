@@ -13,7 +13,7 @@ set -e
 HERE=`dirname $0`
 TOP="${HERE}/.."
 : ${PIP_DOWNLOAD_DIR:="${TOP}/downloads"}
-REQUIREMENTS_FILE=${TOP}/requirements/all.txt
+REQUIREMENTS_FILE=${TOP}/py.requirements/all.txt
 
 if [ $# -ge 1 ]; then
     PIP_DOWNLOAD_DIR="$1"

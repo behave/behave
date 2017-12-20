@@ -1,11 +1,11 @@
 @issue
 Feature: Issue #80: source file names not properly printed with python3
 
-    | $ behave -f pretty example/example.feature
-    | Scenario: run a simple test         # example/example.feature:3
-    |    Given we have behave installed   # <string>:3
-    |    When we implement a test         # <string>:7
-    |    Then behave will test it for us! # <string>:11
+  . $ behave -f pretty example/example.feature
+  . Scenario: run a simple test         # example/example.feature:3
+  .    Given we have behave installed   # <string>:3
+  .    When we implement a test         # <string>:7
+  .    Then behave will test it for us! # <string>:11
 
 
   Background: Test Setup
