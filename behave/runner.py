@@ -959,7 +959,7 @@ class Runner(ModelRunner):
             current_job.run(self)
             end_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
-            sys.stderr.write(current_job.status[0]+"\n")
+            sys.stderr.write(current_job.status.name[0]+"\n")
 
             if current_job.type == 'feature':
                 for reporter in self.config.reporters:
@@ -979,7 +979,7 @@ class Runner(ModelRunner):
                 results['steps_untested'] = 0
                 results['jobtype'] = current_job.type
                 results['reportinginfo'] = job_report_text
-                results['status'] = current_job.status
+                results['status'] = current_job.status.name
                 if current_job.type != 'feature':
                     results['uniquekey'] = \
                     current_job.filename + current_job.feature.name
@@ -1006,10 +1006,10 @@ class Runner(ModelRunner):
             return u""
 
         reportheader = start_time + "|WORKER" + str(proc_number) + " START|" + \
-        "status:" + current_job.status + "|" + current_job.filename + "\n"
+        "status:" + current_job.status.name + "|" + current_job.filename + "\n"
 
         reportfooter = end_time + "|WORKER" + str(proc_number) + " END|" + \
-        "status:" + current_job.status + "|" + current_job.filename + \
+        "status:" + current_job.status.name + "|" + current_job.filename + \
         "|Duration:" + str(current_job.duration)
 
         if self.config.format[0] == 'plain' and len(current_job.tags):
@@ -1052,14 +1052,14 @@ class Runner(ModelRunner):
             [self.countscenariostatus(
                 s, results) for s in current_job.scenarios]
         else:
-            results['scenarios_' + current_job.status] += 1
+            results['scenarios_' + current_job.status.name] += 1
 
     def countstepstatus(self, current_job, results):
         if current_job.type != 'scenario':
             [self.countstepstatus(s, results) for s in current_job.scenarios]
         else:
             for step in current_job.all_steps:
-                results['steps_' + step.status] += 1
+                results['steps_' + step.status.name] += 1
 
     def multiproc_fullreport(self):
         metrics = collections.defaultdict(int)
@@ -1120,13 +1120,13 @@ class Runner(ModelRunner):
         report_string = u""
         report_obj['filebasename'] = cj.location.basename()[:-8]
         report_obj['feature_name'] = cj.feature.name        
-        report_obj['status'] = cj.status
+        report_obj['status'] = cj.status.name
         report_obj['duration'] = round(cj.duration,4)
         report_string += '<testcase classname="'
         report_string += report_obj['filebasename']+'.'
         report_string += report_obj['feature_name']+'" '
         report_string += 'name="'+cj.name+'" '
-        report_string += 'status="'+cj.status+'" '
+        report_string += 'status="'+cj.status.name+'" '
         report_string += 'time="'+str(round(cj.duration,4))+'">'
         if cj.status == 'failed':
             report_string += self.get_junit_error(cj, writebuf)
@@ -1139,7 +1139,7 @@ class Runner(ModelRunner):
             report_string += " "*4
             report_string += step.keyword + " "
             report_string += step.name + " ... "
-            report_string += step.status + " in "
+            report_string += step.status.name + " in "
             report_string += str(round(step.duration,4)) + "s\n"
         report_string += "\n@scenario.end\n"
         report_string += "-"*80 
@@ -1154,12 +1154,12 @@ class Runner(ModelRunner):
         substring = ""
         if cj.status == 'passed':
             substring += "\nCaptured stdout:\n"
-            substring += cj.stdout
+            substring += cj.captured.stdout
             substring += "\n]]>\n</system-out>"
-            if cj.stderr:
+            if cj.captured.stderr:
                 substring += "<system-err>\n<![CDATA[\n"
                 substring += "Captured stderr:\n"
-                substring += cj.stderr
+                substring += cj.captured.stderr
                 substring += "\n]]>\n</system-err>"
             return substring
 
