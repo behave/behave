@@ -315,7 +315,10 @@ class JUnitReporter(Reporter):
             if step.text:
                 text += ModelDescriptor.describe_docstring(step.text, prefix)
             elif step.table:
-                text += ModelDescriptor.describe_table(step.table, prefix)
+                try:
+                    text += ModelDescriptor.describe_table(step.table, prefix)
+                except Exception:
+                    pass
         return text
 
     @classmethod
