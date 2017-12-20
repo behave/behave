@@ -942,7 +942,7 @@ class Runner(ModelRunner):
             except Exception:
                 break
             current_job = self.joblist[joblist_index]
-            writebuf = six.StringIO.StringIO()
+            writebuf = six.StringIO()
             self.setfeature(current_job)
             self.config.outputs = []
             self.config.outputs.append(StreamOpener(stream=writebuf))
