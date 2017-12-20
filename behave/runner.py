@@ -934,7 +934,12 @@ class Runner(ModelRunner):
             p.start()
         [p.join() for p in procs]
 
-        self.run_hook('after_all', self.context)
+        cleanups_failed = False
+        self.run_hook("after_all", self.context)
+        try:
+            self.context._do_cleanups()   # Without dropping the last context layer.
+        except Exception:
+            cleanups_failed = True
         return self.multiproc_fullreport()
 
     def worker(self, proc_number):
