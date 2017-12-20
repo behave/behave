@@ -1103,13 +1103,10 @@ class Runner(ModelRunner):
 
         print ("\n" * 3)
         print ("_" * 75)
-        print ("{0} features passed, {1} features failed, {2} features skipped\n"
-               "{3} scenarios passed, {4} scenarios failed, {5} scenarios skipped\n"
-               "{6} steps passed, {7} steps failed, {8} steps skipped, {9} steps undefined\n")\
-                .format(
-                metrics['features_passed'], metrics['features_failed'], metrics['features_skipped'],
-                metrics['scenarios_passed'], metrics['scenarios_failed'], metrics['scenarios_skipped'],
-                metrics['steps_passed'], metrics['steps_failed'], metrics['steps_skipped'], metrics['steps_undefined'])
+        print ("{m[features_passed]} features passed, {m[features_failed]} features failed, {m[features_skipped]} features skipped\n"
+               "{m[scenarios_passed]} scenarios passed, {m[scenarios_failed]} scenarios failed, {m[scenarios_skipped]} scenarios skipped\n"
+               "{m[steps_passed]} steps passed, {m[steps_failed]} steps failed, {m[steps_skipped]} steps skipped, {m[steps_undefined]} steps undefined\n" \
+                .format(m=metrics))
         if getattr(self.config,'junit'):
             self.write_paralleltestresults_to_junitfile(junit_report_objs)
         return metrics['features_failed']
