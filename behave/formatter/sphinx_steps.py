@@ -108,8 +108,10 @@ class SphinxStepsDocumentGenerator(object):
 .. todo::
     Step definition description is missing.
 """
+    userdata_scope = "behave.formatter.sphinx"
     shows_step_module_info = True
     shows_step_module_overview = True
+    shows_heading = True
     make_step_index_entries = True
     make_step_labels = has_docutils
 
@@ -117,11 +119,34 @@ class SphinxStepsDocumentGenerator(object):
     step_document_prefix = "step_module."
     step_heading_prefix = "**Step:** "
 
-    def __init__(self, step_definitions, destdir=None, stream=None):
+    def __init__(self, step_definitions, destdir=None, stream=None, config=None):
         self.step_definitions = step_definitions
         self.destdir = destdir
         self.stream = stream
         self.document = None
+        if config is not None:
+            self.setup_with_userdata(config.userdata)
+
+    def setup_with_userdata(self, userdata):
+        """Setup Sphinx generator with userdata information.
+        A user can now tweak the output format of this formatter.
+        EXAMPLE:
+        .. code-block:: ini
+            # -- FILE: behave.ini
+            [behave.userdata]
+            behave.formatter.sphinx.shows_heading = false
+        """
+        # -- EXPERIMENTAL:
+        option_names = [
+            "shows_step_module_info", "shows_step_module_overview", "shows_heading", "make_step_index_entries",
+            "make_step_labels"
+        ]
+        for option_name in option_names:
+            name = "%s.%s" % (self.userdata_scope, option_name)
+            default_value = getattr(self, option_name)
+            value = userdata.getbool(name, default_value)
+            if value != default_value:
+                setattr(self, option_name, value)
 
     @property
     def stdout_mode(self):
@@ -221,7 +246,8 @@ The following step definitions are provided here.
         document_name = self.step_document_prefix + step_module.name
         self.document = self.create_document(document_name)
         self.document.write(".. _docid.steps.%s:\n" % step_module.name)
-        self.document.write_heading(step_module.name, index_id=step_module.name)
+        if self.shows_heading:
+            self.document.write_heading(step_module.name, index_id=step_module.name)
         if self.shows_step_module_info:
             self.document.write(":Module:   %s\n" % step_module.name)
             self.document.write(":Filename: %s\n" % step_module.filename)
@@ -358,9 +384,9 @@ class SphinxStepsFormatter(AbstractStepsFormatter):
     def create_document_generator(self):
         generator_class = self.doc_generator_class
         if self.stdout_mode:
-            return generator_class(self.step_definitions, stream=self.stream)
+            return generator_class(self.step_definitions, stream=self.stream, config=self.config)
         else:
-            return generator_class(self.step_definitions, destdir=self.destdir)
+            return generator_class(self.step_definitions, destdir=self.destdir, config=self.config)
 
     def report(self):
         document_generator = self.create_document_generator()
