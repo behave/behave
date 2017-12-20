@@ -58,7 +58,7 @@ setup(
     py_modules = ["setuptools_behave"],
     entry_points={
         "console_scripts": [
-            "behave-parallel = behave.__main__:main"
+            "behave = behave.__main__:main"
         ],
         "distutils.commands": [
             "behave_test = setuptools_behave:behave_test"
