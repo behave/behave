@@ -271,8 +271,8 @@ class BasicStatement(object):
         filename = filename or '<string>'
         filename = os.path.relpath(filename, os.getcwd())   # -- NEEDS: abspath?
         self.location = FileLocation(filename, line)
-        assert isinstance(keyword, six.text_type)
-        assert isinstance(name, six.text_type)
+        assert isinstance(keyword, six.string_types)
+        assert isinstance(name, six.string_types)
         self.keyword = keyword
         self.name = name
         # -- SINCE: 1.2.6
