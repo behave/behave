@@ -312,6 +312,12 @@ options = [
                          on the tag expression given. See below for how to code
                          tag expressions in configuration files.""")),
 
+    (('--filter-in',),
+     dict(action='append', dest='filters_in', help="Only execute scenarios matching a filter")),
+
+    (('--filter-out',),
+     dict(action='append', dest='filters_out', help="Dont execute scenarios matching a filter")),
+
     (("-T", "--no-timings"),
      dict(action="store_false", dest="show_timings",
           help="""Don't print the time taken for each step.""")),
@@ -510,6 +516,8 @@ class Configuration(object):
         junit=False,
         stage=None,
         userdata={},
+        filters_in=[],
+        filters_out=[],
         # -- SPECIAL:
         default_format="pretty",    # -- Used when no formatters are configured.
         default_tags="",            # -- Used when no tags are defined.
@@ -634,6 +642,7 @@ class Configuration(object):
         self.setup_stage(self.stage)
         self.setup_model()
         self.setup_userdata()
+        self.setup_filters()
 
         # -- FINALLY: Setup Reporters and Formatters
         # NOTE: Reporters and Formatters can now use userdata information.
@@ -784,6 +793,18 @@ class Configuration(object):
         if self.userdata_defines:
             # -- ENSURE: Cmd-line overrides configuration file parameters.
             self.userdata.update(self.userdata_defines)
+
+    def setup_filters(self):
+        if self.filters_in and self.filters_out:
+            raise ValueError("--filter-in and --filter-out must be used separately")
+
+        self._compiled_filters_in = []
+        for f in self.filters_in:
+            self._compiled_filters_in.append(compile(f, '--filter-in', 'eval'))
+
+        self._compiled_filters_out = []
+        for f in self.filters_out:
+            self._compiled_filters_out.append(compile(f, '--filter-out', 'eval'))
 
     def update_userdata(self, data):
         """Update userdata with data and reapply userdata defines (cmdline).

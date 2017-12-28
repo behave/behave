@@ -28,6 +28,8 @@ if six.PY2:
 else:
     import traceback
 
+# optional application defined context for filter evaluation
+base_filter_context = {}
 
 class Feature(TagAndStatusStatement, Replayable):
     """A `feature`_ parsed from a *feature file*.
@@ -597,6 +599,7 @@ class Scenario(TagAndStatusStatement, Replayable):
           * if the Scenario is marked as skipped
           * if the config.tags (tag expression) enable/disable this scenario
           * if the scenario is selected by name
+          * if the scenario is permitted by filters
 
         :param config:  Runner configuration to use (optional).
         :return: True, if scenario should run. False, otherwise.
@@ -604,7 +607,8 @@ class Scenario(TagAndStatusStatement, Replayable):
         answer = not self.should_skip
         if answer and config:
             answer = (self.should_run_with_tags(config.tags) and
-                      self.should_run_with_name_select(config))
+                      self.should_run_with_name_select(config) and
+                      self.should_run_with_filters(config))
         return answer
 
     def should_run_with_tags(self, tag_expression):
@@ -624,6 +628,54 @@ class Scenario(TagAndStatusStatement, Replayable):
         """
         # -- SELECT-ANY: If select by name is not specified (not config.name).
         return not config.name or config.name_re.search(self.name)
+
+    def should_run_with_filters(self, config):
+        """
+        Determines if this scenario should run when filters are being used. For
+        --filter-in, True for scenarios matching any filter. For --filter-out,
+        False for scenarios matching any filter.
+
+        :param config:  Runner/config containing filters (if any).
+        :retur: True, if scenario should run. False, otherwise (skip it).
+        """
+        if not config._compiled_filters_in and not config._compiled_filters_out:
+            return True
+
+        # allow filters access to filter context, if any
+        params = dict(base_filter_context)
+
+        # allow filters access to basic properties of the scenario
+        if self.feature:
+            params['feature'] = self.feature.name
+        params['scenario'] = self.name
+        params['tags'] = self.effective_tags
+
+        # allow filters access to Scenario example parameters
+        if self._row:
+            for i, h in enumerate(self._row.headings):
+                params[h] = self._row[i]
+
+        answer = True
+        if config._compiled_filters_in:
+            for cf in config._compiled_filters_in:
+                try:
+                    match = eval(cf, None, params)
+                except:
+                    match = False
+                answer = answer and match
+                if not answer:
+                    break
+
+        elif config._compiled_filters_out:
+            for cf in config._compiled_filters_out:
+                try:
+                    if eval(cf, None, params):
+                        answer = False
+                        break
+                except:
+                    pass
+
+        return answer
 
     def mark_skipped(self):
         """Marks this scenario (and all its steps) as skipped.
