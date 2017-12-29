@@ -3,14 +3,18 @@
 This module provides multiprocessing Runner class.
 """
 
-import Queue
-
+import six
 import multiprocessing
 
 from behave.formatter._registry import make_formatters
 from behave.runner import Runner, Context
 from behave.model import Feature, Scenario, ScenarioOutline
 from behave.runner_util import parse_features
+
+if six.PY2:
+    import Queue as queue
+else:
+    import queue
 
 
 class MultiProcRunner(Runner):
@@ -25,7 +29,7 @@ class MultiProcRunner(Runner):
         manager = multiprocessing.Manager()
         self.jobs_map = {}
         self.jobsq = manager.JoinableQueue()
-        self.resultsq = manager.JoinableQueue()
+        self.resultsq = manager.Queue()
         self._reported_features = set()
         self.results_fail = False
 
@@ -96,8 +100,8 @@ class MultiProcRunner(Runner):
 
     def consume_results(self):
         try:
-            job_id, result = self.resultsq.get(timeout=1.0)
-        except Queue.Empty:
+            job_id, result = self.resultsq.get(timeout=1)
+        except queue.Empty:
             return False
 
         if job_id is None and result == 'set_fail':
@@ -207,7 +211,7 @@ class MultiProcClientRunner(Runner):
         while True:
             try:
                 job_id = self.jobsq.get(timeout=1)
-            except Queue.Empty:
+            except queue.Empty:
                 break
 
             job = self.jobs_map.get(job_id, None)
@@ -220,7 +224,7 @@ class MultiProcClientRunner(Runner):
                 yield job
                 try:
                     self.resultsq.put((job_id, job.send_status()))
-                except Exception, e:
+                except Exception as e:
                     print("ERROR: cannot send result: {0}".format(e))
             elif isinstance(job, Scenario):
                 # construct a dummy feature, having only this scenario
@@ -233,7 +237,7 @@ class MultiProcClientRunner(Runner):
                 yield feature
                 try:
                     self.resultsq.put((job_id, job.send_status()))
-                except Exception, e:
+                except Exception as e:
                     print("ERROR: cannot send result: {0}".format(e))
             else:
                 raise TypeError("Don't know how to process: %s" % type(job))

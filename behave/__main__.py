@@ -201,7 +201,7 @@ def main(args=None):
                     "'%s', which isn't valid." % pelem)
                 return 1
 
-        except ImportError, e:
+        except ImportError as e:
             print ("DEBUG: import error: %s" % e)
             print ("ERROR: Cannot import multiprocessing module."
             " If you're on python2.5, go get the backport")
