@@ -402,6 +402,10 @@ class TagAndStatusStatement(BasicStatement):
             self._cached_status = self.compute_status()
         return self._cached_status
 
+    @property
+    def is_finished(self):
+        return self._cached_status in self.final_status
+
     def set_status(self, value):
         if isinstance(value, six.string_types):
             value = Status.from_name(value)

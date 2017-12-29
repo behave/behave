@@ -153,6 +153,15 @@ class Feature(TagAndStatusStatement, Replayable):
                 if id(scenario) in value['scenarios']:
                     scenario.recv_status(value['scenarios'][id(scenario)])
 
+    @property
+    def is_finished(self):
+        if self._cached_status in self.final_status:
+            return True
+        for s in self.walk_scenarios():
+            if not s.is_finished:
+                return False
+        return True
+
     def __repr__(self):
         return '<Feature "%s": %d scenario(s)>' % \
             (self.name, len(self.scenarios))
@@ -584,6 +593,15 @@ class Scenario(TagAndStatusStatement, Replayable):
 
     def __iter__(self):
         return self.all_steps
+
+    @property
+    def is_finished(self):
+        if self._cached_status in self.final_status:
+            return True
+        for s in self.all_steps:
+            if s.status not in self.final_status:
+                return False
+        return True
 
     def compute_status(self):
         """Compute the status of the scenario from its steps
@@ -1077,6 +1095,15 @@ class ScenarioOutline(Scenario):
 
     def __iter__(self):
         return iter(self.scenarios) # -- REQUIRE: BUILD-SCENARIOS
+
+    @property
+    def is_finished(self):
+        if self._cached_status in self.final_status:
+            return True
+        for s in self._scenarios:
+            if not s.is_finished:
+                return False
+        return True
 
     def compute_status(self):
         skipped_count = 0
