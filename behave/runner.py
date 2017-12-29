@@ -6,14 +6,11 @@ This module provides Runner class to run behave feature files (or model elements
 from __future__ import absolute_import, print_function, with_statement
 
 import contextlib
-import logging
-import re
-import os
+import os.path
 import sys
 import warnings
 import weakref
-import time
-import collections
+
 
 import six
 
@@ -25,19 +22,13 @@ from behave.runner_util import \
     collect_feature_locations, parse_features, \
     exec_file, load_step_modules, PathManager
 from behave.step_registry import registry as the_step_registry
-from behave.formatter.base import StreamOpener
+
 
 if six.PY2:
     # -- USE PYTHON3 BACKPORT: With unicode traceback support.
     import traceback2 as traceback
 else:
     import traceback
-
-multiprocessing = None
-try:
-    import multiprocessing
-except ImportError,e:
-    pass
 
 
 class CleanupError(RuntimeError):
@@ -535,6 +526,14 @@ class ModelRunner(object):
 
     # @property
     def _get_aborted(self):
+        """
+        Indicates that a test run was aborted by the user
+        (:exc:`KeyboardInterrupt` exception).
+        Stored in :attr:`Context.aborted` attribute (as root attribute).
+
+        :return: Current aborted state, initially false.
+        :rtype: bool
+        """
         value = False
         if self.context:
             value = self.context.aborted
@@ -542,6 +541,11 @@ class ModelRunner(object):
 
     # @aborted.setter
     def _set_aborted(self, value):
+        """
+        Set the aborted value.
+
+        :param value: New aborted value (as bool).
+        """
         # pylint: disable=protected-access
         assert self.context, "REQUIRE: context, but context=%r" % self.context
         self.context._set_root_attribute("aborted", bool(value))
@@ -694,35 +698,6 @@ class Runner(ModelRunner):
         self.path_manager = PathManager()
         self.base_dir = None
 
-
-    # @property
-    def _get_aborted(self):
-        """
-        Indicates that a test run was aborted by the user
-        (:exc:`KeyboardInterrupt` exception).
-        Stored in :attr:`Context.aborted` attribute (as root attribute).
-
-        :return: Current aborted state, initially false.
-        :rtype: bool
-        """
-        value = False
-        if self.context:
-            value = self.context.aborted
-        return value
-
-    # @aborted.setter
-    def _set_aborted(self, value):
-        """
-        Set the aborted value.
-
-        :param value: New aborted value (as bool).
-        """
-        assert self.context
-        self.context._set_root_attribute('aborted', bool(value))
-
-    aborted = property(_get_aborted, _set_aborted,
-                       doc="Indicates that test run is aborted by the user.")
-
     def setup_paths(self):
         # pylint: disable=too-many-branches, too-many-statements
         if self.config.paths:
@@ -846,7 +821,7 @@ class Runner(ModelRunner):
         self.context = Context(self)
         self.load_hooks()
         self.load_step_definitions()
-        assert not self.aborted
+
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
         # self.setup_capture()
         # self.run_hook("before_all", self.context)
@@ -857,426 +832,9 @@ class Runner(ModelRunner):
         features = parse_features(feature_locations, language=self.config.lang)
         self.features.extend(features)
 
-        # -- STEP: Multi-processing!
-        if getattr(self.config, 'proc_count'):
-            return self.run_multiproc()
-
         # -- STEP: Run all features.
         stream_openers = self.config.outputs
         self.formatters = make_formatters(self.config, stream_openers)
         return self.run_model()
 
-    def run_multiproc(self):
-        if self.step_registry is None:
-            self.step_registry = the_step_registry
-        self.setup_capture()
-        self.run_hook('before_all', self.context)
-
-        if not multiprocessing:
-            print ("ERROR: Cannot import multiprocessing module."
-            " If you're on python2.5, go get the backport")
-            return 1
-        self.config.format = ['plain']
-        self.parallel_element = getattr(self.config, 'parallel_element')
-
-        if not self.parallel_element:
-            self.parallel_element = 'scenario'
-            print ("INFO: Without giving --parallel-element, defaulting to 'scenario'...")
-        else:
-            if self.parallel_element != 'feature' and \
-                self.parallel_element != 'scenario':
-                    print ("ERROR: When using --processes, --parallel-element"
-                    " option must be set to 'feature' or 'scenario'. You gave '"+
-                    str(self.parallel_element)+"', which isn't valid.")
-                    return 1
-
-        # -- Prevent context warnings.
-        def do_nothing(obj2, obj3):
-            pass
-        self.context._emit_warning = do_nothing
-
-        self.joblist_index_queue = multiprocessing.Manager().JoinableQueue()
-        self.resultsqueue = multiprocessing.Manager().JoinableQueue()
-
-        self.joblist = []
-        scenario_count = 0
-        feature_count = 0
-        for feature in self.features:
-            if self.parallel_element == 'feature' or 'serial' in feature.tags:
-                self.joblist.append(feature)
-                self.joblist_index_queue.put(feature_count + scenario_count)
-                feature_count += 1
-                continue
-            for scenario in feature.scenarios:
-                if scenario.type == 'scenario':
-                    self.joblist.append(scenario)
-                    self.joblist_index_queue.put(
-                        feature_count + scenario_count)
-                    scenario_count += 1
-                else:
-                    for subscenario in scenario.scenarios:
-                        self.joblist.append(subscenario)
-                        self.joblist_index_queue.put(
-                            feature_count + scenario_count)
-                        scenario_count += 1
-
-        proc_count = int(getattr(self.config, 'proc_count'))
-        print ("INFO: {0} scenario(s) and {1} feature(s) queued for"
-                " consideration by {2} workers. Some may be skipped if the"
-                " -t option was given..."
-               .format(scenario_count, feature_count, proc_count))
-        time.sleep(2)
-
-        procs = []
-        for i in range(proc_count):
-            p = multiprocessing.Process(target=self.worker, args=(i, ))
-            procs.append(p)
-            p.start()
-        [p.join() for p in procs]
-
-        cleanups_failed = False
-        self.run_hook("after_all", self.context)
-        try:
-            self.context._do_cleanups()   # Without dropping the last context layer.
-        except Exception:
-            cleanups_failed = True
-        return self.multiproc_fullreport()
-
-    def worker(self, proc_number):
-        while 1:
-            try:
-                joblist_index = self.joblist_index_queue.get_nowait()
-            except Exception:
-                break
-            current_job = self.joblist[joblist_index]
-            writebuf = six.StringIO()
-            self.setfeature(current_job)
-            self.config.outputs = []
-            self.config.outputs.append(StreamOpener(stream=writebuf))
-
-            stream_openers = self.config.outputs
-
-            self.formatters = make_formatters(self.config, stream_openers)
-
-            for formatter in self.formatters:
-                formatter.uri(current_job.filename)
-
-            start_time = time.strftime("%Y-%m-%d %H:%M:%S")
-            current_job.run(self)
-            end_time = time.strftime("%Y-%m-%d %H:%M:%S")
-
-            sys.stderr.write(current_job.status.name[0]+"\n")
-
-            if current_job.type == 'feature':
-                for reporter in self.config.reporters:
-                    reporter.feature(current_job)
-
-            self.clean_buffer(writebuf)
-            job_report_text = self.generatereport(
-                proc_number, current_job,
-                start_time, end_time, writebuf)
-
-            if job_report_text:
-                results = dict()
-                results['steps_passed'] = 0
-                results['steps_failed'] = 0
-                results['steps_skipped'] = 0
-                results['steps_undefined'] = 0
-                results['steps_untested'] = 0
-                results['jobtype'] = current_job.type
-                results['reportinginfo'] = job_report_text
-                results['status'] = current_job.status.name
-                if current_job.type != 'feature':
-                    results['uniquekey'] = \
-                    current_job.filename + current_job.feature.name
-                else:
-                    results['scenarios_passed'] = 0
-                    results['scenarios_failed'] = 0
-                    results['scenarios_skipped'] = 0
-                    self.countscenariostatus(current_job, results)
-                self.countstepstatus(current_job, results)
-                if current_job.type != 'feature' and \
-                    getattr(self.config, 'junit'):
-                        results['junit_report'] = \
-                        self.generate_junit_report(current_job, writebuf)
-                self.resultsqueue.put(results)
-
-    def setfeature(self, current_job):
-        if current_job.type == 'feature':
-            self.feature = current_job
-        else:
-            self.feature = current_job.feature
-
-    def generatereport(self, proc_number, current_job, start_time, end_time, writebuf):
-        if not writebuf.pos:
-            return u""
-
-        reportheader = start_time + "|WORKER" + str(proc_number) + " START|" + \
-        "status:" + current_job.status.name + "|" + current_job.filename + "\n"
-
-        reportfooter = end_time + "|WORKER" + str(proc_number) + " END|" + \
-        "status:" + current_job.status.name + "|" + current_job.filename + \
-        "|Duration:" + str(current_job.duration)
-
-        if self.config.format[0] == 'plain' and len(current_job.tags):
-            tags = "@"
-            for tag in current_job.tags:
-                tags += tag + " "
-            reportheader += "\n" + tags + "\n"
-
-        if current_job.status == 'failed':
-            self.getskippedsteps(current_job, writebuf)
-
-        try:
-            writebuf.seek(0)
-        except UnicodeDecodeError as e:
-            print("SEEK: %s" % e)
-            return u""
-
-        header_unicode = self.to_unicode(reportheader)
-        footer_unicode = self.to_unicode(reportfooter)
-        try:
-            result = header_unicode + writebuf.read() + u"\n" + footer_unicode
-        except UnicodeError as err:
-            print("HEADER ERROR: %s" % err)
-            result = header_unicode + unicode(writebuf.read(), errors='replace') + u"\n" + footer_unicode
-            #result = err.object[0:err.start]+err.object[err.end:len(err.object)-1]
-
-        return result
-
-    def getskippedsteps(self, current_job, writebuf):
-        if current_job.type != 'scenario':
-            [self.getskippedsteps(s, writebuf) for s in current_job.scenarios]
-        else:
-            for step in current_job.all_steps:
-                if step.status == 'skipped':
-                    writebuf.write(u"Skipped step because of previous error - Scenario:{0}|step:{1}\n"
-                                   .format(current_job.name, step.name))
-
-    def countscenariostatus(self, current_job, results):
-        if current_job.type != 'scenario':
-            [self.countscenariostatus(
-                s, results) for s in current_job.scenarios]
-        else:
-            results['scenarios_' + current_job.status.name] += 1
-
-    def countstepstatus(self, current_job, results):
-        if current_job.type != 'scenario':
-            [self.countstepstatus(s, results) for s in current_job.scenarios]
-        else:
-            for step in current_job.all_steps:
-                results['steps_' + step.status.name] += 1
-
-    def multiproc_fullreport(self):
-        metrics = collections.defaultdict(int)
-        combined_features_from_scenarios_results = collections.defaultdict(lambda: '')
-        junit_report_objs = []
-        while not self.resultsqueue.empty():
-            print ("\n" * 3)
-            print ("_" * 75)
-            jobresult = self.resultsqueue.get()
-
-            try:
-                print(self.to_unicode(jobresult['reportinginfo']))
-            except Exception as e:
-                logging.info(e)
-
-            if 'junit_report' in jobresult:
-                junit_report_objs.append(jobresult['junit_report'])
-            if jobresult['jobtype'] != 'feature':
-                combined_features_from_scenarios_results[
-                    jobresult['uniquekey']] += '|' + jobresult['status']
-                metrics['scenarios_' + jobresult['status']] += 1
-            else:
-                metrics['features_' + jobresult['status']] += 1
-
-            metrics['steps_passed'] += jobresult['steps_passed']
-            metrics['steps_failed'] += jobresult['steps_failed']
-            metrics['steps_skipped'] += jobresult['steps_skipped']
-            metrics['steps_undefined'] += jobresult['steps_undefined']
-
-            if jobresult['jobtype'] == 'feature':
-                metrics['scenarios_passed'] += jobresult['scenarios_passed']
-                metrics['scenarios_failed'] += jobresult['scenarios_failed']
-                metrics['scenarios_skipped'] += jobresult['scenarios_skipped']
-
-        for uniquekey in combined_features_from_scenarios_results:
-            if 'failed' in combined_features_from_scenarios_results[uniquekey]:
-                metrics['features_failed'] += 1
-            elif 'passed' in combined_features_from_scenarios_results[uniquekey]:
-                metrics['features_passed'] += 1
-            else:
-                metrics['features_skipped'] += 1
-
-        print ("\n" * 3)
-        print ("_" * 75)
-        print ("{m[features_passed]} features passed, {m[features_failed]} features failed, {m[features_skipped]} features skipped\n"
-               "{m[scenarios_passed]} scenarios passed, {m[scenarios_failed]} scenarios failed, {m[scenarios_skipped]} scenarios skipped\n"
-               "{m[steps_passed]} steps passed, {m[steps_failed]} steps failed, {m[steps_skipped]} steps skipped, {m[steps_undefined]} steps undefined\n" \
-                .format(m=metrics))
-        if getattr(self.config,'junit'):
-            self.write_paralleltestresults_to_junitfile(junit_report_objs)
-        return metrics['features_failed']
-
-    def generate_junit_report(self, cj, writebuf):
-        report_obj = {}
-        report_string = u""
-        report_obj['filebasename'] = cj.location.basename()[:-8]
-        report_obj['feature_name'] = cj.feature.name
-        report_obj['status'] = cj.status.name
-        report_obj['duration'] = round(cj.duration,4)
-        report_string += '<testcase classname="'
-        report_string += report_obj['filebasename']+'.'
-        report_string += report_obj['feature_name']+'" '
-        report_string += 'name="'+cj.name+'" '
-        report_string += 'status="'+cj.status.name+'" '
-        report_string += 'time="'+str(round(cj.duration,4))+'">'
-        if cj.status == 'failed':
-            report_string += self.get_junit_error(cj, writebuf)
-        report_string += "<system-out>\n<![CDATA[\n"
-        report_string += "@scenario.begin\n"
-        writebuf.seek(0)
-        loglines = writebuf.readlines()
-        report_string += loglines[1]
-        for step in cj.all_steps:
-            report_string += " "*4
-            report_string += step.keyword + " "
-            report_string += step.name + " ... "
-            report_string += step.status.name + " in "
-            report_string += str(round(step.duration,4)) + "s\n"
-        report_string += "\n@scenario.end\n"
-        report_string += "-"*80
-        report_string += "\n"
-
-        report_string += self.get_junit_stdoutstderr(cj,loglines)
-        report_string += "</testcase>"
-        report_obj['report_string'] = report_string
-        return report_obj
-
-    def get_junit_stdoutstderr(self, cj, loglines):
-        substring = ""
-        if cj.status == 'passed':
-            substring += "\nCaptured stdout:\n"
-            substring += cj.captured.stdout
-            substring += "\n]]>\n</system-out>"
-            if cj.captured.stderr:
-                substring += "<system-err>\n<![CDATA[\n"
-                substring += "Captured stderr:\n"
-                substring += cj.captured.stderr
-                substring += "\n]]>\n</system-err>"
-            return substring
-
-        q = 0
-        while q < len(loglines):
-            if loglines[q] == "Captured stdout:\n":
-                while q < len(loglines) and \
-                        loglines[q] != "Captured stderr:\n":
-                    substring += loglines[q]
-                    q += 1
-                break
-            q += 1
-
-        substring += "]]>\n</system-out>"
-
-        if q < len(loglines):
-            substring += "<system-err>\n<![CDATA[\n"
-            while q < len(loglines):
-                substring += loglines[q]
-                q = q + 1
-            substring += "]]>\n</system-err>"
-
-        return substring
-
-    def get_junit_error(self, cj, writebuf):
-        failed_step = None
-        error_string = u""
-        error_string += '<error message="'
-        for step in cj.steps:
-            if step.status == 'failed':
-                failed_step = step
-                break
-
-        if not failed_step:
-            error_string += "Unknown Error" '" type="AttributeError">\n'
-            error_string += "Failing step: Unknown\n"
-            error_string += "<![CDATA[\n"
-            error_string += "]]>\n"
-            error_string += "</error>"
-            return error_string
-        try:
-            error_string += failed_step.exception[0]+'" '
-        except Exception:
-            error_string += 'No Exception" '
-        error_string += 'type="'
-        error_string += re.sub(".*?\.(.*?)\'.*","\\1",\
-        str(type(failed_step.exception)))+'">\n'
-        error_string += "Failing step: "
-        error_string += failed_step.name + " ... failed in "
-        error_string += str(round(failed_step.duration,4))+"s\n"
-        error_string += "Location: " + str(failed_step.location)
-        error_string += "<![CDATA[\n"
-        error_string += failed_step.error_message
-        error_string += "]]>\n</error>"
-        return error_string
-
-    def write_paralleltestresults_to_junitfile(self,junit_report_objs):
-        feature_reports = {}
-        for jro in junit_report_objs:
-            #NOTE: There's an edge-case where this key would not be unique
-            #Where a feature has the same filename and feature name but
-            #different directory.
-            uniquekey = jro['filebasename']+"."+jro['feature_name']
-            if uniquekey not in feature_reports:
-                newfeature = {}
-                newfeature['duration'] = float(jro['duration'])
-                newfeature['statuses'] = jro['status']
-                newfeature['filebasename'] = jro['filebasename']
-                newfeature['total_scenarios'] = 1
-                newfeature['data'] = jro['report_string']
-                feature_reports[uniquekey] = newfeature
-            else:
-                feature_reports[uniquekey]['duration'] += float(jro['duration'])
-                feature_reports[uniquekey]['statuses'] += jro['status']
-                feature_reports[uniquekey]['total_scenarios'] += 1
-                feature_reports[uniquekey]['data'] += jro['report_string']
-
-        for uniquekey in feature_reports.keys():
-            filedata = u"<?xml version='1.0' encoding='UTF-8'?>\n"
-            filedata += '<testsuite errors="'
-            filedata += unicode(len(re.findall\
-            ("failed",feature_reports[uniquekey]['statuses'])))
-            filedata += '" failures="0" name="'
-            filedata += uniquekey+'" '
-            filedata += 'skipped="'
-            filedata += unicode(len(re.findall\
-            ("skipped",feature_reports[uniquekey]['statuses'])))
-            filedata += '" tests="'
-            filedata += unicode(feature_reports[uniquekey]['total_scenarios'])
-            filedata += '" time="'
-            filedata += unicode(round(feature_reports[uniquekey]['duration'],4))
-            filedata += '">'
-            filedata += "\n\n"
-            filedata += feature_reports[uniquekey]['data']
-            filedata += "</testsuite>"
-            outputdir = "reports"
-            custdir = getattr(self.config,'junit_directory')
-            if custdir:
-                outputdir = custdir
-            if not os.path.exists(outputdir):
-                os.makedirs(outputdir)
-            filename = outputdir+"/"+"TESTS-"
-            filename += feature_reports[uniquekey]['filebasename']
-            filename += ".xml"
-            fd = open(filename,"w")
-            fd.write(filedata.encode('utf8'))
-            fd.close()
-
-    def clean_buffer(self, buf):
-        for i in range(len(buf.buflist)):
-            buf.buflist[i] = self.to_unicode(buf.buflist[i])
-
-    @staticmethod
-    def to_unicode(var):
-        string = str(var) if isinstance(var, int) else var
-        return unicode(string, "utf-8",  errors='replace') if isinstance(string, str) else string
 

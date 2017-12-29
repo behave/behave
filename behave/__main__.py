@@ -181,7 +181,33 @@ def main(args=None):
     :return: 0, if successful. Non-zero, in case of errors/failures.
     """
     config = Configuration(args)
-    return run_behave(config)
+
+    rclass = Runner
+    if getattr(config, 'proc_count'):
+        try:
+            from behave.runner_mp import MultiProcRunner_Feature, MultiProcRunner_Scenario
+            pelem = getattr(config, 'parallel_element', False)
+            if not pelem:
+                print ("INFO: Without giving --parallel-element, defaulting to 'scenario'...")
+                pelem = 'scenario'
+
+            if pelem == 'scenario':
+                rclass = MultiProcRunner_Scenario
+            elif pelem == 'feature':
+                rclass = MultiProcRunner_Feature
+            else:
+                print ("ERROR: When using --processes, --parallel-element"
+                    " option must be set to 'feature' or 'scenario'. You gave "
+                    "'%s', which isn't valid." % pelem)
+                return 1
+
+        except ImportError, e:
+            print ("DEBUG: import error: %s" % e)
+            print ("ERROR: Cannot import multiprocessing module."
+            " If you're on python2.5, go get the backport")
+            return 1
+    return run_behave(config, runner_class=rclass)
+
 
 if __name__ == "__main__":
     # -- EXAMPLE: main("--version")
