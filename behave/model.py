@@ -136,6 +136,23 @@ class Feature(TagAndStatusStatement, Replayable):
         for scenario in self.scenarios:
             scenario.reset()
 
+    def send_status(self):
+        ret = super(Feature, self).send_status()
+        ret['hook_failed'] = self.hook_failed
+        ret['scenarios'] = {}
+        for scenario in self.scenarios:
+            ret['scenarios'][id(scenario)] = scenario.send_status()
+        return ret
+
+    def recv_status(self, value):
+        super(Feature, self).recv_status(value)
+        if 'hook_failed' in value:
+            self.hook_failed = value['hook_failed']
+        if 'scenarios' in value:
+            for scenario in self.scenarios:
+                if id(scenario) in value['scenarios']:
+                    scenario.recv_status(value['scenarios'][id(scenario)])
+
     def __repr__(self):
         return '<Feature "%s": %d scenario(s)>' % \
             (self.name, len(self.scenarios))
@@ -178,7 +195,6 @@ class Feature(TagAndStatusStatement, Replayable):
             return Status.skipped
         else:
             return Status.passed
-
 
     @property
     def duration(self):
@@ -512,6 +528,28 @@ class Scenario(TagAndStatusStatement, Replayable):
         self.was_dry_run = False
         for step in self.all_steps:
             step.reset()
+
+    def send_status(self):
+        ret = super(Scenario, self).send_status()
+        ret['hook_failed'] = self.hook_failed
+        ret['was_dry_run'] = self.was_dry_run
+
+        ret['steps'] = {}
+        for step in self.all_steps:
+            ret['steps'][id(step)] = step.send_status()
+        return ret
+
+    def recv_status(self, value):
+        super(Scenario, self).recv_status(value)
+        if 'hook_failed' in value:
+            self.hook_failed = value['hook_failed']
+        if 'was_dry_run' in value:
+            self.was_dry_run = value['was_dry_run']
+        if 'steps' in value:
+            steps_v = value['steps']
+            for step in self.all_steps:
+                if id(step) in steps_v:
+                    step.recv_status(steps_v[id(step)])
 
     @property
     def background_steps(self):
@@ -1007,6 +1045,20 @@ class ScenarioOutline(Scenario):
         for scenario in self._scenarios:    # -- AVOID: BUILD-SCENARIOS
             scenario.reset()
 
+    def send_status(self):
+        ret = super(ScenarioOutline, self).send_status()
+        ret['sub_scenarios'] = {}
+        for scenario in self._scenarios:
+            ret['sub_scenarios'][id(scenario)] = scenario.send_status()
+        return ret
+
+    def recv_status(self, value):
+        if 'sub_scenarios' in value:
+            sub_scens = value['sub_scenarios']
+            for scenario in self.scenarios:
+                if id(scenario) in sub_scens:
+                    scenario.recv_status(sub_scens[id(scenario)])
+
     @property
     def scenarios(self):
         """Return the scenarios with the steps altered to take the values from
@@ -1122,6 +1174,7 @@ class ScenarioOutline(Scenario):
                     break
         runner.context._set_root_attribute("active_outline", None)
         return failed_count > 0
+
 
 class Examples(TagStatement, Replayable):
     """A table parsed from a `scenario outline`_ in a *feature file*.
@@ -1260,6 +1313,22 @@ class Step(BasicStatement, Replayable):
         self.hook_failed = False
         self.duration = 0
         # -- POSTCONDITION: assert self.status == Status.untested
+
+    def send_status(self):
+        ret = super(Step, self).send_status()
+        ret['status'] = self.status
+        ret['hook_failed'] = self.hook_failed
+        ret['duration'] = self.duration
+        return ret
+
+    def recv_status(self, value):
+        super(Step, self).recv_status(value)
+        if 'status' in value:
+            self.status = value['status']
+        if 'hook_failed' in value:
+            self.hook_failed = value['hook_failed']
+        if 'duration' in value:
+            self.duration = value['duration']
 
     def __repr__(self):
         return '<%s "%s">' % (self.step_type, self.name)
