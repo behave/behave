@@ -106,12 +106,12 @@ Feature: Parallel options
           """
         And the command output should contain:
           """
-          0 features passed, 1 features failed, 0 features skipped
-          6 scenarios passed, 1 scenarios failed, 0 scenarios skipped
-          31 steps passed, 1 steps failed, 1 steps skipped, 0 steps undefined
+          0 features passed, 1 failed, 0 skipped
+          6 scenarios passed, 1 failed, 0 skipped
+          31 steps passed, 1 failed, 1 skipped, 0 undefined
           """
 
-    Scenario: Test parallel correctness with serial tag              
+    Scenario: Test parallel correctness with serial tag
         When I run "behave --processes 8 --parallel-element scenario features/serialtag_override.feature"
         Then it should pass
         And the command output should contain:
@@ -120,12 +120,12 @@ Feature: Parallel options
           """
         And the command output should contain:
           """
-          1 features passed, 0 features failed, 0 features skipped
-          11 scenarios passed, 0 scenarios failed, 0 scenarios skipped
-          22 steps passed, 0 steps failed, 0 steps skipped, 0 steps undefined
+          1 feature passed, 0 failed, 0 skipped
+          11 scenarios passed, 0 failed, 0 skipped
+          22 steps passed, 0 failed, 0 skipped, 0 undefined
           """
 
-    Scenario: Test parallel correctness with serial & parallel features              
+    Scenario: Test parallel correctness with serial & parallel features
         When I run "behave --processes 8 --parallel-element scenario"
         Then it should fail 
         And the command output should contain:
@@ -134,12 +134,12 @@ Feature: Parallel options
           """
         And the command output should contain:
           """
-          1 features passed, 1 features failed, 0 features skipped
-          17 scenarios passed, 1 scenarios failed, 0 scenarios skipped
-          53 steps passed, 1 steps failed, 1 steps skipped, 0 steps undefined
+          1 feature passed, 1 failed, 0 skipped
+          17 scenarios passed, 1 failed, 0 skipped
+          53 steps passed, 1 failed, 1 skipped, 0 undefined
           """
 
-    Scenario: Test parallel correctness split at features              
+    Scenario: Test parallel correctness split at features
         When I run "behave --processes 8 --parallel-element feature"
         Then it should fail 
         And the command output should contain:
@@ -148,8 +148,8 @@ Feature: Parallel options
           """
         And the command output should contain:
           """
-          1 features passed, 1 features failed, 0 features skipped
-          17 scenarios passed, 1 scenarios failed, 0 scenarios skipped
-          53 steps passed, 1 steps failed, 1 steps skipped, 0 steps undefined
+          1 feature passed, 1 failed, 0 skipped
+          17 scenarios passed, 1 failed, 0 skipped
+          53 steps passed, 1 failed, 1 skipped, 0 undefined
           """
 
