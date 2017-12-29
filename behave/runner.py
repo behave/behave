@@ -401,7 +401,7 @@ class Context(object):
                     if step.error_message:
                         message += "\nSubstep info: %s\n" % step.error_message
                         message += u"Traceback (of failed substep):\n"
-                        message += u"".join(traceback.format_tb(step.exc_traceback))
+                        message += u"".join(step.exc_traceback)
                     # message += u"\nTraceback (of context.execute_steps()):"
                     assert False, message
 

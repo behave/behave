@@ -7,10 +7,15 @@ for the model elements in behave.
 import os.path
 import sys
 import six
+
 from behave.capture import Captured
 from behave.textutil import text as _text
 from enum import Enum
-
+if six.PY2:
+    # -- USE: Python3 backport for better unicode compatibility.
+    import traceback2 as traceback
+else:
+    import traceback
 
 PLATFORM_WIN = sys.platform.startswith("win")
 def posixpath_normalize(path):
@@ -304,6 +309,7 @@ class BasicStatement(object):
         """
         ret = {'exception': self.exception,
                'error_message': self.error_message,
+               'exc_traceback': self.exc_traceback,
                'captured': self.captured.send_status()
                }
         return ret
@@ -319,7 +325,7 @@ class BasicStatement(object):
 
     def store_exception_context(self, exception):
         self.exception = exception
-        self.exc_traceback = sys.exc_info()[2]
+        self.exc_traceback = traceback.format_tb(sys.exc_info()[2])
 
     def __hash__(self):
         # -- NEEDED-FOR: PYTHON3
