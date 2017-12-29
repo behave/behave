@@ -63,20 +63,23 @@ class MultiProcRunner(Runner):
 
         self.config.reporters = old_reporters
         self.formatters = make_formatters(self.config, old_outs)
+        self.config.outputs = old_outs
         while (not self.jobsq.empty()):
             # 1: consume while tests are running
             self.consume_results()
+            if not any([p.is_alive() for p in procs]):
+                break
 
-        self.jobsq.join()   # wait for all jobs to be processed
-        print ("INFO: all jobs have been processed")
-        self.config.outputs = old_outs
+        if any([p.is_alive() for p in procs]):
+            self.jobsq.join()   # wait for all jobs to be processed
+            print ("INFO: all jobs have been processed")
 
-        while self.consume_results():
-            # 2: remaining results
-            pass
+            while self.consume_results():
+                # 2: remaining results
+                pass
 
-        # then, wait for all workers to exit:
-        [p.join() for p in procs]
+            # then, wait for all workers to exit:
+            [p.join() for p in procs]
         print ("INFO: all sub-processes have returned")
 
         while self.consume_results():
