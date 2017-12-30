@@ -116,15 +116,18 @@ class MultiProcRunner(Runner):
             print("ERROR: job_id=%x not found in master map" % job_id)
             return True
 
-        item.recv_status(result)
-        if isinstance(item, Feature):
-            self._output_feature(item)
-        elif isinstance(item, Scenario):
-            feature = item.feature
-            if feature.is_finished:
-                self._output_feature(feature)
-            else:
-                print("INFO: scenario finished: %x" % (job_id,))
+        try:
+            item.recv_status(result)
+            if isinstance(item, Feature):
+                self._output_feature(item)
+            elif isinstance(item, Scenario):
+                feature = item.feature
+                if feature.is_finished:
+                    self._output_feature(feature)
+                else:
+                    print("INFO: scenario finished: %x" % (job_id,))
+        except Exception as e:
+            print("ERROR: cannot receive status for %r: %s" % (item, e))
         return True
 
     def _output_feature(self, feature):
