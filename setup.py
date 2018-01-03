@@ -24,6 +24,7 @@ from setuptools_behave import behave_test
 # -----------------------------------------------------------------------------
 python_version = float("%s.%s" % sys.version_info[:2])
 BEHAVE = os.path.join(HERE, "behave")
+BEHAVE4CMD0 = os.path.join(HERE, "behave4cmd0")
 README = os.path.join(HERE, "README.rst")
 description = "".join(open(README).readlines()[4:])
 
@@ -53,8 +54,9 @@ setup(
     author="Jens Engel, Benno Rice and Richard Jones",
     author_email="behave-users@googlegroups.com",
     url="http://github.com/behave/behave",
-    provides = ["behave", "setuptools_behave"],
-    packages = find_packages_by_root_package(BEHAVE),
+    provides = ["behave", "behave4cmd0", "setuptools_behave"],
+    packages = find_packages_by_root_package(BEHAVE) + \
+               find_packages_by_root_package(BEHAVE4CMD0),
     py_modules = ["setuptools_behave"],
     entry_points={
         "console_scripts": [
