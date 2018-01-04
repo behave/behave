@@ -109,6 +109,8 @@ class Parser(object):
         self.table = None
         self.examples = None
         self.keywords = None
+        self.combinations_group = None
+        self.parameter_sets = {}
         if self.language:
             self.keywords = i18n.languages[self.language]
         # NOT-NEEDED: self.reset()
@@ -134,6 +136,8 @@ class Parser(object):
         self.lines = []
         self.table = None
         self.examples = None
+        self.combinations_group = None
+        self.parameter_sets = {}
 
     def parse(self, data, filename=None):
         self.reset()
@@ -206,6 +210,19 @@ class Parser(object):
         # -- RESET STATE:
         self.tags = []
 
+    def _build_combinations(self, keyword, line):
+        if not isinstance(self.statement, model.ScenarioOutline):
+            message = u"Combinations must only appear inside scenario outline"
+            raise ParserError(message, self.line, self.filename, line)
+        name = line[len(keyword) + 1:].strip()
+        self.combinations_group = model.Combinations(self.filename, self.line,
+                                                     keyword, name, tags=self.tags,
+                                                     parameter_sets=self.parameter_sets)
+
+        self.statement.examples.append(self.combinations_group)
+
+        # -- RESET STATE:
+        self.tags = []
 
     def diagnose_feature_usage_error(self):
         if self.feature:
@@ -354,6 +371,12 @@ class Parser(object):
         if examples_kwd:
             self._build_examples(examples_kwd, line)
             self.state = "table"
+            return True
+
+        combinations_kwd = self.match_keyword("combinations", line)
+        if combinations_kwd:
+            self._build_combinations(combinations_kwd, line)
+            self.state = "parameter_group"
             return True
 
         # -- OTHERWISE:
@@ -521,6 +544,63 @@ class Parser(object):
             if len(cells) != len(self.table.headings):
                 raise ParserError(u"Malformed table", self.line)
             self.table.add_row(cells, self.line)
+        return True
+
+    def action_parameter_group(self, line):
+        """
+        Parse a line of a feature file while in the 'parameter_group' parsing state, which applies to the
+        rows of the table in a Combinations declaration.
+
+        Each parameter group has a set of names, and a list of value mappings for those names. If
+        the same set of names appears on more than one line, the lists of value mappings from
+        each of the lines are concatenated.
+        """
+        index = line.find("|")
+        if index == -1:
+            if self.parameter_sets:
+                self.combinations_group.parameter_sets = self.parameter_sets
+                self.combinations_group = None
+
+            self.parameter_sets = {}
+            self.state = "steps"
+            return self.action_steps(line)
+
+        name_text = line[:index].strip()
+        if len(name_text) > 1 and name_text[0] == '(' and name_text[-1] == ')':
+            name_list = [s.strip() for s in name_text[1:-1].split(",")]
+        else:
+            name_list = [ name_text ]
+        names = frozenset(name_list)
+
+        # permit trailing section to be commented out
+        values_end_index = line.find("#")
+        if values_end_index == -1:
+            values_end_index = len(line)
+
+        value_text = line[index+1:values_end_index].strip()
+        value_groups = []
+        start = value_text.find("(")
+        if start > -1:
+            while start > -1:
+                end = value_text.find(")", start + 1)
+                value_list = [s.strip() for s in value_text[start+1:end].split(",")]
+                if len(value_list) != len(names):
+                    raise ParserError("parameter group has %d names, but %d values" % (len(names), len(values)), self.line)
+                values = dict(zip(name_list, value_list))
+                start = value_text.find("(", end + 1)
+                value_groups.append(values)
+        elif len(names) != 1:
+            raise ParserError("parameter group has %d names, but %d values" % (len(names), 1))
+        else:
+            start = 0
+            end = len(value_text)
+            for s in value_text[start:end].split(","):
+                value_groups.append({name_list[0] : s.strip()})
+
+        # create or append to the value mappings list for the name set
+        if not names in self.parameter_sets:
+            self.parameter_sets[names] = []
+        self.parameter_sets[names].extend(value_groups)
         return True
 
     def match_keyword(self, keyword, line):
