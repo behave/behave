@@ -1588,3 +1588,145 @@ Given a step with a malformed table:
     | Bred   | London    | 2010 |
 '''.lstrip()
         steps = parser.parse_steps(doc)
+
+    def test_parse_combinations(self):
+        doc = u'''
+Feature: Combinations of Stuff
+
+  Scenario Outline: Lots of stuff
+    Given some steps
+
+    Combinations: sets of stuff
+      Stuff  | foo, bar
+      Things | baz, qux
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Combinations of Stuff")
+
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, 'Lots of stuff')
+
+        parameter_sets = {
+            frozenset(['Stuff']) : [{'Stuff': 'foo'}, {'Stuff': 'bar'}],
+            frozenset(['Things']) : [{'Things': 'baz'}, {'Things': 'qux'}],
+        }
+        eq_(feature.scenarios[0].examples[0].name, 'sets of stuff')
+        eq_(feature.scenarios[0].examples[0].parameter_sets, parameter_sets)
+
+    def test_parse_examples_and_combinations(self):
+        doc = u'''
+Feature: Combinations and Examples of Stuff
+
+  Scenario Outline: Lots of stuff
+    Given some steps
+
+    Examples: examples of stuff
+      | Stuff | Things |
+      | foo   | baz    |
+      | foo   | qux    |
+      | bar   | baz    |
+      | bar   | qux    |
+
+    Combinations: sets of stuff
+      Stuff  | foo, bar
+      Things | baz, qux
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Combinations and Examples of Stuff")
+
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, 'Lots of stuff')
+
+        table = model.Table(
+            [u'Stuff', u'Things'],
+            0,
+            [
+                [u'foo', u'baz'],
+                [u'foo', u'qux'],
+                [u'bar', u'baz'],
+                [u'bar', u'qux'],
+            ]
+        )
+
+        eq_(feature.scenarios[0].examples[0].name, 'examples of stuff')
+        eq_(feature.scenarios[0].examples[0].table, table)
+
+        parameter_sets = {
+            frozenset(['Stuff']) : [{'Stuff': 'foo'}, {'Stuff': 'bar'}],
+            frozenset(['Things']) : [{'Things': 'baz'}, {'Things': 'qux'}],
+        }
+        eq_(feature.scenarios[0].examples[1].name, 'sets of stuff')
+        eq_(feature.scenarios[0].examples[1].parameter_sets, parameter_sets)
+
+    def test_parse_linked_combinations(self):
+        doc = u'''
+Feature: Combinations of Linked Stuff
+
+  Scenario Outline: Lots of stuff
+    Given some steps
+
+    Combinations: sets of stuff
+      (Stuff, Things)  | (foo, bar), (baz, qux)
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Combinations of Linked Stuff")
+
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, 'Lots of stuff')
+
+        parameter_sets = {
+            frozenset(['Stuff', 'Things']) : [{'Stuff': 'foo', 'Things' : 'bar'}, {'Stuff': 'baz', 'Things': 'qux'}],
+        }
+        eq_(feature.scenarios[0].examples[0].name, 'sets of stuff')
+        eq_(feature.scenarios[0].examples[0].parameter_sets, parameter_sets)
+
+    def test_parse_repeated_combinations(self):
+        doc = u'''
+Feature: Repeated Combinations of Stuff
+
+  Scenario Outline: Lots of stuff
+    Given some steps
+
+    Combinations: sets of stuff
+      (Stuff, Things)  | (foo, bar), (baz, qux)
+      (Stuff, Things)  | (a, b)
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Repeated Combinations of Stuff")
+
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, 'Lots of stuff')
+
+        parameter_sets = {
+            frozenset(['Stuff', 'Things']) : [
+              {'Stuff': 'foo', 'Things' : 'bar'},
+              {'Stuff': 'baz', 'Things': 'qux'},
+              {'Stuff': 'a', 'Things': 'b'},
+            ],
+        }
+        eq_(feature.scenarios[0].examples[0].name, 'sets of stuff')
+        eq_(feature.scenarios[0].examples[0].parameter_sets, parameter_sets)
+
+    def test_parse_combinations_comments(self):
+        doc = u'''
+Feature: Combinations of Stuff with comments
+
+  Scenario Outline: Lots of stuff and comments
+    Given some steps
+
+    Combinations: sets of stuff
+      (Stuff, Things)  | (foo, bar)#, (baz, qux)
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Combinations of Stuff with comments")
+
+        assert(len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, 'Lots of stuff and comments')
+
+        parameter_sets = {
+            frozenset(['Stuff', 'Things']) : [
+              {'Stuff': 'foo', 'Things' : 'bar'},
+            ],
+        }
+        eq_(feature.scenarios[0].examples[0].name, 'sets of stuff')
+        eq_(feature.scenarios[0].examples[0].parameter_sets, parameter_sets)

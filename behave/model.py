@@ -497,6 +497,7 @@ class Scenario(TagAndStatusStatement, Replayable):
         self.hook_failed = False
         self._background_steps = None
         self._row = None
+        self._parameters = None
         self.was_dry_run = False
 
     def reset(self):
@@ -506,6 +507,7 @@ class Scenario(TagAndStatusStatement, Replayable):
         super(Scenario, self).reset()
         self.hook_failed = False
         self._row = None
+        self._parameters = None
         self.was_dry_run = False
         for step in self.all_steps:
             step.reset()
@@ -807,29 +809,31 @@ class ScenarioOutlineBuilder(object):
                 text = text.replace("<%s>" % name, value)
         return text
 
-    def make_scenario_name(self, outline_name, example, row, params=None):
-        """Build a scenario name for an example row of this scenario outline.
+    def make_scenario_name(self, outline_name, examples_group, parameters, example_index, example_id, placeholders=None):
+        """Build a scenario name for an example of this scenario outline.
         Placeholders for row data are replaced by values.
 
         SCHEMA: "{outline_name} -*- {examples.name}@{row.id}"
 
-        :param outline_name:    ScenarioOutline's name (as template).
-        :param example:         Examples object.
-        :param row:             Row of this example.
-        :param params:          Additional placeholders for example/row.
-        :return: Computed name for the scenario representing example/row.
+        :param outline_name:   ScenarioOutline's name (as template).
+        :param examples_group: Examples or Combinations object.
+        :param parameters:     properties of this example, a Row object or a dict
+        :param example_index:  1-based position of this example in its Examples or Combinations group
+        :param example_id:     id of this example, unique within the examples for a scenario outline
+        :param placeholders:   Additional placeholders for example/row/combination
+        :return: Computed name for the scenario representing example/row/combination.
         """
-        if params is None:
-            params = {}
-        params["examples.name"] = example.name or ""
-        params.setdefault("examples.index", example.index)
-        params.setdefault("row.index", row.index)
-        params.setdefault("row.id", row.id)
+        if placeholders is None:
+            placeholders = {}
+        placeholders["examples.name"] = examples_group.name or ""
+        placeholders.setdefault("examples.index", examples_group.index)
+        placeholders.setdefault("row.index", example_index)
+        placeholders.setdefault("row.id", example_id)
 
         # -- STEP: Replace placeholders in scenario/example name (if any).
-        examples_name = self.render_template(example.name, row, params)
-        params["examples.name"] = examples_name
-        scenario_name = self.render_template(outline_name, row, params)
+        examples_name = self.render_template(examples_group.name, parameters, placeholders)
+        placeholders["examples.name"] = examples_name
+        scenario_name = self.render_template(outline_name, parameters, placeholders)
 
         class Data(object):
             def __init__(self, name, index):
@@ -837,20 +841,20 @@ class ScenarioOutlineBuilder(object):
                 self.index = index
                 self.id = name      # pylint: disable=invalid-name
 
-        example_data = Data(examples_name, example.index)
-        row_data = Data(row.id, row.index)
+        examples_group_data = Data(examples_name, examples_group.index)
+        example_data = Data(example_id, example_index)
         return self.annotation_schema.format(name=scenario_name,
-                                             examples=example_data, row=row_data)
+                                             examples=examples_group_data, row=example_data)
 
     @classmethod
-    def make_row_tags(cls, outline_tags, row, params=None):
+    def make_scenario_tags(cls, outline_tags, example_parameters, placeholders=None):
         if not outline_tags:
             return []
 
         tags = []
         for tag in outline_tags:
             if "<" in tag and ">" in tag:
-                tag = cls.render_template(tag, row, params)
+                tag = cls.render_template(tag, example_parameters, placeholders)
             if "<" in tag or ">" in tag:
                 # -- OOPS: Unknown placeholder, drop tag.
                 continue
@@ -859,59 +863,95 @@ class ScenarioOutlineBuilder(object):
         return tags
 
     @classmethod
-    def make_step_for_row(cls, outline_step, row, params=None):
+    def make_step(cls, outline_step, example_parameters, placeholders=None):
         # -- BASED-ON: new_step = outline_step.set_values(row)
         new_step = copy.deepcopy(outline_step)
-        new_step.name = cls.render_template(new_step.name, row, params)
+        new_step.name = cls.render_template(new_step.name, example_parameters, placeholders)
         if new_step.text:
-            new_step.text = cls.render_template(new_step.text, row)
+            new_step.text = cls.render_template(new_step.text, example_parameters)
         if new_step.table:
-            for name, value in row.items():
+            for name, value in example_parameters.items():
                 for row in new_step.table:
                     for i, cell in enumerate(row.cells):
                         row.cells[i] = cell.replace("<%s>" % name, value)
         return new_step
 
+    def build_scenario(self, parameters, group, outline, line, placeholders):
+        """
+        Build a scenario from an outline and example or combination
+
+        :param group:        Examples or Combinations object.
+        :param parameters:   parameters for this example, a Row or a dict
+        :param outline:      Outline for the scenario
+        :param placeholders: additional arguments for example/row/combination creation
+        """
+        name = self.make_scenario_name(outline.name, group, parameters, placeholders["row.id"], placeholders["row.index"], placeholders)
+        tags = self.make_scenario_tags(outline.tags, parameters, placeholders)
+        tags.extend(group.tags)
+        new_steps = []
+        for outline_step in outline.steps:
+            new_step = self.make_step(outline_step, parameters, placeholders)
+            new_steps.append(new_step)
+
+        scenario = Scenario(outline.filename, line,
+                            outline.keyword,
+                            name, tags=tags, steps=new_steps)
+        scenario.feature = outline.feature
+        scenario.background = outline.background
+        return scenario
+
     def build_scenarios(self, scenario_outline):
-        """Build scenarios for a ScenarioOutline from its examples."""
-        # -- BUILD SCENARIOS (once): For this ScenarioOutline from examples.
-        params = {
+        """Build scenarios for a ScenarioOutline from its examples and combinations tables."""
+        # -- BUILD SCENARIOS (once): For this ScenarioOutline from examples tables and combinations groups.
+        placeholders = {
             "examples.name": None,
             "examples.index": None,
             "row.index": None,
             "row.id": None,
         }
         scenarios = []
-        for example_index, example in enumerate(scenario_outline.examples):
-            example.index = example_index+1
-            params["examples.name"] = example.name
-            params["examples.index"] = _text(example.index)
-            for row_index, row in enumerate(example.table):
-                row.index = row_index+1
-                row.id = "%d.%d" % (example.index, row.index)
-                params["row.id"] = row.id
-                params["row.index"] = _text(row.index)
-                scenario_name = self.make_scenario_name(scenario_outline.name,
-                                                        example, row, params)
-                row_tags = self.make_row_tags(scenario_outline.tags, row, params)
-                row_tags.extend(example.tags)
-                new_steps = []
-                for outline_step in scenario_outline.steps:
-                    new_step = self.make_step_for_row(outline_step, row, params)
-                    new_steps.append(new_step)
+        for group_index, group in enumerate(scenario_outline.examples):
+            group.index = group_index+1
+            placeholders["examples.name"] = group.name
+            placeholders["examples.index"] = _text(group.index)
 
-                # -- STEP: Make Scenario name for this row.
-                # scenario_line = example.line + 2 + row_index
-                scenario_line = row.line
-                scenario = Scenario(scenario_outline.filename, scenario_line,
-                                    scenario_outline.keyword,
-                                    scenario_name, row_tags, new_steps)
-                scenario.feature = scenario_outline.feature
-                scenario.background = scenario_outline.background
-                scenario._row = row     # pylint: disable=protected-access
-                scenarios.append(scenario)
+            if isinstance(group, Examples):
+                examples_group = group
+                for row_index, row in enumerate(examples_group.table):
+                    row.index = row_index+1
+                    row.id = "%d.%d" % (examples_group.index, row.index)
+                    placeholders["row.id"] = row.id
+                    placeholders["row.index"] = _text(row.index)
+
+                    scenario = self.build_scenario(row, group, scenario_outline, row.line, placeholders)
+
+                    scenario._row = row     # pylint: disable=protected-access
+                    scenario._parameters = row.as_dict()
+                    scenarios.append(scenario)
+
+            elif isinstance(group, Combinations):
+                combinations_group = group
+
+                # the list of combinations is the cartesian product of the parameter sets
+                combinations = []
+                product = itertools.product(*combinations_group.parameter_sets.values())
+                for s in product:
+                    combination = {}
+                    for parameter_set in s:
+                        combination.update(parameter_set)
+                    combinations.append(combination)
+
+                # build a scenario for each combination
+                for combination_index, combination in enumerate(combinations):
+                    combination_number = combination_index+1
+                    placeholders["row.id"] = "%d.%d" % (group.index, combination_number)
+                    placeholders["row.index"] = _text(combination_number)
+
+                    scenario = self.build_scenario(combination, group, scenario_outline, combination_index, placeholders)
+                    scenario._parameters = combination
+                    scenarios.append(scenario)
+
         return scenarios
-
 
 class ScenarioOutline(Scenario):
     """A `scenario outline`_ parsed from a *feature file*.
@@ -947,6 +987,10 @@ class ScenarioOutline(Scenario):
     .. attribute:: examples
 
        A list of :class:`~behave.model.Examples` used by this scenario outline.
+
+    .. attribute:: combinations_groups
+
+       A list of :class:`~behave.model.Combinations` used by this scenario outline.
 
     .. attribute:: tags
 
@@ -992,10 +1036,14 @@ class ScenarioOutline(Scenario):
     annotation_schema = u"{name} -- @{row.id} {examples.name}"
 
     def __init__(self, filename, line, keyword, name, tags=None,
-                 steps=None, examples=None, description=None):
+                 steps=None, examples=None, combinations_groups=None, description=None):
         super(ScenarioOutline, self).__init__(filename, line, keyword, name,
                                               tags, steps, description)
-        self.examples = examples or []
+        self.examples = []
+        if examples:
+            self.examples.append(examples)
+        if combinations_groups:
+            self.examples.append(combinations_groups)
         self._scenarios = []
 
     def reset(self):
@@ -1121,7 +1169,7 @@ class ScenarioOutline(Scenario):
         return failed_count > 0
 
 class Examples(TagStatement, Replayable):
-    """A table parsed from a `scenario outline`_ in a *feature file*.
+    """An examples table parsed from a `scenario outline`_ in a *feature file*.
 
     The attributes are:
 
@@ -1157,6 +1205,42 @@ class Examples(TagStatement, Replayable):
         self.table = table
         self.index = None
 
+class Combinations(TagStatement, Replayable):
+    """A combinations table parsed from a `scenario outline`_ in a *feature file*.
+
+    The attributes are:
+
+    .. attribute:: keyword
+
+       This is the keyword as seen in the *feature file*. In English this will
+       typically be "Combinations".
+
+    .. attribute:: name
+
+       The name of the combinations group (the text after "Combinations:".)
+
+    .. attribute:: parameter_sets
+
+       A map of { parameter names } -> [ parameter maps ] from the combinations table
+       in the *feature file*.
+
+    .. attribute:: filename
+
+       The file name (or "<string>") of the *feature file* where the combinations table
+       was found.
+
+    .. attribute:: line
+
+       The line number of the *feature file* where the combinations table was found.
+
+    .. _`examples`: gherkin.html#examples
+    """
+    type = "combinations"
+
+    def __init__(self, filename, line, keyword, name, tags=None, parameter_sets=None):
+        super(Combinations, self).__init__(filename, line, keyword, name, tags)
+        self.parameter_sets = parameter_sets
+        self.index = None
 
 class Step(BasicStatement, Replayable):
     """A single `step`_ parsed from a *feature file*.
