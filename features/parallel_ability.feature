@@ -56,46 +56,47 @@ Feature: Parallel options
           """
         And a file named "features/steps/parallel_test_steps.py" with:
           """
+          from __future__ import print_function
           from behave import given,then
           import time,sys
 
           @given('I decide to say {msg}')
           def saystuff(context,msg):
-              print "And I say,",msg
+              print ("And I say,",msg)
 
           @then('I say again {msg}')
           def sayagain(context,msg):
-              print "Again I say",msg
+              print ("Again I say",msg)
 
           @then('I say {msg}')
           def say(context,msg):
-              print "I say",msg
+              print ("I say",msg)
 
           @given('I decide to yell {msg}')
           def yell(context,msg):
-              print "And I yell",msg
+              print ("And I yell",msg)
 
           @then('I yell again {msg}')
           def yellagain(context,msg):
-              print "Again I yell",msg
+              print ("Again I yell",msg)
 
           @given('I decide to whisper {msg}')
           def whisperstuff(context,msg):
-              print "And I whisper",msg
+              print ("And I whisper",msg)
 
           @then('I whisper again, but this time {msg}')
           def whisperagain(context,msg):
-              print "Again I whisper,",msg
+              print ("Again I whisper,",msg)
 
           @then('I will devide by {num}')
           def devide_by_num(context,num):
-              print "About to devide by",num
+              print ("About to devide by",num)
               sys.stderr.write("I_wrote_this_to_stderr_"+str(num))
-              print 1/int(num)
+              print (1/int(num))
 
           @then('I sing to the stars {msg}')
           def starsong(context,msg):
-              print "starsong: "+msg
+              print ("starsong: "+msg)
           """
 
         When I run "behave --processes 8 --parallel-element scenario features/parallel_running_scenarios.feature"
