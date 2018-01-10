@@ -1748,6 +1748,9 @@ class Tag(six.text_type):
         o.line = line
         return o
 
+    def __getnewargs__(self):
+        return (six.text_type(self), self.line)
+
     @classmethod
     def make_name(cls, text, unescape=False, allowed_chars=None):
         """Translate text into a "valid tag" without whitespace, etc.
@@ -1810,6 +1813,9 @@ class Text(six.text_type):
         o.content_type = content_type
         o.line = line
         return o
+
+    def __getnewargs__(self):
+        return (six.text_type(self), self.content_type, self.line)
 
     def line_range(self):
         line_count = len(self.splitlines())
