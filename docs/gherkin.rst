@@ -180,9 +180,7 @@ A background is executed before each scenario of this feature but after any
 of the before hooks. It is useful for performing setup operations like:
 
   * logging into a web browser or
-  * setting up a database
-
-with test data used by the scenarios.
+  * setting up a database with test data used by the scenarios.
 
 The background description is for the benefit of humans reading the feature text.
 Again the background name should just be a reasonably descriptive title
