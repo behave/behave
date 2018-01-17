@@ -10,7 +10,9 @@ GOALS:
 
 DOCUMENTATION:
 
+  * pull  #609: Describe execute_steps() behaviour correctly (provided by: mixxorz)
   * pull  #603: Update typo tutorial.rst (provided by: fnaval)
+  * pull  #601: Add Flask integration chapter to documentation (provided by: bittner)
   * pull  #580: Fix some dead ecosystem links (provided by: smadness)
   * pull  #579: Add explanation for step_impl function name (provided by: bittner)
   * issue #574: flake8 reports F811 redefinition of unused 'step_impl' (fixed by #579).
@@ -40,7 +42,7 @@ DOCUMENTATION:
 
 SITE:
 
-  * pull #343: Update/fix badges in README (provided by: mixxorx)
+  * pull #343: Update/fix badges in README (provided by: mixxorz)
 
 ENHANCEMENTS:
 

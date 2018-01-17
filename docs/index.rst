@@ -36,7 +36,9 @@ Contents
    behave
    api
    fixtures
-   django
+   usecase_django
+   usecase_flask
+   practical_tips
    comparison
    new_and_noteworthy
    more_info
