@@ -71,7 +71,9 @@ Behave allows you to provide your own formatter (class)::
     behave -f foo.bar:Json2Formatter ...
 
 The usage of a user-defined formatter can be simplified by providing an
-alias name for it in the configuration file::
+alias name for it in the configuration file:
+
+.. code-block:: ini
 
     # -- FILE: behave.ini
     # ALIAS SUPPORTS: behave -f json2 ...
@@ -80,7 +82,9 @@ alias name for it in the configuration file::
     json2 = foo.bar:Json2Formatter
 
 If your formatter can be configured, you should use the userdata concept
-to provide them. The formatter should use the attribute schema::
+to provide them. The formatter should use the attribute schema:
+
+.. code-block:: ini
 
     # -- FILE: behave.ini
     # SCHEMA: behave.formatter.<FORMATTER_NAME>.<ATTRIBUTE_NAME>
@@ -105,4 +109,10 @@ teamcity       :pypi:`behave-teamcity`, a formatter for Jetbrains TeamCity CI te
                with behave.
 ============== =========================================================================
 
+.. code-block:: ini
 
+    # -- FILE: behave.ini
+    # FORMATTER ALIASES: behave -f allure ...
+    [behave.formatters]
+    allure   = allure_behave.formatter:AllureFormatter
+    teamcity = behave_teamcity:TeamcityFormatter

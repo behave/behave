@@ -80,6 +80,7 @@ from behave.model_core import Status
 from behave.formatter import ansi_escapes
 from behave.model_describe import ModelDescriptor
 from behave.textutil import indent, make_indentation, text as _text
+from behave.userdata import UserDataNamespace
 import six
 if six.PY2:
     # -- USE: Python3 backport for better unicode compatibility.
@@ -193,17 +194,15 @@ class JUnitReporter(Reporter):
             behave.reporter.junit.show_hostname = false
         """
         # -- EXPERIMENTAL:
-        option_names = [
-            "show_timings", "show_skipped_always",
-            "show_timestamp", "show_hostname",
-            "show_scenarios", "show_tags", "show_multiline",
-        ]
-        for option_name in option_names:
-            name = "%s.%s" % (self.userdata_scope, option_name)
-            default_value = getattr(self, option_name)
-            value = userdata.getbool(name, default_value)
-            if value != default_value:
-                setattr(self, option_name, value)
+        config = UserDataNamespace(self.userdata_scope, userdata)
+        self.show_hostname = config.getbool("show_hostname", self.show_hostname)
+        self.show_multiline = config.getbool("show_multiline", self.show_multiline)
+        self.show_scenarios = config.getbool("show_scenarios", self.show_scenarios)
+        self.show_tags = config.getbool("show_tags", self.show_tags)
+        self.show_timings = config.getbool("show_timings", self.show_timings)
+        self.show_timestamp = config.getbool("show_timestamp", self.show_timestamp)
+        self.show_skipped_always = config.getbool("show_skipped_always",
+                                              self.show_skipped_always)
 
     def make_feature_filename(self, feature):
         filename = None

@@ -128,3 +128,93 @@ class UserData(dict):
         :raises: ValueError, if type conversion fails.
         """
         return self.getas(parse_bool, name, default, valuetype=bool)
+
+    @classmethod
+    def make(cls, data):
+        if data is None:
+            data = cls()
+        elif not isinstance(data, cls):
+            data = cls(data)
+        return data
+
+
+class UserDataNamespace(object):
+    """Provides a light-weight dictview to the user data that allows you
+    to access all params in a namespace, that use "{namespace}.*" names.
+
+    .. code-block:: python
+
+        my_config = UserDataNamespace("my.config", userdata)
+        value1 = my_config.getint("value1")  # USE: my.config.value1
+        value2 = my_config.get("value2")     # USE: my.config.value2
+    """
+
+    def __init__(self, namespace, data=None):
+        self.namespace = namespace or ""
+        self.data = UserData.make(data)
+
+    @staticmethod
+    def make_scoped(namespace, name):
+        """Creates a scoped-name from its parts."""
+        if not namespace:   # noqa
+            return name
+        return "%s.%s" % (namespace, name)
+
+    # -- DICT-LIKE:
+    def get(self, name, default=None):
+        scoped_name = self.make_scoped(self.namespace, name)
+        return self.data.get(scoped_name, default)
+
+    def getas(self, convert, name, default=None, valuetype=None):
+        scoped_name = self.make_scoped(self.namespace, name)
+        return self.data.getas(convert, scoped_name, default=default,
+                               valuetype=valuetype)
+
+    def getint(self, name, default=0):
+        scoped_name = self.make_scoped(self.namespace, name)
+        return self.data.getint(scoped_name, default=default)
+
+    def getfloat(self, name, default=0.0):
+        scoped_name = self.make_scoped(self.namespace, name)
+        return self.data.getfloat(scoped_name, default=default)
+
+    def getbool(self, name, default=False):
+        scoped_name = self.make_scoped(self.namespace, name)
+        return self.data.getbool(scoped_name, default=default)
+
+    def __contains__(self, name):
+        scoped_name = self.make_scoped(self.namespace, name)
+        return scoped_name in self.data
+
+    def __getitem__(self, name):
+        scoped_name = self.make_scoped(self.namespace, name)
+        return self.data[scoped_name]
+
+    def __setitem__(self, name, value):
+        scoped_name = self.make_scoped(self.namespace, name)
+        self.data[scoped_name] = value
+
+    def __len__(self):
+        return len(self.scoped_keys())
+
+    def scoped_keys(self):
+        if not self.namespace:  # noqa
+            return self.data.keys()
+        prefix = "%s." % self.namespace
+        return [key for key in self.data.keys() if key.startswith(prefix)]
+
+    def keys(self):
+        prefix = "%s." % self.namespace
+        for scoped_name in self.scoped_keys():
+            name = scoped_name.replace(prefix, "", 1)
+            yield name
+
+    def values(self):
+        for scoped_name in self.scoped_keys():
+            yield self.data[scoped_name]
+
+    def items(self):
+        for name in self.keys():
+            scoped_name = self.make_scoped(self.namespace, name)
+            value = self.data[scoped_name]
+            yield (name, value)

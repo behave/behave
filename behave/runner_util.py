@@ -414,10 +414,9 @@ def load_step_modules(step_paths):
 
 
 def make_undefined_step_snippet(step, language=None):
-    """
-    Helper function to create an undefined-step snippet for a step.
+    """Helper function to create an undefined-step snippet for a step.
 
-    :param step: Step to use (as Step object or step text).
+    :param step: Step to use (as Step object or string).
     :param language: i18n language, optionally needed for step text parsing.
     :return: Undefined-step snippet (as string).
     """
@@ -426,9 +425,7 @@ def make_undefined_step_snippet(step, language=None):
         steps = parser.parse_steps(step_text, language=language)
         step = steps[0]
         assert step, "ParseError: %s" % step_text
-    # prefix = u""
-    # if sys.version_info[0] == 2:
-    #    prefix = u"u"
+
     prefix = u"u"
     single_quote = "'"
     if single_quote in step.name:
@@ -439,6 +436,29 @@ def make_undefined_step_snippet(step, language=None):
     snippet = schema % (step.step_type, prefix, step.name,
                         prefix, step.step_type.title(), step.name)
     return snippet
+
+
+def make_undefined_step_snippets(undefined_steps, make_snippet=None):
+    """Creates a list of undefined step snippets.
+    Note that duplicated steps are removed internally.
+
+    :param undefined_steps: List of undefined steps (as Step object or string).
+    :param make_snippet:    Function that generates snippet (optional)
+    :return: List of undefined step snippets (as list of strings)
+    """
+    if make_snippet is None:
+        make_snippet = make_undefined_step_snippet
+
+    # -- NOTE: Remove any duplicated undefined steps.
+    step_snippets = []
+    collected_steps = set()
+    for undefined_step in undefined_steps:
+        if undefined_step in collected_steps:
+            continue
+        collected_steps.add(undefined_step)
+        step_snippet = make_snippet(undefined_step)
+        step_snippets.append(step_snippet)
+    return step_snippets
 
 
 def print_undefined_step_snippets(undefined_steps, stream=None, colored=True):
@@ -456,12 +476,7 @@ def print_undefined_step_snippets(undefined_steps, stream=None, colored=True):
 
     msg = u"\nYou can implement step definitions for undefined steps with "
     msg += u"these snippets:\n\n"
-    printed = set()
-    for step in undefined_steps:
-        if step in printed:
-            continue
-        printed.add(step)
-        msg += make_undefined_step_snippet(step)
+    msg += u"\n".join(make_undefined_step_snippets(undefined_steps))
 
     if colored:
         # -- OOPS: Unclear if stream supports ANSI coloring.
