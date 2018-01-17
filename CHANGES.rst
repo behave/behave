@@ -10,6 +10,7 @@ GOALS:
 
 DOCUMENTATION:
 
+  * pull  #618: Fix a typo in the background section of gherkin docs (provided by: mrrn)
   * pull  #609: Describe execute_steps() behaviour correctly (provided by: mixxorz)
   * pull  #603: Update typo tutorial.rst (provided by: fnaval)
   * pull  #601: Add Flask integration chapter to documentation (provided by: bittner)
