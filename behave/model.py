@@ -587,11 +587,11 @@ class Scenario(TagAndStatusStatement, Replayable):
     def priority(self):
         """
         priority for this scenario:
-          * priority of a scenario is marked by tag - Priority[0-9]
+          * priority of a scenario is marked by tag - Priority[1-5], default - 3
         """
         priority = [tag for tag in self.effective_tags if tag.startswith('Priority')]
-        return int(priority[0][-1]) if len(priority)>0 and len(priority[0]) == 9 else 5
-
+        return int(priority[0][8]) if len(priority)>0 and len(priority[0]) >= 9 and priority[0][8] in '12345' else 3
+		
     def should_run(self, config=None):
         """
         Determines if this Scenario (or ScenarioOutline) should run.
@@ -1042,15 +1042,6 @@ class ScenarioOutline(Scenario):
         for scenario in self._scenarios:    # -- AVOID: BUILD-SCENARIOS
             outline_duration += scenario.duration
         return outline_duration
-
-    @property
-    def priority(self):
-        """
-        priority for this scenario:
-          * priority of a scenario is marked by tag - Priority[0-9]
-        """
-        priority = [tag for tag in self.tags if tag.startswith('Priority')]
-        return int(priority[0][-1]) if len(priority)>0 and len(priority[0]) == 9 else 5
 
     def should_run_with_tags(self, tag_expression):
         """Determines if this scenario outline (or one of its scenarios)
