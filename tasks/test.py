@@ -4,12 +4,12 @@ Invoke test tasks.
 """
 
 from __future__ import print_function
-from invoke import task, Collection
 import os.path
 import sys
+from invoke import task, Collection
 
 # -- TASK-LIBRARY:
-from .clean import cleanup_tasks, cleanup_dirs, cleanup_files
+from ._tasklet_cleanup import cleanup_tasks, cleanup_dirs, cleanup_files
 
 
 # ---------------------------------------------------------------------------
@@ -57,19 +57,20 @@ def pytest(ctx, args="", options=""):
     "args": "Command line args for behave",
     "format": "Formatter to use (progress, pretty, ...)",
 })
+# pylint: disable=redefined-builtin
 def behave(ctx, args="", format="", options=""):
     """Run behave tests."""
-    format  = format or ctx.behave_test.format
+    format = format or ctx.behave_test.format
     options = options or ctx.behave_test.options
     args = args or ctx.behave_test.args
     if os.path.exists("bin/behave"):
-        behave = "{python} bin/behave".format(python=sys.executable)
+        behave_cmd = "{python} bin/behave".format(python=sys.executable)
     else:
-        behave = "{python} -m behave".format(python=sys.executable)
+        behave_cmd = "{python} -m behave".format(python=sys.executable)
 
     for group_args in grouped_by_prefix(args, ctx.behave_test.scopes):
         ctx.run("{behave} -f {format} {options} {args}".format(
-            behave=behave, format=format, options=options, args=group_args))
+            behave=behave_cmd, format=format, options=options, args=group_args))
 
 
 @task(help={
@@ -100,7 +101,7 @@ def coverage(ctx, args="", report="report", append=False):
     # -- RUN TESTS WITH COVERAGE:
     if pytest_should_run:
         ctx.run("coverage run {options} -m pytest {args}".format(
-                args=pytest_args, options=" ".join(opts)))
+            args=pytest_args, options=" ".join(opts)))
     if behave_should_run:
         behave_options = ctx.behave_test.coverage_options or ""
         os.environ["COVERAGE_PROCESS_START"] = os.path.abspath(".coveragerc")

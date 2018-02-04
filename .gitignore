@@ -15,6 +15,7 @@ tools/virtualenvs
 .idea/
 .tox/
 .venv*/
+.vscode/
 .DS_Store
 .coverage
 .ropeproject
