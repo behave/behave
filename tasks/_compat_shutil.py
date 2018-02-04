@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+# pylint: disable=unused-import
 # PYTHON VERSION COMPATIBILITY HELPER
 
 try:

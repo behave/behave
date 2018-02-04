@@ -5,12 +5,12 @@ Basic support to use a --dry-run mode w/ invoke tasks.
 .. code-block::
 
     from ._dry_run import DryRunContext
-    
+
     @task
     def destroy_something(ctx, path, dry_run=False):
         if dry_run:
             ctx = DryRunContext(ctx)
-        
+
         # -- DRY-RUN MODE: Only echos commands.
         ctx.run("rm -rf {}".format(path))
 """
@@ -42,4 +42,3 @@ class DryRunContext(object):
     def sudo(self, command, **kwargs):
         command2 = "sudo %s" % command
         self.run(command2, **kwargs)
-

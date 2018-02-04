@@ -13,13 +13,14 @@ Normal steps::
     twine upload  --skip-existing dist/*
 
     python setup.py upload
-    python setup.py upload_docs     # -- DEPRECATED: Use RTD instead
+    # -- DEPRECATED: No longer supported -> Use RTD instead
+    # -- DEPRECATED: python setup.py upload_docs
 
 pypi repositories:
 
+    * https://pypi.python.org/pypi
     * https://testpypi.python.org/pypi  (not working anymore)
     * https://test.pypi.org/legacy/     (not working anymore)
-    * https://pypi.python.org/pypi
 
 Configuration file for pypi repositories:
 
@@ -32,12 +33,12 @@ Configuration file for pypi repositories:
         testpypi
 
     [pypi]
-    # repository = https://pypi.python.org/pypi
+    # DEPRECATED: repository = https://pypi.python.org/pypi
     username = __USERNAME_HERE__
     password:
 
     [testpypi]
-    # repository = https://test.pypi.org/legacy
+    # DEPRECATED: repository = https://test.pypi.org/legacy
     username = __USERNAME_HERE__
     password:
 
@@ -48,9 +49,9 @@ Configuration file for pypi repositories:
     * https://packaging.python.org/tutorials/distributing-packages/
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 from invoke import Collection, task
-from .clean import path_glob
+from ._tasklet_cleanup import path_glob
 from ._dry_run import DryRunContext
 
 
@@ -58,9 +59,9 @@ from ._dry_run import DryRunContext
 # TASKS:
 # -----------------------------------------------------------------------------
 @task
-def checklist(ctx):
+def checklist(ctx=None):    # pylint: disable=unused-argument
     """Checklist for releasing this project."""
-    checklist = """PRE-RELEASE CHECKLIST:
+    checklist_text = """PRE-RELEASE CHECKLIST:
 [ ]  Everything is checked in
 [ ]  All tests pass w/ tox
 
@@ -81,7 +82,7 @@ POST-RELEASE CHECKLIST:
     yesno_map = {True: "x", False: "_", None: " "}
     answers = {name: yesno_map[value]
                for name, value in steps.items()}
-    print(checklist.format(**answers))
+    print(checklist_text.format(**answers))
 
 
 @task(name="bump_version")
@@ -91,7 +92,7 @@ def bump_version(ctx, new_version, version_part=None, dry_run=False):
     if dry_run:
         ctx = DryRunContext(ctx)
     ctx.run("bumpversion --new-version={} {}".format(new_version,
-                                                      version_part))
+                                                     version_part))
 
 
 @task(name="build", aliases=["build_packages"])
@@ -183,7 +184,7 @@ def ensure_packages_exist(ctx, pattern=None, check_only=False):
             print("NO-PACKAGES-FOUND: Build packages first ...")
             build_packages(ctx, hide=True)
             packages = ensure_packages_exist(ctx, pattern,
-                                                  check_only=True)
+                                             check_only=True)
     return packages
 
 

@@ -4,14 +4,14 @@ Provides tasks to build documentation with sphinx, etc.
 """
 
 from __future__ import absolute_import, print_function
+import sys
 from invoke import task, Collection
 from invoke.util import cd
 from path import Path
-import os.path
-import sys
 
 # -- TASK-LIBRARY:
-from .clean import cleanup_tasks, cleanup_dirs
+from ._tasklet_cleanup import cleanup_tasks, cleanup_dirs
+
 
 # -----------------------------------------------------------------------------
 # TASKS:
@@ -44,7 +44,7 @@ def build(ctx, builder="html", options=""):
     "options": "Additional options for sphinx-build",
 })
 def rebuild(ctx, builder="html", options=""):
-    """Rebuilds the docs. 
+    """Rebuilds the docs.
     Perform the steps: clean, build
     """
     clean(ctx)
@@ -54,6 +54,7 @@ def rebuild(ctx, builder="html", options=""):
 def linkcheck(ctx):
     """Check if all links are corect."""
     build(ctx, builder="linkcheck")
+
 
 @task
 def browse(ctx):
@@ -72,7 +73,9 @@ def browse(ctx):
     # print("Starting webbrowser with page=%s" % page_html)
     # webbrowser.open(str(page_html))
 
-@task(help = {"dest": "Destination directory to save docs"})
+
+@task(help={"dest": "Destination directory to save docs"})
+# pylint: disable=redefined-builtin
 def save(ctx, dest="docs.html", format="html"):
     """Save/update docs under destination directory."""
     print("STEP: Generate docs in HTML format")
@@ -84,12 +87,13 @@ def save(ctx, dest="docs.html", format="html"):
     source_dir.copytree(dest)
 
     # -- POST-PROCESSING: Polish up.
-    for part in [ ".buildinfo", ".doctrees" ]:
+    for part in [".buildinfo", ".doctrees"]:
         partpath = Path(dest)/part
         if partpath.isdir():
             partpath.rmtree_p()
         elif partpath.exists():
             partpath.remove_p()
+
 
 # -----------------------------------------------------------------------------
 # TASK CONFIGURATION:
