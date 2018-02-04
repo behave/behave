@@ -287,3 +287,28 @@ Feature: Select named scenarios to run
             0 features passed, 0 failed, 2 skipped
             0 scenarios passed, 0 failed, 6 skipped
             """
+
+    Scenario: Select scenarios with special unicode names
+        Given a file named "features/xantippe.feature" with:
+          """
+          Feature: Use special unicode names
+
+            Scenario: Ärgernis is everywhere
+              Given a step passes
+
+            Scenario: Second Ärgernis
+              Then a step passes
+
+            Scenario: Something else
+              When a step passes
+          """
+        When I run "behave -f plain --name="Ärgernis" --dry-run features/xantippe.feature"
+        Then it should pass with:
+          """
+          0 features passed, 0 failed, 0 skipped, 1 untested
+          0 scenarios passed, 0 failed, 1 skipped, 2 untested
+          """
+        But the command output should not contain:
+          """
+          UnicodeDecodeError: 'ascii' codec can't decode byte
+          """

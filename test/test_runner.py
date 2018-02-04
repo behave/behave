@@ -15,6 +15,7 @@ from six import StringIO
 from mock import Mock, patch
 from nose.tools import *  # pylint: disable=wildcard-import, unused-wildcard-import
 
+from behave import runner_util
 from behave.model import Table
 from behave.step_registry import StepRegistry
 from behave import parser, runner
@@ -39,7 +40,7 @@ class TestContext(unittest.TestCase):
         # -- CASE: No exception is raised.
         initial_mode = runner.Context.BEHAVE
         eq_(self.context._mode, initial_mode)
-        with self.context.user_mode():
+        with self.context.use_with_user_mode():
             eq_(self.context._mode, runner.Context.USER)
             self.context.thing = "stuff"
         eq_(self.context._mode, initial_mode)
@@ -48,7 +49,7 @@ class TestContext(unittest.TestCase):
         initial_mode = runner.Context.BEHAVE
         eq_(self.context._mode, initial_mode)
         try:
-            with self.context.user_mode():
+            with self.context.use_with_user_mode():
                 eq_(self.context._mode, runner.Context.USER)
                 assert False, "XFAIL"
         except AssertionError:
@@ -58,7 +59,7 @@ class TestContext(unittest.TestCase):
         initial_mode = runner.Context.BEHAVE
         eq_(self.context._mode, initial_mode)
         try:
-            with self.context.user_mode():
+            with self.context.use_with_user_mode():
                 eq_(self.context._mode, runner.Context.USER)
                 raise RuntimeError("XFAIL")
         except RuntimeError:
@@ -316,8 +317,8 @@ class ExampleSteps(object):
             ("step", "a step with text",     cls.step_with_text),
             ("step", "a step with a table",  cls.step_with_table),
         ]
-        for keyword, string, func in step_definitions:
-            step_registry.add_step_definition(keyword, string, func)
+        for keyword, pattern, func in step_definitions:
+            step_registry.add_step_definition(keyword, pattern, func)
 
 class TestContext_ExecuteSteps(unittest.TestCase):
     """
@@ -623,7 +624,7 @@ class TestRunner(object):
             f.write("spam = __file__\n")
         g = {}
         l = {}
-        runner.exec_file(fn, g, l)
+        runner_util.exec_file(fn, g, l)
         assert "__file__" in l
         # pylint: disable=too-many-format-args
         assert "spam" in l, '"spam" variable not set in locals (%r)' % (g, l)

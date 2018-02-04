@@ -10,6 +10,13 @@ GOALS:
 
 DOCUMENTATION:
 
+  * pull  #618: Fix a typo in the background section of gherkin docs (provided by: mrrn)
+  * pull  #609: Describe execute_steps() behaviour correctly (provided by: mixxorz)
+  * pull  #603: Update typo tutorial.rst (provided by: fnaval)
+  * pull  #601: Add Flask integration chapter to documentation (provided by: bittner)
+  * pull  #580: Fix some dead ecosystem links (provided by: smadness)
+  * pull  #579: Add explanation for step_impl function name (provided by: bittner)
+  * issue #574: flake8 reports F811 redefinition of unused 'step_impl' (fixed by #579).
   * pull  #545: Spell "section" correctly (provided by: chelmertz)
   * pull  #489: Fix link to Selenium docs in Django chapter (provided by: bittner)
   * pull  #469: Fix typo in "formatters.rst" (provided by: ab9-er)
@@ -36,11 +43,15 @@ DOCUMENTATION:
 
 SITE:
 
-  * pull #343: Update/fix badges in README (provided by: mixxorx)
+  * pull #343: Update/fix badges in README (provided by: mixxorz)
 
 ENHANCEMENTS:
 
+  * fixtures: Add concept to simplify setup/cleanup tasks for scenario/feature/test-run
+  * context-cleanups: Use context.add_cleanup() to perform cleanups after scenario/feature/test-run.
   * Tagged Examples: Examples in a ScenarioOutline can now have tags.
+  * pull  #596: Add missing Czech translation (provided by: hason)
+  * pull  #554: Adds galician language (provided by: carlosgoce)
   * pull  #447: behave settings from tox.ini (provided by: bittner)
   * issue #411: Support multiple active-tags with same category (submitted by: Kani999)
   * issue #409: Support async/@asyncio.coroutine steps (submitted by: dcarp)
@@ -74,9 +85,13 @@ CHANGES:
 
 FIXED:
 
+  * issue #606: Using name option w/ special unicode chars (submitted by: alluir42)
+  * issue #547: Crash when using step definition with optional cfparse parts (provided by: ftartaggia, jenisys)
+  * pull  #599: Steps from another Windows drive (provided by: psicopep)
+  * issue #582: behave emitting PendingDeprecationWarning messages (submitted by: adamjcooper)
   * pull  #476: scenario.status when scenario without steps is skipped (provided by: ar45, jenisys)
   * pull  #471: convert an object to unicode (py2) using __unicode__ method first  unicode (provided by: ftartaggia)
-  * issue #458: UnicodeEncodeError inside naked except block in __main__.py (submitted by: 	mseery)
+  * issue #458: UnicodeEncodeError inside naked except block in __main__.py (submitted by: mseery)
   * issue #453: Unicode chars are broken in stacktrace (submitted by: throwable-one)
   * issue #455: Restore backward compatibility to Cucumber style RegexMatcher (submitted by:  avabramov)
   * issue #449: Unicode is processed incorrectly for Py2 in "textutil.text" (submitted by: throwable-one)

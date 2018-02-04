@@ -50,7 +50,9 @@ Books
 
 `Behave`_ is covered in the following books:
 
-.. [TDD-Python] Harry Percival,
+..
+
+    [TDD-Python] Harry Percival,
     `Test-Driven Web Development with Python`_, O'Reilly, June 2014,
     `Appendix E: BDD <http://chimera.labs.oreilly.com/books/1234000000754/ape.html>`_
     (covers behave)
@@ -163,7 +165,7 @@ JetBrains PyCharm:
 
 .. _`Getting Started with PyCharm`: https://www.youtube.com/playlist?list=PLQ176FUIyIUZ1mwB-uImQE-gmkwzjNLjP
 .. _`PyCharm In-Depth: Testing`: https://youtu.be/nmBbR97Vsv8?list=PLQ176FUIyIUZ1mwB-uImQE-gmkwzjNLjP
-.. _`In-Depth Screencast on Testing`: http://blog.jetbrains.com/pycharm/2016/04/in-depth-screencast-on-testing/
+.. _`In-Depth Screencast on Testing`: https://blog.jetbrains.com/pycharm/2016/04/in-depth-screencast-on-testing/
 
 
 

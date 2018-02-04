@@ -24,6 +24,12 @@ Summary:
 
 * Testing support for asynchronuous frameworks or protocols (:mod:`asyncio` based)
 
+* Context-cleanups: Register cleanup functions that are executed at the end
+  of the test-scope (scenario, feature or test-run) via
+  :func:`~behave.runner.Context.add_cleanup()`.
+
+* :ref:`docid.fixtures`: Simplify setup/cleanup in scenario, feature or test-run
+
 
 
 Scenario Outline Improvements
@@ -150,6 +156,144 @@ Select the ``Examples`` section now by using:
             scenario.skip(active_tag_matcher.exclude_reason)
 
 
+
+
+Gherkin Parser Improvements
+-------------------------------------------------------------------------------
+
+Escaped-Pipe Support in Tables
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It is now possible to use the "|" (pipe) symbol in Gherkin tables by escaping it.
+The pipe symbol is normally used as column separator in tables.
+
+EXAMPLE:
+
+.. code-block:: Gherkin
+
+    Scenario: Use escaped-pipe symbol
+      Given I use table data with:
+        | name  | value |
+        | alice | one\|two\|three\|four  |
+      Then table data for "alice" is "one|two|three|four"
+
+.. seealso::
+
+    * `issue.features/issue0302.feature`_ for details
+
+.. _`issue.features/issue0302.feature`: https://github.com/behave/behave/blob/master/issue.features/issue0302.feature
+
+
+Configuration Improvements
+-------------------------------------------------------------------------------
+
+Language Option
+~~~~~~~~~~~~~~~
+
+The interpretation of the ``language-tag`` comment in feature files (Gherkin)
+and the configuration ``lang`` option on command-line and in the configuration file
+changed slightly.
+
+If a ``language-tag`` is used in a feature file,
+it is now prefered over the command-line/configuration file settings.
+This is especially useful when your feature files use multiple spoken languages
+(in different files).
+
+EXAMPLE:
+
+.. code-block:: Gherkin
+
+    # -- FILE: features/french_1.feature
+    # language: fr
+    Fonctionnalité: Alice
+        ...
+
+.. code-block:: ini
+
+    # -- FILE: behave.ini
+    [behave]
+    lang = de       # Default (spoken) language to use: German
+    ...
+
+.. note::
+
+    The feature object contains now a ``language`` attribute that contains
+    the information which language was used during Gherkin parsing.
+
+
+Default Tags
+~~~~~~~~~~~~
+
+It is now possible to define ``default tags`` in the configuration file.
+``Default tags`` are used when you do not specify tags on the command-line.
+
+EXAMPLE:
+
+.. code-block:: ini
+
+    # -- FILE: behave.ini
+    # Exclude/skip any feature/scenario with @xfail or @not_implemented tags
+    [behave]
+    default_tags = -@xfail -@not_implemented
+    ...
+
+
+
+Runner Improvements
+-------------------------------------------------------------------------------
+
+Hook Errors cause Failures
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The behaviour of hook errors, meaning uncaught exceptions while processing hooks,
+is changed in this release. The new behaviour causes the entity (test-run, feature, scenario),
+for which the hook is executed, to fail.
+In addition, a hook error in a ``before_all()``, ``before_feature()``,
+``before_scenario()``, and ``before_tag()`` hook causes its corresponding entity
+to be skipped.
+
+.. seealso::
+
+    * `features/runner.hook_errors.feature`_ for the detailled specification
+
+.. _`features/runner.hook_errors.feature`: https://github.com/behave/behave/blob/master/features/runner.hook_errors.feature
+
+
+Option: Continue after Failed Step in a Scenario
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This behaviour is sometimes desired, when you want to see what happens in the
+remaining steps of a scenario.
+
+EXAMPLE:
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    from behave.model import Scenario
+
+    def before_all(context):
+        userdata = context.config.userdata
+        continue_after_failed = userdata.getbool("runner.continue_after_failed_step", False)
+        Scenario.continue_after_failed_step = continue_after_failed
+
+.. code-block:: shell
+
+    # -- ENABLE OPTION: Use userdata on command-line
+    behave -D runner.continue_after_failed_step=true features/
+
+.. note::
+
+    A failing step normally causes correlated failures in most of the following steps.
+    Therefore, this behaviour is normally not desired.
+
+.. seealso::
+
+    * `features/runner.continue_after_failed_step.feature`_ for the detailled specification
+
+.. _`features/runner.continue_after_failed_step.feature`: https://github.com/behave/behave/blob/master/features/runner.continue_after_failed_step.feature
+
+
 Testing asyncio Frameworks
 -------------------------------------------------------------------------------
 
@@ -208,7 +352,7 @@ When you use the async-step from above in a feature file and run it with behave:
 
 .. note::
 
-    The async-step is wrapped with an ``èvent_loop.run_until_complete()`` call.
+    The async-step is wrapped with an ``event_loop.run_until_complete()`` call.
     As the timings show, it actually needs approximatly 0.3 seconds to run.
 
 
@@ -253,3 +397,106 @@ The implementation of the steps from above:
         # -- FILE: features/steps/async_dispatch_steps.py
         # REQUIRES: Python 3.4 or newer
 
+
+Context-based Cleanups
+-------------------------------------------------------------------------------
+
+It is now possible to register cleanup functions with the context object.
+This functionality is normally used in:
+
+* hooks (:func:`before_all()`, :func:`before_feature()`, :func:`before_scenario()`, ...)
+* step implementations
+* ...
+
+.. code-block:: python
+
+    # -- SIGNATURE: Context.add_cleanup(cleanup_func, *args, **kwargs)
+    # CLEANUP CALL EXAMPLES:
+    context.add_cleanup(cleanup0)                       # CALLS LATER: cleanup0()
+    context.add_cleanup(cleanup1, 1, 2)                 # CALLS LATER: cleanup1(1, 2)
+    context.add_cleanup(cleanup2, name="Alice")         # CALLS LATER: cleanup2(name="Alice")
+    context.add_cleanup(cleanup3, 1, 2, name="Bob")     # CALLS LATER: cleanup3(1, 2, name="Bob")
+
+The registered cleanup will be performed when the context layer is removed.
+This depends on the the context layer when the cleanup function was registered
+(test-run, feature, scenario).
+
+Example:
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    def before_all(context):
+        context.add_cleanup(cleanup_me)
+        # -- ON CLEANUP: Calls cleanup_me()
+        # Called after test-run.
+
+    def before_tag(context, tag):
+        if tag == "foo":
+            context.foo = setup_foo()
+            context.add_cleanup(cleanup_foo, context.foo)
+            # -- ON CLEANUP: Calls cleanup_foo(context.foo)
+            # CASE scenario tag: cleanup_foo() will be called after this scenario.
+            # CASE feature  tag: cleanup_foo() will be called after this feature.
+
+.. seealso::
+
+    For more details, see `features/runner.context_cleanup.feature`_ .
+
+.. _`features/runner.context_cleanup.feature`: https://github.com/behave/behave/blob/master/features/runner.context_cleanup.feature
+
+
+Fixtures
+-------------------------------------------------------------------------------
+
+Fixtures simplify setup/cleanup tasks that are often needed for testing.
+
+Providing a Fixture
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    # -- FILE: behave4my_project/fixtures.py  (or in: features/environment.py)
+    from behave import fixture
+    from somewhere.browser.firefox import FirefoxBrowser
+
+    # -- FIXTURE-VARIANT 1: Use generator-function
+    @fixture
+    def browser_firefox(context, timeout=30, **kwargs):
+        # -- SETUP-FIXTURE PART:
+        context.browser = FirefoxBrowser(timeout, **kwargs)
+        yield context.browser
+        # -- CLEANUP-FIXTURE PART:
+        context.browser.shutdown()
+
+Using a Fixture
+~~~~~~~~~~~~~~~
+
+.. code-block:: Gherkin
+
+    # -- FILE: features/use_fixture1.feature
+    Feature: Use Fixture on Scenario Level
+
+        @fixture.browser.firefox
+        Scenario: Use Web Browser Firefox
+            Given I load web page "https://somewhere.web"
+            ...
+        # -- AFTER-SCENARIO: Cleanup fixture.browser.firefox
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    from behave import use_fixture
+    from behave4my_project.fixtures import browser_firefox
+
+    def before_tag(context, tag):
+        if tag == "fixture.browser.firefox":
+            use_fixture(browser_firefox, context, timeout=10)
+
+
+.. seealso::
+
+    * :ref:`docid.fixtures` description for details
+    * `features/fixture.feature`_
+
+.. _`features/fixture.feature`: https://github.com/behave/behave/blob/master/features/fixture.feature

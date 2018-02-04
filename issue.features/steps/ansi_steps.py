@@ -11,10 +11,9 @@ from behave4cmd0.command_steps import \
 CSI = u"\x1b["
 
 @then(u'the command output should contain ANSI escape sequences')
-def step_command_ouput_should_not_contain_ansi_sequences(context):
+def step_command_ouput_should_contain_ansi_sequences(context):
     step_command_output_should_contain_text(context, CSI)
 
 @then(u'the command output should not contain any ANSI escape sequences')
 def step_command_ouput_should_not_contain_ansi_sequences(context):
     step_command_output_should_not_contain_text(context, CSI)
-

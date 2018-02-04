@@ -19,10 +19,8 @@ this can be somewhat brittle. Obviously we prefer to use something written in
 Python but if you've got an existing workflow based around Cucumber and you
 have code in multiple languages, Cucumber may be the one for you.
 
-.. _Cucumber: http://cukes.info/
-.. dead-project:
+.. _Cucumber: https://cucumber.io/
 
-    rubypython: http://rubypython.rubyforge.org/
 
 Lettuce_
 ========
@@ -83,3 +81,6 @@ The issues we had with Freshen that stopped us using it were:
   around and the module namespace is polluted.
 * Only Before and no contextual before/after control, thus requiring use of
   atexit for teardown operations and no fine-grained control.
+
+
+.. include:: _common_extlinks.rst

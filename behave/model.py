@@ -281,7 +281,7 @@ class Feature(TagAndStatusStatement, Replayable):
         self.clear_status()
         self.hook_failed = False
 
-        runner.context._push()      # pylint: disable=protected-access
+        runner.context._push(layer_name="feature")      # pylint: disable=protected-access
         runner.context.feature = self
         runner.context.tags = set(self.tags)
 
@@ -338,7 +338,12 @@ class Feature(TagAndStatusStatement, Replayable):
                 failed_count += 1
                 self.set_status(Status.failed)
 
-        runner.context._pop()       # pylint: disable=protected-access
+        # -- PERFORM CONTEXT CLEANUP: May raise cleanup errors.
+        try:
+            runner.context._pop()       # pylint: disable=protected-access
+        except Exception:
+            # -- CLEANUP-ERROR:
+            self.set_status(Status.failed)
 
         if run_feature or runner.config.show_skipped:
             for formatter in runner.formatters:
@@ -668,7 +673,7 @@ class Scenario(TagAndStatusStatement, Replayable):
         dry_run_scenario = run_scenario and runner.config.dry_run
         self.was_dry_run = dry_run_scenario
 
-        runner.context._push()      # pylint: disable=protected-access
+        runner.context._push(layer_name="scenario")      # pylint: disable=protected-access
         runner.context.scenario = self
         runner.context.tags = set(self.effective_tags)
 
@@ -754,8 +759,15 @@ class Scenario(TagAndStatusStatement, Replayable):
             for tag in self.tags:
                 runner.run_hook("after_tag", runner.context, tag)
             if self.hook_failed:
-                failed = True
                 self.set_status(Status.failed)
+                failed = True
+
+        # -- PERFORM CONTEXT-CLEANUP: May raise cleanup errors.
+        try:
+            runner.context._pop()       # pylint: disable=protected-access
+        except Exception:
+            self.set_status(Status.failed)
+            failed = True
 
         # -- CAPTURED-OUTPUT:
         store_captured = (runner.config.junit or self.status == Status.failed)
@@ -763,7 +775,6 @@ class Scenario(TagAndStatusStatement, Replayable):
             self.captured = runner.capture_controller.captured
 
         runner.teardown_capture()
-        runner.context._pop()       # pylint: disable=protected-access
         return failed
 
 

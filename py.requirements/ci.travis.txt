@@ -1,0 +1,12 @@
+mock
+nose
+PyHamcrest >= 1.8
+pytest >= 3.0
+
+# -- NEEDED: By some tests (as proof of concept)
+# NOTE: path.py-10.1 is required for python2.6
+path.py >= 10.1
+
+# -- NOTE: Travis.CI tweak related w/ invalid linecache2 tests.
+#    This problem does not exist if you use pip.
+linecache2 >= 1.0; python_version < '3.0'

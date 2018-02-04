@@ -26,7 +26,7 @@ you can also use :pypi:`easy_install <setuptools>` to install :pypi:`behave`::
 
     See also `pip related information`_ for installing Python packages.
 
-.. _`pip related information`:  https://pip.pypa.io/en/latest/installing.html
+.. _`pip related information`:  https://pip.pypa.io/en/latest/installing/
 
 
 Using a Source Distribution

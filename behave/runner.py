@@ -4,25 +4,33 @@ This module provides Runner class to run behave feature files (or model elements
 """
 
 from __future__ import absolute_import, print_function, with_statement
+
 import contextlib
 import os.path
 import sys
 import warnings
 import weakref
+
 import six
-from behave import matchers
-from behave.step_registry import setup_step_decorators, registry as the_step_registry
-from behave.formatter._registry import make_formatters
-from behave.configuration import ConfigError
-from behave.capture import CaptureController
-from behave.runner_util import collect_feature_locations, parse_features
+
 from behave._types import ExceptionUtil
+from behave.capture import CaptureController
+from behave.configuration import ConfigError
+from behave.formatter._registry import make_formatters
+from behave.runner_util import \
+    collect_feature_locations, parse_features, \
+    exec_file, load_step_modules, PathManager
+from behave.step_registry import registry as the_step_registry
+
 if six.PY2:
     # -- USE PYTHON3 BACKPORT: With unicode traceback support.
     import traceback2 as traceback
 else:
     import traceback
 
+
+class CleanupError(RuntimeError):
+    pass
 
 
 class ContextMaskWarning(UserWarning):
@@ -141,6 +149,7 @@ class Context(object):
     # pylint: disable=too-many-instance-attributes
     BEHAVE = "behave"
     USER = "user"
+    FAIL_ON_CLEANUP_ERRORS = True
 
     def __init__(self, runner):
         self._runner = weakref.proxy(runner)
@@ -150,6 +159,9 @@ class Context(object):
             "failed": False,
             "config": self._config,
             "active_outline": None,
+            "cleanup_errors": 0,
+            "@cleanups": [],    # -- REQUIRED-BY: before_all() hook
+            "@layer": "testrun",
         }
         self._stack = [d]
         self._record = {}
@@ -162,12 +174,84 @@ class Context(object):
         self.stdout_capture = None
         self.stderr_capture = None
         self.log_capture = None
+        self.fail_on_cleanup_errors = self.FAIL_ON_CLEANUP_ERRORS
 
-    def _push(self):
-        self._stack.insert(0, {})
+    @staticmethod
+    def ignore_cleanup_error(context, cleanup_func, exception):
+        pass
+
+    @staticmethod
+    def print_cleanup_error(context, cleanup_func, exception):
+        cleanup_func_name = getattr(cleanup_func, "__name__", None)
+        if not cleanup_func_name:
+            cleanup_func_name = "%r" % cleanup_func
+        print(u"CLEANUP-ERROR in %s: %s: %s" %
+              (cleanup_func_name, exception.__class__.__name__, exception))
+        traceback.print_exc(file=sys.stdout)
+        # MAYBE: context._dump(pretty=True, prefix="Context: ")
+        # -- MARK: testrun as FAILED
+        # context._set_root_attribute("failed", True)
+
+    def _do_cleanups(self):
+        """Execute optional cleanup functions when stack frame is popped.
+        A user can add a user-specified handler for cleanup errors.
+
+        .. code-block:: python
+
+            # -- FILE: features/environment.py
+            def cleanup_database(database):
+                pass
+
+            def handle_cleanup_error(context, cleanup_func, exception):
+                pass
+
+            def before_all(context):
+                context.on_cleanup_error = handle_cleanup_error
+                context.add_cleanup(cleanup_database, the_database)
+        """
+        # -- BEST-EFFORT ALGORITHM: Tries to perform all cleanups.
+        assert self._stack, "REQUIRE: Non-empty stack"
+        current_layer = self._stack[0]
+        cleanup_funcs = current_layer.get("@cleanups", [])
+        on_cleanup_error = getattr(self, "on_cleanup_error",
+                                   self.print_cleanup_error)
+        context = self
+        cleanup_errors = []
+        for cleanup_func in reversed(cleanup_funcs):
+            try:
+                cleanup_func()
+            except Exception as e: # pylint: disable=broad-except
+                # pylint: disable=protected-access
+                context._root["cleanup_errors"] += 1
+                cleanup_errors.append(sys.exc_info())
+                on_cleanup_error(context, cleanup_func, e)
+
+        if self.fail_on_cleanup_errors and cleanup_errors:
+            first_cleanup_erro_info = cleanup_errors[0]
+            del cleanup_errors  # -- ENSURE: Release other exception frames.
+            six.reraise(*first_cleanup_erro_info)
+
+
+    def _push(self, layer_name=None):
+        """Push a new layer on the context stack.
+        HINT: Use layer_name values: "scenario", "feature", "testrun".
+
+        :param layer_name:   Layer name to use (or None).
+        """
+        initial_data = {"@cleanups": []}
+        if layer_name:
+            initial_data["@layer"] = layer_name
+        self._stack.insert(0, initial_data)
 
     def _pop(self):
-        self._stack.pop(0)
+        """Pop the current layer from the context stack.
+        Performs any pending cleanups, registered for this layer.
+        """
+        try:
+            self._do_cleanups()
+        finally:
+            # -- ENSURE: Layer is removed even if cleanup-errors occur.
+            self._stack.pop(0)
 
     def _use_with_behave_mode(self):
         """Provides a context manager for using the context in BEHAVE mode."""
@@ -285,11 +369,13 @@ class Context(object):
         executed in turn just as though they were defined in a feature file.
 
         If the execute_steps call fails (either through error or failure
-        assertion) then the step invoking it will fail.
+        assertion) then the step invoking it will need to catch the resulting
+        exceptions.
 
-        ValueError will be raised if this is invoked outside a feature context.
-
-        Returns boolean False if the steps are not parseable, True otherwise.
+        :param steps_text:  Text with the Gherkin steps to execute (as string).
+        :returns: True, if the steps executed successfully.
+        :raises: AssertionError, if a step failure occurs.
+        :raises: ValueError, if invoked without a feature context.
         """
         assert isinstance(steps_text, six.text_type), "Steps must be unicode."
         if not self.feature:
@@ -322,6 +408,28 @@ class Context(object):
             self.text = original_text
         return True
 
+    def add_cleanup(self, cleanup_func, *args, **kwargs):
+        """Adds a cleanup function that is called when :meth:`Context._pop()`
+        is called. This is intended for user-cleanups.
+
+        :param cleanup_func:    Callable function
+        :param args:            Args for cleanup_func() call (optional).
+        :param kwargs:          Kwargs for cleanup_func() call (optional).
+        """
+        # MAYBE:
+        assert callable(cleanup_func), "REQUIRES: callable(cleanup_func)"
+        assert self._stack
+        if args or kwargs:
+            def internal_cleanup_func():
+                cleanup_func(*args, **kwargs)
+        else:
+            internal_cleanup_func = cleanup_func
+
+        current_frame = self._stack[0]
+        if cleanup_func not in current_frame["@cleanups"]:
+            # -- AVOID DUPLICATES:
+            current_frame["@cleanups"].append(internal_cleanup_func)
+
 
 @contextlib.contextmanager
 def use_context_with_mode(context, mode):
@@ -350,18 +458,21 @@ def use_context_with_mode(context, mode):
         context._mode = current_mode
 
 
+@contextlib.contextmanager
+def scoped_context_layer(context, layer_name=None):
+    """Provides context manager for context layer (push/do-something/pop cycle).
 
-def exec_file(filename, globals_=None, locals_=None):
-    if globals_ is None:
-        globals_ = {}
-    if locals_ is None:
-        locals_ = globals_
-    locals_["__file__"] = filename
-    with open(filename, "rb") as f:
-        # pylint: disable=exec-used
-        filename2 = os.path.relpath(filename, os.getcwd())
-        code = compile(f.read(), filename2, "exec", dont_inherit=True)
-        exec(code, globals_, locals_)
+    .. code-block::
+
+        with scoped_context_layer(context):
+            the_fixture = use_fixture(foo, context, name="foo_42")
+    """
+    # pylint: disable=protected-access
+    try:
+        context._push(layer_name)
+        yield context
+    finally:
+        context._pop()
 
 
 def path_getrootdir(path):
@@ -382,32 +493,6 @@ def path_getrootdir(path):
         return drive + os.path.sep
     # -- POSIX:
     return os.path.sep
-
-
-class PathManager(object):
-    """
-    Context manager to add paths to sys.path (python search path) within a scope
-    """
-    def __init__(self, paths=None):
-        self.initial_paths = paths or []
-        self.paths = None
-
-    def __enter__(self):
-        self.paths = list(self.initial_paths)
-        sys.path = self.paths + sys.path
-
-    def __exit__(self, *crap):
-        for path in self.paths:
-            sys.path.remove(path)
-        self.paths = None
-
-    def add(self, path):
-        if self.paths is None:
-            # -- CALLED OUTSIDE OF CONTEXT:
-            self.initial_paths.append(path)
-        else:
-            sys.path.insert(0, path)
-            self.paths.append(path)
 
 
 class ModelRunner(object):
@@ -456,7 +541,7 @@ class ModelRunner(object):
     def run_hook(self, name, context, *args):
         if not self.config.dry_run and (name in self.hooks):
             try:
-                with context.user_mode():
+                with context.use_with_user_mode():
                     self.hooks[name](context, *args)
             # except KeyboardInterrupt:
             #     self.aborted = True
@@ -555,16 +640,25 @@ class ModelRunner(object):
                 reporter.feature(feature)
 
         # -- AFTER-ALL:
+        # pylint: disable=protected-access, broad-except
+        cleanups_failed = False
+        self.run_hook("after_all", self.context)
+        try:
+            self.context._do_cleanups()   # Without dropping the last context layer.
+        except Exception:
+            cleanups_failed = True
+
         if self.aborted:
             print("\nABORTED: By user.")
         for formatter in self.formatters:
             formatter.close()
-        self.run_hook("after_all", self.context)
         for reporter in self.config.reporters:
             reporter.end()
 
         failed = ((failed_count > 0) or self.aborted or (self.hook_failures > 0)
-                  or (len(self.undefined_steps) > undefined_steps_initial_size))
+                  or (len(self.undefined_steps) > undefined_steps_initial_size)
+                  or cleanups_failed)
+                  # XXX-MAYBE: or context.failed)
         return failed
 
     def run(self):
@@ -695,34 +789,11 @@ class Runner(ModelRunner):
     def load_step_definitions(self, extra_step_paths=None):
         if extra_step_paths is None:
             extra_step_paths = []
-        step_globals = {
-            "use_step_matcher": matchers.use_step_matcher,
-            "step_matcher":     matchers.step_matcher, # -- DEPRECATING
-        }
-        setup_step_decorators(step_globals)
-
         # -- Allow steps to import other stuff from the steps dir
         # NOTE: Default matcher can be overridden in "environment.py" hook.
         steps_dir = os.path.join(self.base_dir, self.config.steps_dir)
-        paths = [steps_dir] + list(extra_step_paths)
-        with PathManager(paths):
-            default_matcher = matchers.current_matcher
-            for path in paths:
-                for name in sorted(os.listdir(path)):
-                    if name.endswith(".py"):
-                        # -- LOAD STEP DEFINITION:
-                        # Reset to default matcher after each step-definition.
-                        # A step-definition may change the matcher 0..N times.
-                        # ENSURE: Each step definition has clean globals.
-                        # try:
-                        step_module_globals = step_globals.copy()
-                        exec_file(os.path.join(path, name), step_module_globals)
-                        matchers.current_matcher = default_matcher
-                        # except Exception as e:
-                        #     e_text = _text(e)
-                        #     print("Exception %s: %s" % \
-                        #           (e.__class__.__name__, e_text))
-                        #     raise
+        step_paths = [steps_dir] + list(extra_step_paths)
+        load_step_modules(step_paths)
 
     def feature_locations(self):
         return collect_feature_locations(self.config.paths)

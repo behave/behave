@@ -34,7 +34,7 @@ implementations **should normally** start with the import line:
 
 .. code-block:: python
 
-   from behave import *
+    from behave import *
 
 This line imports several decorators defined by *behave* to allow you to
 identify your step functions. These are available in both PEP-8 (all
@@ -50,9 +50,9 @@ implementation code:
 
 .. code-block:: python
 
-   @given('some known state')
-   def step_impl(context):
-       set_up(some, state)
+    @given('some known state')
+    def step_impl(context):
+        set_up(some, state)
 
 
 will match the "Given" step from the following feature:
@@ -84,9 +84,9 @@ will look for a step implementation decorated with either "given" or "step":
 
 .. code-block:: python
 
-  @given('some other known state')
-  def step_impl(context):
-     set_up(some, other, state)
+    @given('some other known state')
+    def step_impl(context):
+        set_up(some, other, state)
 
 and similarly the "but" would be renamed internally to "then". Multiple
 "and" or "but" steps in a row would inherit the non-"and" or "but" keyword.
@@ -170,17 +170,17 @@ The import statement:
 
 .. code-block:: python
 
-  from behave import *
+    from behave import *
 
 is written to introduce a restricted set of variables into your code:
 
- =========================== =========== ===========================================
- Name                        Kind        Description
- =========================== =========== ===========================================
- given, when, then, step     Decorator   Decorators for step implementations.
- use_step_matcher(name)      Function    Selects current step matcher (parser).
- register_type(Type=func)    Function    Registers a type converter.
- =========================== =========== ===========================================
+=========================== =========== ===========================================
+Name                        Kind        Description
+=========================== =========== ===========================================
+given, when, then, step     Decorator   Decorators for step implementations.
+use_step_matcher(name)      Function    Selects current step matcher (parser).
+register_type(Type=func)    Function    Registers a type converter.
+=========================== =========== ===========================================
 
 See also the description in `step parameters`_.
 
@@ -213,16 +213,17 @@ events during your testing:
 
   .. code-block:: python
 
-     # -- ASSUMING: tags @browser.chrome or @browser.any are used.
-     if tag.startswith("browser."):
-         browser_type = tag.replace("browser.", "", 1)
-         if browser_type == "chrome":
-            context.browser = webdriver.Chrome()
-         else:
-            context.browser = webdriver.PlainVanilla()
+      # -- ASSUMING: tags @browser.chrome or @browser.any are used.
+      if tag.startswith("browser."):
+          browser_type = tag.replace("browser.", "", 1)
+          if browser_type == "chrome":
+              context.browser = webdriver.Chrome()
+          else:
+              context.browser = webdriver.PlainVanilla()
 
 **before_all(context), after_all(context)**
   These run before and after the whole shooting match.
+
 
 Some Useful Environment Ideas
 -----------------------------
@@ -277,6 +278,28 @@ The *context* variable in all cases is an instance of
    :members:
 
 .. autoclass:: behave.runner.ContextMaskWarning
+
+
+Fixtures
+================
+
+.. excluded:
+
+    .. automodule:: behave.fixture
+
+Provide a Fixture
+------------------
+
+.. autofunction:: behave.fixture.fixture
+
+Use Fixtures
+------------------
+
+.. autofunction:: behave.fixture.use_fixture
+
+.. autofunction:: behave.fixture.use_fixture_by_tag
+
+.. autofunction:: behave.fixture.use_composite_fixture_with
 
 
 Runner Operation
@@ -406,3 +429,5 @@ intended to be used on your `environment file functions`_.
 
 .. autofunction:: behave.log_capture.capture
 
+
+.. include:: _common_extlinks.rst

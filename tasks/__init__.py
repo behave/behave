@@ -32,6 +32,7 @@ from invoke import Collection
 from . import clean
 from . import docs
 from . import test
+from . import release
 
 # -----------------------------------------------------------------------------
 # TASKS:
@@ -47,6 +48,7 @@ namespace.add_task(clean.clean)
 namespace.add_task(clean.clean_all)
 namespace.add_collection(Collection.from_module(docs))
 namespace.add_collection(Collection.from_module(test))
+namespace.add_collection(Collection.from_module(release))
 
 # -- INJECT: clean configuration into this namespace
 namespace.configure(clean.namespace.configuration())

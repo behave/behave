@@ -135,3 +135,30 @@ def text(value, encoding=None, errors=None):
             # Python3: multi-arg call supports only string-like object: str, bytes
             text2 = six.text_type(e)
         return text2
+
+
+def to_texts(args, encoding=None, errors=None):
+    """Process a list of string-like objects into list of unicode values.
+    Optionally converts binary text into unicode for each item.
+    
+    :return: List of text/unicode values.
+    """
+    if encoding is None:
+        encoding = select_best_encoding()
+    return [text(arg, encoding, errors) for arg in args]
+
+
+def ensure_stream_with_encoder(stream, encoding=None):
+    if not encoding:
+        encoding = select_best_encoding(stream)
+
+    if six.PY3:
+        return stream
+    elif hasattr(stream, "stream"):
+        return stream    # Already wrapped with a codecs.StreamWriter
+    else:
+        assert six.PY2
+        # py2 does, however, sometimes declare an encoding on sys.stdout,
+        # even if it doesn't use it (or it might be explicitly None)
+        stream = codecs.getwriter(encoding)(stream)
+        return stream

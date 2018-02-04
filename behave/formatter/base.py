@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import sys
 import codecs
 import os.path
 import six
+from behave.textutil import select_best_encoding, \
+    ensure_stream_with_encoder as _ensure_stream_with_encoder
 
 
 class StreamOpener(object):
@@ -15,7 +18,8 @@ class StreamOpener(object):
       * the name (filename/dirname) of the output stream
       * let it decide if directory mode is used instead of file mode
     """
-    default_encoding = "UTF-8"
+    # FORMER: default_encoding = "UTF-8"
+    default_encoding = select_best_encoding()
 
     def __init__(self, filename=None, stream=None, encoding=None):
         if not encoding:
@@ -34,23 +38,7 @@ class StreamOpener(object):
 
     @classmethod
     def ensure_stream_with_encoder(cls, stream, encoding=None):
-        if not encoding:
-            encoding = cls.default_encoding
-
-        if six.PY3:
-            return stream
-        elif hasattr(stream, "stream"):
-            return stream    # Already wrapped with a codecs.StreamWriter
-        else:
-            assert six.PY2
-            # py2 does, however, sometimes declare an encoding on sys.stdout,
-            # even if it doesn't use it (or it might be explicitly None)
-            stream = codecs.getwriter(encoding)(stream)
-        # elif not getattr(stream, 'encoding', None):
-        #     # -- TODO: POTENTIAL DEAD-CODE: Inspect and cleanup later.
-        #     # ok, so the stream doesn't have an encoding at all so add one
-        #     stream = codecs.getwriter(encoding)(stream)
-        return stream
+        return _ensure_stream_with_encoder(stream, encoding)
 
     def open(self):
         if not self.stream or self.stream.closed:
@@ -164,6 +152,7 @@ class Formatter(object):
 
         :param step: Step object (as :class:`behave.model.Step`)
         """
+        pass
 
     def match(self, match):
         """Called when a step was matched against its step implementation.

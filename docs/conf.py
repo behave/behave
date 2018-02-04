@@ -5,6 +5,7 @@
 
 import os.path
 import sys
+import importlib
 
 # -- ENSURE: Local workspace is used (for sphinx apidocs).
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -12,18 +13,8 @@ import sys
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath(".."))
 
-# -- OPTIONAL EXTENSIONS/PARTS:
-# NOTES:
-# * sphinxcontrib.youtube: Not easily installable
-#   => other package with same name in pypi
-try:
-    import sphinxcontrib.youtube
-    has_extension_sphinxcontrib_youtube = True
-except ImportError:
-    has_extension_sphinxcontrib_youtube = False
-
 # ------------------------------------------------------------------------------
-# GENERAL CONFIGGURATION
+# EXTENSIONS CONFIGURATION
 # ------------------------------------------------------------------------------
 # If your documentation needs a minimal Sphinx version, state it here.
 needs_sphinx = "1.3"
@@ -34,10 +25,48 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.ifconfig",
     "sphinx.ext.extlinks",
+    "sphinx.ext.todo",
+    "sphinx.ext.intersphinx",
 ]
-if has_extension_sphinxcontrib_youtube:
-    extensions.append("sphinxcontrib.youtube")
+optional_extensions = [
+    # -- DISABLED: "sphinxcontrib.youtube",
+    # http://www.sphinx-doc.org/en/stable/faq.html
+    "rinoh.frontend.sphinx",    # ALTERNATIVE FOR: LATEX-PDF
+    "rst2pdf.pdfbuilder",       # PDF
 
+]
+for optional_module_name in optional_extensions:
+    try:
+        importlib.import_module(optional_module_name)
+        extensions.append(optional_module_name)
+    except ImportError:
+        pass
+
+
+extlinks = {
+    "pypi": ("https://pypi.python.org/pypi/%s", ""),
+    "github": ("https://github.com/%s", "github:/"),
+    "issue":  ("https://github.com/behave/behave/issue/%s", "issue #"),
+    "youtube": ("https://www.youtube.com/watch?v=%s", "youtube:video="),
+    "behave": ("https://github.com/behave/behave", None),
+}
+
+intersphinx_mapping = {
+    "python": ('https://docs.python.org/3', None)
+}
+
+# -- SUPPORT: Documentation variation-points with sphinx.ext.ifconfig
+def setup(app):
+    # -- VARIATION-POINT: supports_video
+    # BASED-ON: installed("sphinxcontrib-youtube") and output-mode
+    # TODO: Check for output-mode, too (supported on: HTML, ...)
+    supports_video = "sphinxcontrib.youtube" in extensions
+    app.add_config_value("supports_video", supports_video, "env")
+
+
+# -----------------------------------------------------------------------------
+# BASIC CONFIGURATION
+# -----------------------------------------------------------------------------
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
@@ -50,10 +79,12 @@ source_encoding = "utf-8"
 # The master toctree document.
 master_doc = "index"
 
-# General information about the project.
+# -----------------------------------------------------------------------------
+# GENERAL CONFIGURATION
+# -----------------------------------------------------------------------------
 project = u"behave"
 authors = u"Benno Rice, Richard Jones and Jens Engel"
-copyright = u"2012-2016, %s" % authors
+copyright = u"2012-2017, %s" % authors
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -73,11 +104,11 @@ release = __version__
 # non-false value, then it is used:
 #today = ""
 # Else, today_fmt is used as the format for a strftime call.
-#today_fmt = "%B %d, %Y"
+today_fmt = "%Y-%m-%d"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ["_build"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
@@ -95,25 +126,13 @@ exclude_patterns = ["_build"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
+# MAYBE STYLES: friendly, vs, xcode, vs, tango
+
+# If true, `todo` and `todoList` produce output, else they produce nothing.
+todo_include_todos = False
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
-
-extlinks = {
-    "pypi": ("https://pypi.python.org/pypi/%s", ""),
-    "github": ("https://github.com/%s", "github:/"),
-    "issue":  ("https://github.com/behave/behave/issue/%s", "issue #"),
-    "youtube": ("https://www.youtube.com/watch?v=%s", "youtube:video="),
-}
-
-
-# -- SUPPORT: Documentation variation-points with sphinx.ext.ifconfig
-def setup(app):
-    # -- VARIATION-POINT: supports_video
-    # BASED-ON: installed("sphinxcontrib-youtube") and output-mode
-    # TODO: Check for output-mode, too (supported on: HTML, ...)
-    supports_video = has_extension_sphinxcontrib_youtube
-    app.add_config_value("supports_video", supports_video, "env")
 
 
 # ------------------------------------------------------------------------------
@@ -121,36 +140,37 @@ def setup(app):
 # ------------------------------------------------------------------------------
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
+html_theme = "kr"
+html_theme = "bootstrap"
+
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 if on_rtd:
     html_theme = "default"
-else:
-    html_theme = "kr"
+
+if html_theme == "bootstrap":
+    # See sphinx-bootstrap-theme for documentation of these options
+    # https://github.com/ryan-roemer/sphinx-bootstrap-theme
+    import sphinx_bootstrap_theme
+    html_theme_options = {
+        'navbar_site_name': 'Document',
+        'navbar_pagenav': True
+    }
+
+    # Add any paths that contain custom themes here, relative to this directory.
+    html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+
+elif html_theme in ("default", "kr"):
+    html_theme_path = ["_themes"]
+    html_logo = "_static/behave_logo1.png"
+
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-
-# agogo options:
-# headerfont (CSS font family): Font for headings.
-# pagewidth (CSS length): Width of the page content, default 70em.
-# documentwidth (CSS length): Width of the document (without sidebar), default 50em.
-# sidebarwidth (CSS length): Width of the sidebar, default 20em.
-# bgcolor (CSS color): Background color.
-# headerbg (CSS value for “background”): background for the header area, default a grayish gradient.
-# footerbg (CSS value for “background”): background for the footer area, default a light gray gradient.
-# linkcolor (CSS color): Body link color.
-# headercolor1, headercolor2 (CSS color): colors for <h1> and <h2> headings.
-# headerlinkcolor (CSS color): Color for the backreference link in headings.
-# textalign (CSS text-align value): Text alignment for the body, default is justify.
-
-html_theme_options = {
- #"bodyfont": '"Ubuntu", sans-serif', # (CSS font family): Font for normal text.
-  #"github_fork": "behave/behave"
-}
+#
+# html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ["_themes"]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -161,7 +181,7 @@ html_theme_path = ["_themes"]
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "_static/behave_logo1.png"
+# html_logo = "_static/behave_logo1.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -175,11 +195,11 @@ html_static_path = ["_static"]
 
 # If not "", a "Last updated on:" timestamp is inserted at every page bottom,
 # using the given strftime format.
-#html_last_updated_fmt = "%b %d, %Y"
+html_last_updated_fmt = "%Y-%m-%d"
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
-#html_use_smartypants = True
+# html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
@@ -189,22 +209,22 @@ html_static_path = ["_static"]
 #html_additional_pages = {}
 
 # If false, no module index is generated.
-#html_domain_indices = True
+# html_domain_indices = True
 
 # If false, no index is generated.
-#html_use_index = True
+# html_use_index = True
 
 # If true, the index is split into individual pages for each letter.
-#html_split_index = False
+# html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-#html_show_sourcelink = True
+# html_show_sourcelink = True
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
-#html_show_sphinx = True
+# html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
-#html_show_copyright = True
+html_show_copyright = True
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
@@ -212,8 +232,11 @@ html_static_path = ["_static"]
 #html_use_opensearch = ""
 
 # This is the file name suffix for HTML files (e.g. ".xhtml").
-#html_file_suffix = None
+html_file_suffix = ".html"
 
+# ------------------------------------------------------------------------------
+# OPTIONS FOR: HTML HELP
+# ------------------------------------------------------------------------------
 # Output file base name for HTML help builder.
 htmlhelp_basename = "behavedoc"
 
@@ -222,14 +245,14 @@ htmlhelp_basename = "behavedoc"
 # OPTIONS FOR: LATEX OUTPUT
 # ------------------------------------------------------------------------------
 latex_elements = {
-# The paper size ("letterpaper" or "a4paper").
-#"papersize": "letterpaper",
+    # The paper size ("letterpaper" or "a4paper").
+    "papersize": "a4paper",
 
-# The font size ("10pt", "11pt" or "12pt").
-#"pointsize": "10pt",
+    # The font size ("10pt", "11pt" or "12pt").
+    # "pointsize": "10pt",
 
-# Additional stuff for the LaTeX preamble.
-#"preamble": "",
+    # Additional stuff for the LaTeX preamble.
+    # "preamble": "",
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
@@ -238,26 +261,7 @@ latex_documents = [
   ("index", "behave.tex", u"behave Documentation", authors, "manual"),
 ]
 
-# The name of an image file (relative to this directory) to place at the top of
-# the title page.
-#latex_logo = None
-
-# For "manual" documents, if this is true, then toplevel headings are parts,
-# not chapters.
-#latex_use_parts = False
-
-# If true, show page references after internal links.
-#latex_show_pagerefs = False
-
-# If true, show URL addresses after external links.
-#latex_show_urls = False
-
-# Documents to append as an appendix to all manuals.
-#latex_appendices = []
-
-# If false, no module index is generated.
-#latex_domain_indices = True
-
+# latex_logo = None
 
 # ------------------------------------------------------------------------------
 # OPTIONS FOR: MANUAL PAGE (man page) OUTPUT
@@ -268,8 +272,6 @@ man_pages = [
     ("index", "behave", u"behave Documentation", [authors], 1)
 ]
 
-# If true, show URL addresses after external links.
-#man_show_urls = False
 
 
 # ------------------------------------------------------------------------------
@@ -283,11 +285,74 @@ texinfo_documents = [
    "behave", "A test runner for behave (feature tests).", "Miscellaneous"),
 ]
 
+# -----------------------------------------------------------------------------
+# RST2PDF OUTPUT CONFIGURATION: builder=pdf   (prepared)
+# -----------------------------------------------------------------------------
+# Grouping the document tree into PDF files. List of tuples
+# (source start file, target name, title, author, options).
+#
+# If there is more than one author, separate them with \\.
+# For example: r'Guido van Rossum\\Fred L. Drake, Jr., editor'
+#
+# The options element is a dictionary that lets you override
+# this config per-document.
+# For example,
+# ('index', u'MyProject', u'My Project', u'Author Name',
+#  dict(pdf_compressed = True))
+# would mean that specific document would be compressed
+# regardless of the global pdf_compressed setting.
+pdf_documents = [
+    ('index', project, project, authors),
+]
+# A comma-separated list of custom stylesheets. Example:
+pdf_stylesheets = ['sphinx','kerning','a4']
+# Create a compressed PDF
+# Use True/False or 1/0
+# Example: compressed=True
+pdf_compressed = True
+# A colon-separated list of folders to search for fonts. Example:
+# pdf_font_path = ['/usr/share/fonts', '/usr/share/texmf-dist/fonts/']
+# Language to be used for hyphenation support
+pdf_language = "en_US"
+# Mode for literal blocks wider than the frame. Can be overflow, shrink or truncate
+pdf_fit_mode = "shrink"
+# Section level that forces a break page.
+# For example: 1 means top-level sections start in a new page
+# 0 means disabled
+# pdf_break_level = 0 XXX
+pdf_break_level = 1
+
+# When a section starts in a new page, force it to be 'even', 'odd',
+# or just use 'any'
+#pdf_breakside = 'any'
+
+# Insert footnotes where they are defined instead of
+# at the end.
+#pdf_inline_footnotes = True
+# verbosity level. 0 1 or 2
+#pdf_verbosity = 0
+# If false, no index is generated.
+#pdf_use_index = True
+# If false, no modindex is generated.
+#pdf_use_modindex = True
+pdf_use_modindex = False
+
+# If false, no coverpage is generated.
+#pdf_use_coverpage = True
+# Name of the cover page template to use
+#pdf_cover_template = 'sphinxcover.tmpl'
 # Documents to append as an appendix to all manuals.
-#texinfo_appendices = []
+#pdf_appendices = []
+# Enable experimental feature to split table cells. Use it
+# if you get "DelayedTable too big" errors
+# pdf_splittables = True XXX
+pdf_splittables = False
 
-# If false, no module index is generated.
-#texinfo_domain_indices = True
+# Set the default DPI for images
+#pdf_default_dpi = 72
+# Enable rst2pdf extension modules (default is empty list)
+# you need vectorpdf for better sphinx's graphviz support
+#pdf_extensions = ['vectorpdf']
 
-# How to display URL addresses: "footnote", "no", or "inline".
-#texinfo_show_urls = "footnote"
+# Page template name for "regular" pages
+pdf_page_template = 'cutePage'

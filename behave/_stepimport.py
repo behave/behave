@@ -85,9 +85,9 @@ class StepMatchersModule(FakeModule):
     # def use_default_step_matcher(self, name=None):
     #     self.matcher_factory.use_default_step_matcher(name=None)
     #
-    # def get_matcher(self, func, string):
+    # def get_matcher(self, func, pattern):
     #     # return self.current_matcher
-    #     return self.matcher_factory.make_matcher(func, string)
+    #     return self.matcher_factory.make_matcher(func, pattern)
     #
     # def register_type(self, **kwargs):
     #     # _matchers.register_type(**kwargs)

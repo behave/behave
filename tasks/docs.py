@@ -39,6 +39,17 @@ def build(ctx, builder="html", options=""):
                             destdir=destdir_relative, opts=options)
         ctx.run(command)
 
+@task(help={
+    "builder": "Builder to use (html, ...)",
+    "options": "Additional options for sphinx-build",
+})
+def rebuild(ctx, builder="html", options=""):
+    """Rebuilds the docs.
+    Perform the steps: clean, build
+    """
+    clean(ctx)
+    build(ctx, builder=builder, options=options)
+
 @task
 def linkcheck(ctx):
     """Check if all links are corect."""
@@ -87,7 +98,7 @@ def save(ctx, dest="docs.html", format="html"):
 # -----------------------------------------------------------------------------
 # TASK CONFIGURATION:
 # -----------------------------------------------------------------------------
-namespace = Collection(clean, linkcheck, browse, save)
+namespace = Collection(clean, rebuild, linkcheck, browse, save)
 namespace.add_task(build, default=True)
 namespace.configure({
     "sphinx": {

@@ -7,6 +7,7 @@ step definition (as text) with step-functions that implement this step.
 from __future__ import absolute_import, print_function, with_statement
 import copy
 import re
+import warnings
 import parse
 import six
 from parse_type import cfparse
@@ -145,7 +146,7 @@ class MatchWithError(Match):
 class Matcher(object):
     """Pull parameters out of step names.
 
-    .. attribute:: string
+    .. attribute:: pattern
 
        The match pattern attached to the step function.
 
@@ -155,17 +156,30 @@ class Matcher(object):
     """
     schema = u"@%s('%s')"   # Schema used to describe step definition (matcher)
 
-    def __init__(self, func, string, step_type=None):
+    def __init__(self, func, pattern, step_type=None):
         self.func = func
-        self.string = string
+        self.pattern = pattern
         self.step_type = step_type
         self._location = None
+
+    # -- BACKWARD-COMPATIBILITY:
+    @property
+    def string(self):
+        warnings.warn("deprecated: Use 'pattern' instead", DeprecationWarning)
+        return self.pattern
 
     @property
     def location(self):
         if self._location is None:
             self._location = Match.make_location(self.func)
         return self._location
+
+    @property
+    def regex_pattern(self):
+        """Return the used textual regex pattern."""
+        # -- ASSUMPTION: pattern attribute provides regex-pattern
+        # NOTE: Method must be overridden if assumption is not met.
+        return self.pattern
 
     def describe(self, schema=None):
         """Provide a textual description of the step function/matcher object.
@@ -176,7 +190,7 @@ class Matcher(object):
         step_type = self.step_type or "step"
         if not schema:
             schema = self.schema
-        return schema % (step_type, self.string)
+        return schema % (step_type, self.pattern)
 
 
     def check_match(self, step):
@@ -202,15 +216,24 @@ class Matcher(object):
         return Match(self.func, result)
 
     def __repr__(self):
-        return u"<%s: %r>" % (self.__class__.__name__, self.string)
+        return u"<%s: %r>" % (self.__class__.__name__, self.pattern)
 
 
 class ParseMatcher(Matcher):
+    """Uses :class:`~parse.Parser` class to be able to use simpler
+    parse expressions compared to normal regular expressions.
+    """
     custom_types = {}
+    parser_class = parse.Parser
 
-    def __init__(self, func, string, step_type=None):
-        super(ParseMatcher, self).__init__(func, string, step_type)
-        self.parser = parse.compile(self.string, self.custom_types)
+    def __init__(self, func, pattern, step_type=None):
+        super(ParseMatcher, self).__init__(func, pattern, step_type)
+        self.parser = self.parser_class(pattern, self.custom_types)
+
+    @property
+    def regex_pattern(self):
+        # -- OVERWRITTEN: Pattern as regex text.
+        return self.parser._expression  # pylint: disable=protected-access
 
     def check_match(self, step):
         # -- FAILURE-POINT: Type conversion of parameters may fail here.
@@ -229,15 +252,13 @@ class ParseMatcher(Matcher):
         args.sort(key=lambda x: x.start)
         return args
 
+
 class CFParseMatcher(ParseMatcher):
-    """
-    Uses :class:`~parse_type.cfparse.Parser` instead of "parse.Parser".
+    """Uses :class:`~parse_type.cfparse.Parser` instead of "parse.Parser".
     Provides support for automatic generation of type variants
     for fields with CardinalityField part.
     """
-    def __init__(self, func, string, step_type=None):
-        super(CFParseMatcher, self).__init__(func, string, step_type)
-        self.parser = cfparse.Parser(self.string, self.custom_types)
+    parser_class = cfparse.Parser
 
 
 def register_type(**kw):
@@ -276,9 +297,9 @@ def register_type(**kw):
 
 
 class RegexMatcher(Matcher):
-    def __init__(self, func, string, step_type=None):
-        super(RegexMatcher, self).__init__(func, string, step_type)
-        self.regex = re.compile(self.string)
+    def __init__(self, func, pattern, step_type=None):
+        super(RegexMatcher, self).__init__(func, pattern, step_type)
+        self.regex = re.compile(self.pattern)
 
     def check_match(self, step):
         m = self.regex.match(step)
@@ -305,12 +326,12 @@ class SimplifiedRegexMatcher(RegexMatcher):
         def step_impl(context): pass
     """
 
-    def __init__(self, func, string, step_type=None):
-        assert not (string.startswith("^") or string.endswith("$")), \
-            "Regular expression should not use begin/end-markers: "+ string
-        expression = "^%s$" % string
+    def __init__(self, func, pattern, step_type=None):
+        assert not (pattern.startswith("^") or pattern.endswith("$")), \
+            "Regular expression should not use begin/end-markers: "+ pattern
+        expression = "^%s$" % pattern
         super(SimplifiedRegexMatcher, self).__init__(func, expression, step_type)
-        self.string = string
+        self.pattern = pattern
 
 
 class CucumberRegexMatcher(RegexMatcher):
@@ -366,9 +387,9 @@ def use_step_matcher(name):
         as long as a type converter for cardinality=1 is provided.
         Supports parse expressions like:
 
-            * ``{values:Type+}`` (cardinality=1..N, many)
-            * ``{values:Type*}`` (cardinality=0..N, many0)
-            * ``{value:Type?}``  (cardinality=0..1, optional)
+        * ``{values:Type+}`` (cardinality=1..N, many)
+        * ``{values:Type*}`` (cardinality=0..N, many0)
+        * ``{value:Type?}``  (cardinality=0..1, optional)
 
         Supports type conversions (as above).
 
@@ -393,10 +414,9 @@ def step_matcher(name):
     DEPRECATED, use :func:`use_step_matcher()` instead.
     """
     # -- BACKWARD-COMPATIBLE NAME: Mark as deprecated.
-    import warnings
-    warnings.warn("Use 'use_step_matcher()' instead",
-                  PendingDeprecationWarning, stacklevel=2)
+    warnings.warn("deprecated: Use 'use_step_matcher()' instead",
+                  DeprecationWarning, stacklevel=2)
     use_step_matcher(name)
 
-def get_matcher(func, string):
-    return current_matcher(func, string)
+def get_matcher(func, pattern):
+    return current_matcher(func, pattern)
