@@ -10,3 +10,6 @@ path.py >= 10.1
 # -- NOTE: Travis.CI tweak related w/ invalid linecache2 tests.
 #    This problem does not exist if you use pip.
 linecache2 >= 1.0; python_version < '3.0'
+
+# FIX: setuptoools problem w/ Python3.7-dev
+setuptools >= 38.5.1; ; python_version > '3.6'
