@@ -12,4 +12,4 @@ path.py >= 10.1
 linecache2 >= 1.0; python_version < '3.0'
 
 # FIX: setuptoools problem w/ Python3.7-dev
-setuptools >= 38.5.1; ; python_version > '3.6'
+setuptools >= 38.5.1; python_version > '3.6'
