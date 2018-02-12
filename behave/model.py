@@ -1248,6 +1248,7 @@ class Step(BasicStatement, Replayable):
         self.status = Status.untested
         self.hook_failed = False
         self.duration = 0
+        self.start = 0
 
     def reset(self):
         """Reset temporary runtime data to reach clean state again."""
@@ -1255,6 +1256,7 @@ class Step(BasicStatement, Replayable):
         self.status = Status.untested
         self.hook_failed = False
         self.duration = 0
+        self.start = 0
         # -- POSTCONDITION: assert self.status == Status.untested
 
     def __repr__(self):
@@ -1317,7 +1319,7 @@ class Step(BasicStatement, Replayable):
         if self.hook_failed:
             skip_step_untested = True
 
-        start = time.time()
+        self.start = time.time()
         if not skip_step_untested:
             try:
                 # -- ENSURE:
@@ -1349,7 +1351,7 @@ class Step(BasicStatement, Replayable):
                 error = _text(traceback.format_exc())
                 self.store_exception_context(e)
 
-        self.duration = time.time() - start
+        self.duration = time.time() - self.start
         runner.run_hook("after_step", runner.context, self)
         if self.hook_failed:
             self.status = Status.failed

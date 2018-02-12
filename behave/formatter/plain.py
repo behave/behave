@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from behave.formatter.base import Formatter
 from behave.model_describe import ModelPrinter
 from behave.textutil import make_indentation
+from datetime import datetime
 
 
 # -----------------------------------------------------------------------------
@@ -99,7 +100,7 @@ class PlainFormatter(Formatter):
 
         status_text = result.status.name
         if self.show_timings:
-            status_text += " in %0.3fs" % step.duration
+            status_text += " in %0.3fs, started at %s" % (step.duration, datetime.fromtimestamp(step.start).strftime("%H:%M:%S"))
 
         if result.error_message:
             self.stream.write(u"%s\n%s\n" % (status_text, result.error_message))
