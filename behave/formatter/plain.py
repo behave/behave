@@ -100,8 +100,9 @@ class PlainFormatter(Formatter):
 
         status_text = result.status.name
         if self.show_timings:
-            status_text += " in %0.3fs, started at %s" % (step.duration, datetime.fromtimestamp(step.start).strftime("%H:%M:%S"))
-
+            status_text = "started at %s, %s in %0.3fs," % (
+                datetime.fromtimestamp(step.start).strftime("%H:%M:%S.%f"),
+                status_text, step.duration)
         if result.error_message:
             self.stream.write(u"%s\n%s\n" % (status_text, result.error_message))
         else:
