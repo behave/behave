@@ -41,6 +41,10 @@ def indent(text, prefix):   # pylint: disable=redefined-outer-name
     # MAYBE: return newline.join([prefix + six.text_type(line, errors="replace")
     return newline.join([prefix + six.text_type(line)  for line in lines])
 
+    if any([isinstance(line, unicode) for line in lines]):
+        return newline.join([prefix + unicode(line) for line in lines])
+    else:
+        return newline.join([prefix + line.decode('utf-8') for line in lines])
 
 def compute_words_maxsize(words):
     """Compute the maximum word size from a list of words (or strings).
