@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+# REQUIRES: Python >= 3.5
 from behave import given, then, step
 from behave.api.async_step import use_or_create_async_context, AsyncContext
 from hamcrest import assert_that, equal_to, empty

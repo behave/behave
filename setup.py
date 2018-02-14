@@ -76,6 +76,8 @@ setup(
         "ordereddict; python_version < '2.7'",
         "traceback2; python_version < '3.0'",
         "enum34; python_version < '3.4'",
+        # PREPARED: "win_unicode_console; python_version < '3.6'",
+        # PREPARED: "colorama",
     ],
     test_suite="nose.collector",
     tests_require=[

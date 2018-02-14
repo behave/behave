@@ -5,9 +5,9 @@
 # -- TESTING: Unit tests and behave self-tests.
 # PREPARED-FUTURE: behave4cmd0, behave4cmd
 pytest >= 3.0
-nose  >= 1.1
-mock  >= 1.3
-PyHamcrest >= 1.8
+nose  >= 1.3
+mock  >= 2.0
+PyHamcrest >= 1.9
 
 # -- NEEDED: By some tests (as proof of concept)
 # NOTE: path.py-10.1 is required for python2.6

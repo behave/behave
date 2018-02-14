@@ -6,8 +6,8 @@ Invoke build script (python based).
 """
 
 from __future__ import print_function
-from invoke import task, Collection
 import sys
+from invoke import task, Collection
 
 # USE_PTY = os.isatty(sys.stdout)
 USE_PTY = sys.stdout.isatty()
@@ -15,19 +15,19 @@ USE_PTY = sys.stdout.isatty()
 # ---------------------------------------------------------------------------
 # TASKS
 # ---------------------------------------------------------------------------
+# MAYBE: echo=False):
 @task(help={
     "args": "Command line args for behave",
     "format": "Formatter to use",
 })
-def behave_test(ctx, args="", format=""): # XXX , echo=False):
+def behave_test(ctx, args="", format=""): # pylint: disable=redefined-builtin
     """Run behave tests."""
-    format  = format or ctx.behave_test.format
+    format = format or ctx.behave_test.format
     options = ctx.behave_test.options or ""
     args = args or ctx.behave_test.args
     behave = "{python} bin/behave".format(python=sys.executable)
     ctx.run("{behave} -f {format} {options} {args}".format(
-            behave=behave, format=format, options=options, args=args),
-            pty=USE_PTY)
+        behave=behave, format=format, options=options, args=args), pty=USE_PTY)
 
 
 # ---------------------------------------------------------------------------

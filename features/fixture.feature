@@ -57,7 +57,12 @@ Feature: Fixture
       def step_passes(context, word):
           pass
       """
-    Given an empty file named "features/environment.py"
+    And a file named "behave.ini" with:
+      """
+      [behave]
+      show_timings = false
+      """
+    And an empty file named "features/environment.py"
 
 
   Scenario: Use fixture with generator-function (setup/cleanup)

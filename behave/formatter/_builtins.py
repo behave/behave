@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Knowledge base of all built-on formatters.
+Knowledge base of all built-in formatters.
 """
 
 from __future__ import  absolute_import
