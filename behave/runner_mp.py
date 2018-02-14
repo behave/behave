@@ -239,7 +239,9 @@ class MultiProcClientRunner(Runner):
                           'description', 'background', 'language'):
                     kwargs[k] = getattr(job.feature, k)
                 kwargs['scenarios'] = [job]
+                orig_parser = job.feature.parser
                 feature = Feature(**kwargs)
+                feature.parser = orig_parser
                 yield feature
                 try:
                     self.resultsq.put((job_id, job.send_status()))
