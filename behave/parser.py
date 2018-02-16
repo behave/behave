@@ -6,10 +6,9 @@ import sys
 import six
 from behave import model, i18n
 from behave.textutil import text as _text
-
+import json
 
 DEFAULT_LANGUAGE = "en"
-
 
 def parse_file(filename, language=None):
     with open(filename, "rb") as f:
@@ -206,6 +205,19 @@ class Parser(object):
         # -- RESET STATE:
         self.tags = []
 
+    def _build_examples_from_file(self, keyword, line):
+        fn = line[len(keyword) + 1:].strip()
+        with open(fn) as f:
+            payload = json.load(f)
+            headings = payload.get("headings", [])
+            rows = payload.get("rows", [])
+            table = model.Table(headings, rows=rows)
+
+        self.examples = model.Examples(self.filename, self.line,
+                                       keyword, name=fn, tags=self.tags)
+        self.examples.table = table
+        self.statement.examples.append(self.examples)
+        self.tags = []
 
     def diagnose_feature_usage_error(self):
         if self.feature:
@@ -356,6 +368,11 @@ class Parser(object):
             self.state = "table"
             return True
 
+        examples_file_kwd = self.match_keyword("examples_file", line)
+        if examples_file_kwd:
+            self._build_examples_from_file(examples_file_kwd, line)
+            self.state = "examples_file"
+            return True
         # -- OTHERWISE:
         return False
     # pylint: enable=invalid-name
@@ -521,6 +538,9 @@ class Parser(object):
             if len(cells) != len(self.table.headings):
                 raise ParserError(u"Malformed table", self.line)
             self.table.add_row(cells, self.line)
+        return True
+
+    def action_examples_file(self, line):
         return True
 
     def match_keyword(self, keyword, line):

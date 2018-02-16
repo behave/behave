@@ -94,6 +94,7 @@ languages = \
         'background': [u'Background'],
         'but': [u'*', u'But'],
         'examples': [u'Examples', u'Scenarios'],
+        'examples_file': [u'Example file'],
         'feature': [u'Feature'],
         'given': [u'*', u'Given'],
         'name': [u'English'],
