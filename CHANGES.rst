@@ -44,6 +44,7 @@ DOCUMENTATION:
 
 SITE:
 
+  * pull #626: Formatting issue in stale-bot config (provided by: teapow)
   * pull #343: Update/fix badges in README (provided by: mixxorz)
 
 ENHANCEMENTS:
