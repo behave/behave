@@ -72,9 +72,9 @@ class ProgressFormatterBase(Formatter):
     def step(self, step):
         self.steps.append(step)
 
-    def result(self, result):
+    def result(self, step):
         self.steps.pop(0)
-        self.report_step_progress(result)
+        self.report_step_progress(step)
 
     def eof(self):
         """
@@ -88,17 +88,15 @@ class ProgressFormatterBase(Formatter):
         self.reset()
 
     # -- SPECIFIC PART:
-    def report_step_progress(self, result):
-        """
-        Report the progress on the current step.
+    def report_step_progress(self, step):
+        """Report the progress on the current step.
         The default implementation is empty.
         It should be override by a concrete class.
         """
         pass
 
     def report_scenario_progress(self):
-        """
-        Report the progress for the current/last scenario.
+        """Report the progress for the current/last scenario.
         The default implementation is empty.
         It should be override by a concrete class.
         """
@@ -128,13 +126,13 @@ class ProgressFormatterBase(Formatter):
         if self.failures:
             separator = "-" * 80
             self.stream.write(u"%s\n" % separator)
-            for result in self.failures:
-                self.stream.write(u"FAILURE in step '%s':\n" % result.name)
-                self.stream.write(u"  Feature:  %s\n" % result.feature.name)
-                self.stream.write(u"  Scenario: %s\n" % result.scenario.name)
-                self.stream.write(u"%s\n" % result.error_message)
-                if result.exception:
-                    self.stream.write(u"exception: %s\n" % result.exception)
+            for step in self.failures:
+                self.stream.write(u"FAILURE in step '%s':\n" % step.name)
+                self.stream.write(u"  Feature:  %s\n" % step.feature.name)
+                self.stream.write(u"  Scenario: %s\n" % step.scenario.name)
+                self.stream.write(u"%s\n" % step.error_message)
+                if step.exception:
+                    self.stream.write(u"exception: %s\n" % step.exception)
             self.stream.write(u"%s\n" % separator)
 
 
@@ -176,19 +174,17 @@ class StepProgressFormatter(ProgressFormatterBase):
     name = "progress2"
     description = "Shows dotted progress for each executed step."
 
-    def report_step_progress(self, result):
-        """
-        Report the progress for each step.
-        """
-        dot_status = self.dot_status[result.status.name]
-        if result.status == Status.failed:
-            if (result.exception and
-                    not isinstance(result.exception, AssertionError)):
+    def report_step_progress(self, step):
+        """Report the progress for each step."""
+        dot_status = self.dot_status[step.status.name]
+        if step.status == Status.failed:
+            if (step.exception and
+                    not isinstance(step.exception, AssertionError)):
                 # -- ISA-ERROR: Some Exception
                 dot_status = self.dot_status["error"]
-            result.feature = self.current_feature
-            result.scenario = self.current_scenario
-            self.failures.append(result)
+            step.feature = self.current_feature
+            step.scenario = self.current_scenario
+            self.failures.append(step)
         self.stream.write(dot_status)
         self.stream.flush()
 
@@ -268,15 +264,15 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
             separator = "-" * 80
             self.stream.write(u"%s\n" % separator)
             unicode_errors = 0
-            for failure in self.failures:
+            for step in self.failures:
                 try:
                     self.stream.write(u"FAILURE in step '%s' (%s):\n" % \
-                                      (failure.name, failure.location))
-                    self.stream.write(u"%s\n" % failure.error_message)
+                                      (step.name, step.location))
+                    self.stream.write(u"%s\n" % step.error_message)
                     self.stream.write(u"%s\n" % separator)
                 except UnicodeError as e:
                     self.stream.write(u"%s while reporting failure in %s\n" % \
-                                      (e.__class__.__name__, failure.location))
+                                      (e.__class__.__name__, step.location))
                     self.stream.write(u"ERROR: %s\n" % \
                                       _text(e, encoding=self.stream.encoding))
                     unicode_errors += 1

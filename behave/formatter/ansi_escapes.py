@@ -49,10 +49,13 @@ for alias in aliases:
     escapes[arg_alias] = "".join([colors[c] for c in arg_seq.split(",")])
 
 
+# pylint: disable=anomalous-backslash-in-string
 def up(n):
     return u"\x1b[%dA" % n
 
+
 _ANSI_ESCAPE_PATTERN = re.compile(u"\x1b\[\d+[mA]", re.UNICODE)
+# pylint: enable=anomalous-backslash-in-string
 def strip_escapes(text):
     """
     Removes ANSI escape sequences from text (if any are contained).

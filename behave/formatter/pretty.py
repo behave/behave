@@ -132,23 +132,23 @@ class PrettyFormatter(Formatter):
                         self._match.location, self.monochrome)
         self.stream.flush()
 
-    def result(self, result):
+    def result(self, step):
         if not self.monochrome:
             lines = self.step_lines + 1
             if self.show_multiline:
-                if result.table:
-                    lines += len(result.table.rows) + 1
-                if result.text:
-                    lines += len(result.text.splitlines()) + 2
+                if step.table:
+                    lines += len(step.table.rows) + 1
+                if step.text:
+                    lines += len(step.text.splitlines()) + 2
             self.stream.write(up(lines))
             arguments = []
             location = None
             if self._match:
                 arguments = self._match.arguments
                 location = self._match.location
-            self.print_step(result.status, arguments, location, True)
-        if result.error_message:
-            self.stream.write(indent(result.error_message.strip(), u"      "))
+            self.print_step(step.status, arguments, location, True)
+        if step.error_message:
+            self.stream.write(indent(step.error_message.strip(), u"      "))
             self.stream.write("\n\n")
         self.stream.flush()
 
@@ -162,7 +162,7 @@ class PrettyFormatter(Formatter):
             return self.formats
         # -- OTHERWISE:
         if self.formats is None:
-            self.formats = {}   # pylint: disable=redefined-variable-type
+            self.formats = {}
         # pylint: disable=redefined-builtin
         format = self.formats.get(key, None)
         if format is not None:
@@ -224,8 +224,8 @@ class PrettyFormatter(Formatter):
     def color(self, cell, statuses, _color):  # pylint: disable=no-self-use
         if statuses:
             return escapes["color"] + escapes["reset"]
-        else:
-            return escape_cell(cell)
+        # -- OTHERWISE:
+        return escape_cell(cell)
 
     def indented_text(self, text, proceed):
         if not text:

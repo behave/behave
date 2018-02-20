@@ -359,8 +359,8 @@ class SphinxStepsFormatter(AbstractStepsFormatter):
         generator_class = self.doc_generator_class
         if self.stdout_mode:
             return generator_class(self.step_definitions, stream=self.stream)
-        else:
-            return generator_class(self.step_definitions, destdir=self.destdir)
+        # -- OTHERWISE:
+        return generator_class(self.step_definitions, destdir=self.destdir)
 
     def report(self):
         document_generator = self.create_document_generator()

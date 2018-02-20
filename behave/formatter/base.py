@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import sys
-import codecs
+# UNUSED: import sys
+# UNUSED: import codecs
 import os.path
-import six
 from behave.textutil import select_best_encoding, \
     ensure_stream_with_encoder as _ensure_stream_with_encoder
 
@@ -161,10 +160,10 @@ class Formatter(object):
         """
         pass
 
-    def result(self, step_result):
+    def result(self, step):
         """Called after processing a step (when the step result is known).
 
-        :param step_result:  Step result (as string-enum).
+        :param step:  Step object with result (after being executed/skipped).
         """
         pass
 

@@ -10,6 +10,7 @@ GOALS:
 
 DOCUMENTATION:
 
+  * issue #625: Formatter documentation is inaccurate for some methods (reported by: throwable-one)
   * pull  #618: Fix a typo in the background section of gherkin docs (provided by: mrrn)
   * pull  #609: Describe execute_steps() behaviour correctly (provided by: mixxorz)
   * pull  #603: Update typo tutorial.rst (provided by: fnaval)
