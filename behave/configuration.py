@@ -147,6 +147,12 @@ options = [
                   This is the default behaviour. This switch is used to
                   override a configuration file setting.""")),
 
+     (("--fail-on-empty-scenario-outline",),
+      dict(action="store_true", dest="fail_on_empty_outline",
+           help="""A scenario outline fails if it has no examples
+                   This is not the default behavior. By default the scenario
+                   will be shown as skipped.""")),
+
     (("--no-snippets",),
      dict(action="store_false", dest="show_snippets",
           help="Don't print snippets for unimplemented steps.")),
@@ -497,6 +503,7 @@ class Configuration(object):
         color=sys.platform != "win32",
         show_snippets=True,
         show_skipped=True,
+        fail_on_empty_outline=False,
         dry_run=False,
         show_source=True,
         show_timings=True,
