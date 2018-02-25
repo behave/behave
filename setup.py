@@ -47,7 +47,7 @@ def find_packages_by_root_package(where):
 # -----------------------------------------------------------------------------
 setup(
     name="behave",
-    version="1.2.6.dev0",
+    version="1.2.6",
     description="behave is behaviour-driven development, Python style",
     long_description=description,
     author="Jens Engel, Benno Rice and Richard Jones",
