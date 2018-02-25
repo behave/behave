@@ -29,4 +29,4 @@ __all__ = [
     # -- DEPRECATING:
     "step_matcher"
 ]
-__version__ = "1.2.6"
+__version__ = "1.2.7.dev0"
