@@ -65,19 +65,21 @@ setup(
         ]
     },
     # -- REQUIREMENTS:
-    # SUPPORT: python2.6, python2.7, python3.3 (or higher)
-    python_requires=">=2.6, !=3.0.*, !=3.1.*, !=3.2.*",
+    # SUPPORT: python2.7, python3.3 (or higher)
+    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*",
     install_requires=[
         "parse >= 1.8.2",
         "parse_type >= 0.4.2",
-        "six >= 1.11",
-        "argparse; python_version < '2.7'",
-        "importlib; python_version < '2.7'",
-        "ordereddict; python_version < '2.7'",
+        "six >= 1.11.0",
         "traceback2; python_version < '3.0'",
         "enum34; python_version < '3.4'",
-        # PREPARED: "win_unicode_console; python_version < '3.6'",
-        # PREPARED: "colorama",
+        # -- PREPARED:
+        "win_unicode_console; python_version < '3.6'",
+        "colorama",
+        # -- DISABLED python2.6 support:
+        #   "argparse; python_version < '2.7'",
+        #   "importlib; python_version < '2.7'",
+        #   "ordereddict; python_version < '2.7'",
     ],
     test_suite="nose.collector",
     tests_require=[
@@ -109,7 +111,6 @@ setup(
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.3",
