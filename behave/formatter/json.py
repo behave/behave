@@ -152,15 +152,15 @@ class JSONFormatter(Formatter):
             steps = self.current_feature_element["steps"]
             steps[self._step_index]["match"] = match_data
 
-    def result(self, result):
+    def result(self, step):
         steps = self.current_feature_element["steps"]
         steps[self._step_index]["result"] = {
-            "status": result.status.name,
-            "duration": result.duration,
+            "status": step.status.name,
+            "duration": step.duration,
         }
-        if result.error_message and result.status == Status.failed:
+        if step.error_message and step.status == Status.failed:
             # -- OPTIONAL: Provided for failed steps.
-            error_message = result.error_message
+            error_message = step.error_message
             if self.split_text_into_lines and "\n" in error_message:
                 error_message = error_message.splitlines()
             result_element = steps[self._step_index]["result"]

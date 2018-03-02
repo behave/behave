@@ -34,14 +34,9 @@ environment:
 #      PYTHON: C:\Python35\python.exe
 
 # -- TEMPORARILY DISABLED: environment matrix:
-#    - PYTHON_DIR:  C:\Python34
-#    - PYTHON_DIR:  C:\Python26
-#    - PYTHON_DIR:  C:\Python33
-#    - PYTHON_DIR:  C:\Python26-x64
+#    - PYTHON_DIR:  C:\Python36
 #    - PYTHON_DIR:  C:\Python27-x64
-#    - PYTHON_DIR:  C:\Python33-x64
-#    - PYTHON_DIR:  C:\Python34-x64
-#    - PYTHON_DIR:  C:\Python35-x64
+#    - PYTHON_DIR:  C:\Python36-x64
 
 init:
     - cmd: "echo TESTING-WITH %PYTHON_DIR%, %PYTHON%"

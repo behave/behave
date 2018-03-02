@@ -14,10 +14,6 @@ Behave
     :target: https://pypi.python.org/pypi/behave
     :alt: Latest Version
 
-.. image:: https://img.shields.io/pypi/dm/behave.svg
-    :target: https://pypi.python.org/pypi/behave
-    :alt: Downloads
-
 .. image:: https://img.shields.io/pypi/l/behave.svg
     :target: https://pypi.python.org/pypi/behave/
     :alt: License

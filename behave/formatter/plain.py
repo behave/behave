@@ -83,11 +83,11 @@ class PlainFormatter(Formatter):
     def step(self, step):
         self.steps.append(step)
 
-    def result(self, result):
+    def result(self, step):
         """
         Process the result of a step (after step execution).
 
-        :param result:
+        :param step:   Step object with result to process.
         """
         step = self.steps.pop(0)
         indent = make_indentation(2 * self.indent_size)
@@ -98,14 +98,14 @@ class PlainFormatter(Formatter):
             text = u"%s%s %s ... " % (indent, step.keyword, step.name)
         self.stream.write(text)
 
-        status_text = result.status.name
+        status_text = step.status.name
         if self.show_timings:
             status_text += " in %0.3fs" % step.duration
 
         unicode_errors = 0
-        if result.error_message:
+        if step.error_message:
             try:
-                self.stream.write(u"%s\n%s\n" % (status_text, result.error_message))
+                self.stream.write(u"%s\n%s\n" % (status_text, step.error_message))
             except UnicodeError as e:
                 unicode_errors += 1
                 self.stream.write(u"%s\n" % status_text)

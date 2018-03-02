@@ -16,7 +16,7 @@ include *.yaml
 include bin/behave*
 include bin/invoke*
 recursive-include .ci           *.yml
-recursive-include bin           *.py *.cmd *.sh *.zip *.yml
+recursive-include bin           *.py *.cmd *.sh *.zip *.yml *.json
 recursive-include behave4cmd0   *.py
 recursive-include etc           *.xsd *.txt *.json-schema
 recursive-include examples      *.py *.feature *.txt *.rst *.ini

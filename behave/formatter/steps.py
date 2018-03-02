@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: UTF-8 -*-
 """
 Provides a formatter that provides an overview of available step definitions
 (step implementations).
@@ -316,9 +316,9 @@ class StepsCatalogFormatter(StepsDocFormatter):
             step_type = step_definition.step_type
         assert step_type
         desc = []
-        if step_type == 'step':
-            for step_type in self.step_types[:-1]:
-                text = u"%5s %s" % (step_type.title(), step_definition.pattern)
+        if step_type == "step":
+            for step_type1 in self.step_types[:-1]:
+                text = u"%5s %s" % (step_type1.title(), step_definition.pattern)
                 desc.append(text)
         else:
             desc.append(u"%s %s" % (step_type.title(), step_definition.pattern))

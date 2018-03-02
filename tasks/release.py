@@ -131,17 +131,22 @@ def prepare(ctx, new_version=None, version_part=None, hide=True,
 
 
 @task
-def upload(ctx, repo=None, dry_run=False):
+def upload(ctx, repo=None, dry_run=False, skip_existing=False):
     """Upload release packages to repository (artifact-store)."""
     original_ctx = ctx
+    opts = ""
     if repo is None:
         repo = ctx.project.repo or "pypi"
     if dry_run:
         ctx = DryRunContext(ctx)
+    if skip_existing:
+        opts = "--skip-existing"
 
     packages = ensure_packages_exist(original_ctx)
     print_packages(packages)
-    ctx.run("twine upload --repository={repo} dist/*".format(repo=repo))
+    # ctx.run("twine upload --repository={repo} dist/*".format(repo=repo))
+    ctx.run("twine upload --repository={repo} {opts} dist/*".format(
+            repo=repo, opts=opts))
 
 
 # -- DEPRECATED: Use RTD instead
