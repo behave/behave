@@ -840,6 +840,11 @@ class Runner(ModelRunner):
         self.setup_capture()
         self.run_hook("before_all", self.context)
 
+        if self.aborted:
+            print("\nABORTED: By user.")
+            self.run_hook("after_all", self.context)
+            return 1
+
         joblist_index_lists = dict()
         joblist_index_lists['default'] = []
         priority_tag_list = []
@@ -922,10 +927,9 @@ class Runner(ModelRunner):
             except Exception, e:
                 if tag == 'default':
                     break
-                try:
-                    joblist_index = self.joblist_index_queues['default'].get_nowait()
-                except Exception, e:
-                    break
+                else:
+                    tag = 'default'
+                    continue
 
             current_job = self.joblist[joblist_index]
             writebuf = StringIO.StringIO()
@@ -984,6 +988,7 @@ class Runner(ModelRunner):
                         results['junit_report'] = \
                         self.generate_junit_report(current_job, writebuf)
                 self.resultsqueue.put(results)
+        self.run_hook('after_worker', self.context)
 
     def setfeature(self, current_job):
         if current_job.type == 'feature':
