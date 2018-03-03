@@ -11,6 +11,10 @@ GOALS:
 - FIX: Regression test problems on Windows (in behave-1.2.6)
 - Drop support for Python 2.6
 
+DOCUMENTATION:
+
+* pull  #628: Changed pythonhosted.org links to readthedocs.io (provided by: chrisbrake)
+
 
 Version: 1.2.6 (2018-02-25)
 -------------------------------------------------------------------------------
