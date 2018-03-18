@@ -15,6 +15,11 @@ DOCUMENTATION:
 
 * pull  #628: Changed pythonhosted.org links to readthedocs.io (provided by: chrisbrake)
 
+FIXED:
+
+* issue #619: Context __getattr__ should raise AttributeError instead of KeyError (submitted by: anxodio)
+
+
 
 Version: 1.2.6 (2018-02-25)
 -------------------------------------------------------------------------------

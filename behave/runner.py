@@ -312,7 +312,11 @@ class Context(object):
 
     def __getattr__(self, attr):
         if attr[0] == "_":
-            return self.__dict__[attr]
+            try:
+                return self.__dict__[attr]
+            except KeyError:
+                raise AttributeError(attr)
+
         for frame in self._stack:
             if attr in frame:
                 return frame[attr]
