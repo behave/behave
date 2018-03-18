@@ -16,6 +16,10 @@ run:
     echo: true
     pty:  true
 
+clean_all:
+    extra_directories:
+      - .pytest_cache
+
 behave_test:
     scopes:
       - features
