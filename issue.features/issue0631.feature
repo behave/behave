@@ -1,5 +1,3 @@
-@issue
-@wip @not_working
 Feature: Issue #631 -- Scenario Outline variables not possible in table headings
 
   Background:
@@ -42,7 +40,6 @@ Feature: Issue #631 -- Scenario Outline variables not possible in table headings
       show_timings = false
       """
 
-  @xfail
   Scenario: Check Syndrome
     When  I run "behave -f plain features/"
     Then it should pass with:
