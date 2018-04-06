@@ -867,7 +867,8 @@ class ScenarioOutlineBuilder(object):
             new_step.text = cls.render_template(new_step.text, row)
         if new_step.table:
             for name, value in row.items():
-                new_step.table.headings = [cell.replace("<%s>" % name, value) for cell in new_step.table.headings]
+                for i, cell in enumerate(new_step.table.headings):
+                    new_step.table.headings[i] = cell.replace('<%s>' % name, value)
                 for row in new_step.table:
                     for i, cell in enumerate(row.cells):
                         row.cells[i] = cell.replace("<%s>" % name, value)
