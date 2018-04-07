@@ -1,5 +1,3 @@
-@issue
-@wip @not_working
 Feature: Issue #631 -- Scenario Outline variables not possible in table headings
 
   Background:
@@ -8,7 +6,7 @@ Feature: Issue #631 -- Scenario Outline variables not possible in table headings
       """
       Feature:
 
-        Scenario Outline: A1
+        Scenario Outline: Use <method>
           When the following request is sent
              | <method>     |
              | /example-url/<method> |
@@ -42,7 +40,6 @@ Feature: Issue #631 -- Scenario Outline variables not possible in table headings
       show_timings = false
       """
 
-  @xfail
   Scenario: Check Syndrome
     When  I run "behave -f plain features/"
     Then it should pass with:
@@ -52,3 +49,18 @@ Feature: Issue #631 -- Scenario Outline variables not possible in table headings
       4 steps passed, 0 failed, 0 skipped, 0 undefined
       """
     And the command output should not contain "<method>"
+    And note that "the resulting output should look like"
+    And the command output should contain:
+      """
+      Scenario Outline: Use GET -- @1.1 Supported methods
+        When the following request is sent ... passed
+          | GET              |
+          | /example-url/GET |
+         Then a step passes ... passed
+
+      Scenario Outline: Use POST -- @1.2 Supported methods
+        When the following request is sent ... passed
+          | POST              |
+          | /example-url/POST |
+        Then a step passes ... passed
+      """

@@ -30,6 +30,7 @@ def parse_feature(data, language=None, filename=None):
 
     return result
 
+
 def parse_steps(text, language=None, filename=None):
     """
     Parse a number of steps a multi-line text from a scenario.
@@ -47,6 +48,20 @@ def parse_steps(text, language=None, filename=None):
         e.filename = filename
         raise
     return result
+
+
+def parse_step(text, language=None, filename=None):
+    """Parse one step as multi-line text.
+
+    :param text: Multi-line text with step to parse (as unicode).
+    :param language:  i18n language identifier (optional).
+    :param filename:  Filename (optional).
+    :return: Parsed step (if successful).
+    """
+    steps = parse_steps(text, language=language, filename=filename)
+    assert len(steps) == 1
+    return steps[0]
+
 
 def parse_tags(text):
     """

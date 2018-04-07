@@ -782,8 +782,11 @@ class ScenarioOutlineBuilder(object):
     """Helper class to use a ScenarioOutline as a template and
     build its scenarios (as template instances).
     """
+    annotation_schema = u"{name} -- @{row.id} {examples.name}"
 
-    def __init__(self, annotation_schema):
+    def __init__(self, annotation_schema=None):
+        if annotation_schema is None:
+            annotation_schema = self.__class__.annotation_schema
         self.annotation_schema = annotation_schema
 
     @staticmethod
@@ -804,7 +807,8 @@ class ScenarioOutlineBuilder(object):
             for name, value in placeholders.items():
                 if safe_values and ("<" in value and ">" in value):
                     continue    # -- OOPS, value looks like placeholder.
-                text = text.replace("<%s>" % name, value)
+                placeholder = u"<%s>" % name
+                text = text.replace(placeholder, value)
         return text
 
     def make_scenario_name(self, outline_name, example, row, params=None):
@@ -867,9 +871,12 @@ class ScenarioOutlineBuilder(object):
             new_step.text = cls.render_template(new_step.text, row)
         if new_step.table:
             for name, value in row.items():
+                placeholder = u"<%s>" % name
+                for i, cell in enumerate(new_step.table.headings):
+                    new_step.table.headings[i] = cell.replace(placeholder, value)
                 for row in new_step.table:
                     for i, cell in enumerate(row.cells):
-                        row.cells[i] = cell.replace("<%s>" % name, value)
+                        row.cells[i] = cell.replace(placeholder, value)
         return new_step
 
     def build_scenarios(self, scenario_outline):
@@ -989,7 +996,7 @@ class ScenarioOutline(Scenario):
     .. _`scenario outline`: gherkin.html#scenario-outlines
     """
     type = "scenario_outline"
-    annotation_schema = u"{name} -- @{row.id} {examples.name}"
+    annotation_schema = ScenarioOutlineBuilder.annotation_schema
 
     def __init__(self, filename, line, keyword, name, tags=None,
                  steps=None, examples=None, description=None):
