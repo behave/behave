@@ -8,7 +8,8 @@ step implementations (step definitions). This is necessary to execute steps.
 from __future__ import absolute_import
 from behave.matchers import Match, get_matcher
 from behave.textutil import text as _text
-
+import functools
+import inspect
 # limit import * to just the decorators
 # pylint: disable=undefined-all-variable
 # names = "given when then step"
@@ -34,6 +35,10 @@ class StepRegistry(object):
         }
 
     @staticmethod
+    def get_matcher(func, step_text):
+        return get_matcher(func, step_text)
+
+    @staticmethod
     def same_step_definition(step, other_pattern, other_location):
         return (step.pattern == other_pattern and
                 step.location == other_location and
@@ -56,7 +61,7 @@ class StepRegistry(object):
                 existing_step = existing.describe()
                 existing_step += u" at %s" % existing.location
                 raise AmbiguousStep(message % (new_step, existing_step))
-        step_definitions.append(get_matcher(func, step_text))
+        step_definitions.append(self.get_matcher(func, step_text))
 
     def find_step_definition(self, step):
         candidates = self.steps[step.step_type]
@@ -97,6 +102,17 @@ class StepRegistry(object):
 
 registry = StepRegistry()
 
+def get_class_that_defined_method(meth):
+    if inspect.ismethod(meth):
+        print('this is a method')
+        for cls in inspect.getmro(meth.__self__.__class__):
+            if cls.__dict__.get(meth.__name__) is meth:
+                return cls
+    if inspect.isfunction(meth):
+        print('this is a function')
+        return getattr(inspect.getmodule(meth),
+                       meth.__qualname__.split('.<locals>', 1)[0].rsplit('.', 1)[0])
+
 # -- Create the decorators
 # pylint: disable=redefined-outer-name
 def setup_step_decorators(run_context=None, registry=registry):
@@ -105,6 +121,58 @@ def setup_step_decorators(run_context=None, registry=registry):
     for step_type in ("given", "when", "then", "step"):
         step_decorator = registry.make_decorator(step_type)
         run_context[step_type.title()] = run_context[step_type] = step_decorator
+
+
+class LocalRegistry(StepRegistry):
+    _matcher = None
+    def __init__(self, matcher=None):
+        if matcher:
+            self._matcher = matcher
+        super(LocalRegistry, self).__init__()
+
+    @property
+    def matcher(self):
+        if self._matcher:
+            return self._matcher
+        else:
+            return get_matcher
+
+    def get_matcher(self, func, step_text, matcher=None):
+        if matcher is None:
+            matcher = self.matcher
+        return matcher(func, step_text)
+
+    def add_step_definition(self, keyword, step_text, func, matcher=None):
+        step_type = keyword.lower()
+        step_text = _text(step_text)
+        self.steps[step_type].append(self.get_matcher(func, step_text, matcher))
+
+    def make_decorator(self, step_type):
+        def decorator(step_text, matcher=None):
+            def wrapper(func):
+                self.add_step_definition(step_type, step_text, func, matcher)
+                return func
+            return wrapper
+        return decorator
+
+
+def local_step_registry(default_matcher=None):
+    class LocalStepRegistry(object):
+        _registry = LocalRegistry(matcher=default_matcher)
+        def register(self):
+            for step_type, steps in self._registry.steps.items():
+                for match_obj in steps:
+                    if hasattr(self, match_obj.func.__name__):
+                        match_obj.func = getattr(self, match_obj.func.__name__)
+                    registry.steps[step_type].append(match_obj)
+
+    #setup_step_decorators(run_context=LocalStepRegistry.__dict__, registry=LocalStepRegistry._registry)
+    for step_type in ("given", "when", "then", "step"):
+        step_decorator = LocalStepRegistry._registry.make_decorator(step_type)
+        setattr(LocalStepRegistry, step_type, step_decorator)
+        setattr(LocalStepRegistry, step_type.title(), step_decorator)
+
+    return LocalStepRegistry
 
 # -----------------------------------------------------------------------------
 # MODULE INIT:

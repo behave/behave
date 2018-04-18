@@ -20,8 +20,8 @@ from behave.formatter._registry import make_formatters
 from behave.runner_util import \
     collect_feature_locations, parse_features, \
     exec_file, load_step_modules, PathManager
-from behave.step_registry import registry as the_step_registry
-
+#from behave.step_registry import registry as the_step_registry
+import behave.step_registry
 if six.PY2:
     # -- USE PYTHON3 BACKPORT: With unicode traceback support.
     import traceback2 as traceback
@@ -519,12 +519,16 @@ class ModelRunner(object):
         self.hooks = {}
         self.formatters = []
         self.undefined_steps = []
-        self.step_registry = step_registry
+        self._step_registry = step_registry
         self.capture_controller = CaptureController(config)
 
         self.context = None
         self.feature = None
         self.hook_failures = 0
+
+    @property
+    def step_registry(self):
+        return self._step_registry or behave.step_registry.registry
 
     # @property
     def _get_aborted(self):
@@ -606,8 +610,8 @@ class ModelRunner(object):
         # pylint: disable=too-many-branches
         if not self.context:
             self.context = Context(self)
-        if self.step_registry is None:
-            self.step_registry = the_step_registry
+        # if self.step_registry is None:
+        #     self.step_registry = the_step_registry
         if features is None:
             features = self.features
 
