@@ -8,8 +8,7 @@ step implementations (step definitions). This is necessary to execute steps.
 from __future__ import absolute_import
 from behave.matchers import Match, get_matcher
 from behave.textutil import text as _text
-import functools
-import inspect
+
 # limit import * to just the decorators
 # pylint: disable=undefined-all-variable
 # names = "given when then step"
@@ -102,17 +101,6 @@ class StepRegistry(object):
 
 registry = StepRegistry()
 
-def get_class_that_defined_method(meth):
-    if inspect.ismethod(meth):
-        print('this is a method')
-        for cls in inspect.getmro(meth.__self__.__class__):
-            if cls.__dict__.get(meth.__name__) is meth:
-                return cls
-    if inspect.isfunction(meth):
-        print('this is a function')
-        return getattr(inspect.getmodule(meth),
-                       meth.__qualname__.split('.<locals>', 1)[0].rsplit('.', 1)[0])
-
 # -- Create the decorators
 # pylint: disable=redefined-outer-name
 def setup_step_decorators(run_context=None, registry=registry):
@@ -159,14 +147,17 @@ class LocalRegistry(StepRegistry):
 def local_step_registry(default_matcher=None):
     class LocalStepRegistry(object):
         _registry = LocalRegistry(matcher=default_matcher)
-        def register(self):
+
+        def register(self, registry=registry):
+            """
+            add contained definitions to a
+            """
             for step_type, steps in self._registry.steps.items():
                 for match_obj in steps:
                     if hasattr(self, match_obj.func.__name__):
                         match_obj.func = getattr(self, match_obj.func.__name__)
                     registry.steps[step_type].append(match_obj)
 
-    #setup_step_decorators(run_context=LocalStepRegistry.__dict__, registry=LocalStepRegistry._registry)
     for step_type in ("given", "when", "then", "step"):
         step_decorator = LocalStepRegistry._registry.make_decorator(step_type)
         setattr(LocalStepRegistry, step_type, step_decorator)
