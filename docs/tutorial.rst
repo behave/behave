@@ -666,6 +666,7 @@ by using the user-specific configuration data. A user can:
     # USE: behave -D BEHAVE_DEBUG_ON_ERROR=yes     (to enable  debug-on-error)
     # USE: behave -D BEHAVE_DEBUG_ON_ERROR=no      (to disable debug-on-error)
 
+    from behave.model_core import Status
     BEHAVE_DEBUG_ON_ERROR = False
 
     def setup_debug_on_error(userdata):
@@ -676,7 +677,7 @@ by using the user-specific configuration data. A user can:
         setup_debug_on_error(context.config.userdata)
 
     def after_step(context, step):
-        if BEHAVE_DEBUG_ON_ERROR and step.status == "failed":
+        if BEHAVE_DEBUG_ON_ERROR and step.status == Status.failed:
             # -- ENTER DEBUGGER: Zoom in on failure location.
             # NOTE: Use IPython debugger, same for pdb (basic python debugger).
             import ipdb
