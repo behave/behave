@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-Unit test facade to protect py.test runner from Python 3.4/3.5 grammar changes.
+Unit test facade to protect pytest runner from Python 3.4/3.5 grammar changes.
 """
 
 from __future__ import absolute_import
