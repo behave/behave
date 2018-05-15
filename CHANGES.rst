@@ -20,6 +20,10 @@ FIXED:
 * issue #631: ScenarioOutline variables not possible in table headings (provided by: mschnelle, pull #642)
 * issue #619: Context __getattr__ should raise AttributeError instead of KeyError (submitted by: anxodio)
 
+MINOR:
+
+* pull  #655: Use pytest instead of py.test per upstream recommendation (provided by: scop)
+* issue #654: tox.ini: pypi.python.org -> pypi.org (submitted by: pradyunsg)
 
 
 Version: 1.2.6 (2018-02-25)
