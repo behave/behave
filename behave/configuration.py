@@ -429,6 +429,7 @@ def read_configuration(path):
     # SCHEMA: config_section: data_name
     special_config_section_map = {
         "behave.formatters": "more_formatters",
+        'behave.reporters': 'more_reporters',
         "behave.userdata":   "userdata",
     }
     for section_name, data_name in special_config_section_map.items():
@@ -578,6 +579,7 @@ class Configuration(object):
         self.environment_file = "environment.py"
         self.userdata_defines = None
         self.more_formatters = None
+        self.more_reporters = None
         if load_config:
             load_configuration(self.defaults, verbose=verbose)
         parser = setup_parser()
