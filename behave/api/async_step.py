@@ -85,7 +85,7 @@ def async_run_until_complete(astep_func=None, loop=None, timeout=None,
         loop (asyncio.EventLoop):   Event loop to use or None.
         timeout (int, float):       Timeout to wait for async-step completion.
         async_context (name):       Async_context name or object to use.
-        should_close (bool):        Indicates if event lopp should be closed.
+        should_close (bool):        Indicates if event loop should be closed.
 
     .. note::
 
