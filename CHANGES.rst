@@ -24,6 +24,7 @@ MINOR:
 
 * pull  #655: Use pytest instead of py.test per upstream recommendation (provided by: scop)
 * issue #654: tox.ini: pypi.python.org -> pypi.org (submitted by: pradyunsg)
+* pull  #660: Fix minor typos (provided by: rrueth)
 
 
 Version: 1.2.6 (2018-02-25)
