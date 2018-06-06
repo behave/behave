@@ -1,3 +1,4 @@
+six >= 1.11
 mock
 nose
 PyHamcrest >= 1.9
