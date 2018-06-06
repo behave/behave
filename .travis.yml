@@ -14,7 +14,6 @@ python:
 #  - "3.3"
 #
 # NOW SUPPORTED: "3.5" => python 3.5.2 (>= 3.5.1)
-# NOTE: Python 3.5.0 is broken (for some tests).
 # NOTE: nightly = 3.7-dev
 
 # -- TEST-BALLON: Check if Python 3.6 is actually Python 3.5.1 or newer
@@ -30,7 +29,6 @@ cache:
 install:
   - travis_retry pip install -q -r py.requirements/ci.travis.txt
   - pip show setuptools
-  - pip --version
   - python setup.py -q install
 
 script:
