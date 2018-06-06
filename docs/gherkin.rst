@@ -55,7 +55,7 @@ line:
 
 **a features directory path**
   This is the path to a features directory laid out as described above. It may be called
-  anything by *must* contain at least one "*name*.feature" file and a directory
+  anything but *must* contain at least one "*name*.feature" file and a directory
   called "steps". The "environment.py" file, if present, must be in the same
   directory that contains the "steps" directory (not *in* the "steps"
   directory).
