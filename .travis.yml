@@ -29,6 +29,8 @@ cache:
 
 install:
   - travis_retry pip install -q -r py.requirements/ci.travis.txt
+  - pip show setuptools
+  - pip --version
   - python setup.py -q install
 
 script:
