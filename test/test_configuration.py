@@ -24,6 +24,8 @@ bogus=spam
 [behave.userdata]
 foo    = bar
 answer = 42
+[behave.reporters]
+junit = behave.reporter.junit:JUnitReporter
 """
 
 
@@ -59,6 +61,7 @@ class TestConfiguration(object):
         eq_(d["stdout_capture"], False)
         ok_("bogus" not in d)
         eq_(d["userdata"], {"foo": "bar", "answer": "42"})
+        eq_(d['more_reporters'], {'junit': 'behave.reporter.junit:JUnitReporter'})
 
     def ensure_stage_environment_is_not_set(self):
         if "BEHAVE_STAGE" in os.environ:

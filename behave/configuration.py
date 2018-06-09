@@ -17,6 +17,7 @@ from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import TagExpression
 from behave.formatter.base import StreamOpener
 from behave.formatter import _registry as _format_registry
+from behave.reporter import _registry as _report_registry
 from behave.userdata import UserData, parse_user_define
 from behave._types import Unknown
 from behave.textutil import select_best_encoding, to_texts
@@ -429,6 +430,7 @@ def read_configuration(path):
     # SCHEMA: config_section: data_name
     special_config_section_map = {
         "behave.formatters": "more_formatters",
+        'behave.reporters': 'more_reporters',
         "behave.userdata":   "userdata",
     }
     for section_name, data_name in special_config_section_map.items():
@@ -578,6 +580,7 @@ class Configuration(object):
         self.environment_file = "environment.py"
         self.userdata_defines = None
         self.more_formatters = None
+        self.more_reporters = None
         if load_config:
             load_configuration(self.defaults, verbose=verbose)
         parser = setup_parser()
@@ -647,6 +650,7 @@ class Configuration(object):
             self.reporters.append(SummaryReporter(self))
 
         self.setup_formats()
+        self.setup_reports()
         unknown_formats = self.collect_unknown_formats()
         if unknown_formats:
             parser.error("format=%s is unknown" % ", ".join(unknown_formats))
@@ -672,6 +676,17 @@ class Configuration(object):
         if self.more_formatters:
             for name, scoped_class_name in self.more_formatters.items():
                 _format_registry.register_as(name, scoped_class_name)
+
+    def setup_reports(self):
+        """Register more, user-defined reporters by name."""
+        print('current reporters:', self.reporters)
+        if self.more_reporters:
+            for name, scoped_class_name in self.more_reporters.items():
+                reporter = _report_registry.load_reporter_class(scoped_class_name)
+                if not _report_registry.is_formatter_valid(reporter):
+                    raise Exception('Invalid reporter class `{}` provided!'.format(scoped_class_name))
+                self.reporters.append(reporter)
+
 
     def collect_unknown_formats(self):
         unknown_formats = []
