@@ -126,6 +126,40 @@ Feature: Async-Test Support (async-step, ...)
         Assertion Failed: TIMEOUT-OCCURED: timeout=0.1
         """
 
+    @use.with_python.version=3.5
+    @use.with_python.version=3.6
+    Scenario: Use @async_run_until_complete(timeout=...) and EXCEPTION occurs (async)
+      Given a new working directory
+      And a file named "features/steps/async_steps_exception35.py" with:
+        """
+        from behave import step
+        from behave.api.async_step import async_run_until_complete
+
+        @step('an async-step raises an exception with timeout')
+        @async_run_until_complete(timeout=1)
+        async def step_async_step_with_timeout_raises_exception35(context):
+            assert(False)
+        """
+      And a file named "features/async_exception35.feature" with:
+        """
+        Feature:
+          Scenario:
+            Given an async-step raises an exception with timeout
+        """
+      When I run "behave -f plain --show-timings features/async_exception35.feature"
+      Then it should fail with:
+        """
+        0 steps passed, 1 failed, 0 skipped, 0 undefined
+        """
+      And the command output should contain:
+        """
+        Given an async-step raises an exception with timeout ... failed in 0.0
+        """
+      And the command output should contain:
+        """
+        assert(False)
+        """
+
     @use.with_python.version=3.4
     @use.with_python.version=3.5
     @use.with_python.version=3.6

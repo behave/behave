@@ -129,6 +129,10 @@ def async_run_until_complete(astep_func=None, loop=None, timeout=None,
                 done, pending = loop.run_until_complete(
                     asyncio.wait([task], timeout=timeout))
                 assert not pending, "TIMEOUT-OCCURED: timeout=%s" % timeout
+                finished_task = done.pop()
+                exception = finished_task.exception()
+                if exception:
+                    raise exception
         finally:
             if loop and should_close:
                 # -- MAYBE-AVOID:
