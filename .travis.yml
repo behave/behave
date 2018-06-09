@@ -4,13 +4,13 @@ python:
   - "3.6"
   - "2.7"
   - "3.5"
+  - "3.4"
   - "pypy"
   - "pypy3"
   - "3.7-dev"
 
 # -- DISABLED:
 #  - "nightly"
-#  - "3.4"
 #  - "3.3"
 #
 # NOW SUPPORTED: "3.5" => python 3.5.2 (>= 3.5.1)
