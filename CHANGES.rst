@@ -17,6 +17,7 @@ DOCUMENTATION:
 
 FIXED:
 
+* pull  #657: Allow async steps with timeouts to fail when they raise exceptions (provided by: ALSchwalm)
 * issue #631: ScenarioOutline variables not possible in table headings (provided by: mschnelle, pull #642)
 * issue #619: Context __getattr__ should raise AttributeError instead of KeyError (submitted by: anxodio)
 
