@@ -128,36 +128,86 @@ Feature: Async-Test Support (async-step, ...)
 
     @use.with_python.version=3.5
     @use.with_python.version=3.6
-    Scenario: Use @async_run_until_complete(timeout=...) and EXCEPTION occurs (async)
+    @async_step_fails
+    Scenario: Use @async_run_until_complete and async-step fails
+      Given a new working directory
+      And a file named "features/steps/async_steps_fails35.py" with:
+        """
+        from behave import step
+        from behave.api.async_step import async_run_until_complete
+
+        @step('an async-step passes')
+        @async_run_until_complete
+        async def step_async_step_passes(context):
+            pass
+
+        @step('an async-step fails')
+        @async_run_until_complete
+        async def step_async_step_fails(context):
+            assert False, "XFAIL in async-step"
+        """
+      And a file named "features/async_failure.feature" with:
+        """
+        Feature:
+          Scenario:
+            Given an async-step passes
+            When an async-step fails
+            Then an async-step passes
+        """
+      When I run "behave -f plain features/async_failure.feature"
+      Then it should fail with:
+        """
+        1 step passed, 1 failed, 1 skipped, 0 undefined
+        """
+      And the command output should contain:
+        """
+        When an async-step fails ... failed
+        """
+      And the command output should contain:
+        """
+        Assertion Failed: XFAIL in async-step
+        """
+
+    @use.with_python.version=3.5
+    @use.with_python.version=3.6
+    @async_step_fails
+    Scenario: Use @async_run_until_complete and async-step raises error
       Given a new working directory
       And a file named "features/steps/async_steps_exception35.py" with:
         """
         from behave import step
         from behave.api.async_step import async_run_until_complete
 
-        @step('an async-step raises an exception with timeout')
-        @async_run_until_complete(timeout=1)
-        async def step_async_step_with_timeout_raises_exception35(context):
-            assert(False)
+        @step('an async-step passes')
+        @async_run_until_complete
+        async def step_async_step_passes(context):
+            pass
+
+        @step('an async-step raises an exception')
+        @async_run_until_complete
+        async def step_async_step_raises_exception(context):
+            raise RuntimeError("XFAIL in async-step")
         """
       And a file named "features/async_exception35.feature" with:
         """
         Feature:
           Scenario:
-            Given an async-step raises an exception with timeout
+            Given an async-step passes
+            When an async-step raises an exception
+            Then an async-step passes
         """
-      When I run "behave -f plain --show-timings features/async_exception35.feature"
+      When I run "behave -f plain features/async_exception35.feature"
       Then it should fail with:
         """
-        0 steps passed, 1 failed, 0 skipped, 0 undefined
+        1 step passed, 1 failed, 1 skipped, 0 undefined
         """
       And the command output should contain:
         """
-        Given an async-step raises an exception with timeout ... failed in 0.0
+        When an async-step raises an exception ... failed
         """
       And the command output should contain:
         """
-        assert(False)
+        raise RuntimeError("XFAIL in async-step")
         """
 
     @use.with_python.version=3.4
