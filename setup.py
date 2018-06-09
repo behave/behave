@@ -6,6 +6,12 @@ USAGE:
     python setup.py install
     python setup.py behave_test     # -- XFAIL on Windows (currently).
     python setup.py nosetests
+
+REQUIRES:
+* setuptools >= 36.2.0
+
+SEE ALSO:
+* https://setuptools.readthedocs.io/en/latest/history.html
 """
 
 import sys
