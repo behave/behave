@@ -45,17 +45,17 @@ Feature: Issue #41 Missing Steps are duplicated in a Scenario Outline
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
-      @given(u'an unknown step')
+      @given(u'an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: Given an unknown step')
       """
     But the command output should not contain:
       """
       You can implement step definitions for undefined steps with these snippets:
-      @given(u'an unknown step')
+      @given(u'an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: Given an unknown step')
-      @given(u'an unknown step')
+      @given(u'an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: Given an unknown step')
       """
@@ -82,17 +82,17 @@ Feature: Issue #41 Missing Steps are duplicated in a Scenario Outline
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
-      @when(u'I use an unknown step')
+      @when(u'I use an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: When I use an unknown step')
       """
     But the command output should not contain:
       """
       You can implement step definitions for undefined steps with these snippets:
-      @when(u'I use an unknown step')
+      @when(u'I use an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: When I use an unknown step')
-      @when(u'I use an unknown step')
+      @when(u'I use an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: When I use an unknown step')
       """
@@ -119,17 +119,17 @@ Feature: Issue #41 Missing Steps are duplicated in a Scenario Outline
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
-      @then(u'I use an unknown step')
+      @then(u'I use an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: Then I use an unknown step')
       """
     But the command output should not contain:
       """
       You can implement step definitions for undefined steps with these snippets:
-      @then(u'I use an unknown step')
+      @then(u'I use an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: Then I use an unknown step')
-      @then(u'I use an unknown step')
+      @then(u'I use an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: Then I use an unknown step')
       """

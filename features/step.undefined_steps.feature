@@ -56,7 +56,7 @@ Feature: Undefined Step
         """
         You can implement step definitions for undefined steps with these snippets:
 
-        @when(u'an undefined step is used')
+        @when(u'an undefined step is used')  # noqa: F811
         def step_impl(context):
             raise NotImplementedError(u'STEP: When an undefined step is used')
         """

@@ -87,7 +87,7 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
       """
       You can implement step definitions for undefined steps with these snippets:
 
-      @given(u'allé')
+      @given(u'allé')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: Given allé')
       """
@@ -127,7 +127,7 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
       """
     And the command output should not contain:
       """
-      @given(u'allé')
+      @given(u'allé')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: Given allé')
       """

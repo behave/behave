@@ -30,7 +30,7 @@ Feature: Issue #181: Escape apostrophes in undefined steps snippets
         """
         You can implement step definitions for undefined steps with these snippets:
 
-        @given(u'I\'m using an "undefined step"')
+        @given(u'I\'m using an "undefined step"')  # noqa: F811
         def step_impl(context):
             raise NotImplementedError(u'STEP: Given I\'m using an "undefined step"')
         """
