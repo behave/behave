@@ -58,7 +58,7 @@ Feature: Issue #127: Strip trailing colons
         """
         You can implement step definitions for undefined steps with these snippets:
 
-        @given(u'the following superusers exist')
+        @given(u'the following superusers exist')  # noqa: F811
         def step_impl(context):
             raise NotImplementedError(u'STEP: Given the following superusers exist')
         """

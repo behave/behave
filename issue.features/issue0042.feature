@@ -45,7 +45,7 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
-      @given(u'an unknown step')
+      @given(u'an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: Given an unknown step')
       """
@@ -68,11 +68,11 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
-      @given(u'an unknown step')
+      @given(u'an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: Given an unknown step')
 
-      @when(u'another unknown step')
+      @when(u'another unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: When another unknown step')
       """
@@ -95,11 +95,11 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
-      @when(u'an unknown step')
+      @when(u'an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: When an unknown step')
 
-      @when(u'another unknown step')
+      @when(u'another unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: When another unknown step')
       """
@@ -122,11 +122,11 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
-      @then(u'an unknown step')
+      @then(u'an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: Then an unknown step')
 
-      @then(u'another unknown step')
+      @then(u'another unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: Then another unknown step')
       """
@@ -149,11 +149,11 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
-      @when(u'an unknown step')
+      @when(u'an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: When an unknown step')
 
-      @then(u'another unknown step')
+      @then(u'another unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: Then another unknown step')
       """
@@ -181,11 +181,11 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
-      @given(u'an unknown step')
+      @given(u'an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: Given an unknown step')
 
-      @when(u'another unknown step')
+      @when(u'another unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: When another unknown step')
       """
@@ -220,11 +220,11 @@ Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
-      @when(u'an unknown step')
+      @when(u'an unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: When an unknown step')
 
-      @when(u'another unknown step')
+      @when(u'another unknown step')  # noqa: F811
       def step_impl(context):
           raise NotImplementedError(u'STEP: When another unknown step')
       """
