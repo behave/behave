@@ -650,7 +650,9 @@ Debug-on-Error (in Case of Step Failures)
 
 A "debug on error/failure" functionality can easily be provided,
 by using the ``after_step()`` hook.
-The debugger is started when a step fails.
+The debugger is started when a step fails. 
+Use the `--no-capture` run option so that Behave does not capture
+all debugger stdout.
 
 It is in general a good idea to enable this functionality only when needed
 (in interactive mode). The functionality is enabled (in this example)
