@@ -14,3 +14,12 @@ Feature: Scenario Outlines can read tags with commas
     Examples:
     | data  |
     | value |
+
+  Scenario Outline: Scenario Outline can see tags with commas in examples
+    Given I print the tags
+    And I see the tag tag,with,commas
+
+    @tag,with,commas
+    Examples:
+    | data  |
+    | value |
