@@ -404,13 +404,13 @@ Feature: JSON Formatter
             ],
             """
 
-    @wip
+#    @wip
     Scenario: Use JSON formatter with feature and two scenarios
 
-    @wip
+#    @wip
     Scenario: Use JSON formatter with feature and background
 
-    @wip
+#    @wip
     Scenario: Use JSON formatter with feature and scenario outline without steps
     Scenario: Use JSON formatter with feature and scenario outline with description
     Scenario: Use JSON formatter with feature and scenario outline with tags
