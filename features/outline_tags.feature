@@ -6,7 +6,7 @@ Feature: Scenario Outlines can read tags with commas
     Given I print the tags
     Then I see the tag tag,with,commas
 
-  @tag,with,comma
+  @tag,with,commas
   Scenario Outline: Scenario Outline can see tags with commas
     Given I print the tags
     And I see the tag tag,with,commas
