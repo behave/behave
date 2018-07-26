@@ -1,4 +1,3 @@
-@wip
 Feature: Scenario Outlines can read tags with commas
 
   @tag,with,commas @tags;with;semi;colons

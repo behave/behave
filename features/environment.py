@@ -24,12 +24,6 @@ active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 # HOOKS:
 # -----------------------------------------------------------------------------
 
-def before_tag(context, tag):
-    context.detected_tags.append(tag)
-
-def after_tag(context, tag):
-    context.detected_tags[:] = [t for t in context.detected_tags if t != tag]
-
 def before_all(context):
     # -- SETUP ACTIVE-TAG MATCHER (with userdata):
     # USE: behave -D browser=safari ...
@@ -37,8 +31,6 @@ def before_all(context):
     setup_python_path()
     setup_context_with_global_params_test(context)
     setup_command_shell_processors4behave()
-
-    context.detected_tags = []
 
 def before_feature(context, feature):
     if active_tag_matcher.should_exclude_with(feature.tags):
