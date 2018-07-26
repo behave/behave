@@ -23,7 +23,6 @@ active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 # -----------------------------------------------------------------------------
 # HOOKS:
 # -----------------------------------------------------------------------------
-
 def before_all(context):
     # -- SETUP ACTIVE-TAG MATCHER (with userdata):
     # USE: behave -D browser=safari ...
