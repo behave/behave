@@ -1670,8 +1670,8 @@ class Tag(six.text_type):
           * underscore  => "_"
           * equal       => "=" (support: active-tag name schema)
           * colon       => ":" (support: active-tag name schema or similar)
-          * semicolon   => ";" (support: complex tag notation
-          * comma       => "," (support: complex tag notation
+          * semicolon   => ";" (support: complex tag notation)
+          * comma       => "," (support: complex tag notation)
 
         :param text: Unicode text as input for name.
         :param unescape: Optional flag to unescape some chars (default: false)
