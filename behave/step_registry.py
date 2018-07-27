@@ -34,10 +34,6 @@ class StepRegistry(object):
         }
 
     @staticmethod
-    def get_matcher(func, step_text):
-        return get_matcher(func, step_text)
-
-    @staticmethod
     def same_step_definition(step, other_pattern, other_location):
         return (step.pattern == other_pattern and
                 step.location == other_location and
@@ -60,7 +56,7 @@ class StepRegistry(object):
                 existing_step = existing.describe()
                 existing_step += u" at %s" % existing.location
                 raise AmbiguousStep(message % (new_step, existing_step))
-        step_definitions.append(self.get_matcher(func, step_text))
+        step_definitions.append(get_matcher(func, step_text))
 
     def find_step_definition(self, step):
         candidates = self.steps[step.step_type]
