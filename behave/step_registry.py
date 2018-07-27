@@ -146,7 +146,11 @@ def local_step_registry(default_matcher=None):
 
         def register(self, registry=registry):
             """
-            add contained definitions to a
+            add contained definitions to a registry
+            defaults to the global registry
+
+            This function also is responsible for updating functions in the registry with functions
+            defined in subclasses
             """
             for step_type, steps in self._registry.steps.items():
                 for match_obj in steps:
