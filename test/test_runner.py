@@ -777,7 +777,7 @@ class FsMock(object):
         self.calls.append(("exists", path))
         return path in self.dirs or path in self.files
 
-    def walk(self, path, locations=None):
+    def walk(self, path, locations=None, followlinks=False):
         if locations is None:
             assert path in self.dirs, "%s not in %s" % (path, self.dirs)
             locations = []
@@ -1072,4 +1072,3 @@ class TestFeatureDirectoryLayout2(object):
                 assert_raises(ConfigError, r.setup_paths)
 
         ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
-
