@@ -144,19 +144,19 @@ def local_step_registry(default_matcher=None):
     class LocalStepRegistry(object):
         _registry = LocalRegistry(matcher=default_matcher)
 
-        def register(self, registry=registry):
+        def register(self):
             """
-            add contained definitions to a registry
-            defaults to the global registry
+            adds contained definitions to the global registry
 
             This function also is responsible for updating functions in the registry with functions
             defined in subclasses
             """
+            from behave.runner import the_step_registry  # make sure we use same registry as normal definitions
             for step_type, steps in self._registry.steps.items():
                 for match_obj in steps:
                     if hasattr(self, match_obj.func.__name__):
                         match_obj.func = getattr(self, match_obj.func.__name__)
-                    registry.steps[step_type].append(match_obj)
+                    the_step_registry.steps[step_type].append(match_obj)
 
     for step_type in ("given", "when", "then", "step"):
         step_decorator = LocalStepRegistry._registry.make_decorator(step_type)
