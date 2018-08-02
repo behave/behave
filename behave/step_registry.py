@@ -6,6 +6,7 @@ step implementations (step definitions). This is necessary to execute steps.
 """
 
 from __future__ import absolute_import
+import functools
 from behave.matchers import Match, get_matcher
 from behave.textutil import text as _text
 
@@ -140,9 +141,15 @@ class LocalRegistry(StepRegistry):
         return decorator
 
 
+
 def local_step_registry(default_matcher=None):
     class LocalStepRegistry(object):
         _registry = LocalRegistry(matcher=default_matcher)
+        _context = None
+
+        @property
+        def context(self):
+            return self._context
 
         def register(self):
             """
@@ -155,14 +162,29 @@ def local_step_registry(default_matcher=None):
             for step_type, steps in self._registry.steps.items():
                 for match_obj in steps:
                     if hasattr(self, match_obj.func.__name__):
-                        match_obj.func = getattr(self, match_obj.func.__name__)
+                        method = getattr(self, match_obj.func.__name__)
+                        match_obj.func = self._step_context(method)
                     the_step_registry.steps[step_type].append(match_obj)
+
+        @classmethod
+        def _step_context(cls, method):
+            from behave.runner import Context
+            @functools.wraps(method)
+            def newmethod(*args, **kwargs):
+                if args:
+                    context, *other_args = args
+                    if isinstance(context, Context):
+                        cls._context = context
+                        args = other_args
+                return method(*args, **kwargs)
+            return newmethod
+
+
 
     for step_type in ("given", "when", "then", "step"):
         step_decorator = LocalStepRegistry._registry.make_decorator(step_type)
         setattr(LocalStepRegistry, step_type, step_decorator)
         setattr(LocalStepRegistry, step_type.title(), step_decorator)
-
     return LocalStepRegistry
 
 # -----------------------------------------------------------------------------
