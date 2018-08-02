@@ -133,6 +133,7 @@ class LocalRegistry(StepRegistry):
         self.steps[step_type].append(self.get_matcher(func, step_text, matcher))
 
     def make_decorator(self, step_type):
+        @staticmethod
         def decorator(step_text, matcher=None):
             def wrapper(func):
                 self.add_step_definition(step_type, step_text, func, matcher)
@@ -172,7 +173,8 @@ def local_step_registry(default_matcher=None):
             @functools.wraps(method)
             def newmethod(*args, **kwargs):
                 if args:
-                    context, *other_args = args
+                    context = args[0]
+                    other_args = args[1:]
                     if isinstance(context, Context):
                         cls._context = context
                         args = other_args
