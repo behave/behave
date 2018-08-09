@@ -303,7 +303,7 @@
   scenario: Scenarij
   scenario_outline: Skica|Koncept
   examples: Primjeri|Scenariji
-  given: "*|Zadan|Zadani|Zadano"
+  given: "*|Zadan|Zadani|Zadano|Ukoliko"
   when: "*|Kada|Kad"
   then: "*|Onda"
   and: "*|I"
