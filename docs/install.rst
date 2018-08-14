@@ -41,7 +41,7 @@ enter the newly created directory "behave-<version>" and run::
 Using the Github Repository
 ---------------------------
 
-:Category: Bleading edge
+:Category: Bleeding edge
 :Precondition: :pypi:`pip` is installed
 
 Run the following command
