@@ -11,6 +11,22 @@ GOALS:
 - FIX: Regression test problems on Windows (in behave-1.2.6)
 - Drop support for Python 2.6
 
+DOCUMENTATION:
+
+* pull  #628: Changed pythonhosted.org links to readthedocs.io (provided by: chrisbrake)
+
+FIXED:
+
+* pull  #657: Allow async steps with timeouts to fail when they raise exceptions (provided by: ALSchwalm)
+* issue #631: ScenarioOutline variables not possible in table headings (provided by: mschnelle, pull #642)
+* issue #619: Context __getattr__ should raise AttributeError instead of KeyError (submitted by: anxodio)
+
+MINOR:
+
+* pull  #655: Use pytest instead of py.test per upstream recommendation (provided by: scop)
+* issue #654: tox.ini: pypi.python.org -> pypi.org (submitted by: pradyunsg)
+* pull  #660: Fix minor typos (provided by: rrueth)
+
 
 Version: 1.2.6 (2018-02-25)
 -------------------------------------------------------------------------------

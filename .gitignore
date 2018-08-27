@@ -13,6 +13,7 @@ reports/
 tools/virtualenvs
 .cache/
 .idea/
+.pytest_cache/
 .tox/
 .venv*/
 .vscode/
