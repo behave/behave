@@ -13,6 +13,7 @@ GOALS:
 
 DOCUMENTATION:
 
+* pull  #684: Fix typo in "install.rst" (provided by: mstred)
 * pull  #628: Changed pythonhosted.org links to readthedocs.io (provided by: chrisbrake)
 
 FIXED:
