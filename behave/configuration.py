@@ -557,6 +557,7 @@ class Configuration(object):
         self.junit = None
         self.logging_format = None
         self.logging_datefmt = None
+        self.logging_filename = None
         self.name = None
         self.scope = None
         self.steps_catalog = None
@@ -739,7 +740,8 @@ class Configuration(object):
             # pylint: disable=no-member
             format_ = kwargs.pop("format", self.logging_format)
             datefmt = kwargs.pop("datefmt", self.logging_datefmt)
-            logging.basicConfig(format=format_, datefmt=datefmt, **kwargs)
+            filename = kwargs.pop("filename", self.logging_filename)
+            logging.basicConfig(format=format_, datefmt=datefmt, filename=filename, **kwargs)
         # -- ENSURE: Default log level is set
         #    (even if logging subsystem is already configured).
         logging.getLogger().setLevel(level)
