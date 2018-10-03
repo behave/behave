@@ -1648,7 +1648,7 @@ class Tag(six.text_type):
 
     See :ref:`controlling things with tags`.
     """
-    allowed_chars = u"._-=:"    # In addition to aplha-numerical chars.
+    allowed_chars = u"._-=:,;()"    # In addition to aplha-numerical chars.
     quoting_chars = ("'", '"', "<", ">")
 
     def __new__(cls, name, line):
@@ -1659,6 +1659,7 @@ class Tag(six.text_type):
     @classmethod
     def make_name(cls, text, unescape=False, allowed_chars=None):
         """Translate text into a "valid tag" without whitespace, etc.
+
         Translation rules are:
           * alnum chars => same, kept
           * space chars => "_"
@@ -1670,6 +1671,10 @@ class Tag(six.text_type):
           * underscore  => "_"
           * equal       => "=" (support: active-tag name schema)
           * colon       => ":" (support: active-tag name schema or similar)
+          * semicolon   => ";" (support: complex tag notation)
+          * comma       => "," (support: complex tag notation)
+          * opening-parens  => "(" (support: complex tag notation)
+          * closing-parens  => ")" (support: complex tag notation)
 
         :param text: Unicode text as input for name.
         :param unescape: Optional flag to unescape some chars (default: false)
