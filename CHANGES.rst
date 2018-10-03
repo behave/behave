@@ -16,9 +16,11 @@ DOCUMENTATION:
 * pull  #684: Fix typo in "install.rst" (provided by: mstred)
 * pull  #628: Changed pythonhosted.org links to readthedocs.io (provided by: chrisbrake)
 
+
 ENHANCEMENTS:
 
 * issue #678: Scenario Outline: Support tags with commas and semicolons (provided by: lawnmowerlatte, pull #679)
+* issue #675: Feature files cannot be found within symlink directories (provided by: smadness, pull #680)
 
 
 FIXED:
