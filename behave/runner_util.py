@@ -352,7 +352,7 @@ def collect_feature_locations(paths, strict=True):
     locations = []
     for path in paths:
         if os.path.isdir(path):
-            for dirpath, dirnames, filenames in os.walk(path):
+            for dirpath, dirnames, filenames in os.walk(path, followlinks=True):
                 dirnames.sort()
                 for filename in sorted(filenames):
                     if filename.endswith(".feature"):

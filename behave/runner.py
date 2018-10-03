@@ -752,7 +752,7 @@ class Runner(ModelRunner):
         base_dir = new_base_dir
         self.config.base_dir = base_dir
 
-        for dirpath, dirnames, filenames in os.walk(base_dir):
+        for dirpath, dirnames, filenames in os.walk(base_dir, followlinks=True):
             if [fn for fn in filenames if fn.endswith(".feature")]:
                 break
         else:
