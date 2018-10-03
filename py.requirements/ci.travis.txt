@@ -2,6 +2,7 @@ mock
 nose
 PyHamcrest >= 1.9
 pytest >= 3.0
+pytest-html >= 1.19.0
 
 # -- NEEDED: By some tests (as proof of concept)
 # NOTE: path.py-10.1 is required for python2.6
