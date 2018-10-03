@@ -70,6 +70,7 @@ def discover_ci_server():
 # -- MATCHES ANY TAGS: @use.with_{category}={value}
 # NOTE: active_tag_value_provider provides category values for active tags.
 active_tag_value_provider = {
+    "platform": sys.platform,
     "python2": str(six.PY2).lower(),
     "python3": str(six.PY3).lower(),
     # -- python.implementation: cpython, pypy, jython, ironpython
