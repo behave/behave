@@ -46,6 +46,7 @@ class ConvertableToUnicode(object):
         __unicode__ = __str__
         __str__ = lambda self: self.__unicode__().encode(self.encoding)
 
+
 class ConvertableToString(object):
     encoding = "utf-8"
 
@@ -68,6 +69,7 @@ class ConvertableToString(object):
             if isinstance(text, six.text_type):
                 text = codecs.encode(text, self.encoding)
             return text
+
 
 class ConvertableToPy2String(object):
     encoding = "utf-8"
@@ -223,9 +225,18 @@ class TestObjectToTextConversion(object):
     def test_text__with_assert_failed_and_bytes_message(self, message):
         # -- ONLY PYTHON2: Use case makes no sense for Python 3.
         bytes_message = message.encode(self.ENCODING)
+        decode_error_occured = False
         with pytest.raises(AssertionError) as e:
-            assert False, bytes_message
+            try:
+                assert False, bytes_message
+            except UnicodeDecodeError as uni_error:
+                # -- SINCE: Python 2.7.15
+                decode_error_occured = True
+                expected_decode_error = "'ascii' codec can't decode byte 0xc3 in position 0"
+                assert expected_decode_error in str(uni_error)
+                assert False, bytes_message.decode(self.ENCODING)
 
+        print("decode_error_occured(ascii)=%s" % decode_error_occured)
         text2 = text(e)
         expected = u"AssertionError: %s" % message
         assert text2.endswith(expected)
