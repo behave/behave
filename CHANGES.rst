@@ -16,6 +16,11 @@ DOCUMENTATION:
 * pull  #684: Fix typo in "install.rst" (provided by: mstred)
 * pull  #628: Changed pythonhosted.org links to readthedocs.io (provided by: chrisbrake)
 
+ENHANCEMENTS:
+
+* issue #678: Scenario Outline: Support tags with commas and semicolons (provided by: lawnmowerlatte, pull #679)
+
+
 FIXED:
 
 * pull  #657: Allow async steps with timeouts to fail when they raise exceptions (provided by: ALSchwalm)
