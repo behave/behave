@@ -90,6 +90,7 @@ setup(
     test_suite="nose.collector",
     tests_require=[
         "pytest >= 3.0",
+        "pytest-html >= 1.19.0",
         "nose >= 1.3",
         "mock >= 1.1",
         "PyHamcrest >= 1.8",

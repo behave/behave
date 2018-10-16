@@ -8,7 +8,7 @@ NOTE: This is only simplistic, proof-of-concept code.
 
 from __future__ import absolute_import, print_function
 from behave.runner_util import make_undefined_step_snippets
-from .steps import StepsUsageFormatter
+from behave.formatter.steps import StepsUsageFormatter
 
 
 STEP_MODULE_TEMPLATE = '''\
@@ -70,7 +70,7 @@ class MissingStepsFormatter(StepsUsageFormatter):
     # -- REPORT SPECIFIC-API:
     def report(self):
         """Writes missing step implementations by using step snippets."""
-        step_snippets = make_undefined_step_snippets(undefined_steps)
+        step_snippets = make_undefined_step_snippets(self.undefined_steps)
         encoding = self.stream.encoding or "UTF-8"
         function_separator = u"\n\n\n"
         step_snippets_text = function_separator.join(step_snippets)

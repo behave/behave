@@ -5,6 +5,7 @@
 # -- TESTING: Unit tests and behave self-tests.
 # PREPARED-FUTURE: behave4cmd0, behave4cmd
 pytest >= 3.0
+pytest-html >= 1.19.0
 nose  >= 1.3
 mock  >= 2.0
 PyHamcrest >= 1.9

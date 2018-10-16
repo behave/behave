@@ -46,7 +46,7 @@ class SimpleContext(object): pass
 def test_issue(log_message):
     @capture(level=logging.INFO)
     def hook_after_scenario(context, message):
-        logging.warn(message)
+        logging.warning(message)
         raise RuntimeError()
 
     # -- PREPARE:
