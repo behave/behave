@@ -19,17 +19,16 @@ else:
 
 class MultiProcRunner(Runner):
     """Master multiprocessing runner: scans jobs and distributes to slaves
-    
+
         This runner should not do any "processing" tasks, apart from scanning
         the feature files and their scenarios. It then spawns processing nodes
         and lets them consume the queue of tasks scheduled.
     """
     def __init__(self, config):
         super(MultiProcRunner, self).__init__(config)
-        manager = multiprocessing.Manager()
         self.jobs_map = {}
-        self.jobsq = manager.JoinableQueue()
-        self.resultsq = manager.Queue()
+        self.jobsq = multiprocessing.JoinableQueue()
+        self.resultsq = multiprocessing.Queue()
         self._reported_features = set()
         self.results_fail = False
 
@@ -74,15 +73,16 @@ class MultiProcRunner(Runner):
             self.jobsq.join()   # wait for all jobs to be processed
             print ("INFO: all jobs have been processed")
 
-            while self.consume_results():
+            while self.consume_results(timeout=0.1):
                 # 2: remaining results
                 pass
 
             # then, wait for all workers to exit:
             [p.join() for p in procs]
+
         print ("INFO: all sub-processes have returned")
 
-        while self.consume_results():
+        while self.consume_results(timeout=0.1):
             # 3: just in case some arrive late in the pipe
             pass
 
@@ -101,9 +101,9 @@ class MultiProcRunner(Runner):
     def scan_features(self):
         raise NotImplementedError
 
-    def consume_results(self):
+    def consume_results(self, timeout=1):
         try:
-            job_id, result = self.resultsq.get(timeout=1)
+            job_id, result = self.resultsq.get(timeout=timeout)
         except queue.Empty:
             return False
 
@@ -197,7 +197,7 @@ class MultiProcRunner_Scenario(MultiProcRunner):
 
 class MultiProcClientRunner(Runner):
     """Multiprocessing Client runner: picks "jobs" from parent queue
-    
+
         Each client is tagged with a `num` to appear in outputs etc.
     """
     def __init__(self, parent, num):
@@ -216,7 +216,7 @@ class MultiProcClientRunner(Runner):
         """
         while True:
             try:
-                job_id = self.jobsq.get(timeout=1)
+                job_id = self.jobsq.get(timeout=0.5)
             except queue.Empty:
                 break
 
@@ -260,6 +260,7 @@ class MultiProcClientRunner(Runner):
         failed = self.run_model(features=self.iter_queue())
         if failed:
             self.resultsq.put((None, 'set_fail'))
+        self.resultsq.close()
 
 
 # eof
