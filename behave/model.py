@@ -141,7 +141,7 @@ class Feature(TagAndStatusStatement, Replayable):
         ret['hook_failed'] = self.hook_failed
         ret['scenarios'] = {}
         for scenario in self.scenarios:
-            ret['scenarios'][id(scenario)] = scenario.send_status()
+            ret['scenarios'][hash(scenario)] = scenario.send_status()
         return ret
 
     def recv_status(self, value):
@@ -150,8 +150,9 @@ class Feature(TagAndStatusStatement, Replayable):
             self.hook_failed = value['hook_failed']
         if 'scenarios' in value:
             for scenario in self.scenarios:
-                if id(scenario) in value['scenarios']:
-                    scenario.recv_status(value['scenarios'][id(scenario)])
+                sval = value['scenarios'].get(hash(scenario))
+                if sval is not None:
+                    scenario.recv_status(sval)
 
     @property
     def is_finished(self):
@@ -527,6 +528,9 @@ class Scenario(TagAndStatusStatement, Replayable):
         self._row = None
         self.was_dry_run = False
 
+    def __hash__(self):
+        return hash((self.filename, self.line, self.keyword, self.name))
+
     def reset(self):
         """Reset the internal data to reintroduce new-born state just after the
         ctor was called.
@@ -545,7 +549,7 @@ class Scenario(TagAndStatusStatement, Replayable):
 
         ret['steps'] = {}
         for step in self.all_steps:
-            ret['steps'][id(step)] = step.send_status()
+            ret['steps'][hash(step)] = step.send_status()
         return ret
 
     def recv_status(self, value):
@@ -557,8 +561,9 @@ class Scenario(TagAndStatusStatement, Replayable):
         if 'steps' in value:
             steps_v = value['steps']
             for step in self.all_steps:
-                if id(step) in steps_v:
-                    step.recv_status(steps_v[id(step)])
+                sval = steps_v.get(hash(step), None)
+                if sval is not None:
+                    step.recv_status(sval)
 
     @property
     def background_steps(self):
@@ -1074,15 +1079,16 @@ class ScenarioOutline(Scenario):
         ret = super(ScenarioOutline, self).send_status()
         ret['sub_scenarios'] = {}
         for scenario in self._scenarios:
-            ret['sub_scenarios'][id(scenario)] = scenario.send_status()
+            ret['sub_scenarios'][hash(scenario)] = scenario.send_status()
         return ret
 
     def recv_status(self, value):
         if 'sub_scenarios' in value:
             sub_scens = value['sub_scenarios']
             for scenario in self.scenarios:
-                if id(scenario) in sub_scens:
-                    scenario.recv_status(sub_scens[id(scenario)])
+                sval = sub_scens.get(hash(scenario))
+                if sval is not None:
+                    scenario.recv_status(sval)
 
     @property
     def scenarios(self):
@@ -1339,6 +1345,9 @@ class Step(BasicStatement, Replayable):
         self.status = Status.untested
         self.hook_failed = False
         self.duration = 0
+
+    def __hash__(self):
+        return hash((self.filename, self.line, self.step_type, self.name))
 
     def reset(self):
         """Reset temporary runtime data to reach clean state again."""
