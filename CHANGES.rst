@@ -13,6 +13,7 @@ GOALS:
 
 DOCUMENTATION:
 
+* pull  #700: Fix wording of "gherkin.rst" (provided by: spitGlued)
 * pull  #699: Fix wording of "philosophy.rst" (provided by: spitGlued)
 * pull  #684: Fix typo in "install.rst" (provided by: mstred)
 * pull  #628: Changed pythonhosted.org links to readthedocs.io (provided by: chrisbrake)
