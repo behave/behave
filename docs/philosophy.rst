@@ -108,7 +108,7 @@ by *behave* as well as many other tools.
     then I should have three blue garments in stock
      and two black garments in stock.
 
-Each scenario is an exemplar, designed to illustrate a specific aspect of behavior of the application.
+Each scenario is an example, designed to illustrate a specific aspect of behavior of the application.
 
 When discussing the scenarios, participants question whether the outcomes
 described always result from those events occurring in the given context.
@@ -123,8 +123,8 @@ This in turn helps participants to pin down the scope of requirements,
 which leads to better estimates of how long those requirements will take to
 implement.
 
-The words Given, When and Then are often used to help drive out the
-scenarios, but are not mandated.
+The words "Given", "When" and "Then" are often used to help drive out the
+scenarios, but are not mandatory.
 
 These scenarios can also be automated, if an appropriate tool exists to
 allow automation at the UI level. If no such tool exists then it may be
@@ -138,7 +138,7 @@ Programmer-domain examples and behavior
 The same principles of examples, using contexts, events and outcomes are
 used to drive development at the level of abstraction of the programmer, as
 opposed to the business level. For instance, the following examples
-describe an aspect of behavior of a list:
+describe different aspects of the list's behavior:
 
 .. code-block:: gherkin
 
