@@ -108,7 +108,7 @@ by *behave* as well as many other tools.
     then I should have three blue garments in stock
      and two black garments in stock.
 
-Each scenario is an exemple, designed to illustrate a specific aspect of behavior of the application.
+Each scenario is an exemplar, designed to illustrate a specific aspect of behavior of the application.
 
 When discussing the scenarios, participants question whether the outcomes
 described always result from those events occurring in the given context.
