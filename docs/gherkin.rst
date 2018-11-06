@@ -239,7 +239,7 @@ some test will pass." In this simplest form, a scenario might be:
 There may be additional conditions imposed on the scenario, and these would
 take the form of "when" steps following the initial "given" condition. If
 necessary, additional "and" or "but" steps may also follow the "given",
-"when" and "then" steps if more needs to be tested. A more complex example
+"when" and "then" steps if more conditions need to be tested. A more complex example
 of a scenario might be:
 
 .. code-block:: gherkin
@@ -402,8 +402,8 @@ If you have several givens, whens or thens you could write:
 
   Scenario: Multiple Givens
     Given one thing
-    Given an other thing
-    Given yet an other thing
+    Given another thing
+    Given yet another thing
      When I open my eyes
      Then I see something
      Then I don't see something else
@@ -414,8 +414,8 @@ Or you can make it read more fluently by writing:
 
   Scenario: Multiple Givens
     Given one thing
-      And an other thing
-      And yet an other thing
+      And another thing
+      And yet another thing
      When I open my eyes
      Then I see something
       But I don't see something else
