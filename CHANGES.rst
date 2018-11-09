@@ -13,6 +13,7 @@ GOALS:
 
 DOCUMENTATION:
 
+* pull  #701: behave/runner.py docstrings (provided by: spitGlued)
 * pull  #700: Fix wording of "gherkin.rst" (provided by: spitGlued)
 * pull  #699: Fix wording of "philosophy.rst" (provided by: spitGlued)
 * pull  #684: Fix typo in "install.rst" (provided by: mstred)
