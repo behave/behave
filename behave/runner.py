@@ -37,10 +37,10 @@ class ContextMaskWarning(UserWarning):
     """Raised if a context variable is being overwritten in some situations.
 
     If the variable was originally set by user code then this will be raised if
-    *behave* overwites the value.
+    *behave* overwrites the value.
 
     If the variable was originally set by *behave* then this will be raised if
-    user code overwites the value.
+    user code overwrites the value.
     """
     pass
 
@@ -129,9 +129,9 @@ class Context(object):
       output as a StringIO instance. It is not present if stderr is not being
       captured.
 
-    If an attempt made by user code to overwrite one of these variables, or
-    indeed by *behave* to overwite a user-set variable, then a
-    :class:`behave.runner.ContextMaskWarning` warning will be raised.
+    A :class:`behave.runner.ContextMaskWarning` warning will be raised if user
+    code attempts to overwrite one of these variables, or if *behave* itself
+    tries to overwrite a user-set variable.
 
     You may use the "in" operator to test whether a certain value has been set
     on the context, for example:
