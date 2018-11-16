@@ -137,6 +137,10 @@ options = [
           help="""Specify name annotation schema for scenario outline
                   (default="{name} -- @{row.id} {examples.name}").""")),
 
+    ((),  # -- CONFIGFILE only
+     dict(dest='css',
+          help="""Specify a different css for HTML formatter""")),
+
     (("-k", "--no-skipped"),
      dict(action="store_false", dest="show_skipped",
           help="Don't print skipped steps (due to tags).")),
@@ -512,6 +516,7 @@ class Configuration(object):
         userdata={},
         # -- SPECIAL:
         default_format="pretty",    # -- Used when no formatters are configured.
+        css=None,
         default_tags="",            # -- Used when no tags are defined.
         scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}"
     )
@@ -573,6 +578,7 @@ class Configuration(object):
         self.outputs = []
         self.include_re = None
         self.exclude_re = None
+        self.css = None
         self.scenario_outline_annotation_schema = None  # pylint: disable=invalid-name
         self.steps_dir = "steps"
         self.environment_file = "environment.py"

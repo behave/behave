@@ -23,21 +23,15 @@ IMPROVEMENTS:
     => AVOID using combination of style attributes where style is better.
 
 TODO:
-  * After pretty-printing: HTML has XML PI
-        <?xml version="1.0" ?>
-        <html>
   * Embedding only works with one part ?!?
   * Even empty embed elements are contained ?!?
-
-IDEA:
-  * "Expand Failed" or "Show Failed" action (on collapsible scenarios).
 """
 
 from behave.formatter.base import Formatter
 from behave.compat.collections import Counter
 # XXX-JE-OLD: import lxml.etree as ET
 import xml.etree.ElementTree as ET
-import base64
+import six
 # XXX-JE-NOT-USED: import os.path
 
 
@@ -58,13 +52,18 @@ def _valid_XML_char_ordinal(i):
 
 def ET_tostring(elem, pretty_print=False):
     """Render an HTML element(tree) and optionally pretty-print it."""
-    text = ET.tostring(elem, "utf-8")   # XXX, method="html")
+
+    text = ET.tostring(elem, "unicode")   # XXX, method="html")
     if pretty_print:
         # -- RECIPE: For pretty-printing w/ xml.etree.ElementTree.
         # SEE: http://pymotw.com/2/xml/etree/ElementTree/create.html
         from xml.dom import minidom
+        import re
+        declaration_len = len(minidom.Document().toxml())
         reparsed = minidom.parseString(text)
-        text = reparsed.toprettyxml(indent="  ")
+        text = reparsed.toprettyxml(indent="  ")[declaration_len:]
+        text_re = re.compile(r'>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
+        text = text_re.sub(r'>\g<1></', text)
     return text
 
 class JavascriptLibrary(object):
@@ -89,6 +88,17 @@ function Collapsible_collapseAll(className)
     var elems = document.getElementsByClassName(className);
     for (var i=0; i < elems.length; i++) {
         elems[i].style.display = 'none';
+    }
+}
+
+function Collapsible_expandAllFailed()
+{
+    var elems = document.getElementsByClassName('failed');
+    for (var i=0; i < elems.length; i++) {
+        var elem = elems[i];
+        if (elem.nodeName == 'H3'){
+            elem.parentElement.getElementsByTagName('ol')[0].style.display = 'block';
+        }
     }
 }
 """
@@ -153,7 +163,10 @@ solid #0ff;background:#e0ffff;color:#011;margin-left:10px}.behave #summary,td
 #summary,th #summary{margin:0;padding:5px 10px;text-align:right;top:0;
 right:0;float:right}.behave #summary p,td #summary p,th #summary
 p{margin:0 0 0 2px}.behave #summary #totals,td #summary #totals,th
-#summary #totals{font-size:1.2em}
+#summary #totals{font-size:1.2em} h3.failed,#behave-header.failed{background:
+#c40d0d !important} h3.undefined,#behave-header.undefined{background:#faf834
+ !important; color:#000 !important} #behave-header.failed a{color:#fff} pre {
+ white-space: pre-wrap}
 """
 
 
@@ -190,7 +203,7 @@ class HTMLFormatter(Formatter):
         self.html = ET.Element('html')
         head = ET.SubElement(self.html, 'head')
         ET.SubElement(head, 'title').text = self.title
-        ET.SubElement(head, 'meta', {'content': 'text/html;charset=utf-8'})
+        ET.SubElement(head, 'meta', {'http-equiv': 'Content-Type', 'content': 'text/html;charset=utf-8'})
         style = ET.SubElement(head, 'style', type=u"text/css")
         style.append(ET.Comment(Page.theme.stylesheet_text))
         script = ET.SubElement(head, 'script', type=u"text/javascript")
@@ -225,6 +238,11 @@ class HTMLFormatter(Formatter):
         collapser = ET.SubElement(expand_collapse, 'a', id='collapser', href="#")
         collapser.set('onclick', "Collapsible_collapseAll('scenario_steps')")
         collapser.text = u'Collapse All'
+        cea_spacer = ET.SubElement(expand_collapse, 'span')
+        cea_spacer.text = u" | "
+        expander = ET.SubElement(expand_collapse, 'a', id='failed_expander', href="#")
+        expander.set('onclick', "Collapsible_expandAllFailed()")
+        expander.text = u'Expand All Failed'
 
 
         self.embed_id = 0
@@ -241,13 +259,13 @@ class HTMLFormatter(Formatter):
         self.current_feature = ET.SubElement(self.suite, 'div', {'class': 'feature'})
         if feature.tags:
             tags_element = ET.SubElement(self.current_feature, 'span', {'class': 'tag'})
-            tags_element.text = u'@' + reduce(lambda d, x: "%s, @%s" % (d, x), feature.tags)
+            tags_element.text = u'@' + ', @'.join(feature.tags)
         h2 = ET.SubElement(self.current_feature, 'h2')
         feature_element = ET.SubElement(h2, 'span', {'class': 'val'})
         feature_element.text = u'%s: %s' % (feature.keyword, feature.name)
         if feature.description:
             description_element = ET.SubElement(self.current_feature, 'pre', {'class': 'message'})
-            description_element.text = reduce(lambda d, x: "%s\n%s" % (d, x), feature.description)
+            description_element.text = '\n'.join(feature.description)
 
     def background(self, background):
         self.current_background = ET.SubElement(self.suite, 'div', {'class': 'background'})
@@ -268,7 +286,7 @@ class HTMLFormatter(Formatter):
 
         if scenario.tags:
             tags = ET.SubElement(self.scenario_el, 'span', {'class': 'tag'})
-            tags.text = u'@' + reduce(lambda d, x: "%s, @%s" % (d, x), scenario.tags)
+            tags.text = u'@' + ', @'.join(scenario.tags)
 
         self.scenario_name = ET.SubElement(self.scenario_el, 'h3')
         span = ET.SubElement(self.scenario_name, 'span', {'class': 'val'})
@@ -276,7 +294,7 @@ class HTMLFormatter(Formatter):
 
         if scenario.description:
             description_element = ET.SubElement(self.scenario_el, 'pre', {'class': 'message'})
-            description_element.text = reduce(lambda d, x: "%s\n%s" % (d, x), scenario.description)
+            description_element.text = '\n'.join(scenario.description)
 
         self.steps = ET.SubElement(self.scenario_el, 'ol',
                                    {'class': 'scenario_steps',
@@ -286,56 +304,81 @@ class HTMLFormatter(Formatter):
                 "Collapsible_toggle('scenario_%s')" % self.scenario_id)
         self.scenario_id += 1
 
+        self.first_step = None
+        self.current = None
+        self.actual = None
+
     def scenario_outline(self, outline):
         self.scenario(self, outline)
         self.scenario_el.set('class', 'scenario outline')
 
-    def match(self, match):
-        self.arguments = match.arguments
-        if match.location:
-            self.location = "%s:%s" % (match.location.filename, match.location.line)
-        else:
-            self.location = "<unknown>"
-
     def step(self, step):
-        self.arguments = None
-        self.embed_in_this_step = None
-        self.last_step = step
 
-    def result(self, result):
-        self.last_step = result
-        step = ET.SubElement(self.steps, 'li', {'class': 'step %s' % result.status})
-        step_name = ET.SubElement(step, 'div', {'class': 'step_name'})
+        cur = {}
+
+        if self.first_step == None:
+            self.first_step = cur
+        else:
+            self.current['next_step'] = cur
+
+        cur['name'] = step.name
+        cur['next_step'] = None
+        cur['keyword'] = step.keyword
+
+        self.current = cur
+
+    def match(self, match):
+        if self.actual == None:
+            self.actual = self.first_step
+        else:
+            self.actual = self.actual['next_step']
+
+        step_el = ET.SubElement(self.steps, 'li')
+        step_name = ET.SubElement(step_el, 'div', {'class': 'step_name'})
 
         keyword = ET.SubElement(step_name, 'span', {'class': 'keyword'})
-        keyword.text = result.keyword + u' '
+        keyword.text = self.actual['keyword'] + u' '
 
-        if self.arguments:
+        step_text = ET.SubElement(step_name, 'span', {'class': 'step val'})
+
+        step_file = ET.SubElement(step_el, 'div', {'class': 'step_file'})
+
+        self.actual['act_step_embed_span'] = ET.SubElement(step_el, 'span')
+        self.actual['act_step_embed_span'].set('class', 'embed')
+
+        self.actual['step_el'] = step_el
+
+        if match.arguments:
             text_start = 0
-            for argument in self.arguments:
-                step_text = ET.SubElement(step_name, 'span', {'class': 'step val'})
-                step_text.text = result.name[text_start:argument.start]
-                ET.SubElement(step_text, 'b').text = str(argument.value)
+            for argument in match.arguments:
+                step_part = ET.SubElement(step_text, 'span')
+                step_part.text = self.actual['name'][text_start:argument.start]
+                if isinstance(argument.value, six.integer_types):
+                    argument.value = str(argument.value)
+                ET.SubElement(step_text, 'b').text = argument.value
                 text_start = argument.end
-            step_text = ET.SubElement(step_name, 'span', {'class': 'step val'})
-            step_text.text = result.name[self.arguments[-1].end:]
+            step_part = ET.SubElement(step_text, 'span')
+            step_part.text = self.actual['name'][match.arguments[-1].end:]
         else:
-            step_text = ET.SubElement(step_name, 'span', {'class': 'step val'})
-            step_text.text = result.name
+            step_text.text = self.actual['name']
 
-        step_file = ET.SubElement(step, 'div', {'class': 'step_file'})
-        ET.SubElement(step_file, 'span').text = self.location
+        if match.location:
+            location = "%s:%s" % (match.location.filename, match.location.line)
+        else:
+            location = "<unknown>"
+        ET.SubElement(step_file, 'span').text = location
 
-        self.last_step_embed_span = ET.SubElement(step, 'span')
-        self.last_step_embed_span.set('class', 'embed')
+    def result(self, result):
+
+        self.actual['step_el'].set('class', 'step %s' % result.status.name)
 
         if result.text:
-            message = ET.SubElement(step, 'div', {'class': 'message'})
-            pre = ET.SubElement(message, 'pre', {'style': 'white-space: pre-wrap;'})
+            message = ET.SubElement(self.actual['step_el'], 'div', {'class': 'message'})
+            pre = ET.SubElement(message, 'pre')
             pre.text = result.text
 
         if result.table:
-            table = ET.SubElement(step, 'table')
+            table = ET.SubElement(self.actual['step_el'], 'table')
             tr = ET.SubElement(table, 'tr')
             for heading in result.table.headings:
                 ET.SubElement(tr, 'th').text = heading
@@ -347,14 +390,14 @@ class HTMLFormatter(Formatter):
 
         if result.error_message:
             self.embed_id += 1
-            link = ET.SubElement(step, 'a', {'class': 'message'})
+            link = ET.SubElement(self.actual['step_el'], 'a', {'class': 'message'})
             link.set("onclick",
                     "Collapsible_toggle('embed_%s')" % self.embed_id)
             link.text = u'Error message'
 
-            embed = ET.SubElement(step, 'pre',
+            embed = ET.SubElement(self.actual['step_el'], 'pre',
                                   {'id': "embed_%s" % self.embed_id,
-                                  'style': 'display: none; white-space: pre-wrap;'})
+                                   'style': 'display: none'})
             cleaned_error_message = ''.join(
                 c for c in result.error_message if _valid_XML_char_ordinal(ord(c))
             )
@@ -362,21 +405,13 @@ class HTMLFormatter(Formatter):
             embed.tail = u'    '
 
         if result.status == 'failed':
-            style = 'background: #C40D0D; color: #FFFFFF'
-            self.scenario_name.set('style', style)
-            self.header.set('style', style)
+            self.scenario_name.set('class', 'failed')
+            self.header.set('class', 'failed')
 
         if result.status == 'undefined':
-            style = 'background: #FAF834; color: #000000'
-            self.scenario_name.set('style', style)
-            self.header.set('style', style)
+            self.scenario_name.set('class', 'undefined')
+            self.header.set('class', 'undefined')
 
-        if hasattr(self, 'embed_in_this_step') and self.embed_in_this_step:
-            self._doEmbed(self.last_step_embed_span,
-                          self.embed_mime_type,
-                          self.embed_data,
-                          self.embed_caption)
-            self.embed_in_this_step = None
 
     def _doEmbed(self, span, mime_type, data, caption):
         self.embed_id += 1
@@ -387,7 +422,7 @@ class HTMLFormatter(Formatter):
         if 'video/' in mime_type:
             if not caption:
                 caption = u'Video'
-            link.text = unicode(caption)
+            link.text = six.u(caption)
 
             embed = ET.SubElement(span, 'video',
                                   {'id': 'embed_%s' % self.embed_id,
@@ -396,25 +431,25 @@ class HTMLFormatter(Formatter):
                                    'controls': ''})
             embed.tail = u'    '
             ET.SubElement(embed, 'source',{
-                          'src': u'data:%s;base64,%s' % (mime_type, base64.b64encode(data)),
-                          'type': '%s; codecs="vp8 vorbis"' % mime_type})
+                          'src': u'data:%s;base64,%s' % (mime_type, data),
+                          'type': mime_type})
 
         if 'image/' in mime_type:
             if not caption:
                 caption = u'Screenshot'
-            link.text = unicode(caption)
+            link.text = six.u(caption)
 
             embed = ET.SubElement(span, 'img', {
                                   'id': 'embed_%s' % self.embed_id,
                                   'style': 'display: none',
                                   'src': u'data:%s;base64,%s' % (
-                                      mime_type, base64.b64encode(data))})
+                                      mime_type, data)})
             embed.tail = u'    '
 
         if 'text/' in mime_type:
             if not caption:
                 caption = u'Data'
-            link.text = unicode(caption)
+            link.text = six.u(caption)
 
             cleaned_data = ''.join(
                 c for c in data if _valid_XML_char_ordinal(ord(c))
@@ -423,52 +458,44 @@ class HTMLFormatter(Formatter):
             embed = ET.SubElement(span, 'pre',
                                   {'id': "embed_%s" % self.embed_id,
                                    'style': 'display: none'})
-            embed.text = cleaned_data
+            embed.text = six.u(cleaned_data)
             embed.tail = u'    '
 
     def embedding(self, mime_type, data, caption=None):
-        if self.last_step.status == 'untested':
-            # Embed called during step execution
-            self.embed_in_this_step = True
-            self.embed_mime_type = mime_type
-            self.embed_data = data
-            self.embed_caption = caption
-        else:
-            # Embed called in after_*
-            self._doEmbed(self.last_step_embed_span, mime_type, data, caption)
+        self._doEmbed(self.actual['act_step_embed_span'], mime_type, data, caption)
 
     def close(self):
         if not hasattr(self, "all_features"):
             self.all_features = []
         self.duration.text =\
             u"Finished in %0.1f seconds" %\
-            sum(map(lambda x: x.duration, self.all_features))
+            sum([x.duration for x in self.all_features])
 
         # Filling in summary details
         result = []
-        statuses = map(lambda x: x.status, self.all_features)
+        statuses = [x.status.name for x in self.all_features]
         status_counter = Counter(statuses)
         for k in status_counter:
             result.append('%s: %s' % (k, status_counter[k]))
         self.current_feature_totals.text = u'Features: %s' % ', '.join(result)
 
         result = []
-        scenarios_list = map(lambda x: x.scenarios, self.all_features)
+        scenarios_list = [x.scenarios for x in self.all_features]
         scenarios = []
         if len(scenarios_list) > 0:
-            scenarios = reduce(lambda a, b: a + b, scenarios_list)
-        statuses = map(lambda x: x.status, scenarios)
+            scenarios = [x for subl in scenarios_list for x in subl]
+        statuses = [x.status.name for x in scenarios]
         status_counter = Counter(statuses)
         for k in status_counter:
             result.append('%s: %s' % (k, status_counter[k]))
         self.scenario_totals.text = u'Scenarios: %s' % ', '.join(result)
 
         result = []
-        step_list = map(lambda x: x.steps, scenarios)
+        step_list = [x.steps for x in scenarios]
         steps = []
         if step_list:
-            steps = reduce(lambda a, b: a + b, step_list)
-        statuses = map(lambda x: x.status, steps)
+            steps = [x for subl in step_list for x in subl]
+        statuses = [x.status.name for x in steps]
         status_counter = Counter(statuses)
         for k in status_counter:
             result.append('%s: %s' % (k, status_counter[k]))

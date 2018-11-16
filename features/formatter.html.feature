@@ -303,7 +303,7 @@ Feature: HTML Formatter
             </div>
             <div class="scenario">
               <span class="scenario_file">features/feature_one_failing_scenario.feature:2</span>
-              <h3 onclick="Collapsible_toggle('scenario_0')" style="background: #C40D0D; color: #FFFFFF">
+              <h3 class="failed" onclick="Collapsible_toggle('scenario_0')">
                 <span class="val">Scenario: Simple scenario with failing step</span>
               </h3>
               <ol class="scenario_steps" id="scenario_0">
@@ -357,7 +357,7 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                   <a class="message" onclick="Collapsible_toggle('embed_1')">Error message</a>
-                  <pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+                  <pre id="embed_1" style="display: none">Assertion Failed: XFAIL-STEP</pre>
 
                 </li>
               </ol>
@@ -390,7 +390,7 @@ Feature: HTML Formatter
             </div>
             <div class="scenario">
               <span class="scenario_file">features/feature_one_failing_scenario_with_skipped_steps.feature:2</span>
-              <h3 onclick="Collapsible_toggle('scenario_0')" style="background: #C40D0D; color: #FFFFFF">
+              <h3 class="failed" onclick="Collapsible_toggle('scenario_0')">
                 <span class="val">Scenario: Simple scenario with failing and skipped steps</span>
               </h3>
               <ol class="scenario_steps" id="scenario_0">
@@ -414,7 +414,7 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                   <a class="message" onclick="Collapsible_toggle('embed_1')">Error message</a>
-                  <pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+                  <pre id="embed_1" style="display: none">Assertion Failed: XFAIL-STEP</pre>
                 </li>
               </ol>
             </div>
@@ -475,7 +475,7 @@ Feature: HTML Formatter
             </div>
             <div class="scenario">
               <span class="scenario_file">features/feature_three_scenarios.feature:6</span>
-              <h3 onclick="Collapsible_toggle('scenario_1')" style="background: #C40D0D; color: #FFFFFF">
+              <h3 class="failed" onclick="Collapsible_toggle('scenario_1')">
                 <span class="val">Scenario: Failing</span>
               </h3>
               <ol class="scenario_steps" id="scenario_1">
@@ -499,14 +499,14 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                   <a class="message" onclick="Collapsible_toggle('embed_1')">Error message</a>
-                  <pre id="embed_1" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+                  <pre id="embed_1" style="display: none">Assertion Failed: XFAIL-STEP</pre>
 
                 </li>
               </ol>
             </div>
             <div class="scenario">
               <span class="scenario_file">features/feature_three_scenarios.feature:10</span>
-              <h3 onclick="Collapsible_toggle('scenario_2')" style="background: #C40D0D; color: #FFFFFF">
+              <h3 class="failed" onclick="Collapsible_toggle('scenario_2')">
                 <span class="val">Scenario: Failing with skipped steps</span>
               </h3>
               <ol class="scenario_steps" id="scenario_2">
@@ -530,7 +530,7 @@ Feature: HTML Formatter
                   </div>
                   <span class="embed"/>
                   <a class="message" onclick="Collapsible_toggle('embed_2')">Error message</a>
-                  <pre id="embed_2" style="display: none; white-space: pre-wrap;">Assertion Failed: XFAIL-STEP</pre>
+                  <pre id="embed_2" style="display: none">Assertion Failed: XFAIL-STEP</pre>
 
                 </li>
               </ol>
@@ -574,10 +574,10 @@ Feature: HTML Formatter
                   <div class="step_name">
                     <span class="keyword">When </span>
                     <span class="step val">
-                      a step with parameter &quot;
+                      <span>a step with parameter &quot;</span>
                       <b>foo</b>
+                      <span>&quot; passes</span>
                     </span>
-                    <span class="step val">&quot; passes</span>
                   </div>
                   <div class="step_file">
                     <span>features/steps/steps.py:11</span>
@@ -635,14 +635,12 @@ Feature: HTML Formatter
                   <div class="step_name">
                     <span class="keyword">When </span>
                     <span class="step val">
-                      a step with parameter &quot;
+                      <span>a step with parameter &quot;</span>
                       <b>foo</b>
-                    </span>
-                    <span class="step val">
-                      &quot; and parameter &quot;
+                      <span>&quot; and parameter &quot;</span>
                       <b>bar</b>
+                      <span>&quot; passes</span>
                     </span>
-                    <span class="step val">&quot; passes</span>
                   </div>
                   <div class="step_file">
                     <span>features/steps/steps.py:15</span>
@@ -696,7 +694,7 @@ Feature: HTML Formatter
               </div>
               <span class="embed"/>
               <div class="message">
-                <pre style="white-space: pre-wrap;">Tiger, tiger, burning bright
+                <pre>Tiger, tiger, burning bright
                 In the forests of the night,
                 What immortal hand or eye
                 Could frame thy fearful symmetry?</pre>
