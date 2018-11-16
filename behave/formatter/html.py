@@ -30,6 +30,7 @@ TODO:
 from behave.formatter.base import Formatter
 from behave.compat.collections import Counter
 # XXX-JE-OLD: import lxml.etree as ET
+from sys import version
 import xml.etree.ElementTree as ET
 import six
 # XXX-JE-NOT-USED: import os.path
@@ -53,7 +54,7 @@ def _valid_XML_char_ordinal(i):
 def ET_tostring(elem, pretty_print=False):
     """Render an HTML element(tree) and optionally pretty-print it."""
 
-    text = ET.tostring(elem, "unicode")   # XXX, method="html")
+    text = ET.tostring(elem, "utf-8" if version < "3.0" else "unicode")
     if pretty_print:
         # -- RECIPE: For pretty-printing w/ xml.etree.ElementTree.
         # SEE: http://pymotw.com/2/xml/etree/ElementTree/create.html
