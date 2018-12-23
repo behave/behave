@@ -92,8 +92,8 @@ class ParserError(Exception):
         if self.filename:
             filename = _text(self.filename, sys.getfilesystemencoding())
             return u'Failed to parse "%s": %s' % (filename, arg0)
-        else:
-            return u"Failed to parse <string>: %s" % arg0
+        # -- OTHERWISE:
+        return u"Failed to parse <string>: %s" % arg0
 
     if six.PY2:
         __unicode__ = __str__
@@ -225,35 +225,34 @@ class Parser(object):
     def diagnose_feature_usage_error(self):
         if self.feature:
             return "Multiple features in one file are not supported."
-        else:
-            return "Feature should not be used here."
+        # -- OTHERWISE:
+        return "Feature should not be used here."
 
     def diagnose_background_usage_error(self):
         if self.feature and self.feature.scenarios:
             return "Background may not occur after Scenario/ScenarioOutline."
         elif self.tags:
             return "Background does not support tags."
-        else:
-            return "Background should not be used here."
+        # -- OTHERWISE:
+        return "Background should not be used here."
 
     def diagnose_scenario_usage_error(self):
         if not self.feature:
             return "Scenario may not occur before Feature."
-        else:
-            return "Scenario should not be used here."
+        # -- OTHERWISE:
+        return "Scenario should not be used here."
 
     def diagnose_scenario_outline_usage_error(self): # pylint: disable=invalid-name
         if not self.feature:
             return "ScenarioOutline may not occur before Feature."
-        else:
-            return "ScenarioOutline should not be used here."
+        # -- OTHERWISE:
+        return "ScenarioOutline should not be used here."
 
     def ask_parse_failure_oracle(self, line):
         """
         Try to find the failure reason when a parse failure occurs:
 
             Oracle, oracle, ... what went wrong?
-            Zzzz
 
         :param line:  Text line where parse failure occured (as string).
         :return: Reason (as string) if an explanation is found.
@@ -317,27 +316,6 @@ class Parser(object):
             return True
         return False
 
-    # def subaction_detect_next_scenario(self, line):
-    #     if line.startswith("@"):
-    #         self.tags.extend(self.parse_tags(line))
-    #         self.state = "next_scenario"
-    #         return True
-    #
-    #     scenario_kwd = self.match_keyword("scenario", line)
-    #     if scenario_kwd:
-    #         self._build_scenario_statement(scenario_kwd, line)
-    #         self.state = "scenario"
-    #         return True
-    #
-    #     scenario_outline_kwd = self.match_keyword("scenario_outline", line)
-    #     if scenario_outline_kwd:
-    #         self._build_scenario_outline_statement(scenario_outline_kwd, line)
-    #         self.state = "scenario"
-    #         return True
-    #
-    #     # -- OTHERWISE:
-    #     return False
-
     # pylint: disable=invalid-name
     def subaction_detect_taggable_statement(self, line):
         """Subaction is used after first tag line is detected.
@@ -385,21 +363,11 @@ class Parser(object):
         background_kwd = self.match_keyword("background", line)
         if background_kwd:
             self._build_background_statement(background_kwd, line)
-            self.state = "steps"
+            self.state = "background"
             return True
 
         self.feature.description.append(line)
         return True
-
-    # def action_next_scenario(self, line):
-    #     """
-    #     Entered after first tag for Scenario/ScenarioOutline is detected.
-    #     """
-    #     line = line.strip()
-    #     if self.subaction_detect_next_scenario(line):
-    #         return True
-    #
-    #     return False
 
     def action_taggable_statement(self, line):
         """Entered after first tag for Scenario/ScenarioOutline or
@@ -417,32 +385,44 @@ class Parser(object):
 
         return False
 
-    def action_scenario(self, line):
+    def action_background(self, line):
+        """Entered when Background keyword/line is detected.
+        Hunts/collects background description lines.
+
+        DETECT:
+            * first step of Background
+            * next Scenario/ScenarioOutline.
+            * any description line after Background keyword
         """
-        Entered when Scenario/ScenarioOutline keyword/line is detected.
+        # -- SAME AS: action_scenario(), only Background is used as self.statement.
+        # REUSE: Already existing action.
+        return self.action_scenario(line)
+
+    def action_scenario(self, line):
+        """Entered when Scenario/ScenarioOutline keyword/line is detected.
         Hunts/collects scenario description lines.
 
         DETECT:
             * first step of Scenario/ScenarioOutline
-            * next Scenario/ScenarioOutline.
+            * next Scenario/ScenarioOutline
+            * any description line after Scenario/ScenarioOutline keyword
         """
         line = line.strip()
         step = self.parse_step(line)
         if step:
-            # -- FIRST STEP DETECTED: End collection of scenario descriptions.
+            # -- FIRST STEP DETECTED: End collection of description-part.
             self.state = "steps"
             self.statement.steps.append(step)
             return True
 
         # -- CASE: Detect next Scenario/ScenarioOutline
-        #   * Scenario with scenario description, but without steps.
-        #   * Title-only scenario without scenario description and steps.
-        # OLD: if self.subaction_detect_next_scenario(line):
+        #   * Background/Scenario with description, but without steps.
+        #   * Title-only Background/Scenario without description and steps.
         if self.subaction_detect_taggable_statement(line):
             # -- DETECTED: Next Scenario, ScenarioOutline (or tags)
             return True
 
-        # -- OTHERWISE: Add scenario description line.
+        # -- OTHERWISE: Add description line.
         # pylint: disable=E1103
         #   E1103   Instance of "Background" has no "description" member...
         self.statement.description.append(line)

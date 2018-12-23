@@ -1390,6 +1390,42 @@ Feature: Background
             ('then', 'Then', 'we have things', None, None),
         ])
 
+    def test_parse_background_with_description(self):
+        # -- RELATED-TO: Issue #713
+        doc = u'''
+Feature: Background
+
+  A feature description line 1.
+  A feature description line 2.
+
+  Background: One
+    A background description line 1.
+    A background description line 2.
+
+    Given we init stuff
+    When we init more stuff
+
+  Scenario: One
+'''.lstrip()
+        feature = parser.parse_feature(doc)
+        eq_(feature.name, "Background")
+        eq_(feature.description, [
+            "A feature description line 1.",
+            "A feature description line 2.",
+        ])
+        assert feature.background is not None
+        eq_(feature.background.name, "One")
+        eq_(feature.background.description, [
+            "A background description line 1.",
+            "A background description line 2.",
+        ])
+        self.compare_steps(feature.background.steps, [
+            ('given', 'Given', 'we init stuff', None, None),
+            ('when', 'When', 'we init more stuff', None, None),
+        ])
+
+        assert (len(feature.scenarios) == 1)
+        eq_(feature.scenarios[0].name, "One")
 
     def test_parse_background_with_tags_should_fail(self):
         doc = u'''

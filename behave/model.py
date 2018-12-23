@@ -385,12 +385,19 @@ class Background(BasicStatement, Replayable):
 
        The line number of the *feature file* where the background was found.
 
+    .. attribute:: description
+
+       Optional description (text, as list of lines).
+
+       .. since:: behave-1.2.7 (supported since Gherkin v6 or earlier)
+
     .. _`background`: gherkin.html#backgrounds
     """
     type = "background"
 
-    def __init__(self, filename, line, keyword, name, steps=None):
+    def __init__(self, filename, line, keyword, name, steps=None, description=None):
         super(Background, self).__init__(filename, line, keyword, name)
+        self.description = description or []
         self.steps = steps or []
 
     def __repr__(self):
