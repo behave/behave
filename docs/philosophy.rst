@@ -217,7 +217,9 @@ which needs it, and examples of that code's behavior are written using this
 object instead of the production version.
 
 These objects can either be created by hand, or created using a
-mocking framework such as :pypi:`mock`.
+mocking framework such as `unittest.mock`_.
+
+.. _`unittest.mock`: https://docs.python.org/fr/3/library/unittest.mock.html
 
 Questioning responsibilities in this way, and using mocks to fulfill the
 required roles of collaborating classes, encourages the use of Role-based
