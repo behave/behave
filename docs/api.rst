@@ -104,7 +104,7 @@ handled by either the default simple parser (:pypi:`parse`),
 its extension "cfparse" or by regular expressions
 if you invoke :func:`~behave.use_step_matcher`.
 
-.. _`parameters`: tutorial.html#step-parameters
+.. _`parameters`: tutorial.rst#step-parameters
 
 
 .. autofunction:: behave.use_step_matcher

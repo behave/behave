@@ -18,8 +18,8 @@ Feature Testing Layout
    steps, scenarios, features or the whole shooting match).
 
 .. _`feature files`: #gherkin-feature-testing-language
-.. _`Python step implementations`: tutorial.html#python-step-implementations
-.. _`environmental controls`: tutorial.html#environmental-controls
+.. _`Python step implementations`: tutorial.rst#python-step-implementations
+.. _`environmental controls`: tutorial.rst#environmental-controls
 
 These files are typically stored in a directory called "features". The
 minimum requirement for a features directory is::
@@ -91,7 +91,7 @@ If you're having trouble setting things up and want to see what *behave* is
 doing in attempting to find your features use the "-v" (verbose)
 command-line switch.
 
-.. _`configuration file`: behave.html#configuration-files
+.. _`configuration file`: behave.rst#configuration-files
 
 .. _chapter.gherkin:
 
@@ -214,7 +214,7 @@ Keep your scenarios short, and don’t have too many.
  If the background section has scrolled off the screen, you should think
  about using higher-level steps, or splitting the features file in two.
 
-.. _`calling steps from other steps`: api.html#calling-steps-from-other-steps
+.. _`calling steps from other steps`: api.rst#calling-steps-from-other-steps
 .. _`Cucumber Background description`: https://github.com/cucumber/cucumber/wiki/Background
 
 
