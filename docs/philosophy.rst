@@ -11,7 +11,7 @@ development practices as found in extreme programming. It has `evolved over
 the last few years`__.
 
 __ https://dannorth.net/introducing-bdd
-__ https://forums.pragprog.com/forums/95/topics/3035
+__ https://dannorth.net/2006/06/04/theres-more-to-bdd-than-evolving-tdd/
 
 On the "Agile specifications, BDD and Testing eXchange" in November 2009 in
 London, Dan North `gave the following definition of BDD`__:

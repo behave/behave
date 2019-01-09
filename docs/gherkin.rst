@@ -118,7 +118,7 @@ structure in the text. Most lines start with a keyword ("Feature",
 Comment lines are allowed anywhere in the file. They begin with zero or
 more spaces, followed by a sharp sign (#) and some amount of text.
 
-.. _`gherkin`: https://github.com/cucumber/cucumber/wiki/Gherkin
+.. _`gherkin`: https://docs.cucumber.io/gherkin/reference/
 
 
 Features
@@ -370,8 +370,8 @@ Examples:
   observable effect somewhere else.
 
 .. _`requests`: http://docs.python-requests.org/en/latest/
-.. _`twill`:    http://twill.idyll.org/
-.. _`selenium`: http://docs.seleniumhq.org/projects/webdriver/
+.. _`twill`:    http://pypi.org/project/twill
+.. _`selenium`: https://docs.seleniumhq.org/projects/webdriver/
 
 
 Then

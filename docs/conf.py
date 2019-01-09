@@ -44,7 +44,7 @@ for optional_module_name in optional_extensions:
 
 
 extlinks = {
-    "pypi": ("https://pypi.python.org/pypi/%s", ""),
+    "pypi": ("https://pypi.org/project/%s", ""),
     "github": ("https://github.com/%s", "github:/"),
     "issue":  ("https://github.com/behave/behave/issue/%s", "issue #"),
     "youtube": ("https://www.youtube.com/watch?v=%s", "youtube:video="),

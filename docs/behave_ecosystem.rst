@@ -44,8 +44,8 @@ IDE             Plugin              Description
 =============== =================== ======================================================================================
 
 .. _PyCharm:        https://www.jetbrains.com/pycharm/
-.. _Eclipse:        http://www.eclipse.org/
-.. _VisualStudio:   https://www.visualstudio.com/
+.. _Eclipse:        https://www.eclipse.org/
+.. _VisualStudio:   https://visualstudio.microsoft.com/
 
 .. _`PyCharm BDD`: https://blog.jetbrains.com/pycharm/2014/09/feature-spotlight-behavior-driven-development-in-pycharm/
 .. _`Cucumber-Eclipse`: http://cucumber.github.io/cucumber-eclipse/
@@ -81,10 +81,10 @@ Editor              Plugin                  Description
 
 .. _`Notepad++`: https://notepad-plus-plus.org/
 .. _gedit:  https://wiki.gnome.org/Apps/Gedit
-.. _vim:    http://www.vim.org/
+.. _vim:    https://www.vim.org/
 .. _`Sublime Text`:    http://www.sublimetext.com
 
-.. _`Gherkin editor`: http://gherkineditor.codeplex.com
+.. _`Gherkin editor`: https://archive.codeplex.com/?p=gherkineditor
 .. _gedit_behave:   https://gitlab.com/mcepl/gedit_behave
 .. _`NP++ gherkin`: http://productive.me/develop/cucumbergherkin-syntax-highlighting-for-notepad
 .. _vim-behave:     https://github.com/rooprob/vim-behave

@@ -8,7 +8,7 @@ to reuse step definitions in similar projects that address the same
 problem domain.
 
 .. _behave:     https://github.com/behave/behave
-.. _Selenium:   http://docs.seleniumhq.org/
+.. _Selenium:   https://docs.seleniumhq.org/
 
 
 Step Libraries

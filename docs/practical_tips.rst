@@ -128,7 +128,7 @@ using *behave-django*:
     def step_impl(context, url):
         context.browser.visit(context.get_url(url))
 
-.. _Splinter docs: http://splinter.readthedocs.io/en/latest/
+.. _Splinter docs: https://splinter.readthedocs.io/en/latest/
 
 
 Visual Testing
@@ -144,4 +144,4 @@ A list of visual testing tools and services is available from Dave Haeffner's
 `How to Do Visual Testing`_ blog post.
 
 .. _How to Do Visual Testing:
-    http://testautomation.applitools.com/post/105435804567/how-to-do-visual-testing-with-selenium
+    https://applitools.com/blog/how-to-do-visual-testing-with-selenium

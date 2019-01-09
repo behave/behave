@@ -9,7 +9,7 @@ The `Flask documentation on testing`_ explains how to use the Werkzeug test
 client for running tests in general.
 
 .. _Flask: http://flask.pocoo.org/
-.. _Flask documentation on testing: http://flask.pocoo.org/docs/latest/testing/
+.. _Flask documentation on testing: http://flask.pocoo.org/docs/1.0/testing/
 
 Integration Example
 ===================
@@ -46,7 +46,7 @@ tutorial.
 
 Taken and adapted from Ismail Dhorat's `BDD testing example on Flaskr`_.
 
-.. _Flaskr sample application: http://flask.pocoo.org/docs/latest/tutorial/introduction/
+.. _Flaskr sample application: http://flask.pocoo.org/docs/dev/tutorial/introduction/
 .. _BDD testing example on Flaskr: https://github.com/ismaild/flaskr-bdd
 
 

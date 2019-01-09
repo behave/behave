@@ -78,7 +78,7 @@ in your ``environment.py`` file:
 Taken from Andrey Zarubin's blog post "`BDD. PyCharm + Python & Django`_".
 
 .. _`BDD. PyCharm + Python & Django`:
-    https://anvileight.com/blog/2016/04/12/behavior-driven-development-pycharm-python-django/
+    https://blog.anvileight.com/posts/behavior-driven-development-pycharm-python-django/
 
 
 Strategies and Tooling
