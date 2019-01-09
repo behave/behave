@@ -26,7 +26,7 @@ Behave related Projects to pypi.org
 ------------------------------------------------------------------------------
 
 Use the following URL to  find `behave`_ related projects on the new pypi
-repository (supersedes: https://pypi.python.org):
+repository (supersedes: ``https://pypi.python.org``):
 
 * https://pypi.org/search/?q=behave
 

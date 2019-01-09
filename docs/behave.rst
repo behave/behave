@@ -278,6 +278,8 @@ you have to use logical AND::
     --tags ~@fixme --tags ~@buggy.
 
 
+.. _docid.behave.configuration-files:
+
 Configuration Files
 ===================
 

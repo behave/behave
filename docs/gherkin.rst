@@ -10,16 +10,14 @@ Feature Testing Layout
 
 *behave* works with three types of files:
 
-1. `feature files`_ written by your Business Analyst / Sponsor / whoever
+1. :ref:`Feature files <docid.gherkin>` written by your Business Analyst / Sponsor / whoever
    with your behaviour scenarios in it, and
-2. a "steps" directory with `Python step implementations`_ for the
+2. a "steps" directory with :ref:`Python step implementations <docid.tutorial.python-step-implementations>` for the
    scenarios.
-3. optionally some `environmental controls`_ (code to run before and after
+3. optionally some :ref:`environmental controls <docid.tutorial.environmental-controls>` (code to run before and after
    steps, scenarios, features or the whole shooting match).
 
-.. _`feature files`: #gherkin-feature-testing-language
-.. _`Python step implementations`: tutorial.html#python-step-implementations
-.. _`environmental controls`: tutorial.html#environmental-controls
+.. _`xxx_feature files`: #gherkin-feature-testing-language
 
 These files are typically stored in a directory called "features". The
 minimum requirement for a features directory is::
@@ -85,14 +83,15 @@ line:
 
   Note that with this approach, if you want to execute *behave* without having
   to explicitly specify the directory (first option) you can set the ``paths``
-  setting in your `configuration file`_ (e.g. ``paths=tests``).
+  setting in your :ref:`configuration file <docid.behave.configuration-files>`
+  (e.g. ``paths=tests``).
 
 If you're having trouble setting things up and want to see what *behave* is
 doing in attempting to find your features use the "-v" (verbose)
 command-line switch.
 
-.. _`configuration file`: behave.html#configuration-files
 
+.. _docid.gherkin:
 .. _chapter.gherkin:
 
 Gherkin: Feature Testing Language
@@ -202,8 +201,8 @@ Don’t use "Background" to set up complicated state unless that state is actual
 Keep your "Background" section short.
  You’re expecting the user to actually remember this stuff when reading
  your scenarios. If the background is more than 4 lines long, can you move
- some of the irrelevant details into high-level steps? See `calling steps
- from other steps`_.
+ some of the irrelevant details into high-level steps? See :ref:`calling steps
+ from other steps <docid.api.calling-steps-from-other-steps>`.
 
 Make your "Background" section vivid.
  You should use colorful names and try to tell a story, because the human
@@ -214,8 +213,7 @@ Keep your scenarios short, and don’t have too many.
  If the background section has scrolled off the screen, you should think
  about using higher-level steps, or splitting the features file in two.
 
-.. _`calling steps from other steps`: api.html#calling-steps-from-other-steps
-.. _`Cucumber Background description`: https://github.com/cucumber/cucumber/wiki/Background
+.. _`Cucumber Background description`: https://docs.cucumber.io/gherkin/reference/#background
 
 
 Scenarios
@@ -369,7 +367,7 @@ Examples:
 - Developing a library? Kicking off some kind of action that has an
   observable effect somewhere else.
 
-.. _`requests`: https://docs.python-requests.org/en/latest/
+.. _`requests`: http://docs.python-requests.org/en/master/
 .. _`twill`:    https://pypi.org/project/twill
 .. _`selenium`: https://docs.seleniumhq.org/projects/webdriver/
 
@@ -608,12 +606,12 @@ the environment functions via the "feature" or "scenario" object passed to
 them. On those objects there is an attribute called "tags" which is a list
 of the tag names attached, in the order they're found in the features file.
 
-There are also `environmental controls`_ specific to tags, so in the above
-example *behave* will attempt to invoke an ``environment.py`` function
-``before_tag`` and ``after_tag`` before and after the Scenario tagged
-``@slow``, passing in the name "slow". If multiple tags are present then
-the functions will be called multiple times with each tag in the order
-they're defined in the feature file.
+There are also :ref:`environmental controls <docid.tutorial.environmental-controls>`
+specific to tags, so in the above example *behave* will attempt to invoke
+an ``environment.py`` function ``before_tag`` and ``after_tag`` before and after
+the Scenario tagged ``@slow``, passing in the name "slow".
+If multiple tags are present then the functions will be called multiple times
+with each tag in the order they're defined in the feature file.
 
 Re-visiting the example from above; if only some of the features required a
 browser and web server then you could tag them ``@browser``:

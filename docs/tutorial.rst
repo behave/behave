@@ -228,6 +228,7 @@ There's a variety of ways to access the table data - see the
 :class:`~behave.model.Table` API documentation for the full details.
 
 
+.. _docid.tutorial.python-step-implementations:
 
 Python Step Implementations
 ===========================
@@ -304,6 +305,8 @@ This function allows you to, for example:
 This will cause the "when I do the same thing as before" step to execute
 the other two steps as though they had also appeared in the scenario file.
 
+
+.. _docid.tutorial.step-parameters:
 
 Step Parameters
 ---------------
@@ -427,6 +430,8 @@ There's also some values added to the context by *behave* itself:
 The *context* variable in all cases is an instance of
 :class:`behave.runner.Context`.
 
+
+.. _docid.tutorial.environmental-controls:
 
 Environmental Controls
 ======================

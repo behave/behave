@@ -99,12 +99,10 @@ variable. Additional arguments come from `step parameters`_, if any.
 Step Parameters
 ---------------
 
-You may additionally use `parameters`_ in your step names. These will be
+You may additionally use :ref:`parameters <docid.tutorial.step-parameters>` in your step names. These will be
 handled by either the default simple parser (:pypi:`parse`),
 its extension "cfparse" or by regular expressions
 if you invoke :func:`~behave.use_step_matcher`.
-
-.. _`parameters`: tutorial.html#step-parameters
 
 
 .. autofunction:: behave.use_step_matcher
@@ -140,6 +138,9 @@ name" to :class:`~behave.matchers.Matcher` class.
 
 .. autoclass:: behave.matchers.Match
 
+
+.. _docid.api.execute-steps:
+.. _docid.api.calling-steps-from-other-steps:
 
 Calling Steps From Other Steps
 ------------------------------

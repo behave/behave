@@ -56,4 +56,4 @@ Type  Characters Matched                          Output Type
 ===== =========================================== ============
 
 
-.. _string.format: https://docs.python.org/2/library/string.html#format-string-syntax
+.. _string.format: https://docs.python.org/3/library/string.html#format-string-syntax
