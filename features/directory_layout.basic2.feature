@@ -11,7 +11,7 @@ Feature: Basic directory layout (Variant 1B)
   .       +-- environment.py      # OPTIONAL: environment setup/hooks.
   .
   . SEE ALSO:
-  .   * http://pythonhosted.org/behave/gherkin.html#layout-variations
+  .   * https://behave.readthedocs.io/en/latest/gherkin.html#layout-variations
 
 
     @setup
