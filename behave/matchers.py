@@ -46,8 +46,7 @@ class StepParseError(ValueError):
 # SECTION: Model Elements
 # -----------------------------------------------------------------------------
 class Match(Replayable):
-    """An parameter-matched *feature file* step name extracted using
-    step decorator `parameters`_.
+    """An parameter-matched step name extracted from a *feature file*.
 
     .. attribute:: func
 

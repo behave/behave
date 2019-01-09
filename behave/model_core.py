@@ -89,8 +89,7 @@ class Status(Enum):
 
 
 class Argument(object):
-    """An argument found in a *feature file* step name and extracted using
-    step decorator `parameters`_.
+    """An argument found in a *feature file* step name.
 
     The attributes are:
 
@@ -104,8 +103,8 @@ class Argument(object):
 
     .. attribute:: name
 
-       The name of the argument. This will be None if the parameter is
-       anonymous.
+       The name of the argument.
+       This will be None if the parameter is anonymous.
 
     .. attribute:: start
 
