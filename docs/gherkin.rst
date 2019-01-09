@@ -17,7 +17,6 @@ Feature Testing Layout
 3. optionally some :ref:`environmental controls <docid.tutorial.environmental-controls>` (code to run before and after
    steps, scenarios, features or the whole shooting match).
 
-.. _`xxx_feature files`: #gherkin-feature-testing-language
 
 These files are typically stored in a directory called "features". The
 minimum requirement for a features directory is::
