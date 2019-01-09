@@ -369,8 +369,8 @@ Examples:
 - Developing a library? Kicking off some kind of action that has an
   observable effect somewhere else.
 
-.. _`requests`: http://docs.python-requests.org/en/latest/
-.. _`twill`:    http://pypi.org/project/twill
+.. _`requests`: https://docs.python-requests.org/en/latest/
+.. _`twill`:    https://pypi.org/project/twill
 .. _`selenium`: https://docs.seleniumhq.org/projects/webdriver/
 
 
