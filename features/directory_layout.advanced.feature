@@ -14,7 +14,7 @@ Feature: Advanced, more complex directory layout (Variant 2)
   .       +-- environment.py      # OPTIONAL: environment setup/hooks.
   .
   . SEE ALSO:
-  .   * http://pythonhosted.org/behave/gherkin.html#layout-variations
+  .   * https://behave.readthedocs.io/en/latest/gherkin.html#layout-variations
   .
   . RELATED:
   .   * issue #99: Layout variation "a directory containing your feature files" ...
