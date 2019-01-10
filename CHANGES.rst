@@ -13,6 +13,7 @@ GOALS:
 
 DOCUMENTATION:
 
+* pull  #722: DOC remove remaining pythonhosted links (provided by: leszekhanusz)
 * pull  #701: behave/runner.py docstrings (provided by: spitGlued)
 * pull  #700: Fix wording of "gherkin.rst" (provided by: spitGlued)
 * pull  #699: Fix wording of "philosophy.rst" (provided by: spitGlued)
