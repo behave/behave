@@ -11,8 +11,8 @@ Django, though, varies slightly.
     Provides a dedicated management command.  Easy, automatic integration (thanks
     to monkey patching).  Behave tests are run with ``python manage.py behave``.
     Allows running tests against an existing database as a special feature.
-    See `setup behave-django <https://pythonhosted.org/behave-django/installation.html>`_
-    and `usage <https://pythonhosted.org/behave-django/usage.html>`_ instructions.
+    See `setup behave-django <https://behave-django.readthedocs.io/en/latest/installation.html>`_
+    and `usage <https://behave-django.readthedocs.io/en/latest/usage.html>`_ instructions.
 
 :pypi:`django-behave`
     Provides a Django-specific TestRunner for Behave, which is set with the
