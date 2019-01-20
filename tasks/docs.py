@@ -130,14 +130,18 @@ def save(ctx, dest="docs.html", format="html", language=None):
             partpath.remove_p()
 
 
-@task(name="intl_update", help={
-    "language": "Language to use (en, ...) or None to build all.",
+@task(help={
+    "language": 'Language to use, like "en" (default: "all" to build all).',
 })
-def sphinx_intl_update(ctx, language=None):
-    """Update sphinx-doc translation(s).
+def update_translation(ctx, language="all"):
+    """Update sphinx-doc translation(s) messages from the "English" docs.
 
     * Generates gettext *.po files in "build/docs/gettext/" directory
     * Updates/generates gettext *.po per language in "docs/LOCALE/{language}/"
+
+    .. note:: Afterwards, the missing message translations can be filled in.
+
+    :param language: Indicate which language messages to update (or "all").
 
     REQUIRES:
 
@@ -146,7 +150,7 @@ def sphinx_intl_update(ctx, language=None):
 
     .. seealso:: https://github.com/sphinx-doc/sphinx-intl
     """
-    if not language or language.lower() == "none":
+    if language == "all":
         # -- CASE: Process/update all support languages (translations).
         DEFAULT_LANGUAGES = os.environ.get("SPHINXINTL_LANGUAGE", None)
         if DEFAULT_LANGUAGES:
@@ -176,14 +180,16 @@ def sphinx_intl_update(ctx, language=None):
 # -----------------------------------------------------------------------------
 # TASK CONFIGURATION:
 # -----------------------------------------------------------------------------
-namespace = Collection(clean, rebuild, linkcheck, browse, save, sphinx_intl_update)
+namespace = Collection(clean, rebuild, linkcheck, browse, save, update_translation)
 namespace.add_task(build, default=True)
 namespace.configure({
     "sphinx": {
+        # -- FOR TASKS: docs.build, docs.rebuild, docs.clean, ...
         "language": SPHINX_LANGUAGE_DEFAULT,
         "sourcedir": "docs",
         "destdir": "build/docs",
-        "languages": None,
+        # -- FOR TASK: docs.update_translation
+        "languages": None,  # -- List of language translations, like: de, ja, ...
     }
 })
 
