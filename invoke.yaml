@@ -16,6 +16,14 @@ run:
     echo: true
     pty:  true
 
+sphinx:
+    sourcedir: "docs"
+    destdir:   "build/docs"
+    language: en
+    languages:
+      - de
+      # PREPARED: - zh-CN
+
 clean_all:
     extra_directories:
       - .pytest_cache

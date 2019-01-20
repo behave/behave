@@ -79,12 +79,24 @@ source_encoding = "utf-8"
 # The master toctree document.
 master_doc = "index"
 
+# -- MULTI-LANGUAGE SUPPORT: en, ...
+# SEE: https://pypi.org/project/sphinx-intl/
+# SEE: https://github.com/sphinx-doc/sphinx-intl/
+locale_dirs = ["locale/"]   # path is example but recommended.
+gettext_compact = False     # optional.
+
+# STEPS:
+#   make gettext
+#       -- Create *.po files in "../build/docs/locale/"
+#   sphinx-intl update -p ../build/docs/locale -l de -l ja
+#       -- Create *.po files in "gettext/de/", "gettext/ja/" dirs.
+#
 # -----------------------------------------------------------------------------
 # GENERAL CONFIGURATION
 # -----------------------------------------------------------------------------
 project = u"behave"
-authors = u"Benno Rice, Richard Jones and Jens Engel"
-copyright = u"2012-2017, %s" % authors
+authors = u"Jens Engel, Benno Rice and Richard Jones"
+copyright = u"2012-2019, %s" % authors
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -238,7 +250,7 @@ html_file_suffix = ".html"
 # OPTIONS FOR: HTML HELP
 # ------------------------------------------------------------------------------
 # Output file base name for HTML help builder.
-htmlhelp_basename = "behavedoc"
+htmlhelp_basename = "behave.doc"
 
 
 # ------------------------------------------------------------------------------

@@ -5,3 +5,6 @@
 
 Sphinx >= 1.6
 sphinx_bootstrap_theme >= 0.6.0
+
+# -- SUPPORT: sphinx-doc translations (prepared)
+sphinx-intl >= 0.9.11
