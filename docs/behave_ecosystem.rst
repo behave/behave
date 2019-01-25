@@ -34,22 +34,25 @@ repository (supersedes: ``https://pypi.python.org``):
 IDE Plugins
 ------------------------------------------------------------------------------
 
-=============== =================== ======================================================================================
-IDE             Plugin              Description
-=============== =================== ======================================================================================
-`PyCharm`_      `PyCharm BDD`_      PyCharm 4 (Professional edition) has **built-in support** for `behave`_.
-`PyCharm`_      Gherkin             PyCharm/IDEA editor support for Gherkin.
-`Eclipse`_      `Cucumber-Eclipse`_ Plugin contains editor support for Gherkin.
-`VisualStudio`_ `cuke4vs`_          VisualStudio plugin with editor support for Gherkin.
-=============== =================== ======================================================================================
+==================== =================== ======================================================================================
+IDE                  Plugin              Description
+==================== =================== ======================================================================================
+`PyCharm`_            `PyCharm BDD`_      PyCharm 4 (Professional edition) has **built-in support** for `behave`_.
+`PyCharm`_            Gherkin             PyCharm/IDEA editor support for Gherkin.
+`Eclipse`_            `Cucumber-Eclipse`_ Plugin contains editor support for Gherkin.
+`VisualStudio`_       `cuke4vs`_          VisualStudio plugin with editor support for Gherkin.
+`Visual Studio Code`_ `BDD Power Tools`_  Visual Studio Code plugin with syntax highlighting and autocompletion for Gherkin.
+===================== =================== ======================================================================================
 
 .. _PyCharm:        https://www.jetbrains.com/pycharm/
 .. _Eclipse:        https://www.eclipse.org/
 .. _VisualStudio:   https://visualstudio.microsoft.com/
+.. _`Visual Studio Code`:   https://code.visualstudio.com/
 
 .. _`PyCharm BDD`: https://blog.jetbrains.com/pycharm/2014/09/feature-spotlight-behavior-driven-development-in-pycharm/
 .. _`Cucumber-Eclipse`: http://cucumber.github.io/cucumber-eclipse/
 .. _cuke4vs:        https://github.com/henritersteeg/cuke4vs
+.. _`BDD Power Tools`: https://github.com/iteratec/bdd-power-tools
 
 .. hidden_BROKEN:
 
