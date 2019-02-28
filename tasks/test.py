@@ -123,6 +123,7 @@ def select_prefix_for(arg, prefixes):
             return prefix
     return os.path.dirname(arg)
 
+
 def select_by_prefix(args, prefixes):
     selected = []
     for arg in args.strip().split():
@@ -131,6 +132,7 @@ def select_by_prefix(args, prefixes):
         if scope:
             selected.append(arg)
     return " ".join(selected)
+
 
 def grouped_by_prefix(args, prefixes):
     """Group behave args by (directory) scope into multiple test-runs."""

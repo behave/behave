@@ -8,11 +8,11 @@
 #  * http://www.pip-installer.org/
 # ============================================================================
 
-invoke >= 0.21.0
-six >= 1.11.0
-path.py >= 10.1
+invoke >= 1.2.0
+path.py >= 11.5.0
+pycmd
+six >= 1.12.0
+
+# -- PYTHON2 BACKPORTS:
 pathlib;    python_version <= '3.4'
 backports.shutil_which; python_version <= '3.3'
-
-# For cleanup of python files: py.cleanup
-pycmd
