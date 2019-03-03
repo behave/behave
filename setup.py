@@ -25,6 +25,7 @@ sys.path.insert(0, HERE)
 from setuptools import find_packages, setup
 from setuptools_behave import behave_test
 
+
 # -----------------------------------------------------------------------------
 # CONFIGURATION:
 # -----------------------------------------------------------------------------
@@ -32,6 +33,7 @@ python_version = float("%s.%s" % sys.version_info[:2])
 BEHAVE = os.path.join(HERE, "behave")
 README = os.path.join(HERE, "README.rst")
 description = "".join(open(README).readlines()[4:])
+
 
 # -----------------------------------------------------------------------------
 # UTILITY:
@@ -74,6 +76,7 @@ setup(
     # SUPPORT: python2.7, python3.3 (or higher)
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*",
     install_requires=[
+        "cucumber-tag-expressions >= 1.1.1",
         "parse >= 1.8.2",
         "parse_type >= 0.4.2",
         "six >= 1.11.0",
@@ -82,10 +85,6 @@ setup(
         # -- PREPARED:
         "win_unicode_console; python_version < '3.6'",
         "colorama",
-        # -- DISABLED python2.6 support:
-        #   "argparse; python_version < '2.7'",
-        #   "importlib; python_version < '2.7'",
-        #   "ordereddict; python_version < '2.7'",
     ],
     test_suite="nose.collector",
     tests_require=[
@@ -100,11 +99,20 @@ setup(
         "behave_test": behave_test,
     },
     extras_require={
-        'docs': ["sphinx >= 1.6", "sphinx_bootstrap_theme >= 0.6"],
-        'develop': [
-            "coverage", "pytest >= 3.0", "pytest-cov", "tox",
-            "invoke >= 0.21.0", "path.py >= 8.1.2", "pycmd",
-            "pathlib",  # python_version <= '3.4'
+        "docs": [
+            "sphinx >= 1.6",
+            "sphinx_bootstrap_theme >= 0.6"
+        ],
+        "develop": [
+            "coverage",
+            "pytest >= 3.0",
+            "pytest-html >= 1.19.0",
+            "pytest-cov",
+            "tox",
+            "invoke >= 1.2.0",
+            "path.py >= 10.1",
+            "pycmd",
+            "pathlib; python_version <= '3.4'",
             "modernize >= 0.5",
             "pylint",
         ],
@@ -124,6 +132,7 @@ setup(
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: Jython",
         "Programming Language :: Python :: Implementation :: PyPy",

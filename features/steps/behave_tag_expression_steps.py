@@ -24,7 +24,7 @@ Provides step definitions that test tag expressions (and tag logic).
 
 from __future__ import absolute_import
 from behave import given, then, register_type
-from behave.tag_expression import TagExpression
+from behave.tag_expression import make_tag_expression
 from behave_model_util import convert_comma_list, convert_model_element_tags
 from hamcrest import assert_that, equal_to
 
@@ -41,9 +41,9 @@ class ModelElement(object):
 # TYPE CONVERTERS:
 # -----------------------------------------------------------------------------
 def convert_tag_expression(text):
-    parts = text.strip().split()
-    return TagExpression(parts)
+    return make_tag_expression(text.strip())
 register_type(TagExpression=convert_tag_expression)
+
 
 def convert_yesno(text):
     text = text.strip().lower()

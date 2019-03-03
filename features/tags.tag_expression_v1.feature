@@ -1,4 +1,5 @@
-Feature: Tag Expression
+@deprecating
+Feature: Old-style Tag Expression (deprecating)
 
   As a tester
   I want to select a subset of all features/scenarios by using tags

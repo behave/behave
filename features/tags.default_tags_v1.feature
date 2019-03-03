@@ -1,4 +1,4 @@
-Feature: Default Tags
+Feature: Default Tags with tag-expressions v1
 
   As a tester
   I want to define a number of default tags in a configuration file
@@ -68,12 +68,13 @@ Feature: Default Tags
     And the command output should contain "Scenario: Alice"
     But the command output should not contain "Scenario: Bob"
 
+  @xfail
   Scenario: Use default tags with two tags
     Given a file named "behave.ini" with:
       """
       [behave]
       show_skipped = false
-      default_tags = -@not_implemented -@xfail
+      default_tags = -@xfail,-@not_implemented
       # tag logic := not @not_implemented and not @xfail
       """
     When I run "behave -f plain features"
@@ -91,7 +92,7 @@ Feature: Default Tags
       """
       [behave]
       show_skipped = false
-      default_tags = -@not_implemented -@xfail
+      default_tags = -@xfail,-@not_implemented
       # tag logic := not @not_implemented and not @xfail
       """
     When I run "behave -f plain --tags=not_implemented,foo features"

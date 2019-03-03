@@ -71,7 +71,7 @@ class TestFeatureRun(unittest.TestCase):
             scenario.tags = []
             scenario.run.return_value = False
 
-        self.config.tags.check.return_value = True  # pylint: disable=no-member
+        self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
         self.config.name = []
 
         feature = Feature('foo.feature', 1, u'Feature', u'foo',
@@ -95,7 +95,7 @@ class TestFeatureRun(unittest.TestCase):
         for scenario in scenarios:
             scenario.run.return_value = False
 
-        self.config.tags.check.return_value = True  # pylint: disable=no-member
+        self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
         self.config.name = ['first', 'third']
         self.config.name_re = Configuration.build_name_re(self.config.name)
 
@@ -122,7 +122,7 @@ class TestFeatureRun(unittest.TestCase):
         for scenario in scenarios:
             scenario.run.return_value = False
 
-        self.config.tags.check.return_value = True  # pylint: disable=no-member
+        self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
         self.config.name = ['third .*', 'second .*']
         self.config.name_re = Configuration.build_name_re(self.config.name)
 
@@ -154,7 +154,7 @@ class TestFeatureRun(unittest.TestCase):
         for scenario in scenarios:
             scenario.run.return_value = False
 
-        self.config.tags.check.return_value = True  # pylint: disable=no-member
+        self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
         self.config.name = ["(?!Alice)"]    # Exclude all scenarios with "Alice"
         self.config.name_re = Configuration.build_name_re(self.config.name)
 
@@ -172,7 +172,7 @@ class TestFeatureRun(unittest.TestCase):
         scenarios[2].run.assert_called_with(self.runner)
 
     def test_feature_hooks_not_run_if_feature_not_being_run(self):
-        self.config.tags.check.return_value = False  # pylint: disable=no-member
+        self.config.tag_expression.check.return_value = False  # pylint: disable=no-member
 
         feature = Feature('foo.feature', 1, u'Feature', u'foo')
         feature.run(self.runner)
@@ -195,7 +195,7 @@ class TestScenarioRun(unittest.TestCase):
     def test_run_invokes_formatter_scenario_and_steps_correctly(self):
         self.config.stdout_capture = False
         self.config.log_capture = False
-        self.config.tags.check.return_value = True  # pylint: disable=no-member
+        self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
         steps = [Mock(), Mock()]
         scenario = Scenario('foo.feature', 17, u'Scenario', u'foo',
                             steps=steps)
@@ -214,7 +214,7 @@ class TestScenarioRun(unittest.TestCase):
     def test_handles_stdout_and_log_capture(self):
         self.config.stdout_capture = True
         self.config.log_capture = True
-        self.config.tags.check.return_value = True  # pylint: disable=no-member
+        self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
 
         steps = [Mock(), Mock()]
         scenario = Scenario('foo.feature', 17, u'Scenario', u'foo',
@@ -228,7 +228,7 @@ class TestScenarioRun(unittest.TestCase):
     def test_failed_step_causes_remaining_steps_to_be_skipped(self):
         self.config.stdout_capture = False
         self.config.log_capture = False
-        self.config.tags.check.return_value = True  # pylint: disable=no-member
+        self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
 
         steps = [Mock(), Mock()]
         scenario = Scenario('foo.feature', 17, u'Scenario', u'foo',
@@ -249,7 +249,7 @@ class TestScenarioRun(unittest.TestCase):
     def test_failed_step_causes_context_failure_to_be_set(self):
         self.config.stdout_capture = False
         self.config.log_capture = False
-        self.config.tags.check.return_value = True  # pylint: disable=no-member
+        self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
 
         steps = [
             Mock(step_type="given", name="step0"),
@@ -266,7 +266,7 @@ class TestScenarioRun(unittest.TestCase):
     def test_undefined_step_causes_failed_scenario_status(self):
         self.config.stdout_capture = False
         self.config.log_capture = False
-        self.config.tags.check.return_value = True  # pylint: disable=no-member
+        self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
 
         passed_step = Mock()
         undefined_step = Mock()
@@ -288,7 +288,7 @@ class TestScenarioRun(unittest.TestCase):
     def test_skipped_steps_set_step_status_and_scenario_status_if_not_set(self):
         self.config.stdout_capture = False
         self.config.log_capture = False
-        self.config.tags.check.return_value = False  # pylint: disable=no-member
+        self.config.tag_expression.check.return_value = False  # pylint: disable=no-member
 
         steps = [Mock(), Mock()]
         scenario = Scenario('foo.feature', 17, u'Scenario', u'foo',
@@ -300,7 +300,7 @@ class TestScenarioRun(unittest.TestCase):
         eq_(scenario.status, Status.skipped)
 
     def test_scenario_hooks_not_run_if_scenario_not_being_run(self):
-        self.config.tags.check.return_value = False  # pylint: disable=no-member
+        self.config.tag_expression.check.return_value = False  # pylint: disable=no-member
 
         scenario = Scenario('foo.feature', 17, u'Scenario', u'foo')
 

@@ -218,14 +218,14 @@ class Feature(TagAndStatusStatement, Replayable):
         The decision depends on:
 
           * if the Feature is marked as skipped
-          * if the config.tags (tag expression) enable/disable this feature
+          * if the config.tag_expression enable/disable this feature
 
         :param config:  Runner configuration to use (optional).
         :return: True, if scenario should run. False, otherwise.
         """
         answer = not self.should_skip
         if answer and config:
-            answer = self.should_run_with_tags(config.tags)
+            answer = self.should_run_with_tags(config.tag_expression)
         return answer
 
     def should_run_with_tags(self, tag_expression):
@@ -389,7 +389,7 @@ class Background(BasicStatement, Replayable):
 
        Optional description (text, as list of lines).
 
-       .. since:: behave-1.2.7 (supported since Gherkin v6 or earlier)
+       .. versionadded:: 1.2.7 (supported since Gherkin v6 or earlier)
 
     .. _`background`: gherkin.html#backgrounds
     """
@@ -602,7 +602,7 @@ class Scenario(TagAndStatusStatement, Replayable):
         The decision depends on:
 
           * if the Scenario is marked as skipped
-          * if the config.tags (tag expression) enable/disable this scenario
+          * if the config.tag_expression enable/disable this scenario
           * if the scenario is selected by name
 
         :param config:  Runner configuration to use (optional).
@@ -610,7 +610,7 @@ class Scenario(TagAndStatusStatement, Replayable):
         """
         answer = not self.should_skip
         if answer and config:
-            answer = (self.should_run_with_tags(config.tags) and
+            answer = (self.should_run_with_tags(config.tag_expression) and
                       self.should_run_with_name_select(config))
         return answer
 
@@ -621,6 +621,9 @@ class Scenario(TagAndStatusStatement, Replayable):
         :param tag_expression:  Runner/config environment tags to use.
         :return: True, if scenario should run. False, otherwise (skip it).
         """
+        # tag_expression_result = tag_expression.check(self.effective_tags)
+        # print("XXX Scenario.should_run_with_tags: tag_expression=%s := %s, tags=%s, scenario:%s" % \
+        #      (tag_expression, tag_expression_result, "".join(self.effective_tags), self.name))
         return tag_expression.check(self.effective_tags)
 
     def should_run_with_name_select(self, config):

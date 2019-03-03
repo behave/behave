@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
+"""
+Unit tests for active tag-matcher (mod:`behave.tag_matcher`).
+
+.. todo::
+
+    Replace unittest.TestCase with pytest style.
+"""
 
 from __future__ import absolute_import
 from behave.tag_matcher import *
 from mock import Mock
 from unittest import TestCase
 import warnings
-# -- REQUIRES: pytest
-# import pytest
+import pytest
 
 
 class Traits4ActiveTagMatcher(object):
@@ -45,93 +51,94 @@ class Traits4ActiveTagMatcher(object):
     ]
     active_tags = active_tags1 + active_tags2
 
+
 # -- REQUIRES: pytest
-# class TestActiveTagMatcher2(object):
-#     TagMatcher = ActiveTagMatcher
-#     traits = Traits4ActiveTagMatcher
-#
-#     @classmethod
-#     def make_tag_matcher(cls):
-#         value_provider = {
-#             "foo": "alice",
-#             "bar": "BOB",
-#         }
-#         tag_matcher = cls.TagMatcher(value_provider)
-#         return tag_matcher
-#
-#     @pytest.mark.parametrize("case, expected_len, tags", [
-#         ("case: Two enabled tags", 2,
-#          [traits.category1_enabled_tag, traits.category2_enabled_tag]),
-#         ("case: Active enabled and normal tag", 1,
-#          [traits.category1_enabled_tag,  "foo"]),
-#         ("case: Active disabled and normal tag", 1,
-#          [traits.category1_disabled_tag, "foo"]),
-#         ("case: Normal and active negated tag", 1,
-#          ["foo", traits.category1_not_enabled_tag]),
-#         ("case: Two normal tags", 0,
-#          ["foo", "bar"]),
-#     ])
-#     def test_select_active_tags__with_two_tags(self, case, expected_len, tags):
-#         tag_matcher = self.make_tag_matcher()
-#         selected = tag_matcher.select_active_tags(tags)
-#         selected = list(selected)
-#         assert len(selected) == expected_len, case
-#
-#     @pytest.mark.parametrize("case, expected, tags", [
-#         # -- GROUP: With positive logic (non-negated tags)
-#         ("case P00: 2 disabled tags", True,
-#          [ traits.category1_disabled_tag, traits.category2_disabled_tag]),
-#         ("case P01: disabled and enabled tag", True,
-#          [ traits.category1_disabled_tag, traits.category2_enabled_tag]),
-#         ("case P10: enabled and disabled tag", True,
-#          [ traits.category1_enabled_tag, traits.category2_disabled_tag]),
-#         ("case P11: 2 enabled tags", False,  # -- SHOULD-RUN
-#          [ traits.category1_enabled_tag, traits.category2_enabled_tag]),
-#         # -- GROUP: With negated tag
-#         ("case N00: not-enabled and disabled tag", True,
-#          [ traits.category1_not_enabled_tag, traits.category2_disabled_tag]),
-#         ("case N01: not-enabled and enabled tag", True,
-#          [ traits.category1_not_enabled_tag, traits.category2_enabled_tag]),
-#         ("case N10: not-disabled and disabled tag", True,
-#          [ traits.category1_not_disabled_tag, traits.category2_disabled_tag]),
-#         ("case N11: not-disabled and enabled tag", False, # -- SHOULD-RUN
-#          [ traits.category1_not_disabled_tag, traits.category2_enabled_tag]),
-#         # -- GROUP: With unknown category
-#         ("case U0x: disabled and unknown tag", True,
-#          [ traits.category1_disabled_tag, traits.unknown_category_tag]),
-#         ("case U1x: enabled and unknown tag", False,  # -- SHOULD-RUN
-#          [ traits.category1_enabled_tag, traits.unknown_category_tag]),
-#     ])
-#     def test_should_exclude_with__combinations_of_2_categories(self, case, expected, tags):
-#         tag_matcher = self.make_tag_matcher()
-#         actual_result = tag_matcher.should_exclude_with(tags)
-#         assert expected == actual_result, case
-#
-#     @pytest.mark.parametrize("case, expected, tags", [
-#         # -- GROUP: With positive logic (non-negated tags)
-#         ("case P00: 2 disabled tags", True,
-#          [ traits.category1_disabled_tag, traits.category1_disabled_tag2]),
-#         ("case P01: disabled and enabled tag", True,
-#          [ traits.category1_disabled_tag, traits.category1_enabled_tag]),
-#         ("case P10: enabled and disabled tag", True,
-#          [ traits.category1_enabled_tag, traits.category1_disabled_tag]),
-#         ("case P11: 2 enabled tags (same)", False,  # -- SHOULD-RUN
-#          [ traits.category1_enabled_tag, traits.category1_enabled_tag]),
-#         # -- GROUP: With negated tag
-#         ("case N00: not-enabled and disabled tag", True,
-#          [ traits.category1_not_enabled_tag, traits.category1_disabled_tag]),
-#         ("case N01: not-enabled and enabled tag", True,
-#          [ traits.category1_not_enabled_tag, traits.category1_enabled_tag]),
-#         ("case N10: not-disabled and disabled tag", True,
-#          [ traits.category1_not_disabled_tag, traits.category1_disabled_tag]),
-#         ("case N11: not-disabled and enabled tag", False, # -- SHOULD-RUN
-#          [ traits.category1_not_disabled_tag, traits.category1_enabled_tag]),
-#     ])
-#     def test_should_exclude_with__combinations_with_same_category(self,
-#                                                         case, expected, tags):
-#         tag_matcher = self.make_tag_matcher()
-#         actual_result = tag_matcher.should_exclude_with(tags)
-#         assert expected == actual_result, case
+class TestActiveTagMatcher2(object):
+    TagMatcher = ActiveTagMatcher
+    traits = Traits4ActiveTagMatcher
+
+    @classmethod
+    def make_tag_matcher(cls):
+        value_provider = {
+            "foo": "alice",
+            "bar": "BOB",
+        }
+        tag_matcher = cls.TagMatcher(value_provider)
+        return tag_matcher
+
+    @pytest.mark.parametrize("case, expected_len, tags", [
+        ("case: Two enabled tags", 2,
+         [traits.category1_enabled_tag, traits.category2_enabled_tag]),
+        ("case: Active enabled and normal tag", 1,
+         [traits.category1_enabled_tag,  "foo"]),
+        ("case: Active disabled and normal tag", 1,
+         [traits.category1_disabled_tag, "foo"]),
+        ("case: Normal and active negated tag", 1,
+         ["foo", traits.category1_not_enabled_tag]),
+        ("case: Two normal tags", 0,
+         ["foo", "bar"]),
+    ])
+    def test_select_active_tags__with_two_tags(self, case, expected_len, tags):
+        tag_matcher = self.make_tag_matcher()
+        selected = tag_matcher.select_active_tags(tags)
+        selected = list(selected)
+        assert len(selected) == expected_len, case
+
+    @pytest.mark.parametrize("case, expected, tags", [
+        # -- GROUP: With positive logic (non-negated tags)
+        ("case P00: 2 disabled tags", True,
+         [ traits.category1_disabled_tag, traits.category2_disabled_tag]),
+        ("case P01: disabled and enabled tag", True,
+         [ traits.category1_disabled_tag, traits.category2_enabled_tag]),
+        ("case P10: enabled and disabled tag", True,
+         [ traits.category1_enabled_tag, traits.category2_disabled_tag]),
+        ("case P11: 2 enabled tags", False,  # -- SHOULD-RUN
+         [ traits.category1_enabled_tag, traits.category2_enabled_tag]),
+        # -- GROUP: With negated tag
+        ("case N00: not-enabled and disabled tag", True,
+         [ traits.category1_not_enabled_tag, traits.category2_disabled_tag]),
+        ("case N01: not-enabled and enabled tag", True,
+         [ traits.category1_not_enabled_tag, traits.category2_enabled_tag]),
+        ("case N10: not-disabled and disabled tag", True,
+         [ traits.category1_not_disabled_tag, traits.category2_disabled_tag]),
+        ("case N11: not-disabled and enabled tag", False, # -- SHOULD-RUN
+         [ traits.category1_not_disabled_tag, traits.category2_enabled_tag]),
+        # -- GROUP: With unknown category
+        ("case U0x: disabled and unknown tag", True,
+         [ traits.category1_disabled_tag, traits.unknown_category_tag]),
+        ("case U1x: enabled and unknown tag", False,  # -- SHOULD-RUN
+         [ traits.category1_enabled_tag, traits.unknown_category_tag]),
+    ])
+    def test_should_exclude_with__combinations_of_2_categories(self, case, expected, tags):
+        tag_matcher = self.make_tag_matcher()
+        actual_result = tag_matcher.should_exclude_with(tags)
+        assert expected == actual_result, case
+
+    @pytest.mark.parametrize("case, expected, tags", [
+        # -- GROUP: With positive logic (non-negated tags)
+        ("case P00: 2 disabled tags", True,
+         [ traits.category1_disabled_tag, traits.category1_disabled_tag2]),
+        ("case P01: disabled and enabled tag", False,
+         [ traits.category1_disabled_tag, traits.category1_enabled_tag]),
+        ("case P10: enabled and disabled tag", False,
+         [ traits.category1_enabled_tag, traits.category1_disabled_tag]),
+        ("case P11: 2 enabled tags (same)", False,  # -- SHOULD-RUN
+         [ traits.category1_enabled_tag, traits.category1_enabled_tag]),
+        # -- GROUP: With negated tag
+        ("case N00: not-enabled and disabled tag", True,
+         [ traits.category1_not_enabled_tag, traits.category1_disabled_tag]),
+        ("case N01: not-enabled and enabled tag", False,
+         [ traits.category1_not_enabled_tag, traits.category1_enabled_tag]),
+        ("case N10: not-disabled and disabled tag", False,
+         [ traits.category1_not_disabled_tag, traits.category1_disabled_tag]),
+        ("case N11: not-disabled and enabled tag", False, # -- SHOULD-RUN
+         [ traits.category1_not_disabled_tag, traits.category1_enabled_tag]),
+    ])
+    def test_should_exclude_with__combinations_with_same_category(self,
+                                                        case, expected, tags):
+        tag_matcher = self.make_tag_matcher()
+        actual_result = tag_matcher.should_exclude_with(tags)
+        assert expected == actual_result, case
 
 
 class TestActiveTagMatcher1(TestCase):
@@ -331,6 +338,7 @@ class TestActiveTagMatcher1(TestCase):
             self.assertEqual(result1, not result2, "%s: tags=%s" % (case, tags))
             self.assertEqual(not result1, result2, "%s: tags=%s" % (case, tags))
 
+
 class TestPredicateTagMatcher(TestCase):
 
     def test_exclude_with__mechanics(self):
@@ -365,6 +373,7 @@ class TestPredicateTagMatcher(TestCase):
         tags = [ "foo", "bar" ]
         self.assertEqual(False, tag_matcher1.should_exclude_with(tags))
         self.assertEqual(False, predicate_always_false(tags))
+
 
 class TestPredicateTagMatcher(TestCase):
 
