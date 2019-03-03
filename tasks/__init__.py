@@ -12,7 +12,7 @@ Show all tasks with::
     * https://github.com/pyinvoke/invoke
 """
 
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import
 
 # -----------------------------------------------------------------------------
 # BOOTSTRAP PATH: Use provided vendor bundle if "invoke" is not installed
@@ -35,7 +35,6 @@ import sys
 from invoke import Collection
 
 # -- TASK-LIBRARY:
-# from . import clean
 from . import _tasklet_cleanup as cleanup
 from . import docs
 from . import test
@@ -57,6 +56,7 @@ namespace.add_collection(Collection.from_module(cleanup), name="cleanup")
 namespace.add_collection(Collection.from_module(docs))
 namespace.add_collection(Collection.from_module(test))
 namespace.add_collection(Collection.from_module(release))
+cleanup.cleanup_tasks.add_task(cleanup.clean_python)
 
 cleanup.cleanup_tasks.add_task(cleanup.clean_python)
 
@@ -68,6 +68,4 @@ if sys.platform.startswith("win"):
     run_settings = dict(echo=True, pty=False, shell=which("cmd"))
     namespace.configure({"run": run_settings})
 else:
-    run_settings = dict(echo=True, pty=True)
-    namespace.configure({"run": run_settings})
-
+    namespace.configure({"run": dict(echo=True, pty=True)})

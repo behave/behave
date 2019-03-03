@@ -22,8 +22,8 @@ Django, though, varies slightly.
     instructions.
 
 .. _Django: https://www.djangoproject.com
-.. _LiveServerTestCase: https://docs.djangoproject.com/en/1.8/topics/testing/tools/#liveservertestcase
-.. _TEST_RUNNER: https://docs.djangoproject.com/en/1.8/topics/testing/advanced/#using-different-testing-frameworks
+.. _LiveServerTestCase: https://docs.djangoproject.com/en/stable/topics/testing/tools/#liveservertestcase
+.. _TEST_RUNNER: https://docs.djangoproject.com/en/stable/topics/testing/advanced/#using-different-testing-frameworks
 
 
 Manual Integration
@@ -75,7 +75,7 @@ in your ``environment.py`` file:
         use_fixture(django_test_case, context)
 
 
-Taken from Andrey Zarubin's blog post "`BDD. PyCharm + Python & Django`_".
+Taken and adapted from Andrey Zarubin's blog post "`BDD. PyCharm + Python & Django`_".
 
 .. _`BDD. PyCharm + Python & Django`:
     https://blog.anvileight.com/posts/behavior-driven-development-pycharm-python-django/

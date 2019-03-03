@@ -41,8 +41,7 @@ class TagExpression(object):
 
     @classmethod
     def normalized_tags_from_or(cls, expr):
-        """
-        Normalizes all tags in an OR expression (and return it as list).
+        """Normalizes all tags in an OR expression (and return it as list).
 
         :param expr:  OR expression to normalize and split (as string).
         :return: Generator of normalized tags (as string)

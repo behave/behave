@@ -4,6 +4,10 @@ Version History
 Version: 1.2.7 (unreleased)
 -------------------------------------------------------------------------------
 
+BACKWARD-INCOMPATIBLE:
+
+* Replace old-style tag-expressions with `cucumber-tag-expressions`_
+
 GOALS:
 
 - Improve support for Windows (continued)
@@ -13,6 +17,7 @@ GOALS:
 
 DOCUMENTATION:
 
+* pull  #731: Update links to Django docs (provided by: bittner)
 * pull  #722: DOC remove remaining pythonhosted links (provided by: leszekhanusz)
 * pull  #701: behave/runner.py docstrings (provided by: spitGlued)
 * pull  #700: Fix wording of "gherkin.rst" (provided by: spitGlued)
@@ -23,6 +28,7 @@ DOCUMENTATION:
 
 ENHANCEMENTS:
 
+* Use `cucumber-tag-expressions`_ with tag-matching extension (superceeds: old-style tag-expressions)
 * issue #678: Scenario Outline: Support tags with commas and semicolons (provided by: lawnmowerlatte, pull #679)
 * issue #675: Feature files cannot be found within symlink directories (provided by: smadness, pull #680)
 
@@ -39,6 +45,9 @@ MINOR:
 * pull  #655: Use pytest instead of py.test per upstream recommendation (provided by: scop)
 * issue #654: tox.ini: pypi.python.org -> pypi.org (submitted by: pradyunsg)
 * pull  #660: Fix minor typos (provided by: rrueth)
+
+
+.. _`cucumber-tag-expressions`: https://pypi.org/project/cucumber-tag-expressions/
 
 
 Version: 1.2.6 (2018-02-25)

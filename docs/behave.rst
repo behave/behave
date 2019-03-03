@@ -585,7 +585,7 @@ Configuration Parameters
 .. index::
     single: configuration param; default_tags
 
-.. describe:: default_tags : text
+.. describe:: default_tags : sequence<text>
 
     Define default tags when non are provided. See --tags for more
     information.

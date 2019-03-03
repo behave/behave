@@ -14,7 +14,7 @@ outfiles= /absolute/path1
           relative/path2
 paths = /absolute/path3
         relative/path4
-tags = @foo,~@bar
+default_tags = @foo,~@bar
        @zap
 format=pretty
        tag-counter
@@ -55,7 +55,7 @@ class TestConfiguration(object):
             os.path.normpath(os.path.join(tndir, "relative/path4")),
             ])
         eq_(d["format"], ["pretty", "tag-counter"])
-        eq_(d["tags"], ["@foo,~@bar", "@zap"])
+        eq_(d["default_tags"], ["@foo,~@bar", "@zap"])
         eq_(d["stdout_capture"], False)
         ok_("bogus" not in d)
         eq_(d["userdata"], {"foo": "bar", "answer": "42"})
