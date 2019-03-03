@@ -17,6 +17,7 @@ GOALS:
 
 DOCUMENTATION:
 
+* pull  #731: Update links to Django docs (provided by: bittner)
 * pull  #722: DOC remove remaining pythonhosted links (provided by: leszekhanusz)
 * pull  #701: behave/runner.py docstrings (provided by: spitGlued)
 * pull  #700: Fix wording of "gherkin.rst" (provided by: spitGlued)
