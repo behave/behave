@@ -1,5 +1,5 @@
 # =====================================================
-# INVOKE CONFIGURATION:
+# INVOKE CONFIGURATION: behave
 # =====================================================
 # -- ON WINDOWS:
 # run:
@@ -14,7 +14,7 @@ project:
 
 run:
     echo: true
-    pty:  true
+    # DISABLED: pty:  true
 
 sphinx:
     sourcedir: "docs"
@@ -23,9 +23,16 @@ sphinx:
     languages:
       - de
       # PREPARED: - zh-CN
-
-clean_all:
+cleanup:
     extra_directories:
+      - "build"
+      - "dist"
+      - "__WORKDIR__"
+      - reports
+
+cleanup_all:
+    extra_directories:
+      - .hypothesis
       - .pytest_cache
 
 behave_test:
