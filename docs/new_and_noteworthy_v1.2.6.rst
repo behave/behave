@@ -234,7 +234,7 @@ EXAMPLE:
     # -- FILE: behave.ini
     # Exclude/skip any feature/scenario with @xfail or @not_implemented tags
     [behave]
-    default_tags = -@xfail -@not_implemented
+    default_tags = not (@xfail or @not_implemented)
     ...
 
 

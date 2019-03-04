@@ -578,29 +578,27 @@ Active Tag Logic
 
 .. index::
     single: Active Tag Schema
-    pair:   @active.with_{category}={value}; active tag schema (dialect 1)
-    pair:   @not_active.with_{category}={value}; active tag schema (dialect 1)
     pair:   @use.with_{category}={value}; active tag schema (dialect 2)
     pair:   @not.with_{category}={value}; active tag schema (dialect 2)
     pair:   @only.with_{category}={value}; active tag schema (dialect 2)
+    pair:   @active.with_{category}={value}; active tag schema (dialect 1)
+    pair:   @not_active.with_{category}={value}; active tag schema (dialect 1)
 
 Active Tag Schema
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following two tag schemas are supported for active tags (by default).
 
-**Dialect 1:**
-
-  * @active.with_{category}={value}
-  * @not_active.with_{category}={value}
-
-**Dialect 2:**
+**Dialect 1** (preferred):
 
   * @use.with_{category}={value}
   * @not.with_{category}={value}
   * @only.with_{category}={value}
 
+**Dialect 2:**
 
+  * @active.with_{category}={value}
+  * @not_active.with_{category}={value}
 
 
 Example 1

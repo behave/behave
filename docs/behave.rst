@@ -250,32 +250,31 @@ You may see the same information presented below at any time using ``behave
 Tag Expression
 --------------
 
-Scenarios inherit tags declared on the Feature level. The simplest
-TAG_EXPRESSION is simply a tag::
+Scenarios inherit tags that are declared on the Feature level.
+The simplest TAG_EXPRESSION is simply a tag::
 
-    --tags @dev
+    --tags=@dev
 
 You may even leave off the "@" - behave doesn't mind.
 
-When a tag in a tag expression starts with a ~, this represents boolean NOT::
+You can also exclude all features / scenarios that have a tag,
+by using boolean NOT::
 
-    --tags ~@dev
+    --tags="not @dev"
 
-A tag expression can have several tags separated by a comma, which represents
-logical OR::
+A tag expression can also use a logical OR::
 
-    --tags @dev,@wip
+    --tags="@dev or @wip"
 
-The --tags option can be specified several times, and this represents logical
-AND, for instance this represents the boolean expression
-"(@foo or not @bar) and @zap"::
+The --tags option can be specified several times,
+and this represents logical AND,
+for instance this represents the boolean expression::
 
-    --tags @foo,~@bar --tags @zap.
+    --tags="(@foo or not @bar) and @zap"
 
-Beware that if you want to use several negative tags to exclude several tags
-you have to use logical AND::
+You can also exclude several tags::
 
-    --tags ~@fixme --tags ~@buggy.
+    --tags="not (@fixme or @buggy)"
 
 
 .. _docid.behave.configuration-files:
@@ -325,12 +324,11 @@ The following types are supported (and used):
 
     .. code-block:: ini
 
-        tags=@foo,~@bar
-            @zap
+        default_tags= (@foo or not @bar) and @zap
 
     which is the equivalent of the command-line usage::
 
-        --tags @foo,~@bar --tags @zap
+        --tags="(@foo or not @bar) and @zap"
 
 
 

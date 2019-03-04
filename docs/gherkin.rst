@@ -579,17 +579,17 @@ Given a feature file with:
 
 then running ``behave --tags=slow`` will run just the scenarios tagged
 ``@slow``. If you wish to check everything *except* the slow ones then you
-may run ``behave --tags=-slow``.
+may run ``behave --tags="not slow"``.
 
 Another common use-case is to tag a scenario you're working on with
 ``@wip`` and then ``behave --tags=wip`` to just test that one case.
 
 Tag selection on the command-line may be combined:
 
-**--tags=wip,slow**
+**--tags="wip or slow"**
    This will select all the cases tagged *either* "wip" or "slow".
 
-**--tags=wip --tags=slow**
+**--tags="wip and slow"**
    This will select all the cases tagged *both* "wip" and "slow".
 
 If a feature or scenario is tagged and then skipped because of a
@@ -613,24 +613,58 @@ If multiple tags are present then the functions will be called multiple times
 with each tag in the order they're defined in the feature file.
 
 Re-visiting the example from above; if only some of the features required a
-browser and web server then you could tag them ``@browser``:
+browser and web server then you could tag them ``@fixture.browser`` and
+``@fixture.webserver``:
 
 .. code-block:: python
 
-  def before_feature(context, feature):
-      model.init(environment='test')
-      if 'browser' in feature.tags:
-          context.server = simple_server.WSGIServer(('', 8000))
-          context.server.set_app(web_app.main(environment='test'))
-          context.thread = threading.Thread(target=context.server.serve_forever)
-          context.thread.start()
-          context.browser = webdriver.Chrome()
+    # -- FILE: features/environment.py
+    from behave.fixture import fixture, use_fixture_by_tag
 
-  def after_feature(context, feature):
-      if 'browser' in feature.tags:
-          context.server.shutdown()
-          context.thread.join()
-          context.browser.quit()
+    @fixture
+    def webserver(context):
+        # -- STEP: Setup browser fixture
+        context.server = simple_server.WSGIServer(("", 8000))
+        context.server.set_app(web_app.main(environment='test'))
+        context.thread = threading.Thread(target=context.server.serve_forever)
+        context.thread.start()
+        yield context.server
+        # -- STEP: Teardown/cleanup fixture
+        context.server.shutdown()
+        context.thread.join()
+
+    @fixture
+    def browser_chrome(context):
+        # -- STEP: Setup browser fixture
+        context.browser = webdriver.Chrome()
+        yield context.browser
+        # -- STEP: Teardown/cleanup fixture
+        context.browser.quit()
+
+
+    fixture_registry = {
+        "fixture.browser":   browser_chrome,
+        "fixture.webserver": webserver,
+    }
+
+    # -- BEHAVE HOOKS:
+    def before_feature(context, feature):
+        model.init(environment='test')
+
+    def before_tag(context, tag):
+        if tag.startswith("fixture."):
+            # USE-FIXTURE FOR TAGS: @fixture.browser, @fixture.webserver
+            return use_fixture_by_tag(tag, context, fixture_registry):
+
+
+.. code-block:: gherkin
+
+    # -- FILE: features/use_browser.feature
+    # HINT: Fixture are automatically setutp and teardown via fixture-tags.
+    @fixture.webserver
+    @fixture.browser
+    Feature: Use Webserver and browser
+        ...
 
 
 Languages Other Than English

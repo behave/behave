@@ -71,12 +71,11 @@ The following types are supported (and used):
 
     .. code-block:: ini
 
-        tags=@foo,~@bar
-            @zap
+        default_tags= (@foo or not @bar) and @zap
 
     which is the equivalent of the command-line usage::
 
-        --tags @foo,~@bar --tags @zap
+        --tags="(@foo or not @bar) and @zap"
 
 
 
