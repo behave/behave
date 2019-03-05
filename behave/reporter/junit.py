@@ -82,11 +82,6 @@ from behave.model_describe import ModelDescriptor
 from behave.textutil import indent, make_indentation, text as _text
 from behave.userdata import UserDataNamespace
 import six
-if six.PY2:
-    # -- USE: Python3 backport for better unicode compatibility.
-    import traceback2 as traceback
-else:
-    import traceback
 
 
 def CDATA(text=None):   # pylint: disable=invalid-name
@@ -314,7 +309,10 @@ class JUnitReporter(Reporter):
             if step.text:
                 text += ModelDescriptor.describe_docstring(step.text, prefix)
             elif step.table:
-                text += ModelDescriptor.describe_table(step.table, prefix)
+                try:
+                    text += ModelDescriptor.describe_table(step.table, prefix)
+                except Exception:
+                    pass
         return text
 
     @classmethod
@@ -413,8 +411,7 @@ class JUnitReporter(Reporter):
                     failure_type = scenario.exception.__class__.__name__
                 failure.set(u'type', failure_type)
                 failure.set(u'message', scenario.error_message or "")
-                traceback_lines = traceback.format_tb(scenario.exc_traceback)
-                traceback_lines.insert(0, u"Traceback:\n")
+                traceback_lines = [u"Traceback:\n"] + scenario.exc_traceback
                 text = _text(u"".join(traceback_lines))
             failure.append(CDATA(text))
             case.append(failure)

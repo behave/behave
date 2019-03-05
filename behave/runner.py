@@ -11,6 +11,7 @@ import sys
 import warnings
 import weakref
 
+
 import six
 
 from behave._types import ExceptionUtil
@@ -21,6 +22,7 @@ from behave.runner_util import \
     collect_feature_locations, parse_features, \
     exec_file, load_step_modules, PathManager
 from behave.step_registry import registry as the_step_registry
+
 
 if six.PY2:
     # -- USE PYTHON3 BACKPORT: With unicode traceback support.
@@ -403,7 +405,7 @@ class Context(object):
                     if step.error_message:
                         message += "\nSubstep info: %s\n" % step.error_message
                         message += u"Traceback (of failed substep):\n"
-                        message += u"".join(traceback.format_tb(step.exc_traceback))
+                        message += u"".join(step.exc_traceback)
                     # message += u"\nTraceback (of context.execute_steps()):"
                     assert False, message
 
@@ -528,6 +530,14 @@ class ModelRunner(object):
 
     # @property
     def _get_aborted(self):
+        """
+        Indicates that a test run was aborted by the user
+        (:exc:`KeyboardInterrupt` exception).
+        Stored in :attr:`Context.aborted` attribute (as root attribute).
+
+        :return: Current aborted state, initially false.
+        :rtype: bool
+        """
         value = False
         if self.context:
             value = self.context.aborted
@@ -535,6 +545,11 @@ class ModelRunner(object):
 
     # @aborted.setter
     def _set_aborted(self, value):
+        """
+        Set the aborted value.
+
+        :param value: New aborted value (as bool).
+        """
         # pylint: disable=protected-access
         assert self.context, "REQUIRE: context, but context=%r" % self.context
         self.context._set_root_attribute("aborted", bool(value))
@@ -687,7 +702,6 @@ class Runner(ModelRunner):
         self.path_manager = PathManager()
         self.base_dir = None
 
-
     def setup_paths(self):
         # pylint: disable=too-many-branches, too-many-statements
         if self.config.paths:
@@ -826,3 +840,5 @@ class Runner(ModelRunner):
         stream_openers = self.config.outputs
         self.formatters = make_formatters(self.config, stream_openers)
         return self.run_model()
+
+

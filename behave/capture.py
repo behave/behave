@@ -105,6 +105,19 @@ class Captured(object):
         """
         return self.add(other)
 
+    def send_status(self):
+        ret = {'stdout': self.stdout,
+               'stderr': self.stderr,
+               'log_output': self.log_output,
+               }
+        return ret
+
+    def recv_status(self, value):
+        assert not self, "Captured already has content"
+        for k in 'stdout', 'stderr', 'log_output':
+            if k in value:
+                setattr(self, k, value[k])
+
 
 class CaptureController(object):
     """Simplifies the lifecycle to capture output from various sources."""

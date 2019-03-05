@@ -7,10 +7,15 @@ for the model elements in behave.
 import os.path
 import sys
 import six
+
 from behave.capture import Captured
 from behave.textutil import text as _text
 from enum import Enum
-
+if six.PY2:
+    # -- USE: Python3 backport for better unicode compatibility.
+    import traceback2 as traceback
+else:
+    import traceback
 
 PLATFORM_WIN = sys.platform.startswith("win")
 def posixpath_normalize(path):
@@ -298,9 +303,28 @@ class BasicStatement(object):
         self.exc_traceback = None
         self.error_message = None
 
+    def send_status(self):
+        """Emit the volatile attributes of this model in a primitive dict
+        """
+        ret = {'exception': self.exception,
+               'error_message': self.error_message,
+               'exc_traceback': self.exc_traceback,
+               'captured': self.captured.send_status()
+               }
+        return ret
+
+    def recv_status(self, value):
+        """Set volatile attributes from a `send_status()` primitive value
+        """
+        for key in 'exception', 'error_message', 'exc_traceback':
+            if key in value:
+                setattr(self, key, value[key])
+        if 'captured' in value:
+            self.captured.recv_status(value['captured'])
+
     def store_exception_context(self, exception):
         self.exception = exception
-        self.exc_traceback = sys.exc_info()[2]
+        self.exc_traceback = traceback.format_tb(sys.exc_info()[2])
 
     def __hash__(self):
         # -- NEEDED-FOR: PYTHON3
@@ -383,6 +407,10 @@ class TagAndStatusStatement(BasicStatement):
             self._cached_status = self.compute_status()
         return self._cached_status
 
+    @property
+    def is_finished(self):
+        return self._cached_status in self.final_status
+
     def set_status(self, value):
         if isinstance(value, six.string_types):
             value = Status.from_name(value)
@@ -398,6 +426,23 @@ class TagAndStatusStatement(BasicStatement):
 
     def compute_status(self):
         raise NotImplementedError
+
+    def send_status(self):
+        ret = super(TagAndStatusStatement, self).send_status()
+        ret['status'] = self._cached_status
+        ret['should_skip'] = self.should_skip
+        ret['skip_reason'] = self.skip_reason
+        return ret
+
+    def recv_status(self, value):
+        assert self._cached_status == Status.untested
+        super(TagAndStatusStatement, self).recv_status(value)
+        if 'should_skip' in value:
+            self.should_skip = value['should_skip']
+        if 'skip_reason' in value:
+            self.skip_reason = value['skip_reason']
+        if 'status' in value:
+            self._cached_status = value['status']
 
 
 class Replayable(object):
