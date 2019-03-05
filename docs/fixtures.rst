@@ -63,7 +63,7 @@ In many cases, the usage of a fixture is triggered by the ``fixture-tag``
 in a feature file. The ``fixture-tag`` marks that a fixture
 should be used in this scenario/feature (as test-scope).
 
-.. code-block:: Gherkin
+.. code-block:: gherkin
 
     # -- FILE: features/use_fixture1.feature
     Feature: Use Fixture on Scenario Level
@@ -74,7 +74,7 @@ should be used in this scenario/feature (as test-scope).
             ...
         # -- AFTER-SCENARIO: Cleanup fixture.browser.firefox
 
-.. code-block:: Gherkin
+.. code-block:: gherkin
 
     # -- FILE: features/use_fixture2.feature
     @fixture.browser.firefox

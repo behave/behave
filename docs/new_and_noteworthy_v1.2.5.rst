@@ -70,9 +70,9 @@ represent the example/row combination within a scenario outline:
 
 Note that:
 
-  * scenario name is now unique for any examples/row combination
-  * scenario name optionally contains the examples (group) name (if one exists)
-  * each scenario has a unique file location, based on the row's file location
+* scenario name is now unique for any examples/row combination
+* scenario name optionally contains the examples (group) name (if one exists)
+* each scenario has a unique file location, based on the row's file location
 
 Therefore, each generated scenario from a scenario outline can be selected
 via its file location (and run on its own). In addition, if one fails,

@@ -33,6 +33,7 @@ Contents
    tutorial
    philosophy
    gherkin
+   tag_expressions
    behave
    api
    fixtures

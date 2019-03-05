@@ -50,18 +50,18 @@ implementation code:
 
 .. code-block:: python
 
-    @given('some known state')
+    @given(u'some known state')
     def step_impl(context):
-        set_up(some, state)
+        setup_something(some, state)
 
 
 will match the "Given" step from the following feature:
 
 .. code-block:: gherkin
 
- Scenario: test something
-  Given some known state
-   then some observed outcome.
+    Scenario: test something
+      Given some known state
+      Then  some observed outcome.
 
 *You don't need to import the decorators*: they're automatically available
 to your step implementation modules as `global variables`_.
@@ -73,20 +73,20 @@ the name of their preceding keyword, so given the following feature file:
 
 .. code-block:: gherkin
 
-  Given some known state
-    and some other known state
-   when some action is taken
-   then some outcome is observed
-    but some other outcome is not observed.
+    Given some known state
+      and some other known state
+     when some action is taken
+     then some outcome is observed
+      but some other outcome is not observed.
 
 the first "and" step will be renamed internally to "given" and *behave*
 will look for a step implementation decorated with either "given" or "step":
 
 .. code-block:: python
 
-    @given('some other known state')
+    @given(u'some other known state')
     def step_impl(context):
-        set_up(some, other, state)
+        setup_something(some, other, state)
 
 and similarly the "but" would be renamed internally to "then". Multiple
 "and" or "but" steps in a row would inherit the non-"and" or "but" keyword.
@@ -120,11 +120,14 @@ You may add new types to the default parser by invoking
     .. code-block:: python
 
         from behave import register_type
-        register_type(custom=lambda s: s.upper())
+        def convert_string_to_upper_case(text):
+            return text.upper
+        register_type(ToUpperCase=convert_string_to_upper_case)
 
-        @given('a string {param:custom} a custom type')
+        @given(u'a string {param:ToUpperCase} a custom type')
         def step_impl(context, param):
             assert param.isupper()
+
 
 You may define a new parameter matcher by subclassing
 :class:`behave.matchers.Matcher` and registering it with
@@ -142,8 +145,8 @@ name" to :class:`~behave.matchers.Matcher` class.
 .. _docid.api.execute-steps:
 .. _docid.api.calling-steps-from-other-steps:
 
-Calling Steps From Other Steps
-------------------------------
+Step Macro: Calling Steps From Other Steps
+------------------------------------------
 
 If you find you'd like your step implementation to invoke another step you
 may do so with the :class:`~behave.runner.Context` method
@@ -153,15 +156,15 @@ This function allows you to, for example:
 
 .. code-block:: python
 
-    @when('I do the same thing as before')
-    def step_impl(context):
+    @when(u'I do the same thing as before with the {color:w} button')
+    def step_impl(context, color):
         context.execute_steps(u'''
-            when I press the big red button
-             and I duck
-        ''')
+            When I press the big {color} button
+             And I duck
+        '''.format(color=color))
 
-This will cause the "when I do the same thing as before" step to execute
-the other two steps as though they had also appeared in the scenario file.
+This will cause the "when I do the same thing as before with the red button" step
+to execute the other two steps as though they had also appeared in the scenario file.
 
 
 from behave import *
@@ -215,12 +218,14 @@ events during your testing:
   .. code-block:: python
 
       # -- ASSUMING: tags @browser.chrome or @browser.any are used.
-      if tag.startswith("browser."):
-          browser_type = tag.replace("browser.", "", 1)
-          if browser_type == "chrome":
-              context.browser = webdriver.Chrome()
-          else:
-              context.browser = webdriver.PlainVanilla()
+      # BETTER: Use Fixture for this example.
+      def before_tag(context, tag):
+          if tag.startswith("browser."):
+              browser_type = tag.replace("browser.", "", 1)
+              if browser_type == "chrome":
+                  context.browser = webdriver.Chrome()
+              else:
+                  context.browser = webdriver.PlainVanilla()
 
 **before_all(context), after_all(context)**
   These run before and after the whole shooting match.
