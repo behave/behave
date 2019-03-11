@@ -155,18 +155,20 @@ class StepsFormatter(AbstractStepsFormatter):
             # -- PREPARE REPORT: For a step-type.
             step_type_name = step_type.upper()
             if step_type == "step":
-                step_keyword = "*"
+                step_keyword = "* "
                 step_type_name = "GENERIC"
             else:
                 # step_keyword = step_type.capitalize()
                 keywords = language_keywords[step_type]
-                if keywords[0] == u"*":
+                if keywords[0] == u"* " or keywords[0] == u"*":
+                    # -- CASE: Skip over generic-step keyword and
+                    #    use next keyword (as default) for this step_type.
                     assert len(keywords) > 1
                     step_keyword = keywords[1]
                 else:
                     step_keyword = keywords[0]
 
-            steps_text = [u"%s %s" % (step_keyword, step.pattern)
+            steps_text = [u"%s%s" % (step_keyword, step.pattern)
                           for step in steps]
             if self.shows_location:
                 max_size = compute_words_maxsize(steps_text)

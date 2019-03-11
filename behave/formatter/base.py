@@ -138,6 +138,21 @@ class Formatter(object):
         """
         pass
 
+    def rule(self, rule):
+        """Called before a rule is executed.
+
+        :param rule:  Rule object (as :class:`behave.model.Rule`)
+        """
+        pass
+
+    # -- PREPARED:
+    # def rule_finished(self, rule):
+    #     """Called after a rule was executed.
+    #
+    #     :param rule:  Rule object (as :class:`behave.model.Rule`)
+    #     """
+    #     pass
+
     def scenario(self, scenario):
         """Called before a scenario is executed (or ScenarioOutline scenarios).
 

@@ -11,20 +11,46 @@ Feature: Command-line options: Use behave --lang-list
     Then it should pass with:
         """
         Languages available:
-         ar: العربية / Arabic
-         bg: български / Bulgarian
-         ca: català / Catalan
-         cs: Česky / Czech
-         cy-GB: Cymraeg / Welsh
-         da: dansk / Danish
-         de: Deutsch / German
-         en: English / English
+          af: Afrikaans / Afrikaans
+          am: հայերեն / Armenian
+          an: Aragonés / Aragonese
+          ar: العربية / Arabic
+          ast: asturianu / Asturian
+          az: Azərbaycanca / Azerbaijani
+          bg: български / Bulgarian
+          bm: Bahasa Melayu / Malay
+          bs: Bosanski / Bosnian
+          ca: català / Catalan
+          cs: Česky / Czech
+          cy-GB: Cymraeg / Welsh
+          da: dansk / Danish
+          de: Deutsch / German
+          el: Ελληνικά / Greek
+          em: 😀 / Emoji
+          en: English / English
+          en-Scouse: Scouse / Scouse
+          en-au: Australian / Australian
+          en-lol: LOLCAT / LOLCAT
+          en-old: Englisc / Old English
+          en-pirate: Pirate / Pirate
+          eo: Esperanto / Esperanto
+          es: español / Spanish
+          et: eesti keel / Estonian
+          fa: فارسی / Persian
+          fi: suomi / Finnish
+          fr: français / French
         """
     And the command output should contain:
         """
         sv: Svenska / Swedish
+        ta: தமிழ் / Tamil
+        th: ไทย / Thai
+        tl: తెలుగు / Telugu
+        tlh: tlhIngan / Klingon
         tr: Türkçe / Turkish
+        tt: Татарча / Tatar
         uk: Українська / Ukrainian
+        ur: اردو / Urdu
         uz: Узбекча / Uzbek
         vi: Tiếng Việt / Vietnamese
         zh-CN: 简体中文 / Chinese simplified

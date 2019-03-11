@@ -2,8 +2,10 @@
 
 from __future__ import absolute_import, division
 import sys
+import pytest
 from mock import Mock, patch
-from nose.tools import *
+# NOT-NEEDED: from nose.tools import *
+
 from behave.model import ScenarioOutline, Scenario
 from behave.model_core import Status
 from behave.reporter.summary import SummaryReporter, format_summary
@@ -79,7 +81,7 @@ class TestSummaryReporter(object):
         reporter = SummaryReporter(config)
 
         [reporter.feature(f) for f in features]
-        eq_(round(reporter.duration, 3), 12.400)
+        assert round(reporter.duration, 3) == 12.400
 
         reporter.end()
         output = stdout.write.call_args_list[-1][0][0]
@@ -123,8 +125,8 @@ class TestSummaryReporter(object):
             Status.skipped.name: 1,
             Status.untested.name: 1,
         }
-
-        eq_(format_summary.call_args_list[0][0], ('feature', expected))
+        expected_parts = ("feature", expected)
+        assert format_summary.call_args_list[0][0] == expected_parts
 
     @patch('sys.stdout')
     @patch('behave.reporter.summary.format_summary')
@@ -160,7 +162,9 @@ class TestSummaryReporter(object):
             Status.untested.name: 1,
         }
 
-        eq_(format_summary.call_args_list[1][0], ('scenario', expected))
+        scenario_index = 2
+        expected_parts = ("scenario", expected)
+        assert format_summary.call_args_list[scenario_index][0] == expected_parts
 
     @patch('behave.reporter.summary.format_summary')
     @patch('sys.stdout')
@@ -201,9 +205,10 @@ class TestSummaryReporter(object):
             Status.failed.name: 3,
             Status.skipped.name: 2,
             Status.untested.name: 0,
-            }
-
-        eq_(format_summary.call_args_list[1][0], ('scenario', expected))
+        }
+        scenario_index = 2
+        expected_parts = ("scenario", expected)
+        assert format_summary.call_args_list[scenario_index][0] == expected_parts
 
     @patch('sys.stdout')
     @patch('behave.reporter.summary.format_summary')
@@ -243,4 +248,6 @@ class TestSummaryReporter(object):
             Status.undefined.name: 1,
         }
 
-        eq_(format_summary.call_args_list[2][0], ('step', expected))
+        step_index = 3
+        expected_parts = ("step", expected)
+        assert format_summary.call_args_list[step_index][0] == expected_parts

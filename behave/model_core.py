@@ -361,8 +361,9 @@ class TagAndStatusStatement(BasicStatement):
     # final_status = ('passed', 'failed', 'skipped')
     final_status = (Status.passed, Status.failed, Status.skipped)
 
-    def __init__(self, filename, line, keyword, name, tags):
+    def __init__(self, filename, line, keyword, name, tags, parent=None):
         super(TagAndStatusStatement, self).__init__(filename, line, keyword, name)
+        self.parent = parent    # Container for this entity; None for feature.
         self.tags = tags
         self.should_skip = False
         self.skip_reason = None
