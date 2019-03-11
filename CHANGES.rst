@@ -32,6 +32,7 @@ ENHANCEMENTS:
 
 FIXED:
 
+* issue #725: Scenario Outline description lines seem to be ignored (submitted by: nizwiz)
 * issue #713: Background section doesn't support description (provided by: dgou)
 * pull  #657: Allow async steps with timeouts to fail when they raise exceptions (provided by: ALSchwalm)
 * issue #631: ScenarioOutline variables not possible in table headings (provided by: mschnelle, pull #642)
