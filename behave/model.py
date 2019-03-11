@@ -1196,6 +1196,7 @@ class ScenarioOutlineBuilder(object):
                 scenario.feature = scenario_outline.feature
                 scenario.parent = scenario_outline
                 scenario.background = scenario_outline.background
+                scenario.description = scenario_outline.description
                 scenario._row = row     # pylint: disable=protected-access
                 scenarios.append(scenario)
         return scenarios
