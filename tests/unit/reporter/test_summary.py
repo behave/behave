@@ -164,7 +164,7 @@ class TestSummaryReporter(object):
             Status.untested.name: 1,
         }
 
-        scenario_index = 2
+        scenario_index = 1  # -- HINT: Index for scenarios if no Rules are used.
         expected_parts = ("scenario", expected)
         assert format_summary.call_args_list[scenario_index][0] == expected_parts
 
@@ -209,7 +209,7 @@ class TestSummaryReporter(object):
             Status.skipped.name: 2,
             Status.untested.name: 0,
         }
-        scenario_index = 2
+        scenario_index = 1  # -- HINT: Index for scenarios if no Rules are used.
         expected_parts = ("scenario", expected)
         assert format_summary.call_args_list[scenario_index][0] == expected_parts
 
@@ -252,6 +252,6 @@ class TestSummaryReporter(object):
             Status.undefined.name: 1,
         }
 
-        step_index = 3
+        step_index = 2  # HINT: Index for steps if not rules are used.
         expected_parts = ("step", expected)
         assert format_summary.call_args_list[step_index][0] == expected_parts

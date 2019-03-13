@@ -179,11 +179,12 @@ class SummaryReporter(Reporter):
             stream = self.stream
 
         self.compute_summary_sums()
+        has_rules = (self.rule_summary["all"] > 0)
+
         stream.write(format_summary("feature", self.feature_summary))
-        rules_summary = format_summary("rule", self.rule_summary)
-        if self.show_rules and not rules_summary.strip().startswith("0"):
+        if self.show_rules and has_rules:
             # -- HINT: Show only rules, if any exists.
-            self.stream.write(rules_summary)
+            self.stream.write(format_summary("rule", self.rule_summary))
         stream.write(format_summary("scenario", self.scenario_summary))
         stream.write(format_summary("step", self.step_summary))
 
