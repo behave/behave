@@ -120,6 +120,7 @@ class TestSummaryReporter(object):
         reporter.end()
 
         expected = {
+            "all": 5,
             Status.passed.name: 2,
             Status.failed.name: 1,
             Status.skipped.name: 1,
@@ -156,6 +157,7 @@ class TestSummaryReporter(object):
         reporter.end()
 
         expected = {
+            "all": 5,
             Status.passed.name: 1,
             Status.failed.name: 2,
             Status.skipped.name: 1,
@@ -201,6 +203,7 @@ class TestSummaryReporter(object):
         reporter.end()
 
         expected = {
+            "all": 7,
             Status.passed.name: 2,
             Status.failed.name: 3,
             Status.skipped.name: 2,
@@ -241,6 +244,7 @@ class TestSummaryReporter(object):
         reporter.end()
 
         expected = {
+            "all": 5,
             Status.passed.name: 2,
             Status.failed.name: 1,
             Status.skipped.name: 1,

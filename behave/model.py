@@ -144,18 +144,18 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
         self.hook_failed = False
         self.run_starttime = 0
         self.run_endtime = 0
-        for scenario in self.scenarios:
-            scenario.reset()
+        for run_item in self.run_items:
+            run_item.reset()
 
     def __iter__(self):
-        return iter(self.scenarios)
+        return iter(self.run_items)
 
     def add_scenario(self, scenario):
         feature = getattr(self, "feature", None)
         if isinstance(self, Feature):
             feature = self
 
-        scenario.parent = self      # XXX-NEW
+        scenario.parent = self
         scenario.feature = feature
         scenario.background = self.background
         self.scenarios.append(scenario)
@@ -174,17 +174,17 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
 
         skipped = True
         passed_count = 0
-        for scenario in self.scenarios:
-            scenario_status = scenario.status
-            if scenario_status == Status.failed:
+        for run_item in self.run_items:
+            run_item_status = run_item.status
+            if run_item_status == Status.failed:
                 return Status.failed
-            elif scenario_status == Status.untested:
+            elif run_item_status == Status.untested:
                 if passed_count > 0:
                     return Status.failed  # ABORTED: Some passed, now untested.
                 return Status.untested
-            if scenario_status != Status.skipped:
+            if run_item_status != Status.skipped:
                 skipped = False
-            if scenario_status == Status.passed:
+            if run_item_status == Status.passed:
                 passed_count += 1
 
         if skipped:
@@ -217,14 +217,19 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
         """
         # TODO: Better use self.run_items
         all_scenarios = []
-        for scenario in self.scenarios:
-            if isinstance(scenario, ScenarioOutline):
-                scenario_outline = scenario
+        # for scenario in self.scenarios:
+        for run_item in self.run_items:
+            if isinstance(run_item, Rule):
+                rule = run_item
+                all_scenarios.extend(rule.walk_scenarios(with_outlines=with_outlines))
+            if isinstance(run_item, ScenarioOutline):
+                scenario_outline = run_item
                 if with_outlines:
                     all_scenarios.append(scenario_outline)
                 all_scenarios.extend(scenario_outline.scenarios)
             else:
-                all_scenarios.append(scenario)
+                assert isinstance(run_item, Scenario)
+                all_scenarios.append(run_item)
         return all_scenarios
 
     def should_run(self, config=None):
@@ -285,9 +290,9 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
         self.clear_status()
         self.should_skip = True
         self.skip_reason = reason
-        for scenario in self.scenarios:
-            scenario.skip(reason, require_not_executed)
-        if not self.scenarios:
+        for run_item in self.run_items:
+            run_item.skip(reason, require_not_executed)
+        if not self.run_items:
             # -- SPECIAL CASE: Feature without scenarios
             self.set_status(Status.skipped)
         assert self.status in self.final_status #< skipped, failed or passed.
