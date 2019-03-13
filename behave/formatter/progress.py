@@ -43,6 +43,7 @@ class ProgressFormatterBase(Formatter):
         self.steps = []
         self.failures = []
         self.current_feature = None
+        self.current_rule = None
         self.current_scenario = None
         self.show_timings = config.show_timings and self.show_timings
 
@@ -50,13 +51,18 @@ class ProgressFormatterBase(Formatter):
         self.steps = []
         self.failures = []
         self.current_feature = None
+        self.current_rule = None
         self.current_scenario = None
 
     # -- FORMATTER API:
     def feature(self, feature):
+        self.current_rule = None
         self.current_feature = feature
         self.stream.write("%s  " % six.text_type(feature.filename))
         self.stream.flush()
+
+    def rule(self, rule):
+        self.current_rule = rule
 
     def background(self, background):
         pass
@@ -219,8 +225,15 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
 
     # -- FORMATTER API:
     def feature(self, feature):
+        self.current_rule = None
         self.current_feature = feature
         self.stream.write(u"%s    # %s" % (feature.name, feature.filename))
+
+    def rule(self, rule):
+        self.current_rule = rule
+        self.stream.write(u"\n\n  %s: %s    # %s" %
+                          (rule.keyword, rule.name, rule.location))
+        self.stream.flush()
 
     def scenario(self, scenario):
         """Process the next scenario."""
@@ -231,9 +244,12 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         assert not self.failures
         self.current_scenario = scenario
         scenario_name = scenario.name
+        prefix = self.scenario_prefix
+        if self.current_rule:
+            prefix += u"  "
         if scenario_name:
             scenario_name += " "
-        self.stream.write(u"%s%s " % (self.scenario_prefix, scenario_name))
+        self.stream.write(u"%s%s " % (prefix, scenario_name))
         self.stream.flush()
 
     # -- DISABLED:

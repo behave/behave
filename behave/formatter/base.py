@@ -129,15 +129,6 @@ class Formatter(object):
         """
         pass
 
-    def background(self, background):
-        """Called when a (Feature) Background is provided.
-        Called after :method:`feature()` is called.
-        Called before processing any scenarios or scenario outlines.
-
-        :param background:  Background object (as :class:`behave.model.Background`)
-        """
-        pass
-
     def rule(self, rule):
         """Called before a rule is executed.
 
@@ -152,6 +143,15 @@ class Formatter(object):
     #     :param rule:  Rule object (as :class:`behave.model.Rule`)
     #     """
     #     pass
+
+    def background(self, background):
+        """Called when a (Feature) Background is provided.
+        Called after :method:`feature()` is called.
+        Called before processing any scenarios or scenario outlines.
+
+        :param background:  Background object (as :class:`behave.model.Background`)
+        """
+        pass
 
     def scenario(self, scenario):
         """Called before a scenario is executed (or ScenarioOutline scenarios).

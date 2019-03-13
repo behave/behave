@@ -318,10 +318,10 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
         runner.context.tags = set(self.tags)
 
         skip_entity_untested = runner.aborted
-        run_entity = self.should_run(runner.config)
+        should_run_entity = self.should_run(runner.config)
         failed_count = 0
         hooks_called = False
-        if not runner.config.dry_run and run_entity:
+        if not runner.config.dry_run and should_run_entity:
             hooks_called = True
             for tag in self.tags:
                 runner.run_hook("before_tag", runner.context, tag)
@@ -332,10 +332,10 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
             # -- RE-EVALUATE SHOULD-RUN STATE:
             # Hook may call entity.mark_skipped() to exclude it.
             skip_entity_untested = self.hook_failed or runner.aborted
-            run_entity = self.should_run()
+            should_run_entity = self.should_run()
 
         # run this entity if the tags say so or any one of its scenarios
-        if run_entity or runner.config.show_skipped:
+        if should_run_entity or runner.config.show_skipped:
             for formatter in runner.formatters:
                 formatter_callback = getattr(formatter, entity_name, None)
                 if formatter_callback:
@@ -363,7 +363,7 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
                         break
 
         self.clear_status()  # -- ENFORCE: compute_status() after run.
-        if not self.run_items and not run_entity:
+        if not self.run_items and not should_run_entity:
             # -- SPECIAL CASE: Feature without scenarios
             self.set_status(Status.skipped)
 
@@ -382,7 +382,7 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
             # -- CLEANUP-ERROR:
             self.set_status(Status.failed)
 
-        if run_entity or runner.config.show_skipped:
+        if should_run_entity or runner.config.show_skipped:
             callback_name = "{0}_finished".format(entity_name)
             if entity_name == "feature":
                 callback_name = "eof"
@@ -608,7 +608,6 @@ class Rule(ScenarioContainer):
     .. versionadded:: 1.2.7
     .. _`feature`: gherkin.html#rule
     """
-
     type = "rule"
 
     def __init__(self, filename, line, keyword, name, tags=None,
@@ -623,7 +622,6 @@ class Rule(ScenarioContainer):
     def __repr__(self):
         return '<Rule "%s": %d scenario(s)>' % \
             (self.name, len(self.scenarios))
-
 
 
 class Background(BasicStatement, Replayable):
