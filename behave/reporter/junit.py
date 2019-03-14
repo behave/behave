@@ -75,7 +75,7 @@ import codecs
 from xml.etree import ElementTree
 from datetime import datetime
 from behave.reporter.base import Reporter
-from behave.model import Scenario, ScenarioOutline, Step
+from behave.model import Rule, Scenario, ScenarioOutline, Step
 from behave.model_core import Status
 from behave.formatter import ansi_escapes
 from behave.model_describe import ModelDescriptor
@@ -236,13 +236,8 @@ class JUnitReporter(Reporter):
         feature_name = feature.name or feature_filename
         suite.set(u'name', u'%s.%s' % (classname, feature_name))
 
-        # -- BUILD-TESTCASES: From scenarios
-        for scenario in feature:
-            if isinstance(scenario, ScenarioOutline):
-                scenario_outline = scenario
-                self._process_scenario_outline(scenario_outline, report)
-            else:
-                self._process_scenario(scenario, report)
+        # -- BUILD-TESTCASES: From run_items (and scenarios)
+        self._process_run_items_for(feature, report)
 
         # -- ADD TESTCASES to testsuite:
         for testcase in report.testcases:
@@ -456,6 +451,19 @@ class JUnitReporter(Reporter):
 
         if scenario.status != Status.skipped or self.show_skipped:
             report.testcases.append(case)
+
+    def _process_run_items_for(self, parent, report):
+        for run_item in parent.run_items:
+            if isinstance(run_item, Rule):
+                self._process_rule(run_item, report)
+            elif isinstance(run_item, ScenarioOutline):
+                self._process_scenario_outline(run_item, report)
+            else:
+                assert isinstance(run_item, Scenario)
+                self._process_scenario(run_item, report)
+
+    def _process_rule(self, rule, report):
+        self._process_run_items_for(rule, report)
 
     def _process_scenario_outline(self, scenario_outline, report):
         assert isinstance(scenario_outline, ScenarioOutline)
