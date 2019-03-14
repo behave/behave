@@ -74,11 +74,12 @@ class Formatter(object):
 
     Processing Logic (simplified, without ScenarioOutline and skip logic)::
 
+        # -- HINT: Rule processing is missing.
         for feature in runner.features:
             formatter = make_formatters(...)
             formatter.uri(feature.filename)
             formatter.feature(feature)
-            for scenario in feature.scenarios:
+            for scenario in feature.walk_scenarios():
                 formatter.scenario(scenario)
                 for step in scenario.all_steps:
                     formatter.step(step)
