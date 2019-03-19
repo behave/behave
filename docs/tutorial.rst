@@ -321,7 +321,7 @@ with only some variation. For example:
      Then the result page will include "success"
 
   Scenario: look up an invalid book
-    Given I search for a invalid book
+    Given I search for an invalid book
      Then the result page will include "failure"
 
 You may define a single Python step that handles both of those Then
