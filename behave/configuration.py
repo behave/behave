@@ -259,6 +259,14 @@ options = [
      dict(action="store_true", dest="summary",
           help="""Display the summary at the end of the run.""")),
 
+    (("--no-skipped-list",),
+     dict(action="store_false", dest="skipped_list",
+          help="""Don't display the list of skipped scenarios at the end of the run.""")),
+          
+    (("--skipped-list",),
+     dict(action="store_true", dest="skipped_list",
+          help="""Display the list of skipped scenarios at the end of the run.""")),      
+
     (("-o", "--outfile"),
      dict(action="append", dest="outfiles", metavar="FILE",
           help="Write to specified file instead of stdout.")),
@@ -507,6 +515,7 @@ class Configuration(object):
         logging_level=logging.INFO,
         steps_catalog=False,
         summary=True,
+        skipped_list=False,
         junit=False,
         stage=None,
         userdata={},

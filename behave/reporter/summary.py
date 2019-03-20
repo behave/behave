@@ -143,7 +143,9 @@ class SummaryReporter(Reporter):
         self.run_starttime = 0
         self.run_endtime = 0
         self.failed_scenarios = []
+        self.skipped_scenarios = []
         self.show_rules = True
+        self.show_skipped_scenarios = config.skipped_list
 
     def testrun_started(self, timestamp=None):
         if timestamp is None:
@@ -153,7 +155,7 @@ class SummaryReporter(Reporter):
     def testrun_finished(self, timestamp=None):
         if timestamp is None:
             timestamp = time_now()
-        self.run_endtime = timestamp
+        self.run_endtime = timestamp    
 
     def print_failing_scenarios(self, stream=None):
         if stream is None:
@@ -162,6 +164,14 @@ class SummaryReporter(Reporter):
         stream.write("\nFailing scenarios:\n")
         for scenario in self.failed_scenarios:
             stream.write(u"  %s  %s\n" % (scenario.location, scenario.name))
+
+    def print_skipped_scenarios(self, stream=None):
+        if stream is None:
+            stream = self.stream
+
+        stream.write("\nSkipped scenarios:\n")
+        for scenario in self.skipped_scenarios:
+            stream.write(u"  %s  %s - Reason: %s\n" % (scenario.location, scenario.name, scenario.skip_reason))
 
     def compute_summary_sums(self):
         """(Re)Compute summary sum of all counts (except: all)."""
@@ -204,6 +214,11 @@ class SummaryReporter(Reporter):
     def end(self):
         self.testrun_finished()
 
+        # -- SHOW SKIPPED SCENARIOS (optional):
+        if self.show_skipped_scenarios and self.skipped_scenarios:
+            self.print_skipped_scenarios()
+            self.stream.write("\n")
+        
         # -- SHOW FAILED SCENARIOS (optional):
         if self.show_failed_scenarios and self.failed_scenarios:
             self.print_failing_scenarios()
@@ -234,6 +249,8 @@ class SummaryReporter(Reporter):
     def process_scenario(self, scenario):
         if scenario.status == Status.failed:
             self.failed_scenarios.append(scenario)
+        elif scenario.status == Status.skipped:
+            self.skipped_scenarios.append(scenario)
 
         self.scenario_summary[scenario.status.name] += 1
         for step in scenario:

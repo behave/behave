@@ -168,6 +168,14 @@ You may see the same information presented below at any time using ``behave
 
     Display the summary at the end of the run.
 
+.. option:: --no-skipped-list
+
+    Don't display the list of skipped scenarios at the end of the run.   
+
+.. option:: --skipped-list
+
+    Display the list of skipped scenarios at the end of the run.    
+
 .. option:: -o, --outfile
 
     Write to specified file instead of stdout.
