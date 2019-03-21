@@ -155,7 +155,7 @@ class SummaryReporter(Reporter):
     def testrun_finished(self, timestamp=None):
         if timestamp is None:
             timestamp = time_now()
-        self.run_endtime = timestamp    
+        self.run_endtime = timestamp
 
     def print_failing_scenarios(self, stream=None):
         if stream is None:
