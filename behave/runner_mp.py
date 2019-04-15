@@ -37,6 +37,7 @@ class MultiProcRunner(Runner):
                         if not self.config.exclude(filename)]
         features = parse_features(feature_locations, language=self.config.lang)
         self.features.extend(features)
+        self.load_hooks()   # hooks themselves not used, but 'environment.py' loaded
         feature_count, scenario_count = self.scan_features()
         njobs = len(self.jobs_map)
         proc_count = int(self.config.proc_count)
