@@ -1,9 +1,9 @@
-from multiprocessing import Queue
+import sys
 
-queue = Queue()
-print ("Loaded queue")
-queue.put("first")
-queue.put("second")
+sys.path.append('.')
+
+from common_module import queue
+
 
 def before_all(context):
     print("Queue is: %x" % id(queue))
