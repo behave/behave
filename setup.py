@@ -79,7 +79,7 @@ setup(
         "cucumber-tag-expressions >= 1.1.1",
         "parse >= 1.8.2",
         "parse_type >= 0.4.2",
-        "six >= 1.11.0",
+        "six >= 1.12.0",
         "traceback2; python_version < '3.0'",
         "enum34; python_version < '3.4'",
         # -- PREPARED:
@@ -93,7 +93,7 @@ setup(
         "nose >= 1.3",
         "mock >= 1.1",
         "PyHamcrest >= 1.8",
-        "path.py >= 10.1"
+        "path.py >= 11.5.0"
     ],
     cmdclass = {
         "behave_test": behave_test,
@@ -110,7 +110,7 @@ setup(
             "pytest-cov",
             "tox",
             "invoke >= 1.2.0",
-            "path.py >= 10.1",
+            "path.py >= 11.5.0",
             "pycmd",
             "pathlib; python_version <= '3.4'",
             "modernize >= 0.5",
