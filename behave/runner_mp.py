@@ -141,6 +141,10 @@ class MultiProcRunner(Runner):
             formatter.feature(feature)
             if feature.background:
                 formatter.background(feature.background)
+            for scenario in feature.scenarios:
+                formatter.scenario(scenario)
+                for step in scenario.steps:
+                    formatter.step(step)
 
             formatter.eof()
 
