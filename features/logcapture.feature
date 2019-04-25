@@ -119,6 +119,8 @@ Feature: Capture log output
             ERROR:foo:Hello Bob
             WARNING:foo.bar:Hello Charly
             INFO:bar:Hello Dora
+
+            Assertion Failed: EXPECT: Failing step
             """
         And the command output should contain the following log records:
             | category | level   | message |
