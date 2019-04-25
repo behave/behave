@@ -1661,7 +1661,7 @@ class Step(BasicStatement, Replayable):
                 self.captured = runner.capture_controller.captured
                 error2 = self.captured.make_report()
                 if error2:
-                    error += "\n" + error2 + "\n\n" + error
+                    error += "\n" + error2
             self.error_message = error
             self.error_message2 = error2
             keep_going = False
