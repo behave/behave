@@ -145,6 +145,7 @@ class MultiProcRunner(Runner):
                 formatter.scenario(scenario)
                 for step in scenario.steps:
                     formatter.step(step)
+                    formatter.result(step)
 
             formatter.eof()
 
