@@ -1656,14 +1656,15 @@ class Step(BasicStatement, Replayable):
         if self.status == Status.failed:
             assert isinstance(error, six.text_type)
             self.error_message1 = error
+            self.error_message2 = None
             if capture:
                 # -- CAPTURE-ONLY: Non-nested step failures.
                 self.captured = runner.capture_controller.captured
                 error2 = self.captured.make_report()
                 if error2:
                     error += "\n" + error2
+                    self.error_message2 = error2
             self.error_message = error
-            self.error_message2 = error2
             keep_going = False
         elif store_captured and capture:
             self.captured = runner.capture_controller.captured
