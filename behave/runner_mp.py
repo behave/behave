@@ -8,8 +8,9 @@ import multiprocessing
 
 from behave.formatter._registry import make_formatters
 from behave.runner import Runner, Context
-from behave.model import Feature, Scenario, ScenarioOutline
-from behave.runner_util import parse_features
+from behave.model import Feature, Scenario, ScenarioOutline, NoMatch
+from behave.runner_util import parse_features, load_step_modules
+from behave.step_registry import registry as the_step_registry
 
 if six.PY2:
     import Queue as queue
@@ -145,6 +146,11 @@ class MultiProcRunner(Runner):
                 formatter.scenario(scenario)
                 for step in scenario.steps:
                     formatter.step(step)
+                    match = the_step_registry.match(step)
+                    if match:
+                        formatter.match(match)
+                    else:
+                        formatter.match(NoMatch())
                     formatter.result(step)
 
             formatter.eof()
