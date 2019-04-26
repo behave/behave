@@ -36,6 +36,7 @@ class MultiProcRunner(Runner):
     def run_with_paths(self):
         feature_locations = [filename for filename in self.feature_locations()
                         if not self.config.exclude(filename)]
+        load_step_modules(loc.abspath() for loc in feature_locations)
         features = parse_features(feature_locations, language=self.config.lang)
         self.features.extend(features)
         self.load_hooks()   # hooks themselves not used, but 'environment.py' loaded
@@ -146,11 +147,13 @@ class MultiProcRunner(Runner):
                 formatter.scenario(scenario)
                 for step in scenario.steps:
                     formatter.step(step)
-                    match = the_step_registry.match(step)
+                for step in scenario.steps:
+                    match = the_step_registry.find_match(step)
                     if match:
                         formatter.match(match)
                     else:
                         formatter.match(NoMatch())
+                for step in scenario.steps:
                     formatter.result(step)
 
             formatter.eof()
