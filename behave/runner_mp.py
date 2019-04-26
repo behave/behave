@@ -8,8 +8,9 @@ import multiprocessing
 
 from behave.formatter._registry import make_formatters
 from behave.runner import Runner, Context
-from behave.model import Feature, Scenario, ScenarioOutline
-from behave.runner_util import parse_features
+from behave.model import Feature, Scenario, ScenarioOutline, NoMatch
+from behave.runner_util import parse_features, load_step_modules
+from behave.step_registry import registry as the_step_registry
 
 if six.PY2:
     import Queue as queue
@@ -35,6 +36,7 @@ class MultiProcRunner(Runner):
     def run_with_paths(self):
         feature_locations = [filename for filename in self.feature_locations()
                         if not self.config.exclude(filename)]
+        load_step_modules(loc.abspath() for loc in feature_locations)
         features = parse_features(feature_locations, language=self.config.lang)
         self.features.extend(features)
         self.load_hooks()   # hooks themselves not used, but 'environment.py' loaded
@@ -145,6 +147,11 @@ class MultiProcRunner(Runner):
                 formatter.scenario(scenario)
                 for step in scenario.steps:
                     formatter.step(step)
+                    match = the_step_registry.find_match(step)
+                    if match:
+                        formatter.match(match)
+                    else:
+                        formatter.match(NoMatch())
                     formatter.result(step)
 
             formatter.eof()
