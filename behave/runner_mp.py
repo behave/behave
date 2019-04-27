@@ -9,7 +9,7 @@ import multiprocessing
 
 from behave.formatter._registry import make_formatters
 from behave.runner import Runner, Context
-from behave.model import Feature, Scenario, ScenarioOutline, NoMatch, Status
+from behave.model import Feature, Scenario, ScenarioOutline, NoMatch
 from behave.runner_util import parse_features, load_step_modules
 from behave.step_registry import registry as the_step_registry
 
