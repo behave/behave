@@ -4,12 +4,14 @@ This module provides multiprocessing Runner class.
 """
 
 import six
+import os
 import multiprocessing
 
 from behave.formatter._registry import make_formatters
 from behave.runner import Runner, Context
-from behave.model import Feature, Scenario, ScenarioOutline
-from behave.runner_util import parse_features
+from behave.model import Feature, Scenario, ScenarioOutline, NoMatch
+from behave.runner_util import parse_features, load_step_modules
+from behave.step_registry import registry as the_step_registry
 
 if six.PY2:
     import Queue as queue
@@ -35,6 +37,8 @@ class MultiProcRunner(Runner):
     def run_with_paths(self):
         feature_locations = [filename for filename in self.feature_locations()
                         if not self.config.exclude(filename)]
+        # step definitions are needed here for formatters only
+        self.load_step_definitions(os.path.join(loc.dirname(), self.config.steps_dir) for loc in feature_locations)
         features = parse_features(feature_locations, language=self.config.lang)
         self.features.extend(features)
         self.load_hooks()   # hooks themselves not used, but 'environment.py' loaded
@@ -141,6 +145,17 @@ class MultiProcRunner(Runner):
             formatter.feature(feature)
             if feature.background:
                 formatter.background(feature.background)
+            for scenario in feature.scenarios:
+                formatter.scenario(scenario)
+                for step in scenario.steps:
+                    formatter.step(step)
+                for step in scenario.steps:
+                    match = the_step_registry.find_match(step)
+                    if match:
+                        formatter.match(match)
+                    else:
+                        formatter.match(NoMatch())
+                    formatter.result(step)
 
             formatter.eof()
 
