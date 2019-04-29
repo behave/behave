@@ -38,7 +38,13 @@ class MultiProcRunner(Runner):
         feature_locations = [filename for filename in self.feature_locations()
                         if not self.config.exclude(filename)]
         # step definitions are needed here for formatters only
-        self.load_step_definitions(os.path.join(loc.dirname(), self.config.steps_dir) for loc in feature_locations)
+        steps_paths = []
+        for loc in feature_locations:
+            steps_path = os.path.join(loc.dirname(), self.config.steps_dir)
+            if os.path.isdir(steps_path):
+                steps_paths.append(steps_path)
+
+        self.load_step_definitions(steps_paths)
         features = parse_features(feature_locations, language=self.config.lang)
         self.features.extend(features)
         self.load_hooks()   # hooks themselves not used, but 'environment.py' loaded
