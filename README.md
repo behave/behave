@@ -70,8 +70,7 @@ I broke ALL THE THINGS!
 * I don't print out the total time behave has ran. Too lazy to code it; just use linux's "time" command.
 
 		/usr/bin/time behave --processes 2 --parallel-element feature
-
-* You can't use the --format flag when using parallelization. I've noticed it tends to break stuff if it's set to anything other than "plain", so now I just hardcode it to always be "plain".
+* Not all parameters to the --format option will do what you expect. --format pretty and --format json should be fine.
 
 ======
 Advice
