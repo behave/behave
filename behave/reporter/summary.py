@@ -5,11 +5,15 @@ Provides a summary after each test run.
 
 from __future__ import absolute_import, division
 import sys
-from time import monotonic
 from behave.model import ScenarioOutline
 from behave.model_core import Status
 from behave.reporter.base import Reporter
 from behave.formatter.base import StreamOpener
+try:
+    # requires py>=3.3 or 3.5 for all platforms
+    from time import monotonic
+except ImportError:
+    from time import time as monotonic
 
 
 # -- DISABLED: optional_steps = ('untested', 'undefined')
