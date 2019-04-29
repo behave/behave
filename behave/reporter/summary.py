@@ -5,6 +5,7 @@ Provides a summary after each test run.
 
 from __future__ import absolute_import, division
 import sys
+from time import monotonic
 from behave.model import ScenarioOutline
 from behave.model_core import Status
 from behave.reporter.base import Reporter
@@ -53,12 +54,11 @@ class SummaryReporter(Reporter):
         self.step_summary = {Status.passed.name: 0, Status.failed.name: 0,
                              Status.skipped.name: 0, Status.untested.name: 0,
                              Status.undefined.name: 0}
-        self.duration = 0.0
+        self.start = monotonic()
         self.failed_scenarios = []
 
     def feature(self, feature):
         self.feature_summary[feature.status.name] += 1
-        self.duration += feature.duration
         for scenario in feature:
             if isinstance(scenario, ScenarioOutline):
                 self.process_scenario_outline(scenario)
@@ -78,7 +78,8 @@ class SummaryReporter(Reporter):
         self.stream.write(format_summary("feature", self.feature_summary))
         self.stream.write(format_summary("scenario", self.scenario_summary))
         self.stream.write(format_summary("step", self.step_summary))
-        timings = (int(self.duration / 60.0), self.duration % 60)
+        duration = monotonic() - self.start
+        timings = (int(duration / 60.0), duration % 60)
         self.stream.write('Took %dm%02.3fs\n' % timings)
 
     def process_scenario(self, scenario):
