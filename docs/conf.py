@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath(".."))
 # DETECT BUILD CONTEXT
 # ------------------------------------------------------------------------------
 ON_READTHEDOCS = os.environ.get("READTHEDOCS", None) == "True"
-USE_SPHINX_INTERNATIONAL = not ON_READTHEDOCS
+USE_SPHINX_INTERNATIONAL = True
 
 
 # ------------------------------------------------------------------------------
@@ -164,7 +164,6 @@ todo_include_todos = False
 # a list of builtin themes.
 html_theme = "kr"
 html_theme = "bootstrap"
-
 if ON_READTHEDOCS:
     html_theme = "default"
 
