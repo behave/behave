@@ -3,6 +3,7 @@
 # SPHINX CONFIGURATION: behave documentation build configuration file
 # =============================================================================
 
+from __future__ import print_function
 import os.path
 import sys
 import importlib
@@ -12,6 +13,13 @@ import importlib
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath(".."))
+
+# ------------------------------------------------------------------------------
+# DETECT BUILD CONTEXT
+# ------------------------------------------------------------------------------
+ON_READTHEDOCS = os.environ.get("READTHEDOCS", None) == "True"
+USE_SPHINX_INTERNATIONAL = not ON_READTHEDOCS
+
 
 # ------------------------------------------------------------------------------
 # EXTENSIONS CONFIGURATION
@@ -82,8 +90,10 @@ master_doc = "index"
 # -- MULTI-LANGUAGE SUPPORT: en, ...
 # SEE: https://pypi.org/project/sphinx-intl/
 # SEE: https://github.com/sphinx-doc/sphinx-intl/
-locale_dirs = ["locale/"]   # path is example but recommended.
-gettext_compact = False     # optional.
+if USE_SPHINX_INTERNATIONAL:
+    locale_dirs = ["locale/"]   # path is example but recommended.
+    gettext_compact = False     # optional.
+    print("USE SPHINX-INTL: locale_dirs=%s" % ",".join(locale_dirs))
 
 # STEPS:
 #   make gettext
@@ -155,8 +165,7 @@ todo_include_todos = False
 html_theme = "kr"
 html_theme = "bootstrap"
 
-on_rtd = os.environ.get("READTHEDOCS", None) == "True"
-if on_rtd:
+if ON_READTHEDOCS:
     html_theme = "default"
 
 if html_theme == "bootstrap":
