@@ -5,7 +5,7 @@
 # pylint: disable=line-too-long, too-many-lines, missing-docstring, invalid-name
 """
 Gherkin keywords in the different I18N languages, like:
- 
+
 * English
 * French
 * German
@@ -331,7 +331,7 @@ languages = \
         'given': ['* ', 'Dado ', 'Dada ', 'Dados ', 'Dadas '],
         'name': 'Spanish',
         'native': 'español',
-        'rule': ['Rule'],
+        'rule': ['Regla'],
         'scenario': ['Ejemplo', 'Escenario'],
         'scenario_outline': ['Esquema del escenario'],
         'then': ['* ', 'Entonces '],
@@ -759,7 +759,7 @@ languages = \
         'given': ['* ', 'Dado ', 'Dada ', 'Dados ', 'Dadas '],
         'name': 'Portuguese',
         'native': 'português',
-        'rule': ['Rule'],
+        'rule': ['Regra'],
         'scenario': ['Exemplo', 'Cenário', 'Cenario'],
         'scenario_outline': ['Esquema do Cenário',
                              'Esquema do Cenario',
