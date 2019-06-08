@@ -92,5 +92,13 @@ Overview of the `Example Mapping`_ concepts:
     * https://lisacrispin.com/2016/06/02/experiment-example-mapping/
     * https://tobythetesterblog.wordpress.com/2016/05/25/how-to-do-example-mapping/
 
+.. hint:: **Gherkin v6 Grammar Issues**
+
+    * :cucumber.issue:`632`: Rule tags are currently only supported in `behave`.
+      The Cucumber Gherkin v6 grammar currently lacks this functionality.
+
+    * :cucumber.issue:`590`: Rule Background:
+      A proposal is pending to remove Rule Backgrounds again
+
 
 .. include:: _content.tag_expressions_v2.rst

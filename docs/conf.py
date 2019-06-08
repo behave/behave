@@ -54,9 +54,11 @@ for optional_module_name in optional_extensions:
 extlinks = {
     "pypi": ("https://pypi.org/project/%s", ""),
     "github": ("https://github.com/%s", "github:/"),
-    "issue":  ("https://github.com/behave/behave/issue/%s", "issue #"),
+    "issue":  ("https://github.com/behave/behave/issues/%s", "issue #"),
     "youtube": ("https://www.youtube.com/watch?v=%s", "youtube:video="),
     "behave": ("https://github.com/behave/behave", None),
+    "cucumber": ("https://github.com/cucumber/cucumber/", None),
+    "cucumber.issue": ("https://github.com/cucumber/cucumber/issues/%s", "issue #"),
 }
 
 intersphinx_mapping = {
