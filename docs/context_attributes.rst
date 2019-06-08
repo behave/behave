@@ -23,6 +23,7 @@ config          test run  :class:`~behave.configuration.Configuration`  Configur
 aborted         test run  bool                                          Set to true if test run is aborted by the user.
 failed          test run  bool                                          Set to true if a step fails.
 feature         feature   :class:`~behave.model.Feature`                Current feature.
+rule            rule      :class:`~behave.model.Feature`                Current rule.
 tags            feature,  list<:class:`~behave.model.Tag`>              Effective tags of current feature, rule, scenario, scenario outline.
                 rule,
                 scenario
@@ -62,7 +63,7 @@ Hook    :func:`after_tags`          feature, rule or scenario
 Hook    :func:`before_feature`      feature
 Hook    :func:`after_feature`       feature
 Hook    :func:`before_rule`         rule
-Hook    :func:`after_after`         rule
+Hook    :func:`after_rule`          rule
 Hook    :func:`before_scenario`     scenario
 Hook    :func:`after_scenario`      scenario
 Hook    :func:`before_step`         scenario
