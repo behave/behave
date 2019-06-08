@@ -1,12 +1,14 @@
 language: python
 sudo: false
+dist: xenial   # required for Python >= 3.7
 python:
-  - "3.6"
+  - "3.7"
   - "2.7"
+  - "3.6"
   - "3.5"
   - "pypy"
   - "pypy3"
-  - "3.7-dev"
+  - "3.8-dev"
 
 # -- DISABLED:
 #  - "nightly"
@@ -19,7 +21,7 @@ python:
 # -- TEST-BALLON: Check if Python 3.6 is actually Python 3.5.1 or newer
 matrix:
   allow_failures:
-    - python: "3.7-dev"
+    - python: "3.8-dev"
     - python: "nightly"
 
 cache:
