@@ -5,15 +5,15 @@ python:
   - "3.8-dev"
   - "3.7"
   - "2.7"
-  - "3.6"
-  - "3.5"
-  - "pypy"
-  - "pypy3"
+
+# -- DISABLE-TEMPORARILY: Ensure faster builds
+#  - "3.6"
+#  - "3.5"
+#  - "pypy"
+#  - "pypy3"
 
 # -- DISABLED:
 #  - "nightly"
-#  - "3.4"
-#  - "3.3"
 #
 # NOW SUPPORTED: "3.5" => python 3.5.2 (>= 3.5.1)
 # NOTE: nightly = 3.7-dev
