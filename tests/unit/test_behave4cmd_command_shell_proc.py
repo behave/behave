@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-"""
+r"""
 
 Regular expressions for winpath:
 http://regexlib.com/Search.aspx?k=file+name
@@ -61,7 +61,7 @@ line_processor_ioerrors = [
 
 line_processor_traceback = [
     ExceptionWithPathNormalizer(
-        '^\s*File "(?P<path>.*)", line \d+, in ',
+        r'^\s*File "(?P<path>.*)", line \d+, in ',
         '  File "'),
     BehaveWinCommandOutputProcessor.line_processors[4],
 ]
