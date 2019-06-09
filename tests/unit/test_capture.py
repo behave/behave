@@ -20,6 +20,8 @@ def create_capture_controller(config=None):
         config.log_capture = True
         config.logging_filter = None
         config.logging_level = "INFO"
+        config.logging_format = "%(levelname)s:%(name)s:%(message)s"
+        config.logging_datefmt = None
     return CaptureController(config)
 
 def setup_capture_controller(capture_controller, context=None):
