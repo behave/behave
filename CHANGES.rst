@@ -30,6 +30,10 @@ ENHANCEMENTS:
 * issue #675: Feature files cannot be found within symlink directories (provided by: smadness, pull #680)
 
 
+PARTIALLY FIXED:
+
+* issue #755: Failures with Python 3.8 (submitted by: hroncok)
+
 FIXED:
 
 * issue #725: Scenario Outline description lines seem to be ignored (submitted by: nizwiz)
