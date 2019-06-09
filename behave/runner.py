@@ -167,10 +167,15 @@ class Context(object):
         self._record = {}
         self._origin = {}
         self._mode = self.BEHAVE
+
+        # -- MODEL ENTITY REFERENCES/SUPPORT:
         self.feature = None
-        # -- RECHECK: If needed
+        # DISABLED: self.rule = None
+        # DISABLED: self.scenario = None
         self.text = None
         self.table = None
+
+        # -- RUNTIME SUPPORT:
         self.stdout_capture = None
         self.stderr_capture = None
         self.log_capture = None
