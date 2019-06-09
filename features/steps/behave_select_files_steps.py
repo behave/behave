@@ -1,29 +1,34 @@
 # -*- coding: utf-8 -*-
-"""
+# DOCSTRING-NEEDS-REGEX-STRING-PREFIX: Due to example w/ wildcard pattern.
+r'''
 Provides step definitions that test how the behave runner selects feature files.
 
 EXAMPLE:
+
+.. code-block:: gherkin
+
     Given behave has the following feature fileset:
-      '''
+      """
       features/alice.feature
       features/bob.feature
       features/barbi.feature
-      '''
+      """
     When behave includes feature files with "features/a.*\.feature"
     And  behave excludes feature files with "features/b.*\.feature"
     Then the following feature files are selected:
-      '''
+      """
       features/alice.feature
-      '''
-"""
+      """
+'''
 
 from __future__ import absolute_import
-from behave import given, when, then
-from behave.runner_util import FeatureListParser
-from hamcrest import assert_that, equal_to
 from copy import copy
 import re
 import six
+from hamcrest import assert_that, equal_to
+from behave import given, when, then
+from behave.runner_util import FeatureListParser
+
 
 # -----------------------------------------------------------------------------
 # STEP UTILS:
@@ -47,6 +52,7 @@ class BasicBehaveRunner(object):
 # -----------------------------------------------------------------------------
 # STEP DEFINITIONS:
 # -----------------------------------------------------------------------------
+# pylint: disable=invalid-name
 @given('behave has the following feature fileset')
 def step_given_behave_has_feature_fileset(context):
     assert context.text is not None, "REQUIRE: text"
