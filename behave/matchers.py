@@ -261,9 +261,7 @@ class CFParseMatcher(ParseMatcher):
 
 
 def register_type(**kw):
-    # pylint: disable=anomalous-backslash-in-string
-    # REQUIRED-BY: code example
-    """Registers a custom type that will be available to "parse"
+    r"""Registers a custom type that will be available to "parse"
     for type conversion during step matching.
 
     Converters should be supplied as ``name=callable`` arguments (or as dict).
