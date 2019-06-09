@@ -2,13 +2,13 @@ language: python
 sudo: false
 dist: xenial   # required for Python >= 3.7
 python:
+  - "3.8-dev"
   - "3.7"
   - "2.7"
   - "3.6"
   - "3.5"
   - "pypy"
   - "pypy3"
-  - "3.8-dev"
 
 # -- DISABLED:
 #  - "nightly"
