@@ -286,6 +286,7 @@ class TestContext(unittest.TestCase):
         eq_("thing" in self.context, True)
         del self.context.thing
 
+
 class ExampleSteps(object):
     text = None
     table = None
@@ -320,6 +321,7 @@ class ExampleSteps(object):
         for keyword, pattern, func in step_definitions:
             step_registry.add_step_definition(keyword, pattern, func)
 
+
 class TestContext_ExecuteSteps(unittest.TestCase):
     """
     Test the behave.runner.Context.execute_steps() functionality.
@@ -341,6 +343,8 @@ class TestContext_ExecuteSteps(unittest.TestCase):
         runner_.config.stdout_capture = False
         runner_.config.stderr_capture = False
         runner_.config.log_capture = False
+        runner_.config.logging_format = None
+        runner_.config.logging_datefmt = None
         runner_.step_registry = self.step_registry
 
         self.context = runner.Context(runner_)
@@ -658,6 +662,8 @@ class TestRunWithPaths(unittest.TestCase):
         self.config.logging_filter = None
         self.config.outputs = [Mock(), StreamOpener(stream=sys.stdout)]
         self.config.format = ["plain", "progress"]
+        self.config.logging_format = None
+        self.config.logging_datefmt = None
         self.runner = runner.Runner(self.config)
         self.load_hooks = self.runner.load_hooks = Mock()
         self.load_step_definitions = self.runner.load_step_definitions = Mock()
