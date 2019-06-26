@@ -436,7 +436,7 @@ class TagAndStatusStatement(BasicStatement):
         return ret
 
     def recv_status(self, value):
-        assert self._cached_status == Status.untested
+        assert self._cached_status in (Status.untested, Status.skipped), self._cached_status
         super(TagAndStatusStatement, self).recv_status(value)
         if 'should_skip' in value:
             self.should_skip = value['should_skip']
