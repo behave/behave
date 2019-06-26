@@ -133,6 +133,9 @@ class MultiProcRunner(Runner):
                     print("INFO: scenario finished: %x" % (job_id,))
         except Exception as e:
             print("ERROR: cannot receive status for %r: %s" % (item, e))
+            if self.config.wip and not self.config.quiet:
+                import traceback
+                traceback.print_exc()
         return True
 
     def _output_feature(self, feature):
