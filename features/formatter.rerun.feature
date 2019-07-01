@@ -294,3 +294,20 @@ Feature: Rerun Formatter
             features/bob.feature:13
             """
         And note that "the second RerunFormatter overwrites the output of the first one"
+
+    @with.behave_configfile
+    Scenario: RerunFormatter with steps-catalog
+        Given a file named "behave.ini" with:
+            """
+            [behave]
+            format   = rerun
+            outfiles = rerun.txt
+            """
+        When I run "behave --steps-catalog features/"
+
+        Then it should pass with:
+            """
+            Given a step passes
+            """
+        And a file named "rerun.txt" does not exist
+
