@@ -36,6 +36,7 @@ PARTIALLY FIXED:
 
 FIXED:
 
+* pull  #588: Steps-catalog argument should not break configured rerun settings (provided by: Lego3)
 * issue #725: Scenario Outline description lines seem to be ignored (submitted by: nizwiz)
 * issue #713: Background section doesn't support description (provided by: dgou)
 * pull  #657: Allow async steps with timeouts to fail when they raise exceptions (provided by: ALSchwalm)
