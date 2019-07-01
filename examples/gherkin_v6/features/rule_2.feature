@@ -36,7 +36,12 @@ Feature: Gherkin v6 Example -- with Rules
     Scenario Template: R3.Scenario
       Given a person named "<name>"
 
-      Examples:
+      Examples: R3.E1
         | name  |
         | Alice |
         | Bob   |
+
+      Examples: R3.E2
+        | name  |
+        | Charly |
+        | Doro   |
