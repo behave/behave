@@ -214,9 +214,11 @@ class TestObjectToTextConversion(object):
         with pytest.raises(AssertionError) as e:
             assert False, message
 
-        text2 = text(e)
-        expected = u"AssertionError: %s" % message
-        assert text2.endswith(expected)
+        # -- FOR: pytest < 5.0
+        # expected = u"AssertionError: %s" % message
+        text2 = text(e.value)
+        assert u"AssertionError" in text(e)
+        assert message in text2, "OOPS: text=%r" % text2
 
     @requires_python2
     @pytest.mark.parametrize("message", [
@@ -236,10 +238,11 @@ class TestObjectToTextConversion(object):
                 assert expected_decode_error in str(uni_error)
                 assert False, bytes_message.decode(self.ENCODING)
 
+        # -- FOR: pytest < 5.0
+        # expected = u"AssertionError: %s" % message
         print("decode_error_occured(ascii)=%s" % decode_error_occured)
-        text2 = text(e)
-        expected = u"AssertionError: %s" % message
-        assert text2.endswith(expected)
+        text2 = text(e.value)
+        assert message in text2, "OOPS: text=%r" % text2
 
     @pytest.mark.parametrize("exception_class, message", [
         (AssertionError, u"Ärgernis"),
@@ -251,10 +254,13 @@ class TestObjectToTextConversion(object):
         with pytest.raises(exception_class) as e:
             raise exception_class(message)
 
-        text2 = text(e)
+        # -- FOR: pytest < 5.0
+        # expected = u"AssertionError: %s" % message
+        text2 = text(e.value)
         expected = u"%s: %s" % (exception_class.__name__, message)
         assert isinstance(text2, six.text_type)
-        assert text2.endswith(expected)
+        assert exception_class.__name__ in str(e)
+        assert message in text2, "OOPS: text=%r" % text2
 
     @requires_python2
     @pytest.mark.parametrize("exception_class, message", [
@@ -268,7 +274,7 @@ class TestObjectToTextConversion(object):
         with pytest.raises(exception_class) as e:
             raise exception_class(bytes_message)
 
-        text2 = text(e)
+        text2 = text(e.value)
         unicode_message = bytes_message.decode(self.ENCODING)
         expected = u"%s: %s" % (exception_class.__name__, unicode_message)
         assert isinstance(text2, six.text_type)

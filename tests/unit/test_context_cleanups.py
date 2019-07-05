@@ -153,7 +153,7 @@ class TestContextCleanup(object):
         with pytest.raises(AssertionError) as e:
             with scoped_context_layer(context):
                 context.add_cleanup(non_callable)
-        assert "REQUIRES: callable(cleanup_func)" in str(e)
+        assert "REQUIRES: callable(cleanup_func)" in str(e.value)
 
     def test_on_cleanup_error__prints_error_by_default(self, capsys):
         def bad_cleanup_func():
