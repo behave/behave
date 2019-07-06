@@ -13,15 +13,28 @@ Feature: Select Scenarios by File Location
     .   * A file location with filename but without line number
     .     refers to the complete file
     .   * A file location with line number 0 (zero) refers to the complete file
+    .   * A file location within a scenario container (Feature, Rule, ScenarioOutline),
+    .     that does not refer to the file location within a scenario,
+    .     selects all scenarios of this scenario container.
     .
     . SPECIFICATION: Scenario selection by file locations
     .   * scenario.line == file_location.line selects scenario (preferred method).
     .   * Any line number in the following range is acceptable:
-    .        scenario.line <= file_location.line < next_scenario.line
-    .   * The first scenario is selected,
-    .     if the file location line number is less than first scenario.line.
+    .        scenario.line <= file_location.line < next_entity.line (maybe: scenario)
+    .   * If the file location line number is less than first scenario.line,
+    .     the preceeding scenario container (Feature or Rule) is selected.
     .   * The last scenario is selected,
     .     if the file location line number is greater than the lines in the file.
+    .   * For ScenarioOutline.scenarios:
+    .         scenario.line == ScenarioOutline.examples[x].row.line
+    .     The line number of the Examples row that created the scenario is assigned to it.
+    .
+    . SPECIFICATION: "Scenario container" selection by file locations
+    .   * Scenario containers are: Feature, Rule, ScenarioOutline
+    .   * A file location that points into the matching range of a scenario container,
+    .     selects all scenarios / run-items within this scenario container.
+    .   * Any line number in the following range selects the scenario container:
+    .        entity.line <= file_location.line < next_entity.line (maybe: child)
     .
     . SPECIFICATION: Runner with scenario locations (file locations)
     .   * Adjacent file locations are merged if they refer to the same file, like:
@@ -162,22 +175,24 @@ Feature: Select Scenarios by File Location
             """
 
     @file_location.select_first
-    Scenario: Select first scenario if line number is smaller than first scenario line
+    Scenario: Select all scenarios if line number is smaller than first scenario line
 
       CASE: 0 < file_location.line < first_scenario.line
+      HINT: Any line number outside of a scenario may point into a "scenario container".
+            In this case, all the scenarios of the scenario container are selected.
 
         When I run "behave -f plain --dry-run --no-skipped features/alice.feature:1"
         Then it should pass with:
             """
             0 features passed, 0 failed, 0 skipped, 1 untested
-            0 scenarios passed, 0 failed, 1 skipped, 1 untested
+            0 scenarios passed, 0 failed, 0 skipped, 2 untested
             """
         And the command output should contain:
             """
             Feature: Alice
               Scenario: Alice First
             """
-        But the command output should not contain:
+        But the command output should contain:
             """
             Scenario: Alice Last
             """

@@ -28,7 +28,7 @@ ENHANCEMENTS:
 * Use `cucumber-tag-expressions`_ with tag-matching extension (superceeds: old-style tag-expressions)
 * issue #678: Scenario Outline: Support tags with commas and semicolons (provided by: lawnmowerlatte, pull #679)
 * issue #675: Feature files cannot be found within symlink directories (provided by: smadness, pull #680)
-
+* Select-by-location: Add support for "Scenario container" (Feature, Rule, ScenarioOutline) (related to: #391)
 
 PARTIALLY FIXED:
 

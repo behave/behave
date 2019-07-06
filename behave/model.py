@@ -55,11 +55,11 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
     .. attribute:: keyword
 
        This is the keyword as seen in the *feature file*. In English this will
-       be "Feature".
+       be "Feature" or "Rule".
 
     .. attribute:: name
 
-       The name of the feature (the text after "Feature".)
+       The name (or title) of the model entity (the text after the keyword.)
 
     .. attribute:: description
 
@@ -93,12 +93,16 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
 
        Status.untested
          The feature was has not been completely tested yet.
+
        Status.skipped
-         One or more steps of this feature was passed over during testing.
+         The execution of this model entity (feature or rule)
+         should be / was skipped (excluded from the test run).
+
        Status.passed
-         The feature was tested successfully.
+         The model entity (feature or rule) was tested successfully.
+
        Status.failed
-         One or more steps of this feature failed.
+         One or more run items of this model entity failed.
 
        .. versionchanged:: 1.2.6
             Use Status enum class (was: string).
@@ -146,6 +150,11 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
         self.run_endtime = 0
         for run_item in self.run_items:
             run_item.reset()
+
+    def _setup_context_for_run(self, context):
+        """Setup/Init runner context for run."""
+        # -- OVERRIDDEN: By derived classes.
+        pass
 
     def __iter__(self):
         return iter(self.run_items)
@@ -204,7 +213,7 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
         # feature_duration = self.run_endtime - self.run_starttime
         return feature_duration
 
-    def walk_scenarios(self, with_outlines=False):
+    def walk_scenarios(self, with_outlines=False, with_rules=False):
         """Provides a flat list of all scenarios of this ScenarioContainer.
         A ScenarioOutline element adds its scenarios to this list.
         But the ScenarioOutline element itself is only added when specified.
@@ -215,20 +224,20 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
         :param with_outlines: If ScenarioOutline items should be added, too.
         :return: List of all scenarios of this feature.
         """
-        # TODO: Better use self.run_items
         all_scenarios = []
-        # for scenario in self.scenarios:
         for run_item in self.run_items:
             if isinstance(run_item, Rule):
                 rule = run_item
+                if with_rules:
+                    all_scenarios.append(rule)
                 all_scenarios.extend(rule.walk_scenarios(with_outlines=with_outlines))
-            if isinstance(run_item, ScenarioOutline):
+            elif isinstance(run_item, ScenarioOutline):
                 scenario_outline = run_item
                 if with_outlines:
                     all_scenarios.append(scenario_outline)
                 all_scenarios.extend(scenario_outline.scenarios)
             else:
-                assert isinstance(run_item, Scenario)
+                assert isinstance(run_item, Scenario), "OOPS: %r" % run_item
                 all_scenarios.append(run_item)
         return all_scenarios
 
@@ -274,9 +283,9 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
         assert self.status == Status.skipped or self.hook_failed
 
     def skip(self, reason=None, require_not_executed=False):
-        """Skip executing this feature or the remaining parts of it.
-        Note that this feature may be already partly executed
-        when this function is called.
+        """Skip executing this model entity or the remaining parts of it.
+        Note that this model entity (feature or rule) may be already partly
+        executed when this function is called.
 
         :param reason:  Optional reason why feature should be skipped (as string).
         :param require_not_executed: Optional, requires that feature is not
@@ -314,8 +323,8 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
         hook_after_entity = "after_{0}".format(entity_name)
 
         runner.context._push(layer_name=entity_name)      # pylint: disable=protected-access
-        runner.context.feature = self
         runner.context.tags = set(self.tags)
+        self._setup_context_for_run(runner.context)
 
         skip_entity_untested = runner.aborted
         should_run_entity = self.should_run(runner.config)
@@ -497,6 +506,9 @@ class Feature(ScenarioContainer):
             (self.name, len(self.run_items),
              len(self.rules), len(self.scenarios))
 
+    def _setup_context_for_run(self, context):
+        context.feature = self
+
     def add_rule(self, rule):
         """Add a rule to this feature."""
         feature = self
@@ -619,6 +631,9 @@ class Rule(ScenarioContainer):
         self.parent = parent
         self.feature = parent
 
+    def _setup_context_for_run(self, context):
+        context.rule = self
+
     def __repr__(self):
         return '<Rule "%s": %d scenario(s)>' % \
             (self.name, len(self.scenarios))
@@ -664,6 +679,10 @@ class Background(BasicStatement, Replayable):
 
     .. _`background`: gherkin.html#backgrounds
     """
+    # TODO: Background inheritance
+    # Rule.background should inherit its Feature.background steps (if available)
+    # Rule.background = Feature.background iff not Rule.background exists (ALREADY-SOLVED)
+    # Rule may override background inheritance mechanism
     type = "background"
 
     def __init__(self, filename, line, keyword, name, steps=None, description=None):
@@ -796,7 +815,7 @@ class Scenario(TagAndStatusStatement, Replayable):
 
     @property
     def background_steps(self):
-        """Provide background steps if feature has a background.
+        """Provide background steps if feature/rule has a background.
         Lazy init that copies the background steps.
 
         Note that a copy of the background steps is needed to ensure

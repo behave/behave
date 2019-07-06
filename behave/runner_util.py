@@ -58,6 +58,100 @@ class FileLocationParser(object):
 # -----------------------------------------------------------------------------
 # CLASSES:
 # -----------------------------------------------------------------------------
+from collections import OrderedDict
+from .model import Feature, Rule, ScenarioOutline, Scenario
+
+
+class FeatureLineDatabase(object):
+    """Helper class that supports select-by-location mechanism (FileLocation)
+    within a feature file by storing the feature line numbers for each entity.
+
+    RESPONSIBILITY(s):
+
+    * Can use the line number to select the best matching entity(s) in a feature
+    * Implements the select-by-location mechanism for each entity in the feature
+    """
+
+    def __init__(self, entity=None, line_data=None):
+        if entity and not line_data:
+            line_data = self.make_line_data_for(entity)
+        self.entity = entity
+        self.data = OrderedDict(line_data or [])
+        self._line_numbers = None
+        self._line_entities = None
+
+    def select_run_item_by_line(self, line):
+        """Select one run-items by using the line number.
+
+        * Exact match returns run-time entity (Feature, Rule, ScenarioOutline, Scenario)
+        * Any other line in between uses the predecessor entity
+
+        :param line: Line number in Feature file (as int)
+        :return: Selected run-item object.
+        """
+        run_item = self.data.get(line, None)
+        if run_item is None:
+            # -- CASE: BEST-MATCH in ordered line database
+            if self._line_numbers is None:
+                self._line_numbers = list(self.data.keys())
+                self._line_entities = list(self.data.values())
+
+            pos = bisect(self._line_numbers, line) - 1
+            if pos < 0:
+                pos = 0
+            run_item = self._line_entities[pos]
+        return run_item
+
+    def select_scenarios_by_line(self, line):
+        """Select one or more scenarios by using the line number.
+
+        * line = 0: Selects all scenarios in the Feature file
+        * Feature / Rule / ScenarioOutline.location.line selects its scenarios
+        * Scenario.location.line selects the Scenario
+        * Any other lines use the predecessor entity (and its scenarios)
+
+        :param line: Line number in Feature file (as int)
+        :return: List of selected scenarios
+        """
+        run_item = self.select_run_item_by_line(line)
+        scenarios = []
+        if isinstance(run_item, Feature):
+            scenarios = list(run_item.walk_scenarios())
+        elif isinstance(run_item, Rule):
+            scenarios = list(run_item.walk_scenarios())
+        elif isinstance(run_item, ScenarioOutline):
+            scenarios = list(run_item.scenarios)
+        elif isinstance(run_item, Scenario):
+            scenarios = [run_item]
+        return scenarios
+
+    @classmethod
+    def make_line_data_for(cls, entity):
+        line_data = []
+        run_items = []
+        if isinstance(entity, Feature):
+            line_data.append((0, entity))
+            run_items = entity.run_items
+        elif isinstance(entity, Rule):
+            run_items = entity.run_items
+        elif isinstance(entity, ScenarioOutline):
+            run_items = entity.scenarios
+
+        line_data.append((entity.location.line, entity))
+        for run_item in run_items:
+            line_data.extend(cls.make_line_data_for(run_item))
+        # -- MAYBE:
+        # if isinstance(entity, ScenarioOutline) and run_items:
+        #     # -- SPECIAL CASE: Lines after last Examples row => Use ScenarioOutline
+        #     line_data.append((run_items[-1].location.line + 1, entity))
+        return sorted(line_data)
+
+    @classmethod
+    def make(cls, entity):
+        return cls(entity, cls.make_line_data_for(entity))
+
+
+
 class FeatureScenarioLocationCollector(object):
     """
     Collects FileLocation objects for a feature.
@@ -200,6 +294,94 @@ class FeatureScenarioLocationCollector(object):
         return self.feature
 
 
+class FeatureScenarioLocationCollector1(FeatureScenarioLocationCollector):
+
+    @staticmethod
+    def select_scenario_line_for(line, scenario_lines):
+        """
+        Select scenario line for any given line.
+
+        ALGORITHM: scenario.line <= line < next_scenario.line
+
+        :param line:  A line number in the file (as number).
+        :param scenario_lines: Sorted list of scenario lines.
+        :return: Scenario.line (first line) for the given line.
+        """
+        if not scenario_lines:
+            return 0    # -- Select all scenarios.
+        pos = bisect(scenario_lines, line) - 1
+        if pos < 0:
+            pos = 0
+        return scenario_lines[pos]
+
+    def discover_selected_scenarios(self, strict=False):
+        """
+        Discovers selected scenarios based on the provided file locations.
+        In addition:
+          * discover all scenarios
+          * auto-correct BAD LINE-NUMBERS
+
+        :param strict:  If true, raises exception if file location is invalid.
+        :return: List of selected scenarios of this feature (as set).
+        :raises InvalidFileLocationError:
+            If file location is no exactly correct and strict is true.
+        """
+        assert self.feature
+        if not self.all_scenarios:
+            self.all_scenarios = self.feature.walk_scenarios()
+
+        # -- STEP: Check if lines are correct.
+        existing_lines = [scenario.line for scenario in self.all_scenarios]
+        selected_lines = list(self.scenario_lines)
+        for line in selected_lines:
+            new_line = self.select_scenario_line_for(line, existing_lines)
+            if new_line != line:
+                # -- AUTO-CORRECT BAD-LINE:
+                self.scenario_lines.remove(line)
+                self.scenario_lines.add(new_line)
+                if strict:
+                    msg = "Scenario location '...:%d' should be: '%s:%d'" % \
+                          (line, self.filename, new_line)
+                    raise InvalidFileLocationError(msg)
+
+        # -- STEP: Determine selected scenarios and store them.
+        scenario_lines = set(self.scenario_lines)
+        selected_scenarios = set()
+        for scenario in self.all_scenarios:
+            if scenario.line in scenario_lines:
+                selected_scenarios.add(scenario)
+                scenario_lines.remove(scenario.line)
+        # -- CHECK ALL ARE RESOLVED:
+        assert not scenario_lines
+        return selected_scenarios
+
+
+class FeatureScenarioLocationCollector2(FeatureScenarioLocationCollector):
+
+    def discover_selected_scenarios(self, strict=False):
+        """Discovers selected scenarios based on the provided file locations.
+        In addition:
+          * discover all scenarios
+          * auto-correct BAD LINE-NUMBERS
+
+        :param strict:  If true, raises exception if file location is invalid.
+        :return: List of selected scenarios of this feature (as set).
+        :raises InvalidFileLocationError:
+            If file location is no exactly correct and strict is true.
+        """
+        assert self.feature
+        if not self.all_scenarios:
+            self.all_scenarios = self.feature.walk_scenarios()
+
+        line_database = FeatureLineDatabase.make(self.feature)
+        selected_lines = list(self.scenario_lines)
+        selected_scenarios = set()
+        for line in selected_lines:
+            more_scenarios = line_database.select_scenarios_by_line(line)
+            selected_scenarios.update(more_scenarios)
+        return selected_scenarios
+
+
 class FeatureListParser(object):
     """
     Read textual file, ala '@features.txt'. This file contains:
@@ -304,7 +486,7 @@ def parse_features(feature_files, language=None):
     :param language:      Default language to use.
     :return: List of feature objects.
     """
-    scenario_collector = FeatureScenarioLocationCollector()
+    scenario_collector = FeatureScenarioLocationCollector2()
     features = []
     for location in feature_files:
         if not isinstance(location, FileLocation):
@@ -315,7 +497,7 @@ def parse_features(feature_files, language=None):
             scenario_collector.add_location(location)
             continue
         elif scenario_collector.feature:
-            # -- ADD CURRENT FEATURE: As collection of scenarios.
+            # -- NEW FEATURE DETECTED: Add current feature.
             current_feature = scenario_collector.build_feature()
             features.append(current_feature)
             scenario_collector.clear()
