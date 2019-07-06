@@ -1,10 +1,9 @@
 from __future__ import absolute_import, with_statement
-
-from nose.tools import *
+import pytest
 from mock import patch
-
 from behave.log_capture import LoggingCapture
 from six.moves import range
+
 
 class TestLogCapture(object):
     def test_get_value_returns_all_log_records(self):
@@ -23,7 +22,7 @@ class TestLogCapture(object):
             format.return_value = 'foo'
             expected = '\n'.join(['foo'] * len(fake_records))
 
-            eq_(handler.getvalue(), expected)
+            assert handler.getvalue() == expected
 
             calls = [args[0][0] for args in format.call_args_list]
-            eq_(calls, fake_records)
+            assert calls == fake_records

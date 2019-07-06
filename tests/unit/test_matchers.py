@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from __future__ import absolute_import, with_statement
+import pytest
 from mock import Mock, patch
-from nose.tools import *  # pylint: disable=wildcard-import, unused-wildcard-import
 import parse
 from behave.matchers import Match, Matcher, ParseMatcher, RegexMatcher, \
     SimplifiedRegexMatcher, CucumberRegexMatcher
@@ -80,7 +80,7 @@ class TestParseMatcher(object):
             assert m.func is func
             args = m.arguments
             have = [(a.start, a.end, a.original, a.value, a.name) for a in args]
-            eq_(have, expected)
+            assert have == expected
 
     def test_named_arguments(self):
         text = "has a {string}, an {integer:d} and a {decimal:f}"
@@ -89,11 +89,11 @@ class TestParseMatcher(object):
 
         m = matcher.match("has a foo, an 11 and a 3.14159")
         m.run(context)
-        eq_(self.recorded_args, ((context,), {
+        assert self.recorded_args, ((context,) == {
             'string': 'foo',
             'integer': 11,
             'decimal': 3.14159
-        }))
+        })
 
     def test_positional_arguments(self):
         text = "has a {}, an {:d} and a {:f}"
@@ -102,7 +102,7 @@ class TestParseMatcher(object):
 
         m = matcher.match("has a foo, an 11 and a 3.14159")
         m.run(context)
-        eq_(self.recorded_args, ((context, 'foo', 11, 3.14159), {}))
+        assert self.recorded_args == ((context, 'foo', 11, 3.14159), {})
 
 class TestRegexMatcher(object):
     # pylint: disable=invalid-name, no-self-use
@@ -151,7 +151,7 @@ class TestRegexMatcher(object):
         assert m.func is func
         args = m.arguments
         have = [(a.start, a.end, a.original, a.value, a.name) for a in args]
-        eq_(have, expected)
+        assert have == expected
 
 
 
@@ -179,17 +179,17 @@ class TestSimplifiedRegexMatcher(TestRegexMatcher):
         assert isinstance(matched1, Match)
         assert isinstance(matched2, Match)
 
-    @raises(AssertionError)
     def test_step_should_not_use_regex_begin_marker(self):
-        SimplifiedRegexMatcher(None, "^I do something")
+        with pytest.raises(AssertionError):
+            SimplifiedRegexMatcher(None, "^I do something")
 
-    @raises(AssertionError)
     def test_step_should_not_use_regex_end_marker(self):
-        SimplifiedRegexMatcher(None, "I do something$")
+        with pytest.raises(AssertionError):
+            SimplifiedRegexMatcher(None, "I do something$")
 
-    @raises(AssertionError)
     def test_step_should_not_use_regex_begin_and_end_marker(self):
-        SimplifiedRegexMatcher(None, "^I do something$")
+        with pytest.raises(AssertionError):
+            SimplifiedRegexMatcher(None, "^I do something$")
 
 
 class TestCucumberRegexMatcher(TestRegexMatcher):

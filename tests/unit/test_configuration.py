@@ -2,7 +2,7 @@ import os.path
 import sys
 import tempfile
 import six
-from nose.tools import *
+import pytest
 from behave import configuration
 from behave.configuration import Configuration, UserData
 from unittest import TestCase
@@ -36,6 +36,7 @@ if sys.platform.startswith("win"):
         ROOTDIR_PREFIX_DEFAULT = ROOTDIR_PREFIX_DEFAULT.lower()
     ROOTDIR_PREFIX = os.environ.get("BEHAVE_ROOTDIR_PREFIX", ROOTDIR_PREFIX_DEFAULT)
 
+
 class TestConfiguration(object):
 
     def test_read_file(self):
@@ -46,19 +47,19 @@ class TestConfiguration(object):
 
         # -- WINDOWS-REQUIRES: normpath
         d = configuration.read_configuration(tn)
-        eq_(d["outfiles"], [
+        assert d["outfiles"] ==[
             os.path.normpath(ROOTDIR_PREFIX + "/absolute/path1"),
             os.path.normpath(os.path.join(tndir, "relative/path2")),
-        ])
-        eq_(d["paths"], [
+        ]
+        assert d["paths"] == [
             os.path.normpath(ROOTDIR_PREFIX + "/absolute/path3"),
             os.path.normpath(os.path.join(tndir, "relative/path4")),
-            ])
-        eq_(d["format"], ["pretty", "tag-counter"])
-        eq_(d["default_tags"], ["@foo,~@bar", "@zap"])
-        eq_(d["stdout_capture"], False)
-        ok_("bogus" not in d)
-        eq_(d["userdata"], {"foo": "bar", "answer": "42"})
+            ]
+        assert d["format"] == ["pretty", "tag-counter"]
+        assert d["default_tags"] == ["@foo,~@bar", "@zap"]
+        assert d["stdout_capture"] == False
+        assert "bogus" not in d
+        assert d["userdata"] == {"foo": "bar", "answer": "42"}
 
     def ensure_stage_environment_is_not_set(self):
         if "BEHAVE_STAGE" in os.environ:
@@ -69,26 +70,26 @@ class TestConfiguration(object):
         self.ensure_stage_environment_is_not_set()
         assert "BEHAVE_STAGE" not in os.environ
         config = Configuration("")
-        eq_("steps", config.steps_dir)
-        eq_("environment.py", config.environment_file)
+        assert "steps" == config.steps_dir
+        assert "environment.py" == config.environment_file
 
     def test_settings_with_stage(self):
         config = Configuration(["--stage=STAGE1"])
-        eq_("STAGE1_steps", config.steps_dir)
-        eq_("STAGE1_environment.py", config.environment_file)
+        assert "STAGE1_steps" == config.steps_dir
+        assert "STAGE1_environment.py" == config.environment_file
 
     def test_settings_with_stage_and_envvar(self):
         os.environ["BEHAVE_STAGE"] = "STAGE2"
         config = Configuration(["--stage=STAGE1"])
-        eq_("STAGE1_steps", config.steps_dir)
-        eq_("STAGE1_environment.py", config.environment_file)
+        assert "STAGE1_steps" == config.steps_dir
+        assert "STAGE1_environment.py" == config.environment_file
         del os.environ["BEHAVE_STAGE"]
 
     def test_settings_with_stage_from_envvar(self):
         os.environ["BEHAVE_STAGE"] = "STAGE2"
         config = Configuration("")
-        eq_("STAGE2_steps", config.steps_dir)
-        eq_("STAGE2_environment.py", config.environment_file)
+        assert "STAGE2_steps" == config.steps_dir
+        assert "STAGE2_environment.py" == config.environment_file
         del os.environ["BEHAVE_STAGE"]
 
 
@@ -101,33 +102,33 @@ class TestConfigurationUserData(TestCase):
             "--define=bar=bar_value",
             "--define", "baz=BAZ_VALUE",
         ])
-        eq_("foo_value", config.userdata["foo"])
-        eq_("bar_value", config.userdata["bar"])
-        eq_("BAZ_VALUE", config.userdata["baz"])
+        assert "foo_value" == config.userdata["foo"]
+        assert "bar_value" == config.userdata["bar"]
+        assert "BAZ_VALUE" == config.userdata["baz"]
 
     def test_cmdline_defines_override_configfile(self):
         userdata_init = {"foo": "XXX", "bar": "ZZZ", "baz": 42}
         config = Configuration(
                     "-D foo=foo_value --define bar=123",
                     load_config=False, userdata=userdata_init)
-        eq_("foo_value", config.userdata["foo"])
-        eq_("123", config.userdata["bar"])
-        eq_(42, config.userdata["baz"])
+        assert "foo_value" == config.userdata["foo"]
+        assert "123" == config.userdata["bar"]
+        assert 42 == config.userdata["baz"]
 
     def test_cmdline_defines_without_value_are_true(self):
         config = Configuration("-D foo --define bar -Dbaz")
-        eq_("true", config.userdata["foo"])
-        eq_("true", config.userdata["bar"])
-        eq_("true", config.userdata["baz"])
-        eq_(True, config.userdata.getbool("foo"))
+        assert "true" == config.userdata["foo"]
+        assert "true" == config.userdata["bar"]
+        assert "true" == config.userdata["baz"]
+        assert True == config.userdata.getbool("foo")
 
     def test_cmdline_defines_with_empty_value(self):
         config = Configuration("-D foo=")
-        eq_("", config.userdata["foo"])
+        assert "" == config.userdata["foo"]
 
     def test_cmdline_defines_with_assign_character_as_value(self):
         config = Configuration("-D foo=bar=baz")
-        eq_("bar=baz", config.userdata["foo"])
+        assert "bar=baz" == config.userdata["foo"]
 
     def test_cmdline_defines__with_quoted_name_value_pair(self):
         cmdlines = [
@@ -136,7 +137,7 @@ class TestConfigurationUserData(TestCase):
         ]
         for cmdline in cmdlines:
             config = Configuration(cmdline, load_config=False)
-            eq_(config.userdata, dict(person="Alice and Bob"))
+            assert config.userdata == dict(person="Alice and Bob")
 
     def test_cmdline_defines__with_quoted_value(self):
         cmdlines = [
@@ -145,7 +146,7 @@ class TestConfigurationUserData(TestCase):
         ]
         for cmdline in cmdlines:
             config = Configuration(cmdline, load_config=False)
-            eq_(config.userdata, dict(person="Alice and Bob"))
+            assert config.userdata == dict(person="Alice and Bob")
 
     def test_setup_userdata(self):
         config = Configuration("", load_config=False)
@@ -154,7 +155,7 @@ class TestConfigurationUserData(TestCase):
         config.setup_userdata()
 
         expected_data = dict(person1="Alice", person2="Charly")
-        eq_(config.userdata, expected_data)
+        assert config.userdata == expected_data
 
     def test_update_userdata__with_cmdline_defines(self):
         # -- NOTE: cmdline defines are reapplied.
@@ -163,8 +164,8 @@ class TestConfigurationUserData(TestCase):
         config.update_userdata(dict(person1="Alice", person2="Bob"))
 
         expected_data = dict(person1="Alice", person2="Bea", person3="Charly")
-        eq_(config.userdata, expected_data)
-        eq_(config.userdata_defines, [("person2", "Bea")])
+        assert config.userdata == expected_data
+        assert config.userdata_defines == [("person2", "Bea")]
 
     def test_update_userdata__without_cmdline_defines(self):
         config = Configuration("", load_config=False)
@@ -172,5 +173,5 @@ class TestConfigurationUserData(TestCase):
         config.update_userdata(dict(person1="Alice", person2="Bob"))
 
         expected_data = dict(person1="Alice", person2="Bob", person3="Charly")
-        eq_(config.userdata, expected_data)
-        self.assertFalse(config.userdata_defines)
+        assert config.userdata == expected_data
+        assert config.userdata_defines is None

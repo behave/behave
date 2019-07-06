@@ -172,7 +172,7 @@ namespace.configure({
         },
     },
     "pytest": {
-        "scopes":   ["test", "tests"],
+        "scopes":   ["tests"],
         "args":   "",
         "options": "",  # -- NOTE:  Overide in configfile "invoke.yaml"
     },

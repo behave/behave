@@ -33,5 +33,3 @@ recursive-include py.requirements  *.txt
 
 prune .tox
 prune .venv*
-prune paver_ext
-exclude pavement.py

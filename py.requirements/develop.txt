@@ -14,7 +14,6 @@ pycmd
 bumpversion >= 0.4.0
 
 # -- DEVELOPMENT SUPPORT:
-# PREPARED: nose-cov >= 1.4
 tox   >= 1.8.1
 coverage >= 4.2
 pytest-cov

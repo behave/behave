@@ -23,6 +23,7 @@ sphinx:
     languages:
       - de
       # PREPARED: - zh-CN
+
 cleanup:
     extra_directories:
       - "build"

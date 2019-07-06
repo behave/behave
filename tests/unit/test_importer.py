@@ -62,7 +62,7 @@ class TestLoadModule(object):
         self.theory.assert_module_is_imported(module_name)
 
     def test_load_module__should_succeed_for_existing_module(self):
-        module_name = "test._importer_candidate"
+        module_name = "tests.unit._importer_candidate"
         self.theory.ensure_module_is_not_imported(module_name)
 
         module = load_module(module_name)

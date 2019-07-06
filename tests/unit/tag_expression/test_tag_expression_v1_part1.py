@@ -2,7 +2,7 @@
 
 from __future__ import absolute_import
 from behave.tag_expression import TagExpression
-from nose import tools
+import pytest
 import unittest
 
 
@@ -476,31 +476,34 @@ class TestTagExpressionFoo3OrNotBar4AndZap5(unittest.TestCase):
         self.e = TagExpression(['foo:3,-bar', 'zap:5'])
 
     def test_should_count_tags_for_positive_tags(self):
-        tools.eq_(self.e.limits, {'foo': 3, 'zap': 5})
+        assert self.e.limits == {'foo': 3, 'zap': 5}
 
     def test_should_match_foo_zap(self):
         assert self.e.check(['foo', 'zap'])
+
 
 class TestTagExpressionParsing(unittest.TestCase):
     def setUp(self):
         self.e = TagExpression([' foo:3 , -bar ', ' zap:5 '])
 
     def test_should_have_limits(self):
-        tools.eq_(self.e.limits, {'zap': 5, 'foo': 3})
+        assert self.e.limits == {'zap': 5, 'foo': 3}
+
 
 class TestTagExpressionTagLimits(unittest.TestCase):
     def test_should_be_counted_for_negative_tags(self):
         e = TagExpression(['-todo:3'])
-        tools.eq_(e.limits, {'todo': 3})
+        assert e.limits == {'todo': 3}
 
     def test_should_be_counted_for_positive_tags(self):
         e = TagExpression(['todo:3'])
-        tools.eq_(e.limits, {'todo': 3})
+        assert e.limits == {'todo': 3}
 
     def test_should_raise_an_error_for_inconsistent_limits(self):
-        tools.assert_raises(Exception, TagExpression, ['todo:3', '-todo:4'])
+        with pytest.raises(Exception):
+            _ = TagExpression(['todo:3', '-todo:4'])
 
     def test_should_allow_duplicate_consistent_limits(self):
         e = TagExpression(['todo:3', '-todo:3'])
-        tools.eq_(e.limits, {'todo': 3})
+        assert e.limits == {'todo': 3}
 

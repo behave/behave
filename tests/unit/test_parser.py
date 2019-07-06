@@ -7,7 +7,6 @@ Unit tests for Gherkin parser: :mod:`behave.parser`.
 from __future__ import absolute_import, print_function
 import pytest
 from behave import i18n, model, parser
-# NOT-NEEDED: from nose.tools import *
 
 
 # ---------------------------------------------------------------------------

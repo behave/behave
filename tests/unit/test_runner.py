@@ -11,10 +11,8 @@ import tempfile
 import unittest
 import six
 from six import StringIO
-
+import pytest
 from mock import Mock, patch
-from nose.tools import *  # pylint: disable=wildcard-import, unused-wildcard-import
-
 from behave import runner_util
 from behave.model import Table
 from behave.step_registry import StepRegistry
@@ -39,31 +37,31 @@ class TestContext(unittest.TestCase):
     def test_user_mode_shall_restore_behave_mode(self):
         # -- CASE: No exception is raised.
         initial_mode = runner.Context.BEHAVE
-        eq_(self.context._mode, initial_mode)
+        assert self.context._mode == initial_mode
         with self.context.use_with_user_mode():
-            eq_(self.context._mode, runner.Context.USER)
+            assert self.context._mode == runner.Context.USER
             self.context.thing = "stuff"
-        eq_(self.context._mode, initial_mode)
+        assert self.context._mode == initial_mode
 
     def test_user_mode_shall_restore_behave_mode_if_assert_fails(self):
         initial_mode = runner.Context.BEHAVE
-        eq_(self.context._mode, initial_mode)
+        assert self.context._mode == initial_mode
         try:
             with self.context.use_with_user_mode():
-                eq_(self.context._mode, runner.Context.USER)
+                assert self.context._mode == runner.Context.USER
                 assert False, "XFAIL"
         except AssertionError:
-            eq_(self.context._mode, initial_mode)
+            assert self.context._mode == initial_mode
 
     def test_user_mode_shall_restore_behave_mode_if_exception_is_raised(self):
         initial_mode = runner.Context.BEHAVE
-        eq_(self.context._mode, initial_mode)
+        assert self.context._mode == initial_mode
         try:
             with self.context.use_with_user_mode():
-                eq_(self.context._mode, runner.Context.USER)
+                assert self.context._mode == runner.Context.USER
                 raise RuntimeError("XFAIL")
         except RuntimeError:
-            eq_(self.context._mode, initial_mode)
+            assert self.context._mode == initial_mode
 
     def test_use_with_user_mode__shall_restore_initial_mode(self):
         # -- CASE: No exception is raised.
@@ -71,9 +69,9 @@ class TestContext(unittest.TestCase):
         initial_mode = runner.Context.BEHAVE
         self.context._mode = initial_mode
         with self.context.use_with_user_mode():
-            eq_(self.context._mode, runner.Context.USER)
+            assert self.context._mode == runner.Context.USER
             self.context.thing = "stuff"
-        eq_(self.context._mode, initial_mode)
+        assert self.context._mode == initial_mode
 
     def test_use_with_user_mode__shall_restore_initial_mode_with_error(self):
         # -- CASE: Exception is raised.
@@ -82,10 +80,10 @@ class TestContext(unittest.TestCase):
         self.context._mode = initial_mode
         try:
             with self.context.use_with_user_mode():
-                eq_(self.context._mode, runner.Context.USER)
+                assert self.context._mode == runner.Context.USER
                 raise RuntimeError("XFAIL")
         except RuntimeError:
-            eq_(self.context._mode, initial_mode)
+            assert self.context._mode == initial_mode
 
     def test_use_with_behave_mode__shall_restore_initial_mode(self):
         # -- CASE: No exception is raised.
@@ -93,9 +91,9 @@ class TestContext(unittest.TestCase):
         initial_mode = runner.Context.USER
         self.context._mode = initial_mode
         with self.context._use_with_behave_mode():
-            eq_(self.context._mode, runner.Context.BEHAVE)
+            assert self.context._mode == runner.Context.BEHAVE
             self.context.thing = "stuff"
-        eq_(self.context._mode, initial_mode)
+        assert self.context._mode == initial_mode
 
     def test_use_with_behave_mode__shall_restore_initial_mode_with_error(self):
         # -- CASE: Exception is raised.
@@ -104,22 +102,22 @@ class TestContext(unittest.TestCase):
         self.context._mode = initial_mode
         try:
             with self.context._use_with_behave_mode():
-                eq_(self.context._mode, runner.Context.BEHAVE)
+                assert self.context._mode == runner.Context.BEHAVE
                 raise RuntimeError("XFAIL")
         except RuntimeError:
-            eq_(self.context._mode, initial_mode)
+            assert self.context._mode == initial_mode
 
     def test_context_contains(self):
-        eq_("thing" in self.context, False)
+        assert "thing" not in self.context
         self.context.thing = "stuff"
-        eq_("thing" in self.context, True)
+        assert "thing" in self.context
         self.context._push()
-        eq_("thing" in self.context, True)
+        assert "thing" in self.context
 
     def test_attribute_set_at_upper_level_visible_at_lower_level(self):
         self.context.thing = "stuff"
         self.context._push()
-        eq_(self.context.thing, "stuff")
+        assert self.context.thing == "stuff"
 
     def test_attribute_set_at_lower_level_not_visible_at_upper_level(self):
         self.context._push()
@@ -130,16 +128,16 @@ class TestContext(unittest.TestCase):
     def test_attributes_set_at_upper_level_visible_at_lower_level(self):
         self.context.thing = "stuff"
         self.context._push()
-        eq_(self.context.thing, "stuff")
+        assert self.context.thing == "stuff"
         self.context.other_thing = "more stuff"
         self.context._push()
-        eq_(self.context.thing, "stuff")
-        eq_(self.context.other_thing, "more stuff")
+        assert self.context.thing == "stuff"
+        assert self.context.other_thing == "more stuff"
         self.context.third_thing = "wombats"
         self.context._push()
-        eq_(self.context.thing, "stuff")
-        eq_(self.context.other_thing, "more stuff")
-        eq_(self.context.third_thing, "wombats")
+        assert self.context.thing == "stuff"
+        assert self.context.other_thing == "more stuff"
+        assert self.context.third_thing == "wombats"
 
     def test_attributes_set_at_lower_level_not_visible_at_upper_level(self):
         self.context.thing = "stuff"
@@ -149,17 +147,17 @@ class TestContext(unittest.TestCase):
 
         self.context._push()
         self.context.third_thing = "wombats"
-        eq_(self.context.thing, "stuff")
-        eq_(self.context.other_thing, "more stuff")
-        eq_(self.context.third_thing, "wombats")
+        assert self.context.thing == "stuff"
+        assert self.context.other_thing == "more stuff"
+        assert self.context.third_thing == "wombats"
 
         self.context._pop()
-        eq_(self.context.thing, "stuff")
-        eq_(self.context.other_thing, "more stuff")
+        assert self.context.thing == "stuff"
+        assert self.context.other_thing == "more stuff"
         assert getattr(self.context, "third_thing", None) is None, "%s is not None" % self.context.third_thing
 
         self.context._pop()
-        eq_(self.context.thing, "stuff")
+        assert self.context.thing == "stuff"
         assert getattr(self.context, "other_thing", None) is None, "%s is not None" % self.context.other_thing
         assert getattr(self.context, "third_thing", None) is None, "%s is not None" % self.context.third_thing
 
@@ -270,21 +268,22 @@ class TestContext(unittest.TestCase):
         assert filename in info, "%r not in %r" % (filename, info)
 
     def test_context_deletable(self):
-        eq_("thing" in self.context, False)
+        assert "thing" not in self.context
         self.context.thing = "stuff"
-        eq_("thing" in self.context, True)
+        assert "thing" in self.context
         del self.context.thing
-        eq_("thing" in self.context, False)
+        assert "thing" not in self.context
 
-    @raises(AttributeError)
+    # OLD: @raises(AttributeError)
     def test_context_deletable_raises(self):
         # pylint: disable=protected-access
-        eq_("thing" in self.context, False)
+        assert "thing" not in self.context
         self.context.thing = "stuff"
-        eq_("thing" in self.context, True)
+        assert "thing" in self.context
         self.context._push()
-        eq_("thing" in self.context, True)
-        del self.context.thing
+        assert "thing" in self.context
+        with pytest.raises(AttributeError):
+            del self.context.thing
 
 
 class ExampleSteps(object):
@@ -362,7 +361,7 @@ Then a step passes
 """.lstrip()
         with patch("behave.step_registry.registry", self.step_registry):
             result = self.context.execute_steps(doc)
-            eq_(result, True)
+            assert result is True
 
     def test_execute_steps_with_failing_step(self):
         doc = u"""
@@ -374,7 +373,7 @@ Then a step passes
             try:
                 result = self.context.execute_steps(doc)
             except AssertionError as e:
-                ok_("FAILED SUB-STEP: When a step fails" in _text(e))
+                assert "FAILED SUB-STEP: When a step fails" in _text(e)
 
     def test_execute_steps_with_undefined_step(self):
         doc = u"""
@@ -386,7 +385,7 @@ Then a step passes
             try:
                 result = self.context.execute_steps(doc)
             except AssertionError as e:
-                ok_("UNDEFINED SUB-STEP: When a step is undefined" in _text(e))
+                assert "UNDEFINED SUB-STEP: When a step is undefined" in _text(e)
 
     def test_execute_steps_with_text(self):
         doc = u'''
@@ -401,8 +400,8 @@ Then a step passes
         with patch("behave.step_registry.registry", self.step_registry):
             result = self.context.execute_steps(doc)
             expected_text = "Lorem ipsum\nIpsum lorem"
-            eq_(result, True)
-            eq_(expected_text, ExampleSteps.text)
+            assert result is True
+            assert expected_text == ExampleSteps.text
 
     def test_execute_steps_with_table(self):
         doc = u"""
@@ -419,8 +418,8 @@ Then a step passes
                     [u"Alice", u"12"],
                     [u"Bob",   u"23"],
             ])
-            eq_(result, True)
-            eq_(expected_table, ExampleSteps.table)
+            assert result is True
+            assert expected_table == ExampleSteps.table
 
     def test_context_table_is_restored_after_execute_steps_without_table(self):
         doc = u"""
@@ -431,7 +430,7 @@ Then a step passes
             original_table = "<ORIGINAL_TABLE>"
             self.context.table = original_table
             self.context.execute_steps(doc)
-            eq_(self.context.table, original_table)
+            assert self.context.table == original_table
 
     def test_context_table_is_restored_after_execute_steps_with_table(self):
         doc = u"""
@@ -445,7 +444,7 @@ Then a step passes
             original_table = "<ORIGINAL_TABLE>"
             self.context.table = original_table
             self.context.execute_steps(doc)
-            eq_(self.context.table, original_table)
+            assert self.context.table == original_table
 
     def test_context_text_is_restored_after_execute_steps_without_text(self):
         doc = u"""
@@ -456,7 +455,7 @@ Then a step passes
             original_text = "<ORIGINAL_TEXT>"
             self.context.text = original_text
             self.context.execute_steps(doc)
-            eq_(self.context.text, original_text)
+            assert self.context.text == original_text
 
     def test_context_text_is_restored_after_execute_steps_with_text(self):
         doc = u'''
@@ -471,10 +470,10 @@ When a step with text:
             original_text = "<ORIGINAL_TEXT>"
             self.context.text = original_text
             self.context.execute_steps(doc)
-            eq_(self.context.text, original_text)
+            assert self.context.text == original_text
 
 
-    @raises(ValueError)
+    # OLD: @raises(ValueError)
     def test_execute_steps_should_fail_when_called_without_feature(self):
         doc = u"""
 Given a passes
@@ -482,7 +481,8 @@ Then a step passes
 """.lstrip()
         with patch("behave.step_registry.registry", self.step_registry):
             self.context.feature = None
-            self.context.execute_steps(doc)
+            with pytest.raises(ValueError):
+                self.context.execute_steps(doc)
 
 
 def create_mock_config():
@@ -588,11 +588,11 @@ class TestRunner(object):
         r.setup_capture()
         r.start_capture()
 
-        eq_(sys.stdout, r.capture_controller.stdout_capture)
+        assert sys.stdout == r.capture_controller.stdout_capture
 
         r.stop_capture()
 
-        eq_(sys.stdout, new_stdout)
+        assert sys.stdout == new_stdout
 
         sys.stdout = old_stdout
 
@@ -605,11 +605,11 @@ class TestRunner(object):
 
         r.start_capture()
 
-        eq_(sys.stdout, old_stdout)
+        assert sys.stdout == old_stdout
 
         r.stop_capture()
 
-        eq_(sys.stdout, old_stdout)
+        assert sys.stdout == old_stdout
 
     def test_teardown_capture_removes_log_tap(self):
         r = runner.Runner(Mock())
@@ -633,7 +633,7 @@ class TestRunner(object):
         # pylint: disable=too-many-format-args
         assert "spam" in l, '"spam" variable not set in locals (%r)' % (g, l)
         # pylint: enable=too-many-format-args
-        eq_(l["spam"], fn)
+        assert l["spam"] == fn
 
     def test_run_returns_true_if_everything_passed(self):
         r = runner.Runner(Mock())
@@ -694,11 +694,11 @@ class TestRunWithPaths(unittest.TestCase):
         self.runner.context = Mock()
         self.runner.run_with_paths()
 
-        eq_(self.run_hook.call_args_list, [
+        assert self.run_hook.call_args_list == [
             ((), {}),
             (("before_all", self.runner.context), {}),
             (("after_all", self.runner.context), {}),
-        ])
+        ]
 
     @patch("behave.parser.parse_file")
     @patch("os.path.abspath")
@@ -724,8 +724,8 @@ class TestRunWithPaths(unittest.TestCase):
 
         expected_parse_file_args = \
             [((x.upper(),), {"language": "fritz"}) for x in feature_locations]
-        eq_(parse_file.call_args_list, expected_parse_file_args)
-        eq_(self.runner.features, [feature] * 3)
+        assert parse_file.call_args_list == expected_parse_file_args
+        assert self.runner.features == [feature] * 3
 
 
 class FsMock(object):
@@ -829,9 +829,12 @@ class TestFeatureDirectory(object):
 
         # will look for a "features" directory and not find one
         with patch("os.path", fs):
-            assert_raises(ConfigError, r.setup_paths)
+            with pytest.raises(ConfigError):
+                r.setup_paths()
+            # OLD: assert_raises(ConfigError, r.setup_paths)
 
-        ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
+        assert ("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls
+        # ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
 
     def test_default_path_no_features(self):
         config = create_mock_config()
@@ -842,7 +845,9 @@ class TestFeatureDirectory(object):
         fs = FsMock("features/steps/")
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
-                assert_raises(ConfigError, r.setup_paths)
+                with pytest.raises(ConfigError):
+                    r.setup_paths()
+                # OLD: assert_raises(ConfigError, r.setup_paths)
 
     def test_default_path(self):
         config = create_mock_config()
@@ -857,7 +862,7 @@ class TestFeatureDirectory(object):
                 with r.path_manager:
                     r.setup_paths()
 
-        eq_(r.base_dir, os.path.abspath("features"))
+        assert r.base_dir == os.path.abspath("features")
 
     def test_supplied_feature_file(self):
         config = create_mock_config()
@@ -872,10 +877,12 @@ class TestFeatureDirectory(object):
             with patch("os.walk", fs.walk):
                 with r.path_manager:
                     r.setup_paths()
-        ok_(("isdir", os.path.join(fs.base, "steps")) in fs.calls)
-        ok_(("isfile", os.path.join(fs.base, "foo.feature")) in fs.calls)
+        assert ("isdir", os.path.join(fs.base, "steps")) in fs.calls
+        assert ("isfile", os.path.join(fs.base, "foo.feature")) in fs.calls
+        # OLD: ok_(("isdir", os.path.join(fs.base, "steps")) in fs.calls)
+        # OLD: ok_(("isfile", os.path.join(fs.base, "foo.feature")) in fs.calls)
 
-        eq_(r.base_dir, fs.base)
+        assert r.base_dir == fs.base
 
     def test_supplied_feature_file_no_steps(self):
         config = create_mock_config()
@@ -888,7 +895,9 @@ class TestFeatureDirectory(object):
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
                 with r.path_manager:
-                    assert_raises(ConfigError, r.setup_paths)
+                    with pytest.raises(ConfigError):
+                        r.setup_paths()
+                    # OLD: assert_raises(ConfigError, r.setup_paths)
 
     def test_supplied_feature_directory(self):
         config = create_mock_config()
@@ -903,9 +912,10 @@ class TestFeatureDirectory(object):
                 with r.path_manager:
                     r.setup_paths()
 
-        ok_(("isdir", os.path.join(fs.base, "spam", "steps")) in fs.calls)
+        assert ("isdir", os.path.join(fs.base, "spam", "steps")) in fs.calls
+        # OLD ok_(("isdir", os.path.join(fs.base, "spam", "steps")) in fs.calls)
 
-        eq_(r.base_dir, os.path.join(fs.base, "spam"))
+        assert r.base_dir == os.path.join(fs.base, "spam")
 
     def test_supplied_feature_directory_no_steps(self):
         config = create_mock_config()
@@ -917,9 +927,12 @@ class TestFeatureDirectory(object):
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
-                assert_raises(ConfigError, r.setup_paths)
+                with pytest.raises(ConfigError):
+                    r.setup_paths()
+                # OLD: assert_raises(ConfigError, r.setup_paths)
 
-        ok_(("isdir", os.path.join(fs.base, "spam", "steps")) in fs.calls)
+        assert ("isdir", os.path.join(fs.base, "spam", "steps")) in fs.calls
+        # OLD: ok_(("isdir", os.path.join(fs.base, "spam", "steps")) in fs.calls)
 
     def test_supplied_feature_directory_missing(self):
         config = create_mock_config()
@@ -931,7 +944,9 @@ class TestFeatureDirectory(object):
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
-                assert_raises(ConfigError, r.setup_paths)
+                with pytest.raises(ConfigError):
+                    r.setup_paths()
+                # OLD: assert_raises(ConfigError, r.setup_paths)
 
 
 class TestFeatureDirectoryLayout2(object):
@@ -955,7 +970,7 @@ class TestFeatureDirectoryLayout2(object):
                 with r.path_manager:
                     r.setup_paths()
 
-        eq_(r.base_dir, os.path.abspath("features"))
+        assert r.base_dir == os.path.abspath("features")
 
     def test_supplied_root_directory(self):
         config = create_mock_config()
@@ -975,8 +990,9 @@ class TestFeatureDirectoryLayout2(object):
                 with r.path_manager:
                     r.setup_paths()
 
-        ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
-        eq_(r.base_dir, os.path.join(fs.base, "features"))
+        # OLD: ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
+        assert ("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls
+        assert r.base_dir == os.path.join(fs.base, "features")
 
     def test_supplied_root_directory_no_steps(self):
         config = create_mock_config()
@@ -993,10 +1009,13 @@ class TestFeatureDirectoryLayout2(object):
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
                 with r.path_manager:
-                    assert_raises(ConfigError, r.setup_paths)
+                    with pytest.raises(ConfigError):
+                        r.setup_paths()
+                    # OLD: assert_raises(ConfigError, r.setup_paths)
 
-        ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
-        eq_(r.base_dir, None)
+        # OLD: ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
+        assert ("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls
+        assert r.base_dir is None
 
 
     def test_supplied_feature_file(self):
@@ -1018,9 +1037,11 @@ class TestFeatureDirectoryLayout2(object):
                 with r.path_manager:
                     r.setup_paths()
 
-        ok_(("isdir", os.path.join(fs.base, "features", "steps"))  in fs.calls)
-        ok_(("isfile", os.path.join(fs.base, "features", "group1", "foo.feature")) in fs.calls)
-        eq_(r.base_dir, fs.join(fs.base, "features"))
+        # OLD: ok_(("isdir", os.path.join(fs.base, "features", "steps"))  in fs.calls)
+        # OLD: ok_(("isfile", os.path.join(fs.base, "features", "group1", "foo.feature")) in fs.calls)
+        assert ("isdir", os.path.join(fs.base, "features", "steps"))  in fs.calls
+        assert ("isfile", os.path.join(fs.base, "features", "group1", "foo.feature")) in fs.calls
+        assert r.base_dir == fs.join(fs.base, "features")
 
     def test_supplied_feature_file_no_steps(self):
         config = create_mock_config()
@@ -1037,7 +1058,9 @@ class TestFeatureDirectoryLayout2(object):
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
                 with r.path_manager:
-                    assert_raises(ConfigError, r.setup_paths)
+                    with pytest.raises(ConfigError):
+                        r.setup_paths()
+                    # OLD assert_raises(ConfigError, r.setup_paths)
 
     def test_supplied_feature_directory(self):
         config = create_mock_config()
@@ -1057,8 +1080,9 @@ class TestFeatureDirectoryLayout2(object):
                 with r.path_manager:
                     r.setup_paths()
 
-        ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
-        eq_(r.base_dir, os.path.join(fs.base, "features"))
+        # OLD: ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
+        assert ("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls
+        assert r.base_dir == os.path.join(fs.base, "features")
 
 
     def test_supplied_feature_directory_no_steps(self):
@@ -1075,6 +1099,9 @@ class TestFeatureDirectoryLayout2(object):
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
-                assert_raises(ConfigError, r.setup_paths)
+                with pytest.raises(ConfigError):
+                    r.setup_paths()
+                # OLD: assert_raises(ConfigError, r.setup_paths)
 
-        ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
+        # OLD: ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
+        assert ("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls

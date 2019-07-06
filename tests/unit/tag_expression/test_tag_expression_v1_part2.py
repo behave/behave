@@ -6,10 +6,11 @@ REQUIRES: Python >= 2.6, because itertools.combinations() is used.
 """
 
 from __future__ import absolute_import
-from behave.tag_expression import TagExpression
-from nose import tools
 import itertools
 from six.moves import range
+import pytest
+from behave.tag_expression import TagExpression
+
 
 has_combinations = hasattr(itertools, "combinations")
 if has_combinations:
@@ -31,6 +32,7 @@ if has_combinations:
             return "@" + " @".join(tags)
         return NO_TAGS
 
+
     TestCase = object
     # ----------------------------------------------------------------------------
     # TEST: all_combinations() test helper
@@ -45,8 +47,8 @@ if has_combinations:
                 ('@one', '@two'),
             ]
             actual = all_combinations(items)
-            tools.eq_(actual, expected)
-            tools.eq_(len(actual), 4)
+            assert actual == expected
+            assert len(actual) == 4
 
         def test_all_combinations_with_3values(self):
             items = "@one @two @three".split()
@@ -61,8 +63,8 @@ if has_combinations:
                 ('@one', '@two', '@three'),
             ]
             actual = all_combinations(items)
-            tools.eq_(actual, expected)
-            tools.eq_(len(actual), 8)
+            assert actual == expected
+            assert len(actual) == 8
 
 
     # ----------------------------------------------------------------------------
@@ -74,13 +76,13 @@ if has_combinations:
                                           tag_combinations, expected):
             matched = [ make_tags_line(c) for c in tag_combinations
                                 if tag_expression.check(c) ]
-            tools.eq_(matched, expected)
+            assert matched == expected
 
         def assert_tag_expression_mismatches(self, tag_expression,
                                             tag_combinations, expected):
             mismatched = [ make_tags_line(c) for c in tag_combinations
                                 if not tag_expression.check(c) ]
-            tools.eq_(mismatched, expected)
+            assert mismatched == expected
 
 
     class TestTagExpressionWith1Term(TagExpressionTestCase):

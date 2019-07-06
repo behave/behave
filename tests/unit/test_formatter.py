@@ -6,9 +6,8 @@ import sys
 import tempfile
 import unittest
 import six
+import pytest
 from mock import Mock, patch
-from nose.tools import *    # pylint: disable=wildcard-import, unused-wildcard-import
-
 from behave.formatter._registry import make_formatters
 from behave.formatter import pretty
 from behave.formatter.base import StreamOpener
@@ -35,7 +34,7 @@ class TestGetTerminalSize(unittest.TestCase):
         platform = sys.platform
         sys.platform = "windows"
 
-        eq_(pretty.get_terminal_size(), (80, 24))
+        assert pretty.get_terminal_size() == (80, 24)
 
         sys.platform = platform
 
@@ -46,7 +45,7 @@ class TestGetTerminalSize(unittest.TestCase):
         except ImportError:
             pass
 
-        eq_(pretty.get_terminal_size(), (80, 24))
+        assert pretty.get_terminal_size() == (80, 24)
 
     def test_exception_in_ioctl(self):
         try:
@@ -59,7 +58,7 @@ class TestGetTerminalSize(unittest.TestCase):
 
         self.ioctl.side_effect = raiser
 
-        eq_(pretty.get_terminal_size(), (80, 24))
+        assert pretty.get_terminal_size() == (80, 24)
         self.ioctl.assert_called_with(0, termios.TIOCGWINSZ, self.zero_struct)
 
     def test_happy_path(self):
@@ -70,7 +69,7 @@ class TestGetTerminalSize(unittest.TestCase):
 
         self.ioctl.return_value = struct.pack("HHHH", 17, 23, 5, 5)
 
-        eq_(pretty.get_terminal_size(), (23, 17))
+        assert pretty.get_terminal_size() == (23, 17)
         self.ioctl.assert_called_with(0, termios.TIOCGWINSZ, self.zero_struct)
 
     def test_zero_size_fallback(self):
@@ -81,7 +80,7 @@ class TestGetTerminalSize(unittest.TestCase):
 
         self.ioctl.return_value = self.zero_struct
 
-        eq_(pretty.get_terminal_size(), (80, 24))
+        assert pretty.get_terminal_size() == (80, 24)
         self.ioctl.assert_called_with(0, termios.TIOCGWINSZ, self.zero_struct)
 
 
@@ -204,7 +203,7 @@ class TestTagsCount(FormatterTests):
         p.feature(f)
         p.scenario(s)
 
-        eq_(p.tag_counts, {"ham": [f, s], "spam": [f], "foo": [s]})
+        assert p.tag_counts == {"ham": [f, s], "spam": [f], "foo": [s]}
 
 
 class MultipleFormattersTests(FormatterTests):

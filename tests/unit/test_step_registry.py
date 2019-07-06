@@ -2,7 +2,6 @@
 # pylint: disable=unused-wildcard-import
 from __future__ import absolute_import, with_statement
 from mock import Mock, patch
-from nose.tools import *        # pylint: disable=wildcard-import
 from six.moves import range     # pylint: disable=redefined-builtin
 from behave import step_registry
 
@@ -26,7 +25,7 @@ class TestStepRegistry(object):
 
                 registry.add_step_definition(step_type.upper(), pattern, func)
                 get_matcher.assert_called_with(func, pattern)
-                eq_(l, [magic_object])
+                assert l == [magic_object]
 
     def test_find_match_with_specific_step_type_also_searches_generic(self):
         registry = step_registry.StepRegistry()
@@ -80,7 +79,7 @@ class TestStepRegistry(object):
 
         assert registry.find_match(step) is magic_object
         for mock in step_defs[6:]:
-            eq_(mock.match.call_count, 0)
+            assert mock.match.call_count == 0
 
     # pylint: disable=line-too-long
     @patch.object(step_registry.registry, 'add_step_definition')

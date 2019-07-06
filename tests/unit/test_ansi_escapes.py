@@ -7,7 +7,7 @@
 #   W0621   Redefining name ... from outer scope
 
 from __future__ import absolute_import
-from nose import tools
+import pytest
 from behave.formatter import ansi_escapes
 import unittest
 from six.moves import range
@@ -44,30 +44,30 @@ class StripEscapesTest(unittest.TestCase):
 
     def test_should_return_same_text_without_escapes(self):
         for text in self.TEXTS:
-            tools.eq_(text, ansi_escapes.strip_escapes(text))
+            assert text == ansi_escapes.strip_escapes(text)
 
     def test_should_return_empty_string_for_any_ansi_escape(self):
         # XXX-JE-CHECK-PY23: If list() is really needed.
         for text in list(ansi_escapes.colors.values()):
-            tools.eq_("", ansi_escapes.strip_escapes(text))
+            assert "" == ansi_escapes.strip_escapes(text)
         for text in list(ansi_escapes.escapes.values()):
-            tools.eq_("", ansi_escapes.strip_escapes(text))
+            assert "" == ansi_escapes.strip_escapes(text)
 
 
     def test_should_strip_color_escapes_from_text(self):
         for text in self.TEXTS:
             colored_text = self.colorize_text(text, self.ALL_COLORS)
-            tools.eq_(text, ansi_escapes.strip_escapes(colored_text))
+            assert text == ansi_escapes.strip_escapes(colored_text)
             self.assertNotEqual(text, colored_text)
 
             for color in self.ALL_COLORS:
                 colored_text = self.colorize(text, color)
-                tools.eq_(text, ansi_escapes.strip_escapes(colored_text))
+                assert text == ansi_escapes.strip_escapes(colored_text)
                 self.assertNotEqual(text, colored_text)
 
     def test_should_strip_cursor_up_escapes_from_text(self):
         for text in self.TEXTS:
             for cursor_up in self.CURSOR_UPS:
                 colored_text = cursor_up + text + ansi_escapes.escapes["reset"]
-                tools.eq_(text, ansi_escapes.strip_escapes(colored_text))
+                assert text == ansi_escapes.strip_escapes(colored_text)
                 self.assertNotEqual(text, colored_text)

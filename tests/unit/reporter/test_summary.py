@@ -4,8 +4,6 @@ from __future__ import absolute_import, division
 import sys
 import pytest
 from mock import Mock, patch
-# NOT-NEEDED: from nose.tools import *
-
 from behave.model import ScenarioOutline, Scenario
 from behave.model_core import Status
 from behave.reporter.summary import SummaryReporter, format_summary

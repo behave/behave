@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from behave.model_core import Status
 from .test_formatter import FormatterTests as FormatterTest, _tf
 from .test_formatter import MultipleFormattersTests as MultipleFormattersTest
-from nose.tools import *
+
 
 class TestRerunFormatter(FormatterTest):
     formatter_name = "rerun"
@@ -26,7 +26,7 @@ class TestRerunFormatter(FormatterTest):
             p.scenario(scenario)
             assert scenario.status == Status.passed
         p.eof()
-        eq_([], p.failed_scenarios)
+        assert [] == p.failed_scenarios
         # -- EMIT REPORT:
         p.close()
 
@@ -49,7 +49,7 @@ class TestRerunFormatter(FormatterTest):
         assert scenarios[0].status == Status.passed
         assert scenarios[1].status == Status.failed
         p.eof()
-        eq_([ failing_scenario ], p.failed_scenarios)
+        assert [ failing_scenario ] == p.failed_scenarios
         # -- EMIT REPORT:
         p.close()
 
@@ -76,7 +76,7 @@ class TestRerunFormatter(FormatterTest):
         assert scenarios[1].status == Status.passed
         assert scenarios[2].status == Status.failed
         p.eof()
-        eq_([ failing_scenario1, failing_scenario2 ], p.failed_scenarios)
+        assert [ failing_scenario1, failing_scenario2 ] == p.failed_scenarios
         # -- EMIT REPORT:
         p.close()
 
@@ -84,14 +84,18 @@ class TestRerunFormatter(FormatterTest):
 class TestRerunAndPrettyFormatters(MultipleFormattersTest):
     formatters = ["rerun", "pretty"]
 
+
 class TestRerunAndPlainFormatters(MultipleFormattersTest):
     formatters = ["rerun", "plain"]
+
 
 class TestRerunAndScenarioProgressFormatters(MultipleFormattersTest):
     formatters = ["rerun", "progress"]
 
+
 class TestRerunAndStepProgressFormatters(MultipleFormattersTest):
     formatters = ["rerun", "progress2"]
+
 
 class TestRerunAndJsonFormatter(MultipleFormattersTest):
     formatters = ["rerun", "json"]
