@@ -7,6 +7,7 @@ Summary:
 * Use/Support :pypi:`cucumber-tag-expressions` (superceed: old-style tag-expressions)
 * :pypi:`cucumber-tag-expressions` are extended by "tag-matching"
   to match partial tag names, like: ``@foo.*``
+* `Select-by-location for Scenario Containers`_ (Feature, Rule, ScenarioOutline)
 
 .. _`Example Mapping`: https://cucumber.io/blog/example-mapping-introduction/
 .. _`Example Mapping Webinar`: https://cucumber.io/blog/example-mapping-webinar/
@@ -102,3 +103,35 @@ Overview of the `Example Mapping`_ concepts:
 
 
 .. include:: _content.tag_expressions_v2.rst
+
+
+Select-by-location for Scenario Containers
+-------------------------------------------------------------------------------
+
+In the past, it was already possible to scenario(s) by using its **file-location**.
+
+A **file-location** has the schema: ``<FILENAME>:<LINE_NUMBER>``.
+Example: ``features/alice.feature:12``
+(refers to ``line 12`` in ``features/alice.feature`` file).
+
+Rules to select **Scenarios** by using the file-location:
+
+* **Scenario:** Use a file-location that points to the keyword/title or its steps
+  (until next Scenario/Entity starts).
+
+* **Scenario of a ScenarioOutline:**
+  Use the file-location of its Examples row.
+
+Now you can select all entities of a **Scenario Container** (Feature, Rule, ScenarioOutline):
+
+* **Feature:**
+  Use file-location before first contained entity/Scenario starts.
+
+* **Rule:**
+  Use file-location from keyword/title line to line before its first Scenario/Background.
+
+* **ScenarioOutline:**
+  Use file-location from keyword/title line to line before its Examples rows.
+
+A file-location into a **Scenario Container** selects all its entities
+(Scenarios, ...).
