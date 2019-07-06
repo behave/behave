@@ -9,65 +9,89 @@
 from __future__ import absolute_import
 import pytest
 from behave.formatter import ansi_escapes
-import unittest
 from six.moves import range
 
-class StripEscapesTest(unittest.TestCase):
-    ALL_COLORS = list(ansi_escapes.colors.keys())
-    CURSOR_UPS = [ ansi_escapes.up(count)  for count in range(10) ]
-    TEXTS = [
-        u"lorem ipsum",
-        u"Alice\nBob\nCharly\nDennis",
-    ]
 
-    @classmethod
-    def colorize(cls, text, color):
-        color_escape = ""
-        if color:
-            color_escape = ansi_escapes.colors[color]
-        return color_escape + text + ansi_escapes.escapes["reset"]
-
-    @classmethod
-    def colorize_text(cls, text, colors=None):
-        if not colors:
-            colors = []
-        colors_size = len(colors)
-        color_index = 0
-        colored_chars = []
-        for char in text:
-            color = colors[color_index]
-            colored_chars.append(cls.colorize(char, color))
-            color_index += 1
-            if color_index >= colors_size:
-                color_index = 0
-        return "".join(colored_chars)
-
-    def test_should_return_same_text_without_escapes(self):
-        for text in self.TEXTS:
-            assert text == ansi_escapes.strip_escapes(text)
-
-    def test_should_return_empty_string_for_any_ansi_escape(self):
-        # XXX-JE-CHECK-PY23: If list() is really needed.
-        for text in list(ansi_escapes.colors.values()):
-            assert "" == ansi_escapes.strip_escapes(text)
-        for text in list(ansi_escapes.escapes.values()):
-            assert "" == ansi_escapes.strip_escapes(text)
+# --------------------------------------------------------------------------
+# TEST SUPPORT and TEST DATA
+# --------------------------------------------------------------------------
+TEXTS = [
+    u"lorem ipsum",
+    u"Alice and Bob",
+    u"Alice\nBob",
+]
+ALL_COLORS = list(ansi_escapes.colors.keys())
+CURSOR_UPS = [ansi_escapes.up(count) for count in range(10)]
 
 
-    def test_should_strip_color_escapes_from_text(self):
-        for text in self.TEXTS:
-            colored_text = self.colorize_text(text, self.ALL_COLORS)
-            assert text == ansi_escapes.strip_escapes(colored_text)
-            self.assertNotEqual(text, colored_text)
+def colorize(text, color):
+    color_escape = ""
+    if color:
+        color_escape = ansi_escapes.colors[color]
+    return color_escape + text + ansi_escapes.escapes["reset"]
 
-            for color in self.ALL_COLORS:
-                colored_text = self.colorize(text, color)
-                assert text == ansi_escapes.strip_escapes(colored_text)
-                self.assertNotEqual(text, colored_text)
 
-    def test_should_strip_cursor_up_escapes_from_text(self):
-        for text in self.TEXTS:
-            for cursor_up in self.CURSOR_UPS:
-                colored_text = cursor_up + text + ansi_escapes.escapes["reset"]
-                assert text == ansi_escapes.strip_escapes(colored_text)
-                self.assertNotEqual(text, colored_text)
+def colorize_text(text, colors=None):
+    if not colors:
+        colors = []
+    colors_size = len(colors)
+    color_index = 0
+    colored_chars = []
+    for char in text:
+        color = colors[color_index]
+        colored_chars.append(colorize(char, color))
+        color_index += 1
+        if color_index >= colors_size:
+            color_index = 0
+    return "".join(colored_chars)
+
+
+# --------------------------------------------------------------------------
+# TEST SUITE
+# --------------------------------------------------------------------------
+def test_module_setup():
+    """Ensure that the module setup (aliases, escapes) occured."""
+    # colors_count = len(ansi_escapes.colors)
+    aliases_count = len(ansi_escapes.aliases)
+    escapes_count = len(ansi_escapes.escapes)
+    assert escapes_count >= (2 + aliases_count + aliases_count)
+
+
+class TestStripEscapes(object):
+
+    @pytest.mark.parametrize("text", TEXTS)
+    def test_should_return_same_text_without_escapes(self, text):
+        assert text == ansi_escapes.strip_escapes(text)
+
+    @pytest.mark.parametrize("text", ansi_escapes.colors.values())
+    def test_should_return_empty_string_for_any_ansi_escape_color(self, text):
+        assert "" == ansi_escapes.strip_escapes(text)
+
+    @pytest.mark.parametrize("text", ansi_escapes.escapes.values())
+    def test_should_return_empty_string_for_any_ansi_escape(self, text):
+        assert "" == ansi_escapes.strip_escapes(text)
+
+    @pytest.mark.parametrize("text", TEXTS)
+    def test_should_strip_color_escapes_from_all_colored_text(self, text):
+        colored_text = colorize_text(text, ALL_COLORS)
+        assert text == ansi_escapes.strip_escapes(colored_text)
+        assert text != colored_text
+
+    @pytest.mark.parametrize("text", TEXTS)
+    @pytest.mark.parametrize("color", ALL_COLORS)
+    def test_should_strip_color_escapes_from_text(self, text, color):
+        colored_text = colorize(text, color)
+        assert text == ansi_escapes.strip_escapes(colored_text)
+        assert text != colored_text
+
+        colored_text2 = colorize(text, color) + text
+        text2 = text + text
+        assert text2 == ansi_escapes.strip_escapes(colored_text2)
+        assert text2 != colored_text2
+
+    @pytest.mark.parametrize("text", TEXTS)
+    @pytest.mark.parametrize("cursor_up", CURSOR_UPS)
+    def test_should_strip_cursor_up_escapes_from_text(self, text, cursor_up):
+        colored_text = cursor_up + text + ansi_escapes.escapes["reset"]
+        assert text == ansi_escapes.strip_escapes(colored_text)
+        assert text != colored_text

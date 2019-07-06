@@ -7,6 +7,9 @@ from __future__ import absolute_import
 import os
 import re
 
+# ---------------------------------------------------------------------------
+# MODULE DATA
+# ---------------------------------------------------------------------------
 colors = {
     "black":        u"\x1b[30m",
     "red":          u"\x1b[31m",
@@ -38,27 +41,48 @@ escapes = {
     "up":           u"\x1b[1A",
 }
 
-if "GHERKIN_COLORS" in os.environ:
-    new_aliases = [p.split("=") for p in os.environ["GHERKIN_COLORS"].split(":")]
-    aliases.update(dict(new_aliases))
 
-for alias in aliases:
-    escapes[alias] = "".join([colors[c] for c in aliases[alias].split(",")])
-    arg_alias = alias + "_arg"
-    arg_seq = aliases.get(arg_alias, aliases[alias] + ",bold")
-    escapes[arg_alias] = "".join([colors[c] for c in arg_seq.split(",")])
+# -- NEEDED-FOR: strip_escapes(), ...
+_ANSI_ESCAPE_PATTERN = re.compile(u"\x1b\\[\\d+[mA]", re.UNICODE)
 
 
-# pylint: disable=anomalous-backslash-in-string
+
+# ---------------------------------------------------------------------------
+# MODULE SETUP
+# ---------------------------------------------------------------------------
+def _setup_module():
+    """Setup the remaining ANSI color aliases and ANSI escape sequences.
+
+    .. note:: May modify/extend the module attributes:
+
+        * :attr:`aliases`
+        * :attr:`escapes`
+    """
+    # MAYBE: global aliases, escapes
+    if "GHERKIN_COLORS" in os.environ:
+        new_aliases = [p.split("=") for p in os.environ["GHERKIN_COLORS"].split(":")]
+        aliases.update(dict(new_aliases))
+
+    for alias in aliases:
+        escapes[alias] = "".join([colors[c] for c in aliases[alias].split(",")])
+        arg_alias = alias + "_arg"
+        arg_seq = aliases.get(arg_alias, aliases[alias] + ",bold")
+        escapes[arg_alias] = "".join([colors[c] for c in arg_seq.split(",")])
+
+
+# -- ONCE: During module-import.
+_setup_module()
+
+
+# ---------------------------------------------------------------------------
+# FUNCTIONS:
+# ---------------------------------------------------------------------------
 def up(n):
     return u"\x1b[%dA" % n
 
 
-_ANSI_ESCAPE_PATTERN = re.compile(u"\x1b\[\d+[mA]", re.UNICODE)
-# pylint: enable=anomalous-backslash-in-string
 def strip_escapes(text):
-    """
-    Removes ANSI escape sequences from text (if any are contained).
+    """Removes ANSI escape sequences from text (if any are contained).
 
     :param text: Text that may or may not contain ANSI escape sequences.
     :return: Text without ANSI escape sequences.
@@ -67,8 +91,7 @@ def strip_escapes(text):
 
 
 def use_ansi_escape_colorbold_composites():     # pragma: no cover
-    """
-    Patch for "sphinxcontrib-ansi" to process the following ANSI escapes
+    """Patch for "sphinxcontrib-ansi" to process the following ANSI escapes
     correctly (set-color set-bold sequences):
 
         ESC[{color}mESC[1m  => ESC[{color};1m
