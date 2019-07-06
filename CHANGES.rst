@@ -24,8 +24,9 @@ GOALS:
 ENHANCEMENTS:
 
 * Add support for Gherkin v6 grammar and syntax in ``*.feature`` files
-* Use cucumber "gherkin-languages.json" now (simplify: Gherkin v6 aliases, language usage)
 * Use `cucumber-tag-expressions`_ with tag-matching extension (superceeds: old-style tag-expressions)
+* Use cucumber "gherkin-languages.json" now (simplify: Gherkin v6 aliases, language usage)
+* Support emojis in ``*.feature`` files and steps
 * issue #678: Scenario Outline: Support tags with commas and semicolons (provided by: lawnmowerlatte, pull #679)
 * issue #675: Feature files cannot be found within symlink directories (provided by: smadness, pull #680)
 * Select-by-location: Add support for "Scenario container" (Feature, Rule, ScenarioOutline) (related to: #391)

@@ -8,6 +8,7 @@ Summary:
 * :pypi:`cucumber-tag-expressions` are extended by "tag-matching"
   to match partial tag names, like: ``@foo.*``
 * `Select-by-location for Scenario Containers`_ (Feature, Rule, ScenarioOutline)
+* `Support for emojis in feature files and steps`_
 
 .. _`Example Mapping`: https://cucumber.io/blog/example-mapping-introduction/
 .. _`Example Mapping Webinar`: https://cucumber.io/blog/example-mapping-webinar/
@@ -135,3 +136,19 @@ Now you can select all entities of a **Scenario Container** (Feature, Rule, Scen
 
 A file-location into a **Scenario Container** selects all its entities
 (Scenarios, ...).
+
+
+Support for Emojis in Feature Files and Steps
+-------------------------------------------------------------------------------
+
+* Emojis can now be used in ``*.feature`` files.
+* Emojis can now be used in step definitions.
+* You can now use ``language=emoji (em)`` in ``*.feature`` files ;-)
+
+.. literalinclude:: ../features/i18n_emoji.feature
+    :prepend:  # -- FILE: features/i18n_emoji.feature
+    :language: gherkin
+
+.. literalinclude:: ../features/steps/i18n_emoji_steps.py
+    :prepend:  # -- FILE: features/steps/i18n_emoji_steps.py
+    :language: python
