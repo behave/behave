@@ -11,7 +11,11 @@ pathlib;    python_version <= '3.4'
 pycmd
 
 # -- CONFIGURATION MANAGEMENT (helpers):
-bumpversion >= 0.4.0
+# FORMER: bumpversion >= 0.4.0
+bump2version >= 0.5.6
+
+# -- RELEASE MANAGEMENT: Push package to pypi.
+twine >= 1.13.0
 
 # -- DEVELOPMENT SUPPORT:
 tox   >= 1.8.1

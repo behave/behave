@@ -8,7 +8,7 @@
 #  * http://www.pip-installer.org/
 # ============================================================================
 
-cucumber-tag-expressions >= 1.1.1
+cucumber-tag-expressions >= 1.1.2
 parse >= 1.8.2
 parse_type >= 0.4.2
 six >= 1.12.0

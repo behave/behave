@@ -76,7 +76,7 @@ setup(
     # SUPPORT: python2.7, python3.3 (or higher)
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*",
     install_requires=[
-        "cucumber-tag-expressions >= 1.1.1",
+        "cucumber-tag-expressions >= 1.1.2",
         "parse >= 1.8.2",
         "parse_type >= 0.4.2",
         "six >= 1.12.0",
