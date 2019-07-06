@@ -564,16 +564,19 @@ Feature: Stuff
             ('then', 'Then', 'stuff is in buckets', None, None),
         ])
 
+    @pytest.mark.filterwarnings("ignore:invalid escape sequence")
     def test_parses_feature_with_table_and_escaped_pipe_in_cell_values(self):
+        # -- HINT py37: DeprecationWarning: invalid escape sequence '\|'
+        # USE: Double escaped-backslashes.
         doc = u'''
 Feature:
   Scenario:
     Given we have special cell values:
       | name   | value    |
-      | alice  | one\|two |
-      | bob    |\|one     |
-      | charly |     one\||
-      | doro   | one\|two\|three\|four |
+      | alice  | one\\|two |
+      | bob    |\\|one     |
+      | charly |     one\\||
+      | doro   | one\\|two\\|three\\|four |
 '''.lstrip()
         feature = parser.parse_feature(doc)
         assert len(feature.scenarios) == 1

@@ -52,6 +52,7 @@ AssertionError
             assert file_line_text in text2
 
     # @require_python2
+    @pytest.mark.filterwarnings("ignore:invalid escape sequence")
     def test__problem_exists_with_problematic_encoding(self):
         """Test ensures that problem exists with encoding=unicode-escape"""
         # -- NOTE: Explicit use of problematic encoding
