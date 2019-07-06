@@ -35,7 +35,7 @@ install:
 
 script:
   - python --version
-  - pytest test tests
+  - pytest tests
   - behave -f progress --junit features/
   - behave -f progress --junit tools/test-features/
   - behave -f progress --junit issue.features/
