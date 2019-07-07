@@ -68,7 +68,7 @@ def yaml_normalize(data):
     return data
 
 
-def data_normalize(data):
+def data_normalize(data, verbose=False):
     """Normalize "gherkin-languages.json" data into internal format,
     needed by behave."
 
@@ -76,7 +76,8 @@ def data_normalize(data):
     :return: Normalized data (as dictionary).
     """
     for language in data:
-        print("Language: %s ..." % language)
+        if verbose:
+            print("Language: %s ..." % language)
         # -- STEP: Normalize attribute "scenarioOutline" => "scenario_outline"
         lang_keywords = data[language]
         lang_keywords[u"scenario_outline"] = lang_keywords[u"scenarioOutline"]
@@ -107,7 +108,7 @@ def data_normalize(data):
 
 
 def gherkin_languages_to_python_module(gherkin_languages_path, output_file=None,
-                                       encoding=None):
+                                       encoding=None, verbose=False):
     """Workhorse.
     Performs the conversion from "gherkin-languages.json" to "i18n.py".
     Writes output to file or console (stdout).
@@ -115,6 +116,7 @@ def gherkin_languages_to_python_module(gherkin_languages_path, output_file=None,
     :param gherkin_languages_path: File path for JSON file.
     :param output_file:     Output filename (or STDOUT for: None, "stdout", "-")
     :param encoding:        Optional output encoding to use (default: UTF-8).
+    :param verbose:         Enable verbose mode (as bool; optional).
     """
     if encoding is None:
         encoding = "UTF-8"
@@ -122,7 +124,7 @@ def gherkin_languages_to_python_module(gherkin_languages_path, output_file=None,
     # -- STEP 1: Load JSON data.
     json_encoding = "UTF-8"
     languages = json.load(open(gherkin_languages_path, encoding=json_encoding))
-    languages = data_normalize(languages)
+    languages = data_normalize(languages, verbose=verbose)
     # languages = yaml_normalize(languages)
 
     # -- STEP 2: Generate python module with i18n data.
@@ -178,6 +180,9 @@ def main(args=None):
     parser.add_argument("-e", "--encoding", dest="encoding",
                         default="UTF-8",
                         help="Output encoding.")
+    parser.add_argument("--verbose", dest="verbose", default=False,
+                        action="store_true",
+                        help="Enable verbose mode.")
     parser.add_argument("output_file", default="i18n.py", nargs="?",
                 help="Filename of Python I18N module (as output).")
     parser.add_argument("--version", action="version", version=__version__)
@@ -191,7 +196,8 @@ def main(args=None):
     try:
         print("Writing %s .." % options.output_file)
         gherkin_languages_to_python_module(options.json_file, options.output_file,
-                                           encoding=options.encoding)
+                                           encoding=options.encoding,
+                                           verbose=options.verbose)
     except Exception as e:
         message = "%s: %s" % (e.__class__.__name__, e)
         sys.exit(message)

@@ -18,9 +18,15 @@ GHERKIN_LANGUAGES_URL = "https://raw.githubusercontent.com/cucumber/cucumber/mas
 # -----------------------------------------------------------------------------
 # TASKS:
 # -----------------------------------------------------------------------------
-@task(name="update_gherkin") # TOO-LONGS: aliases=["update_gherkin_languages"])
-def update_gherkin_languages(ctx):
-    """Update "gherkin-languages.json" file from cucumber-repo."""
+@task
+def update_gherkin(ctx, dry_run=False):
+    """Update "gherkin-languages.json" file from cucumber-repo.
+
+    * Download "gherkin-languages.json" from cucumber repo
+    * Update "gherkin-languages.json"
+    * Generate "i18n.py" file from "gherkin-languages.json"
+    * Update "behave/i18n.py" file (optional; not in dry-run mode)
+    """
     with cd("etc/gherkin"):
         # -- BACKUP-FILE:
         gherkin_languages_file = Path("gherkin-languages.json")
@@ -28,31 +34,23 @@ def update_gherkin_languages(ctx):
 
         print('Downloading "gherkin-languages.json" from github:cucumber ...')
         download_request = requests.get(GHERKIN_LANGUAGES_URL)
-        gherkin_languages_newfile = Path("gherkin-languages.json.NEW")
         assert download_request.ok
         print('Download finished: OK (size={0})'.format(len(download_request.content)))
-        with open(gherkin_languages_newfile, "wb") as f:
+        with open(gherkin_languages_file, "wb") as f:
             f.write(download_request.content)
-        gherkin_languages_newfile.rename("gherkin-languages.json")
 
         print('Generating "i18n.py" ...')
         ctx.run("./convert_gherkin-languages.py")
-
-
-# -----------------------------------------------------------------------------
-# TASK HELPERS:
-# -----------------------------------------------------------------------------
-def print_packages(packages):
-    print("PACKAGES[%d]:" % len(packages))
-    for package in packages:
-        package_size = package.stat().st_size
-        package_time = package.stat().st_mtime
-        print("  - %s  (size=%s)" % (package, package_size))
+        ctx.run("diff i18n.py ../../behave/i18n.py")
+        if not dry_run:
+            print("Updating behave/i18n.py ...")
+            Path("i18n.py").move("../../behave/i18n.py")
 
 
 # -----------------------------------------------------------------------------
 # TASK CONFIGURATION:
 # -----------------------------------------------------------------------------
+# TOO-LONG: aliases=["update_gherkin_languages"])
 namespace = Collection()
-namespace.add_task(update_gherkin_languages)
+namespace.add_task(update_gherkin)
 namespace.configure({})
