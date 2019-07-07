@@ -70,6 +70,7 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
     And note that "bob.feature is skipped"
 
 
+  @not.with_python.version=3.8
   Scenario: Junit report for skipped feature is created with --show-skipped
     When I run "behave --junit -t @tag1 --show-skipped @alice_and_bob.featureset"
     Then it should pass with:
@@ -83,6 +84,23 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
       <testsuite errors="0" failures="0" name="bob.Bob" skipped="1" tests="1" time="0.0">
       """
 
+  @use.with_python.version=3.8
+  Scenario: Junit report for skipped feature is created with --show-skipped
+    When I run "behave --junit -t @tag1 --show-skipped @alice_and_bob.featureset"
+    Then it should pass with:
+      """
+      1 feature passed, 0 failed, 1 skipped
+      """
+    And a file named "test_results/TESTS-alice.xml" exists
+    And a file named "test_results/TESTS-bob.xml" exists
+    And the file "test_results/TESTS-bob.xml" should contain:
+      """
+      <testsuite name="bob.Bob" tests="1" errors="0" failures="0" skipped="1" time="0.0">
+      """
+      # -- HINT FOR: Python < 3.8
+      # <testsuite errors="0" failures="0" name="bob.Bob" skipped="1" tests="1" time="0.0">
+
+  @not.with_python.version=3.8
   Scenario: Junit report for skipped scenario is neither shown nor counted with --no-skipped
     When I run "behave --junit -t @tag1 --no-skipped"
     Then it should pass with:
@@ -102,7 +120,30 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
       """
     And note that "Charly2 is the skipped scenarion in charly.feature"
 
+  @use.with_python.version=3.8
+  Scenario: Junit report for skipped scenario is neither shown nor counted with --no-skipped
+    When I run "behave --junit -t @tag1 --no-skipped"
+    Then it should pass with:
+      """
+      2 features passed, 0 failed, 1 skipped
+      2 scenarios passed, 0 failed, 2 skipped
+      """
+    And a file named "test_results/TESTS-alice.xml" exists
+    And a file named "test_results/TESTS-charly.xml" exists
+    And the file "test_results/TESTS-charly.xml" should contain:
+      """
+      <testsuite name="charly.Charly" tests="1" errors="0" failures="0" skipped="0"
+      """
+      # -- HINT FOR: Python < 3.8
+      # <testsuite errors="0" failures="0" name="charly.Charly" skipped="0" tests="1"
+    And the file "test_results/TESTS-charly.xml" should not contain:
+      """
+      <testcase classname="charly.Charly" name="Charly2"
+      """
+    And note that "Charly2 is the skipped scenarion in charly.feature"
 
+
+  @not.with_python.version=3.8
   Scenario: Junit report for skipped scenario is shown and counted with --show-skipped
     When I run "behave --junit -t @tag1 --show-skipped"
     Then it should pass with:
@@ -116,6 +157,29 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
       """
       <testsuite errors="0" failures="0" name="charly.Charly" skipped="1" tests="2"
       """
+    And the file "test_results/TESTS-charly.xml" should contain:
+      """
+      <testcase classname="charly.Charly" name="Charly2" status="skipped"
+      """
+    And note that "Charly2 is the skipped scenarion in charly.feature"
+
+
+  @use.with_python.version=3.8
+  Scenario: Junit report for skipped scenario is shown and counted with --show-skipped
+    When I run "behave --junit -t @tag1 --show-skipped"
+    Then it should pass with:
+      """
+      2 features passed, 0 failed, 1 skipped
+      2 scenarios passed, 0 failed, 2 skipped
+      """
+    And a file named "test_results/TESTS-alice.xml" exists
+    And a file named "test_results/TESTS-charly.xml" exists
+    And the file "test_results/TESTS-charly.xml" should contain:
+      """
+      <testsuite name="charly.Charly" tests="2" errors="0" failures="0" skipped="1"
+      """
+      # HINT: Python < 3.8
+      # <testsuite errors="0" failures="0" name="charly.Charly" skipped="1" tests="2"
     And the file "test_results/TESTS-charly.xml" should contain:
       """
       <testcase classname="charly.Charly" name="Charly2" status="skipped"

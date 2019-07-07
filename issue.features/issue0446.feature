@@ -58,6 +58,7 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         behave.reporter.junit.show_hostname = False
         """
 
+    @not.with_python.version=3.8
     Scenario: Hook error in before_scenario()
       When I run "behave -f plain --junit features/before_scenario_failure.feature"
       Then it should fail with:
@@ -86,6 +87,40 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
       And note that "the traceback is contained in the XML element <error/>"
 
 
+    @use.with_python.version=3.8
+    Scenario: Hook error in before_scenario()
+      When I run "behave -f plain --junit features/before_scenario_failure.feature"
+      Then it should fail with:
+        """
+        0 scenarios passed, 1 failed, 0 skipped
+        """
+      And the command output should contain:
+        """
+        HOOK-ERROR in before_scenario: RuntimeError: OOPS
+        """
+      And the file "reports/TESTS-before_scenario_failure.xml" should contain:
+        """
+        <testsuite name="before_scenario_failure.Alice" tests="1" errors="1" failures="0" skipped="0"
+        """
+        # -- HINT FOR: Python < 3.8
+        # <testsuite errors="1" failures="0" name="before_scenario_failure.Alice" skipped="0" tests="1"
+      And the file "reports/TESTS-before_scenario_failure.xml" should contain:
+        """
+        <error type="RuntimeError" message="HOOK-ERROR in before_scenario: RuntimeError: OOPS">
+        """
+        # -- HINT FOR: Python < 3.8
+        # <error message="HOOK-ERROR in before_scenario: RuntimeError: OOPS" type="RuntimeError">
+      And the file "reports/TESTS-before_scenario_failure.xml" should contain:
+        """
+        File "features/environment.py", line 6, in before_scenario
+          cause_hook_failure()
+        File "features/environment.py", line 2, in cause_hook_failure
+          raise RuntimeError("OOPS")
+        """
+      And note that "the traceback is contained in the XML element <error/>"
+
+
+    @not.with_python.version=3.8
     Scenario: Hook error in after_scenario()
       When I run "behave -f plain --junit features/after_scenario_failure.feature"
       Then it should fail with:
@@ -106,6 +141,41 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         """
         <error message="HOOK-ERROR in after_scenario: RuntimeError: OOPS" type="RuntimeError">
         """
+      And the file "reports/TESTS-after_scenario_failure.xml" should contain:
+        """
+        File "features/environment.py", line 10, in after_scenario
+          cause_hook_failure()
+        File "features/environment.py", line 2, in cause_hook_failure
+          raise RuntimeError("OOPS")
+        """
+      And note that "the traceback is contained in the XML element <error/>"
+
+
+    @use.with_python.version=3.8
+    Scenario: Hook error in after_scenario()
+      When I run "behave -f plain --junit features/after_scenario_failure.feature"
+      Then it should fail with:
+        """
+        0 scenarios passed, 1 failed, 0 skipped
+        """
+      And the command output should contain:
+        """
+          Scenario: B1
+            Given another step passes ... passed
+        HOOK-ERROR in after_scenario: RuntimeError: OOPS
+        """
+      And the file "reports/TESTS-after_scenario_failure.xml" should contain:
+        """
+        <testsuite name="after_scenario_failure.Bob" tests="1" errors="1" failures="0" skipped="0"
+        """
+        # -- HINT FOR: Python < 3.8
+        # <testsuite errors="1" failures="0" name="after_scenario_failure.Bob" skipped="0" tests="1"
+      And the file "reports/TESTS-after_scenario_failure.xml" should contain:
+        """
+        <error type="RuntimeError" message="HOOK-ERROR in after_scenario: RuntimeError: OOPS">
+        """
+        # -- HINT FOR: Python < 3.8
+        # <error message="HOOK-ERROR in after_scenario: RuntimeError: OOPS" type="RuntimeError">
       And the file "reports/TESTS-after_scenario_failure.xml" should contain:
         """
         File "features/environment.py", line 10, in after_scenario

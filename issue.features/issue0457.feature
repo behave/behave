@@ -24,6 +24,7 @@ Feature: Issue #457 -- Double-quotes in error messages of JUnit XML reports
         """
 
 
+    @not.with_python.version=3.8
     Scenario: Use failing assertation in a JUnit XML report
       Given a file named "features/fails1.feature" with:
         """
@@ -44,6 +45,31 @@ Feature: Issue #457 -- Double-quotes in error messages of JUnit XML reports
         <failure message="FAILED: My name is &quot;Alice&quot;"
         """
 
+    @use.with_python.version=3.8
+    Scenario: Use failing assertation in a JUnit XML report
+      Given a file named "features/fails1.feature" with:
+        """
+        Feature:
+          Scenario: Alice
+            Given a step fails with message:
+              '''
+              My name is "Alice"
+              '''
+        """
+      When I run "behave --junit features/fails1.feature"
+      Then it should fail with:
+        """
+        0 scenarios passed, 1 failed, 0 skipped
+        """
+      And the file "reports/TESTS-fails1.xml" should contain:
+        """
+        <failure type="AssertionError" message="FAILED: My name is &quot;Alice&quot;">
+        """
+        # -- HINT FOR: Python < 3.8
+        # <failure message="FAILED: My name is &quot;Alice&quot;"
+
+
+    @not.with_python.version=3.8
     Scenario: Use exception in a JUnit XML report
       Given a file named "features/fails2.feature" with:
         """
@@ -63,3 +89,26 @@ Feature: Issue #457 -- Double-quotes in error messages of JUnit XML reports
         """
         <error message="My name is &quot;Bob&quot; and &lt;here&gt; I am"
         """
+
+    @use.with_python.version=3.8
+    Scenario: Use exception in a JUnit XML report
+      Given a file named "features/fails2.feature" with:
+        """
+        Feature:
+          Scenario: Bob
+            Given a step fails with error and message:
+              '''
+              My name is "Bob" and <here> I am
+              '''
+        """
+      When I run "behave --junit features/fails2.feature"
+      Then it should fail with:
+        """
+        0 scenarios passed, 1 failed, 0 skipped
+        """
+      And the file "reports/TESTS-fails2.xml" should contain:
+        """
+        <error type="RuntimeError" message="My name is &quot;Bob&quot; and &lt;here&gt; I am">
+        """
+        # -- HINT FOR: Python < 3.8
+        # <error message="My name is &quot;Bob&quot; and &lt;here&gt; I am"
