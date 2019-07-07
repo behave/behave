@@ -1256,6 +1256,9 @@
     "given": [
       "* ",
       "Soit ",
+      "Sachant que ",
+      "Sachant qu'",
+      "Sachant ",
       "Etant donné que ",
       "Etant donné qu'",
       "Etant donné ",
@@ -1284,7 +1287,8 @@
     ],
     "then": [
       "* ",
-      "Alors "
+      "Alors ",
+      "Donc "
     ],
     "when": [
       "* ",
