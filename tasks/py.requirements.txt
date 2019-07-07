@@ -16,3 +16,6 @@ six >= 1.12.0
 # -- PYTHON2 BACKPORTS:
 pathlib;    python_version <= '3.4'
 backports.shutil_which; python_version <= '3.3'
+
+# -- SECTION: develop
+requests

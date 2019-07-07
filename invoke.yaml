@@ -38,6 +38,10 @@ cleanup:
       - "__WORKDIR__"
       - reports
 
+    extra_files:
+      - "etc/gherkin/gherkin*.json.SAVED"
+      - "etc/gherkin/i18n.py"
+
 cleanup_all:
     extra_directories:
       - .hypothesis

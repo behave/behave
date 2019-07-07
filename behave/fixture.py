@@ -348,7 +348,6 @@ def use_composite_fixture_with(context, fixture_funcs_with_params):
     return composite_fixture
 
 
-
 # -------------------------------------------------------------------------------
 # DECORATORS:
 # -------------------------------------------------------------------------------

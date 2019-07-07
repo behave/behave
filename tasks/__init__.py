@@ -39,6 +39,8 @@ from . import _tasklet_cleanup as cleanup
 from . import docs
 from . import test
 from . import release
+from . import develop
+
 
 # -----------------------------------------------------------------------------
 # TASKS:
@@ -56,6 +58,7 @@ namespace.add_collection(Collection.from_module(cleanup), name="cleanup")
 namespace.add_collection(Collection.from_module(docs))
 namespace.add_collection(Collection.from_module(test))
 namespace.add_collection(Collection.from_module(release))
+namespace.add_collection(Collection.from_module(develop))
 cleanup.cleanup_tasks.add_task(cleanup.clean_python)
 
 cleanup.cleanup_tasks.add_task(cleanup.clean_python)

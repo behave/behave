@@ -43,6 +43,7 @@ FIXED:
 
 MINOR:
 
+* pull  #751: gherkin: Adding Rule keyword translation in portuguese and spanish to gherkin-languages.json (provided by: dunossauro)
 * pull  #660: Fix minor typos (provided by: rrueth)
 * pull  #655: Use pytest instead of py.test per upstream recommendation (provided by: scop)
 * issue #654: tox.ini: pypi.python.org -> pypi.org (submitted by: pradyunsg)
