@@ -2,17 +2,22 @@ Gherkin v6 Examples
 =============================================================================
 
 
-SCRATCHPAD: Problems
------------------------------------------------------------------------------
+Provides example(s) of Gherkin v6 additions:
 
-- SummaryReporter: Shows wrong counts when Rules are present::
+* Rule concept
+* New aliases for Gherkin keywords (Scenario, ScenarioOutline)
 
-    ...
-    0 features passed, 0 failed, 1 skipped XXX
-    3 rules passed, 0 failed, 0 skipped
-    5 scenarios passed, 0 failed, 0 skipped
-    13 steps passed, 0 failed, 0 skipped, 0 undefined
+Rule functionality:
 
+* A Rule is a scenario container similar to a Feature
+* A Feature may contain many Rules
+* A Rule may not contain other Rules
+* A Rule may contain a Background (and inherits its Feature Background)
+* A Rule inherits its Feature Background if it has no Background
+* A Rule may contain many Scenarios and/or ScenarioOutlines
+* A Rule may have tags
 
-- Formatters: PrettyFormatter, PlainFormatter (at least) need Rule support
+New keyword aliases:
 
+* "Scenario Template" for "Scenario Outline"
+* "Example" for "Scenario"
