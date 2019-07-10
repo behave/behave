@@ -227,7 +227,9 @@ Feature: With Rule
         assert rule1.description == []
         assert rule1.tags == []
         assert len(rule1.scenarios) == 1
-        assert rule1.background is feature.background
+        assert rule1.background is not feature.background
+        assert rule1.background.inherited_steps == feature.background.steps
+        assert list(rule1.background.all_steps) == feature.background.steps
         assert_compare_steps(rule1.scenarios[0].all_steps, [
             ("given", "Given", "feature background step 1", None, None),
             ("when", "When", "feature background step 2", None, None),
@@ -235,7 +237,7 @@ Feature: With Rule
             ("when", "When", "scenario step 2", None, None),
         ])
 
-    def test_parses_rule_with_background_should_not_inherit_feature_background(self):
+    def test_parses_rule_with_background_inherits_feature_background(self):
         """If a Rule has no Background,
         it inherits the Feature's Background (if one exists).
         """
@@ -269,13 +271,15 @@ Feature: With Rule
         assert rule1.background is not None
         assert rule1.background is not feature.background
         assert_compare_steps(rule1.scenarios[0].all_steps, [
+            ("given", "Given", "feature background step 1", None, None),
+            ("when",  "When",  "feature background step 2", None, None),
             ("given", "Given", "rule background step 1", None, None),
-            ("when", "When", "rule background step 2", None, None),
+            ("when",  "When",  "rule background step 2", None, None),
             ("given", "Given", "scenario step 1", None, None),
-            ("when", "When", "scenario step 2", None, None),
+            ("when",  "When",  "scenario step 2", None, None),
         ])
 
-    def test_parses_rule_with_empty_background_prevents_inheriting_feature_background(self):
+    def test_parses_rule_with_empty_background_inherits_feature_background(self):
         """A Rule has empty Background (without any steps) prevents that
         Feature Background is inherited (if one exists).
         """
@@ -308,8 +312,10 @@ Feature: With Rule
         assert rule1.background is not feature.background
         assert rule1.background.name == "Rule_R3C.Empty_Background"
         assert_compare_steps(rule1.scenarios[0].all_steps, [
+            ("given", "Given", "feature background step 1", None, None),
+            ("when",  "When",  "feature background step 2", None, None),
             ("given", "Given", "scenario step 1", None, None),
-            ("when", "When", "scenario step 2", None, None),
+            ("when",  "When", "scenario step 2", None, None),
         ])
 
     def test_parses_rule_with_scenario(self):
@@ -558,6 +564,7 @@ Feature: With Rule
             ("when", "When", 'step uses "2"', None, None),
         ])
 
+    # @check.duplicated
     def test_parse_background_scenario_and_rules(self):
         """HINT: Some Scenarios may exist before the first Rule."""
         text = u'''
@@ -606,10 +613,10 @@ Feature: With Scenarios and Rules
         assert scenario1.tags == []
         assert scenario1.description == []
         assert_compare_steps(scenario1.all_steps, [
-            ("given", "Given", 'feature background step_1', None, None),
-            ("when", "When",   'feature background step_2', None, None),
-            ("given", "Given", 'scenario_1 step_1', None, None),
-            ("when", "When",   'scenario_1 step_2', None, None),
+            (u"given", u"Given", u'feature background step_1', None, None),
+            (u"when", u"When",   u'feature background step_2', None, None),
+            (u"given", u"Given", u'scenario_1 step_1', None, None),
+            (u"when", u"When",   u'scenario_1 step_2', None, None),
         ])
 
         assert rule1.name == "R1"
@@ -623,9 +630,11 @@ Feature: With Scenarios and Rules
         assert rule1_scenario1.parent is rule1
         assert rule1_scenario1.feature is feature
         assert_compare_steps(rule1_scenario1.all_steps, [
+            ("given", "Given", 'feature background step_1', None, None),
+            ("when",  "When",  'feature background step_2', None, None),
             ("given", "Given", 'rule R1 background step_1', None, None),
             ("given", "Given", 'rule R1 scenario_1 step_1', None, None),
-            ("when", "When",   'rule R1 scenario_1 step_2', None, None),
+            ("when",  "When",  'rule R1 scenario_1 step_2', None, None),
         ])
 
         assert rule2.name == "R2"
@@ -633,16 +642,318 @@ Feature: With Scenarios and Rules
         assert rule2.feature is feature
         assert rule2.description == []
         assert rule2.tags == []
-        assert rule2.background is feature.background
+        assert rule2.background is not feature.background
+        assert list(rule2.background.inherited_steps) == list(feature.background.steps)
+        assert list(rule2.background.all_steps) == list(feature.background.steps)
         assert len(rule2.scenarios) == 1
         assert rule2_scenario1.name == "R2.Scenario_1"
         assert rule2_scenario1.parent is rule2
         assert rule2_scenario1.feature is feature
         assert_compare_steps(rule2_scenario1.all_steps, [
             ("given", "Given", 'feature background step_1', None, None),
-            ("when", "When",   'feature background step_2', None, None),
+            ("when",  "When",  'feature background step_2', None, None),
             ("given", "Given", 'rule R2 scenario_1 step_1', None, None),
-            ("when", "When",   'rule R2 scenario_1 step_2', None, None),
+            ("when",  "When",  'rule R2 scenario_1 step_2', None, None),
+        ])
+
+
+# ---------------------------------------------------------------------------
+# TEST SUITE: Verify Feature Background to Rule Background Inheritance
+# ---------------------------------------------------------------------------
+class TestParser4Background(object):
+    """Verify feature.background to rule.background inheritance, etc."""
+
+    def test_parse__norule_scenarios_use_feature_background(self):
+        """AFFECTED: Scenarios outside of rules (before first rule)."""
+        text = u'''
+            Feature: With Scenarios and Rules
+            
+              Background: Feature.Background
+                Given feature background step_1
+            
+              Scenario: Scenario_1
+                Given scenario_1 step_1
+            
+              Rule: R1
+                Scenario: R1.Scenario_1
+                  Given rule R1 scenario_1 step_1
+            '''.lstrip()
+        feature = parse_feature(text)
+        assert feature.name == "With Scenarios and Rules"
+        assert feature.background is not None
+        assert len(feature.scenarios) == 1
+        assert len(feature.rules) == 1
+        assert len(feature.run_items) == 2
+
+        scenario1 = feature.scenarios[0]
+        rule1 = feature.rules[0]
+        assert feature.run_items == [scenario1, rule1]
+
+        assert scenario1.name == "Scenario_1"
+        assert scenario1.background is feature.background
+        assert scenario1.background_steps == feature.background.steps
+        assert_compare_steps(scenario1.all_steps, [
+            (u"given", u"Given", u'feature background step_1', None, None),
+            (u"given", u"Given", u'scenario_1 step_1', None, None),
+        ])
+
+    def test_parse__norule_scenarios_with_disabled_background(self):
+        """AFFECTED: Scenarios outside of rules (before first rule)."""
+        text = u'''
+            Feature: Scenario with disabled background
+            
+              Background: Feature.Background
+                Given feature background step_1
+            
+              @fixture.behave.disable_background
+              Scenario: Scenario_1
+                Given scenario_1 step_1
+            
+              Scenario: Scenario_2
+                Given scenario_2 step_1
+            '''.lstrip()
+        feature = parse_feature(text)
+        assert feature.name == "Scenario with disabled background"
+        assert feature.background is not None
+        assert len(feature.scenarios) == 2
+        assert len(feature.run_items) == 2
+
+        scenario1 = feature.scenarios[0]
+        scenario2 = feature.scenarios[1]
+        assert feature.run_items == [scenario1, scenario2]
+
+        scenario1.use_background = False    # -- FIXTURE-EFFECT (simulated)
+        assert scenario1.name == "Scenario_1"
+        assert scenario1.background is feature.background
+        assert scenario1.background_steps != feature.background.steps
+        assert scenario1.background_steps == []
+        assert_compare_steps(scenario1.all_steps, [
+            (u"given", u"Given", u'scenario_1 step_1', None, None),
+        ])
+
+        # -- ENSURE: Disabling of background has no effect on other scenarios.
+        assert scenario2.name == "Scenario_2"
+        assert scenario2.background is feature.background
+        assert scenario2.background_steps == feature.background.steps
+        assert_compare_steps(scenario2.all_steps, [
+            (u"given", u"Given", u'feature background step_1', None, None),
+            (u"given", u"Given", u'scenario_2 step_1', None, None),
+        ])
+
+    def test_parse__rule_scenarios_inherit_feature_background_without_rule_background(self):
+        text = u'''
+            Feature: With Background and Rule
+    
+              Background: Feature.Background
+                Given feature background step_1
+    
+              Rule: R1
+                Scenario: R1.Scenario_1
+                  Given rule R1 scenario_1 step_1
+            '''.lstrip()
+        feature = parse_feature(text)
+        assert feature.name == "With Background and Rule"
+        assert feature.background is not None
+        assert len(feature.scenarios) == 0
+        assert len(feature.rules) == 1
+        assert len(feature.run_items) == 1
+
+        rule1 = feature.rules[0]
+        rule1_scenario1 = rule1.scenarios[0]
+        assert feature.run_items == [rule1]
+
+        assert rule1_scenario1.name == "R1.Scenario_1"
+        assert rule1_scenario1.background is not None
+        # assert rule1_scenario1.background is not feature.background
+        assert rule1_scenario1.background_steps == feature.background.steps
+        assert_compare_steps(rule1_scenario1.all_steps, [
+            (u"given", u"Given", u'feature background step_1', None, None),
+            (u"given", u"Given", u'rule R1 scenario_1 step_1', None, None),
+        ])
+
+    def test_parse__rule_scenarios_inherit_feature_background_with_rule_background(self):
+        text = u'''
+            Feature: With Feature.Background and Rule.Background
+
+              Background: Feature.Background
+                Given feature background step_1
+
+              Rule: R1
+                Background: R1.Background
+                  Given rule R1 background step_1
+                
+                Scenario: R1.Scenario_1
+                  Given rule R1 scenario_1 step_1
+            '''.lstrip()
+        feature = parse_feature(text)
+        assert feature.name == "With Feature.Background and Rule.Background"
+        assert feature.background is not None
+        assert len(feature.scenarios) == 0
+        assert len(feature.rules) == 1
+        assert len(feature.run_items) == 1
+
+        rule1 = feature.rules[0]
+        rule1_scenario1 = rule1.scenarios[0]
+        assert feature.run_items == [rule1]
+
+        assert rule1.background is not None
+        assert rule1.background is not feature.background
+        assert rule1.background.inherited_steps == feature.background.steps
+        assert list(rule1.background.all_steps) != feature.background.steps
+
+        assert rule1_scenario1.name == "R1.Scenario_1"
+        assert rule1_scenario1.background is rule1.background
+        assert rule1_scenario1.background_steps == list(rule1.background.all_steps)
+        assert_compare_steps(rule1_scenario1.all_steps, [
+            (u"given", u"Given", u'feature background step_1', None, None),
+            (u"given", u"Given", u'rule R1 background step_1', None, None),
+            (u"given", u"Given", u'rule R1 scenario_1 step_1', None, None),
+        ])
+
+    def test_parse__rule_scenarios_with_rule_background_when_background_inheritance_is_disabled(self):
+        # -- HINT: Background inheritance is enabled (by default).
+        text = u'''
+            Feature: With Feature Background Inheritance disabled
+
+              Background: Feature.Background
+                Given feature background step_1
+
+              @fixture.behave.override_background
+              Rule: R1
+                Background: R1.Background
+                  Given rule R1 background step_1
+
+                Scenario: R1.Scenario_1
+                  Given rule R1 scenario_1 step_1
+            '''.lstrip()
+        feature = parse_feature(text)
+        assert feature.name == "With Feature Background Inheritance disabled"
+        assert feature.background is not None
+        assert len(feature.scenarios) == 0
+        assert len(feature.rules) == 1
+        assert len(feature.run_items) == 1
+
+        rule1 = feature.rules[0]
+        rule1_scenario1 = rule1.scenarios[0]
+        assert feature.run_items == [rule1]
+
+        rule1.use_background_inheritance = False  # FIXTURE-EFFECT (simulated)
+        assert rule1.background is not None
+        assert rule1.background.use_inheritance is False
+        assert rule1.background is not feature.background
+        assert rule1.background.inherited_steps == []
+        assert rule1.background.inherited_steps != feature.background.steps
+        assert list(rule1.background.all_steps) != feature.background.steps
+
+        assert rule1_scenario1.name == "R1.Scenario_1"
+        assert rule1_scenario1.background is rule1.background
+        assert rule1_scenario1.background_steps == rule1.background.steps
+        assert rule1_scenario1.background_steps == list(rule1.background.all_steps)
+        assert_compare_steps(rule1_scenario1.all_steps, [
+            (u"given", u"Given", u'rule R1 background step_1', None, None),
+            (u"given", u"Given", u'rule R1 scenario_1 step_1', None, None),
+        ])
+
+    def test_parse__rule_scenarios_without_rule_background_when_background_inheritance_is_disabled_without(self):
+        # -- HINT: Background inheritance is enabled (by default).
+        text = u'''
+            Feature: With Feature Background Inheritance disabled
+
+              Background: Feature.Background
+                Given feature background step_1
+
+              @fixture.behave.override_background
+              Rule: R1
+                Scenario: R1.Scenario_1
+                  Given rule R1 scenario_1 step_1
+            '''.lstrip()
+        feature = parse_feature(text)
+        assert feature.name == "With Feature Background Inheritance disabled"
+        assert feature.background is not None
+        assert len(feature.scenarios) == 0
+        assert len(feature.rules) == 1
+        assert len(feature.run_items) == 1
+
+        rule1 = feature.rules[0]
+        rule1_scenario1 = rule1.scenarios[0]
+        assert feature.run_items == [rule1]
+
+        rule1.use_background_inheritance = False  # FIXTURE-EFFECT (simulated)
+        assert rule1.background is not None
+        assert rule1.background.use_inheritance is False
+        assert rule1.background is not feature.background
+        assert rule1.background.inherited_steps == []
+
+        assert rule1_scenario1.name == "R1.Scenario_1"
+        assert rule1_scenario1.background is rule1.background
+        assert rule1_scenario1.background_steps == rule1.background.steps
+        assert rule1_scenario1.background_steps == list(rule1.background.all_steps)
+        assert_compare_steps(rule1_scenario1.all_steps, [
+            (u"given", u"Given", u'rule R1 scenario_1 step_1', None, None),
+        ])
+
+    def test_parse__rule_scenarios_without_feature_background_and_with_rule_background(self):
+        text = u'''
+            Feature: Without Feature.Background and with Rule.Background
+
+              Rule: R1
+                Background: R1.Background
+                  Given rule R1 background step_1
+
+                Scenario: R1.Scenario_1
+                  Given rule R1 scenario_1 step_1
+            '''.lstrip()
+        feature = parse_feature(text)
+        assert feature.name == "Without Feature.Background and with Rule.Background"
+        assert feature.background is None
+        assert len(feature.scenarios) == 0
+        assert len(feature.rules) == 1
+        assert len(feature.run_items) == 1
+
+        rule1 = feature.rules[0]
+        rule1_scenario1 = rule1.scenarios[0]
+        assert feature.run_items == [rule1]
+
+        assert rule1.background is not None
+        assert rule1.background is not feature.background
+        assert rule1.background.inherited_steps == []
+
+        assert rule1_scenario1.name == "R1.Scenario_1"
+        assert rule1_scenario1.background is rule1.background
+        assert rule1_scenario1.background_steps == rule1.background.steps
+        assert rule1_scenario1.background_steps == list(rule1.background.all_steps)
+        assert_compare_steps(rule1_scenario1.all_steps, [
+            (u"given", u"Given", u'rule R1 background step_1', None, None),
+            (u"given", u"Given", u'rule R1 scenario_1 step_1', None, None),
+        ])
+
+    def test_parse__rule_scenarios_without_feature_and_rule_background(self):
+        text = u'''
+            Feature: Without Feature.Background and Rule.Background
+
+              Rule: R1
+                Scenario: R1.Scenario_1
+                  Given rule R1 scenario_1 step_1
+            '''.lstrip()
+        feature = parse_feature(text)
+        assert feature.name == "Without Feature.Background and Rule.Background"
+        assert feature.background is None
+        assert len(feature.scenarios) == 0
+        assert len(feature.rules) == 1
+        assert len(feature.run_items) == 1
+
+        rule1 = feature.rules[0]
+        rule1_scenario1 = rule1.scenarios[0]
+        assert feature.run_items == [rule1]
+
+        assert rule1.background is None
+
+        assert rule1_scenario1.name == "R1.Scenario_1"
+        assert rule1_scenario1.background is None
+        assert rule1_scenario1.background is rule1.background
+        assert rule1_scenario1.background_steps == []
+        assert_compare_steps(rule1_scenario1.all_steps, [
+            (u"given", u"Given", u'rule R1 scenario_1 step_1', None, None),
         ])
 
 

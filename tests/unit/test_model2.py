@@ -35,10 +35,6 @@ def step_to_text(step, indentation="    "):
     return step_text.rstrip()
 
 
-# -- PYTEST MARKERS/ANNOTATIONS:
-not_implemented_yet = pytest.mark.skip("NOT-IMPLEMENTED-YET")
-
-
 # ----------------------------------------------------------------------------
 # TEST SUITE:
 # ----------------------------------------------------------------------------

@@ -249,7 +249,6 @@ class Parser(object):
         self.rule = rule
         self.scenario_container = rule
         self.statement = rule
-        # MAYBE: self.background = None
         self.feature.add_rule(self.statement)
         # -- RESET STATE:
         self.tags = []
@@ -258,11 +257,15 @@ class Parser(object):
         if self.tags:
             msg = u"Background supports no tags: @%s" % (u" @".join(self.tags))
             raise ParserError(msg, self.line, self.filename, line)
+        elif self.scenario_container and self.scenario_container.background:
+            if self.scenario_container.background.steps:
+                # -- HINT: Rule may have default background w/o steps.
+                msg = u"Second Background (can have only one)"
+                raise ParserError(msg, self.line, self.filename, line)
         name = line[len(keyword) + 1:].strip()
         background = model.Background(self.filename, self.line, keyword, name)
+        self.scenario_container.add_background(background)
         self.statement = background
-        self.scenario_container.background = background
-        # OLD: self.feature.background = self.statement
 
     def _build_scenario_statement(self, keyword, line):
         name = line[len(keyword) + 1:].strip()
