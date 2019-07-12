@@ -157,8 +157,8 @@ basic actions. You may use a Scenario Outline to achieve this:
 
   Scenario Outline: Blenders
      Given I put <thing> in a blender,
-      when I switch the blender on
-      then it should transform into <other thing>
+      When I switch the blender on
+      Then it should transform into <other thing>
 
    Examples: Amphibians
      | thing         | other thing |
