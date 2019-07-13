@@ -3,9 +3,10 @@
 # CONVERT: behave JSON dialect to cucumber JSON dialect
 # =============================================================================
 # STATUS: __PROTOTYPE__
-# REQUIRES: Python >= 2.6
-# REQUIRES: https://github.com/behalfinc/b2c/
-# SEE: https://github.com/behave/behave/issues/267#issuecomment-249607191
+# REQUIRES: Python >= 2.7
+# REQUIRES: https://github.com/behalf-oss/behave2cucumber
+# SEE:
+# * https://github.com/behave/behave/issues/267#issuecomment-251746565
 # =============================================================================
 """
 Convert a file with behave JSON data into a file with cucumber JSON data.
@@ -17,14 +18,15 @@ import json
 import sys
 import os.path
 try:
-    import b2c
+    import behave2cucumber
 except ImportError:
-    print("REQUIRE: https://github.com/behalfinc/b2c/  (not installed yet)")
-    print("INSTALL: pip install b2c")
+    print("REQUIRE: https://github.com/behalf-oss/behave2cucumber (not installed yet)")
+    print("INSTALL: pip install behave2cucumber")
     sys.exit(2)
 
 
 NAME = os.path.basename(__file__)
+
 
 def convert_behave_to_cucumber_json(behave_filename, cucumber_filename,
                                     encoding="UTF-8", pretty=True):
@@ -39,11 +41,13 @@ def convert_behave_to_cucumber_json(behave_filename, cucumber_filename,
 
     with open(behave_filename, "r") as behave_json:
         with open(cucumber_filename, "w+") as output_file:
-            cucumber_json = b2c.convert(json.load(behave_json, encoding))
+            behave_json = json.load(behave_json, encoding)
+            cucumber_json = behave2cucumber.convert(behave_json)
             # cucumber_text = json.dumps(cucumber_json, **dump_kwargs)
             # output_file.write(cucumber_text)
             json.dump(cucumber_json, output_file, **dump_kwargs)
     return 0
+
 
 def main(args=None):
     """Main function to run the script."""
@@ -57,6 +61,7 @@ def main(args=None):
     behave_filename = args[0]
     cucumber_filename = args[1]
     return convert_behave_to_cucumber_json(behave_filename, cucumber_filename)
+
 
 # -- AUTO-MAIN:
 if __name__ == "__main__":
