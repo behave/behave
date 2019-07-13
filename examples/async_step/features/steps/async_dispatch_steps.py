@@ -1,20 +1,37 @@
 # -*- coding: UTF-8 -*-
-# REQUIRES: Python >= 3.5
+# REQUIRES: Python >= 3.4/3.5
+import sys
 from behave import given, then, step
-from behave.api.async_step import use_or_create_async_context, AsyncContext
+from behave.api.async_step import use_or_create_async_context
 from hamcrest import assert_that, equal_to, empty
 import asyncio
 
-@asyncio.coroutine
-def async_func(param):
-    yield from asyncio.sleep(0.2)
-    return str(param).upper()
 
+# ---------------------------------------------------------------------------
+# ASYNC EXAMPLE FUNCTION:
+# ---------------------------------------------------------------------------
+python_version = "%s.%s" % sys.version_info[:2]
+if python_version >= "3.5":
+    async def async_func(param):
+        await asyncio.sleep(0.2)
+        return str(param).upper()
+else:
+    # -- HINT: Decorator @asyncio.coroutine is prohibited in python 3.8
+    @asyncio.coroutine
+    def async_func(param):
+        yield from asyncio.sleep(0.2)
+        return str(param).upper()
+
+
+# ---------------------------------------------------------------------------
+# STEPS:
+# ---------------------------------------------------------------------------
 @given('I dispatch an async-call with param "{param}"')
 def step_dispatch_async_call(context, param):
     async_context = use_or_create_async_context(context, "async_context1")
     task = async_context.loop.create_task(async_func(param))
     async_context.tasks.append(task)
+
 
 @then('the collected result of the async-calls is "{expected}"')
 def step_collected_async_call_result_is(context, expected):
