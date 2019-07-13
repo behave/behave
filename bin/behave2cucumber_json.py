@@ -20,7 +20,7 @@ import os.path
 try:
     import behave2cucumber
 except ImportError:
-    print("REQUIRE: https://github.com/behalf-oss/behave2cucumber (not installed yet)")
+    print("REQUIRE: https://github.com/behalf-oss/behave2cucumber")
     print("INSTALL: pip install behave2cucumber")
     sys.exit(2)
 
