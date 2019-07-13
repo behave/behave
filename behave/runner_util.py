@@ -11,24 +11,11 @@ import re
 import sys
 from six import string_types
 from behave import parser
+from behave.exception import \
+    FileNotFoundError, InvalidFileLocationError, InvalidFilenameError
 from behave.model_core import FileLocation
 from behave.textutil import ensure_stream_with_encoder
 # LAZY: from behave.step_registry import setup_step_decorators
-
-
-# -----------------------------------------------------------------------------
-# EXCEPTIONS:
-# -----------------------------------------------------------------------------
-class FileNotFoundError(LookupError):
-    pass
-
-
-class InvalidFileLocationError(LookupError):
-    pass
-
-
-class InvalidFilenameError(ValueError):
-    pass
 
 
 # -----------------------------------------------------------------------------

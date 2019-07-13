@@ -17,7 +17,7 @@ from behave import runner_util
 from behave.model import Table
 from behave.step_registry import StepRegistry
 from behave import parser, runner
-from behave.configuration import ConfigError
+from behave.exception import ConfigError
 from behave.formatter.base import StreamOpener
 
 

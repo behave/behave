@@ -4,12 +4,13 @@ from __future__ import absolute_import, print_function
 import codecs
 import sys
 import six
-from behave import __version__
-from behave.configuration import Configuration, ConfigError
+from behave.version import VERSION as BEHAVE_VERSION
+from behave.configuration import Configuration
+from behave.exception import ConstraintError, ConfigError, \
+    FileNotFoundError, InvalidFileLocationError, InvalidFilenameError
 from behave.parser import ParserError
 from behave.runner import Runner
-from behave.runner_util import print_undefined_step_snippets, reset_runtime, \
-    InvalidFileLocationError, InvalidFilenameError, FileNotFoundError
+from behave.runner_util import print_undefined_step_snippets, reset_runtime
 from behave.textutil import compute_words_maxsize, text as _text
 
 
@@ -62,7 +63,7 @@ def run_behave(config, runner_class=None):
         runner_class = Runner
 
     if config.version:
-        print("behave " + __version__)
+        print("behave " + BEHAVE_VERSION)
         return 0
 
     if config.tags_help:
@@ -110,6 +111,8 @@ def run_behave(config, runner_class=None):
         print(u"InvalidFileLocationError: %s" % e)
     except InvalidFilenameError as e:
         print(u"InvalidFilenameError: %s" % e)
+    except ConstraintError as e:
+        print(u"ConstraintError: %s" % e)
     except Exception as e:
         # -- DIAGNOSTICS:
         text = _text(e)

@@ -62,10 +62,6 @@ class LogLevel(object):
         return logging.getLevelName(level)
 
 
-class ConfigError(Exception):
-    pass
-
-
 # -----------------------------------------------------------------------------
 # CONFIGURATION SCHEMA:
 # -----------------------------------------------------------------------------

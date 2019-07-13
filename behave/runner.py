@@ -15,7 +15,7 @@ import six
 
 from behave._types import ExceptionUtil
 from behave.capture import CaptureController
-from behave.configuration import ConfigError
+from behave.exception import ConfigError
 from behave.formatter._registry import make_formatters
 from behave.runner_util import \
     collect_feature_locations, parse_features, \
