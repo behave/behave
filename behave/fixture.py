@@ -272,7 +272,7 @@ def use_fixture_by_tag(tag, context, fixture_registry):
 
     if callable(fixture_data):
         fixture_func = fixture_data
-        use_fixture(fixture_func, context)
+        return use_fixture(fixture_func, context)
     elif isinstance(fixture_data, (tuple, list)):
         assert len(fixture_data) == 3
         fixture_func, fixture_args, fixture_kwargs = fixture_data
