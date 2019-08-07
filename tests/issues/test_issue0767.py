@@ -15,11 +15,12 @@ This seems to be an oversight.
 """
 
 from mock import Mock
+from behave.fixture import fixture, use_fixture_by_tag
+from behave.runner import Context
+
 
 def test_issue_767_use_feature_by_tag_has_no_return():
     """Verifies that issue #767 is fixed."""
-    from behave.fixture import fixture, use_fixture_by_tag
-    from behave.runner import Context
 
     @fixture(name='fixture.foo')
     def foo_fixture(context, *args, **kwargs):
@@ -36,11 +37,11 @@ def test_issue_767_use_feature_by_tag_has_no_return():
     }
 
     context = Context(runner=Mock())
-    f1 = use_fixture_by_tag('fixture.foo', context, fixture_registry1)
-    assert f1 == 'foo'
-    assert context.foo is f1
+    fixture1 = use_fixture_by_tag("fixture.foo", context, fixture_registry1)
+    assert fixture1 == "foo"
+    assert context.foo is fixture1
 
     context = Context(runner=Mock())
-    f2 = use_fixture_by_tag('fixture.foo', context, fixture_registry2)
-    assert f2 == 'foo'
-    assert context.foo is f2
+    fixture2 = use_fixture_by_tag("fixture.foo", context, fixture_registry2)
+    assert fixture2 == "foo"
+    assert context.foo is fixture2
