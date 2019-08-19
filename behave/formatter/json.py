@@ -35,6 +35,7 @@ class JSONFormatter(Formatter):
         super(JSONFormatter, self).__init__(stream_opener, config)
         # -- ENSURE: Output stream is open.
         self.stream = self.open()
+        self.show_timings = config.show_timings
         self.feature_count = 0
         self.current_feature = None
         self.current_feature_data = None
@@ -154,10 +155,10 @@ class JSONFormatter(Formatter):
 
     def result(self, step):
         steps = self.current_feature_element["steps"]
-        steps[self._step_index]["result"] = {
-            "status": step.status.name,
-            "duration": step.duration,
-        }
+        result = {"status": step.status.name}
+        if self.show_timings:
+            result["duration"] = step.duration
+        steps[self._step_index]["result"] = result
         if step.error_message and step.status == Status.failed:
             # -- OPTIONAL: Provided for failed steps.
             error_message = step.error_message

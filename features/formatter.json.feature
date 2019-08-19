@@ -309,6 +309,71 @@ Feature: JSON Formatter
       But note that "both matched arguments.values are provided as string"
 
 
+    Scenario: Use JSON formatter with --no-timings option
+      Given a file named "features/scenario_with_steps_no_timings.feature" with:
+            """
+            Feature:
+              Scenario: Simple scenario with --no-timings options
+                  When a step passes
+                  Then a step passes
+            """
+        When I run "behave -f json.pretty --no-timings features/scenario_with_steps_no_timings.feature"
+        Then it should pass with:
+            """
+            1 feature passed, 0 failed, 0 skipped
+            1 scenario passed, 0 failed, 0 skipped
+            """
+        And the command output should contain:
+            """
+            [
+            {
+              "elements": [
+                {
+                  "keyword": "Scenario",
+                  "location": "features/scenario_with_steps_no_timings.feature:2",
+                  "name": "Simple scenario with --no-timings options",
+                  "status": "passed",
+                  "steps": [
+                    {
+                      "keyword": "When",
+                      "location": "features/scenario_with_steps_no_timings.feature:3",
+                      "match": {
+                        "arguments": [],
+                        "location": "features/steps/steps.py:3"
+                      },
+                      "name": "a step passes",
+                      "result": {
+                        "status": "passed"
+                      },
+                      "step_type": "when"
+                    },
+                    {
+                      "keyword": "Then",
+                      "location": "features/scenario_with_steps_no_timings.feature:4",
+                      "match": {
+                        "arguments": [],
+                        "location": "features/steps/steps.py:3"
+                      },
+                      "name": "a step passes",
+                      "result": {
+                        "status": "passed"
+                      },
+                      "step_type": "then"
+                    }
+                  ],
+                  "tags": [],
+                  "type": "scenario"
+                }
+              ],
+              "keyword": "Feature",
+              "location": "features/scenario_with_steps_no_timings.feature:1",
+              "name": "",
+              "status": "passed",
+              "tags": []
+            }
+            ]
+            """
+
     @xfail
     @regression_problem.with_duration
     Scenario: Use JSON formatter with feature and one scenario with steps
