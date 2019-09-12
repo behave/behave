@@ -224,7 +224,7 @@ def use_fixture(fixture_func, context, *fixture_args, **fixture_kwargs):
 
     :param fixture_func: Fixture function to use.
     :param context: Context object to use
-    :param fixture_kwargs: Positional args, passed to the fixture function.
+    :param fixture_args: Positional args, passed to the fixture function.
     :param fixture_kwargs: Additional kwargs, passed to the fixture function.
     :return: Setup result object (may be None).
     """
