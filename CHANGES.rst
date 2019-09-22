@@ -33,6 +33,7 @@ ENHANCEMENTS:
 
 FIXED:
 
+* issue #772: ScenarioOutline.Examples without table (submitted by: The-QA-Geek)
 * issue #755: Failures with Python 3.8 (submitted by: hroncok)
 * issue #725: Scenario Outline description lines seem to be ignored (submitted by: nizwiz)
 * issue #713: Background section doesn't support description (provided by: dgou)
