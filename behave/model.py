@@ -10,7 +10,7 @@ This module provides the model element class that represent a behave model:
 * ...
 """
 
-from __future__ import absolute_import, with_statement
+from __future__ import absolute_import, with_statement, print_function
 import copy
 import difflib
 import logging
@@ -1355,6 +1355,12 @@ class ScenarioOutlineBuilder(object):
             example.index = example_index+1
             params["examples.name"] = example.name
             params["examples.index"] = _text(example.index)
+            if not example.table:
+                # -- SYNDROME: Examples keyword without table
+                print("ERROR: ScenarioOutline.Examples: Has NO-TABLE syndrome ({0})"\
+                      .format(example.location))
+                continue
+
             for row_index, row in enumerate(example.table):
                 row.index = row_index+1
                 row.id = "%d.%d" % (example.index, row.index)
