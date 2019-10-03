@@ -9,7 +9,7 @@ import glob
 import os.path
 import re
 import sys
-from six import string_types
+from six import PY2, string_types
 from behave import parser
 from behave.exception import \
     FileNotFoundError, InvalidFileLocationError, InvalidFilenameError
@@ -595,7 +595,10 @@ def make_undefined_step_snippet(step, language=None):
         step = steps[0]
         assert step, "ParseError: %s" % step_text
 
-    prefix = u"u"
+    if PY2:
+        prefix = u"u"
+    else:
+        prefix = u""
     single_quote = "'"
     if single_quote in step.name:
         step.name = step.name.replace(single_quote, r"\'")
