@@ -37,11 +37,11 @@ class MultiProcRunner(Runner):
     def run_with_paths(self):
         feature_locations = [filename for filename in self.feature_locations()
                         if not self.config.exclude(filename)]
+        self.load_hooks()   # hooks themselves not used, but 'environment.py' loaded
         # step definitions are needed here for formatters only
         self.load_step_definitions()
         features = parse_features(feature_locations, language=self.config.lang)
         self.features.extend(features)
-        self.load_hooks()   # hooks themselves not used, but 'environment.py' loaded
         feature_count, scenario_count = self.scan_features()
         njobs = len(self.jobs_map)
         proc_count = int(self.config.proc_count)
