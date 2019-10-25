@@ -1,13 +1,11 @@
-======
 behave-parallel
-======
+================
 
 Q: Will this be merged upstream?
 
 A: I'd like to, but... https://github.com/behave/behave/pull/616
 
 
-======
 USAGE
 ======
 
@@ -16,9 +14,9 @@ USAGE
 
 Just like RSpec's parallel_test, and python's nosetests, it's up to you to decide a sane value for the number of pids that should be created for your parallel running tests. Another option, --parallel-element must go with it. The 2 valid values are 'scenario' or 'feature'. If you don't give --parallel-element, it'll be assumed you wanted 'scenario'.
 
-======
+
 Here's how it works:
-======
+====================
 
 * If you had 3 features, each with 3 scenarios, that's 9 scenarios total. So, if you ran _behave --processes 9 --parallel-element scenario_, first behave will find the 9 scenarios then create 9 pids to run each of them *at the same time*.
 * This implementation keeps a queue of pending jobs at the *master* process, which
@@ -52,9 +50,9 @@ You don't have to install this system-wide. Keep your normal offical-copy of beh
 	No steps directory in "/home/toks/features"
 	$
 
-======
+
 Known issues when using --processes flag
-======
+=========================================
 
 * Since each scenario is now running in its own pid, changes that one pid makes to context won't be reflected anywhere else. Each scenario gets its own copy of the context object. Also, and this is the sad part :(, your steps will generally only be able to access python primitives in the context object. If you have one of your tests fail because of something related to python trying to call the method \__new__(), it's because you tried to move around a complex object between processes. I think the general rule is only pickle-able objects can be copied between processes. Maybe when I have freetime, I'll use SWIG to write C code manipulating pointers and create a method called context.unsafe_access_parent_copy() that'll get you a handle to the main-process version. Combined with multiprocessing.Lock, it would leave you to be a responsible test-developer in knowing all the terrible things that could go wrong with locking, unlocking and accessing a single object concurrently. Or - I'll find that it's just impossible and seriously, if you designed _concurrent_ tests that rely on sharing data you've probably done something wrong anyway. ^_^;. Keep in mind, that if you put the __@serial__ tag on a feature, that feature's scenarios will be run in order by a single pid. Therefore in that situation, if the first scenario changes something in context, it __will__ carry over to subsequent scenarios.
 
