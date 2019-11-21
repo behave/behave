@@ -60,7 +60,6 @@ def run_behave(config, runner_class=None):
     """
     # pylint: disable=too-many-branches, too-many-statements, too-many-return-statements
     if runner_class is None:
-        warn.warning('Depricated, no default value will be provided')
         runner_class = Runner
 
     if config.version:
