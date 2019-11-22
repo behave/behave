@@ -1474,7 +1474,7 @@ class Step(BasicStatement, Replayable):
             runner.stop_capture()
 
         # flesh out the failure with details
-        store_captured_always = False   # PREPARED
+        store_captured_always = True   # PREPARED
         store_captured = self.status == Status.failed or store_captured_always
         if self.status == Status.failed:
             assert isinstance(error, six.text_type)
