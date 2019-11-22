@@ -127,10 +127,9 @@ class MultiProcRunner(Runner):
                 self._output_feature(item)
             elif isinstance(item, Scenario):
                 feature = item.feature
+                print("INFO: scenario finished: %s %s" % (item.name, item.status))
                 if feature.is_finished:
                     self._output_feature(feature)
-                else:
-                    print("INFO: scenario finished: %x" % (job_id,))
         except Exception as e:
             print("ERROR: cannot receive status for %r: %s" % (item, e))
             if self.config.wip and not self.config.quiet:
@@ -143,22 +142,30 @@ class MultiProcRunner(Runner):
             return
         self._reported_features.add(id(feature))
 
+        def _out_scenario(scenario, formatter):
+            formatter.scenario(scenario)
+            for step in scenario.steps:
+                formatter.step(step)
+            for step in scenario.steps:
+                match = the_step_registry.find_match(step)
+                if match:
+                    formatter.match(match)
+                else:
+                    formatter.match(NoMatch())
+                formatter.result(step)
+
         for formatter in self.formatters:
             formatter.uri(feature.filename)
             formatter.feature(feature)
             if feature.background:
                 formatter.background(feature.background)
             for scenario in feature.scenarios:
-                formatter.scenario(scenario)
-                for step in scenario.steps:
-                    formatter.step(step)
-                for step in scenario.steps:
-                    match = the_step_registry.find_match(step)
-                    if match:
-                        formatter.match(match)
-                    else:
-                        formatter.match(NoMatch())
-                    formatter.result(step)
+                if isinstance(scenario, ScenarioOutline):
+                    for scen in scenario.scenarios:
+                        _out_scenario(scen, formatter)
+                else:
+                    _out_scenario(scenario, formatter)
+
 
             formatter.eof()
 
