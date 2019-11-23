@@ -725,6 +725,15 @@ class Scenario(TagAndStatusStatement, Replayable):
             self.set_status(Status.skipped)
         assert self.status in self.final_status #< skipped, failed or passed
 
+    def force_pass(self, reason=None):
+        """Mark scenario as passed and skip any remaining steps
+        """
+        assert self._cached_status == Status.untested, self._cached_status
+        assert not self.should_skip
+        self.skip_reason = reason
+        self._cached_status = Status.passed
+        self.should_skip = 'pass'
+
     def run(self, runner):
         # pylint: disable=too-many-branches, too-many-statements
         self.clear_status()
@@ -812,7 +821,8 @@ class Scenario(TagAndStatusStatement, Replayable):
                     #   * Step skipped remaining scenario.
                     step.status = Status.skipped
 
-        self.clear_status()  # -- ENFORCE: compute_status() after run.
+        if self.should_skip != 'pass':
+            self.clear_status()  # -- ENFORCE: compute_status() after run.
         if not run_scenario and not self.steps:
             # -- SPECIAL CASE: Scenario without steps.
             self.set_status(Status.skipped)
