@@ -1446,6 +1446,11 @@ class Step(BasicStatement, Replayable):
                     # -- NOTE: Executed step may have skipped scenario and itself.
                     # pylint: disable=redefined-variable-type
                     self.status = Status.passed
+                elif self.status == Status.skipped:
+                    # scenario has just skipped (after running this step)
+                    # then this step must keep reason for skipping
+                    self.error_message = runner.context.scenario.skip_reason \
+                                         or self.error_message
             except KeyboardInterrupt as e:
                 runner.aborted = True
                 error = u"ABORTED: By user (KeyboardInterrupt)."
