@@ -188,7 +188,7 @@ def main(args=None):
             from behave.runner_mp import MultiProcRunner_Feature, MultiProcRunner_Scenario
             pelem = getattr(config, 'parallel_element', False)
             if not pelem:
-                print ("INFO: Without giving --parallel-element, defaulting to 'scenario'...")
+                print("INFO: Without giving --parallel-element, defaulting to 'scenario'...")
                 pelem = 'scenario'
 
             if pelem == 'scenario':
@@ -196,15 +196,15 @@ def main(args=None):
             elif pelem == 'feature':
                 rclass = MultiProcRunner_Feature
             else:
-                print ("ERROR: When using --processes, --parallel-element"
+                print("ERROR: When using --processes, --parallel-element"
                     " option must be set to 'feature' or 'scenario'. You gave "
                     "'%s', which isn't valid." % pelem)
                 return 1
 
         except ImportError as e:
-            print ("DEBUG: import error: %s" % e)
-            print ("ERROR: Cannot import multiprocessing module."
-            " If you're on python2.5, go get the backport")
+            print("DEBUG: import error: %s" % e)
+            print("ERROR: Cannot import multiprocessing module."
+                  "Cannot use parallel mode here.")
             return 1
     return run_behave(config, runner_class=rclass)
 

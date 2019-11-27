@@ -45,7 +45,7 @@ class MultiProcRunner(Runner):
         feature_count, scenario_count = self.scan_features()
         njobs = len(self.jobs_map)
         proc_count = int(self.config.proc_count)
-        print ("INFO: {0} scenario(s) and {1} feature(s) queued for"
+        print("INFO: {0} scenario(s) and {1} feature(s) queued for"
                 " consideration by {2} workers. Some may be skipped if the"
                 " -t option was given..."
                .format(scenario_count, feature_count, proc_count))
@@ -63,7 +63,7 @@ class MultiProcRunner(Runner):
             p.start()
             del p
 
-        print ("INFO: started {0} workers for {1} jobs.".format(proc_count, njobs))
+        print("INFO: started {0} workers for {1} jobs.".format(proc_count, njobs))
 
         self.config.reporters = old_reporters
         self.formatters = make_formatters(self.config, old_outs)
@@ -76,7 +76,7 @@ class MultiProcRunner(Runner):
 
         if any([p.is_alive() for p in procs]):
             self.jobsq.join()   # wait for all jobs to be processed
-            print ("INFO: all jobs have been processed")
+            print("INFO: all jobs have been processed")
 
             while self.consume_results(timeout=0.1):
                 # 2: remaining results
@@ -85,7 +85,7 @@ class MultiProcRunner(Runner):
             # then, wait for all workers to exit:
             [p.join() for p in procs]
 
-        print ("INFO: all sub-processes have returned")
+        print("INFO: all sub-processes have returned")
 
         while self.consume_results(timeout=0.1):
             # 3: just in case some arrive late in the pipe
