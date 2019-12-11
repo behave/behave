@@ -87,7 +87,8 @@ setup(
         "colorama",
     ],
     tests_require=[
-        "pytest >= 4.2",
+        "pytest <  5.0; python_version <  '3.0'", # >= 4.2
+        "pytest >= 5.0; python_version >= '3.0'",
         "pytest-html >= 1.19.0",
         "mock >= 1.1",
         "PyHamcrest >= 1.9",

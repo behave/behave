@@ -1,6 +1,7 @@
 mock
 PyHamcrest >= 1.9
-pytest >= 3.0
+pytest <  5.0; python_version <  '3.0'
+pytest >= 5.0; python_version >= '3.0'
 pytest-html >= 1.19.0
 
 # -- NEEDED: By some tests (as proof of concept)
