@@ -17,6 +17,7 @@ from behave import runner_util
 from behave.model import Table
 from behave.step_registry import StepRegistry
 from behave import parser, runner
+from behave.runner import ContextMode
 from behave.exception import ConfigError
 from behave.formatter.base import StreamOpener
 
@@ -36,29 +37,29 @@ class TestContext(unittest.TestCase):
 
     def test_user_mode_shall_restore_behave_mode(self):
         # -- CASE: No exception is raised.
-        initial_mode = runner.Context.BEHAVE
+        initial_mode = ContextMode.BEHAVE
         assert self.context._mode == initial_mode
         with self.context.use_with_user_mode():
-            assert self.context._mode == runner.Context.USER
+            assert self.context._mode == ContextMode.USER
             self.context.thing = "stuff"
         assert self.context._mode == initial_mode
 
     def test_user_mode_shall_restore_behave_mode_if_assert_fails(self):
-        initial_mode = runner.Context.BEHAVE
+        initial_mode = ContextMode.BEHAVE
         assert self.context._mode == initial_mode
         try:
             with self.context.use_with_user_mode():
-                assert self.context._mode == runner.Context.USER
+                assert self.context._mode == ContextMode.USER
                 assert False, "XFAIL"
         except AssertionError:
             assert self.context._mode == initial_mode
 
     def test_user_mode_shall_restore_behave_mode_if_exception_is_raised(self):
-        initial_mode = runner.Context.BEHAVE
+        initial_mode = ContextMode.BEHAVE
         assert self.context._mode == initial_mode
         try:
             with self.context.use_with_user_mode():
-                assert self.context._mode == runner.Context.USER
+                assert self.context._mode == ContextMode.USER
                 raise RuntimeError("XFAIL")
         except RuntimeError:
             assert self.context._mode == initial_mode
@@ -66,21 +67,21 @@ class TestContext(unittest.TestCase):
     def test_use_with_user_mode__shall_restore_initial_mode(self):
         # -- CASE: No exception is raised.
         # pylint: disable=protected-access
-        initial_mode = runner.Context.BEHAVE
+        initial_mode = ContextMode.BEHAVE
         self.context._mode = initial_mode
         with self.context.use_with_user_mode():
-            assert self.context._mode == runner.Context.USER
+            assert self.context._mode == ContextMode.USER
             self.context.thing = "stuff"
         assert self.context._mode == initial_mode
 
     def test_use_with_user_mode__shall_restore_initial_mode_with_error(self):
         # -- CASE: Exception is raised.
         # pylint: disable=protected-access
-        initial_mode = runner.Context.BEHAVE
+        initial_mode = ContextMode.BEHAVE
         self.context._mode = initial_mode
         try:
             with self.context.use_with_user_mode():
-                assert self.context._mode == runner.Context.USER
+                assert self.context._mode == ContextMode.USER
                 raise RuntimeError("XFAIL")
         except RuntimeError:
             assert self.context._mode == initial_mode
@@ -88,21 +89,21 @@ class TestContext(unittest.TestCase):
     def test_use_with_behave_mode__shall_restore_initial_mode(self):
         # -- CASE: No exception is raised.
         # pylint: disable=protected-access
-        initial_mode = runner.Context.USER
+        initial_mode = ContextMode.USER
         self.context._mode = initial_mode
         with self.context._use_with_behave_mode():
-            assert self.context._mode == runner.Context.BEHAVE
+            assert self.context._mode == ContextMode.BEHAVE
             self.context.thing = "stuff"
         assert self.context._mode == initial_mode
 
     def test_use_with_behave_mode__shall_restore_initial_mode_with_error(self):
         # -- CASE: Exception is raised.
         # pylint: disable=protected-access
-        initial_mode = runner.Context.USER
+        initial_mode = ContextMode.USER
         self.context._mode = initial_mode
         try:
             with self.context._use_with_behave_mode():
-                assert self.context._mode == runner.Context.BEHAVE
+                assert self.context._mode == ContextMode.BEHAVE
                 raise RuntimeError("XFAIL")
         except RuntimeError:
             assert self.context._mode == initial_mode

@@ -21,6 +21,7 @@ from behave.runner_util import \
     collect_feature_locations, parse_features, \
     exec_file, load_step_modules, PathManager
 from behave.step_registry import registry as the_step_registry
+from enum import Enum
 
 if six.PY2:
     # -- USE PYTHON3 BACKPORT: With unicode traceback support.
@@ -43,6 +44,16 @@ class ContextMaskWarning(UserWarning):
     user code overwrites the value.
     """
     pass
+
+
+class ContextMode(Enum):
+    """Used to distinguish between the two usage modes while using the context:
+
+    * BEHAVE: Indicates "behave" (internal) mode
+    * USER: Indicates "user" mode (in steps, hooks, fixtures, ...)
+    """
+    BEHAVE = 1
+    USER = 2
 
 
 class Context(object):
@@ -147,8 +158,8 @@ class Context(object):
     .. _`configuration file section names`: behave.html#configuration-files
     """
     # pylint: disable=too-many-instance-attributes
-    BEHAVE = "behave"
-    USER = "user"
+    # BEHAVE = "behave"
+    # USER = "user"
     FAIL_ON_CLEANUP_ERRORS = True
 
     def __init__(self, runner):
@@ -166,7 +177,7 @@ class Context(object):
         self._stack = [d]
         self._record = {}
         self._origin = {}
-        self._mode = self.BEHAVE
+        self._mode = ContextMode.BEHAVE
 
         # -- MODEL ENTITY REFERENCES/SUPPORT:
         self.feature = None
@@ -260,11 +271,11 @@ class Context(object):
 
     def _use_with_behave_mode(self):
         """Provides a context manager for using the context in BEHAVE mode."""
-        return use_context_with_mode(self, Context.BEHAVE)
+        return use_context_with_mode(self, ContextMode.BEHAVE)
 
     def use_with_user_mode(self):
         """Provides a context manager for using the context in USER mode."""
-        return use_context_with_mode(self, Context.USER)
+        return use_context_with_mode(self, ContextMode.USER)
 
     def user_mode(self):
         warnings.warn("Use 'use_with_user_mode()' instead",
@@ -291,11 +302,11 @@ class Context(object):
 
     def _emit_warning(self, attr, params):
         msg = ""
-        if self._mode is self.BEHAVE and self._origin[attr] is not self.BEHAVE:
+        if self._mode is ContextMode.BEHAVE and self._origin[attr] is not ContextMode.BEHAVE:
             msg = "behave runner is masking context attribute '%(attr)s' " \
                   "originally set in %(function)s (%(filename)s:%(line)s)"
-        elif self._mode is self.USER:
-            if self._origin[attr] is not self.USER:
+        elif self._mode is ContextMode.USER:
+            if self._origin[attr] is not ContextMode.USER:
                 msg = "user code is masking context attribute '%(attr)s' " \
                       "originally set by behave"
             elif self._config.verbose:
@@ -442,13 +453,13 @@ class Context(object):
 
 @contextlib.contextmanager
 def use_context_with_mode(context, mode):
-    """Switch context to BEHAVE or USER mode.
+    """Switch context to ContextMode.BEHAVE or ContextMode.USER mode.
     Provides a context manager for switching between the two context modes.
 
     .. sourcecode:: python
 
         context = Context()
-        with use_context_with_mode(context, Context.BEHAVE):
+        with use_context_with_mode(context, ContextMode.BEHAVE):
             ...     # Do something
         # -- POSTCONDITION: Original context._mode is restored.
 
@@ -456,7 +467,7 @@ def use_context_with_mode(context, mode):
     :param mode:     Mode to apply to context object.
     """
     # pylint: disable=protected-access
-    assert mode in (Context.BEHAVE, Context.USER)
+    assert mode in (ContextMode.BEHAVE, ContextMode.USER)
     current_mode = context._mode
     try:
         context._mode = mode
