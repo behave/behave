@@ -77,7 +77,7 @@ setup(
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*",
     install_requires=[
         "cucumber-tag-expressions >= 1.1.2",
-        "parse >= 1.8.2",
+        "parse >= 1.9.1",
         "parse_type >= 0.4.2",
         "six >= 1.12.0",
         "traceback2; python_version < '3.0'",
@@ -92,7 +92,9 @@ setup(
         "pytest-html >= 1.19.0",
         "mock >= 1.1",
         "PyHamcrest >= 1.9",
-        "path.py >= 11.5.0"
+        # -- HINT: path.py => path (python-install-package was renamed for python3)
+        "path.py >= 11.5.0; python_version <  '3.5'",
+        "path >= 13.1.0;    python_version >= '3.5'",
     ],
     cmdclass = {
         "behave_test": behave_test,

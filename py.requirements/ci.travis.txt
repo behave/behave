@@ -1,12 +1,17 @@
-mock
-PyHamcrest >= 1.9
+# ============================================================================
+# PYTHON PACKAGE REQUIREMENTS FOR: behave -- ci.travis.txt
+# ============================================================================
 pytest <  5.0; python_version <  '3.0'
 pytest >= 5.0; python_version >= '3.0'
 pytest-html >= 1.19.0
+mock  >= 2.0
+PyHamcrest >= 1.9
 
 # -- NEEDED: By some tests (as proof of concept)
 # NOTE: path.py-10.1 is required for python2.6
-path.py >= 10.1
+# HINT: path.py => path (python-install-package was renamed for python3)
+path.py >= 11.5.0; python_version <  '3.5'
+path >= 13.1.0;    python_version >= '3.5'
 
 # -- NOTE: Travis.CI tweak related w/ invalid linecache2 tests.
 #    This problem does not exist if you use pip.
