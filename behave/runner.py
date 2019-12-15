@@ -158,8 +158,6 @@ class Context(object):
     .. _`configuration file section names`: behave.html#configuration-files
     """
     # pylint: disable=too-many-instance-attributes
-    # BEHAVE = "behave"
-    # USER = "user"
     FAIL_ON_CLEANUP_ERRORS = True
 
     def __init__(self, runner):
