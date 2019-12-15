@@ -65,6 +65,8 @@ tt    Time                                        time
       e.g. 10:21:36 PM -5:30
 ===== =========================================== ========
 
+If `parse_type`_ module is used, the cardinality of a type can be specified, too
+(by using the `CardinalityField`_ support):
 
 =====================  ==============================================================
 Cardinality            Description
@@ -72,14 +74,13 @@ Cardinality            Description
 ``?``                   Pattern with cardinality 0..1: optional part (question mark).
 ``*``                   Pattern with cardinality zero or more, 0.. (asterisk).
 ``+``                   Pattern with cardinality one or more, 1.. (plus sign).
-``{m}``                 Matches ``m`` repetitions of a pattern.
-``{m,n}``               Matches from ``m`` to ``n`` repetitions of a pattern.
-``[A-Za-z]+``           EXAMPLE: Matches one or more alphabetical characters.
 =====================  ==============================================================
 
 
 .. _parse module: https://github.com/r1chardj0n3s/parse
+.. _parse_type: https://github.com/jenisys/parse_type
 .. _string.format: https://docs.python.org/3/library/string.html#format-string-syntax
+.. _CardinalityField: https://github.com/jenisys/parse_type/blob/master/README.rst#extended-parser-with-cardinalityfield-support
 
 .. _re module: https://docs.python.org/3/library/re.html#module-re
 .. _Python regular expressions: https://docs.python.org/3/library/re.html#module-re
