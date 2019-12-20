@@ -44,6 +44,7 @@ FIXED:
 
 MINOR:
 
+* issue #800: Cleanups related to Gherkin parser/ParseError question (submitted by: otstanteplz)
 * pull  #767: FIX: use_fixture_by_tag didn't return the actual fixture in all cases (provided by: jgentil)
 * pull  #751: gherkin: Adding Rule keyword translation in portuguese and spanish to gherkin-languages.json (provided by: dunossauro)
 * pull  #660: Fix minor typos (provided by: rrueth)

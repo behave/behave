@@ -132,13 +132,24 @@ def parse_tags(text):
 
 
 class ParserError(Exception):
-    def __init__(self, message, line, filename=None, line_text=None):
-        if line:
-            message += u" at line %d" % line
-            if line_text:
-                message += u': "%s"' % line_text.strip()
+    @staticmethod
+    def make_annotated(message, line_number, line_text=None, reason=None):
+        """Make annotated message enriched w/ line_number, line_text."""
+        if line_number:
+            message += u" at line %d" % line_number
+        if line_text:
+            message += u': "%s"' % line_text.strip()
+        if reason:
+            message += u"\nREASON: %s" % reason
+        return message
+
+    def __init__(self, message, line, filename=None, line_text=None,
+                 reason=None, use_annotated_message=True):
+        if use_annotated_message:
+            message = self.make_annotated(message, line, line_text, reason)
+
         super(ParserError, self).__init__(message)
-        self.line = line
+        self.line = line    # Line number of parse failure.
         self.line_text = line_text
         self.filename = filename
 
@@ -386,14 +397,13 @@ class Parser(object):
             line = line.strip()
             msg = u"Parser in unknown state %s;" % self.state
             raise ParserError(msg, self.line, self.filename, line)
+
         if not func(line):
             line = line.strip()
-            msg = u'\nParser failure in state %s, at line %d: "%s"\n' % \
-                  (self.state, self.line, line)
+            msg = u'\nParser failure in state=%s' % self.state
             reason = self.ask_parse_failure_oracle(line)
-            if reason:
-                msg += u"REASON: %s" % reason
-            raise ParserError(msg, None, self.filename)
+            raise ParserError(msg, self.line, self.filename,
+                              line_text=line, reason=reason)
 
     def action_init(self, line):
         line = line.strip()
@@ -642,7 +652,7 @@ class Parser(object):
             self.table = model.Table(cells, self.line)
         else:
             if len(cells) != len(self.table.headings):
-                raise ParserError(u"Malformed table", self.line)
+                raise ParserError(u"Malformed table", self.line, self.filename)
                 # MAYBE: self.filename)
             self.table.add_row(cells, self.line)
         return True
@@ -704,8 +714,8 @@ class Parser(object):
                 break   # -- COMMENT: Skip rest of line.
             else:
                 # -- BAD-TAG: Abort here.
-                raise ParserError(u"tag: %s (line: %s)" % (word, line),
-                                  self.line, self.filename)
+                message = u"tag: %s (line: %s)" % (word, line)
+                raise ParserError(message, self.line, self.filename)
         return tags
 
     def parse_step(self, line):
@@ -723,7 +733,8 @@ class Parser(object):
                 step_text_after_keyword = line[len(kw):].strip()
                 if step_type in ("and", "but"):
                     if not self.last_step:
-                        raise ParserError(u"No previous step", self.line)
+                        raise ParserError(u"No previous step",
+                                          self.line, self.filename)
                     step_type = self.last_step
                 else:
                     self.last_step = step_type
