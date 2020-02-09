@@ -164,11 +164,11 @@ options = [
                   override a configuration file setting.""")),
 
     (("-n", "--name"),
-     dict(action="append",
-          help="""Only execute the feature elements which match part
-                  of the given name. If this option is given more
-                  than once, it will match against all the given
-                  names.""")),
+     dict(action="append", metavar="NAME_PATTERN",
+          help="""Select feature elements (scenarios, ...) to run
+                  which match part of the given name (regex pattern).
+                  If this option is given more than once,
+                  it will match against all the given names.""")),
 
     (("--no-capture",),
      dict(action="store_false", dest="stdout_capture",

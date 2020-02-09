@@ -31,6 +31,10 @@ ENHANCEMENTS:
 * issue #678: Scenario Outline: Support tags with commas and semicolons (provided by: lawnmowerlatte, pull #679)
 * issue #675: Feature files cannot be found within symlink directories (provided by: smadness, pull #680)
 
+CLARIFICATION:
+
+* issue #810: Clarify select-by-name using regex pattern (submitted by: xv-chris-w)
+
 FIXED:
 
 * issue #772: ScenarioOutline.Examples without table (submitted by: The-QA-Geek)

@@ -95,9 +95,9 @@ You may see the same information presented below at any time using ``behave
 
 .. option:: -n, --name
 
-    Only execute the feature elements which match part of the given name.
-    If this option is given more than once, it will match against all
-    the given names.
+    Select feature elements (scenarios, ...) to run which match part of
+    the given name (regex pattern). If this option is given more than
+    once, it will match against all the given names.
 
 .. option:: --no-capture
 
@@ -449,9 +449,9 @@ Configuration Parameters
 
 .. describe:: name : sequence<text>
 
-    Only execute the feature elements which match part of the given name.
-    If this option is given more than once, it will match against all
-    the given names.
+    Select feature elements (scenarios, ...) to run which match part of
+    the given name (regex pattern). If this option is given more than
+    once, it will match against all the given names.
 
 .. index::
     single: configuration param; stdout_capture
