@@ -10,6 +10,7 @@ REQUIRES: Python >= 2.6 (json module is part of Python standard library)
 
 from __future__ import absolute_import
 import codecs
+import six
 from behave import model
 from behave.model_core import Status
 try:
@@ -33,7 +34,8 @@ def parse(json_filename, encoding="UTF-8"):
     :param json_filename:  JSON filename to process.
     :return: List of feature objects.
     """
-    with codecs.open(json_filename, "rU", encoding=encoding) as input_file:
+    mode = "rU" if six.PY2 else "r"
+    with codecs.open(json_filename, mode, encoding=encoding) as input_file:
         json_data = json.load(input_file, encoding=encoding)
         json_processor = JsonParser()
         features = json_processor.parse_features(json_data)
