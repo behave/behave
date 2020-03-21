@@ -10,6 +10,7 @@ import os.path
 import sys
 import warnings
 import weakref
+from multiprocessing import Process, Queue
 
 import six
 
@@ -22,12 +23,62 @@ from behave.runner_util import \
     exec_file, load_step_modules, PathManager
 from behave.step_registry import registry as the_step_registry
 from enum import Enum
+from behave.model_core import Status
 
 if six.PY2:
     # -- USE PYTHON3 BACKPORT: With unicode traceback support.
     import traceback2 as traceback
 else:
     import traceback
+
+
+def _forEachStatusInFeatures(feature, f, param):
+    def foreachscenario(scenarios, f, param):
+        for s in scenarios:
+            if hasattr(s, 'scenarios'):
+                foreachscenario(s.scenarios, f, param)
+            else:
+                f(s, param)
+                for step in s.steps:
+                    f(step, param)
+
+    f(feature, param)
+    foreachscenario(feature.scenarios, f, param)
+
+
+def _extractResults(feature):
+    output_list = []
+
+    def appendStatus(item, output):
+        output.append(str(item.status.value))
+
+    _forEachStatusInFeatures(feature, appendStatus, output_list)
+    return str("").join(output_list)
+
+
+def _setStatus(item, status):
+    if hasattr(item, "set_status") and callable(getattr(item, 'set_status')):
+        item.set_status(status)
+    else:
+        item.status = status
+
+
+def _fillResults(feature, results):
+    input_list = list(results)
+
+    def fillStatusAndRemoveOne(item, input_list):
+        if len(input_list) > 0:
+            s = Status(int(input_list[0]))
+            del input_list[0]
+            _setStatus(item, s)
+
+    _forEachStatusInFeatures(feature, fillStatusAndRemoveOne, input_list)
+
+
+def _run_feature(feature, model, q):
+    ret = feature.run(model)
+    q.put(_extractResults(feature))
+    return ret
 
 
 class CleanupError(RuntimeError):
@@ -616,6 +667,34 @@ class ModelRunner(object):
     def teardown_capture(self):
         self.capture_controller.teardown_capture()
 
+    def _run_one_feature(self, feature):
+        try:
+            self.feature = feature
+            for formatter in self.formatters:
+                formatter.uri(feature.filename)
+
+            q = Queue()
+            proc = Process(target=_run_feature, args=(feature, self, q))
+            proc.start()
+            proc.join()
+            if not proc.is_alive():
+                failed = proc.exitcode
+                results = q.get()
+                _fillResults(feature, results)
+            else:
+                proc.terminate()
+                failed = True
+                _forEachStatusInFeatures(feature, _setStatus, Status.failed)
+
+            if failed:
+                if self.config.stop or self.aborted:
+                    # -- FAIL-EARLY: After first failure.
+                    return False
+        except KeyboardInterrupt:
+            self.aborted = True
+            return False
+        return True
+
     def run_model(self, features=None):
         # pylint: disable=too-many-branches
         if not self.context:
@@ -636,21 +715,8 @@ class ModelRunner(object):
         undefined_steps_initial_size = len(self.undefined_steps)
         for feature in features:
             if run_feature:
-                try:
-                    self.feature = feature
-                    for formatter in self.formatters:
-                        formatter.uri(feature.filename)
-
-                    failed = feature.run(self)
-                    if failed:
-                        failed_count += 1
-                        if self.config.stop or self.aborted:
-                            # -- FAIL-EARLY: After first failure.
-                            run_feature = False
-                except KeyboardInterrupt:
-                    self.aborted = True
-                    failed_count += 1
-                    run_feature = False
+                if not self._run_one_feature(feature):
+                  failed_count += 1
 
             # -- ALWAYS: Report run/not-run feature to reporters.
             # REQUIRED-FOR: Summary to keep track of untested features.
