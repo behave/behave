@@ -32,55 +32,6 @@ else:
     import traceback
 
 
-def _forEachStatusInFeatures(feature, f, param):
-    def foreachscenario(scenarios, f, param):
-        for s in scenarios:
-            if hasattr(s, 'scenarios'):
-                foreachscenario(s.scenarios, f, param)
-            else:
-                f(s, param)
-                for step in s.steps:
-                    f(step, param)
-
-    f(feature, param)
-    foreachscenario(feature.scenarios, f, param)
-
-
-def _extractResults(feature):
-    output_list = []
-
-    def appendStatus(item, output):
-        output.append(str(item.status.value))
-
-    _forEachStatusInFeatures(feature, appendStatus, output_list)
-    return str("").join(output_list)
-
-
-def _setStatus(item, status):
-    if hasattr(item, "set_status") and callable(getattr(item, 'set_status')):
-        item.set_status(status)
-    else:
-        item.status = status
-
-
-def _fillResults(feature, results):
-    input_list = list(results)
-
-    def fillStatusAndRemoveOne(item, input_list):
-        if len(input_list) > 0:
-            s = Status(int(input_list[0]))
-            del input_list[0]
-            _setStatus(item, s)
-
-    _forEachStatusInFeatures(feature, fillStatusAndRemoveOne, input_list)
-
-
-def _run_feature(feature, model, q):
-    ret = feature.run(model)
-    q.put(_extractResults(feature))
-    return ret
-
-
 class CleanupError(RuntimeError):
     pass
 
@@ -667,25 +618,79 @@ class ModelRunner(object):
     def teardown_capture(self):
         self.capture_controller.teardown_capture()
 
+    def _forEachItemInFeatures(self, feature, f, param):
+        def foreachscenario(scenarios, f, param):
+            for s in scenarios:
+                if hasattr(s, 'scenarios'):
+                    foreachscenario(s.scenarios, f, param)
+                else:
+                    f(s, param)
+                    for step in s.steps:
+                        f(step, param)
+
+        f(feature, param)
+        foreachscenario(feature.scenarios, f, param)
+
+    def _run_feature(self, feature, q):
+        try:
+            ret = feature.run(self)
+
+            def clearTraceback(item, param):
+                if hasattr(item, 'exc_traceback'):
+                    delattr(item, 'exc_traceback')
+
+            self._forEachItemInFeatures(feature, clearTraceback, 0)
+            q.put(feature)
+            return ret
+        except Exception as e: # pylint: disable=broad-except
+            print("_run_feature() -> ERROR {}".format(e))
+            return sys.exit(255)
+
     def _run_one_feature(self, feature):
         try:
             self.feature = feature
             for formatter in self.formatters:
                 formatter.uri(feature.filename)
 
-            q = Queue()
-            proc = Process(target=_run_feature, args=(feature, self, q))
-            proc.start()
-            proc.join()
-            if not proc.is_alive():
-                failed = proc.exitcode
-                results = q.get()
-                _fillResults(feature, results)
-            else:
-                proc.terminate()
-                failed = True
-                _forEachStatusInFeatures(feature, _setStatus, Status.failed)
+            def read_timeout(tags):
+                tag_name = "timeout="
+                for tag in tags:
+                    res = tag.find(tag_name)
+                    if res == 0:
+                        return int(tag[len(tag_name):])
+                return 0
 
+            timeout = read_timeout(feature.tags)
+            if not (timeout and timeout > 0):
+                timeout = None
+
+            fork_mode = True
+
+            if not fork_mode:
+                failed = feature.run(self)
+            else:
+                q = Queue()
+                proc = Process(target=self._run_feature,
+                               args=(feature, q))
+                proc.start()
+                a = proc.join(timeout)
+                if not proc.is_alive():
+                    if proc.exitcode != 255:
+                        feature = q.get()
+                        failed = False
+                    else:
+                        failed = True
+                        print("Exception in _run_feature cancelling get feature")
+                else:
+                    proc.terminate()
+                    failed = True
+
+                    def setStatus(item, status):
+                        if hasattr(item, "set_status") and callable(getattr(item, 'set_status')):
+                            item.set_status(status)
+                        else:
+                            item.status = status
+                    self._forEachItemInFeatures(feature, setStatus, Status.failed)
             if failed:
                 if self.config.stop or self.aborted:
                     # -- FAIL-EARLY: After first failure.
