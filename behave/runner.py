@@ -664,9 +664,7 @@ class ModelRunner(object):
             if not (timeout and timeout > 0):
                 timeout = None
 
-            fork_mode = True
-
-            if not fork_mode:
+            if not self.config.fork:
                 failed = feature.run(self)
             else:
                 q = Queue()
