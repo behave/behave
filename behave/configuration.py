@@ -293,6 +293,10 @@ options = [
      dict(action="store_true",
           help="Run each feature in a different process")),
 
+    (("--timeout",),
+     dict(type=int,
+          help="Set a max timeout for each feature (only if --fork)")),
+
     # -- DISABLE-UNUSED-OPTION: Not used anywhere.
     # (("-S", "--strict"),
     # dict(action="store_true",

@@ -662,10 +662,14 @@ class ModelRunner(object):
 
             timeout = read_timeout(feature.tags)
             if not (timeout and timeout > 0):
-                timeout = None
+                if self.config.timeout and self.config.timeout > 0:
+                    timeout = self.config.timeout
+                else:
+                    timeout = None
 
             if not self.config.fork:
                 failed = feature.run(self)
+                return failed, feature
             else:
                 q = Queue()
                 proc = Process(target=self._run_feature,
@@ -673,30 +677,31 @@ class ModelRunner(object):
                 proc.start()
                 a = proc.join(timeout)
                 if not proc.is_alive():
-                    if proc.exitcode != 255:
+                    if proc.exitcode >= 0:
                         feature = q.get()
-                        failed = False
+                        return True, feature
                     else:
-                        failed = True
-                        print("Exception in _run_feature cancelling get feature")
+                        print("Child Process finished with exit code {}"
+                              .format(proc.exitcode))
                 else:
+                    print("killing Child Process after {} seconds timeout"
+                          .format(timeout))
                     proc.terminate()
-                    failed = True
 
-                    def setStatus(item, status):
-                        if hasattr(item, "set_status") and callable(getattr(item, 'set_status')):
-                            item.set_status(status)
-                        else:
-                            item.status = status
-                    self._forEachItemInFeatures(feature, setStatus, Status.failed)
-            if failed:
-                if self.config.stop or self.aborted:
-                    # -- FAIL-EARLY: After first failure.
-                    return False
+                def setStatus(item, status):
+                    if hasattr(item, "set_status") and callable(getattr(item,
+                                                                'set_status')):
+                        item.set_status(status)
+                    else:
+                        item.status = status
+
+                self._forEachItemInFeatures(feature,
+                                            setStatus,
+                                            Status.failed)
+                return False, feature
         except KeyboardInterrupt:
             self.aborted = True
-            return False
-        return True
+            return False, feature
 
     def run_model(self, features=None):
         # pylint: disable=too-many-branches
@@ -718,13 +723,18 @@ class ModelRunner(object):
         undefined_steps_initial_size = len(self.undefined_steps)
         for feature in features:
             if run_feature:
-                if not self._run_one_feature(feature):
-                  failed_count += 1
+                succeed, feature = self._run_one_feature(feature)
 
-            # -- ALWAYS: Report run/not-run feature to reporters.
-            # REQUIRED-FOR: Summary to keep track of untested features.
-            for reporter in self.config.reporters:
-                reporter.feature(feature)
+                # -- ALWAYS: Report run/not-run feature to reporters.
+                # REQUIRED-FOR: Summary to keep track of untested features.
+                for reporter in self.config.reporters:
+                    reporter.feature(feature)
+
+                if not succeed:
+                    failed_count += 1
+                    if self.config.stop or self.aborted:
+                        # -- FAIL-EARLY: After first failure.
+                        break
 
         # -- AFTER-ALL:
         # pylint: disable=protected-access, broad-except
