@@ -10,6 +10,7 @@ import os.path
 import sys
 import warnings
 import weakref
+from multiprocessing import Process, Queue
 
 import six
 
@@ -22,6 +23,7 @@ from behave.runner_util import \
     exec_file, load_step_modules, PathManager
 from behave.step_registry import registry as the_step_registry
 from enum import Enum
+from behave.model_core import Status
 
 if six.PY2:
     # -- USE PYTHON3 BACKPORT: With unicode traceback support.
@@ -616,6 +618,91 @@ class ModelRunner(object):
     def teardown_capture(self):
         self.capture_controller.teardown_capture()
 
+    def _forEachItemInFeatures(self, feature, f, param):
+        def foreachscenario(scenarios, f, param):
+            for s in scenarios:
+                if hasattr(s, 'scenarios'):
+                    foreachscenario(s.scenarios, f, param)
+                else:
+                    f(s, param)
+                    for step in s.steps:
+                        f(step, param)
+
+        f(feature, param)
+        foreachscenario(feature.scenarios, f, param)
+
+    def _run_feature(self, feature, q):
+        try:
+            ret = feature.run(self)
+
+            def clearTraceback(item, param):
+                if hasattr(item, 'exc_traceback'):
+                    delattr(item, 'exc_traceback')
+
+            self._forEachItemInFeatures(feature, clearTraceback, 0)
+            q.put(feature)
+            return ret
+        except Exception as e: # pylint: disable=broad-except
+            print("_run_feature() -> ERROR {}".format(e))
+            return sys.exit(255)
+
+    def _run_one_feature(self, feature):
+        try:
+            self.feature = feature
+            for formatter in self.formatters:
+                formatter.uri(feature.filename)
+
+            def read_timeout(tags):
+                tag_name = "timeout="
+                for tag in tags:
+                    res = tag.find(tag_name)
+                    if res == 0:
+                        return int(tag[len(tag_name):])
+                return 0
+
+            timeout = read_timeout(feature.tags)
+            if not (timeout and timeout > 0):
+                if self.config.timeout and self.config.timeout > 0:
+                    timeout = self.config.timeout
+                else:
+                    timeout = None
+
+            if not self.config.fork:
+                failed = feature.run(self)
+                return failed, feature
+            else:
+                q = Queue()
+                proc = Process(target=self._run_feature,
+                               args=(feature, q))
+                proc.start()
+                a = proc.join(timeout)
+                if not proc.is_alive():
+                    if proc.exitcode >= 0:
+                        feature = q.get()
+                        return True, feature
+                    else:
+                        print("Child Process finished with exit code {}"
+                              .format(proc.exitcode))
+                else:
+                    print("killing Child Process after {} seconds timeout"
+                          .format(timeout))
+                    proc.terminate()
+
+                def setStatus(item, status):
+                    if hasattr(item, "set_status") and callable(getattr(item,
+                                                                'set_status')):
+                        item.set_status(status)
+                    else:
+                        item.status = status
+
+                self._forEachItemInFeatures(feature,
+                                            setStatus,
+                                            Status.failed)
+                return False, feature
+        except KeyboardInterrupt:
+            self.aborted = True
+            return False, feature
+
     def run_model(self, features=None):
         # pylint: disable=too-many-branches
         if not self.context:
@@ -636,26 +723,18 @@ class ModelRunner(object):
         undefined_steps_initial_size = len(self.undefined_steps)
         for feature in features:
             if run_feature:
-                try:
-                    self.feature = feature
-                    for formatter in self.formatters:
-                        formatter.uri(feature.filename)
+                succeed, feature = self._run_one_feature(feature)
 
-                    failed = feature.run(self)
-                    if failed:
-                        failed_count += 1
-                        if self.config.stop or self.aborted:
-                            # -- FAIL-EARLY: After first failure.
-                            run_feature = False
-                except KeyboardInterrupt:
-                    self.aborted = True
+                # -- ALWAYS: Report run/not-run feature to reporters.
+                # REQUIRED-FOR: Summary to keep track of untested features.
+                for reporter in self.config.reporters:
+                    reporter.feature(feature)
+
+                if not succeed:
                     failed_count += 1
-                    run_feature = False
-
-            # -- ALWAYS: Report run/not-run feature to reporters.
-            # REQUIRED-FOR: Summary to keep track of untested features.
-            for reporter in self.config.reporters:
-                reporter.feature(feature)
+                    if self.config.stop or self.aborted:
+                        # -- FAIL-EARLY: After first failure.
+                        break
 
         # -- AFTER-ALL:
         # pylint: disable=protected-access, broad-except

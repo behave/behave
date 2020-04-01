@@ -2119,6 +2119,9 @@ class Tag(six.text_type):
     allowed_chars = u"._-=:,;()"    # In addition to aplha-numerical chars.
     quoting_chars = ("'", '"', "<", ">")
 
+    def __getnewargs__(self):
+        return super, self.line
+
     def __new__(cls, name, line):
         o = six.text_type.__new__(cls, name)
         o.line = line
