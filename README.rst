@@ -58,7 +58,7 @@ In that directory create a file called "example_steps.py" containing:
 .. code-block:: python
 
     # -- FILE: features/steps/example_steps.py
-    from behave import given, when, then, step
+    from behave import given, when, then
 
     @given('we have behave installed')
     def step_impl(context):
