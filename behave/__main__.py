@@ -97,10 +97,11 @@ def run_behave(config, runner_class=None):
 
     # -- MAIN PART:
     failed = True
+    return_code = 0
     try:
         reset_runtime()
         runner = runner_class(config)
-        failed = runner.run()
+        return_code = runner.run()
     except ParserError as e:
         print(u"ParserError: %s" % e)
     except ConfigError as e:
@@ -122,10 +123,6 @@ def run_behave(config, runner_class=None):
     if config.show_snippets and runner.undefined_steps:
         print_undefined_step_snippets(runner.undefined_steps,
                                       colored=config.color)
-
-    return_code = 0
-    if failed:
-        return_code = 1
     return return_code
 
 

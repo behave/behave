@@ -20,6 +20,16 @@ def posixpath_normalize(path):
 # -----------------------------------------------------------------------------
 # GENERIC MODEL CLASSES:
 # -----------------------------------------------------------------------------
+
+class StatusError(Enum):
+    """Provides addicional error info for feature.
+    Features use: none, crash, timeout
+    """
+    none = 1
+    timeout = 2
+    crash = 3
+
+
 class Status(Enum):
     """Provides the (test-run) status of a model element.
     Features and Scenarios use: untested, skipped, passed, failed.
@@ -360,6 +370,7 @@ class TagStatement(BasicStatement):
 class TagAndStatusStatement(BasicStatement):
     # final_status = ('passed', 'failed', 'skipped')
     final_status = (Status.passed, Status.failed, Status.skipped)
+    status_error = StatusError.none
 
     def __init__(self, filename, line, keyword, name, tags, parent=None):
         super(TagAndStatusStatement, self).__init__(filename, line, keyword, name)
