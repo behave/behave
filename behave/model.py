@@ -84,8 +84,8 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
 
     .. attribute:: keyword
 
-       This is the keyword as seen in the *feature file*. In English this will
-       be "Feature" or "Rule".
+       This is the keyword as seen in the *feature file*.
+       In English this will be "Feature" or "Rule".
 
     .. attribute:: name
 
@@ -671,7 +671,7 @@ class Rule(ScenarioContainer):
 
 
     .. versionadded:: 1.2.7
-    .. _`feature`: gherkin.html#rule
+    .. _`rule`: gherkin.html#rule
     """
     type = "rule"
 
