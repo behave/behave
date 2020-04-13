@@ -196,24 +196,34 @@ Environment File Functions
 The environment.py module may define code to run before and after certain
 events during your testing:
 
-**before_step(context, step), after_step(context, step)**
-  These run before and after every step. The step passed in is an instance
-  of :class:`~behave.model.Step`.
-
-**before_scenario(context, scenario), after_scenario(context, scenario)**
-  These run before and after each scenario is run. The scenario passed in is an
-  instance of :class:`~behave.model.Scenario`.
+**before_all(context), after_all(context)**
+  These run before and after the whole shooting match.
 
 **before_feature(context, feature), after_feature(context, feature)**
-  These run before and after each feature file is exercised. The feature
-  passed in is an instance of :class:`~behave.model.Feature`.
+  These run before and after each feature is executed.
+  The feature object, that is passed in, is an instance of :class:`~behave.model.Feature`.
+
+**before_rule(context, rule), after_rule(context, rule)**
+  These run before and after each rule is execured.
+  The rule object, that is passed in, is an instance of :class:`~behave.model.Rule`.
+
+**before_scenario(context, scenario), after_scenario(context, scenario)**
+  These run before and after each scenario is run.
+  The scenario object, that is passed in, is an instance of :class:`~behave.model.Scenario`.
+
+**before_step(context, step), after_step(context, step)**
+  These run before and after every step.
+  The step object, that is passed in, is an instance of :class:`~behave.model.Step`.
 
 **before_tag(context, tag), after_tag(context, tag)**
   These run before and after a section tagged with the given name. They are
   invoked for each tag encountered in the order they're found in the
-  feature file. See  :ref:`controlling things with tags`. The tag passed in is
-  an instance of :class:`~behave.model.Tag` and because it's a subclass of
-  string you can do simple tests like:
+  feature file. See  :ref:`controlling things with tags`.
+
+  Taggable statements are: Feature, Rule, Scenario, ScenarioOutline, Examples.
+
+  The tag, that is passed in, is an instance of :class:`~behave.model.Tag` and
+  because it's a subclass of string you can do simple tests like:
 
   .. code-block:: python
 
@@ -227,8 +237,6 @@ events during your testing:
               else:
                   context.browser = webdriver.PlainVanilla()
 
-**before_all(context), after_all(context)**
-  These run before and after the whole shooting match.
 
 
 Some Useful Environment Ideas
@@ -311,42 +319,87 @@ Use Fixtures
 Runner Operation
 ================
 
-Given all the code that could be run by *behave*, this is the order in
-which that code is invoked (if they exist.)
+The execution of code is based on the Gherkin description in `*.feature` files.
+The following section provides a short overview of the hierarchical containment
+that is possible in the Gherkin grammer:
 
 .. parsed-literal::
 
-    before_all
+    # -- SIMPLIFIED GHERKIN GRAMMAR (for Gherkin v6):
+    # CARDINALITY DECORATOR: '*' means 0..N (many), '?' means 0..1 (optional)
+    # EXAMPLE: Feature
+    #   A Feature can have many Tags (as TaggableStatement: zero or more tags before its keyword).
+    #   A Feature can have an optional Background.
+    #   A Feature can have many Scenario(s), meaning zero or more Scenarios.
+    #   A Feature can have many ScenarioOutline(s).
+    #   A Feature can have many Rule(s).
+    Feature(TaggableStatement):
+        Background?
+        Scenario*
+        ScenarioOutline*
+        Rule*
+
+    Background:
+        Step*           # Background steps are injected into any Scenario of its scope.
+
+    Scenario(TaggableStatement):
+        Step*
+
+    ScenarioOutline(ScenarioTemplateWithPlaceholders):
+        Scenario*       # Rendered Template by using ScenarioOutline.Examples.rows placeholder values.
+
+    Rule(TaggableStatement):
+        Background?     # Behave-specific extension (after removal from final Gherkin v6).
+        Scenario*
+        ScenarioOutline*
+
+
+Given all the code that could be run by *behave*,
+this is the order in which that code is invoked (if they exist.)
+
+.. parsed-literal::
+
+    # -- PSEUDO-CODE:
+    # HOOK: before_tag(), after_tag() is called for Feature, Rule, Scenario
+    ctx = createContext()
+    call-optional-hook before_all(ctx)
     for feature in all_features:
-        before_feature
-        for scenario in feature.scenarios:
-            before_scenario
+        for tag in feature.tags: call-optional-hook before_tag(ctx, tag)
+        call-optional-hook before_feature(ctx, feature)
+        for run_item in feature.run_items:  # CAN BE: Rule, Scenario, ScenarioOutline
+            execute_run_item(ctx, run_item)
+        call-optional-hook after_feature(ctx, feature)
+        for tag in feature.tags: call-optional-hook after_tag(ctx, tag)
+    call-optional-hook after_all(ctx)
+
+    function execute_run_item(run_item, ctx):
+        if run_item isa Rule:
+            # -- CASE: Rule
+            rule = run_item
+            for tag in rule.tags: call-optional-hook before_tag(ctx, tag)
+            call-optional-hook before_rule(ctx, rule)
+            for run_item in rule.run_items:     # CAN BE: Scenario, ScenarioOutline
+                execute_run_item(run_item, ctx)
+            call-optional-hook after_rule(ctx, rule)
+            for tag in rule.tags: call-optional-hook after_tag(ctx, tag)
+        else if run_item isa ScenarioOutline:
+            # -- CASE: ScenarioOutline
+            # HINT: All Scenarios are already created from Example(s) rows.
+            scenario_outline = run_item
+            for scenario in scenario_outline.scenarios:
+                execute_run_item(scenario, ctx)
+        else if run_item isa Scenario:
+            # -- CASE: Scenario
+            # HINT: Background steps are injected before scenario steps.
+            scenario = run_item
+            for tag in scenario.tags: call-optional-hook before_tag(ctx, tag)
+            call-optional-hook before_scenario(ctx, scenario)
             for step in scenario.steps:
-                before_step
-                    step.run()
-                after_step
-            after_scenario
-        after_feature
-    after_all
-
-If the feature contains scenario outlines then there is an additional loop
-over all the scenarios in the outline making the running look like this:
-
-.. parsed-literal::
-
-    before_all
-    for feature in all_features:
-        before_feature
-        for outline in feature.scenarios:
-            for scenario in outline.scenarios:
-                before_scenario
-                for step in scenario.steps:
-                    before_step
-                        step.run()
-                    after_step
-                after_scenario
-        after_feature
-    after_all
+                call-optional-hook before_step(ctx, step)
+                step.run(ctx)
+                call-optional-hook after_step(ctx, step)
+            call-optional-hook after_scenario(ctx, scenario)
+            for tag in scenario.tags: call-optional-hook after_tag(ctx, tag)
 
 
 Model Objects
@@ -396,6 +449,8 @@ be:
 
 
 .. autoclass:: behave.model.Feature
+
+.. autoclass:: behave.model.Rule
 
 .. autoclass:: behave.model.Background
 
