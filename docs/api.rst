@@ -367,7 +367,7 @@ this is the order in which that code is invoked (if they exist.)
         for tag in feature.tags: call-optional-hook before_tag(ctx, tag)
         call-optional-hook before_feature(ctx, feature)
         for run_item in feature.run_items:  # CAN BE: Rule, Scenario, ScenarioOutline
-            execute_run_item(ctx, run_item)
+            execute_run_item(run_item, ctx)
         call-optional-hook after_feature(ctx, feature)
         for tag in feature.tags: call-optional-hook after_tag(ctx, tag)
     call-optional-hook after_all(ctx)
