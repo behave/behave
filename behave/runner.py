@@ -162,6 +162,10 @@ class Context(object):
     # pylint: disable=too-many-instance-attributes
     FAIL_ON_CLEANUP_ERRORS = True
 
+    # compatibility with previous versions of behave
+    BEHAVE = ContextMode.BEHAVE
+    USER = ContextMode.USER
+
     def __init__(self, runner):
         self._runner = weakref.proxy(runner)
         self._config = runner.config
