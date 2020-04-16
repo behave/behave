@@ -346,7 +346,7 @@ languages = \
         'native': 'eesti keel',
         'rule': ['Rule'],
         'scenario': ['Juhtum', 'Stsenaarium'],
-        'scenario_outline': ['Raamstjuhtum', 'Raamstsenaarium'],
+        'scenario_outline': ['Raamjuhtum', 'Raamstsenaarium'],
         'then': ['* ', 'Siis '],
         'when': ['* ', 'Kui ']},
  'fa': {'and': ['* ', 'و '],
