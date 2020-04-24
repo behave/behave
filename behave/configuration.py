@@ -297,6 +297,10 @@ options = [
      dict(type=int,
           help="Set a max timeout for each feature (only if --fork)")),
 
+    (("--just-list",),
+     dict(action="store_true",
+          help="Do not run any test, just enumerate and print file paths")),
+
     # -- DISABLE-UNUSED-OPTION: Not used anywhere.
     # (("-S", "--strict"),
     # dict(action="store_true",

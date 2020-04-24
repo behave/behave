@@ -162,6 +162,10 @@ class Context(object):
     # pylint: disable=too-many-instance-attributes
     FAIL_ON_CLEANUP_ERRORS = True
 
+    # compatibility with previous versions of behave
+    BEHAVE = ContextMode.BEHAVE
+    USER = ContextMode.USER
+
     def __init__(self, runner):
         self._runner = weakref.proxy(runner)
         self._config = runner.config
@@ -704,6 +708,12 @@ class ModelRunner(object):
             return False, feature
 
     def run_model(self, features=None):
+        if self.config.just_list:
+            for feature in self.features:
+                if feature.should_run(self.config):
+                    print(feature.filename)
+            return False
+
         # pylint: disable=too-many-branches
         if not self.context:
             self.context = Context(self)
