@@ -22,6 +22,10 @@ To update an already installed :pypi:`behave` version, use:
 
 .. _`pip related information`:  https://pip.pypa.io/en/latest/installing/
 
+Using Ubuntu 20.04
+------------------
+
+sudo apt install python3-behave
 
 Using a Source Distribution
 ---------------------------
