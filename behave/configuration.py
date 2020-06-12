@@ -95,6 +95,10 @@ options = [
      dict(metavar="PATTERN", dest="include_re",
           help="Only run feature files matching regular expression PATTERN.")),
 
+    (("-l", "--loop"),
+     dict(action="store", default=1, type=int,
+          help="Define loop number to execute tests")),
+
     (("--no-junit",),
      dict(action="store_false", dest="junit",
           help="Don't output JUnit-compatible reports.")),

@@ -634,28 +634,30 @@ class ModelRunner(object):
         run_feature = not self.aborted
         failed_count = 0
         undefined_steps_initial_size = len(self.undefined_steps)
-        for feature in features:
-            if run_feature:
-                try:
-                    self.feature = feature
-                    for formatter in self.formatters:
-                        formatter.uri(feature.filename)
 
-                    failed = feature.run(self)
-                    if failed:
+        for i in range(self.config.loop):
+            for feature in features:
+                if run_feature:
+                    try:
+                        self.feature = feature
+                        for formatter in self.formatters:
+                            formatter.uri(feature.filename)
+
+                        failed = feature.run(self)
+                        if failed:
+                            failed_count += 1
+                            if self.config.stop or self.aborted:
+                                # -- FAIL-EARLY: After first failure.
+                                run_feature = False
+                    except KeyboardInterrupt:
+                        self.aborted = True
                         failed_count += 1
-                        if self.config.stop or self.aborted:
-                            # -- FAIL-EARLY: After first failure.
-                            run_feature = False
-                except KeyboardInterrupt:
-                    self.aborted = True
-                    failed_count += 1
-                    run_feature = False
+                        run_feature = False
 
-            # -- ALWAYS: Report run/not-run feature to reporters.
-            # REQUIRED-FOR: Summary to keep track of untested features.
-            for reporter in self.config.reporters:
-                reporter.feature(feature)
+                # -- ALWAYS: Report run/not-run feature to reporters.
+                # REQUIRED-FOR: Summary to keep track of untested features.
+                for reporter in self.config.reporters:
+                    reporter.feature(feature)
 
         # -- AFTER-ALL:
         # pylint: disable=protected-access, broad-except
