@@ -669,6 +669,7 @@ class ModelRunner(object):
         if self.aborted:
             print("\nABORTED: By user.")
         for formatter in self.formatters:
+            formatter.eof()
             formatter.close()
         for reporter in self.config.reporters:
             reporter.end()
