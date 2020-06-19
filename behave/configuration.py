@@ -8,6 +8,7 @@ import re
 import sys
 import shlex
 import six
+from importlib import import_module
 from six.moves import configparser
 
 from behave.model import ScenarioOutline
@@ -65,6 +66,16 @@ class LogLevel(object):
 # -----------------------------------------------------------------------------
 # CONFIGURATION SCHEMA:
 # -----------------------------------------------------------------------------
+
+def valid_python_module(path):
+    try:
+        module_path, class_name = path.rsplit('.', 1)
+        module = import_module(module_path)
+        return getattr(module, class_name)
+    except (ValueError, AttributeError, ImportError):
+        raise argparse.ArgumentTypeError("No module named '%s' was found." % path)
+
+
 options = [
     (("-c", "--no-color"),
      dict(action="store_false", dest="color",
@@ -111,6 +122,11 @@ options = [
      dict(metavar="PATH", dest="junit_directory",
           default="reports",
           help="""Directory in which to store JUnit reports.""")),
+    
+    (("--runner-class",),
+     dict(action="store",
+          default="behave.runner.Runner", type=valid_python_module,
+          help="Tells Behave to use a specific runner. (default: %(default)s)")),
 
     ((),  # -- CONFIGFILE only
      dict(dest="default_format",

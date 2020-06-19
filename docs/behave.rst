@@ -55,6 +55,11 @@ You may see the same information presented below at any time using ``behave
 
     Directory in which to store JUnit reports.
 
+.. option:: --runner-class
+
+    This allows you to use your own custom runner. The default is 
+    ``behave.runner.Runner``.
+
 .. option:: -f, --format
 
     Specify a formatter. If none is specified the default formatter is
