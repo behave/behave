@@ -215,7 +215,7 @@ def main(args=None):
     :return: 0, if successful. Non-zero, in case of errors/failures.
     """
     config = Configuration(args)
-    return run_behave(config)
+    return run_behave(config, runner_class=config.runner_class)
 
 
 if __name__ == "__main__":
