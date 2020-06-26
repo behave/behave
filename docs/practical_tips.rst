@@ -30,7 +30,7 @@ For example, if you want to use the feature files in the same directory for
 testing the model layer and the UI layer, this can be done by using the
 ``--stage`` option, like with:
 
-.. code-block:: bash
+.. code-block:: console
 
     $ behave --stage=model features/
     $ behave --stage=ui    features/  # NOTE: Normally used on a subset of features.

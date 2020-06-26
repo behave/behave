@@ -76,7 +76,7 @@ In that directory create a file called "example_steps.py" containing:
 
 Run behave:
 
-.. code-block:: bash
+.. code-block:: console
 
     $ behave
     Feature: Showing off behave # features/example.feature:2
