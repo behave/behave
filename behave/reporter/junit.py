@@ -88,7 +88,7 @@ if six.PY2:
     import traceback2 as traceback
 else:
     import traceback
-
+from behave.model_core import Status, StatusError
 
 def CDATA(text=None):   # pylint: disable=invalid-name
     # -- issue #70: remove_ansi_escapes(text)
@@ -429,6 +429,13 @@ class JUnitReporter(Reporter):
             else:
                 skip = ElementTree.Element(u'skipped')
                 case.append(skip)
+
+        if scenario.status_error == StatusError.none:
+            case.set(u"status_error", "none")
+        elif scenario.status_error == StatusError.timeout:
+            case.set(u"status_error", "timeout")
+        elif scenario.status_error == StatusError.crash:
+            case.set(u"status_error", "crash")
 
         # Create stdout section for each test case
         stdout = ElementTree.Element(u"system-out")

@@ -687,24 +687,25 @@ class ModelRunner(object):
                     else:
                         print("Child Process finished with exit code {}"
                               .format(proc.exitcode))
-                        error = Error.crash
+                        error = StatusError.crash
                 else:
                     print("killing Child Process after {} seconds timeout"
                           .format(timeout))
                     proc.terminate()
-                    error = Error.timeout
+                    error = StatusError.timeout
 
                 def setStatus(item, status):
                     if hasattr(item, "set_status") and callable(getattr(item,
                                                                 'set_status')):
-                        item.set_status(status)
+                        item.set_status(status[0])
+                        item.status_error = status[1]
                     else:
-                        item.status = status
+                        item.status = status[0]
+                        item.status_error = status[1]
 
                 self._forEachItemInFeatures(feature,
                                             setStatus,
-                                            Status.failed,
-                                            error)
+                                            [Status.failed, error])
                 return False, feature
         except KeyboardInterrupt:
             self.aborted = True
