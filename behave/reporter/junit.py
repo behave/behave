@@ -70,6 +70,7 @@ Best sources are:
 # pylint: enable=line-too-long
 
 from __future__ import absolute_import
+import time
 import os.path
 import codecs
 from xml.etree import ElementTree
@@ -260,7 +261,8 @@ class JUnitReporter(Reporter):
 
         tree = ElementTreeWithCDATA(suite)
         report_dirname = self.config.junit_directory
-        report_basename = u'TESTS-%s.xml' % feature_filename
+        report_basename = u'TESTS-{}-{}.xml'.format(feature_filename,
+                                                    int(time.time()*1000000))
         report_filename = os.path.join(report_dirname, report_basename)
         tree.write(codecs.open(report_filename, "wb"), "UTF-8")
 
