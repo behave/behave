@@ -2124,6 +2124,9 @@ class Tag(six.text_type):
         o.line = line
         return o
 
+    def __getnewargs__(self):
+        return str(self), self.line
+
     @classmethod
     def make_name(cls, text, unescape=False, allowed_chars=None):
         """Translate text into a "valid tag" without whitespace, etc.

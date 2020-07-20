@@ -66,6 +66,9 @@ class LogLevel(object):
 # CONFIGURATION SCHEMA:
 # -----------------------------------------------------------------------------
 options = [
+    (("--runner",),
+     dict(dest="runner", type=str, default='',
+          help="custom runner")),
     (("-c", "--no-color"),
      dict(action="store_false", dest="color",
           help="Disable the use of ANSI color escapes.")),
@@ -545,6 +548,7 @@ class Configuration(object):
             # -- AUTO-DISCOVER: Verbose mode from command-line args.
             verbose = ("-v" in command_args) or ("--verbose" in command_args)
 
+        self.runner = None
         self.version = None
         self.tags_help = None
         self.lang_list = None

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import, print_function
+import os
+import importlib
 import codecs
 import sys
 import six
@@ -215,7 +217,12 @@ def main(args=None):
     :return: 0, if successful. Non-zero, in case of errors/failures.
     """
     config = Configuration(args)
-    return run_behave(config)
+    runner_class = None
+    if config.runner:
+        module_name, class_ = os.path.splitext(config.runner)
+        module = importlib.import_module(module_name)
+        runner_class = getattr(module, class_[1:])
+    return run_behave(config, runner_class=runner_class)
 
 
 if __name__ == "__main__":
