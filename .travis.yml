@@ -1,3 +1,4 @@
+arch: ppc64le
 language: python
 sudo: false
 dist: xenial   # required for Python >= 3.7
