@@ -28,6 +28,7 @@ ENHANCEMENTS:
 * Use cucumber "gherkin-languages.json" now (simplify: Gherkin v6 aliases, language usage)
 * Support emojis in ``*.feature`` files and steps
 * Select-by-location: Add support for "Scenario container" (Feature, Rule, ScenarioOutline) (related to: #391)
+* issue #740: Enhancement: possibility to add cleanup to be called upon leaving outer context stack frames (submitted by: nizwiz, dcvmoole)
 * issue #678: Scenario Outline: Support tags with commas and semicolons (provided by: lawnmowerlatte, pull #679)
 * issue #675: Feature files cannot be found within symlink directories (provided by: smadness, pull #680)
 
@@ -64,6 +65,12 @@ DOCUMENTATION:
 * pull  #699: Fix wording of "philosophy.rst" (provided by: spitGlued)
 * pull  #684: Fix typo in "install.rst" (provided by: mstred)
 * pull  #628: Changed pythonhosted.org links to readthedocs.io (provided by: chrisbrake)
+
+BREAKING CHANGES (naming):
+
+* behave.runner.Context._push(layer=None): Was Context._push(layer_name=None)
+* behave.runner.scoped_context_layer(context, layer=None):
+  Was scoped_context_layer(context.layer_name=None)
 
 
 .. _`cucumber-tag-expressions`: https://pypi.org/project/cucumber-tag-expressions/

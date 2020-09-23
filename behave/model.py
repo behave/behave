@@ -363,7 +363,7 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
         hook_before_entity = "before_{0}".format(entity_name)
         hook_after_entity = "after_{0}".format(entity_name)
 
-        runner.context._push(layer_name=entity_name)      # pylint: disable=protected-access
+        runner.context._push(layer=entity_name)      # pylint: disable=protected-access
         runner.context.tags = set(self.tags)
         self._setup_context_for_run(runner.context)
 
@@ -1136,7 +1136,7 @@ class Scenario(TagAndStatusStatement, Replayable):
         dry_run_scenario = run_scenario and runner.config.dry_run
         self.was_dry_run = dry_run_scenario
 
-        runner.context._push(layer_name="scenario")      # pylint: disable=protected-access
+        runner.context._push(layer="scenario")      # pylint: disable=protected-access
         runner.context.scenario = self
         runner.context.tags = set(self.effective_tags)
 

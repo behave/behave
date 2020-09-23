@@ -23,6 +23,9 @@ import pytest
 def cleanup_func():
     pass
 
+def cleanup_func_with_args(*args, **kwargs):
+    pass
+
 class CleanupFunction(object):
     def __init__(self, name="CLEANUP-FUNC", listener=None):
         self.name = name
@@ -40,7 +43,6 @@ class CallListener(object):
 
     def __call__(self, message):
         self.collected.append(message)
-
 
 
 # ------------------------------------------------------------------------------
@@ -145,6 +147,24 @@ class TestContextCleanup(object):
         my_cleanup_B2M.assert_called_once()
         my_cleanup_B3M.assert_called_once()
 
+    def test_add_cleanup_with_args(self):
+        my_cleanup = Mock(spec=cleanup_func_with_args)
+        context = Context(runner=Mock())
+        with scoped_context_layer(context):
+            context.add_cleanup(my_cleanup, 1, 2, 3)
+            my_cleanup.assert_not_called()
+        # CALLS-HERE: context._pop()
+        my_cleanup.assert_called_once_with(1, 2, 3)
+
+    def test_add_cleanup_with_args_and_kwargs(self):
+        my_cleanup = Mock(spec=cleanup_func_with_args)
+        context = Context(runner=Mock())
+        with scoped_context_layer(context):
+            context.add_cleanup(my_cleanup, 1, 2, 3, name="alice")
+            my_cleanup.assert_not_called()
+        # CALLS-HERE: context._pop()
+        my_cleanup.assert_called_once_with(1, 2, 3, name="alice")
+
     def test_add_cleanup__rejects_noncallable_cleanup_func(self):
         class NonCallable(object): pass
         non_callable = NonCallable()
@@ -218,3 +238,67 @@ class TestContextCleanup(object):
         assert collect_cleanup_error.collected[0][:-1] == expected[0][:-1]
         assert collect_cleanup_error.collected[1][:-1] == expected[1][:-1]
 
+
+class TestContextCleanupWithLayer(object):
+    """Tests :meth:`behave.runner.Context.add_cleanup()`
+    with layer parameter.
+
+    :meth:`cleanup_func()` is called when Context layer is removed/popped.
+    """
+
+    def test_add_cleanup_with_known_layer(self):
+        my_cleanup = Mock(spec=cleanup_func)
+        context = Context(runner=Mock())
+        with scoped_context_layer(context, layer="scenario"):
+            context.add_cleanup(my_cleanup, layer="scenario")
+            my_cleanup.assert_not_called()
+        # CALLS-HERE: context._pop()
+        my_cleanup.assert_called_once()
+
+    def test_add_cleanup_with_known_layer_and_args(self):
+        my_cleanup = Mock(spec=cleanup_func_with_args)
+        context = Context(runner=Mock())
+        with scoped_context_layer(context, layer="scenario"):
+            context.add_cleanup(my_cleanup, 1, 2, 3, layer="scenario")
+            my_cleanup.assert_not_called()
+        # CALLS-HERE: context._pop()
+        my_cleanup.assert_called_once_with(1, 2, 3)
+
+    def test_add_cleanup_with_known_layer_and_kwargs(self):
+        my_cleanup = Mock(spec=cleanup_func_with_args)
+        context = Context(runner=Mock())
+        with scoped_context_layer(context, layer="scenario"):
+            context.add_cleanup(my_cleanup, layer="scenario", name="alice")
+            my_cleanup.assert_not_called()
+        # CALLS-HERE: context._pop()
+        my_cleanup.assert_called_once_with(name="alice")
+
+    def test_add_cleanup_with_known_deeper_layer2(self):
+        my_cleanup = Mock(spec=cleanup_func)
+        context = Context(runner=Mock())
+        with scoped_context_layer(context, layer="feature"):
+            with scoped_context_layer(context, layer="scenario"):
+                context.add_cleanup(my_cleanup, layer="feature")
+            my_cleanup.assert_not_called()
+        # CALLS-HERE: context._pop()
+        my_cleanup.assert_called_once()
+
+    def test_add_cleanup_with_known_deeper_layer3(self):
+        my_cleanup = Mock(spec=cleanup_func)
+        context = Context(runner=Mock())
+        with scoped_context_layer(context, layer="testrun"):
+            with scoped_context_layer(context, layer="feature"):
+                with scoped_context_layer(context, layer="scenario"):
+                    context.add_cleanup(my_cleanup, layer="feature")
+                my_cleanup.assert_not_called()
+            my_cleanup.assert_called_once()     # LEFT: layer="feature"
+        my_cleanup.assert_called_once()
+
+    def test_add_cleanup_with_unknown_layer_raises_lookup_error(self):
+        """Cleanup function is not registered"""
+        my_cleanup = Mock(spec=cleanup_func)
+        context = Context(runner=Mock())
+        with scoped_context_layer(context):   # CALLS-HERE: context._push()
+            with pytest.raises(LookupError) as error:
+                context.add_cleanup(my_cleanup, layer="other")
+        my_cleanup.assert_not_called()

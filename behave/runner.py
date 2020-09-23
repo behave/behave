@@ -145,7 +145,7 @@ class Context(object):
     tries to overwrite a user-set variable.
 
     You may use the "in" operator to test whether a certain value has been set
-    on the context, for example:
+    on the context, for example::
 
         "feature" in context
 
@@ -158,6 +158,7 @@ class Context(object):
     .. _`configuration file section names`: behave.html#configuration-files
     """
     # pylint: disable=too-many-instance-attributes
+    LAYER_NAMES = ["testrun", "feature", "rule", "scenario"]
     FAIL_ON_CLEANUP_ERRORS = True
 
     def __init__(self, runner):
@@ -245,16 +246,15 @@ class Context(object):
             del cleanup_errors  # -- ENSURE: Release other exception frames.
             six.reraise(*first_cleanup_erro_info)
 
-
-    def _push(self, layer_name=None):
+    def _push(self, layer=None):
         """Push a new layer on the context stack.
-        HINT: Use layer_name values: "scenario", "feature", "testrun".
+        HINT: Use layer values: "testrun", "feature", "rule, "scenario".
 
-        :param layer_name:   Layer name to use (or None).
+        :param layer:   Layer name to use (or None).
         """
         initial_data = {"@cleanups": []}
-        if layer_name:
-            initial_data["@layer"] = layer_name
+        if layer:
+            initial_data["@layer"] = layer
         self._stack.insert(0, initial_data)
 
     def _pop(self):
@@ -426,6 +426,20 @@ class Context(object):
             self.text = original_text
         return True
 
+    def _select_stack_frame_by_layer(self, layer):
+        """Select context stack frame by layer name.
+
+        :param layer:   Layer name (as string).
+        :return: Selected frame object (if any)
+        :raises: LookupError, if layer was not found.
+        """
+        for frame in self._stack:
+            frame_layer = frame.get("@layer", None)
+            if layer == frame_layer:
+                return frame
+        # -- OOPS, NOT FOUND:
+        raise LookupError("Context.stack: layer=%s not found" % layer)
+
     def add_cleanup(self, cleanup_func, *args, **kwargs):
         """Adds a cleanup function that is called when :meth:`Context._pop()`
         is called. This is intended for user-cleanups.
@@ -433,10 +447,21 @@ class Context(object):
         :param cleanup_func:    Callable function
         :param args:            Args for cleanup_func() call (optional).
         :param kwargs:          Kwargs for cleanup_func() call (optional).
+
+        .. note:: RESERVED :obj:`layer` : optional-string
+
+            The keyword argument ``layer="LAYER_NAME"`` can to be used to
+            assign the :obj:`cleanup_func` to specific a layer on the context stack
+            (instead of the current layer).
+
+            Known layer names are: "testrun", "feature", "rule", "scenario"
+
+        .. seealso:: :attr:`.Context.LAYER_NAMES`
         """
         # MAYBE:
         assert callable(cleanup_func), "REQUIRES: callable(cleanup_func)"
         assert self._stack
+        layer = kwargs.pop("layer", None)
         if args or kwargs:
             def internal_cleanup_func():
                 cleanup_func(*args, **kwargs)
@@ -444,6 +469,8 @@ class Context(object):
             internal_cleanup_func = cleanup_func
 
         current_frame = self._stack[0]
+        if layer:
+            current_frame = self._select_stack_frame_by_layer(layer)
         if cleanup_func not in current_frame["@cleanups"]:
             # -- AVOID DUPLICATES:
             current_frame["@cleanups"].append(internal_cleanup_func)
@@ -477,7 +504,7 @@ def use_context_with_mode(context, mode):
 
 
 @contextlib.contextmanager
-def scoped_context_layer(context, layer_name=None):
+def scoped_context_layer(context, layer=None):
     """Provides context manager for context layer (push/do-something/pop cycle).
 
     .. code-block::
@@ -487,7 +514,7 @@ def scoped_context_layer(context, layer_name=None):
     """
     # pylint: disable=protected-access
     try:
-        context._push(layer_name)
+        context._push(layer)
         yield context
     finally:
         context._pop()
