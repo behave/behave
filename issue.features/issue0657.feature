@@ -5,6 +5,9 @@ Feature: Issue #657 -- Allow async steps with timeouts to fail when they raise e
 
     @use.with_python.version=3.5
     @use.with_python.version=3.6
+    @use.with_python.version=3.7
+    @use.with_python.version=3.8
+    @use.with_python.version=3.9
     @async_step_fails
     Scenario: Use @async_run_until_complete and async-step fails
       Given a new working directory

@@ -25,6 +25,7 @@ Feature: Issue #457 -- Double-quotes in error messages of JUnit XML reports
 
 
     @not.with_python.version=3.8
+    @not.with_python.version=3.9
     Scenario: Use failing assertation in a JUnit XML report
       Given a file named "features/fails1.feature" with:
         """
@@ -46,6 +47,7 @@ Feature: Issue #457 -- Double-quotes in error messages of JUnit XML reports
         """
 
     @use.with_python.version=3.8
+    @use.with_python.version=3.9
     Scenario: Use failing assertation in a JUnit XML report
       Given a file named "features/fails1.feature" with:
         """
@@ -70,6 +72,7 @@ Feature: Issue #457 -- Double-quotes in error messages of JUnit XML reports
 
 
     @not.with_python.version=3.8
+    @not.with_python.version=3.9
     Scenario: Use exception in a JUnit XML report
       Given a file named "features/fails2.feature" with:
         """
@@ -90,7 +93,9 @@ Feature: Issue #457 -- Double-quotes in error messages of JUnit XML reports
         <error message="My name is &quot;Bob&quot; and &lt;here&gt; I am"
         """
 
+
     @use.with_python.version=3.8
+    @use.with_python.version=3.9
     Scenario: Use exception in a JUnit XML report
       Given a file named "features/fails2.feature" with:
         """

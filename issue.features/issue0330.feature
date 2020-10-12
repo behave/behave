@@ -71,6 +71,7 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
 
 
   @not.with_python.version=3.8
+  @not.with_python.version=3.9
   Scenario: Junit report for skipped feature is created with --show-skipped
     When I run "behave --junit -t @tag1 --show-skipped @alice_and_bob.featureset"
     Then it should pass with:
@@ -85,6 +86,7 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
       """
 
   @use.with_python.version=3.8
+  @use.with_python.version=3.9
   Scenario: Junit report for skipped feature is created with --show-skipped
     When I run "behave --junit -t @tag1 --show-skipped @alice_and_bob.featureset"
     Then it should pass with:
@@ -101,6 +103,7 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
       # <testsuite errors="0" failures="0" name="bob.Bob" skipped="1" tests="1" time="0.0">
 
   @not.with_python.version=3.8
+  @not.with_python.version=3.9
   Scenario: Junit report for skipped scenario is neither shown nor counted with --no-skipped
     When I run "behave --junit -t @tag1 --no-skipped"
     Then it should pass with:
@@ -121,6 +124,7 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
     And note that "Charly2 is the skipped scenarion in charly.feature"
 
   @use.with_python.version=3.8
+  @use.with_python.version=3.9
   Scenario: Junit report for skipped scenario is neither shown nor counted with --no-skipped
     When I run "behave --junit -t @tag1 --no-skipped"
     Then it should pass with:
@@ -144,6 +148,7 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
 
 
   @not.with_python.version=3.8
+  @not.with_python.version=3.9
   Scenario: Junit report for skipped scenario is shown and counted with --show-skipped
     When I run "behave --junit -t @tag1 --show-skipped"
     Then it should pass with:
@@ -165,6 +170,7 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
 
 
   @use.with_python.version=3.8
+  @use.with_python.version=3.9
   Scenario: Junit report for skipped scenario is shown and counted with --show-skipped
     When I run "behave --junit -t @tag1 --show-skipped"
     Then it should pass with:
