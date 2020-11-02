@@ -76,8 +76,17 @@ Feature: Duplicated Step Definitions
     #    File "features/steps/bob2_steps.py", line 3, in <module>
     #    """
 
-  @xfail
+
   Scenario: Duplicated Same Step Definition via import from another File
+
+    VERIFY THAT: Duplicated step-detection works.
+    Duplicated step-registration occured through a twice imported step-module:
+    First registration may occurs by step-loading the step-module,
+    second registration due to import of first step-module.
+
+    The step registry detects that the same step-function should be registered
+    another time and ignores it (step is already registered).
+
     Given a new working directory
     And a file named "features/steps/charly1_steps.py" with:
       """
