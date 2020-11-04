@@ -3,9 +3,7 @@
 # ============================================================================
 
 # -- BUILD-TOOL:
-# PREPARE USAGE: invoke
-# ALREADY: six >= 1.11.0
-invoke >= 1.2.0
+invoke == 1.4.1
 pathlib;    python_version <= '3.4'
 pycmd
 

@@ -4,10 +4,15 @@
   ],
   "pip_requirements": {
     "fileMatch": [
-        "py.requirements/all.txt",
         "py.requirements/*.txt",
+        "py.requirements/all.txt",
+        "py.requirements/basic.txt",
+        "py.requirements/develop.txt",
+        "py.requirements/testing.txt",
+        "py.requirements/ci.tox.txt",
+        "py.requirements/ci.travis.txt",
         "tasks/py.requirements.txt",
         "issue.features/py.requirements.txt"
     ]
-}
+  }
 }
