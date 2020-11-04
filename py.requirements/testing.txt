@@ -8,10 +8,12 @@ pytest <  5.0; python_version <  '3.0' # pytest >= 4.2
 pytest >= 5.0; python_version >= '3.0'
 pytest-html >= 1.19.0
 mock  >= 2.0
-PyHamcrest >= 1.9
+PyHamcrest >= 2.0.2
 
 # -- NEEDED: By some tests (as proof of concept)
 # NOTE: path.py-10.1 is required for python2.6
 # HINT: path.py => path (python-install-package was renamed for python3)
 path.py >= 11.5.0; python_version <  '3.5'
 path >= 13.1.0;    python_version >= '3.5'
+
+-r ../issue.features/py.requirements.txt

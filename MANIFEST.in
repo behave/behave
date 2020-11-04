@@ -28,8 +28,8 @@ recursive-include tasks         *.py *.zip *.txt *.rst
 recursive-include tools         *.feature *.py *.yml *.sh
 recursive-include features      *.feature *.py *.txt
 recursive-include issue.features  *.feature *.py *.txt
-recursive-include more.features *.feature *.py *.txt
-recursive-include py.requirements  *.txt
+recursive-include more.features *.feature *.py *.txt *.rst
+recursive-include py.requirements  *.txt *.rst
 
 prune .tox
 prune .venv*
