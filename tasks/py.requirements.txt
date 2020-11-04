@@ -8,9 +8,9 @@
 #  * http://www.pip-installer.org/
 # ============================================================================
 
-invoke >= 1.2.0
+invoke==1.4.1
 pycmd
-six >= 1.12.0
+six==1.15.0
 
 # -- HINT: path.py => path (python-install-package was renamed for python3)
 path.py >= 11.5.0; python_version <  '3.5'
