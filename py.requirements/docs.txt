@@ -3,7 +3,8 @@
 # ============================================================================
 # REQUIRES: pip >= 8.0
 
-Sphinx >= 1.6
+sphinx >= 1.6
+sphinx-autobuild
 sphinx_bootstrap_theme >= 0.6.0
 
 # -- SUPPORT: sphinx-doc translations (prepared)

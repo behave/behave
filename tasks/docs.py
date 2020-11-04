@@ -11,7 +11,8 @@ from invoke.util import cd
 from path import Path
 
 # -- TASK-LIBRARY:
-from ._tasklet_cleanup import cleanup_tasks, cleanup_dirs
+# PREPARED: from invoke_cleanup import cleanup_tasks, cleanup_dirs
+from .invoke_cleanup import cleanup_tasks, cleanup_dirs
 
 
 # -----------------------------------------------------------------------------
@@ -69,6 +70,7 @@ def build(ctx, builder="html", language=None, options=""):
                             opts=options)
         ctx.run(command)
 
+
 @task(help={
     "builder": "Builder to use (html, ...)",
     "language": "Language to use (en, ...)",
@@ -81,12 +83,38 @@ def rebuild(ctx, builder="html", language=None, options=""):
     clean(ctx)
     build(ctx, builder=builder, language=None, options=options)
 
+
+@task(aliases=["auto", "watch"],
+    help={
+        "builder": "Builder to use (html, ...)",
+        "language": "Language to use (en, ...)",
+        "options": "Additional options for sphinx-build",
+})
+def autobuild(ctx, builder="html", language=None, options=""):
+    """Build docs with sphinx-build"""
+    language = _sphinxdoc_get_language(ctx, language)
+    sourcedir = ctx.config.sphinx.sourcedir
+    destdir = _sphinxdoc_get_destdir(ctx, builder, language=language)
+    destdir = destdir.abspath()
+    with cd(sourcedir):
+        destdir_relative = Path(".").relpathto(destdir)
+        command = "sphinx-autobuild {opts} -b {builder} -D language={language} {sourcedir} {destdir}" \
+                    .format(builder=builder, sourcedir=".",
+                            destdir=destdir_relative,
+                            language=language,
+                            opts=options)
+        ctx.run(command)
+
+
 @task
 def linkcheck(ctx):
     """Check if all links are corect."""
     build(ctx, builder="linkcheck")
 
-@task(help={"language": "Language to use (en, ...)"})
+
+@task(aliases=["open"],
+    help={"language": "Language to use (en, ...)"}
+)
 def browse(ctx, language=None):
     """Open documentation in web browser."""
     output_dir = _sphinxdoc_get_destdir(ctx, "html", language=language)
@@ -182,6 +210,7 @@ def update_translation(ctx, language="all"):
 # -----------------------------------------------------------------------------
 namespace = Collection(clean, rebuild, linkcheck, browse, save, update_translation)
 namespace.add_task(build, default=True)
+namespace.add_task(autobuild)
 namespace.configure({
     "sphinx": {
         # -- FOR TASKS: docs.build, docs.rebuild, docs.clean, ...

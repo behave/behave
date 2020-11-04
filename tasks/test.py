@@ -9,7 +9,8 @@ import sys
 from invoke import task, Collection
 
 # -- TASK-LIBRARY:
-from ._tasklet_cleanup import cleanup_tasks, cleanup_dirs, cleanup_files
+# PREPARED: from invoke_cleanup import cleanup_tasks, cleanup_dirs, cleanup_files
+from .invoke_cleanup import cleanup_tasks, cleanup_dirs, cleanup_files
 
 
 # ---------------------------------------------------------------------------

@@ -51,7 +51,7 @@ Configuration file for pypi repositories:
 
 from __future__ import absolute_import, print_function
 from invoke import Collection, task
-from ._tasklet_cleanup import path_glob
+from .invoke_cleanup import path_glob
 from ._dry_run import DryRunContext
 
 
