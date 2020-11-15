@@ -74,10 +74,10 @@ the name of their preceding keyword, so given the following feature file:
 .. code-block:: gherkin
 
     Given some known state
-      and some other known state
-     when some action is taken
-     then some outcome is observed
-      but some other outcome is not observed.
+      And some other known state
+     When some action is taken
+     Then some outcome is observed
+      But some other outcome is not observed.
 
 the first "and" step will be renamed internally to "given" and *behave*
 will look for a step implementation decorated with either "given" or "step":
