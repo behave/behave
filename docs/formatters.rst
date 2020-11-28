@@ -116,3 +116,21 @@ teamcity       :pypi:`behave-teamcity`, a formatter for Jetbrains TeamCity CI te
     [behave.formatters]
     allure   = allure_behave.formatter:AllureFormatter
     teamcity = behave_teamcity:TeamcityFormatter
+
+
+Embedding data (e.g. screenshots) in reports
+------------------------------------------------------------------------------
+
+You can embed data in reports with the :class:`~behave.runner.Context` method
+:func:`~behave.runner.Context.attach`, if you have configured a formatter that
+supports it. Currently only the JSON formatter supports embedding data.
+
+For example:
+
+.. code-block:: python
+
+    @when(u'I open the Google webpage')
+    def step_impl(context):
+        context.browser.get('http://www.google.com')
+        img = context.browser.get_full_page_screenshot_as_png()
+        context.attach("image/png", img)
