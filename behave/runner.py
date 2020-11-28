@@ -475,6 +475,17 @@ class Context(object):
             # -- AVOID DUPLICATES:
             current_frame["@cleanups"].append(internal_cleanup_func)
 
+    def attach(self, mime_type, data):
+        """Embeds data (e.g. a screenshot) in reports for all
+        formatters that support it, such as the JSON formatter.
+
+        :param mime_type:       MIME type of the binary data.
+        :param data:            Bytes-like object to embed.
+        """
+        is_compatible = lambda f: hasattr(f, "embedding")
+        for formatter in filter(is_compatible, self._runner.formatters):
+            formatter.embedding(mime_type, data)
+
 
 @contextlib.contextmanager
 def use_context_with_mode(context, mode):
