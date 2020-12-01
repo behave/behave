@@ -6,9 +6,11 @@
 # PREPARED-FUTURE: behave4cmd0, behave4cmd
 pytest <  5.0; python_version <  '3.0' # pytest >= 4.2
 pytest >= 5.0; python_version >= '3.0'
-pytest-html >= 1.19.0
+
+pytest-html >= 1.19.0,<2.0
 mock  >= 2.0
-PyHamcrest == 2.0.2
+PyHamcrest >= 2.0.2; python_version >= '3.0'
+PyHamcrest <  2.0;   python_version <  '3.0'
 
 # -- NEEDED: By some tests (as proof of concept)
 # NOTE: path.py-10.1 is required for python2.6
