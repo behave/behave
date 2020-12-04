@@ -58,6 +58,7 @@ MINOR:
 
 DOCUMENTATION:
 
+* pull  #877: docs: API reference - Capitalizing Step Keywords in example (provided by: Ibrian93)
 * pull  #731: Update links to Django docs (provided by: bittner)
 * pull  #722: DOC remove remaining pythonhosted links (provided by: leszekhanusz)
 * pull  #701: behave/runner.py docstrings (provided by: spitGlued)
