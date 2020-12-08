@@ -665,7 +665,7 @@ class TestStepRun(unittest.TestCase):
     def test_run_replaces_variables(self):
         self.runner.step_registry.find_match.return_value = Mock()
 
-        step = Step("foo.feature", 17, u"Given", "given", u"some <thing> name", u"some <thing> text")
+        step = Step("foo.feature", 17, u"Given", "given", u"some <ctx:thing> name", u"some <ctx:thing> text")
         assert step.run(self.runner)
 
         assert step.name == "some wombats name"
@@ -674,10 +674,10 @@ class TestStepRun(unittest.TestCase):
     def test_run_fails_on_missing_variables(self):
         self.runner.step_registry.find_match.return_value = Mock()
 
-        step = Step("foo.feature", 17, u"Given", "given", u"some <unknown_thing> name", u"")
+        step = Step("foo.feature", 17, u"Given", "given", u"some <ctx:unknown_thing> name", u"")
         assert step.run(self.runner)
 
-        assert step.name == "some <unknown_thing> name"
+        assert step.name == "some <ctx:unknown_thing> name"
 
 
 class TestTableModel(unittest.TestCase):

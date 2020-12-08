@@ -1767,18 +1767,18 @@ class Step(BasicStatement, Replayable):
         # self.hook_failed = False
         self.reset()
 
-        flat_context = runner.context.as_flat()
+        render_params = {}
 
-        for k, v in list(flat_context.items()):
+        for k, v in runner.context.as_flat().items():
             try:
-                flat_context[k] = str(v)
+                render_params['ctx:' + k] = str(v)
             except:
-                del flat_context[k]
+                pass
 
-        self.name = ScenarioOutlineBuilder.render_template(self.name, params=flat_context)
+        self.name = ScenarioOutlineBuilder.render_template(self.name, params=render_params)
 
         if self.text:
-            self.text = ScenarioOutlineBuilder.render_template(self.text, params=flat_context)
+            self.text = ScenarioOutlineBuilder.render_template(self.text, params=render_params)
 
         match = runner.step_registry.find_match(self)
         if match is None:
