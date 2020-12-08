@@ -671,6 +671,14 @@ class TestStepRun(unittest.TestCase):
         assert step.name == "some wombats name"
         assert step.text == "some wombats text"
 
+    def test_run_fails_on_missing_variables(self):
+        self.runner.step_registry.find_match.return_value = Mock()
+
+        step = Step("foo.feature", 17, u"Given", "given", u"some <unknown_thing> name", u"")
+        assert step.run(self.runner)
+
+        assert step.name == "some <unknown_thing> name"
+
 
 class TestTableModel(unittest.TestCase):
     # pylint: disable=invalid-name
