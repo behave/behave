@@ -1769,9 +1769,9 @@ class Step(BasicStatement, Replayable):
 
         flat_context = runner.context.as_flat()
 
-        for k in list(flat_context.keys()):
+        for k, v in list(flat_context.items()):
             try:
-                flat_context[k] = str(k)
+                flat_context[k] = str(v)
             except:
                 del flat_context[k]
 
