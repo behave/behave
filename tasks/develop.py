@@ -9,6 +9,7 @@ from invoke.util import cd
 from path import Path
 import requests
 
+
 # -----------------------------------------------------------------------------
 # CONSTANTS:
 # -----------------------------------------------------------------------------
@@ -18,8 +19,8 @@ GHERKIN_LANGUAGES_URL = "https://raw.githubusercontent.com/cucumber/cucumber/mas
 # -----------------------------------------------------------------------------
 # TASKS:
 # -----------------------------------------------------------------------------
-@task
-def update_gherkin(ctx, dry_run=False):
+@task(aliases=["update-languages"])
+def update_gherkin(ctx, dry_run=False, verbose=False):
     """Update "gherkin-languages.json" file from cucumber-repo.
 
     * Download "gherkin-languages.json" from cucumber repo
@@ -41,8 +42,18 @@ def update_gherkin(ctx, dry_run=False):
 
         print('Generating "i18n.py" ...')
         ctx.run("./convert_gherkin-languages.py")
-        ctx.run("diff i18n.py ../../behave/i18n.py")
-        if not dry_run:
+
+        # -- DIFF: Returns normally w/ non-zero exitcode => NEEDS: warn=True
+        languages_have_changed = False
+        result = ctx.run("diff i18n.py ../../behave/i18n.py", warn=True, hide=True)
+        languages_have_changed = not result.ok
+        if verbose and languages_have_changed:
+            # -- SHOW DIFF:
+            print(result.stdout)
+
+        if not languages_have_changed:
+            print("NO_CHANGED: gherkin-languages.json")
+        elif not dry_run:
             print("Updating behave/i18n.py ...")
             Path("i18n.py").move("../../behave/i18n.py")
 
