@@ -43,6 +43,7 @@ Contents
    comparison
    new_and_noteworthy
    more_info
+   contributing
    appendix
 
 .. seealso::

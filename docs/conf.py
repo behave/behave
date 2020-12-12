@@ -108,7 +108,7 @@ if USE_SPHINX_INTERNATIONAL:
 # -----------------------------------------------------------------------------
 project = u"behave"
 authors = u"Jens Engel, Benno Rice and Richard Jones"
-copyright = u"2012-2019, %s" % authors
+copyright = u"2012-2020, %s" % authors
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
