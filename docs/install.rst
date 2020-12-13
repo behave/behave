@@ -22,13 +22,23 @@ To update an already installed :pypi:`behave` version, use:
 
 .. _`pip related information`:  https://pip.pypa.io/en/latest/installing/
 
-Using Ubuntu 20.04
-------------------
-
-sudo apt install python3-behave
 
 Using a Source Distribution
 ---------------------------
+
+* `Overview`_
+
+.. _`Overview`:  http://rpm.pbone.net/info_idpl_70083425_distro_fedora_32_com_python3-behave-1.2.6-6.fc32.noarch.rpm.html
+
+* `Ubuntu`_
+
+.. _`Ubuntu`: https://packages.ubuntu.com/search?suite=default&section=all&arch=any&keywords=python3-behave&searchon=names
+
+    sudo apt install python3-behave
+
+* `Fedora`_
+.. _`Fedora`: http://rpm.pbone.net/info_idpl_70083425_distro_fedora_32_com_python3-behave-1.2.6-6.fc32.noarch.rpm.html
+
 
 After unpacking the :pypi:`behave` source distribution,
 enter the newly created directory "behave-<version>" and run::
