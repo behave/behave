@@ -1,8 +1,8 @@
 .. _id.appendix.formatters:
 
-==============================================================================
+========================
 Formatters and Reporters
-==============================================================================
+========================
 
 :pypi:`behave` provides 2 different concepts for reporting results of a test run:
 
@@ -15,7 +15,7 @@ The ``Reporter`` has a more coarse-grained API.
 
 
 Reporters
-------------------------------------------------------------------------------
+---------
 
 The following reporters are currently supported:
 
@@ -28,7 +28,7 @@ summary         Provides a summary of the test run.
 
 
 Formatters
-------------------------------------------------------------------------------
+----------
 
 The following formatters are currently supported:
 
@@ -62,7 +62,7 @@ tags.location  dry-run  Shows tags and the location where they are used.
 
 
 User-Defined Formatters
-------------------------------------------------------------------------------
+-----------------------
 
 Behave allows you to provide your own formatter (class)::
 
@@ -96,16 +96,16 @@ to provide them. The formatter should use the attribute schema:
 
 
 More Formatters
-------------------------------------------------------------------------------
+---------------
 
-The following formatters are currently known:
+The following contributed formatters are currently known:
 
 ============== =========================================================================
 Name           Description
 ============== =========================================================================
-allure         :pypi:`allure-behave`, an Allure formatter for behave:
-               ``allure_behave.formatter:AllureFormatter``
-teamcity       :pypi:`behave-teamcity`, a formatter for Jetbrains TeamCity CI testruns
+allure         :pypi:`allure-behave`, an Allure formatter for behave.
+html           :pypi:`behave-html-formatter`, a simple HTML formatter for behave.
+teamcity       :pypi:`behave-teamcity`, a formatter for JetBrains TeamCity CI testruns
                with behave.
 ============== =========================================================================
 
@@ -114,7 +114,8 @@ teamcity       :pypi:`behave-teamcity`, a formatter for Jetbrains TeamCity CI te
     # -- FILE: behave.ini
     # FORMATTER ALIASES: behave -f allure ...
     [behave.formatters]
-    allure   = allure_behave.formatter:AllureFormatter
+    allure = allure_behave.formatter:AllureFormatter
+    html = behave_html_formatter:HTMLFormatter
     teamcity = behave_teamcity:TeamcityFormatter
 
 
