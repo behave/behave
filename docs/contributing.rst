@@ -71,6 +71,8 @@ or, alternatively, using Tox:
     Building the docs requires Sphinx and DocUtils. If your build fails
     because those are missing, run:
 
+    .. code-block:: console
+
         python3 -m pip install -r py.requirements/docs.txt
 
 Once the docs are built successfully, ``sphinx`` will tell you where it
