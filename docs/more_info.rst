@@ -66,7 +66,7 @@ Presentation Videos
 * Benno Rice: `Making Your Application Behave`_ (30min),
   2012-08-12, PyCon Australia.
 
-* Selenium: `First behave python tuorial with selenium`_ (8min), 2015-01-28,
+* Selenium: `First behave python tutorial with selenium`_ (8min), 2015-01-28,
   http://www.seleniumframework.com/python-basic/first-behave-gherkin/
 
 * Jessica Ingrasselino: `Automation with Python and Behave`_ (67min), 2015-12-16
@@ -84,7 +84,7 @@ Presentation Videos
         * Benno Rice: `Making Your Application Behave`_ (30min),
           PyCon Australia, 2012-08-12
 
-        * Selenium: `First behave python tuorial with selenium`_ (8min), 2015-01-28,
+        * Selenium: `First behave python tutorial with selenium`_ (8min), 2015-01-28,
           http://www.seleniumframework.com/python-basic/first-behave-gherkin/
 
         * Jessica Ingrasselino: `Automation with Python and Behave`_ (67min), 2015-12-16
@@ -112,7 +112,7 @@ Presentation Videos
             :width: 600
             :height: 400
 
-        Selenium: `First behave python tuorial with selenium`_
+        Selenium: `First behave python tutorial with selenium`_
         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         :Date: 2015-01-28
@@ -146,7 +146,7 @@ Presentation Videos
 
 
 .. _`Making Your Application Behave`: https://www.youtube.com/watch?v=u8BOKuNkmhg
-.. _`First behave python tuorial with selenium`: https://www.youtube.com/watch?v=D24_QrGUCFk
+.. _`First behave python tutorial with selenium`: https://www.youtube.com/watch?v=D24_QrGUCFk
 .. _`Automation with Python and Behave`: https://www.youtube.com/watch?v=e78c7h6DRDQ
 .. _`Selenium Python Webdriver Tutorial - Behave (BDD)`: https://www.youtube.com/watch?v=mextSo0UExc
 
