@@ -10,8 +10,8 @@ LICENSE:  BSD
 from __future__ import absolute_import
 
 __author__    = "Jens Engel"
-__copyright__ = "(c) 2011-2013 by Jens Engel"
-VERSION = "0.2.2"
+__copyright__ = "(c) 2011-2021 by Jens Engel"
+VERSION = "0.3.0"
 
 # -- IMPORTS:
 import os.path
@@ -29,6 +29,7 @@ except ImportError:
 # CONSTANTS:
 # ----------------------------------------------------------------------------
 DEFAULT_INDENT_SIZE = 2
+PYTHON_VERSION = sys.version_info[:2]
 
 # ----------------------------------------------------------------------------
 # FUNCTIONS:
@@ -58,7 +59,11 @@ def json_format(filename, indent=DEFAULT_INDENT_SIZE, **kwargs):
 #        return 0
 
     contents = open(filename, "r").read()
-    data      = json.loads(contents, encoding=encoding)
+    if PYTHON_VERSION >= (3, 1):
+        # -- NOTE: encoding keyword is deprecated since python 3.1
+        data = json.loads(contents)
+    else:
+        data = json.loads(contents, encoding=encoding)
     contents2 = json.dumps(data, indent=indent, sort_keys=sort_keys)
     contents2 = contents2.strip()
     contents2 = "%s\n" % contents2
@@ -69,7 +74,7 @@ def json_format(filename, indent=DEFAULT_INDENT_SIZE, **kwargs):
         outfile = open(filename, "w")
         outfile.write(contents2)
         outfile.close()
-        console.warn("%s OK", message)
+        console.warning("%s OK", message)
         return 1 #< OK
 
 def json_formatall(filenames, indent=DEFAULT_INDENT_SIZE, dry_run=False):
@@ -143,7 +148,7 @@ Format/Beautify one or more JSON file(s)."""
                 console.info("SKIP %s, no JSON files found in dir.", filename)
                 skipped += 1
         elif not os.path.exists(filename):
-            console.warn("SKIP %s, file not found.", filename)
+            console.warning("SKIP %s, file not found.", filename)
             skipped += 1
             continue
         else:

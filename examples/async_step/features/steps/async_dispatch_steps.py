@@ -1,8 +1,9 @@
 # -*- coding: UTF-8 -*-
 # REQUIRES: Python >= 3.4/3.5
-import sys
+
 from behave import given, then, step
 from behave.api.async_step import use_or_create_async_context
+from behave.python_feature import PythonFeature
 from hamcrest import assert_that, equal_to, empty
 import asyncio
 
@@ -10,13 +11,15 @@ import asyncio
 # ---------------------------------------------------------------------------
 # ASYNC EXAMPLE FUNCTION:
 # ---------------------------------------------------------------------------
-python_version = "%s.%s" % sys.version_info[:2]
-if python_version >= "3.5":
+if PythonFeature.has_async_function():
+    # -- USE: async-function as coroutine-function
+    # SINCE: Python 3.5 (preferred)
     async def async_func(param):
         await asyncio.sleep(0.2)
         return str(param).upper()
-else:
-    # -- HINT: Decorator @asyncio.coroutine is prohibited in python 3.8
+elif PythonFeature.has_asyncio_coroutine_decorator():
+    # -- USE: @asyncio.coroutine decorator
+    # SINCE: Python 3.4, deprecated since Python 3.8, removed in Python 3.10
     @asyncio.coroutine
     def async_func(param):
         yield from asyncio.sleep(0.2)

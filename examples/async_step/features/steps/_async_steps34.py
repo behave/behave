@@ -1,5 +1,5 @@
-# -- REQUIRES: Python >= 3.4 and Python < 3.8
-# HINT: Decorator @asyncio.coroutine is prohibited in python 3.8
+# -- REQUIRES: Python >= 3.4 and Python < 3.10 (removed in: 3.10)
+# HINT: @asyncio.coroutine decorator is deprecated since python 3.8
 # USE:  Async generator/coroutine instead.
 
 from behave import step

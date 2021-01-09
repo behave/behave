@@ -1,21 +1,154 @@
 # -*- coding: utf-8 -*-
 """
-Unit tests for active tag-matcher (mod:`behave.tag_matcher`).
-
-.. todo::
-
-    Replace unittest.TestCase with pytest style.
+Functionals tests for active tag-matcher (mod:`behave.tag_matcher`).
 """
 
-from __future__ import absolute_import
-from mock import Mock
-from unittest import TestCase
-import warnings
+from __future__ import absolute_import, print_function
 import pytest
+from behave.tag_matcher import ActiveTagMatcher
 
-from behave.tag_matcher import *
+# =============================================================================
+# TEST DATA:
+# =============================================================================
+# VALUE_PROVIDER = {
+#     "foo": "alice",
+#     "bar": "BOB",
+# }
+
+# =============================================================================
+# PYTEST FIXTURES:
+# =============================================================================
+# @pytest.fixture
+# def active_tag_matcher():
+#     tag_matcher = ActiveTagMatcher(VALUE_PROVIDER)
+#     return tag_matcher
 
 
+# =============================================================================
+# TEST SUITE:
+# =============================================================================
+class TestActivateTags(object):
+    VALUE_PROVIDER = {
+        "foo": "Frank",
+        "bar": "Bob",
+        # "OTHER": "VALUE",
+    }
+
+    def check_should_run_with_active_tags(self, case, expected, tags):
+        # -- tag_matcher.should_run_with(tags).result := expected
+        case += " (tags: {tags})"
+        tag_matcher = ActiveTagMatcher(self.VALUE_PROVIDER)
+        actual_result1 = tag_matcher.should_run_with(tags)
+        actual_result2 = tag_matcher.should_exclude_with(tags)
+        assert expected == actual_result1, case.format(tags=tags)
+        assert (not expected) == actual_result2
+
+    @pytest.mark.parametrize("case, expected, tags", [
+        ("use.with_foo=VALUE matches",     True, ["use.with_foo=Frank"]),
+        ("use.with_foo=VALUE mismatches", False, ["use.with_foo=OTHER"]),
+        ("not.with_foo=VALUE matches",    False, ["not.with_foo=Frank"]),
+        ("not.with_foo=VALUE mismatches",  True, ["not.with_foo=OTHER"]),
+        ("NO_TAGS", True, []),
+    ])
+    def test_one_tag_for_category1(self, case, expected, tags):
+        self.check_should_run_with_active_tags(case, expected, tags)
+
+    @pytest.mark.parametrize("case, expected, tags", [
+        ("use.with_bar=Bob matches",       True, ["use.with_bar=Bob"]),
+        ("use.with_bar=VALUE mismatches", False, ["use.with_bar=OTHER"]),
+        ("not.with_bar=VALUE matches",    False, ["not.with_bar=Bob"]),
+        ("not.with_bar=VALUE mismatches",  True, ["not.with_bar=OTHER"]),
+    ])
+    def test_one_tag_for_category2(self, case, expected, tags):
+        self.check_should_run_with_active_tags(case, expected, tags)
+
+    # @pytest.mark.parametrize("case, expected, tags", [
+    #     ("use.with_OTHER=VALUE matches",     True, ["use.with_OTHER=VALUE"]),
+    #     ("use.with_OTHER=VALUE mismatches", False, ["use.with_OTHER=OTHER"]),
+    #     ("not.with_OTHER=VALUE matches",    False, ["not.with_OTHER=VALUE"]),
+    #     ("not.with_OTHER=VALUE mismatches",  True, ["not.with_OTHER=OTHER"]),
+    # ])
+    # def test_one_tag_for_other_category(self, case, expected, tags):
+    #     self.check_should_run_with_active_tags(case, expected, tags)
+
+    @pytest.mark.parametrize("case, expected, tags", [
+        ("2x use.with_foo=VALUE: one matches", True,
+         ["use.with_foo=Frank", "use.with_foo=OTHER"]),
+        ("2x not.with_foo=VALUE: one matches", False,
+         ["not.with_foo=Frank", "not.with_foo=OTHER"]),
+        ("1x use./not.with_foo=VALUE: use-matches", True,
+         ["use.with_foo=Frank", "not.with_foo=OTHER"]),
+        ("1x use./not.with_foo=VALUE: not-matches", False,
+         ["not.with_foo=Frank", "use.with_foo=OTHER"]),
+    ])
+    def test_one_category_with_two_tags(self, case, expected, tags):
+        self.check_should_run_with_active_tags(case, expected, tags)
+
+    @pytest.mark.parametrize("case, expected, tags", [
+        ("3x use.with_foo=VALUE: one matches", True,
+         ["use.with_foo=Frank", "use.with_foo=OTHER_1", "use.with_foo=OTHER_2"]),
+        ("3x not.with_foo=VALUE: one matches", False,
+         ["not.with_foo=Frank", "not.with_foo=OTHER_1", "not.with_foo=OTHER_2"]),
+        ("2x use.with_foo=VALUE: use-matches", True,
+         ["use.with_foo=Frank", "use.with_foo=OTHER_1", "not.with_foo=OTHER_2"]),
+        ("2x not.with_foo=VALUE: not-matches", False,
+         ["not.with_foo=Frank", "not.with_foo=OTHER_1", "use.with_foo=OTHER_2"]),
+        ("1x use.with_foo=VALUE: use-matches", True,
+         ["use.with_foo=Frank", "not.with_foo=OTHER_1", "not.with_foo=OTHER_2"]),
+        ("1x not.with_foo=VALUE: not-matches", False,
+         ["not.with_foo=Frank", "use.with_foo=OTHER_1", "use.with_foo=OTHER_2"]),
+    ])
+    def test_one_category_with_three_tags(self, case, expected, tags):
+        self.check_should_run_with_active_tags(case, expected, tags)
+
+    @pytest.mark.parametrize("case, expected, tags", [
+        # -- use.with_CATEGORY=VALUE
+        ("use.with_... 2x matches",      True, ["use.with_foo=Frank", "use.with_bar=Bob"]),
+        ("use.with_... 1x matches",     False, ["use.with_foo=Frank", "use.with_bar=OTHER"]),
+        ("use.with_... 1x matches",     False, ["use.with_foo=OTHER", "use.with_bar=OTHER"]),
+        ("use.with_... 1x matches",     False, ["use.with_foo=OTHER", "use.with_bar=Bob"]),
+        ("use.with_... 0x matches",     False, ["use.with_foo=OTHER", "use.with_bar=OTHER"]),
+        # -- not.with_CATEGORY=VALUE
+        ("not.with_... 2x matches", False, ["not.with_foo=Frank", "not.with_bar=Bob"]),
+        ("not.with_... 1x matches", False, ["not.with_foo=Frank", "not.with_bar=OTHER"]),
+        ("not.with_... 1x matches", False, ["not.with_foo=OTHER", "not.with_bar=Bob"]),
+        ("not.with_... 0x matches",  True, ["not.with_foo=OTHER", "not.with_bar=OTHER"]),
+        # -- use.with_CATEGORY_1=VALUE_1, not.with_CATEGORY_2=VALUE_2
+        ("use./not.with_... use-matches",  True, ["use.with_foo=Frank", "not.with_bar=OTHER"]),
+        ("use./not.with_... not-matches", False, ["use.with_foo=OTHER", "not.with_bar=Bob"]),
+        ("use./not.with_... 2x matches",  False, ["use.with_foo=Frank", "not.with_bar=Bob"]),
+        ("use./not.with_... 0x matches",  False, ["use.with_foo=OTHER", "not.with_bar=OTHER"]),
+    ])
+    def test_two_categories_with_two_tags(self, case, expected, tags):
+        self.check_should_run_with_active_tags(case, expected, tags)
+
+    @pytest.mark.parametrize("case, expected, tags", [
+        # -- use.with_CATEGORY=VALUE
+        ("use.with_... 2x matches",      True, ["use.with_foo=Frank", "use.with_foo=OTHER", "use.with_bar=Bob"]),
+        ("use.with_... 1x matches",     False, ["use.with_foo=Frank", "use.with_foo=OTHER", "use.with_bar=OTHER"]),
+        ("use.with_... 1x matches",     False, ["use.with_foo=OTHER", "use.with_foo=Frank", "use.with_bar=OTHER"]),
+        ("use.with_... 1x matches",     False, ["use.with_foo=OTHER", "use.with_foo=OTHER2", "use.with_bar=Bob"]),
+        ("use.with_... 0x matches",     False, ["use.with_foo=OTHER", "use.with_bar=OTHER2", "use.with_bar=OTHER"]),
+        # -- not.with_CATEGORY=VALUE
+        ("not.with_... 2x matches", False, ["not.with_foo=Frank", "not.with_foo=OTHER", "not.with_bar=Bob"]),
+        ("not.with_... 1x matches", False, ["not.with_foo=Frank", "not.with_foo=OTHER", "not.with_bar=OTHER"]),
+        ("not.with_... 1x matches", False, ["not.with_foo=OTHER", "not.with_foo=OTHER2", "not.with_bar=Bob"]),
+        ("not.with_... 0x matches",  True, ["not.with_foo=OTHER", "not.with_foo=OTHER2", "not.with_bar=OTHER"]),
+        # -- use.with_CATEGORY_1=VALUE_1, not.with_CATEGORY_2=VALUE_2
+        ("use./not.with_... use-matches",  True, ["use.with_foo=Frank", "use.with_foo=OTHER", "not.with_bar=OTHER"]),
+        ("use./not.with_... not-matches", False, ["use.with_foo=OTHER", "use.with_foo=OTHER2", "not.with_bar=Bob"]),
+        ("use./not.with_... 2x matches",  False, ["use.with_foo=Frank", "use.with_foo=OTHER", "not.with_bar=Bob"]),
+        ("use./not.with_... 0x matches",  False, ["use.with_foo=OTHER", "use.with_foo=OTHER2", "not.with_bar=OTHER"]),
+        # -- not.with_CATEGORY_1=VALUE_1, use.with_CATEGORY_2=VALUE_2
+        ("use./not.with_... not-matches", False, ["not.with_foo=Frank", "not.with_foo=OTHER", "use.with_bar=OTHER"]),
+        ("use./not.with_... use-matches", True, ["not.with_foo=OTHER", "not.with_foo=OTHER2", "use.with_bar=Bob"]),
+        ("use./not.with_... 2x matches", False, ["not.with_foo=Frank", "not.with_foo=OTHER", "use.with_bar=Bob"]),
+        ("use./not.with_... 0x matches", False, ["not.with_foo=OTHER", "not.with_foo=OTHER2", "use.with_bar=OTHER"]),
+    ])
+    def test_two_categories_with_three_tags(self, case, expected, tags):
+        self.check_should_run_with_active_tags(case, expected, tags)
+
+'''
 class Traits4ActiveTagMatcher(object):
     TagMatcher = ActiveTagMatcher
     value_provider = {
@@ -144,7 +277,7 @@ class TestActiveTagMatcher2(object):
         assert expected == actual_result, case
 
 
-class TestActiveTagMatcher1(TestCase):
+class TestActiveTags(TestCase):
     TagMatcher = ActiveTagMatcher
     traits = Traits4ActiveTagMatcher
 
@@ -188,7 +321,7 @@ class TestActiveTagMatcher1(TestCase):
     def test_select_active_tags__ignores_invalid_active_tags(self):
         invalid_active_tags = [
             ("foo.alice",               "case: Normal tag"),
-            ("with_foo=alice",          "case: Subset of an active tag"),
+            ("with_foo=Frank",          "case: Subset of an active tag"),
             ("ACTIVE.with_foo.alice",   "case: Wrong tag_prefix (uppercase)"),
             ("only.with_foo.alice",     "case: Wrong value_separator"),
         ]
@@ -343,42 +476,6 @@ class TestActiveTagMatcher1(TestCase):
             self.assertEqual(not result1, result2, "%s: tags=%s" % (case, tags))
 
 
-class TestPredicateTagMatcher(TestCase):
-
-    def test_exclude_with__mechanics(self):
-        predicate_function_blueprint = lambda tags: False
-        predicate_function = Mock(predicate_function_blueprint)
-        predicate_function.return_value = True
-        tag_matcher = PredicateTagMatcher(predicate_function)
-        tags = [ "foo", "bar" ]
-        self.assertEqual(True, tag_matcher.should_exclude_with(tags))
-        predicate_function.assert_called_once_with(tags)
-        self.assertEqual(True, predicate_function(tags))
-
-    def test_should_exclude_with__returns_true_when_predicate_is_true(self):
-        predicate_always_true = lambda tags: True
-        tag_matcher1 = PredicateTagMatcher(predicate_always_true)
-        tags = [ "foo", "bar" ]
-        self.assertEqual(True, tag_matcher1.should_exclude_with(tags))
-        self.assertEqual(True, predicate_always_true(tags))
-
-    def test_should_exclude_with__returns_true_when_predicate_is_true2(self):
-        # -- CASE: Use predicate function instead of lambda.
-        def predicate_contains_foo(tags):
-            return any(x == "foo" for x in tags)
-        tag_matcher2 = PredicateTagMatcher(predicate_contains_foo)
-        tags = [ "foo", "bar" ]
-        self.assertEqual(True, tag_matcher2.should_exclude_with(tags))
-        self.assertEqual(True, predicate_contains_foo(tags))
-
-    def test_should_exclude_with__returns_false_when_predicate_is_false(self):
-        predicate_always_false = lambda tags: False
-        tag_matcher1 = PredicateTagMatcher(predicate_always_false)
-        tags = [ "foo", "bar" ]
-        self.assertEqual(False, tag_matcher1.should_exclude_with(tags))
-        self.assertEqual(False, predicate_always_false(tags))
-
-
 class TestCompositeTagMatcher(TestCase):
 
     @staticmethod
@@ -428,3 +525,5 @@ class TestCompositeTagMatcher(TestCase):
             actual_true_count = self.count_tag_matcher_with_result(
                                     self.ctag_matcher.tag_matchers, tags, True)
             self.assertEqual(0, actual_true_count)
+'''
+

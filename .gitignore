@@ -25,3 +25,4 @@ tools/virtualenvs
 .ropeproject
 nosetests.xml
 rerun.txt
+testrun*.json

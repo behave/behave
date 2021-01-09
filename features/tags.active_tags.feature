@@ -240,9 +240,25 @@ Feature: Active Tags
         | tags                                      | enabled? | Comment |
         | @use.with_foo=xxx   @use.with_foo=other   |  yes     | Enabled: tag1 |
         | @use.with_foo=xxx   @not.with_foo=other   |  yes     | Enabled: tag1, tag2|
-        | @use.with_foo=xxx   @not.with_foo=xxx     |  yes     | Enabled: tag1 (BAD-SPEC) |
-        | @use.with_foo=other @not.with_foo=xxx     |  no      | Enabled: none |
-        | @not.with_foo=other @not.with_foo=xxx     |  yes     | Enabled: tag1 |
+        | @use.with_foo=other @not.with_foo=xxx     |  no      | Disabled: none |
+        | @not.with_foo=other @not.with_foo=xxx     |  no      | Disabled: tag1 |
+        | @use.with_foo=xxx   @not.with_foo=xxx     |  no      | Disabled: tag1 (BAD-SPEC, CONFLICTS) |
+
+
+  Scenario: Tag logic with three active tags of same category
+      Given I setup the current values for active tags with:
+        | category | value |
+        | foo      | xxx   |
+      Then the following active tag combinations are enabled:
+        | tags                                                        | enabled? | Comment |
+        | @use.with_foo=xxx  @use.with_foo=other @use.with_foo=other2|  yes     | Enabled: tag1  |
+        | @use.with_foo=xxx  @use.with_foo=other @not.with_foo=other2|  yes     | Enabled: tag1  |
+        | @use.with_foo=xxx  @not.with_foo=other @use.with_foo=other2|  yes     | Enabled: tag1  |
+        | @use.with_foo=xxx  @not.with_foo=other @not.with_foo=other2|  yes     | Enabled: tag1  |
+        | @not.with_foo=xxx  @use.with_foo=other @use.with_foo=other2|  no      | Disabled: tag1 |
+        | @not.with_foo=xxx  @use.with_foo=other @not.with_foo=other2|  no      | Disabled: tag1 |
+        | @not.with_foo=xxx  @not.with_foo=other @use.with_foo=other2|  no      | Disabled: tag1 |
+        | @not.with_foo=xxx  @not.with_foo=other @not.with_foo=other2|  no      | Disabled: tag1 |
 
 
     Scenario: Tag logic with unknown categories (case: ignored)
