@@ -16,6 +16,8 @@ PyHamcrest <  2.0;   python_version <  '3.0'
 path.py >= 11.5.0; python_version <  '3.5'
 path >= 13.1.0;    python_version >= '3.5'
 
+jsonschema
+
 # -- NOTE: Travis.CI tweak related w/ invalid linecache2 tests.
 #    This problem does not exist if you use pip.
 linecache2 >= 1.0; python_version < '3.0'
