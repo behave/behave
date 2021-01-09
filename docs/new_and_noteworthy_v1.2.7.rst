@@ -9,6 +9,7 @@ Summary:
   to match partial tag names, like: ``@foo.*``
 * `Select-by-location for Scenario Containers`_ (Feature, Rule, ScenarioOutline)
 * `Support for emojis in feature files and steps`_
+* `Improve Active-Tags Logic`_
 
 .. _`Example Mapping`: https://cucumber.io/blog/example-mapping-introduction/
 .. _`Example Mapping Webinar`: https://cucumber.io/blog/example-mapping-webinar/
@@ -152,3 +153,47 @@ Support for Emojis in Feature Files and Steps
 .. literalinclude:: ../features/steps/i18n_emoji_steps.py
     :prepend:  # -- FILE: features/steps/i18n_emoji_steps.py
     :language: python
+
+
+Improve Active-Tags Logic
+-------------------------------------------------------------------------------
+
+The active-tag computation logic was slightly changed (and fixed):
+
+* if multiple active-tags with same category are used
+* combination of positive active-tags (``use.with_{category}={value}``) and
+  negative active-tags (``not.with_{category}={value}``) with same category
+  are now supported
+
+All active-tags with same category are combined into one category tag-group.
+The following logical expression is used for active-tags with the same category::
+
+    category_tag_group.enabled := positive-tag-expression and not negative-tag-expression
+      positive-tag-expression  := enabled(tag1) or enabled(tag2) or ...
+      negative-tag-expression  := enabled(tag3) or enabled(tag4) or ...
+       tag1, tag2 are positive-tags, like @use.with_category=value
+       tag3, tag4 are negative-tags, like @not.with_category=value
+
+
+EXAMPLE:
+
+.. code-block:: gherkin
+
+    Feature: Active-Tag Example
+
+      @use.with_browser=Safari
+      @use.with_browser=Chrome
+      @not.with_browser=Firefox
+      Scenario: Use one active-tag group/category
+
+        HINT: Only executed with web browser Safari and Chrome, Firefox is explicitly excluded.
+        ...
+
+      @use.with_browser=Firefox
+      @use.with_os=linux
+      @use.with_os=darwin
+      Scenario: Use two active-tag groups/categories
+
+        HINT 1: Only executed with browser: Firefox
+        HINT 2: Only executed on OS: Linux and Darwin (macOS)
+        ...
