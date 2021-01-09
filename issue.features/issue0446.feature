@@ -60,7 +60,8 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
 
     @not.with_python.version=3.8
     @not.with_python.version=3.9
-    Scenario: Hook error in before_scenario()
+    @not.with_python.version=3.10
+    Scenario: Hook error in before_scenario() (py.version < 3.8)
       When I run "behave -f plain --junit features/before_scenario_failure.feature"
       Then it should fail with:
         """
@@ -90,7 +91,8 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
 
     @use.with_python.version=3.8
     @use.with_python.version=3.9
-    Scenario: Hook error in before_scenario()
+    @use.with_python.version=3.10
+    Scenario: Hook error in before_scenario() (py.version >= 3.8)
       When I run "behave -f plain --junit features/before_scenario_failure.feature"
       Then it should fail with:
         """
@@ -124,7 +126,8 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
 
     @not.with_python.version=3.8
     @not.with_python.version=3.9
-    Scenario: Hook error in after_scenario()
+    @not.with_python.version=3.10
+    Scenario: Hook error in after_scenario() (py.version < 3.8)
       When I run "behave -f plain --junit features/after_scenario_failure.feature"
       Then it should fail with:
         """
@@ -156,7 +159,8 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
 
     @use.with_python.version=3.8
     @use.with_python.version=3.9
-    Scenario: Hook error in after_scenario()
+    @use.with_python.version=3.10
+    Scenario: Hook error in after_scenario() (py.version >= 3.8)
       When I run "behave -f plain --junit features/after_scenario_failure.feature"
       Then it should fail with:
         """

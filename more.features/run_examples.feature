@@ -29,13 +29,8 @@ Feature: Ensure that all examples are usable
         features/rule_fails.feature:16  F2 -- Fails
       """
 
-
-  @use.with_python.version=3.4
-  @use.with_python.version=3.5
-  @use.with_python.version=3.6
-  @use.with_python.version=3.7
-  @use.with_python.version=3.8
-  Scenario: examples/async_step (needs: py34 or newer)
+  @use.with_python_has_coroutine=true
+  Scenario: examples/async_step (requires: python.version >= 3.4)
     Given I use the directory "examples/async_step" as working directory
     When I run "behave features/"
     Then it should pass

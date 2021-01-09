@@ -28,8 +28,34 @@
             "type": "object",
             "anyOf": [
                 { "$ref": "#/definitions/Background" },
+                { "$ref": "#/definitions/Rule" },
                 { "$ref": "#/definitions/Scenario" },
                 { "$ref": "#/definitions/ScenarioOutline" }
+            ]
+        },
+        "Rule": {
+            "type": "object",
+            "description": "Represents a Rule object.",
+            "properties": {
+                "name":     { "type": "string" },
+                "keyword":  { "type": "string" },
+                "location": { "type": "string" },
+                "status":   { "type": "string" },
+                "tags":     { "$ref": "#/definitions/Tags" },
+                "description": { "$ref": "#/definitions/MultiLineText" },
+                "elements": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/RuleElement" }
+                }
+            },
+            "required": [ "name", "keyword", "location" ]
+        },
+        "RuleElement": {
+            "type": "object",
+            "anyOf": [
+                { "$ref": "#/definitions/Scenario" },
+                { "$ref": "#/definitions/ScenarioOutline" },
+                { "$ref": "#/definitions/Background" }
             ]
         },
         "Background": {

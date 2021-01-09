@@ -1,15 +1,10 @@
-@not.with_python2=true
 @issue
+@not.with_python2=true
 Feature: Issue #657 -- Allow async steps with timeouts to fail when they raise exceptions
 
-
-    @use.with_python.version=3.5
-    @use.with_python.version=3.6
-    @use.with_python.version=3.7
-    @use.with_python.version=3.8
-    @use.with_python.version=3.9
+    @use.with_python_has_async_function=true
     @async_step_fails
-    Scenario: Use @async_run_until_complete and async-step fails
+    Scenario: Use @async_run_until_complete and async-step fails (py.version >= 3.8)
       Given a new working directory
       And a file named "features/steps/async_steps_fails35.py" with:
         """
