@@ -1,13 +1,18 @@
 # -*- coding: UTF-8 -*-
 """
-Contains classes and functionality to provide a skip-if logic based on tags
-in feature files.
+Contains classes and functionality to provide the active-tag mechanism.
+Active-tags provide a skip-if logic based on tags in feature files.
 """
 
 from __future__ import absolute_import
 import re
 import operator
 import six
+
+
+def bool_to_string(value):
+    """Converts a Boolean value into its normalized string representation."""
+    return str(bool(value)).lower()
 
 
 class TagMatcher(object):
@@ -36,12 +41,13 @@ class TagMatcher(object):
 class ActiveTagMatcher(TagMatcher):
     """Provides an active tag matcher for many categories.
 
-    TAG SCHEMA:
+    TAG SCHEMA 1 (preferred):
       * use.with_{category}={value}
       * not.with_{category}={value}
+
+    TAG SCHEMA 2:
       * active.with_{category}={value}
       * not_active.with_{category}={value}
-      * only.with_{category}={value}        (NOTE: For backward compatibility)
 
     TAG LOGIC
     ----------
@@ -52,7 +58,7 @@ class ActiveTagMatcher(TagMatcher):
         active_group.enabled := enabled(group.tag1) or enabled(group.tag2) or ...
         active_tags.enabled  := enabled(group1) and enabled(group2) and ...
 
-    All active-tag groups must be turned "on".
+    All active-tag groups must be turned "on" (enabled).
     Otherwise, the model element should be excluded.
 
     CONCEPT: ValueProvider
@@ -81,12 +87,12 @@ class ActiveTagMatcher(TagMatcher):
         # -- FILE: features/alice.feature
         Feature:
 
-          @active.with_os=win32
+          @use.with_os=win32
           Scenario: Alice (Run only on Windows)
             Given I do something
             ...
 
-          @not_active.with_browser=chrome
+          @not.with_browser=chrome
           Scenario: Bob (Excluded with Web-Browser Chrome)
             Given I do something else
             ...
@@ -116,7 +122,7 @@ class ActiveTagMatcher(TagMatcher):
                 scenario.skip(exclude_reason)   #< LATE-EXCLUDE from run-set.
     """
     value_separator = "="
-    tag_prefixes = ["active", "not_active", "use", "not", "only"]
+    tag_prefixes = ["use", "not", "active", "not_active", "only"]
     tag_schema = r"^(?P<prefix>%s)\.with_(?P<category>\w+(\.\w+)*)%s(?P<value>.*)$"
     ignore_unknown_categories = True
     use_exclude_reason = False
@@ -163,20 +169,48 @@ class ActiveTagMatcher(TagMatcher):
 
     def is_tag_group_enabled(self, group_category, group_tag_pairs):
         """Provides boolean logic to determine if all active-tags
-        which use the same category result in a enabled value.
-
-        Use LOGICAL-OR expression for active-tags with same category::
-
-            category_tag_group.enabled := enabled(tag1) or enabled(tag2) or ...
+        which use the same category result in an enabled value.
 
         .. code-block:: gherkin
 
             @use.with_xxx=alice
             @use.with_xxx=bob
             @not.with_xxx=charly
+            @not.with_xxx=doro
             Scenario:
                 Given a step passes
                 ...
+
+        Use LOGICAL expression for active-tags with same category::
+
+            category_tag_group.enabled := positive-tag-expression and not negative-tag-expression
+              positive-tag-expression  := enabled(tag1) or enabled(tag2) or ...
+              negative-tag-expression  := enabled(tag3) or enabled(tag4) or ...
+               tag1, tag2 are positive-tags, like @use.with_category=value
+               tag3, tag4 are negative-tags, like @not.with_category=value
+
+             xxx   | Only use parts: (xxx == "alice") or (xxx == "bob")
+            -------+-------------------
+            alice  | true
+            bob    | true
+            other  | false
+
+             xxx   | Only not parts:
+                   | (not xxx == "charly") and (not xxx == "doro")
+                   | = not((xxx == "charly") or (xxx == "doro"))
+            -------+-------------------
+            charly | false
+            doro   | false
+            other  | true
+
+             xxx   | Use and not parts:
+                   | ((xxx == "alice") or (xxx == "bob")) and not((xxx == "charly") or (xxx == "doro"))
+            -------+-------------------
+            alice  | true
+            bob    | true
+            charly | false
+            doro   | false
+            other  | false
 
         :param group_category:      Category for this tag-group (as string).
         :param category_tag_group:  List of active-tag match-pairs.
@@ -191,20 +225,28 @@ class ActiveTagMatcher(TagMatcher):
             # -- CASE: Unknown category, ignore it.
             return True
 
-        tags_enabled = []
+        positive_tags_matched = []
+        negative_tags_matched = []
         for category_tag, tag_match in group_tag_pairs:
             tag_prefix = tag_match.group("prefix")
             category = tag_match.group("category")
             tag_value = tag_match.group("value")
             assert category == group_category
 
-            is_category_tag_switched_on = operator.eq       # equal_to
             if self.is_tag_negated(tag_prefix):
-                is_category_tag_switched_on = operator.ne   # not_equal_to
-
-            tag_enabled = is_category_tag_switched_on(tag_value, current_value)
-            tags_enabled.append(tag_enabled)
-        return any(tags_enabled)    # -- PROVIDES: LOGICAL-OR expression
+                # -- CASE: @not.with_CATEGORY=VALUE
+                tag_matched = (tag_value == current_value)
+                negative_tags_matched.append(tag_matched)
+            else:
+                # -- CASE: @use.with_CATEGORY=VALUE
+                tag_matched = (tag_value == current_value)
+                positive_tags_matched.append(tag_matched)
+        tag_expression1 = any(positive_tags_matched)    #< LOGICAL-OR expression
+        tag_expression2 = any(negative_tags_matched)    #< LOGICAL-OR expression
+        if not positive_tags_matched:
+            tag_expression1 = True
+        tag_group_enabled = bool(tag_expression1 and not tag_expression2)
+        return tag_group_enabled
 
     def should_exclude_with(self, tags):
         group_categories = self.group_active_tags_by_category(tags)
