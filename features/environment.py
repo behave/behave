@@ -2,7 +2,8 @@
 # FILE: features/environemnt.py
 
 from __future__ import absolute_import, print_function
-from behave.tag_matcher import ActiveTagMatcher, setup_active_tag_values
+from behave.tag_matcher import \
+    ActiveTagMatcher, setup_active_tag_values, print_active_tags
 from behave4cmd0.setup_command_shell import setup_command_shell_processors4behave
 from behave import python_feature
 import platform
@@ -21,11 +22,7 @@ active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
 
 def print_active_tags_summary():
-    active_tag_data = active_tag_value_provider
-    print("ACTIVE-TAG SUMMARY:")
-    print("use.with_python.version=%s" % active_tag_data.get("python.version"))
-    print("use.with_os=%s" % active_tag_data.get("os"))
-    print()
+    print_active_tags(active_tag_value_provider, ["python.version", "os"])
 
 
 # -----------------------------------------------------------------------------

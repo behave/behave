@@ -13,7 +13,7 @@ import sys
 import platform
 import os.path
 import six
-from behave.tag_matcher import ActiveTagMatcher
+from behave.tag_matcher import ActiveTagMatcher, print_active_tags
 from behave4cmd0.setup_command_shell import setup_command_shell_processors4behave
 # PREPARED: from behave.tag_matcher import setup_active_tag_values
 
@@ -94,12 +94,7 @@ active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
 
 def print_active_tags_summary():
-    active_tag_data = active_tag_value_provider
-    print("ACTIVE-TAG SUMMARY:")
-    print("use.with_python.version=%s" % active_tag_data.get("python.version"))
-    # print("use.with_platform=%s" % active_tag_data.get("platform"))
-    # print("use.with_os=%s" % active_tag_data.get("os"))
-    print()
+    print_active_tags(active_tag_value_provider, ["python.version", "os"])
 
 
 # ---------------------------------------------------------------------------

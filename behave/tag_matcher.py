@@ -4,17 +4,16 @@ Contains classes and functionality to provide the active-tag mechanism.
 Active-tags provide a skip-if logic based on tags in feature files.
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import re
-import operator
 import six
+from ._types import Unknown
+from .compat.collections import UserDict
 
 
-def bool_to_string(value):
-    """Converts a Boolean value into its normalized string representation."""
-    return str(bool(value)).lower()
-
-
+# -----------------------------------------------------------------------------
+# CLASSES FOR: Active-Tags and ActiveTagMatchers
+# -----------------------------------------------------------------------------
 class TagMatcher(object):
     """Abstract base class that defines the TagMatcher protocol."""
 
@@ -220,8 +219,8 @@ class ActiveTagMatcher(TagMatcher):
             # -- CASE: Empty group is always enabled (CORNER-CASE).
             return True
 
-        current_value = self.value_provider.get(group_category, None)
-        if current_value is None and self.ignore_unknown_categories:
+        current_value = self.value_provider.get(group_category, Unknown)
+        if current_value is Unknown and self.ignore_unknown_categories:
             # -- CASE: Unknown category, ignore it.
             return True
 
@@ -320,6 +319,115 @@ class CompositeTagMatcher(TagMatcher):
         return False
 
 
+# -----------------------------------------------------------------------------
+# ACTIVE TAG VALUE PROVIDER CLASSES:
+# -----------------------------------------------------------------------------
+class IActiveTagValueProvider(object):
+    """Protocol/Interface for active-tag value providers."""
+
+    def get(self, category, default=None):
+        return NotImplemented
+
+
+class ActiveTagValueProvider(UserDict):
+    def __init__(self, data=None):
+        if data is None:
+            data = {}
+        UserDict.__init__(self, data)
+
+    @staticmethod
+    def use_value(value):
+        if callable(value):
+            # -- RE-EVALUATE VALUE: Each time
+            value_func = value
+            value = value_func()
+        return value
+
+    def __getitem__(self, name):
+        value = self.data[name]
+        return self.use_value(value)
+
+    def get(self, category, default=None):
+        value = self.data.get(category, default)
+        return self.use_value(value)
+
+    def values(self):
+        for value in self.data.values(self):
+            yield self.use_value(value)
+
+    def items(self):
+        for category, value in self.data.items():
+            yield (category, self.use_value(value))
+
+    def categories(self):
+        return self.keys()
+
+
+class CompositeActiveTagValueProvider(ActiveTagValueProvider):
+    """Provides a composite helper class to resolve active-tag values
+    from a list of value-providers.
+    """
+
+    def __init__(self, value_providers=None):
+        if value_providers is None:
+            value_providers = []
+        super(CompositeActiveTagValueProvider, self).__init__()
+        self.value_providers = list(value_providers)
+
+    def get(self, category, default=None):
+        # -- FIRST: Check category cached-map (=self.data)
+        value = self.data.get(category, Unknown)
+        if value is Unknown:
+            # -- NOT DISCOVERED: Search over value_providers.
+            for value_provider in self.value_providers:
+                value = value_provider.get(category, Unknown)
+                if value is Unknown:
+                    continue
+
+                # -- FOUND CATEGORY:
+                self.data[category] = value
+                break
+            # -- FOUND-CATEGORY or NOT-FOUND:
+            if value is Unknown:
+                value = default
+
+        return self.use_value(value)
+
+    # -- MORE: Provide a dict-like interface.
+    def keys(self):
+        for value_provider in self.value_providers:
+            try:
+                for category in value_provider.keys():
+                    yield category
+            except AttributeError:
+                # -- keys() method not supported.
+                pass
+
+    def values(self):
+        for category in self.keys():
+            value = self.get(category)
+            yield value
+
+    def items(self):
+        for category in self.keys():
+            value = self.get(category)
+            yield (category, value)
+
+
+
+# -----------------------------------------------------------------------------
+# UTILITY FUNCTIONS:
+# -----------------------------------------------------------------------------
+def bool_to_string(value):
+    """Converts a boolean active-tag value into its normalized
+    string representation.
+
+    :param value:  Boolean value to use (or value converted into bool).
+    :returns: Boolean value converted into a normalized string.
+    """
+    return str(bool(value)).lower()
+
+
 def setup_active_tag_values(active_tag_values, data):
     """Setup/update active_tag values with dict-like data.
     Only values for keys that are already present are updated.
@@ -330,3 +438,22 @@ def setup_active_tag_values(active_tag_values, data):
     for category in list(active_tag_values.keys()):
         if category in data:
             active_tag_values[category] = data[category]
+
+
+def print_active_tags(active_tag_value_provider, categories=None):
+    """Print a summary of the current active-tag values."""
+    if categories is None:
+        try:
+            categories = list(active_tag_value_provider)
+        except TypeError:   # TypeError: object is not iterable
+            categories = []
+
+    active_tag_data = active_tag_value_provider
+    print("ACTIVE-TAGS:")
+    for category in categories:
+        active_tag_value = active_tag_data.get(category)
+        print("use.with_{category}={value}".format(
+            category=category, value=active_tag_value))
+
+    # -- FINALLY: TRAILING NEW-LINE
+    print()
