@@ -6,7 +6,8 @@ pytest <  5.0; python_version <  '3.0'
 pytest >= 5.0; python_version >= '3.0'
 
 pytest-html >= 1.19.0,<2.0
-mock  >= 2.0
+mock  <  4.0;   python_version <  '3.6'
+mock  >= 4.0;   python_version >= '3.6'
 PyHamcrest >= 2.0.2; python_version >= '3.0'
 PyHamcrest <  2.0;   python_version <  '3.0'
 
