@@ -52,8 +52,8 @@ Feature: Issue #309 -- behave --lang-list fails on Python3
         """
         sv: Svenska / Swedish
         ta: தமிழ் / Tamil
+        te: తెలుగు / Telugu
         th: ไทย / Thai
-        tl: తెలుగు / Telugu
         tlh: tlhIngan / Klingon
         tr: Türkçe / Turkish
         tt: Татарча / Tatar
