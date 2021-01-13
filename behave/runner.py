@@ -13,6 +13,7 @@ import weakref
 
 import six
 
+from behave.api.runner import IRunner
 from behave._types import ExceptionUtil
 from behave.capture import CaptureController
 from behave.exception import ConfigError
@@ -908,3 +909,10 @@ class Runner(ModelRunner):
         stream_openers = self.config.outputs
         self.formatters = make_formatters(self.config, stream_openers)
         return self.run_model()
+
+
+# -----------------------------------------------------------------------------
+# REGISTER RUNNER-CLASSES:
+# -----------------------------------------------------------------------------
+IRunner.register(ModelRunner)
+IRunner.register(Runner)

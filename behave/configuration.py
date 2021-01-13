@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 import argparse
+import inspect
 import logging
 import os
 import re
 import sys
 import shlex
 import six
-from importlib import import_module
 from six.moves import configparser
 
 from behave.model import ScenarioOutline
@@ -30,7 +30,13 @@ if six.PY2:
 
 
 # -----------------------------------------------------------------------------
-# CONFIGURATION DATA TYPES:
+# CONSTANTS:
+# -----------------------------------------------------------------------------
+DEFAULT_RUNNER_CLASS_NAME = "behave.runner:Runner"
+
+
+# -----------------------------------------------------------------------------
+# CONFIGURATION DATA TYPES and TYPE CONVERTERS:
 # -----------------------------------------------------------------------------
 class LogLevel(object):
     names = [
@@ -66,16 +72,6 @@ class LogLevel(object):
 # -----------------------------------------------------------------------------
 # CONFIGURATION SCHEMA:
 # -----------------------------------------------------------------------------
-
-def valid_python_module(path):
-    try:
-        module_path, class_name = path.rsplit('.', 1)
-        module = import_module(module_path)
-        return getattr(module, class_name)
-    except (ValueError, AttributeError, ImportError):
-        raise argparse.ArgumentTypeError("No module named '%s' was found." % path)
-
-
 options = [
     (("-c", "--no-color"),
      dict(action="store_false", dest="color",
@@ -123,11 +119,6 @@ options = [
      dict(metavar="PATH", dest="junit_directory",
           default="reports",
           help="""Directory in which to store JUnit reports.""")),
-
-    (("--runner-class",),
-     dict(action="store",
-          default="behave.runner.Runner", type=valid_python_module,
-          help="Tells Behave to use a specific runner. (default: %(default)s)")),
 
     ((),  # -- CONFIGFILE only
      dict(dest="default_format",
@@ -283,6 +274,11 @@ options = [
     (("-q", "--quiet"),
      dict(action="store_true",
           help="Alias for --no-snippets --no-source.")),
+
+    (("-r", "--runner"),
+     dict(dest="runner", action="store", metavar="RUNNER_CLASS",
+          default=DEFAULT_RUNNER_CLASS_NAME,
+          help="Use own runner class, like: behave.runner:Runner")),
 
     (("-s", "--no-source"),
      dict(action="store_false", dest="show_source",
@@ -442,6 +438,7 @@ def read_configuration(path):
     # SCHEMA: config_section: data_name
     special_config_section_map = {
         "behave.formatters": "more_formatters",
+        "behave.runners":    "more_runners",
         "behave.userdata":   "userdata",
     }
     for section_name, data_name in special_config_section_map.items():
@@ -518,6 +515,7 @@ class Configuration(object):
         log_capture=True,
         logging_format="%(levelname)s:%(name)s:%(message)s",
         logging_level=logging.INFO,
+        runner=DEFAULT_RUNNER_CLASS_NAME,
         steps_catalog=False,
         summary=True,
         junit=False,
@@ -601,6 +599,8 @@ class Configuration(object):
         self.environment_file = "environment.py"
         self.userdata_defines = None
         self.more_formatters = None
+        self.more_runners = None
+        self.runner_aliases = dict(default=DEFAULT_RUNNER_CLASS_NAME)
         if load_config:
             load_configuration(self.defaults, verbose=verbose)
         parser = setup_parser()
@@ -669,6 +669,7 @@ class Configuration(object):
         self.setup_stage(self.stage)
         self.setup_model()
         self.setup_userdata()
+        self.setup_runners()
 
         # -- FINALLY: Setup Reporters and Formatters
         # NOTE: Reporters and Formatters can now use userdata information.
@@ -685,7 +686,6 @@ class Configuration(object):
         unknown_formats = self.collect_unknown_formats()
         if unknown_formats:
             parser.error("format=%s is unknown" % ", ".join(unknown_formats))
-
 
     def setup_outputs(self, args_outfiles=None):
         if self.outputs:
@@ -707,6 +707,11 @@ class Configuration(object):
         if self.more_formatters:
             for name, scoped_class_name in self.more_formatters.items():
                 _format_registry.register_as(name, scoped_class_name)
+
+    def setup_runners(self):
+        if self.more_runners:
+            for name, scoped_class_name in self.more_runners.items():
+                self.runner_aliases[name] = scoped_class_name
 
     def collect_unknown_formats(self):
         unknown_formats = []

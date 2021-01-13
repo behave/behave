@@ -7,7 +7,9 @@ REQUIRES: importlib (provided in Python2.7, Python3.2...)
 
 from __future__ import absolute_import
 import importlib
+import inspect
 from behave._types import Unknown
+
 
 def parse_scoped_name(scoped_name):
     """
@@ -19,8 +21,25 @@ def parse_scoped_name(scoped_name):
     if "::" in scoped_name:
         # -- ALTERNATIVE: my.module_name::MyClassName
         scoped_name = scoped_name.replace("::", ":")
+    if ":" not in scoped_name:
+        schema = "%s: Missing ':' (colon) as module-to-name seperator'"
+        raise ValueError(schema % scoped_name)
     module_name, object_name = scoped_name.rsplit(":", 1)
     return module_name, object_name
+
+
+def make_scoped_class_name(obj):
+    """Build scoped-class-name from an object/class.
+
+    :param obj:  Object or class.
+    :return Scoped-class-name (as string).
+    """
+    if inspect.isclass(obj):
+        class_name = obj.__name__
+    else:
+        class_name = obj.__class__.__name__
+    return "{0}:{1}".format(obj.__module__, class_name)
+
 
 def load_module(module_name):
     return importlib.import_module(module_name)

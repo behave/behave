@@ -7,16 +7,20 @@ import six
 from behave.version import VERSION as BEHAVE_VERSION
 from behave.configuration import Configuration
 from behave.exception import ConstraintError, ConfigError, \
-    FileNotFoundError, InvalidFileLocationError, InvalidFilenameError
+    FileNotFoundError, InvalidFileLocationError, InvalidFilenameError, \
+    ModuleNotFoundError, ClassNotFoundError, InvalidClassError
 from behave.parser import ParserError
 from behave.runner import Runner
 from behave.runner_util import print_undefined_step_snippets, reset_runtime
 from behave.textutil import compute_words_maxsize, text as _text
+from behave.runner_plugin import RunnerPlugin
+# PREPARED: from behave.importer import make_scoped_class_name
 
 
 # ---------------------------------------------------------------------------
 # CONSTANTS:
 # ---------------------------------------------------------------------------
+DEBUG = __debug__
 TAG_HELP = """
 Scenarios inherit tags that are declared on the Feature level.
 The simplest TAG_EXPRESSION is simply a tag::
@@ -59,8 +63,6 @@ def run_behave(config, runner_class=None):
     .. note:: BEST EFFORT, not intended for multi-threaded usage.
     """
     # pylint: disable=too-many-branches, too-many-statements, too-many-return-statements
-    if runner_class is None:
-        runner_class = Runner
 
     if config.version:
         print("behave " + BEHAVE_VERSION)
@@ -96,10 +98,12 @@ def run_behave(config, runner_class=None):
         return 1
 
     # -- MAIN PART:
+    runner = None
     failed = True
     try:
         reset_runtime()
-        runner = runner_class(config)
+        runner = RunnerPlugin(runner_class=runner_class).make_runner(config)
+        # print("USING RUNNER: {0}".format(make_scoped_class_name(runner)))
         failed = runner.run()
     except ParserError as e:
         print(u"ParserError: %s" % e)
@@ -111,6 +115,16 @@ def run_behave(config, runner_class=None):
         print(u"InvalidFileLocationError: %s" % e)
     except InvalidFilenameError as e:
         print(u"InvalidFilenameError: %s" % e)
+    except ModuleNotFoundError as e:
+        print(u"ModuleNotFoundError: %s" % e)
+    except ClassNotFoundError as e:
+        print(u"ClassNotFoundError: %s" % e)
+    except InvalidClassError as e:
+        print(u"InvalidClassError: %s" % e)
+    except ImportError as e:
+        print(u"%s: %s" % (e.__class__.__name__, e))
+        if DEBUG:
+            raise
     except ConstraintError as e:
         print(u"ConstraintError: %s" % e)
     except Exception as e:
@@ -119,7 +133,7 @@ def run_behave(config, runner_class=None):
         print(u"Exception %s: %s" % (e.__class__.__name__, text))
         raise
 
-    if config.show_snippets and runner.undefined_steps:
+    if config.show_snippets and runner and runner.undefined_steps:
         print_undefined_step_snippets(runner.undefined_steps,
                                       colored=config.color)
 
@@ -215,7 +229,7 @@ def main(args=None):
     :return: 0, if successful. Non-zero, in case of errors/failures.
     """
     config = Configuration(args)
-    return run_behave(config, runner_class=config.runner_class)
+    return run_behave(config)
 
 
 if __name__ == "__main__":

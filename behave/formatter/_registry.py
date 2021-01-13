@@ -4,6 +4,7 @@ import sys
 import warnings
 from behave.formatter.base import Formatter, StreamOpener
 from behave.importer import LazyDict, LazyObject, parse_scoped_name, load_module
+from behave.exception import ClassNotFoundError
 import six
 
 
@@ -12,14 +13,17 @@ import six
 # -----------------------------------------------------------------------------
 _formatter_registry = LazyDict()
 
+
 def format_iter():
     return iter(_formatter_registry.keys())
+
 
 def format_items(resolved=False):
     if resolved:
         # -- ENSURE: All formatter classes are loaded (and resolved).
         _formatter_registry.load_all(strict=False)
     return iter(_formatter_registry.items())
+
 
 def register_as(name, formatter_class):
     """
@@ -47,8 +51,10 @@ def register_as(name, formatter_class):
             issubclass(formatter_class, Formatter))
     _formatter_registry[name] = formatter_class
 
+
 def register(formatter_class):
     register_as(formatter_class.name, formatter_class)
+
 
 def register_formats(formats):
     """Register many format items into the registry.
@@ -57,6 +63,7 @@ def register_formats(formats):
     """
     for formatter_name, formatter_class_name in formats:
         register_as(formatter_name, formatter_class_name)
+
 
 def load_formatter_class(scoped_class_name):
     """Load a formatter class by using its scoped class name.
@@ -73,7 +80,7 @@ def load_formatter_class(scoped_class_name):
     formatter_module = load_module(module_name)
     formatter_class = getattr(formatter_module, class_name, None)
     if formatter_class is None:
-        raise ImportError("CLASS NOT FOUND: %s" % scoped_class_name)
+        raise ClassNotFoundError("CLASS NOT FOUND: %s" % scoped_class_name)
     return formatter_class
 
 
