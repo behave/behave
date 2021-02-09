@@ -268,7 +268,14 @@ class FileLocation(object):
 class BasicStatement(object):
     def __init__(self, filename, line, keyword, name):
         filename = filename or '<string>'
-        filename = os.path.relpath(filename, os.getcwd())   # -- NEEDS: abspath?
+        try:
+            filename = os.path.relpath(filename, os.getcwd())   # -- NEEDS: abspath?
+        except ValueError:
+            # On Windows a relative path can't be evaluated for
+            # paths on two different drives (i.e. c:\foo and f:\bar).
+            # The only thing left to is to use the original absolute
+            # path.
+            filename = filename
         self.location = FileLocation(filename, line)
         assert isinstance(keyword, six.text_type)
         assert isinstance(name, six.text_type)

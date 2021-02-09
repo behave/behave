@@ -550,7 +550,14 @@ def exec_file(filename, globals_=None, locals_=None):
     locals_["__file__"] = filename
     with open(filename, "rb") as f:
         # pylint: disable=exec-used
-        filename2 = os.path.relpath(filename, os.getcwd())
+        try:
+            filename2 = os.path.relpath(filename, os.getcwd())
+        except ValueError:
+            # On Windows a relative path can't be evaluated for
+            # paths on two different drives (i.e. c:\foo and f:\bar).
+            # The only thing left to is to use the original absolute
+            # path.
+            filename2 = filename
         code = compile(f.read(), filename2, "exec", dont_inherit=True)
         exec(code, globals_, locals_)
 
