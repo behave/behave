@@ -375,7 +375,7 @@ class JUnitReporter(Reporter):
         case.set(u"name", scenario.name or "")
         case.set(u"status", scenario.status.name)
         case.set(u"time", _text(round(scenario.duration, 6)))
-        case.set(u"tags", _text(",".join(scenario.tags)))
+        case.set(u"tags", _text(self.describe_tags(scenario.tags)))
 
         step = None
         failing_step = None
