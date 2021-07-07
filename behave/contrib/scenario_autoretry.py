@@ -65,8 +65,9 @@ def patch_scenario_with_autoretry(scenario, max_attempts=3, delay=0, backoff=1):
             # -- SCENARIO FAILED:
             if attempt < max_attempts:
                 if delay:
-                    if attempt > 1: _delay *= backoff
-                    delay_message =  u" Delaying retry for {0}s".format(_delay)
+                    if attempt > 1:
+                        _delay *= backoff
+                    delay_message = u" Delaying retry for {0}s".format(_delay)
 
                 print(u"AUTO-RETRY SCENARIO (attempt {0}){1}".format(attempt, delay_message))
                 sleep(_delay)
