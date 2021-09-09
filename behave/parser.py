@@ -41,6 +41,7 @@ Keyword aliases:
 # pylint: enable=line-too-long
 
 from __future__ import absolute_import, with_statement
+import logging
 import re
 import sys
 import six
@@ -643,6 +644,10 @@ class Parser(object):
             self.table = None
             self.state = "steps"
             return self.action_steps(line)
+
+        if not re.match(r"^(|.+)\|$", line):
+            logger = logging.getLogger("behave")
+            logger.warning(u"Malformed table row at %s: line %i", self.feature.filename, self.line)
 
         # -- SUPPORT: Escaped-pipe(s) in Gherkin cell values.
         #    Search for pipe(s) that are not preceeded with an escape char.
