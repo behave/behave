@@ -42,6 +42,7 @@ FIXED:
 
 * FIXED: Some tests related to python3.9
 * FIXED: active-tag logic if multiple tags with same category exists.
+* issue #955: setup: Remove attribute 'use_2to3' (submitted by: krisgesling)
 * issue #772: ScenarioOutline.Examples without table (submitted by: The-QA-Geek)
 * issue #755: Failures with Python 3.8 (submitted by: hroncok)
 * issue #725: Scenario Outline description lines seem to be ignored (submitted by: nizwiz)
