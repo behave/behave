@@ -75,12 +75,16 @@ class LoggingCapture(BufferingHandler):
         self.setFormatter(formatter)
 
         # figure the level we're logging at
+        # use a temporary logger to correctly retrieve the logging level as int.
+        tmp_logger = logging.getLogger(__name__ + '.tmp')
         if level is not None:
-            self.level = level
+            tmp_logger.setLevel(level)
         elif config.logging_level:
-            self.level = config.logging_level
+            tmp_logger.setLevel(config.logging_level)
         else:
-            self.level = logging.NOTSET
+            tmp_logger.setLevel(logging.NOTSET)
+        self.level = tmp_logger.level
+        del tmp_logger
 
         # construct my filter
         if config.logging_filter:
@@ -150,8 +154,11 @@ class LoggingCapture(BufferingHandler):
         root_logger.addHandler(self)
 
         # capture the level we're interested in
-        self.old_level = root_logger.level
-        root_logger.setLevel(self.level)
+        if root_logger.level > self.level:
+            self.old_level = root_logger.level
+            root_logger.setLevel(self.level)
+        else:
+            self.old_level = None
 
     def abandon(self):
         """Turn off logging capture.
