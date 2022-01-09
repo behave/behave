@@ -16,13 +16,15 @@ and `behave`_ (after reading the behave documentation):
 The following small tutorials provide an introduction how you use `behave`_
 in a specific testing domain:
 
-* Phillip Johnson, `Getting Started with Behavior Testing in Python with Behave`_
-* `Bdd with Python, Behave and WebDriver`_
+* Phillip Johnson, `Getting Started with Behavior Testing in Python with Behave`_, 2015-10-15.
+* Nicole Harris, `Beginning BDD with Django`_ (part 1 and 2), 2015-03-16.
+* TestingBot, `Bdd with Python, Behave and WebDriver`_
 * Wayne Witzel III, `Using Behave with Pyramid`_, 2014-01-10.
 
 .. _`Getting Started with Behavior Testing in Python with Behave`: https://semaphoreci.com/community/tutorials/getting-started-with-behavior-testing-in-python-with-behave
+.. _`Beginning BDD with Django`: https://whoisnicoleharris.com/2015/03/16/bdd-part-one.html
 .. _`Bdd with Python, Behave and WebDriver`: https://testingbot.com/support/getting-started/behave.html
-.. _`Using Behave with Pyramid`:    https://www.safaribooksonline.com/blog/2014/01/10/using-behave-with-pyramid/
+.. _`Using Behave with Pyramid`: https://active6.blogspot.com/2014/01/using-behave-with-pyramid.html
 
 .. warning::
 
@@ -73,6 +75,8 @@ Presentation Videos
 
 * `Selenium Python Webdriver Tutorial - Behave (BDD)`_ (14min), 2016-01-21
 
+* `Front-end integration testing with splinter`_ (30min), 2017-08-05
+
 
 .. hidden:
 
@@ -90,6 +94,8 @@ Presentation Videos
         * Jessica Ingrasselino: `Automation with Python and Behave`_ (67min), 2015-12-16
 
         * `Selenium Python Webdriver Tutorial - Behave (BDD)`_ (14min), 2016-01-21
+
+        * `Front-end integration testing with splinter`_ (30min), 2017-08-05
 
 
         .. hint::
@@ -144,11 +150,22 @@ Presentation Videos
             :width: 600
             :height: 400
 
+        Nick Coghlan: `Front-end integration testing with splinter`_
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        :Date: 2017-08-05
+        :Duration: 30min
+
+        ..  youtube:: HY0_RtTUfUg
+            :width: 600
+            :height: 400
+
 
 .. _`Making Your Application Behave`: https://www.youtube.com/watch?v=u8BOKuNkmhg
 .. _`First behave python tutorial with selenium`: https://www.youtube.com/watch?v=D24_QrGUCFk
 .. _`Automation with Python and Behave`: https://www.youtube.com/watch?v=e78c7h6DRDQ
 .. _`Selenium Python Webdriver Tutorial - Behave (BDD)`: https://www.youtube.com/watch?v=mextSo0UExc
+.. _`Front-end integration testing with splinter`: https://pyvideo.org/pycon-au-2017/front-end-integration-testing-with-splinter.html
 
 .. _sphinxcontrib-youtube: https://bitbucket.org/birkenfeld/sphinx-contrib
 
