@@ -137,6 +137,10 @@ setup(
         'formatters': [
             "behave-html-formatter",
         ],
+        'toml': [  # Enable pyproject.toml support.
+            "tomli>=1.1.0; python_version >=  '3.0' and python_version < '3.11'",
+            "toml>=0.10.2; python_version <  '3.0'",  # py27 support
+        ],
     },
     license="BSD",
     classifiers=[
@@ -161,4 +165,3 @@ setup(
     ],
     zip_safe = True,
 )
-

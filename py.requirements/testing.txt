@@ -20,6 +20,9 @@ PyHamcrest <  2.0;   python_version <  '3.0'
 # HINT: path.py => path (python-install-package was renamed for python3)
 path.py >=11.5.0,<13.0; python_version <  '3.5'
 path >= 13.1.0;         python_version >= '3.5'
+# NOTE: toml extra for pyproject.toml-based config
+.[toml]
+
 
 # -- PYTHON2 BACKPORTS:
 pathlib;    python_version <= '3.4'
