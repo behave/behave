@@ -3,6 +3,7 @@
 from __future__ import absolute_import, print_function
 import argparse
 import inspect
+import json
 import logging
 import os
 import re
@@ -27,6 +28,17 @@ from behave.textutil import select_best_encoding, to_texts
 ConfigParser = configparser.ConfigParser
 if six.PY2:
     ConfigParser = configparser.SafeConfigParser
+
+try:
+    if sys.version_info >= (3, 11):
+        import tomllib
+    elif sys.version_info < (3, 0):
+        import toml as tomllib
+    else:
+        import tomli as tomllib
+    _TOML_AVAILABLE = True
+except ImportError:
+    _TOML_AVAILABLE = False
 
 
 # -----------------------------------------------------------------------------
@@ -382,41 +394,49 @@ raw_value_options = frozenset([
 ])
 
 
-def read_configuration(path):
-    # pylint: disable=too-many-locals, too-many-branches
-    config = ConfigParser()
-    config.optionxform = str    # -- SUPPORT: case-sensitive keys
-    config.read(path)
-    config_dir = os.path.dirname(path)
-    result = {}
+def values_to_str(d):
+    return json.loads(
+        json.dumps(d),
+        parse_float=str,
+        parse_int=str,
+        parse_constant=str
+    )
+
+
+def decode_options(config):
     for fixed, keywords in options:
         if "dest" in keywords:
             dest = keywords["dest"]
         else:
+            dest = None
             for opt in fixed:
                 if opt.startswith("--"):
                     dest = opt[2:].replace("-", "_")
                 else:
                     assert len(opt) == 2
                     dest = opt[1:]
-        if dest in "tags_help lang_list lang_help version".split():
+        if (
+            not dest
+        ) or (
+            dest in "tags_help lang_list lang_help version".split()
+        ):
             continue
-        if not config.has_option("behave", dest):
+        try:
+            if dest not in config["behave"]:
+                continue
+        except AttributeError as exc:
+            # SafeConfigParser instance has no attribute '__getitem__' (py27)
+            if "__getitem__" not in str(exc):
+                raise
+            if not config.has_option("behave", dest):
+                continue
+        except KeyError:
             continue
         action = keywords.get("action", "store")
-        if action == "store":
-            use_raw_value = dest in raw_value_options
-            result[dest] = config.get("behave", dest, raw=use_raw_value)
-        elif action in ("store_true", "store_false"):
-            result[dest] = config.getboolean("behave", dest)
-        elif action == "append":
-            if dest == "userdata_defines":
-                continue    # -- SKIP-CONFIGFILE: Command-line only option.
-            result[dest] = \
-                [s.strip() for s in config.get("behave", dest).splitlines()]
-        else:
-            raise ValueError('action "%s" not implemented' % action)
+        yield dest, action
 
+
+def format_outfiles_coupling(result, config_dir):
     # -- STEP: format/outfiles coupling
     if "format" in result:
         # -- OPTIONS: format/outfiles are coupled in configuration file.
@@ -442,6 +462,32 @@ def read_configuration(path):
             result[paths_name] = \
                 [os.path.normpath(os.path.join(config_dir, p)) for p in paths]
 
+
+def read_configparser(path):
+    # pylint: disable=too-many-locals, too-many-branches
+    config = ConfigParser()
+    config.optionxform = str    # -- SUPPORT: case-sensitive keys
+    config.read(path)
+    config_dir = os.path.dirname(path)
+    result = {}
+
+    for dest, action in decode_options(config):
+        if action == "store":
+            result[dest] = config.get(
+                "behave", dest, raw=dest in raw_value_options
+            )
+        elif action in ("store_true", "store_false"):
+            result[dest] = config.getboolean("behave", dest)
+        elif action == "append":
+            if dest == "userdata_defines":
+                continue    # -- SKIP-CONFIGFILE: Command-line only option.
+            result[dest] = \
+                [s.strip() for s in config.get("behave", dest).splitlines()]
+        else:
+            raise ValueError('action "%s" not implemented' % action)
+
+    format_outfiles_coupling(result, config_dir)
+
     # -- STEP: Special additional configuration sections.
     # SCHEMA: config_section: data_name
     special_config_section_map = {
@@ -457,14 +503,82 @@ def read_configuration(path):
     return result
 
 
+def read_toml(path):
+    """Read configuration from pyproject.toml file.
+
+    Configuration should be stored inside the 'tool.behave' table.
+
+    See https://www.python.org/dev/peps/pep-0518/#tool-table
+    """
+    # pylint: disable=too-many-locals, too-many-branches
+    with open(path, "rb") as tomlfile:
+        config = json.loads(json.dumps(tomllib.load(tomlfile)))  # simple dict
+
+    config = config['tool']
+    config_dir = os.path.dirname(path)
+    result = {}
+
+    for dest, action in decode_options(config):
+        raw = config["behave"][dest]
+        if action == "store":
+            result[dest] = str(raw)
+        elif action in ("store_true", "store_false"):
+            result[dest] = bool(raw)
+        elif action == "append":
+            if dest == "userdata_defines":
+                continue    # -- SKIP-CONFIGFILE: Command-line only option.
+            # toml has native arrays and quoted strings, so there's no
+            # need to split by newlines or strip values
+            result[dest] = raw
+        else:
+            raise ValueError('action "%s" not implemented' % action)
+    format_outfiles_coupling(result, config_dir)
+
+    # -- STEP: Special additional configuration sections.
+    # SCHEMA: config_section: data_name
+    special_config_section_map = {
+        "formatters": "more_formatters",
+        "userdata":   "userdata",
+    }
+    for section_name, data_name in special_config_section_map.items():
+        result[data_name] = {}
+        try:
+            result[data_name] = values_to_str(config["behave"][section_name])
+        except KeyError:
+            result[data_name] = {}
+
+    return result
+
+
+def read_configuration(path, verbose=False):
+    ext = path.split(".")[-1]
+    parsers = {
+        "ini": read_configparser,
+        "cfg": read_configparser,
+        "behaverc": read_configparser,
+    }
+
+    if _TOML_AVAILABLE:
+        parsers["toml"] = read_toml
+    parse_func = parsers.get(ext, None)
+    if not parse_func:
+        if verbose:
+            print('Unable to find a parser for "%s"' % path)
+        return {}
+    parsed = parse_func(path)
+
+    return parsed
+
+
 def config_filenames():
     paths = ["./", os.path.expanduser("~")]
     if sys.platform in ("cygwin", "win32") and "APPDATA" in os.environ:
         paths.append(os.path.join(os.environ["APPDATA"]))
 
     for path in reversed(paths):
-        for filename in reversed(
-                ("behave.ini", ".behaverc", "setup.cfg", "tox.ini")):
+        for filename in reversed((
+            "behave.ini", ".behaverc", "setup.cfg", "tox.ini", "pyproject.toml"
+        )):
             filename = os.path.join(path, filename)
             if os.path.isfile(filename):
                 yield filename
@@ -474,7 +588,7 @@ def load_configuration(defaults, verbose=False):
     for filename in config_filenames():
         if verbose:
             print('Loading config defaults from "%s"' % filename)
-        defaults.update(read_configuration(filename))
+        defaults.update(read_configuration(filename, verbose))
 
     if verbose:
         print("Using CONFIGURATION DEFAULTS:")

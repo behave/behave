@@ -287,9 +287,9 @@ You can also exclude several tags::
 Configuration Files
 ===================
 
-Configuration files for *behave* are called either ".behaverc",
-"behave.ini", "setup.cfg" or "tox.ini" (your preference) and are located in
-one of three places:
+Configuration files for *behave* are called either ".behaverc", "behave.ini",
+"setup.cfg", "tox.ini", or "pyproject.toml" (your preference) and are located
+in one of three places:
 
 1. the current working directory (good for per-project settings),
 2. your home directory ($HOME), or
@@ -308,6 +308,16 @@ formatted in the Windows INI style, for example:
     logging_clear_handlers=yes
     logging_filter=-suds
 
+Alternatively, if using "pyproject.toml" instead (note the "tool." prefix):
+
+.. code-block:: toml
+
+    [tool.behave]
+    format = "plain"
+    logging_clear_handlers = true
+    logging_filter = "-suds"
+
+NOTE: toml does not support `'%'` interpolations.
 
 Configuration Parameter Types
 -----------------------------
@@ -322,6 +332,7 @@ The following types are supported (and used):
     The text describes the functionality when the value is true.
     True values are "1", "yes", "true", and "on".
     False values are "0", "no", "false", and "off".
+    TOML: toml only accepts its native `true`
 
 **sequence<text>**
     These fields accept one or more values on new lines, for example a tag
@@ -335,6 +346,7 @@ The following types are supported (and used):
 
         --tags="(@foo or not @bar) and @zap"
 
+    TOML: toml can use arrays natively.
 
 
 Configuration Parameters

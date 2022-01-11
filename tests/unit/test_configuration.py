@@ -2,13 +2,18 @@ import os.path
 import sys
 import tempfile
 import six
+import pytest
 from behave import configuration
 from behave.configuration import Configuration, UserData
 from unittest import TestCase
 
 
 # one entry of each kind handled
-TEST_CONFIG="""[behave]
+# configparser and toml
+TEST_CONFIGS = [
+    (
+        ".behaverc",
+        """[behave]
 outfiles= /absolute/path1
           relative/path2
 paths = /absolute/path3
@@ -23,7 +28,22 @@ bogus=spam
 [behave.userdata]
 foo    = bar
 answer = 42
-"""
+"""),
+    (
+        "pyproject.toml",
+        """[tool.behave]
+outfiles = ["/absolute/path1", "relative/path2"]
+paths = ["/absolute/path3", "relative/path4"]
+default_tags = ["@foo,~@bar", "@zap"]
+format = ["pretty", "tag-counter"]
+stdout_capture = false
+bogus = "spam"
+
+[tool.behave.userdata]
+foo    = "bar"
+answer = 42
+""")
+]
 
 # -----------------------------------------------------------------------------
 # TEST SUPPORT:
@@ -43,15 +63,18 @@ if sys.platform.startswith("win"):
 # -----------------------------------------------------------------------------
 class TestConfiguration(object):
 
-    def test_read_file(self):
-        tn = tempfile.mktemp()
-        tndir = os.path.dirname(tn)
-        with open(tn, "w") as f:
-            f.write(TEST_CONFIG)
-
+    @pytest.mark.parametrize(
+        ("filename", "contents"),
+        list(TEST_CONFIGS)
+    )
+    def test_read_file(self, filename, contents):
+        tndir = tempfile.mkdtemp()
+        file_path = os.path.normpath(os.path.join(tndir, filename))
+        with open(file_path, "w") as fp:
+            fp.write(contents)
         # -- WINDOWS-REQUIRES: normpath
-        d = configuration.read_configuration(tn)
-        assert d["outfiles"] ==[
+        d = configuration.read_configuration(file_path)
+        assert d["outfiles"] == [
             os.path.normpath(ROOTDIR_PREFIX + "/absolute/path1"),
             os.path.normpath(os.path.join(tndir, "relative/path2")),
         ]
@@ -61,7 +84,7 @@ class TestConfiguration(object):
             ]
         assert d["format"] == ["pretty", "tag-counter"]
         assert d["default_tags"] == ["@foo,~@bar", "@zap"]
-        assert d["stdout_capture"] == False
+        assert d["stdout_capture"] is False
         assert "bogus" not in d
         assert d["userdata"] == {"foo": "bar", "answer": "42"}
 
