@@ -17,7 +17,7 @@ To get started, we recommend the `tutorial`_ and then the `test language`_ and
 """
 
 from __future__ import absolute_import
-from behave.step_registry import *      # pylint: disable=wildcard-import
+from behave.step_registry import given, when, then, step, Given, When, Then, Step      # pylint: disable=no-name-in-module
 from behave.matchers import use_step_matcher, step_matcher, register_type
 from behave.fixture import fixture, use_fixture
 from behave.version import VERSION as __version__

@@ -42,12 +42,14 @@ FIXED:
 
 * FIXED: Some tests related to python3.9
 * FIXED: active-tag logic if multiple tags with same category exists.
+* pull  #967: Update __init__.py in behave import to fix pylint (provided by: dsayling)
 * issue #955: setup: Remove attribute 'use_2to3' (submitted by: krisgesling)
 * issue #772: ScenarioOutline.Examples without table (submitted by: The-QA-Geek)
 * issue #755: Failures with Python 3.8 (submitted by: hroncok)
 * issue #725: Scenario Outline description lines seem to be ignored (submitted by: nizwiz)
 * issue #713: Background section doesn't support description (provided by: dgou)
 * pull  #657: Allow async steps with timeouts to fail when they raise exceptions (provided by: ALSchwalm)
+* issue #641: Pylint errors when importing given - when - then from behave (solved by: #967)
 * issue #631: ScenarioOutline variables not possible in table headings (provided by: mschnelle, pull #642)
 * issue #619: Context __getattr__ should raise AttributeError instead of KeyError (submitted by: anxodio)
 * pull  #588: Steps-catalog argument should not break configured rerun settings (provided by: Lego3)
