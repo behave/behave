@@ -55,3 +55,21 @@ where <tag> is the placeholder for an `existing tag`_.
 
 .. _`Github repository`: https://github.com/behave/behave
 .. _`existing tag`:      https://github.com/behave/behave/tags
+
+
+Optional Dependencies
+---------------------
+
+If needed, additional dependencies can be installed using ``pip install``
+with one of the following installation targets.
+
+==================== ===================================================================
+Installation Target  Description
+==================== ===================================================================
+behave[docs]         Include packages needed for building Behave's documentation.
+behave[develop]      Optional packages helpful for local development.
+behave[formatters]   Install formatters from `behave-contrib`_ to extend the list of
+                     :ref:`id.appendix.formatters<formatters>` provided by default.
+==================== ===================================================================
+
+.. _`behave-contrib`: https://github.com/behave-contrib

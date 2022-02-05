@@ -117,6 +117,9 @@ setup(
             "modernize >= 0.5",
             "pylint",
         ],
+        'formatters': [
+            "behave-html-formatter",
+        ],
     },
     # DISABLED: use_2to3= bool(python_version >= 3.0),
     # DEPRECATED SINCE: setuptools v58.0.2 (2021-09-06)
@@ -142,5 +145,4 @@ setup(
     ],
     zip_safe = True,
 )
-
 
