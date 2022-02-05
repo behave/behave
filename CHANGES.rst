@@ -28,6 +28,7 @@ ENHANCEMENTS:
 * Use cucumber "gherkin-languages.json" now (simplify: Gherkin v6 aliases, language usage)
 * Support emojis in ``*.feature`` files and steps
 * Select-by-location: Add support for "Scenario container" (Feature, Rule, ScenarioOutline) (related to: #391)
+* pull  #988: setup.py: Add category to install additional formatters (html) (provided-by: bittner)
 * pull  #895: UPDATE: i18n/gherkin-languages.json from cucumber repository #895 (related to: #827)
 * pull  #827: Fixed keyword translation in Estonian #827 (provided by: ookull)
 * issue #740: Enhancement: possibility to add cleanup to be called upon leaving outer context stack frames (submitted by: nizwiz, dcvmoole)
