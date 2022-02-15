@@ -26,7 +26,7 @@
     "name": "Afrikaans",
     "native": "Afrikaans",
     "rule": [
-      "Rule"
+      "Regel"
     ],
     "scenario": [
       "Voorbeeld",
@@ -303,7 +303,7 @@
     "name": "Bulgarian",
     "native": "български",
     "rule": [
-      "Rule"
+      "Правило"
     ],
     "scenario": [
       "Пример",
@@ -494,7 +494,7 @@
     "name": "Czech",
     "native": "Česky",
     "rule": [
-      "Rule"
+      "Pravidlo"
     ],
     "scenario": [
       "Příklad",
@@ -1014,6 +1014,46 @@
       "Blimey! "
     ]
   },
+    "en-tx": {
+    "and": [
+      "Come hell or high water "
+    ],
+    "background": [
+      "Lemme tell y'all a story"
+    ],
+    "but": [
+      "Well now hold on, I'll you what "
+    ],
+    "examples": [
+      "Now that's a story longer than a cattle drive in July"
+    ],
+    "feature": [
+      "This ain’t my first rodeo",
+      "All gussied up"
+    ],
+    "given": [
+      "Fixin' to ",
+      "All git out "
+    ],
+    "name": "Texas",
+    "native": "Texas",
+    "rule": [
+      "Rule "
+    ],
+    "scenario": [
+      "All hat and no cattle"
+    ],
+    "scenarioOutline": [
+      "Serious as a snake bite",
+      "Busy as a hound in flea season"
+    ],
+    "then": [
+      "There’s no tree but bears some fruit "
+    ],
+    "when": [
+      "Quick out of the chute "
+    ]
+  },
   "eo": {
     "and": [
       "* ",
@@ -1078,7 +1118,9 @@
       "Ejemplos"
     ],
     "feature": [
-      "Característica"
+      "Característica",
+      "Necesidad del negocio",
+      "Requisito"
     ],
     "given": [
       "* ",
@@ -1090,7 +1132,8 @@
     "name": "Spanish",
     "native": "español",
     "rule": [
-      "Regla"
+      "Regla",
+      "Regla de negocio"
     ],
     "scenario": [
       "Ejemplo",
@@ -1520,7 +1563,7 @@
     "name": "Hindi",
     "native": "हिंदी",
     "rule": [
-      "Rule"
+      "नियम"
     ],
     "scenario": [
       "परिदृश्य"
@@ -1672,7 +1715,7 @@
     "name": "Hungarian",
     "native": "magyar",
     "rule": [
-      "Rule"
+      "Szabály"
     ],
     "scenario": [
       "Példa",
@@ -1804,7 +1847,9 @@
       "Esempi"
     ],
     "feature": [
-      "Funzionalità"
+      "Funzionalità",
+      "Esigenza di Business",
+      "Abilità"
     ],
     "given": [
       "* ",
@@ -1816,7 +1861,7 @@
     "name": "Italian",
     "native": "italiano",
     "rule": [
-      "Rule"
+      "Regola"
     ],
     "scenario": [
       "Esempio",
@@ -2561,7 +2606,8 @@
     "name": "Polish",
     "native": "polski",
     "rule": [
-      "Rule"
+      "Zasada",
+      "Reguła"
     ],
     "scenario": [
       "Przykład",
@@ -2736,7 +2782,8 @@
       "Сценарий"
     ],
     "scenarioOutline": [
-      "Структура сценария"
+      "Структура сценария",
+      "Шаблон сценария"
     ],
     "then": [
       "* ",
@@ -2896,7 +2943,7 @@
     "name": "Serbian",
     "native": "Српски",
     "rule": [
-      "Rule"
+      "Правило"
     ],
     "scenario": [
       "Пример",
@@ -2951,7 +2998,7 @@
     "name": "Serbian (Latin)",
     "native": "Srpski (Latinica)",
     "rule": [
-      "Rule"
+      "Pravilo"
     ],
     "scenario": [
       "Scenario",
@@ -3229,7 +3276,7 @@
     "name": "Turkish",
     "native": "Türkçe",
     "rule": [
-      "Rule"
+      "Kural"
     ],
     "scenario": [
       "Örnek",

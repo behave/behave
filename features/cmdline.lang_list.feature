@@ -33,6 +33,7 @@ Feature: Command-line options: Use behave --lang-list
           en-lol: LOLCAT / LOLCAT
           en-old: Englisc / Old English
           en-pirate: Pirate / Pirate
+          en-tx: Texas / Texas
           eo: Esperanto / Esperanto
           es: español / Spanish
           et: eesti keel / Estonian
