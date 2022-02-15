@@ -123,7 +123,7 @@ options = [
      dict(metavar="PATH", dest="junit_directory",
           default="reports",
           help="""Directory in which to store JUnit reports.""")),
-    
+
     (("--runner-class",),
      dict(action="store",
           default="behave.runner.Runner", type=valid_python_module,

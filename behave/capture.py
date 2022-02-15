@@ -108,6 +108,7 @@ class Captured(object):
 
 class CaptureController(object):
     """Simplifies the lifecycle to capture output from various sources."""
+
     def __init__(self, config):
         self.config = config
         self.stdout_capture = None
@@ -185,23 +186,7 @@ class CaptureController(object):
     def make_capture_report(self):
         """Combine collected output and return as string."""
         return self.captured.make_report()
-        # report = u""
-        # if self.config.stdout_capture and self.stdout_capture:
-        #     output = self.stdout_capture.getvalue()
-        #     if output:
-        #         output = _text(output)
-        #         report += u"\nCaptured stdout:\n" + output
-        # if self.config.stderr_capture and self.stderr_capture:
-        #     output = self.stderr_capture.getvalue()
-        #     if output:
-        #         output = _text(output)
-        #         report += u"\nCaptured stderr:\n" + output
-        # if self.config.log_capture and self.log_capture:
-        #     output = self.log_capture.getvalue()
-        #     if output:
-        #         output = _text(output)
-        #         report += u"\nCaptured logging:\n" + output
-        # return report
+
 
 # -----------------------------------------------------------------------------
 # UTILITY FUNCTIONS:
