@@ -13,6 +13,9 @@ BACKWARD-INCOMPATIBLE:
   - DEPRECATING: tag-expressions v1 (old-style)
   - BUT: Currently, tag-expression version is automatically detected (and used).
 
+* CLEANUP: Remove ``stdout_capture``, ``stderr_capture``, ``log_capture``
+  attributes from ``behave.runner.Context`` class
+  (use: ``captured`` attribute instead).
 
 GOALS:
 
