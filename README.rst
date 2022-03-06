@@ -1,10 +1,11 @@
 ======
-Behave
+behave
 ======
 
-.. image:: https://img.shields.io/travis/behave/behave/master.svg
-    :target: https://travis-ci.org/behave/behave
-    :alt: Travis CI Build Status
+
+.. image:: https://github.com/behave/behave/actions/workflows/tests.yml/badge.svg
+    :target: https://github.com/behave/behave/actions/workflows/tests.yml
+    :alt: CI Build Status
 
 .. image:: https://readthedocs.org/projects/behave/badge/?version=latest
     :target: http://behave.readthedocs.io/en/latest/?badge=latest

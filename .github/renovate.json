@@ -10,7 +10,7 @@
         "py.requirements/develop.txt",
         "py.requirements/testing.txt",
         "py.requirements/ci.tox.txt",
-        "py.requirements/ci.travis.txt",
+        "py.requirements/ci.github.testing.txt",
         "tasks/py.requirements.txt",
         "issue.features/py.requirements.txt"
     ]

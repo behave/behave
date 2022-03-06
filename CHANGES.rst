@@ -22,6 +22,7 @@ GOALS:
 DEVELOPMENT:
 
 * Renamed default branch of Git repository to "main" (was: "master").
+* Use github-actions as CI/CD pipeline (and remove Travis as CI).
 
 CLEANUPS:
 

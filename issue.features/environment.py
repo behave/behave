@@ -60,13 +60,13 @@ def discover_ci_server():
     # pylint: disable=invalid-name
     ci_server = "none"
     CI = os.environ.get("CI", "false").lower() == "true"
+    GITHUB_ACTIONS = os.environ.get("GITHUB_ACTIONS", "false").lower() == "true"
     APPVEYOR = os.environ.get("APPVEYOR", "false").lower() == "true"
-    TRAVIS = os.environ.get("TRAVIS", "false").lower() == "true"
     if CI:
-        if APPVEYOR:
+        if GITHUB_ACTIONS:
+            ci_server = "github-actions"
+        elif APPVEYOR:
             ci_server = "appveyor"
-        elif TRAVIS:
-            ci_server = "travis"
         else:
             ci_server = "unknown"
     return ci_server
