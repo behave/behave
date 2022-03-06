@@ -6,16 +6,12 @@ Version: 1.2.7 (unreleased)
 
 BACKWARD-INCOMPATIBLE:
 
-* Replace old-style tag-expressions with `cucumber-tag-expressions`_
+* Replace old-style tag-expressions with `cucumber-tag-expressions`_ as ``tag-expressions v2``.
 
   HINTS:
 
-  - DEPRECATING: tag-expressions v1 (old-style)
+  - DEPRECATING: ``tag-expressions v1`` (old-style)
   - BUT: Currently, tag-expression version is automatically detected (and used).
-
-* CLEANUP: Remove ``stdout_capture``, ``stderr_capture``, ``log_capture``
-  attributes from ``behave.runner.Context`` class
-  (use: ``captured`` attribute instead).
 
 GOALS:
 
@@ -23,6 +19,15 @@ GOALS:
 - FIX: Unicode problems on Windows (in behave-1.2.6)
 - FIX: Regression test problems on Windows (in behave-1.2.6)
 
+DEVELOPMENT:
+
+* Renamed default branch of Git repository to "main" (was: "master").
+
+CLEANUPS:
+
+* Remove ``stdout_capture``, ``stderr_capture``, ``log_capture``
+  attributes from ``behave.runner.Context`` class
+  (use: ``captured`` attribute instead).
 
 ENHANCEMENTS:
 
