@@ -1,0 +1,49 @@
+# -- FAST-PROTOTYPING: Tests on Windows -- Until tests are OK.
+# BASED ON: tests.yml
+
+name: tests-windows
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # PREPARED: python-version: ['3.10', '3.9']
+        python-version: ['3.9']
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python ${{ matrix.python-version }} on platform=${{ matrix.os }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+          cache-dependency-path: 'py.requirements/*.txt'
+      - name: Show Python version
+        run: python --version
+      - name: Install Python package dependencies
+        run: |
+          python -m pip install -U pip setuptools wheel
+          pip install --upgrade -r py.requirements/ci.github.testing.txt
+          pip install -e .
+      - name: Run tests
+        run: pytest
+      - name: Run behave tests
+        run: |
+          behave --format=progress features
+          behave --format=progress tools/test-features
+          behave --format=progress issue.features
+      - name: Upload test reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: test reports
+          path: |
+            build/testing/report.xml
+            build/testing/report.html
+        if: ${{ job.status == 'failure' }}
+        # MAYBE: if: ${{ always() }}

@@ -550,7 +550,12 @@ def exec_file(filename, globals_=None, locals_=None):
     locals_["__file__"] = filename
     with open(filename, "rb") as f:
         # pylint: disable=exec-used
-        filename2 = os.path.relpath(filename, os.getcwd())
+        try:
+            filename2 = os.path.relpath(filename, os.getcwd())
+        except ValueError:
+            # -- CASE Windows: CWD and filename on different drives.
+            filename2 = filename
+
         code = compile(f.read(), filename2, "exec", dont_inherit=True)
         exec(code, globals_, locals_)
 
