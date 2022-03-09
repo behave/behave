@@ -10,11 +10,12 @@ on:
 
 jobs:
   test:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         # PREPARED: python-version: ['3.10', '3.9']
+        os: [windows-latest]
         python-version: ['3.9']
     steps:
       - uses: actions/checkout@v2

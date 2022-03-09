@@ -6,6 +6,7 @@ Unit tests for :mod:`behave.api.async_test` for Python 3.5 (or newer).
 # -- IMPORTS:
 from __future__ import absolute_import, print_function
 import sys
+from hamcrest import assert_that, close_to
 from behave._stepimport import use_step_import_modules
 from behave.runner import Context, Runner
 import pytest
@@ -40,9 +41,15 @@ from .testing_support_async import AsyncStepTheory
 # -----------------------------------------------------------------------------
 # TEST MARKERS:
 # -----------------------------------------------------------------------------
-# xfail = pytest.mark.xfail
-_python_version = float("%s.%s" % sys.version_info[:2])
-py35_or_newer = pytest.mark.skipif(_python_version < 3.5, reason="Needs Python >= 3.5")
+PYTHON_3_5 = (3, 5)
+python_version = sys.version_info[:2]
+py35_or_newer = pytest.mark.skipif(python_version < PYTHON_3_5, reason="Needs Python >= 3.5")
+
+SLEEP_DELTA = 0.050
+if sys.platform.startswith("win"):
+    # MAYBE: SLEEP_DELTA = 0.100
+    SLEEP_DELTA = 0.050
+
 
 # -----------------------------------------------------------------------------
 # TESTSUITE:
@@ -72,7 +79,8 @@ class TestAsyncStepDecoratorPy35(object):
         context = Context(runner=Runner(config={}))
         with StopWatch() as stop_watch:
             step_async_step_waits_seconds(context, 0.2)
-        assert abs(stop_watch.duration - 0.2) <= 0.05
+        # DISABLED: assert abs(stop_watch.duration - 0.2) <= 0.05
+        assert_that(stop_watch.duration, close_to(0.2, delta=SLEEP_DELTA))
 
 
 @py35_or_newer
