@@ -33,7 +33,7 @@ Provides model classes to evaluate parsed boolean tag expressions.
 """
 
 from __future__ import absolute_import
-from fnmatch import fnmatch
+from fnmatch import fnmatchcase
 import glob
 from .model import Expression
 
@@ -74,7 +74,8 @@ class Matcher(Expression):
 
     def evaluate(self, values):
         for value in values:
-            if fnmatch(value, self.pattern):
+            # -- REQUIRE: case-sensitive matching
+            if fnmatchcase(value, self.pattern):
                 return True
         # -- OTHERWISE: no-match
         return False
