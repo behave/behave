@@ -36,9 +36,9 @@ jobs:
         run: pytest
       - name: Run behave tests
         run: |
-          behave --format=progress features
-          behave --format=progress tools/test-features
-          behave --format=progress issue.features
+          behave --format=progress3 features
+          behave --format=progress3 tools/test-features
+          behave --format=progress3 issue.features
       - name: Upload test reports
         uses: actions/upload-artifact@v3
         with:
@@ -48,3 +48,8 @@ jobs:
             build/testing/report.html
         if: ${{ job.status == 'failure' }}
         # MAYBE: if: ${{ always() }}
+      - name: Upload behave test reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: behave.reports
+          path: build/behave.reports/
