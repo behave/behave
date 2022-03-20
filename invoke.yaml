@@ -43,6 +43,7 @@ cleanup_all:
 
     extra_files:
       - "**/testrun*.json"
+      - ".done.*"
       - "*.lock"
       - "*.log"
       - .coverage

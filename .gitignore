@@ -23,6 +23,7 @@ tools/virtualenvs
 .tox/
 .venv*/
 .vscode/
+.done.*
 .envrc.use_venv
 .envrc.use_pep0582
 .DS_Store
