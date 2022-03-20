@@ -2,10 +2,8 @@
 # PYTHON PACKAGE REQUIREMENTS FOR: behave -- For development only
 # ============================================================================
 
-# -- BUILD-TOOL:
-invoke == 1.4.1
-pathlib;    python_version <= '3.4'
-pycmd
+# -- BUILD-SYSTEM: invoke
+-r invoke.txt
 
 # -- HINT: path.py => path (python-install-package was renamed for python3)
 path.py >= 11.5.0; python_version <  '3.5'
@@ -19,9 +17,6 @@ bump2version >= 0.5.6
 twine >= 1.13.0
 
 # -- DEVELOPMENT SUPPORT:
-tox   >= 1.8.1
-coverage >= 4.2
-pytest-cov
 
 # -- PYTHON2/3 COMPATIBILITY: pypa/modernize
 # python-futurize
@@ -30,7 +25,11 @@ modernize >= 0.5
 # -- STATIC CODE ANALYSIS:
 pylint
 
-# -- REQUIRES: testing, docs, invoke-task requirements
+# -- REQUIRES: testing
 -r testing.txt
+coverage >= 4.2
+pytest-cov
+tox   >= 1.8.1
+
+# -- REQUIRED FOR: docs
 -r docs.txt
--r ../tasks/py.requirements.txt

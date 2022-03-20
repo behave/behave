@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*
+# -*- coding: UTF-8 -*
 """
 Setup script for behave.
 
@@ -76,25 +76,32 @@ setup(
     # SUPPORT: python2.7, python3.3 (or higher)
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*",
     install_requires=[
-        "cucumber-tag-expressions >= 1.1.2",
-        "parse >= 1.18.0",
-        "parse_type >= 0.4.2",
-        "six >= 1.12.0",
-        "traceback2; python_version < '3.0'",
+        "cucumber-tag-expressions >= 4.1.0",
         "enum34; python_version < '3.4'",
+        "parse >= 1.18.0",
+        "parse_type >= 0.6.0",
+        "six >= 1.15.0",
+        "traceback2; python_version < '3.0'",
+
         # -- PREPARED:
         "win_unicode_console; python_version < '3.6'",
-        "colorama",
+        "contextlib2;  python_version < '3.5'",
+        # DISABLED: "contextlib2 >= 21.6.0;  python_version < '3.5'",
+        "colorama >= 0.3.7",
     ],
     tests_require=[
         "pytest <  5.0; python_version <  '3.0'", # >= 4.2
         "pytest >= 5.0; python_version >= '3.0'",
-        "pytest-html >= 1.19.0",
-        "mock >= 1.1",
-        "PyHamcrest >= 1.9",
+        "pytest-html >= 1.19.0,<2.0; python_version <  '3.0'",
+        "pytest-html >= 2.0;         python_version >= '3.0'",
+        "mock  <  4.0;   python_version <  '3.6'",
+        "mock  >= 4.0;   python_version >= '3.6'",
+        "PyHamcrest >= 2.0.2; python_version >= '3.0'",
+        "PyHamcrest <  2.0;   python_version <  '3.0'",
+
         # -- HINT: path.py => path (python-install-package was renamed for python3)
-        "path.py >= 11.5.0; python_version <  '3.5'",
-        "path >= 13.1.0;    python_version >= '3.5'",
+        "path >= 13.1.0;         python_version >= '3.5'",
+        "path.py >=11.5.0,<13.0; python_version <  '3.5'",
     ],
     cmdclass = {
         "behave_test": behave_test,
@@ -106,12 +113,20 @@ setup(
         ],
         "develop": [
             "coverage",
-            "pytest >= 4.2",
-            "pytest-html >= 1.19.0",
+            "pytest >=4.2,<5.0; python_version <  '3.0' # pytest >= 4.2",
+            "pytest >= 5.0; python_version >= '3.0'",
+            "pytest-html >= 1.19.0,<2.0; python_version <  '3.0'",
+            "pytest-html >= 2.0;         python_version >= '3.0'",
+            "mock  <  4.0;   python_version <  '3.6'",
+            "mock  >= 4.0;   python_version >= '3.6'",
+            "PyHamcrest >= 2.0.2; python_version >= '3.0'",
+            "PyHamcrest <  2.0;   python_version <  '3.0'",
             "pytest-cov",
             "tox",
-            "invoke >= 1.2.0",
-            "path.py >= 11.5.0",
+            "invoke >= 1.4.0",
+            # -- HINT: path.py => path (python-install-package was renamed for python3)
+            "path >= 13.1.0;    python_version >= '3.5'",
+            "path.py >= 11.5.0; python_version <  '3.5'",
             "pycmd",
             "pathlib; python_version <= '3.4'",
             "modernize >= 0.5",
@@ -121,8 +136,6 @@ setup(
             "behave-html-formatter",
         ],
     },
-    # DISABLED: use_2to3= bool(python_version >= 3.0),
-    # DEPRECATED SINCE: setuptools v58.0.2 (2021-09-06)
     license="BSD",
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -137,6 +150,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: Jython",
         "Programming Language :: Python :: Implementation :: PyPy",

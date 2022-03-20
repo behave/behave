@@ -8,14 +8,15 @@
 #  * http://www.pip-installer.org/
 # ============================================================================
 
-cucumber-tag-expressions >= 1.1.2
+cucumber-tag-expressions >= 4.1.0
+enum34; python_version < '3.4'
 parse >= 1.18.0
-parse_type >= 0.4.2
-six == 1.15.0
+parse_type >= 0.6.0
+six >= 1.15.0
 
 traceback2;  python_version < '3.0'
-contextlib2     # MAYBE: python_version < '3.5'
-win_unicode_console >= 0.5;  python_version >= '2.7'
+contextlib2; python_version < '3.5'
+win_unicode_console >= 0.5;  python_version < '3.6'
 colorama >= 0.3.7
 
 # -- DISABLED PYTHON 2.6 SUPPORT:
