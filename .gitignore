@@ -1,4 +1,5 @@
 *.egg-info
+*.lock
 *.log
 *.pyc
 *.pyo
@@ -6,6 +7,7 @@
 build/
 dist/
 __pycache__/
+__pypackages__/
 __WORKDIR__/
 __*/
 __*.txt
@@ -15,14 +17,15 @@ _WORKSPACE/
 reports/
 tools/virtualenvs
 .cache/
+.direnv/
 .idea/
 .pytest_cache/
 .tox/
 .venv*/
 .vscode/
+.envrc.use_venv
+.envrc.use_pep0582
 .DS_Store
 .coverage
-.ropeproject
-nosetests.xml
 rerun.txt
 testrun*.json

@@ -39,9 +39,14 @@ cleanup_all:
     extra_directories:
       - .hypothesis
       - .pytest_cache
+      - .direnv
 
     extra_files:
       - "**/testrun*.json"
+      - "*.lock"
+      - "*.log"
+      - .coverage
+      - rerun.txt
 
 behave_test:
     scopes:
