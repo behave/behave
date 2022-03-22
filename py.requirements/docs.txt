@@ -2,8 +2,9 @@
 # BEHAVE: PYTHON PACKAGE REQUIREMENTS: For documentation generation
 # ============================================================================
 # REQUIRES: pip >= 8.0
+# AVOID: shponx v4.4.0 and newer -- Problems w/ new link check suggestion warnings
 
-sphinx >= 1.6
+sphinx >=1.6,<4.4
 sphinx-autobuild
 sphinx_bootstrap_theme >= 0.6.0
 

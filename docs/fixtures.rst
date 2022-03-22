@@ -11,6 +11,7 @@ A common task during test execution is to:
 **Fixtures** are provided as concept to simplify this setup/cleanup task
 in `behave`_.
 
+.. include:: _common_extlinks.rst
 
 Providing a Fixture
 -------------------
@@ -52,8 +53,6 @@ Providing a Fixture
     * a :func:`contextlib.contextmanager`
     * a `pytest.fixture`_
     * the `scope guard`_ idiom
-
-.. include:: _common_extlinks.rst
 
 
 Using a Fixture

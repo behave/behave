@@ -1,6 +1,7 @@
 
 .. _behave:     https://github.com/behave/behave
 .. _behave4cmd: https://github.com/behave/behave4cmd
+.. _`behave.example`: https://github.com/behave/behave.example
 
 .. _`pytest.fixture`:   https://docs.pytest.org/en/latest/fixture.html
 .. _`@pytest.fixture`:  https://docs.pytest.org/en/latest/fixture.html

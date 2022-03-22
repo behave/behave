@@ -6,8 +6,8 @@ Formatters and Reporters
 
 :pypi:`behave` provides 2 different concepts for reporting results of a test run:
 
-  * formatters
-  * reporters
+* formatters
+* reporters
 
 A slightly different interface is provided for each "formatter" concept.
 The ``Formatter`` is informed about each step that is taken.
@@ -109,29 +109,80 @@ teamcity       :pypi:`behave-teamcity`, a formatter for JetBrains TeamCity CI te
                with behave.
 ============== =========================================================================
 
+The usage of a custom formatter can be simplified if a formatter alias is defined for.
+
+EXAMPLE:
+
 .. code-block:: ini
 
     # -- FILE: behave.ini
-    # FORMATTER ALIASES: behave -f allure ...
+    # FORMATTER ALIASES: "behave -f allure" and others...
     [behave.formatters]
     allure = allure_behave.formatter:AllureFormatter
     html = behave_html_formatter:HTMLFormatter
     teamcity = behave_teamcity:TeamcityFormatter
 
 
-Embedding data (e.g. screenshots) in reports
+Embedding Screenshots / Data in Reports
 ------------------------------------------------------------------------------
 
+:Hint 1: Only supported by JSON formatter
+:Hint 2: Binary attachments may require base64 encoding.
+
 You can embed data in reports with the :class:`~behave.runner.Context` method
-:func:`~behave.runner.Context.attach`, if you have configured a formatter that
+:func:`~behave.runner.Context.attach()`, if you have configured a formatter that
 supports it. Currently only the JSON formatter supports embedding data.
 
 For example:
 
 .. code-block:: python
 
+    # -- FILE: features/steps/screenshot_example_steps.py
+    from behave import fiven, when
+    from behave4example.web_browser.util import take_screenshot_and_attach_to_scenario
+
+    @given(u'I open the Google webpage')
     @when(u'I open the Google webpage')
-    def step_impl(context):
-        context.browser.get('http://www.google.com')
-        img = context.browser.get_full_page_screenshot_as_png()
-        context.attach("image/png", img)
+    def step_open_google_webpage(ctx):
+        ctx.browser.get("https://www.google.com")
+        take_screenshot_and_attach_to_scenario(ctx)
+
+.. code-block:: python
+
+    # -- FILE: behave4example/web_browser/util.py
+    # HINTS:
+    #   * EXAMPLE CODE ONLY
+    #   * BROWSER-SPECIFIC: Implementation may depend on browser driver.
+    def take_screenshot_and_attach_to_scenario(ctx):
+        # -- HINT: SELENIUM WITH CHROME: ctx.browser.get_screenshot_as_base64()
+        screenshot_image = ctx.browser.get_full_page_screenshot_as_png()
+        ctx.attach("image/png", screenshot_image)
+
+.. code-block:: python
+
+    # -- FILE: features/environment.py
+    # EXAMPLE REQUIRES: This browser driver setup code (or something similar).
+    from selenium import webdriver
+
+    def before_all(ctx):
+        ctx.browser = webdriver.Firefox()
+
+.. seealso::
+
+    * Selenium Python SDK: https://www.selenium.dev/selenium/docs/api/py/
+    * Playwright Python SDK: https://playwright.dev/python/docs/intro
+
+
+    **RELATED:** Selenium webdriver details:
+
+    * Selenium webdriver (for Firefox): `selenium.webdriver.firefox.webdriver.WebDriver.get_full_page_screenshot_as_png`_
+    * Selenium webdriver (for Chrome):  `selenium.webdriver.remote.webdriver.WebDriver.get_screenshot_as_base64`_
+
+
+    **RELATED:** Playwright details:
+
+    * https://playwright.dev/python/docs/api/class-locator#locator-screenshot
+    * https://playwright.dev/python/docs/api/class-page#page-screenshot
+
+.. _`selenium.webdriver.firefox.webdriver.WebDriver.get_full_page_screenshot_as_png`: https://www.selenium.dev/selenium/docs/api/py/webdriver_firefox/selenium.webdriver.firefox.webdriver.html?highlight=screenshot#selenium.webdriver.firefox.webdriver.WebDriver.get_full_page_screenshot_as_png
+.. _`selenium.webdriver.remote.webdriver.WebDriver.get_screenshot_as_base64`: https://www.selenium.dev/selenium/docs/api/py/webdriver_remote/selenium.webdriver.remote.webdriver.html?highlight=get_screenshot_as_base64#selenium.webdriver.remote.webdriver.WebDriver.get_screenshot_as_base64

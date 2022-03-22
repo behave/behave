@@ -21,8 +21,8 @@ You may see the same information presented below at any time using ``behave
 
 .. option:: --color
 
-    Use ANSI color escapes. This is the default behaviour. This switch is
-    used to override a configuration file setting.
+    Use ANSI color escapes. Defaults to %(const)r. This switch is used to
+    override a configuration file setting.
 
 .. option:: -d, --dry-run
 
@@ -57,8 +57,7 @@ You may see the same information presented below at any time using ``behave
 
 .. option:: --runner-class
 
-    This allows you to use your own custom runner. The default is 
-    ``behave.runner.Runner``.
+    Tells Behave to use a specific runner. (default: %(default)s)
 
 .. option:: -f, --format
 
@@ -343,10 +342,10 @@ Configuration Parameters
 .. index::
     single: configuration param; color
 
-.. describe:: color : bool
+.. describe:: color : text
 
-    Use ANSI color escapes. This is the default behaviour. This switch is
-    used to override a configuration file setting.
+    Use ANSI color escapes. Defaults to %(const)r. This switch is used to
+    override a configuration file setting.
 
 .. index::
     single: configuration param; dry_run
@@ -392,6 +391,13 @@ Configuration Parameters
 .. describe:: junit_directory : text
 
     Directory in which to store JUnit reports.
+
+.. index::
+    single: configuration param; runner_class
+
+.. describe:: runner_class : text
+
+    Tells Behave to use a specific runner. (default: %(default)s)
 
 .. index::
     single: configuration param; default_format
