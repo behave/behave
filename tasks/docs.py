@@ -18,6 +18,8 @@ from .invoke_cleanup import cleanup_tasks, cleanup_dirs
 # -----------------------------------------------------------------------------
 # CONSTANTS:
 # -----------------------------------------------------------------------------
+HERE = Path(__file__).dirname().abspath()
+PROJECT_DIR = Path(HERE/"..").abspath()
 SPHINX_LANGUAGE_DEFAULT = os.environ.get("SPHINX_LANGUAGE", "en")
 
 
@@ -58,8 +60,8 @@ def clean(ctx, dry_run=False):
 def build(ctx, builder="html", language=None, options=""):
     """Build docs with sphinx-build"""
     language = _sphinxdoc_get_language(ctx, language)
-    sourcedir = ctx.config.sphinx.sourcedir
-    destdir = _sphinxdoc_get_destdir(ctx, builder, language=language)
+    sourcedir = PROJECT_DIR/ctx.config.sphinx.sourcedir
+    destdir = PROJECT_DIR/_sphinxdoc_get_destdir(ctx, builder, language=language)
     destdir = destdir.abspath()
     with cd(sourcedir):
         destdir_relative = Path(".").relpathto(destdir)
@@ -118,7 +120,9 @@ def linkcheck(ctx):
 def browse(ctx, language=None):
     """Open documentation in web browser."""
     output_dir = _sphinxdoc_get_destdir(ctx, "html", language=language)
-    page_html = Path(output_dir)/"index.html"
+    project_dir = Path(".").relpathto(PROJECT_DIR)
+    page_html = project_dir/output_dir/"index.html"
+    # OR: page_html = Path(PROJECT_DIR)/output_dir/"index.html"
     if not page_html.exists():
         build(ctx, builder="html")
     assert page_html.exists()
