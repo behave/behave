@@ -84,7 +84,7 @@ setup(
         "traceback2; python_version < '3.0'",
 
         # -- PREPARED:
-        "win_unicode_console; python_version < '3.6'",
+        "win_unicode_console; python_version <= '3.9'",
         "contextlib2;  python_version < '3.5'",
         # DISABLED: "contextlib2 >= 21.6.0;  python_version < '3.5'",
         "colorama >= 0.3.7",
