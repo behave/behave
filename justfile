@@ -1,15 +1,22 @@
 # =============================================================================
-# justfile: A makefile like build script
+# justfile: A makefile like build script -- Command Runner
 # =============================================================================
 # REQUIRES: cargo install just
-# PLATFORMS: Windows, Linux, macOS, ...
+# PLATFORMS: macOS, Linux, Windows, ...
 # USAGE:
 #   just --list
 #   just <TARGET>
-#   just <TARGET> <PARAM_VALUE>
+#   just <TARGET> <PARAM_VALUE1> ...
 #
 # SEE ALSO:
 #   * https://github.com/casey/just
+# =============================================================================
+# WORKS BEST FOR: macOS, Linux
+# PLATFORM HINTS:
+#  * Windows: Python 3.x has only "python.exe", but no "python3.exe"
+#             HINT: Requires "bash.exe", provided by WSL or git-bash.
+#  * Linux: Python 3.x has only "python3", but no "python" (for newer versions)
+#           HINT: "python" seems to be used for "python2".
 # =============================================================================
 
 # -- OPTION: Load environment-variables from "$HERE/.env" file (if exists)
@@ -19,11 +26,9 @@ set export := true
 # -----------------------------------------------------------------------------
 # CONFIG:
 # -----------------------------------------------------------------------------
-# NOTES:
-# - PYTHON: Newer Linux may have no "python" executable, only "python3".
-
 HERE   := justfile_directory()
-PYTHON := env_var_or_default("PYTHON", "python3")
+PYTHON_DEFAULT := if os() == "windows" { "python" } else { "python3" }
+PYTHON := env_var_or_default("PYTHON", PYTHON_DEFAULT)
 PIP_INSTALL_OPTIONS := env_var_or_default("PIP_INSTALL_OPTIONS", "--quiet")
 
 BEHAVE_FORMATTER := env_var_or_default("BEHAVE_FORMATTER", "progress")
@@ -34,7 +39,7 @@ PYTEST_OPTIONS   := env_var_or_default("PYTEST_OPTIONS", "")
 # -----------------------------------------------------------------------------
 
 # DEFAULT-TARGET: Ensure that packages are installed and runs tests.
-default: (_ensure-install-packages "basic") (_ensure-install-packages "testing") test
+default: (_ensure-install-packages "basic") (_ensure-install-packages "testing") test-all
 
 # PART=all, testing, ...
 install-packages PART="all":
@@ -60,7 +65,7 @@ test *TESTS:
 
 # Run behave with feature file(s) or directory(s).
 behave +FEATURE_FILES="features":
-    {{PYTHON}} bin/behave --format={{BEHAVE_FORMATTER}} {{FEATURE_FILES}}
+    {{PYTHON}} {{HERE}}/bin/behave --format={{BEHAVE_FORMATTER}} {{FEATURE_FILES}}
 
 # Run all behave tests.
 behave-all:
