@@ -74,7 +74,11 @@ class Command(object):
     """
     DEBUG = False
     COMMAND_MAP = {
-        "behave": os.path.normpath("{0}/bin/behave".format(TOP))
+        # OLD: "behave": os.path.normpath("{0}/bin/behave".format(TOP)),
+        "behave": "{python} {behave_cmd}".format(
+            python=sys.executable,
+            behave_cmd=os.path.normpath("{0}/bin/behave".format(TOP))
+        ),
     }
     PREPROCESSOR_MAP = {}
     POSTPROCESSOR_MAP = {}
