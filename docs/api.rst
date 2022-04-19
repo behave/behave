@@ -42,11 +42,11 @@ lowercase) and traditional (title case) versions: "given", "when", "then"
 and the generic "step". See the `full list of variables imported`_ in the
 above statement.
 
-.. _`full list of variables imported`: #from-behave-import-*
+.. _`full list of variables imported`: #from-behave-import
 
 The decorators all take a single string argument: the string to match
-against the feature file step text *exactly*. So the following step
-implementation code:
+against the feature file step text (and they must match *exactly*).
+So the following step implementation code:
 
 .. code-block:: python
 
@@ -67,6 +67,10 @@ will match the "Given" step from the following feature:
 to your step implementation modules as `global variables`_.
 
 .. _`global variables`: #step-global-variables
+
+The keywords "Given", "When" and "Then" are chosen for their BDD connotations.
+Other than matching the different names of the decorators, however, their
+implementations are identical.
 
 Steps beginning with "and" or "but" in the feature file are renamed to take
 the name of their preceding keyword, so given the following feature file:
