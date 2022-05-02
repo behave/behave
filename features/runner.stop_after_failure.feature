@@ -65,7 +65,7 @@ Feature: Runner should stop after first failure if --stop option is used
 
             0 features passed, 1 failed, 0 skipped
             1 scenario passed, 1 failed, 0 skipped, 2 untested
-            4 steps passed, 1 failed, 1 skipped, 0 undefined, 2 untested
+            4 steps passed, 1 failed, 1 skipped, 2 untested
             """
         And the command output should contain:
             """
@@ -94,7 +94,7 @@ Feature: Runner should stop after first failure if --stop option is used
 
             0 features passed, 1 failed, 0 skipped, 1 untested
             1 scenario passed, 1 failed, 0 skipped, 4 untested
-            4 steps passed, 1 failed, 1 skipped, 0 undefined, 8 untested
+            4 steps passed, 1 failed, 1 skipped, 8 untested
             """
 
     Scenario: Stop running after first failure with several features (CASE 2: Different order)
@@ -106,7 +106,7 @@ Feature: Runner should stop after first failure if --stop option is used
 
             1 feature passed, 1 failed, 0 skipped
             3 scenarios passed, 1 failed, 0 skipped, 2 untested
-            10 steps passed, 1 failed, 1 skipped, 0 undefined, 2 untested
+            10 steps passed, 1 failed, 1 skipped, 2 untested
             """
 
     Scenario: Stop running after first failure with several features (CASE 3: Use directory)
@@ -118,5 +118,5 @@ Feature: Runner should stop after first failure if --stop option is used
 
             0 features passed, 1 failed, 0 skipped, 1 untested
             1 scenario passed, 1 failed, 0 skipped, 4 untested
-            4 steps passed, 1 failed, 1 skipped, 0 undefined, 8 untested
+            4 steps passed, 1 failed, 1 skipped, 8 untested
             """

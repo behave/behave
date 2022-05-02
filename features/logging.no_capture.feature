@@ -85,7 +85,7 @@ Feature: No-logcapture mode (normal mode) shows log-records
         Then it should fail with:
             """
             0 scenarios passed, 1 failed, 0 skipped
-            1 step passed, 1 failed, 1 skipped, 0 undefined
+            1 step passed, 1 failed, 1 skipped
             """
         And the command output should contain the following log records:
             | category | level   | message |

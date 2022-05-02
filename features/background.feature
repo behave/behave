@@ -83,7 +83,7 @@ Feature: Background
     Then it should pass with:
         """
         2 scenarios passed, 0 failed, 0 skipped
-        7 steps passed, 0 failed, 0 skipped, 0 undefined
+        7 steps passed, 0 failed, 0 skipped
         """
     And the command output should contain:
         """
@@ -126,7 +126,7 @@ Feature: Background
     Then it should fail with:
         """
         0 scenarios passed, 2 failed, 0 skipped
-        2 steps passed, 2 failed, 5 skipped, 0 undefined
+        2 steps passed, 2 failed, 5 skipped
         """
     And the command output should contain:
         """
@@ -180,7 +180,7 @@ Feature: Background
     Then it should fail with:
         """
         1 scenario passed, 2 failed, 0 skipped
-        2 steps passed, 2 failed, 2 skipped, 0 undefined
+        2 steps passed, 2 failed, 2 skipped
         """
     And the command output should contain:
         """
@@ -232,7 +232,7 @@ Feature: Background
     Then it should pass with:
         """
         5 scenarios passed, 0 failed, 0 skipped
-        20 steps passed, 0 failed, 0 skipped, 0 undefined
+        20 steps passed, 0 failed, 0 skipped
         """
     And the command output should contain:
         """
@@ -305,7 +305,7 @@ Feature: Background
     Then it should fail with:
         """
         0 scenarios passed, 6 failed, 0 skipped
-        6 steps passed, 6 failed, 16 skipped, 0 undefined
+        6 steps passed, 6 failed, 16 skipped
         """
     And the command output should contain:
         """

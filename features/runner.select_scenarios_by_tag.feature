@@ -68,7 +68,7 @@ Feature: Select scenarios by using tags
           """
           2 features passed, 0 failed, 0 skipped
           3 scenarios passed, 0 failed, 3 skipped
-          3 steps passed, 0 failed, 3 skipped, 0 undefined
+          3 steps passed, 0 failed, 3 skipped
           """
       And the command output should contain:
           """
@@ -96,7 +96,7 @@ Feature: Select scenarios by using tags
           """
           2 features passed, 0 failed, 0 skipped
           3 scenarios passed, 0 failed, 3 skipped
-          3 steps passed, 0 failed, 3 skipped, 0 undefined
+          3 steps passed, 0 failed, 3 skipped
           """
       And the command output should contain:
           """
@@ -121,7 +121,7 @@ Feature: Select scenarios by using tags
           """
           1 feature passed, 0 failed, 1 skipped
           1 scenario passed, 0 failed, 5 skipped
-          1 step passed, 0 failed, 5 skipped, 0 undefined
+          1 step passed, 0 failed, 5 skipped
           """
       And the command output should contain:
           """
@@ -141,7 +141,7 @@ Feature: Select scenarios by using tags
           """
           1 feature passed, 0 failed, 1 skipped
           1 scenario passed, 0 failed, 5 skipped
-          1 step passed, 0 failed, 5 skipped, 0 undefined
+          1 step passed, 0 failed, 5 skipped
           """
       And the command output should contain:
           """
@@ -161,7 +161,7 @@ Feature: Select scenarios by using tags
           """
           2 features passed, 0 failed, 0 skipped
           2 scenarios passed, 0 failed, 4 skipped
-          2 steps passed, 0 failed, 4 skipped, 0 undefined
+          2 steps passed, 0 failed, 4 skipped
           """
       And the command output should contain:
           """
@@ -185,7 +185,7 @@ Feature: Select scenarios by using tags
           """
           2 features passed, 0 failed, 0 skipped
           2 scenarios passed, 0 failed, 4 skipped
-          2 steps passed, 0 failed, 4 skipped, 0 undefined
+          2 steps passed, 0 failed, 4 skipped
           """
       And the command output should contain:
           """
@@ -209,7 +209,7 @@ Feature: Select scenarios by using tags
           """
           0 features passed, 0 failed, 0 skipped, 2 untested
           0 scenarios passed, 0 failed, 3 skipped, 3 untested
-          0 steps passed, 0 failed, 3 skipped, 0 undefined, 3 untested
+          0 steps passed, 0 failed, 3 skipped, 3 untested
           """
       And the command output should contain:
           """

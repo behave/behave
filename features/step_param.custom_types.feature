@@ -117,7 +117,7 @@ Feature: Parse custom data types in step parameters (type transformation)
     Then it should fail with:
         """
         1 scenario passed, 1 failed, 0 skipped
-        1 step passed, 1 failed, 0 skipped, 0 undefined
+        1 step passed, 1 failed, 0 skipped
         """
     And the command output should contain:
         """

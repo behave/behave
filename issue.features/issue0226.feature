@@ -37,7 +37,7 @@ Feature: UnicodeDecodeError in tracebacks (when an exception in a step implement
     Then it should fail with:
       """
       0 scenarios passed, 1 failed, 0 skipped
-      0 steps passed, 1 failed, 0 skipped, 0 undefined
+      0 steps passed, 1 failed, 0 skipped
       """
     And the command output should contain:
       """

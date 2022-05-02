@@ -54,7 +54,7 @@ Feature: Issue #162 Unnecessary ContextMaskWarnings when assert fails or excepti
     Then it should fail with:
       """
       1 scenario passed, 1 failed, 0 skipped
-      2 steps passed, 1 failed, 1 skipped, 0 undefined
+      2 steps passed, 1 failed, 1 skipped
       """
     But the command output should not contain:
       """
@@ -78,7 +78,7 @@ Feature: Issue #162 Unnecessary ContextMaskWarnings when assert fails or excepti
     Then it should fail with:
       """
       1 scenario passed, 1 failed, 0 skipped
-      2 steps passed, 1 failed, 1 skipped, 0 undefined
+      2 steps passed, 1 failed, 1 skipped
       """
     But the command output should not contain:
       """

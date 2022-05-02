@@ -4,8 +4,8 @@ Feature: Auto-retry failed scenarios (a number of times)
   I want that failed scenarios are automatically retried a number of times
   So that these scenarios are passing
 
-  NOTE: 
-  This problem should occur rather seldom, but may occur when the server or 
+  NOTE:
+  This problem should occur rather seldom, but may occur when the server or
   network infrastructure, etc. is unreliable and causes random failures.
 
 
@@ -56,7 +56,7 @@ Feature: Auto-retry failed scenarios (a number of times)
 
             Scenario: A2
               Given an unreliable step fails sometimes
-              Then another step passes  
+              Then another step passes
         """
     And a file named "behave.ini" with:
         """
@@ -70,7 +70,7 @@ Feature: Auto-retry failed scenarios (a number of times)
     Then it should pass with:
         """
         2 scenarios passed, 0 failed, 0 skipped
-        5 steps passed, 0 failed, 0 skipped, 0 undefined
+        5 steps passed, 0 failed, 0 skipped
         """
     And the command output should contain:
         """
@@ -86,12 +86,12 @@ Feature: Auto-retry failed scenarios (a number of times)
           Given a step passes ... passed
           When an unreliable step fails sometimes ... passed
           Then another unreliable step fails sometimes ... passed
-      
+
         Scenario: A2
           Given an unreliable step fails sometimes ... failed
         Assertion Failed: UNRELIABLE-STEP FAILURE
         AUTO-RETRY SCENARIO (attempt 1)
-      
+
         Scenario: A2
           Given an unreliable step fails sometimes ... passed
           Then another step passes ... passed
@@ -102,7 +102,7 @@ Feature: Auto-retry failed scenarios (a number of times)
     Then it should fail with:
         """
         1 scenario passed, 1 failed, 0 skipped
-        4 steps passed, 1 failed, 0 skipped, 0 undefined
+        4 steps passed, 1 failed, 0 skipped
         """
     And the command output should not contain:
         """
@@ -117,15 +117,15 @@ Feature: Auto-retry failed scenarios (a number of times)
           Then another unreliable step fails sometimes ... failed
         Assertion Failed: UNRELIABLE-STEP FAILURE
         AUTO-RETRY SCENARIO (attempt 1)
-        
+
         Scenario: A1
           Given a step passes ... passed
            When an unreliable step fails sometimes ... passed
           Then another unreliable step fails sometimes ... failed
         Assertion Failed: UNRELIABLE-STEP FAILURE
         AUTO-RETRY SCENARIO FAILED (after 2 attempts)
-      
+
         Scenario: A2
           Given an unreliable step fails sometimes ... passed
           Then another step passes ... passed
-        """        
+        """

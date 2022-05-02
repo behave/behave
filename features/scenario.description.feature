@@ -78,7 +78,7 @@ Feature: Scenario Description
         """
         1 feature passed, 0 failed, 0 skipped
         1 scenario passed, 0 failed, 0 skipped
-        3 steps passed, 0 failed, 0 skipped, 0 undefined
+        3 steps passed, 0 failed, 0 skipped
         """
       And the command output should contain:
         """
@@ -138,7 +138,7 @@ Feature: Scenario Description
         """
         1 feature passed, 0 failed, 0 skipped
         2 scenarios passed, 0 failed, 0 skipped
-        3 steps passed, 0 failed, 0 skipped, 0 undefined
+        3 steps passed, 0 failed, 0 skipped
         """
       And the command output should contain:
         """

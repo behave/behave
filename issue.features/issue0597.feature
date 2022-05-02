@@ -50,7 +50,7 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
 
       1 feature passed, 0 failed, 0 skipped
       1 scenario passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
 
   @only.with_python2=true
@@ -118,7 +118,7 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
       """
       1 feature passed, 0 failed, 0 skipped
       1 scenario passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
       """

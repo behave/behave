@@ -91,7 +91,7 @@ Feature: Runner should support a --dry-run option
             """
             0 features passed, 0 failed, 0 skipped, 1 untested
             0 scenarios passed, 0 failed, 0 skipped, 4 untested
-            0 steps passed, 0 failed, 0 skipped, 0 undefined, 8 untested
+            0 steps passed, 0 failed, 0 skipped, 8 untested
             """
         And the command output should contain
             """
@@ -117,7 +117,7 @@ Feature: Runner should support a --dry-run option
             """
             0 features passed, 0 failed, 0 skipped, 1 untested
             0 scenarios passed, 0 failed, 1 skipped, 3 untested
-            0 steps passed, 0 failed, 3 skipped, 0 undefined, 5 untested
+            0 steps passed, 0 failed, 3 skipped, 5 untested
             """
         And the command output should contain:
             """
@@ -144,7 +144,7 @@ Feature: Runner should support a --dry-run option
             """
             0 features passed, 0 failed, 0 skipped, 2 untested
             0 scenarios passed, 0 failed, 0 skipped, 6 untested
-            0 steps passed, 0 failed, 0 skipped, 0 undefined, 14 untested
+            0 steps passed, 0 failed, 0 skipped, 14 untested
             """
 
     Scenario: Dry-run one feature with undefined steps

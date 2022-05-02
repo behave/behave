@@ -67,7 +67,7 @@ Feature: Capture log output
         Then it should pass with:
             """
             1 scenario passed, 0 failed, 0 skipped
-            2 steps passed, 0 failed, 0 skipped, 0 undefined
+            2 steps passed, 0 failed, 0 skipped
             """
         And the command output should contain:
             """
@@ -99,7 +99,7 @@ Feature: Capture log output
         Then it should fail with:
             """
             0 scenarios passed, 1 failed, 0 skipped
-            1 step passed, 1 failed, 0 skipped, 0 undefined
+            1 step passed, 1 failed, 0 skipped
             """
         And the command output should contain:
             """

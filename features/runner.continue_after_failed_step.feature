@@ -75,7 +75,7 @@ Feature: Runner should continue after a failed step
 
           0 features passed, 1 failed, 0 skipped
           1 scenario passed, 2 failed, 0 skipped
-          6 steps passed, 3 failed, 0 skipped, 0 undefined
+          6 steps passed, 3 failed, 0 skipped
           """
       And the command output should contain:
           """
@@ -115,7 +115,7 @@ Feature: Runner should continue after a failed step
 
           0 features passed, 1 failed, 0 skipped
           1 scenario passed, 2 failed, 0 skipped
-          5 steps passed, 3 failed, 1 skipped, 0 undefined
+          5 steps passed, 3 failed, 1 skipped
           """
       And the command output should contain:
           """

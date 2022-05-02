@@ -46,7 +46,7 @@ Feature: Issue #631 -- Scenario Outline variables not possible in table headings
       """
       1 feature passed, 0 failed, 0 skipped
       2 scenarios passed, 0 failed, 0 skipped
-      4 steps passed, 0 failed, 0 skipped, 0 undefined
+      4 steps passed, 0 failed, 0 skipped
       """
     And the command output should not contain "<method>"
     And note that "the resulting output should look like"

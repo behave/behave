@@ -37,7 +37,7 @@ Feature: Issue #606 -- Name option with special unicode chars
       """
       1 feature passed, 0 failed, 0 skipped
       2 scenarios passed, 0 failed, 1 skipped
-      2 steps passed, 0 failed, 1 skipped, 0 undefined
+      2 steps passed, 0 failed, 1 skipped
       """
     And the command output should contain:
       """

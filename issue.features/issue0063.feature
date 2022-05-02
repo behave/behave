@@ -53,7 +53,7 @@ Feature: Issue #63: 'ScenarioOutline' object has no attribute 'stdout'
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      6 steps passed, 0 failed, 0 skipped, 0 undefined
+      6 steps passed, 0 failed, 0 skipped
       """
     But the command output should not contain:
       """
@@ -78,7 +78,7 @@ Feature: Issue #63: 'ScenarioOutline' object has no attribute 'stdout'
     Then it should fail with:
       """
       0 scenarios passed, 2 failed, 0 skipped
-      2 steps passed, 2 failed, 2 skipped, 0 undefined
+      2 steps passed, 2 failed, 2 skipped
       """
     But the command output should not contain:
       """

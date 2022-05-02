@@ -29,7 +29,7 @@ Feature: Issue #125: Duplicate "Captured stdout" if substep has failed
     Then it should fail with:
       """
       0 scenarios passed, 1 failed, 0 skipped
-      0 steps passed, 1 failed, 0 skipped, 0 undefined
+      0 steps passed, 1 failed, 0 skipped
       """
     And the command output should contain:
       """

@@ -136,7 +136,7 @@ Feature: Progress3 Formatter
         And the command output should contain:
             """
             RuntimeError: Error message here
-            
+
             --------------------------------------------------------------------------------
             """
 
@@ -170,7 +170,7 @@ Feature: Progress3 Formatter
             """
             1 feature passed, 0 failed, 0 skipped
             3 scenarios passed, 0 failed, 0 skipped
-            15 steps passed, 0 failed, 0 skipped, 0 undefined
+            15 steps passed, 0 failed, 0 skipped
             """
         And the command output should contain:
             """
@@ -210,7 +210,7 @@ Feature: Progress3 Formatter
             """
             0 features passed, 1 failed, 0 skipped
             1 scenario passed, 2 failed, 0 skipped
-            9 steps passed, 2 failed, 4 skipped, 0 undefined
+            9 steps passed, 2 failed, 4 skipped
             """
         And the command output should contain:
             """
@@ -221,14 +221,14 @@ Feature: Progress3 Formatter
             FAILURE in step 'second step fails' (features/scenario_with_steps.feature:11):
             Assertion Failed: XFAIL-STEP
             --------------------------------------------------------------------------------
-            
+
                 Third scenario with fourth failing step  ...F
             --------------------------------------------------------------------------------
             FAILURE in step 'fourth step fails' (features/scenario_with_steps.feature:20):
             Assertion Failed: XFAIL-STEP
             --------------------------------------------------------------------------------
-            
-            
+
+
             Failing scenarios:
               features/scenario_with_steps.feature:9  Second scenario with second failing step
               features/scenario_with_steps.feature:16  Third scenario with fourth failing step

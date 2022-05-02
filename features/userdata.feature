@@ -75,7 +75,7 @@ Feature: User-specific Configuration Data (userdata)
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
 
   @userdata.define
@@ -93,7 +93,7 @@ Feature: User-specific Configuration Data (userdata)
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
 
   @userdata.define
@@ -114,7 +114,7 @@ Feature: User-specific Configuration Data (userdata)
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
 
   @userdata.config
@@ -129,7 +129,7 @@ Feature: User-specific Configuration Data (userdata)
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
 
   @userdata.config
@@ -153,7 +153,7 @@ Feature: User-specific Configuration Data (userdata)
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
 
   @userdata.config
@@ -178,7 +178,7 @@ Feature: User-specific Configuration Data (userdata)
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
 
   @userdata.load
@@ -216,7 +216,7 @@ Feature: User-specific Configuration Data (userdata)
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
 
   @userdata.load
@@ -259,7 +259,7 @@ Feature: User-specific Configuration Data (userdata)
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
 
   @bad_practice
@@ -298,7 +298,7 @@ Feature: User-specific Configuration Data (userdata)
     Then it should pass with:
         """
         2 scenarios passed, 0 failed, 0 skipped
-        4 steps passed, 0 failed, 0 skipped, 0 undefined
+        4 steps passed, 0 failed, 0 skipped
         """
     But note that "modifying userdata is BAD-PRACTICE, except in before_all() hook"
 
@@ -326,5 +326,5 @@ Feature: User-specific Configuration Data (userdata)
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """

@@ -7,7 +7,7 @@ Feature: Setup logging_format
   As a tester
   I want to configure the logging_format for logging mode (no-log_capture)
   So that log-records are shown in my preferred format.
-  
+
   . SPECIFICATION:
   .  * logging_format can be defined on command-line
   .  * logging_format can be defined in behave configuration file
@@ -52,7 +52,7 @@ Feature: Setup logging_format
     Then it should fail with:
         """
         0 scenarios passed, 1 failed, 0 skipped
-        1 step passed, 1 failed, 0 skipped, 0 undefined
+        1 step passed, 1 failed, 0 skipped
         """
     And the command output should contain "Captured logging:"
     And the command output should contain:
@@ -101,7 +101,7 @@ Feature: Setup logging_format
     Then it should fail with:
         """
         0 scenarios passed, 1 failed, 0 skipped
-        1 step passed, 1 failed, 0 skipped, 0 undefined
+        1 step passed, 1 failed, 0 skipped
         """
     And the command output should not contain "Captured logging:"
     And the command output should contain:
@@ -151,7 +151,7 @@ Feature: Setup logging_format
     Then it should fail with:
         """
         0 scenarios passed, 1 failed, 0 skipped
-        1 step passed, 1 failed, 0 skipped, 0 undefined
+        1 step passed, 1 failed, 0 skipped
         """
     And the command output should contain "LOG.ERROR    root: Hello Alice"
     And the command output should contain "LOG.WARNING  root: Hello Bob"

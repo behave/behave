@@ -32,7 +32,7 @@ Feature: Issue #46 Behave returns 0 (SUCCESS) even in case of test failures
       """
       1 feature passed, 0 failed, 0 skipped
       1 scenario passed, 0 failed, 0 skipped
-      1 step passed, 0 failed, 0 skipped, 0 undefined
+      1 step passed, 0 failed, 0 skipped
       """
 
   Scenario: Failing Execution
@@ -47,7 +47,7 @@ Feature: Issue #46 Behave returns 0 (SUCCESS) even in case of test failures
       """
       0 features passed, 1 failed, 0 skipped
       0 scenarios passed, 1 failed, 0 skipped
-      0 steps passed, 1 failed, 0 skipped, 0 undefined
+      0 steps passed, 1 failed, 0 skipped
       """
 
   Scenario: Passing and Failing Execution
@@ -64,7 +64,7 @@ Feature: Issue #46 Behave returns 0 (SUCCESS) even in case of test failures
       """
       0 features passed, 1 failed, 0 skipped
       1 scenario passed, 1 failed, 0 skipped
-      1 step passed, 1 failed, 0 skipped, 0 undefined
+      1 step passed, 1 failed, 0 skipped
       """
     And the command output should contain:
       """

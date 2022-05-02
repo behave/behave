@@ -60,7 +60,7 @@ Feature: Select named scenarios to run
             """
             0 features passed, 0 failed, 0 skipped, 2 untested
             0 scenarios passed, 0 failed, 2 skipped, 4 untested
-            0 steps passed, 0 failed, 2 skipped, 0 undefined, 4 untested
+            0 steps passed, 0 failed, 2 skipped, 4 untested
             """
         And the command output should contain:
             """
@@ -83,7 +83,7 @@ Feature: Select named scenarios to run
             """
             2 features passed, 0 failed, 0 skipped
             4 scenarios passed, 0 failed, 2 skipped
-            4 steps passed, 0 failed, 2 skipped, 0 undefined
+            4 steps passed, 0 failed, 2 skipped
             """
         And the command output should contain:
             """
@@ -106,7 +106,7 @@ Feature: Select named scenarios to run
             """
             0 features passed, 0 failed, 1 skipped, 1 untested
             0 scenarios passed, 0 failed, 3 skipped, 3 untested
-            0 steps passed, 0 failed, 3 skipped, 0 undefined, 3 untested
+            0 steps passed, 0 failed, 3 skipped, 3 untested
             """
         And the command output should contain:
             """
@@ -125,7 +125,7 @@ Feature: Select named scenarios to run
             """
             0 features passed, 0 failed, 0 skipped, 2 untested
             0 scenarios passed, 0 failed, 4 skipped, 2 untested
-            0 steps passed, 0 failed, 4 skipped, 0 undefined, 2 untested
+            0 steps passed, 0 failed, 4 skipped, 2 untested
             """
         And the command output should contain:
             """
@@ -157,7 +157,7 @@ Feature: Select named scenarios to run
             """
             0 features passed, 0 failed, 0 skipped, 2 untested
             0 scenarios passed, 0 failed, 1 skipped, 5 untested
-            0 steps passed, 0 failed, 1 skipped, 0 undefined, 5 untested
+            0 steps passed, 0 failed, 1 skipped, 5 untested
             """
         And the command output should contain:
             """

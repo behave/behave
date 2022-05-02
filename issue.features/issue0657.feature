@@ -32,7 +32,7 @@ Feature: Issue #657 -- Allow async steps with timeouts to fail when they raise e
       When I run "behave -f plain --show-timings features/async_failure.feature"
       Then it should fail with:
         """
-        1 step passed, 1 failed, 1 skipped, 0 undefined
+        1 step passed, 1 failed, 1 skipped
         """
       And the command output should contain:
         """

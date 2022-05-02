@@ -50,7 +50,7 @@ Feature: Issue #424 -- Unicode output problem when fails in nested steps
       Then it should fail with:
         """
         0 scenarios passed, 2 failed, 0 skipped
-        1 step passed, 2 failed, 0 skipped, 0 undefined
+        1 step passed, 2 failed, 0 skipped
         """
       And the command output should contain:
         """

@@ -42,7 +42,7 @@ Feature: Issue #713 -- Background section doesn't support descriptive paragraphs
 
       1 feature passed, 0 failed, 0 skipped
       1 scenario passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      2 steps passed, 0 failed, 0 skipped
       """
     And the command output should not contain "Parser failure in state"
     And note that "the Background description was parsed."

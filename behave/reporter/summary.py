@@ -15,8 +15,7 @@ from behave.formatter.base import StreamOpener
 # ---------------------------------------------------------------------------
 # CONSTANTS:
 # ---------------------------------------------------------------------------
-# -- DISABLED: OPTIONAL_STEPS = ('untested', 'undefined')
-OPTIONAL_STEPS = (Status.untested,) # MAYBE: Status.undefined
+OPTIONAL_STEPS = (Status.untested, Status.undefined)
 STATUS_ORDER = (Status.passed, Status.failed, Status.skipped,
                 Status.undefined, Status.untested)
 

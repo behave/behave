@@ -22,7 +22,7 @@ Feature: Parsing a Feature File without a Feature or with several Features
           """
           0 features passed, 0 failed, 0 skipped
           0 scenarios passed, 0 failed, 0 skipped
-          0 steps passed, 0 failed, 0 skipped, 0 undefined
+          0 steps passed, 0 failed, 0 skipped
           """
 
 
@@ -38,7 +38,7 @@ Feature: Parsing a Feature File without a Feature or with several Features
         """
         0 features passed, 0 failed, 0 skipped
         0 scenarios passed, 0 failed, 0 skipped
-        0 steps passed, 0 failed, 0 skipped, 0 undefined
+        0 steps passed, 0 failed, 0 skipped
         """
 
 
@@ -53,7 +53,7 @@ Feature: Parsing a Feature File without a Feature or with several Features
         """
         0 features passed, 0 failed, 0 skipped
         0 scenarios passed, 0 failed, 0 skipped
-        0 steps passed, 0 failed, 0 skipped, 0 undefined
+        0 steps passed, 0 failed, 0 skipped
         """
 
 
@@ -69,7 +69,7 @@ Feature: Parsing a Feature File without a Feature or with several Features
         """
         0 features passed, 0 failed, 0 skipped
         0 scenarios passed, 0 failed, 0 skipped
-        0 steps passed, 0 failed, 0 skipped, 0 undefined
+        0 steps passed, 0 failed, 0 skipped
         """
 
     @no_feature

@@ -56,6 +56,6 @@ Feature: Issue #643 -- Unable to add comments on table data lines
       """
       1 feature passed, 0 failed, 0 skipped
       3 scenarios passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
     But note that "providing a comment after each table row 'fixes' the parse-problem, too"

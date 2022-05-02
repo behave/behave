@@ -50,7 +50,7 @@ Feature: Issue #148: Substeps do not fail
         """
         0 features passed, 1 failed, 0 skipped
         0 scenarios passed, 2 failed, 0 skipped
-        2 steps passed, 2 failed, 2 skipped, 0 undefined
+        2 steps passed, 2 failed, 2 skipped
         """
     And the command output should contain:
         """
@@ -86,7 +86,7 @@ Feature: Issue #148: Substeps do not fail
         """
         0 features passed, 1 failed, 0 skipped
         0 scenarios passed, 2 failed, 0 skipped
-        2 steps passed, 2 failed, 2 skipped, 0 undefined
+        2 steps passed, 2 failed, 2 skipped
         """
     And the command output should contain:
         """

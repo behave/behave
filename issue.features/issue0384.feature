@@ -69,7 +69,7 @@ Feature: Issue #384 -- Active Tags fail with ScenarioOutline
       Then it should pass with:
         """
         2 scenarios passed, 0 failed, 0 skipped
-        4 steps passed, 0 failed, 0 skipped, 0 undefined
+        4 steps passed, 0 failed, 0 skipped
         """
       And the command output should contain:
         """
@@ -94,7 +94,7 @@ Feature: Issue #384 -- Active Tags fail with ScenarioOutline
       Then it should pass with:
         """
         0 scenarios passed, 0 failed, 2 skipped
-        0 steps passed, 0 failed, 4 skipped, 0 undefined
+        0 steps passed, 0 failed, 4 skipped
         """
       And the command output should contain:
         """

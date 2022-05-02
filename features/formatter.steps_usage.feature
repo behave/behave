@@ -326,7 +326,7 @@ Feature: Steps Usage Formatter
     @use_outline
     Scenario: Scenario Outlines should not cause duplicated step entries
 
-      Scenario Outlines generate Scenarios that use the same step multiple times.
+      Note that Scenario Outlines generate Scenarios that use the same step multiple times.
       This duplication should not be listed.
 
         Given a file named "features/use_scenario_outline.feature" with:
@@ -345,7 +345,7 @@ Feature: Steps Usage Formatter
         Then it should pass with:
           """
           0 scenarios passed, 0 failed, 0 skipped, 2 untested
-          0 steps passed, 0 failed, 0 skipped, 0 undefined, 4 untested
+          0 steps passed, 0 failed, 0 skipped, 4 untested
           """
         And the command output should contain:
           """
@@ -367,7 +367,7 @@ Feature: Steps Usage Formatter
     @use_outline
     Scenario: Scenario Outlines should not cause duplicated entries for undefined steps
 
-      Scenario Outlines generate Scenarios that use the same step multiple times.
+      Note that Scenario Outlines generate Scenarios that use the same step multiple times.
       This duplication should not be listed.
 
         Given a file named "features/scenario_outline_with_undefined.feature" with:

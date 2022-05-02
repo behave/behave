@@ -23,6 +23,6 @@ Feature: Issue #32 "behave --junit-directory=xxx" fails if more than 1 level mus
       """
       1 feature passed, 0 failed, 0 skipped
       1 scenario passed, 0 failed, 0 skipped
-      1 step passed, 0 failed, 0 skipped, 0 undefined
+      1 step passed, 0 failed, 0 skipped
       """
     And the directory "report/test_results" should exist

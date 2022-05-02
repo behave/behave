@@ -37,5 +37,5 @@ Feature: Issue #228: Allow before_scenario to determine whether steps should be 
         """
         1 feature passed, 0 failed, 0 skipped
         1 scenario passed, 0 failed, 1 skipped
-        1 step passed, 0 failed, 1 skipped, 0 undefined
+        1 step passed, 0 failed, 1 skipped
         """

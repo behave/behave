@@ -126,7 +126,7 @@ Feature: Hooks processing in case of errors (exceptions)
           ABORTED: By user.
           0 features passed, 0 failed, 0 skipped, 1 untested
           0 scenarios passed, 0 failed, 0 skipped, 1 untested
-          0 steps passed, 0 failed, 0 skipped, 0 undefined, 1 untested
+          0 steps passed, 0 failed, 0 skipped, 1 untested
           """
       But note that "the after_all hook is called, too"
 
@@ -145,7 +145,7 @@ Feature: Hooks processing in case of errors (exceptions)
           ABORTED: By user.
           1 feature passed, 0 failed, 0 skipped
           1 scenario passed, 0 failed, 0 skipped
-          1 step passed, 0 failed, 0 skipped, 0 undefined
+          1 step passed, 0 failed, 0 skipped
           """
 
 
@@ -160,7 +160,7 @@ Feature: Hooks processing in case of errors (exceptions)
 
           0 features passed, 1 failed, 0 skipped
           0 scenarios passed, 0 failed, 0 skipped, 1 untested
-          0 steps passed, 0 failed, 0 skipped, 0 undefined, 1 untested
+          0 steps passed, 0 failed, 0 skipped, 1 untested
           """
       But note that "the after_feature hook is called, too."
 
@@ -177,7 +177,7 @@ Feature: Hooks processing in case of errors (exceptions)
 
           0 features passed, 1 failed, 0 skipped
           1 scenario passed, 0 failed, 0 skipped
-          1 step passed, 0 failed, 0 skipped, 0 undefined
+          1 step passed, 0 failed, 0 skipped
           """
 
 
@@ -197,7 +197,7 @@ Feature: Hooks processing in case of errors (exceptions)
 
           0 features passed, 1 failed, 0 skipped
           0 scenarios passed, 1 failed, 0 skipped
-          0 steps passed, 0 failed, 0 skipped, 0 undefined, 1 untested
+          0 steps passed, 0 failed, 0 skipped, 1 untested
           """
       But note that "the after_scenario hook is called, too."
 
@@ -219,7 +219,7 @@ Feature: Hooks processing in case of errors (exceptions)
 
           0 features passed, 1 failed, 0 skipped
           0 scenarios passed, 1 failed, 0 skipped
-          1 step passed, 0 failed, 0 skipped, 0 undefined
+          1 step passed, 0 failed, 0 skipped
           """
 
     @hook.before_step
@@ -241,7 +241,7 @@ Feature: Hooks processing in case of errors (exceptions)
 
           0 features passed, 1 failed, 0 skipped
           0 scenarios passed, 1 failed, 0 skipped
-          0 steps passed, 1 failed, 0 skipped, 0 undefined
+          0 steps passed, 1 failed, 0 skipped
           """
       But note that "the after_step hook is called, too."
 
@@ -264,7 +264,7 @@ Feature: Hooks processing in case of errors (exceptions)
 
           0 features passed, 1 failed, 0 skipped
           0 scenarios passed, 1 failed, 0 skipped
-          0 steps passed, 1 failed, 0 skipped, 0 undefined
+          0 steps passed, 1 failed, 0 skipped
           """
 
 
@@ -279,7 +279,7 @@ Feature: Hooks processing in case of errors (exceptions)
 
           0 features passed, 1 failed, 0 skipped
           0 scenarios passed, 0 failed, 0 skipped, 1 untested
-          0 steps passed, 0 failed, 0 skipped, 0 undefined, 1 untested
+          0 steps passed, 0 failed, 0 skipped, 1 untested
           """
       And the command output should contain:
           """
@@ -303,7 +303,7 @@ Feature: Hooks processing in case of errors (exceptions)
 
           0 features passed, 1 failed, 0 skipped
           1 scenario passed, 0 failed, 0 skipped
-          1 step passed, 0 failed, 0 skipped, 0 undefined
+          1 step passed, 0 failed, 0 skipped
           """
       But note that "the hook-error in after_tag of the scenario causes it to fail"
 
@@ -323,7 +323,7 @@ Feature: Hooks processing in case of errors (exceptions)
 
           0 features passed, 1 failed, 0 skipped
           0 scenarios passed, 1 failed, 0 skipped
-          0 steps passed, 0 failed, 0 skipped, 0 undefined, 1 untested
+          0 steps passed, 0 failed, 0 skipped, 1 untested
           """
       But note that "the hook-error in before_tag of the scenario causes it to fail and be skipped (untested)"
       And note that "the after_tag hook is still called"
@@ -345,7 +345,7 @@ Feature: Hooks processing in case of errors (exceptions)
 
           0 features passed, 1 failed, 0 skipped
           0 scenarios passed, 1 failed, 0 skipped
-          1 step passed, 0 failed, 0 skipped, 0 undefined
+          1 step passed, 0 failed, 0 skipped
           """
       But note that "the hook-error in after_tag of the scenario causes it to fail"
 
@@ -361,7 +361,7 @@ Feature: Hooks processing in case of errors (exceptions)
           """
           0 features passed, 0 failed, 1 skipped
           0 scenarios passed, 0 failed, 1 skipped
-          0 steps passed, 0 failed, 1 skipped, 0 undefined
+          0 steps passed, 0 failed, 1 skipped
           """
       But note that "hooks are not executed for skipped features/scenarios"
 

@@ -97,7 +97,7 @@ Feature: Fixture
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      2 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
       """
@@ -137,7 +137,7 @@ Feature: Fixture
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      2 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
       """
@@ -184,7 +184,7 @@ Feature: Fixture
       """
       1 feature passed, 0 failed, 0 skipped
       2 scenarios passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      2 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
       """
@@ -253,7 +253,7 @@ Feature: Fixture
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
       """
@@ -308,7 +308,7 @@ Feature: Fixture
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      2 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
       """
@@ -357,7 +357,7 @@ Feature: Fixture
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      2 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
       """
@@ -404,7 +404,7 @@ Feature: Fixture
     Then it should fail with:
       """
       1 scenario passed, 1 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      2 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
       """
@@ -448,7 +448,7 @@ Feature: Fixture
     Then it should fail with:
       """
       1 scenario passed, 1 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      2 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
       """
@@ -510,7 +510,7 @@ Feature: Fixture
     Then it should fail with:
       """
       1 scenario passed, 1 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      2 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
       """

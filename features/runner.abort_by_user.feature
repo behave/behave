@@ -63,7 +63,7 @@ Feature: Test run can be aborted by the user
         """
         0 features passed, 1 failed, 0 skipped
         1 scenario passed, 1 failed, 0 skipped, 1 untested
-        3 steps passed, 1 failed, 1 skipped, 0 undefined, 1 untested
+        3 steps passed, 1 failed, 1 skipped, 1 untested
         """
     And the command output should contain:
         """
@@ -118,7 +118,7 @@ Feature: Test run can be aborted by the user
         ABORTED: By user.
         0 features passed, 1 failed, 0 skipped
         1 scenario passed, 0 failed, 0 skipped, 2 untested
-        2 steps passed, 0 failed, 0 skipped, 0 undefined, 4 untested
+        2 steps passed, 0 failed, 0 skipped, 4 untested
         """
     And the command output should contain:
         """
@@ -162,7 +162,7 @@ Feature: Test run can be aborted by the user
         ABORTED: By user.
         0 features passed, 1 failed, 0 skipped
         2 scenarios passed, 0 failed, 0 skipped, 1 untested
-        5 steps passed, 0 failed, 0 skipped, 0 undefined, 1 untested
+        5 steps passed, 0 failed, 0 skipped, 1 untested
         """
     And the command output should contain:
         """
@@ -219,7 +219,7 @@ Feature: Test run can be aborted by the user
         ABORTED: By user.
         0 features passed, 0 failed, 0 skipped, 1 untested
         0 scenarios passed, 0 failed, 0 skipped, 3 untested
-        0 steps passed, 0 failed, 0 skipped, 0 undefined, 6 untested
+        0 steps passed, 0 failed, 0 skipped, 6 untested
         """
     But note that "the feature is not run"
     And note that "the formatters are not informed of this feature"
@@ -254,7 +254,7 @@ Feature: Test run can be aborted by the user
         ABORTED: By user.
         1 feature passed, 0 failed, 0 skipped
         3 scenarios passed, 0 failed, 0 skipped
-        6 steps passed, 0 failed, 0 skipped, 0 undefined
+        6 steps passed, 0 failed, 0 skipped
         """
     But note that "the behave command fails, but all features/scenarios passed"
 

@@ -43,7 +43,7 @@ Feature: Issue #288 -- Use print function instead print statement in environment
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
     And the command output should not contain:
         """
@@ -64,7 +64,7 @@ Feature: Issue #288 -- Use print function instead print statement in environment
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
     And the command output should not contain "SyntaxError"
     And the command output should not contain:
@@ -86,7 +86,7 @@ Feature: Issue #288 -- Use print function instead print statement in environment
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
     And the command output should not contain:
         """

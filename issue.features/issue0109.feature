@@ -52,7 +52,7 @@ Feature: Issue #109: Insists that implemented tests are not implemented
         """
         1 feature passed, 0 failed, 0 skipped
         2 scenarios passed, 0 failed, 0 skipped
-        6 steps passed, 0 failed, 0 skipped, 0 undefined
+        6 steps passed, 0 failed, 0 skipped
         """
     And the command output should not contain:
         """

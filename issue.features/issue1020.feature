@@ -43,4 +43,4 @@ Feature: Issue #1020 -- Switch Step-Matcher in Step Definition File
       2 scenarios passed, 0 failed, 0 skipped
       4 steps passed, 0 failed, 0 skipped
       """
-    And the command output should contain "0 undefined"
+    And the command output should not contain "undefined"

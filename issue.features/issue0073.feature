@@ -37,7 +37,7 @@ Feature: Issue #73: the current_matcher is not predictable
     Then it should pass with
         """
         1 scenario passed, 0 failed, 0 skipped
-        3 steps passed, 0 failed, 0 skipped, 0 undefined
+        3 steps passed, 0 failed, 0 skipped
         """
 
 
@@ -68,7 +68,7 @@ Feature: Issue #73: the current_matcher is not predictable
     Then it should pass with
         """
         1 scenario passed, 0 failed, 0 skipped
-        3 steps passed, 0 failed, 0 skipped, 0 undefined
+        3 steps passed, 0 failed, 0 skipped
         """
 
 
@@ -117,7 +117,7 @@ Feature: Issue #73: the current_matcher is not predictable
     Then it should pass with
         """
         1 scenario passed, 0 failed, 0 skipped
-        3 steps passed, 0 failed, 0 skipped, 0 undefined
+        3 steps passed, 0 failed, 0 skipped
         """
 
 
@@ -206,7 +206,7 @@ Feature: Issue #73: the current_matcher is not predictable
     Then it should pass with:
         """
         3 scenarios passed, 0 failed, 0 skipped
-        9 steps passed, 0 failed, 0 skipped, 0 undefined
+        9 steps passed, 0 failed, 0 skipped
         """
     And the command output should contain:
         """

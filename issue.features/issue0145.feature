@@ -45,7 +45,7 @@ Feature: Issue #145: before_feature/after_feature should not be skipped
         """
         1 feature passed, 0 failed, 0 skipped
         1 scenario passed, 0 failed, 0 skipped
-        3 steps passed, 0 failed, 0 skipped, 0 undefined
+        3 steps passed, 0 failed, 0 skipped
         """
     And the behave hook "before_feature" was called
     And the behave hook "after_feature" was called
@@ -56,7 +56,7 @@ Feature: Issue #145: before_feature/after_feature should not be skipped
         """
         1 feature passed, 0 failed, 0 skipped
         1 scenario passed, 0 failed, 0 skipped
-        3 steps passed, 0 failed, 0 skipped, 0 undefined
+        3 steps passed, 0 failed, 0 skipped
         """
     And the behave hook "before_feature" was called
     And the behave hook "after_feature" was called

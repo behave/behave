@@ -46,7 +46,7 @@ Feature: Use logging_filter with logcapture
       Then it should fail with:
           """
           0 scenarios passed, 1 failed, 0 skipped
-          1 step passed, 1 failed, 0 skipped, 0 undefined
+          1 step passed, 1 failed, 0 skipped
           """
       And the command output should contain log records from categories:
           | category |
