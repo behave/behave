@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# FILE: features/environemnt.py
+# FILE: features/environment.py
 
 from __future__ import absolute_import, print_function
 from behave.tag_matcher import \
