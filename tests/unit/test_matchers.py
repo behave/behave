@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from __future__ import absolute_import, with_statement
 import pytest
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 import parse
 from behave.matchers import Match, Matcher, ParseMatcher, RegexMatcher, \
     SimplifiedRegexMatcher, CucumberRegexMatcher

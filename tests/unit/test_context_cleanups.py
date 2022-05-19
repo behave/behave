@@ -13,7 +13,7 @@ OPEN ISSUES:
 from __future__ import print_function
 from behave.runner import Context, scoped_context_layer
 from contextlib import contextmanager
-from mock import Mock, NonCallableMock
+from unittest.mock import Mock, NonCallableMock
 import pytest
 
 
