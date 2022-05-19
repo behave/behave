@@ -6,7 +6,7 @@ Unittests for :mod:`behave.capture` module.
 from __future__ import absolute_import, print_function
 import sys
 from behave.capture import Captured, CaptureController
-from mock import Mock
+from unittest.mock import Mock
 import pytest
 
 # -----------------------------------------------------------------------------

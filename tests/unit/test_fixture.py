@@ -12,7 +12,7 @@ from behave.fixture import \
 from behave.runner import Context, CleanupError, scoped_context_layer
 from behave._types import Unknown
 import pytest
-from mock import Mock
+from unittest.mock import Mock
 import six
 
 
