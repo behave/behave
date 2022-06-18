@@ -2,6 +2,7 @@ include README.rst
 include CHANGES.rst
 include MANIFEST.in
 include LICENSE
+include LICENSE-i18n
 include .coveragerc
 include .editorconfig
 include .pycheckrc
