@@ -178,7 +178,7 @@ class Parser(object):
         self.variant = variant
         self.state = "init"
         self.line = 0
-        self.last_step = None
+        self.last_step_type = None
         self.multiline_start = None
         self.multiline_leading = None
         self.multiline_terminator = None
@@ -207,7 +207,7 @@ class Parser(object):
 
         self.state = "init"
         self.line = 0
-        self.last_step = None
+        self.last_step_type = None
         self.multiline_start = None
         self.multiline_leading = None
         self.multiline_terminator = None
@@ -546,6 +546,7 @@ class Parser(object):
         * first step of Scenario/ScenarioOutline
         * next Scenario/ScenarioOutline
         """
+        self.last_step_type = None
         line = line.strip()
         step = self.parse_step(line)
         if step:
@@ -736,13 +737,17 @@ class Parser(object):
                 # BUT: Keywords in some languages (like Chinese, Japanese, ...)
                 #      do not need a whitespace as word separator.
                 step_text_after_keyword = line[len(kw):].strip()
-                if step_type in ("and", "but"):
-                    if not self.last_step:
+                if kw.startswith("*") and self.last_step_type:
+                    # -- CASE: Generic steps and Given/When/Then steps are mixed.
+                    # HINT: Inherit step type from last step.
+                    step_type = self.last_step_type
+                elif step_type in ("and", "but"):
+                    if not self.last_step_type:
                         raise ParserError(u"No previous step",
                                           self.line, self.filename)
-                    step_type = self.last_step
+                    step_type = self.last_step_type
                 else:
-                    self.last_step = step_type
+                    self.last_step_type = step_type
 
                 keyword = kw.rstrip()  # HINT: Strip optional trailing SPACE.
                 step = model.Step(self.filename, self.line,
