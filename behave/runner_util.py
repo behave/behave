@@ -673,3 +673,7 @@ def reset_runtime():
     # -- RESET 2: behave.matchers
     matchers.ParseMatcher.custom_types = {}
     matchers.current_matcher = matchers.ParseMatcher
+
+    from importlib import reload
+    import parse
+    reload(parse)
