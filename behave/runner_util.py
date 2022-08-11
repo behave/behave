@@ -662,20 +662,24 @@ def print_undefined_step_snippets(undefined_steps, stream=None, colored=True):
     stream.write(msg)
     stream.flush()
 
-def reset_runtime():
+def reset_runtime(reset_registry=True, reset_matchers=True, reset_parse=True):
     """Reset runtime environment.
     Best effort to reset module data to initial state.
     """
-    from behave import step_registry
-    from behave import matchers
     # -- RESET 1: behave.step_registry
-    step_registry.registry = step_registry.StepRegistry()
-    step_registry.setup_step_decorators(None, step_registry.registry)
+    if reset_registry:
+        from behave import step_registry
+        step_registry.registry = step_registry.StepRegistry()
+        step_registry.setup_step_decorators(None, step_registry.registry)
+
     # -- RESET 2: behave.matchers
-    matchers.ParseMatcher.custom_types = {}
-    matchers.current_matcher = matchers.ParseMatcher
+    if reset_matchers:
+        from behave import matchers
+        matchers.ParseMatcher.custom_types = {}
+        matchers.current_matcher = matchers.ParseMatcher
 
     # -- RESET 3: reload parse module, so that parse.Parser instances 
     # are initialized correctly
-    import parse
-    reload_module(parse)
+    if reset_parse:
+        import parse
+        reload_module(parse)
