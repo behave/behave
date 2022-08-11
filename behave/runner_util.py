@@ -10,6 +10,7 @@ import os.path
 import re
 import sys
 from six import string_types
+from six.moves import reload_module
 from behave import parser
 from behave.exception import \
     FileNotFoundError, InvalidFileLocationError, InvalidFilenameError
@@ -674,11 +675,7 @@ def reset_runtime():
     matchers.ParseMatcher.custom_types = {}
     matchers.current_matcher = matchers.ParseMatcher
 
-    if sys.version_info.major > 2:  # reload is a builtin in 2.x
-        if sys.version_info.minor >= 4: # imp was deprecated in 3.4
-            from importlib import reload
-        else:
-            from imp import reload  # pylint: disable=deprecated-module
-
+    # -- RESET 3: reload parse module, so that parse.Parser instances 
+    # are initialized correctly
     import parse
-    reload(parse)
+    reload_module(parse)
