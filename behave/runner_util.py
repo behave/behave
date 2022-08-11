@@ -674,6 +674,11 @@ def reset_runtime():
     matchers.ParseMatcher.custom_types = {}
     matchers.current_matcher = matchers.ParseMatcher
 
-    from importlib import reload
+    if sys.version_info.major > 2:  # reload is a builtin in 2.x
+        if sys.version_info.minor >= 4: # imp was deprecated in 3.4
+            from importlib import reload
+        else:
+            from imp import reload  # pylint: disable=deprecated-module
+
     import parse
     reload(parse)
