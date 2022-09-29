@@ -8,5 +8,5 @@
 #
 # ============================================================================
 
-PyHamcrest >= 2.0.2; python_version >= '3.0'
-PyHamcrest <  2.0;   python_version <  '3.0'
+PyHamcrest ==2.0.4; python_version >= '3.0'
+PyHamcrest ==1.10.1;   python_version <  '3.0'

@@ -6,30 +6,30 @@
 -r invoke.txt
 
 # -- HINT: path.py => path (python-install-package was renamed for python3)
-path.py >= 11.5.0; python_version <  '3.5'
-path >= 13.1.0;    python_version >= '3.5'
+path.py ==12.5.0; python_version <  '3.5'
+path ==16.5.0;    python_version >= '3.5'
 
 # -- CONFIGURATION MANAGEMENT (helpers):
 # FORMER: bumpversion >= 0.4.0
-bump2version >= 0.5.6
+bump2version ==1.0.1
 
 # -- RELEASE MANAGEMENT: Push package to pypi.
-twine >= 1.13.0
+twine ==4.0.1
 
 # -- DEVELOPMENT SUPPORT:
 
 # -- PYTHON2/3 COMPATIBILITY: pypa/modernize
 # python-futurize
-modernize >= 0.5
+modernize ==0.8.0
 
 # -- STATIC CODE ANALYSIS:
 pylint
 
 # -- REQUIRES: testing
 -r testing.txt
-coverage >= 4.2
+coverage ==6.5.0
 pytest-cov
-tox   >= 1.8.1
+tox   ==3.26.0
 
 # -- REQUIRED FOR: docs
 -r docs.txt
