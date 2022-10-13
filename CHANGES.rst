@@ -52,6 +52,7 @@ FIXED:
 
 * FIXED: Some tests related to python3.9
 * FIXED: active-tag logic if multiple tags with same category exists.
+* issue #1061: Scenario should inherit Rule tags (submitted by: testgitdl)
 * pull  #967: Update __init__.py in behave import to fix pylint (provided by: dsayling)
 * issue #955: setup: Remove attribute 'use_2to3' (submitted by: krisgesling)
 * issue #772: ScenarioOutline.Examples without table (submitted by: The-QA-Geek)

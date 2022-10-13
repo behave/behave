@@ -300,21 +300,24 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
         return answer
 
     def should_run_with_tags(self, tag_expression):
-        """Determines if this feature should run when the tag expression is used.
-        A feature should run if:
-          * it should run according to its tags
-          * any of its scenarios should run according to its tags
+        """Determines if this feature or rule should run when the tag expression is used.
+
+        A feature (or rule) should run if:
+
+        * it should run according to its tags
+        * any of its scenarios should run according to its tags
 
         :param tag_expression:  Runner/config environment tags to use.
         :return: True, if feature should run. False, otherwise (skip it).
         """
-        run_feature = tag_expression.check(self.tags)
-        if not run_feature:
-            for scenario in self:
-                if scenario.should_run_with_tags(tag_expression):
-                    run_feature = True
-                    break
-        return run_feature
+        if tag_expression.check(self.effective_tags):
+            return True
+
+        for run_item in self.run_items:
+            if run_item.should_run_with_tags(tag_expression):
+                return True
+        # -- OTHERWISE: Should NOT run
+        return False
 
     def mark_skipped(self):
         """Marks this feature (and all its scenarios and steps) as skipped.
@@ -1040,21 +1043,8 @@ class Scenario(TagAndStatusStatement, Replayable):
             scenario_duration += step.duration
         return scenario_duration
 
-    @property
-    def effective_tags(self):
-        """
-        Effective tags for this scenario:
-          * own tags
-          * tags inherited from its feature
-        """
-        tags = self.tags
-        if self.feature:
-            tags = self.feature.tags + self.tags
-        return tags
-
     def should_run(self, config=None):
-        """
-        Determines if this Scenario (or ScenarioOutline) should run.
+        """Determines if this Scenario (or ScenarioOutline) should run.
         Implements the run decision logic for a scenario.
         The decision depends on:
 
@@ -1070,14 +1060,6 @@ class Scenario(TagAndStatusStatement, Replayable):
             answer = (self.should_run_with_tags(config.tag_expression) and
                       self.should_run_with_name_select(config))
         return answer
-
-    def should_run_with_tags(self, tag_expression):
-        """Checks if scenario should run when the tag expression is used.
-
-        :param tag_expression:  Runner/config environment tags to use.
-        :return: True, if scenario should run. False, otherwise (skip it).
-        """
-        return tag_expression.check(self.effective_tags)
 
     def should_run_with_name_select(self, config):
         """Checks if scenario should run when it is selected by name.
@@ -1308,6 +1290,10 @@ class ScenarioOutlineBuilder(object):
         return self.annotation_schema.format(name=scenario_name,
                                              examples=example_data, row=row_data)
 
+    @staticmethod
+    def is_parametrized_tag(tag):
+        return "<" in tag and ">" in tag
+
     @classmethod
     def make_row_tags(cls, outline_tags, row, params=None):
         if not outline_tags:
@@ -1315,9 +1301,9 @@ class ScenarioOutlineBuilder(object):
 
         tags = []
         for tag in outline_tags:
-            if "<" in tag and ">" in tag:
+            if cls.is_parametrized_tag(tag):
                 tag = cls.render_template(tag, row, params)
-            if "<" in tag or ">" in tag:
+            if cls.is_parametrized_tag(tag):
                 # -- OOPS: Unknown placeholder, drop tag.
                 continue
             new_tag = Tag.make_name(tag, unescape=True)
@@ -1493,6 +1479,26 @@ class ScenarioOutline(Scenario):
         builder = ScenarioOutlineBuilder(self.annotation_schema)
         self._scenarios = builder.build_scenarios(self)
         return self._scenarios
+
+    @property
+    def effective_tags(self):
+        """Compute effective tags of this ScenarioOutline/ScenarioTemplate.
+        This is includes the own tags and the inherited tags from the parents.
+        Note that parametrized tags are filter out.
+
+        :return: Set of effective tags
+
+        .. note:: Overrides generic implementation in base class.
+        """
+        # -- SPECIAL CASE: ScenarioOutline/ScenarioTemplate
+        # Filter out "abstract tags" (parametrized tags) used in this template.
+        tags = set([tag for tag in self.tags
+                    if not ScenarioOutlineBuilder.is_parametrized_tag(tag)])
+        if self.parent:
+            # -- INHERIT TAGS: From parent(s), recursively
+            inherited_tags = self.parent.effective_tags
+            tags.update(inherited_tags)
+        return tags
 
     def __repr__(self):
         return '<ScenarioOutline "%s">' % self.name
