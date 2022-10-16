@@ -2213,13 +2213,19 @@ class Text(six.text_type):
         """
         if self == expected:
             return True
+
+        # -- DETAILED HINTS: Why comparison failed.
         diff = []
         for line in difflib.unified_diff(self.splitlines(),
                                          expected.splitlines()):
             diff.append(line)
-        # strip unnecessary diff prefix
+        if not diff:
+            # -- MAYBE: Only differences in line-endings => GRACEFULLY ACCEPT as OK.
+            return True
+
+        # -- HINT: Strip unnecessary diff prefix
         diff = ["Text does not match:"] + diff[3:]
-        raise AssertionError("\n".join(diff))
+        raise AssertionError("\n".join(diff) +";")
 
 
 # -----------------------------------------------------------------------------

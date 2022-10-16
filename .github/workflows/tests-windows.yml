@@ -7,6 +7,10 @@ on:
   pull_request:
     branches: [ main ]
 
+# -- TEST BALLOON: Fix encoding="cp1252" problems by using "UTF-8"
+env:
+  PYTHONUTF8: 1
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}

@@ -11,6 +11,8 @@ TODO:
 """
 
 from __future__ import absolute_import, print_function
+
+import codecs
 import contextlib
 import difflib
 import os
@@ -37,6 +39,17 @@ if BehaveWinCommandOutputProcessor.enabled:
 # -----------------------------------------------------------------------------
 # UTILITIES:
 # -----------------------------------------------------------------------------
+def print_differences(actual, expected):
+    # diff = difflib.unified_diff(expected.splitlines(), actual.splitlines(),
+    #                            "expected", "actual")
+    diff = difflib.ndiff(expected.splitlines(), actual.splitlines())
+    diff_text = u"\n".join(diff)
+    print(u"DIFF (+ ACTUAL, - EXPECTED):\n{0}\n".format(diff_text))
+    if DEBUG:
+        print(u"expected:\n{0}\n".format(expected))
+        print(u"actual:\n{0}\n".format(actual))
+
+
 @contextlib.contextmanager
 def on_assert_failed_print_details(actual, expected):
     """
@@ -50,14 +63,7 @@ def on_assert_failed_print_details(actual, expected):
     try:
         yield
     except AssertionError:
-        # diff = difflib.unified_diff(expected.splitlines(), actual.splitlines(),
-        #                            "expected", "actual")
-        diff = difflib.ndiff(expected.splitlines(), actual.splitlines())
-        diff_text = u"\n".join(diff)
-        print(u"DIFF (+ ACTUAL, - EXPECTED):\n{0}\n".format(diff_text))
-        if DEBUG:
-            print(u"expected:\n{0}\n".format(expected))
-            print(u"actual:\n{0}\n".format(actual))
+        print_differences(actual, expected)
         raise
 
 @contextlib.contextmanager
@@ -73,13 +79,16 @@ def on_error_print_details(actual, expected):
     try:
         yield
     except Exception:
-        diff = difflib.ndiff(expected.splitlines(), actual.splitlines())
-        diff_text = u"\n".join(diff)
-        print(u"DIFF (+ ACTUAL, - EXPECTED):\n{0}\n".format(diff_text))
-        if DEBUG:
-            print(u"expected:\n{0}\n".format(expected))
-            print(u"actual:\n{0}".format(actual))
+        print_differences(actual, expected)
         raise
+
+
+def is_encoding_valid(encoding):
+    try:
+        return bool(codecs.lookup(encoding))
+    except LookupError:
+        return False
+
 
 # -----------------------------------------------------------------------------
 # STEPS: WORKING DIR
@@ -94,13 +103,13 @@ def step_a_new_working_directory(context):
     shutil.rmtree(context.workdir, ignore_errors=True)
     command_util.ensure_workdir_exists(context)
 
+
 @given(u'I use the current directory as working directory')
 def step_use_curdir_as_working_directory(context):
-    """
-    Uses the current directory as working directory
-    """
+    """Uses the current directory as working directory"""
     context.workdir = os.path.abspath(".")
     command_util.ensure_workdir_exists(context)
+
 
 @step(u'I use the directory "{directory}" as working directory')
 def step_use_directory_as_working_directory(context, directory):
@@ -125,16 +134,16 @@ def step_use_directory_as_working_directory(context, directory):
     context.workdir = workdir
     command_util.ensure_workdir_exists(context)
 
+
 # -----------------------------------------------------------------------------
 # STEPS: Create files with contents
 # -----------------------------------------------------------------------------
 @given(u'a file named "{filename}" and encoding="{encoding}" with')
 def step_a_file_named_filename_and_encoding_with(context, filename, encoding):
     """Creates a textual file with the content provided as docstring."""
-    __encoding_is_valid = True
     assert context.text is not None, "ENSURE: multiline text is provided."
     assert not os.path.isabs(filename)
-    assert __encoding_is_valid
+    assert is_encoding_valid(encoding), "INVALID: encoding=%s;" % encoding
     command_util.ensure_workdir_exists(context)
     filename2 = os.path.join(context.workdir, filename)
     pathutil.create_textfile_with_contents(filename2, context.text, encoding)
@@ -178,39 +187,47 @@ def step_i_run_command(context, command):
         print(u"run_command: {0}".format(command))
         print(u"run_command.output {0}".format(context.command_result.output))
 
+
 @when(u'I successfully run "{command}"')
 @when(u'I successfully run `{command}`')
 def step_i_successfully_run_command(context, command):
     step_i_run_command(context, command)
     step_it_should_pass(context)
 
+
 @then(u'it should fail with result "{result:int}"')
 def step_it_should_fail_with_result(context, result):
     assert_that(context.command_result.returncode, equal_to(result))
     assert_that(result, is_not(equal_to(0)))
+
 
 @then(u'the command should fail with returncode="{result:int}"')
 def step_it_should_fail_with_returncode(context, result):
     assert_that(context.command_result.returncode, equal_to(result))
     assert_that(result, is_not(equal_to(0)))
 
+
 @then(u'the command returncode is "{result:int}"')
 def step_the_command_returncode_is(context, result):
     assert_that(context.command_result.returncode, equal_to(result))
 
+
 @then(u'the command returncode is non-zero')
 def step_the_command_returncode_is_nonzero(context):
     assert_that(context.command_result.returncode, is_not(equal_to(0)))
+
 
 @then(u'it should pass')
 def step_it_should_pass(context):
     assert_that(context.command_result.returncode, equal_to(0),
                 context.command_result.output)
 
+
 @then(u'it should fail')
 def step_it_should_fail(context):
     assert_that(context.command_result.returncode, is_not(equal_to(0)),
                 context.command_result.output)
+
 
 @then(u'it should pass with')
 def step_it_should_pass_with(context):
@@ -299,10 +316,12 @@ def step_command_output_should_contain_text_multiple_times(context, text, count)
              __CWD__     = posixpath_normpath(os.getcwd())
         )
     actual_output = context.command_result.output
-    with on_assert_failed_print_details(actual_output, expected_text):
+    expected_text_part = expected_text
+    with on_assert_failed_print_details(actual_output, expected_text_part):
         textutil.assert_normtext_should_contain_multiple_times(actual_output,
-                                                               expected_text,
+                                                               expected_text_part,
                                                                count)
+
 
 @then(u'the command output should contain exactly "{text}"')
 def step_command_output_should_contain_exactly_text(context, text):
@@ -366,7 +385,9 @@ def step_command_output_should_not_contain(context):
             """
     '''
     assert context.text is not None, "REQUIRE: multi-line text"
-    step_command_output_should_not_contain_text(context, context.text.strip())
+    text = context.text.rstrip()
+    step_command_output_should_not_contain_text(context, text)
+
 
 @then(u'the command output should contain {count:d} times')
 def step_command_output_should_contain_multiple_times(context, count):
@@ -381,19 +402,22 @@ def step_command_output_should_contain_multiple_times(context, count):
             """
     '''
     assert context.text is not None, "REQUIRE: multi-line text"
-    step_command_output_should_contain_text_multiple_times(context,
-                                                           context.text, count)
+    text = context.text.rstrip()
+    step_command_output_should_contain_text_multiple_times(context, text, count)
+
 
 @then(u'the command output should contain exactly')
 def step_command_output_should_contain_exactly_with_multiline_text(context):
     assert context.text is not None, "REQUIRE: multi-line text"
-    step_command_output_should_contain_exactly_text(context, context.text)
+    text = context.text.rstrip()
+    step_command_output_should_contain_exactly_text(context, text)
 
 
 @then(u'the command output should not contain exactly')
 def step_command_output_should_contain_not_exactly_with_multiline_text(context):
     assert context.text is not None, "REQUIRE: multi-line text"
-    step_command_output_should_not_contain_exactly_text(context, context.text)
+    text = context.text.rstrip()
+    step_command_output_should_not_contain_exactly_text(context, text)
 
 
 # -----------------------------------------------------------------------------
@@ -408,6 +432,7 @@ def step_remove_directory(context, directory):
         shutil.rmtree(path_, ignore_errors=True)
     assert_that(not os.path.isdir(path_))
 
+
 @given(u'I ensure that the directory "{directory}" exists')
 def step_given_ensure_that_the_directory_exists(context, directory):
     path_ = directory
@@ -417,9 +442,11 @@ def step_given_ensure_that_the_directory_exists(context, directory):
         os.makedirs(path_)
     assert_that(os.path.isdir(path_))
 
+
 @given(u'I ensure that the directory "{directory}" does not exist')
 def step_given_the_directory_should_not_exist(context, directory):
     step_remove_directory(context, directory)
+
 
 @given(u'a directory named "{path}"')
 def step_directory_named_dirname(context, path):
@@ -429,6 +456,7 @@ def step_directory_named_dirname(context, path):
         os.makedirs(path_)
     assert os.path.isdir(path_)
 
+
 @then(u'the directory "{directory}" should exist')
 def step_the_directory_should_exist(context, directory):
     path_ = directory
@@ -436,12 +464,14 @@ def step_the_directory_should_exist(context, directory):
         path_ = os.path.join(context.workdir, os.path.normpath(directory))
     assert_that(os.path.isdir(path_))
 
+
 @then(u'the directory "{directory}" should not exist')
 def step_the_directory_should_not_exist(context, directory):
     path_ = directory
     if not os.path.isabs(directory):
         path_ = os.path.join(context.workdir, os.path.normpath(directory))
     assert_that(not os.path.isdir(path_))
+
 
 @step(u'the directory "{directory}" exists')
 def step_directory_exists(context, directory):
@@ -455,6 +485,7 @@ def step_directory_exists(context, directory):
     """
     step_the_directory_should_exist(context, directory)
 
+
 @step(u'the directory "{directory}" does not exist')
 def step_directory_named_does_not_exist(context, directory):
     """
@@ -466,6 +497,7 @@ def step_directory_named_does_not_exist(context, directory):
          When the directory "abc/" does not exist
     """
     step_the_directory_should_not_exist(context, directory)
+
 
 # -----------------------------------------------------------------------------
 # FILE STEPS:
@@ -482,6 +514,7 @@ def step_file_named_filename_exists(context, filename):
     """
     step_file_named_filename_should_exist(context, filename)
 
+
 @step(u'a file named "{filename}" does not exist')
 @step(u'the file named "{filename}" does not exist')
 def step_file_named_filename_does_not_exist(context, filename):
@@ -495,17 +528,20 @@ def step_file_named_filename_does_not_exist(context, filename):
     """
     step_file_named_filename_should_not_exist(context, filename)
 
+
 @then(u'a file named "{filename}" should exist')
 def step_file_named_filename_should_exist(context, filename):
     command_util.ensure_workdir_exists(context)
     filename_ = pathutil.realpath_with_context(filename, context)
     assert_that(os.path.exists(filename_) and os.path.isfile(filename_))
 
+
 @then(u'a file named "{filename}" should not exist')
 def step_file_named_filename_should_not_exist(context, filename):
     command_util.ensure_workdir_exists(context)
     filename_ = pathutil.realpath_with_context(filename, context)
     assert_that(not os.path.exists(filename_))
+
 
 @step(u'I remove the file "{filename}"')
 def step_remove_file(context, filename):
@@ -566,6 +602,7 @@ def step_I_set_the_environment_variable_to(context, env_name, env_value):
         context.environ = {}
     context.environ[env_name] = env_value
     os.environ[env_name] = env_value
+
 
 @step(u'I remove the environment variable "{env_name}"')
 def step_I_remove_the_environment_variable(context, env_name):
