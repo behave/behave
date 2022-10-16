@@ -397,7 +397,7 @@ class JUnitReporter(Reporter):
                 step_text = self.describe_step(step).rstrip()
                 text = u"\nFailing step: %s\nLocation: %s\n" % \
                        (step_text, step.location)
-                message = _text(step.exception)
+                message = _text(step.exception).strip()
                 failure.set(u'type', step.exception.__class__.__name__)
                 failure.set(u'message', message)
                 text += _text(step.error_message)
@@ -407,7 +407,7 @@ class JUnitReporter(Reporter):
                 if scenario.exception:
                     failure_type = scenario.exception.__class__.__name__
                 failure.set(u'type', failure_type)
-                failure.set(u'message', scenario.error_message or "")
+                failure.set(u'message', scenario.error_message.strip() or "")
                 traceback_lines = traceback.format_tb(scenario.exc_traceback)
                 traceback_lines.insert(0, u"Traceback:\n")
                 text = _text(u"".join(traceback_lines))
@@ -420,9 +420,10 @@ class JUnitReporter(Reporter):
             if step:
                 # -- UNDEFINED-STEP:
                 report.counts_failed += 1
+                message = u"Undefined Step: %s" % step.name.strip()
                 failure = ElementTree.Element(u"failure")
                 failure.set(u"type", u"undefined")
-                failure.set(u"message", (u"Undefined Step: %s" % step.name))
+                failure.set(u"message", message)
                 case.append(failure)
             else:
                 skip = ElementTree.Element(u'skipped')
