@@ -967,9 +967,12 @@
     ],
     "when": [
       "* ",
-      "Tha ",
-      "Þa ",
-      "Ða "
+      "Bæþsealf ",
+      "Bæþsealfa ",
+      "Bæþsealfe ",
+      "Ciricæw ",
+      "Ciricæwe ",
+      "Ciricæwa "
     ]
   },
   "en-pirate": {
@@ -2395,7 +2398,7 @@
     "and": [
       "* ",
       "र ",
-      "अनी "
+      "अनि "
     ],
     "background": [
       "पृष्ठभूमी"
@@ -3459,7 +3462,7 @@
     ],
     "given": [
       "* ",
-      "Агар "
+      "Belgilangan "
     ],
     "name": "Uzbek",
     "native": "Узбекча",
@@ -3555,7 +3558,8 @@
     "name": "Chinese simplified",
     "native": "简体中文",
     "rule": [
-      "Rule"
+      "Rule",
+      "规则"
     ],
     "scenario": [
       "场景",
