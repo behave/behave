@@ -1,5 +1,6 @@
 # -- SOURCE: https://github.com/marketplace/actions/setup-python
 # SEE: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+# SUPPORTED PYTHON VERSIONS: https://github.com/actions/python-versions
 
 name: tests
 on:
@@ -18,14 +19,14 @@ jobs:
         # PREPARED: python-version: ['3.9', '2.7', '3.10', '3.8', 'pypy-2.7', 'pypy-3.8']
         # PREPARED: os: [ubuntu-latest, windows-latest]
         os: [ubuntu-latest]
-        python-version: ['3.10', '3.9', '2.7']
+        python-version: ["3.10", "3.9", "2.7"]
         exclude:
           - os: windows-latest
             python-version: "2.7"
     steps:
       - uses: actions/checkout@v3
       # DISABLED: name: Setup Python ${{ matrix.python-version }} on platform=${{ matrix.os }}
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'

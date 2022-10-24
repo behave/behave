@@ -1,5 +1,6 @@
 # -- FAST-PROTOTYPING: Tests on Windows -- Until tests are OK.
 # BASED ON: tests.yml
+# SUPPORTED PYTHON VERSIONS: https://github.com/actions/python-versions
 
 name: tests-windows
 on:
@@ -19,11 +20,11 @@ jobs:
       matrix:
         # PREPARED: python-version: ['3.10', '3.9']
         os: [windows-latest]
-        python-version: ['3.9']
+        python-version: ["3.10", "3.9"]
     steps:
       - uses: actions/checkout@v3
       # DISABLED: name: Setup Python ${{ matrix.python-version }} on platform=${{ matrix.os }}
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
