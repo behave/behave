@@ -47,12 +47,15 @@ from __future__ import print_function
 # -- REQUIRES: Python >= 3.4
 # MAYBE BACKPORT: trollius
 import functools
+import sys
 from six import string_types
 try:
     import asyncio
     has_asyncio = True
 except ImportError:
     has_asyncio = False
+
+_PYTHON_VERSION = sys.version_info[:2]
 
 
 # -----------------------------------------------------------------------------
@@ -117,7 +120,12 @@ def async_run_until_complete(astep_func=None, loop=None, timeout=None,
                 assert isinstance(async_context, AsyncContext)
                 loop = async_context.loop
         if loop is None:
-            loop = asyncio.get_event_loop() or asyncio.new_event_loop()
+            if _PYTHON_VERSION < (3, 10):
+                # -- DEPRECATED SINCE: Python 3.10
+                loop = asyncio.get_event_loop()
+            if loop is None:
+                loop = asyncio.new_event_loop()
+                should_close = True
 
         # -- WORKHORSE:
         try:
