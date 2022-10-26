@@ -4,6 +4,7 @@
 from __future__ import absolute_import, print_function, with_statement
 from collections import defaultdict
 from platform import python_implementation
+import argparse
 import os.path
 import sys
 import warnings
@@ -17,7 +18,7 @@ from behave import runner_util
 from behave.model import Table
 from behave.step_registry import StepRegistry
 from behave import parser, runner
-from behave.runner import ContextMode
+from behave.runner import ContextMode, ModelRunner
 from behave.exception import ConfigError
 from behave.formatter.base import StreamOpener
 
@@ -490,6 +491,7 @@ def create_mock_config():
     config = Mock()
     config.steps_dir = "steps"
     config.environment_file = "environment.py"
+    config.unknown_args = []
     return config
 
 
@@ -511,9 +513,7 @@ class TestRunner(object):
                 ef.assert_called_with(hooks_path, r.hooks)
 
     def test_run_hook_runs_a_hook_that_exists(self):
-        config = Mock()
-        r = runner.Runner(config)
-        # XXX r.config = Mock()
+        r = runner.Runner(create_mock_config())
         r.config.stdout_capture = False
         r.config.stderr_capture = False
         r.config.dry_run = False
@@ -534,7 +534,7 @@ class TestRunner(object):
         assert len(hook.call_args_list) == 0
 
     def test_setup_capture_creates_stringio_for_stdout(self):
-        r = runner.Runner(Mock())
+        r = runner.Runner(create_mock_config())
         r.config.stdout_capture = True
         r.config.log_capture = False
         r.context = Mock()
@@ -545,7 +545,7 @@ class TestRunner(object):
         assert isinstance(r.capture_controller.stdout_capture, StringIO)
 
     def test_setup_capture_does_not_create_stringio_if_not_wanted(self):
-        r = runner.Runner(Mock())
+        r = runner.Runner(create_mock_config())
         r.config.stdout_capture = False
         r.config.stderr_capture = False
         r.config.log_capture = False
@@ -556,7 +556,7 @@ class TestRunner(object):
 
     @patch("behave.capture.LoggingCapture")
     def test_setup_capture_creates_memory_handler_for_logging(self, handler):
-        r = runner.Runner(Mock())
+        r = runner.Runner(create_mock_config())
         r.config.stdout_capture = False
         r.config.log_capture = True
         r.context = Mock()
@@ -568,7 +568,7 @@ class TestRunner(object):
         r.capture_controller.log_capture.inveigle.assert_called_with()
 
     def test_setup_capture_does_not_create_memory_handler_if_not_wanted(self):
-        r = runner.Runner(Mock())
+        r = runner.Runner(create_mock_config())
         r.config.stdout_capture = False
         r.config.stderr_capture = False
         r.config.log_capture = False
@@ -581,7 +581,7 @@ class TestRunner(object):
         old_stdout = sys.stdout
         sys.stdout = new_stdout = Mock()
 
-        r = runner.Runner(Mock())
+        r = runner.Runner(create_mock_config())
         r.config.stdout_capture = True
         r.config.log_capture = False
         r.context = Mock()
@@ -598,7 +598,7 @@ class TestRunner(object):
         sys.stdout = old_stdout
 
     def test_start_stop_capture_leaves_sys_stdout_alone_if_off(self):
-        r = runner.Runner(Mock())
+        r = runner.Runner(create_mock_config())
         r.config.stdout_capture = False
         r.config.log_capture = False
 
@@ -613,7 +613,7 @@ class TestRunner(object):
         assert sys.stdout == old_stdout
 
     def test_teardown_capture_removes_log_tap(self):
-        r = runner.Runner(Mock())
+        r = runner.Runner(create_mock_config())
         r.config.stdout_capture = False
         r.config.log_capture = True
 
@@ -637,7 +637,7 @@ class TestRunner(object):
         assert l["spam"] == fn
 
     def test_run_returns_true_if_everything_passed(self):
-        r = runner.Runner(Mock())
+        r = runner.Runner(create_mock_config())
         r.setup_capture = Mock()
         r.setup_paths = Mock()
         r.run_with_paths = Mock()
@@ -645,7 +645,7 @@ class TestRunner(object):
         assert r.run()
 
     def test_run_returns_false_if_anything_failed(self):
-        r = runner.Runner(Mock())
+        r = runner.Runner(create_mock_config())
         r.setup_capture = Mock()
         r.setup_paths = Mock()
         r.run_with_paths = Mock()
@@ -657,7 +657,7 @@ class TestRunWithPaths(unittest.TestCase):
     # pylint: disable=invalid-name, no-self-use
 
     def setUp(self):
-        self.config = Mock()
+        self.config = create_mock_config()
         self.config.reporters = []
         self.config.logging_level = None
         self.config.logging_filter = None
@@ -1106,3 +1106,35 @@ class TestFeatureDirectoryLayout2(object):
 
         # OLD: ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
         assert ("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls
+
+class TestRunnerArgs():
+
+    def test_no_runner_args(self):
+        config = create_mock_config()
+        r = runner.Runner(config)
+        assert len(r.runner_args) == 0
+
+    def test_unsupported_runner_args(self, capsys):
+        """The default runner class doesn't provide a specific parser and hence doesn't accept
+           unknown args."""
+        config = create_mock_config()
+        config.unknown_args = ['unknown-arg']
+        with pytest.raises(SystemExit):
+            runner.Runner(config)
+
+        assert "unrecognized arguments: unknown-arg" in capsys.readouterr().err
+
+    class SpecificRunner(ModelRunner):
+
+        def get_parser(self):
+            parser = argparse.ArgumentParser()
+            parser.add_argument('-s', '--supported-arg', type=str)
+            return parser
+
+    def test_supported_runner_args(self):
+        config = create_mock_config()
+        config.unknown_args = ['--supported-arg', 'value']
+        r = TestRunnerArgs.SpecificRunner(config)
+        print(r.runner_args)
+        assert 'supported_arg' in r.runner_args
+        assert r.runner_args.supported_arg == 'value'
