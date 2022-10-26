@@ -14,7 +14,7 @@ Behave returns nothing. ::
 This seems to be an oversight.
 """
 
-from mock import Mock
+from unittest.mock import Mock
 from behave.fixture import fixture, use_fixture_by_tag
 from behave.runner import Context
 

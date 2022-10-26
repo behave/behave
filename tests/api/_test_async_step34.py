@@ -9,7 +9,7 @@ from behave.api.async_step import AsyncContext, use_or_create_async_context
 from behave._stepimport import use_step_import_modules
 from behave.runner import Context, Runner
 import sys
-from mock import Mock
+from unittest.mock import Mock
 import pytest
 
 from .testing_support import StopWatch, SimpleStepContainer

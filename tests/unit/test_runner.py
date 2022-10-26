@@ -12,7 +12,7 @@ import unittest
 import six
 from six import StringIO
 import pytest
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 from behave import runner_util
 from behave.model import Table
 from behave.step_registry import StepRegistry

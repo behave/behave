@@ -7,7 +7,7 @@ import tempfile
 import unittest
 import six
 import pytest
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 from behave.formatter._registry import make_formatters
 from behave.formatter import pretty
 from behave.formatter.base import StreamOpener

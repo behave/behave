@@ -4,7 +4,7 @@
 from __future__ import absolute_import, print_function, with_statement
 import unittest
 import pytest
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 import six
 from six.moves import range     # pylint: disable=redefined-builtin
 from six.moves import zip       # pylint: disable=redefined-builtin

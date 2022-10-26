@@ -19,7 +19,7 @@ so the default behaviour of getattr is not executed (see docs).
 
 from __future__ import absolute_import
 from behave.runner import Context, scoped_context_layer
-from mock import Mock
+from unittest.mock import Mock
 
 
 def test_issue__getattr_with_protected_unknown_context_attribute_raises_no_error():
