@@ -32,6 +32,8 @@ CLEANUPS:
 
 ENHANCEMENTS:
 
+* active-tags: Added ``ValueObject`` class for enhanced control of comparison mechanism
+  (supports: equals, less-than, less-or-equal, greater-than, greater-or-equal, contains, ...)
 * Add support for Gherkin v6 grammar and syntax in ``*.feature`` files
 * Use `cucumber-tag-expressions`_ with tag-matching extension (superceeds: old-style tag-expressions)
 * Use cucumber "gherkin-languages.json" now (simplify: Gherkin v6 aliases, language usage)
@@ -50,6 +52,7 @@ CLARIFICATION:
 
 FIXED:
 
+* FIXED: Some tests related to python3.11
 * FIXED: Some tests related to python3.9
 * FIXED: active-tag logic if multiple tags with same category exists.
 * issue #1061: Scenario should inherit Rule tags (submitted by: testgitdl)

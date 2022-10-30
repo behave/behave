@@ -5,19 +5,15 @@ from __future__ import absolute_import, print_function
 from behave.tag_matcher import \
     ActiveTagMatcher, setup_active_tag_values, print_active_tags
 from behave4cmd0.setup_command_shell import setup_command_shell_processors4behave
-from behave import python_feature
-import platform
-import sys
+import behave.active_tag.python
+import behave.active_tag.python_feature
 
 
 # -- MATCHES ANY TAGS: @use.with_{category}={value}
 # NOTE: active_tag_value_provider provides category values for active tags.
-active_tag_value_provider = {
-    # -- python.implementation: cpython, pypy, jython, ironpython
-    "python.implementation": platform.python_implementation().lower(),
-    "pypy":    str("__pypy__" in sys.modules).lower(),
-}
-active_tag_value_provider.update(python_feature.ACTIVE_TAG_VALUE_PROVIDER)
+active_tag_value_provider = {}
+active_tag_value_provider.update(behave.active_tag.python.ACTIVE_TAG_VALUE_PROVIDER)
+active_tag_value_provider.update(behave.active_tag.python_feature.ACTIVE_TAG_VALUE_PROVIDER)
 active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
 

@@ -2,8 +2,7 @@
 
 from behave.tag_matcher import ActiveTagMatcher, setup_active_tag_values
 from behave.api.runtime_constraint import require_min_python_version
-from behave import python_feature
-
+from behave.active_tag import python_feature
 
 # -----------------------------------------------------------------------------
 # REQUIRE: python >= 3.4

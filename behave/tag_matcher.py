@@ -5,10 +5,127 @@ Active-tags provide a skip-if logic based on tags in feature files.
 """
 
 from __future__ import absolute_import, print_function
+import logging
+import operator
 import re
 import six
 from ._types import Unknown
 from .compat.collections import UserDict
+
+
+# -----------------------------------------------------------------------------
+# VALUE OBJECT CLASSES FOR: Active-Tag Value Providers
+# -----------------------------------------------------------------------------
+class ValueObject(object):
+    """Value object for active-tags that holds the current value for
+    one activate-tag category and its comparison function.
+
+    The :param:`compare_func(current_value, tag_value)` is a predicate function
+    with two arguments that performs the comparison between the
+    "current_value" and the "tag_value".
+
+    EXAMPLE::
+
+        # -- SIMPLIFIED EXAMPLE:
+        from behave.tag_matcher import ValueObject
+        import operator     # Module contains comparison functions.
+        class NumberObject(ValueObject): ...  # Details left out here.
+
+        xxx_current_value = 42
+        active_tag_value_provider = {
+            "xxx.value": ValueObject(xxx_current_value)  # USES: operator.eq (equals)
+            "xxx.min_value": NumberValueObject(xxx_current_value, operator.ge),
+            "xxx.max_value": NumberValueObject(xxx_current_value, operator.le),
+        }
+
+        # -- LATER WITHIN: ActivTag Logic
+        # EXAMPLE TAG: @use.with_xxx.min_value=10  (schema: "@use.with_{category}={value}")
+        tag_category = "xxx.min_value"
+        current_value = active_tag_value_provider.get(tag_category)
+        if not isinstance(current_value, ValueObject):
+            current_value = ValueObject(current_value)
+        ...
+        tag_matches = current_value.matches(tag_value)
+    """
+    def __init__(self, value, compare=operator.eq):
+        assert callable(compare)
+        self._value = value
+        self.compare = compare
+
+    @property
+    def value(self):
+        if callable(self._value):
+            # -- SUPPORT: Lazy computation of current-value.
+            return self._value()
+        # -- OTHERWISE:
+        return self._value
+
+    def matches(self, tag_value):
+        """Comparison between current value and :param:`tag_value`.
+
+        :param tag_value: Tag value from active tag (as string).
+        :return: True, if comparison matches. False, otherwise.
+        """
+        return bool(self.compare(self.value, tag_value))
+
+    @staticmethod
+    def on_type_conversion_error(tag_value, e):
+        logger = logging.getLogger("behave.active_tags")
+        logger.error("TYPE CONVERSION ERROR: active_tag.value='%s' (error: %s)" % \
+                     (tag_value, str(e)))
+        # MAYBE: logger.exception(e)
+        return False    # HINT: mis-matched
+
+    def __str__(self):
+        """Conversion to string."""
+        return str(self.value)
+
+    def __repr__(self):
+        return "<%s: value=%s, compare=%s>" % \
+               (self.__class__.__name__, self.value, self.compare)
+
+
+class NumberValueObject(ValueObject):
+    def matches(self, tag_value):
+        try:
+            tag_number = int(tag_value)
+            return super(NumberValueObject, self).matches(tag_number)
+        except ValueError as e:
+            # -- INTEGER TYPE-CONVERSION ERROR:
+            return self.on_type_conversion_error(tag_value, e)
+
+    def __int__(self):
+        """Convert into integer-number value."""
+        return int(self.value)
+
+
+class BoolValueObject(ValueObject):
+    TRUE_STRINGS = set(["true", "yes", "on"])
+    FALSE_STRINGS = set(["false", "no", "off"])
+
+    def matches(self, tag_value):
+        try:
+            boolean_tag_value = self.to_bool(tag_value)
+            return super(BoolValueObject, self).matches(boolean_tag_value)
+        except ValueError as e:
+            return self.on_type_conversion_error(tag_value, e)
+
+    def __bool__(self):
+        """Conversion to boolean value."""
+        return bool(self.value)
+
+    @classmethod
+    def to_bool(cls, value):
+        if isinstance(value, six.string_types):
+            text = value.lower()
+            if text in cls.TRUE_STRINGS:
+                return True
+            elif text in cls.FALSE_STRINGS:
+                return False
+            else:
+                raise ValueError("NON-BOOL: %s" % value)
+        # -- OTHERWISE:
+        return bool(value)
 
 
 # -----------------------------------------------------------------------------
@@ -223,6 +340,8 @@ class ActiveTagMatcher(TagMatcher):
         if current_value is Unknown and self.ignore_unknown_categories:
             # -- CASE: Unknown category, ignore it.
             return True
+        elif not isinstance(current_value, ValueObject):
+            current_value = ValueObject(current_value)
 
         positive_tags_matched = []
         negative_tags_matched = []
@@ -234,11 +353,13 @@ class ActiveTagMatcher(TagMatcher):
 
             if self.is_tag_negated(tag_prefix):
                 # -- CASE: @not.with_CATEGORY=VALUE
-                tag_matched = (tag_value == current_value)
+                # NORMALLY: tag_matched = (current_value == tag_value)
+                tag_matched = current_value.matches(tag_value)
                 negative_tags_matched.append(tag_matched)
             else:
                 # -- CASE: @use.with_CATEGORY=VALUE
-                tag_matched = (tag_value == current_value)
+                # NORMALLY: tag_matched = (current_value == tag_value)
+                tag_matched = current_value.matches(tag_value)
                 positive_tags_matched.append(tag_matched)
         tag_expression1 = any(positive_tags_matched)    #< LOGICAL-OR expression
         tag_expression2 = any(negative_tags_matched)    #< LOGICAL-OR expression
@@ -411,8 +532,7 @@ class CompositeActiveTagValueProvider(ActiveTagValueProvider):
     def items(self):
         for category in self.keys():
             value = self.get(category)
-            yield (category, value)
-
+            yield category, value
 
 
 # -----------------------------------------------------------------------------
@@ -444,7 +564,7 @@ def print_active_tags(active_tag_value_provider, categories=None):
     """Print a summary of the current active-tag values."""
     if categories is None:
         try:
-            categories = list(active_tag_value_provider)
+            categories = list(active_tag_value_provider.keys())
         except TypeError:   # TypeError: object is not iterable
             categories = []
 

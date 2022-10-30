@@ -13,6 +13,8 @@ import sys
 import platform
 import os.path
 import six
+from behave.active_tag.python import \
+    ACTIVE_TAG_VALUE_PROVIDER as ACTIVE_TAG_VALUE_PROVIDER4PYTHON
 from behave.tag_matcher import ActiveTagMatcher, print_active_tags
 from behave4cmd0.setup_command_shell import setup_command_shell_processors4behave
 # PREPARED: from behave.tag_matcher import setup_active_tag_values
@@ -79,17 +81,10 @@ def discover_ci_server():
 # NOTE: active_tag_value_provider provides category values for active tags.
 python_version = "%s.%s" % sys.version_info[:2]
 active_tag_value_provider = {
-    "platform": sys.platform,
-    "python2": str(six.PY2).lower(),
-    "python3": str(six.PY3).lower(),
-    "python.version": python_version,
-    # -- python.implementation: cpython, pypy, jython, ironpython
-    "python.implementation": platform.python_implementation().lower(),
-    "pypy":    str("__pypy__" in sys.modules).lower(),
-    "os":      sys.platform,
     "xmllint": as_bool_string(require_tool("xmllint")),
     "ci": discover_ci_server()
 }
+active_tag_value_provider.update(ACTIVE_TAG_VALUE_PROVIDER4PYTHON)
 active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
 
