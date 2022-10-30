@@ -6,8 +6,6 @@ in the current python version.
 
 from __future__ import absolute_import
 import sys
-import six
-from behave.tag_matcher import bool_to_string
 
 
 # -----------------------------------------------------------------------------
@@ -56,26 +54,9 @@ class PythonFeature(object):
         return (3, 5) <= PYTHON_VERSION
 
     @classmethod
+    def has_async_keyword(cls):
+        return cls.has_async_function()
+
+    @classmethod
     def has_coroutine(cls):
         return cls.has_async_function() or cls.has_asyncio_coroutine_decorator()
-
-
-# -----------------------------------------------------------------------------
-# SUPPORTED: ACTIVE-TAGS
-# -----------------------------------------------------------------------------
-PYTHON_HAS_ASYNCIO_COROUTINE_DECORATOR = PythonFeature.has_asyncio_coroutine_decorator()
-PYTHON_HAS_ASYNC_FUNCTION = PythonFeature.has_async_function()
-PYTHON_HAS_COROUTINE = PythonFeature.has_coroutine()
-ACTIVE_TAG_VALUE_PROVIDER = {
-    "python2": bool_to_string(six.PY2),
-    "python3": bool_to_string(six.PY3),
-    "python.version": "%s.%s" % PYTHON_VERSION,
-    "os":      sys.platform.lower(),
-
-    # -- PYTHON FEATURE, like: @use.with_py.feature_asyncio.coroutine
-    "python_has_coroutine": bool_to_string(PYTHON_HAS_COROUTINE),
-    "python_has_asyncio.coroutine_decorator":
-        bool_to_string(PYTHON_HAS_ASYNCIO_COROUTINE_DECORATOR),
-    "python_has_async_function": bool_to_string(PYTHON_HAS_ASYNC_FUNCTION),
-    "python_has_async_keyword": bool_to_string(PYTHON_HAS_ASYNC_FUNCTION),
-}

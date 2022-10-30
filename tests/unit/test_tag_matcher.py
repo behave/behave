@@ -428,3 +428,112 @@ class TestCompositeTagMatcher(TestCase):
             actual_true_count = self.count_tag_matcher_with_result(
                                     self.ctag_matcher.tag_matchers, tags, True)
             self.assertEqual(0, actual_true_count)
+
+# -----------------------------------------------------------------------------
+# TEST SUPPORT FOR: ActiveTag ValueObject(s)
+# -----------------------------------------------------------------------------
+# XXX from behave.python_feature import VersionObject
+from behave.tag_matcher import ValueObject
+import operator
+
+
+class NumberValueObject(ValueObject):
+    def matches(self, tag_value):
+        tag_number = int(tag_value)     # HINT: Conversion from string-to-int
+        return self.compare(self.value, tag_number)
+
+
+# -----------------------------------------------------------------------------
+# TEST SUITE WITH: ActiveTag ValueObject(s)
+# -----------------------------------------------------------------------------
+class TestActiveTagMatcherWithValueObject(object):
+    """Tests :class:`behave.tag_matcher.ValueObject` functionality.
+
+    ValueObject(s) support additional comparison functions that matches
+    the "tag_value" of the active-tag with the "current_value".
+    """
+
+    # -- ASSERTION HELPERS:
+    @staticmethod
+    def assert_active_tags_should_run(tags, value_provider, expected_verdict):
+        active_tag_matcher = ActiveTagMatcher(value_provider)
+        actual_verdict = active_tag_matcher.should_run_with(tags)
+        assert actual_verdict == expected_verdict
+
+    @classmethod
+    def assert_active_tag_should_run(cls, tag, value_provider, expected_verdict):
+        cls.assert_active_tags_should_run([tag], value_provider, expected_verdict)
+
+    # -- USE TAG: @use.with_xxx.min_value=10
+    @pytest.mark.parametrize("current_value, expected_verdict", [
+        (0, False),
+        (1, False),
+        (9, False),
+        (10, True),   # -- THRESHOLD BY: active_tag.value
+        (11, True),
+        (100, True),
+    ])
+    def test_active_tag_with_min_value_10_should_run(self, current_value, expected_verdict):
+        # -- USE: min_value.compare: current_value >= tag_number  -- greater_or_equal
+        tag = "use.with_xxx.min_value=10"
+        value_provider = {
+            "xxx.min_value": NumberValueObject(current_value, operator.ge)
+        }
+        self.assert_active_tag_should_run(tag, value_provider, expected_verdict)
+
+    # -- USE TAG: @use.with_xxx.max_value=10
+    @pytest.mark.parametrize("current_value, expected_verdict", [
+        (0, True),
+        (1, True),
+        (9, True),
+        (10, True),   # -- THRESHOLD BY: active_tag.value
+        (11, False),
+        (100, False),
+    ])
+    def test_active_tag_with_max_value_10_should_run(self, current_value, expected_verdict):
+        # -- USE: max_value.compare: current_value <= tag_value -- less_or_equal
+        tag = "use.with_xxx.max_value=10"
+        value_provider = {
+            "xxx.max_value": NumberValueObject(current_value, operator.le)
+        }
+        self.assert_active_tag_should_run(tag, value_provider, expected_verdict)
+
+    # -- TAGS: @use.with_xxx.min_value=3 @use.with_xxx.max_value=10
+    # HINT: Tests active-tag compositions logic: active-tag1 and active-tag2 and ...
+    @pytest.mark.parametrize("current_value, expected_verdict", [
+        (0, False),
+        (2, False),
+        (3, True),  # -- THRESHOLD 1: active_tag.min_value
+        (4, True),
+        (9, True),
+        (10, True), # -- THRESHOLD 2: active_tag.max_value
+        (11, False),
+        (100, False),
+    ])
+    def test_active_tag_with_min_value_3_and_max_value_10_should_run(self, current_value, expected_verdict):
+        # -- USE: min_value.compare: current_value >= tag_number
+        # -- USE: max_value.compare: current_value <= tag_number
+        tags = ["use.with_xxx.min_value=3", "use.with_xxx.max_value=10"]
+        value_provider = {
+            "xxx.min_value": NumberValueObject(current_value, operator.ge),
+            "xxx.max_value": NumberValueObject(current_value, operator.le),
+        }
+        self.assert_active_tags_should_run(tags, value_provider, expected_verdict)
+
+    # -- TAG: @use.with_xxx.contains_value=10
+    @pytest.mark.parametrize("current_value, expected_verdict", [
+        # -- CASE: IS_CONTAINED
+        ([10], True),
+        ([2, 10, 14, 10], True),
+        # -- CASE: NOT_CONTAINED
+        ([], False),
+        ([2, 8, 9], False),
+        ([11, 12, 100], False),
+    ])
+    def test_active_tag_with_contains_value_10_should_run(self, current_value, expected_verdict):
+        # -- USE: contains_value.compare: tag_number contained-in current_value
+        tag = "use.with_xxx.contains_value=10"
+        value_provider = {
+            "xxx.contains_value": NumberValueObject(current_value, operator.contains),
+        }
+        self.assert_active_tag_should_run(tag, value_provider, expected_verdict)

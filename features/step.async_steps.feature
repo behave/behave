@@ -1,5 +1,5 @@
 @not.with_python2=true
-@use.with_python_has_coroutine=true
+@use.with_python.feature.coroutine=true
 Feature: Async-Test Support (async-step, ...)
 
   As a test writer and step provider
@@ -14,7 +14,7 @@ Feature: Async-Test Support (async-step, ...)
   .
   . TERMINOLOGY: async-step
   .  An async-step is either
-  .    * an async-function as coroutine using async/await keywords (Python 3.5)
+  .    * an async-function as coroutine using async/await keywords (Python >= 3.5)
   .    * an async-function tagged with @asyncio.coroutine and using "yield from"
   .
   .  # -- EXAMPLE CASE 1 (since Python 3.5; preferred):
@@ -31,7 +31,7 @@ Feature: Async-Test Support (async-step, ...)
   .   The async-step can directly interact with other async-functions.
 
 
-    @use.with_python_has_async_function=true
+    @use.with_python.feature.async_keyword=true
     Scenario: Use async-step with @async_run_until_complete (async; requires: py.version >= 3.5)
       Given a new working directory
       And a file named "features/steps/async_steps35.py" with:
@@ -60,7 +60,7 @@ Feature: Async-Test Support (async-step, ...)
         """
 
 
-    @use.with_python_has_asyncio.coroutine_decorator=true
+    @use.with_python.feature.asyncio.coroutine_decorator=true
     Scenario: Use async-step with @async_run_until_complete (@asyncio.coroutine)
       Given a new working directory
       And a file named "features/steps/async_steps34.py" with:
@@ -89,7 +89,7 @@ Feature: Async-Test Support (async-step, ...)
              Given an async-step waits 0.3 seconds ... passed in 0.3
         """
 
-    @use.with_python_has_async_function=true
+    @use.with_python.feature.async_keyword=true
     Scenario: Use @async_run_until_complete(timeout=...) and TIMEOUT occurs (async-function)
       Given a new working directory
       And a file named "features/steps/async_steps_timeout35.py" with:
@@ -123,7 +123,7 @@ Feature: Async-Test Support (async-step, ...)
         Assertion Failed: TIMEOUT-OCCURED: timeout=0.1
         """
 
-    @use.with_python_has_async_function=true
+    @use.with_python.feature.async_keyword=true
     @async_step_fails
     Scenario: Use @async_run_until_complete and async-step fails (async-function)
       Given a new working directory
@@ -164,7 +164,7 @@ Feature: Async-Test Support (async-step, ...)
         Assertion Failed: XFAIL in async-step
         """
 
-    @use.with_python_has_async_function=true
+    @use.with_python.feature.async_keyword=true
     @async_step_fails
     Scenario: Use @async_run_until_complete and async-step raises error (async-function)
       Given a new working directory
@@ -205,7 +205,7 @@ Feature: Async-Test Support (async-step, ...)
         raise RuntimeError("XFAIL in async-step")
         """
 
-    @use.with_python_has_asyncio.coroutine_decorator=true
+    @use.with_python.feature.asyncio.coroutine_decorator=true
     Scenario: Use @async_run_until_complete(timeout=...) and TIMEOUT occurs (@asyncio.coroutine)
       Given a new working directory
       And a file named "features/steps/async_steps_timeout34.py" with:
@@ -240,7 +240,7 @@ Feature: Async-Test Support (async-step, ...)
         Assertion Failed: TIMEOUT-OCCURED: timeout=0.2
         """
 
-    @use.with_python_has_asyncio.coroutine_decorator=true
+    @use.with_python.feature.asyncio.coroutine_decorator=true
     Scenario: Use async-dispatch and async-collect concepts (@asyncio.coroutine)
       Given a new working directory
       And a file named "features/steps/async_dispatch_steps.py" with:

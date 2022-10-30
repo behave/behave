@@ -1,5 +1,4 @@
-@use.with_python_has_async_function=true
-@use.with_python_has_asyncio.coroutine_decorator=true
+@use.with_python.feature.coroutine=true
 Feature:
   Scenario:
     Given I dispatch an async-call with param "Alice"

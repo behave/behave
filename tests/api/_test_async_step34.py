@@ -5,10 +5,11 @@ Unit tests for :mod:`behave.api.async_test`.
 
 # -- IMPORTS:
 from __future__ import absolute_import, print_function
+import sys
 from behave.api.async_step import AsyncContext, use_or_create_async_context
 from behave._stepimport import use_step_import_modules
 from behave.runner import Context, Runner
-import sys
+from hamcrest import assert_that, close_to
 from mock import Mock
 import pytest
 
@@ -45,6 +46,11 @@ requires_py34_to_py37 = pytest.mark.skipif(not (PYTHON_3_5 <= python_version < P
     reason="Supported only for python.versions: 3.4 .. 3.7 (inclusive)")
 
 
+SLEEP_DELTA = 0.050
+if sys.platform.startswith("win"):
+    SLEEP_DELTA = 0.100
+
+
 # -----------------------------------------------------------------------------
 # TESTSUITE:
 # -----------------------------------------------------------------------------
@@ -74,7 +80,9 @@ class TestAsyncStepDecoratorPy34(object):
         context = Context(runner=Runner(config={}))
         with StopWatch() as stop_watch:
             step_async_step_waits_seconds2(context, duration=0.2)
-        assert abs(stop_watch.duration - 0.2) <= 0.05
+
+        # DISABLED: assert abs(stop_watch.duration - 0.2) <= 0.05
+        assert_that(stop_watch.duration, close_to(0.2, delta=SLEEP_DELTA))
 
 
 class TestAsyncContext(object):
