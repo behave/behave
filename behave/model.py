@@ -1814,7 +1814,7 @@ class Step(BasicStatement, Replayable):
                     # -- NOTE: Executed step may have skipped scenario and itself.
                     self.status = Status.passed
             except KeyboardInterrupt as e:
-                runner.aborted = True
+                runner.abort(reason="KeyboardInterrupt")
                 error = u"ABORTED: By user (KeyboardInterrupt)."
                 self.status = Status.failed
                 self.store_exception_context(e)

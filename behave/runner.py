@@ -154,7 +154,7 @@ class Context(object):
     def __init__(self, runner):
         self._runner = weakref.proxy(runner)
         self._config = runner.config
-        d = self._root = {
+        root_data = self._root = {
             "aborted": False,
             "failed": False,
             "config": self._config,
@@ -163,7 +163,7 @@ class Context(object):
             "@cleanups": [],    # -- REQUIRED-BY: before_all() hook
             "@layer": "testrun",
         }
-        self._stack = [d]
+        self._stack = [root_data]
         self._record = {}
         self._origin = {}
         self._mode = ContextMode.BEHAVE
@@ -180,6 +180,16 @@ class Context(object):
         # DISABLED: self.stderr_capture = None
         # DISABLED: self.log_capture = None
         self.fail_on_cleanup_errors = self.FAIL_ON_CLEANUP_ERRORS
+
+    def abort(self, reason=None):
+        """Abort the test run.
+
+        This sets the :attr:`aborted` attribute to true.
+        Any test runner evaluates this attribute to abort a test run.
+
+        .. versionadded:: 1.2.7
+        """
+        self._set_root_attribute("aborted", True)
 
     @staticmethod
     def ignore_cleanup_error(context, cleanup_func, exception):
@@ -451,7 +461,7 @@ class Context(object):
         # MAYBE:
         assert callable(cleanup_func), "REQUIRES: callable(cleanup_func)"
         assert self._stack
-        layer = kwargs.pop("layer", None)
+        layer_name = kwargs.pop("layer", None)
         if args or kwargs:
             def internal_cleanup_func():
                 cleanup_func(*args, **kwargs)
@@ -459,8 +469,8 @@ class Context(object):
             internal_cleanup_func = cleanup_func
 
         current_frame = self._stack[0]
-        if layer:
-            current_frame = self._select_stack_frame_by_layer(layer)
+        if layer_name:
+            current_frame = self._select_stack_frame_by_layer(layer_name)
         if cleanup_func not in current_frame["@cleanups"]:
             # -- AVOID DUPLICATES:
             current_frame["@cleanups"].append(internal_cleanup_func)
@@ -596,13 +606,25 @@ class ModelRunner(object):
     aborted = property(_get_aborted, _set_aborted,
                        doc="Indicates that test run is aborted by the user.")
 
+    def abort(self, reason=None):
+        """Abort the test run.
+
+        .. versionadded:: 1.2.7
+        """
+        if self.context is None:
+            return  # -- GRACEFULLY IGNORED.
+
+        # -- NORMAL CASE:
+        # SIMILAR TO: self.aborted = True
+        self.context.abort(reason=reason)
+
     def run_hook(self, name, context, *args):
         if not self.config.dry_run and (name in self.hooks):
             try:
                 with context.use_with_user_mode():
                     self.hooks[name](context, *args)
             # except KeyboardInterrupt:
-            #     self.aborted = True
+            #     self.abort(reason="KeyboardInterrupt")
             #     if name not in ("before_all", "after_all"):
             #         raise
             except Exception as e:  # pylint: disable=broad-except
@@ -624,7 +646,7 @@ class ModelRunner(object):
                     statement = getattr(context, "scenario", context.feature)
                 elif "all" in name:
                     # -- ABORT EXECUTION: For before_all/after_all
-                    self.aborted = True
+                    self.abort(reason="HOOK-ERROR in hook=%s" % name)
                     statement = None
                 else:
                     # -- CASE: feature, scenario, step
@@ -695,7 +717,7 @@ class ModelRunner(object):
                             # -- FAIL-EARLY: After first failure.
                             run_feature = False
                 except KeyboardInterrupt:
-                    self.aborted = True
+                    self.abort(reason="KeyboardInterrupt")
                     failed_count += 1
                     run_feature = False
 
