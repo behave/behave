@@ -13,6 +13,7 @@ Feature: Command-line options: Use behave --lang-list
         Languages available:
           af: Afrikaans / Afrikaans
           am: հայերեն / Armenian
+          amh: አማርኛ / Amharic
           an: Aragonés / Aragonese
           ar: العربية / Arabic
           ast: asturianu / Asturian
@@ -53,7 +54,7 @@ Feature: Command-line options: Use behave --lang-list
           it: italiano / Italian
           ja: 日本語 / Japanese
           jv: Basa Jawa / Javanese
-          ka: ქართველი / Georgian
+          ka: ქართული / Georgian
           kn: ಕನ್ನಡ / Kannada
           ko: 한국어 / Korean
           lt: lietuvių kalba / Lithuanian

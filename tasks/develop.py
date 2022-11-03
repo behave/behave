@@ -13,7 +13,9 @@ import requests
 # -----------------------------------------------------------------------------
 # CONSTANTS:
 # -----------------------------------------------------------------------------
-GHERKIN_LANGUAGES_URL = "https://raw.githubusercontent.com/cucumber/cucumber/master/gherkin/gherkin-languages.json"
+# DISABLED: OLD LOCATION:
+# GHERKIN_LANGUAGES_URL = "https://raw.githubusercontent.com/cucumber/cucumber/master/gherkin/gherkin-languages.json"
+GHERKIN_LANGUAGES_URL = "https://raw.githubusercontent.com/cucumber/common/main/gherkin/gherkin-languages.json"
 
 
 # -----------------------------------------------------------------------------

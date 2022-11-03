@@ -32,6 +32,7 @@ Feature: Issue #309 -- behave --lang-list fails on Python3
         Languages available:
           af: Afrikaans / Afrikaans
           am: հայերեն / Armenian
+          amh: አማርኛ / Amharic
           an: Aragonés / Aragonese
           ar: العربية / Arabic
           ast: asturianu / Asturian
