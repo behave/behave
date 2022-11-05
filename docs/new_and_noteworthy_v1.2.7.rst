@@ -209,7 +209,7 @@ mechanism to determine if the ``tag.value`` matches the ``current.value``, like:
     # -- SCHEMA: "@use.with_{category}={value}" or "@not.with_{category}={value}"
     @use.with_browser=Safari    # HINT: tag.value = "Safari"
 
-    ACTIVE TAG MATCHES, if: current.value == tag.value  (for strings)
+    ACTIVE TAG MATCHES, if: current.value == tag.value  (for string values)
 
 The ``equals`` comparison method is sufficient for many situations.
 But in some situations, you want to use other comparison methods.
@@ -222,7 +222,7 @@ the user to provide an own comparison method (and type conversion support).
 
     Feature: Active-Tag Example 1 with ValueObject
 
-      @use.with_temperatur.min_value=15
+      @use.with_temperature.min_value=15
       Scenario: Only run if temperature >= 15 degrees Celcius
         ...
 
@@ -234,7 +234,7 @@ the user to provide an own comparison method (and type conversion support).
     from my_system.sensors import Sensors
 
     # -- SIMPLIFIED: Better use behave.tag_matcher.NumberValueObject
-    # CONSTRUCTOR: ValueObject(value, compare=operator.eq)
+    # CTOR: ValueObject(value, compare=operator.eq)
     # HINT: Parameter "value" can be a getter-function (w/o args).
     class NumberValueObject(ValueObject):
         def matches(self, tag_value):
@@ -261,7 +261,7 @@ execution of an scenario to a temperature range, like:
 
 .. code:: gherkin
 
-    Feature: Active-Tag Example 2 with Value Range
+    Feature: Active-Tag Example 2 with Min/Max Value Range
 
       @use.with_temperature.min_value=10
       @use.with_temperature.max_value=70
@@ -272,7 +272,7 @@ execution of an scenario to a temperature range, like:
 
     # -- FILE: features/environment.py
     ...
-    current_temperature = get_temperature()  # RETURNS: integer-number in Celcius.
+    current_temperature = Sensors().get_temperature()
     active_tag_value_provider = {
         # -- COMPARISON:
         # temperature.min_value:  current.value >= tag.value
