@@ -8,7 +8,7 @@ TODO:
 
 from __future__ import absolute_import, print_function
 from hamcrest import assert_that, is_not, equal_to, contains_string
-# DISABLED: from behave4cmd.hamcrest_text import matches_regexp
+from hamcrest import matches_regexp
 import codecs
 
 DEBUG = False
@@ -300,27 +300,29 @@ def assert_normtext_should_not_contain(text, unexpected_part):
     assert_text_should_not_contain(actual_text, unexpected_part2)
 
 
-# def assert_text_should_match_pattern(text, pattern):
-#     """
-#     Assert that the :attr:`text` matches the regular expression :attr:`pattern`.
-#
-#     :param text: Multi-line text (as string).
-#     :param pattern: Regular expression pattern (as string, compiled regexp).
-#     :raise: AssertionError, if text matches not the pattern.
-#     """
-#     assert_that(text, matches_regexp(pattern))
-#
-# def assert_text_should_not_match_pattern(text, pattern):
-#     """
-#     Assert that the :attr:`text` matches not the regular expression
-#     :attr:`pattern`.
-#
-#     :param text: Multi-line text (as string).
-#     :param pattern: Regular expression pattern (as string, compiled regexp).
-#     :raise: AssertionError, if text matches the pattern.
-#     """
-#     assert_that(text, is_not(matches_regexp(pattern)))
-#
+def assert_text_should_match_pattern(text, pattern):
+    """
+    Assert that the :attr:`text` matches the regular expression :attr:`pattern`.
+
+    :param text: Multi-line text (as string).
+    :param pattern: Regular expression pattern (as string, compiled regexp).
+    :raise: AssertionError, if text matches not the pattern.
+    """
+    assert_that(text, matches_regexp(pattern))
+
+
+def assert_text_should_not_match_pattern(text, pattern):
+    """
+    Assert that the :attr:`text` matches not the regular expression
+    :attr:`pattern`.
+
+    :param text: Multi-line text (as string).
+    :param pattern: Regular expression pattern (as string, compiled regexp).
+    :raise: AssertionError, if text matches the pattern.
+    """
+    assert_that(text, is_not(matches_regexp(pattern)))
+
+
 # -----------------------------------------------------------------------------
 # MAIN:
 # -----------------------------------------------------------------------------
