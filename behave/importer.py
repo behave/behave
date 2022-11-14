@@ -9,6 +9,7 @@ from __future__ import absolute_import
 import importlib
 import inspect
 from behave._types import Unknown
+from behave.exception import ClassNotFoundError, ModuleNotFoundError
 
 
 def parse_scoped_name(scoped_name):
@@ -25,7 +26,7 @@ def parse_scoped_name(scoped_name):
         schema = "%s: Missing ':' (colon) as module-to-name seperator'"
         raise ValueError(schema % scoped_name)
     module_name, object_name = scoped_name.rsplit(":", 1)
-    return module_name, object_name
+    return module_name, object_name or ""
 
 
 def make_scoped_class_name(obj):
@@ -38,16 +39,35 @@ def make_scoped_class_name(obj):
         class_name = obj.__name__
     else:
         class_name = obj.__class__.__name__
-    return "{0}:{1}".format(obj.__module__, class_name)
+    module_name = getattr(obj, "__module__", None)
+    if module_name:
+        return "{0}:{1}".format(obj.__module__, class_name)
+    # -- OTHERWISE: Builtin data type
+    return class_name
 
 
 def load_module(module_name):
-    return importlib.import_module(module_name)
+    try:
+        return importlib.import_module(module_name)
+    except ModuleNotFoundError:
+        # -- SINCE: Python 3.6 (special kind of ImportError)
+        raise
+    except ImportError as e:
+        # -- CASE: Python < 3.6 (Python 2.7, ...)
+        msg = str(e)
+        if not msg.endswith("'"):
+            # -- NOTE: Emulate ModuleNotFoundError message:
+            #    "No module named '{module_name}'"
+            prefix, module_name = msg.rsplit(" ", 1)
+            msg = "{0} '{1}'".format(prefix, module_name)
+        raise ModuleNotFoundError(msg)
 
 
 class LazyObject(object):
-    """
-    Provides a placeholder for an object that should be loaded lazily.
+    """Provides a placeholder for an class/object that should be loaded lazily.
+
+    It stores the module-name, object-name/class-name and
+    imports it later (on demand) when this lazy-object is accessed.
     """
 
     def __init__(self, module_name, object_name=None):
@@ -57,24 +77,33 @@ class LazyObject(object):
         self.module_name = module_name
         self.object_name = object_name
         self.resolved_object = None
+        self.error = None
 
+    # -- PYTHON DESCRIPTOR PROTOCOL:
     def __get__(self, obj=None, type=None):     # pylint: disable=redefined-builtin
-        """
-        Implement descriptor protocol,
+        """Implement descriptor protocol,
         useful if this class is used as attribute.
+
         :return: Real object (lazy-loaded if necessary).
-        :raise ImportError: If module or object cannot be imported.
+        :raise ModuleNotFoundError: If module is not found or cannot be imported.
+        :raise ClassNotFoundError:  If class/object is not found in module.
         """
         __pychecker__ = "unusednames=obj,type"
         resolved_object = None
         if not self.resolved_object:
             # -- SETUP-ONCE: Lazy load the real object.
-            module = load_module(self.module_name)
-            resolved_object = getattr(module, self.object_name, Unknown)
-            if resolved_object is Unknown:
-                msg = "%s: %s is Unknown" % (self.module_name, self.object_name)
-                raise ImportError(msg)
-            self.resolved_object = resolved_object
+            try:
+                module = load_module(self.module_name)
+                resolved_object = getattr(module, self.object_name, Unknown)
+                if resolved_object is Unknown:
+                    # OLD: msg = "%s: %s is Unknown" % (self.module_name, self.object_name)
+                    scoped_name = "%s:%s" % (self.module_name, self.object_name)
+                    raise ClassNotFoundError(scoped_name)
+                self.resolved_object = resolved_object
+            except ImportError as e:
+                self.error = "%s: %s" % (e.__class__.__name__, e)
+                raise
+                # OR: resolved_object = self
         return resolved_object
 
     def __set__(self, obj, value):
@@ -87,27 +116,45 @@ class LazyObject(object):
 
 
 class LazyDict(dict):
-    """
-    Provides a dict that supports lazy loading of objects.
+    """Provides a dict that supports lazy loading of classes/objects.
     A LazyObject is provided as placeholder for a value that should be
     loaded lazily.
+
+    EXAMPLE:
+
+    .. code-block:: python
+
+        from behave.importer import LazyDict
+
+        the_plugin_registry = LazyDict({
+            "alice": LazyObject("my_module.alice_plugin:AliceClass"),
+            "bob": LayzObject("my_module.bob_plugin:BobClass"),
+        })
+
+        # -- LATER: Import plugin-class module(s) only if needed.
+        # INTENTION: Pay only (with runtime costs) for what you use.
+        config.plugin_name = "alice"
+        plugin_class = the_plugin_registry[config.plugin_name]
+        ...
     """
 
     def __getitem__(self, key):
-        """
-        Provides access to stored dict values.
+        """Provides access to the stored dict value(s).
+
         Implements lazy loading of item value (if necessary).
         When lazy object is loaded, its value with the dict is replaced
         with the real value.
 
         :param key:  Key to access the value of an item in the dict.
         :return: value
-        :raises: KeyError if item is not found
-        :raises: ImportError for a LazyObject that cannot be imported.
+        :raises KeyError: if item is not found.
+        :raises ModuleNotFoundError: for a LazyObject module is not found.
+        :raises ClassNotFoundError:  for a LazyObject class/object is not found in module.
         """
         value = dict.__getitem__(self, key)
         if isinstance(value, LazyObject):
-            # -- LAZY-LOADING MECHANISM: Load object and replace with lazy one.
+            # -- LAZY-LOADING MECHANISM:
+            # Load class/object once and replace the lazy placeholder.
             value = value.__get__()
             self[key] = value
         return value

@@ -97,12 +97,16 @@ def run_behave(config, runner_class=None):
               (len(config.outputs), len(config.format)))
         return 1
 
+    if config.runner == "help":
+        print_runners(config.runner_aliases)
+        return 0
+
     # -- MAIN PART:
     runner = None
     failed = True
     try:
         reset_runtime()
-        runner = RunnerPlugin(runner_class=runner_class).make_runner(config)
+        runner = RunnerPlugin(runner_class).make_runner(config)
         # print("USING RUNNER: {0}".format(make_scoped_class_name(runner)))
         failed = runner.run()
     except ParserError as e:
@@ -196,7 +200,7 @@ def print_language_help(config, stream=None):
     return 0
 
 
-def print_formatters(title=None, stream=None):
+def print_formatters(title=None, file=None):
     """Prints the list of available formatters and their description.
 
     :param title:   Optional title (as string).
@@ -205,18 +209,48 @@ def print_formatters(title=None, stream=None):
     from behave.formatter._registry  import format_items
     from operator import itemgetter
 
-    if stream is None:
-        stream = sys.stdout
-    if title:
-        stream.write(u"%s\n" % title)
+    print_ = lambda text: print(text, file=file)
 
-    format_items = sorted(format_items(resolved=True), key=itemgetter(0))
-    format_names = [item[0]  for item in format_items]
-    column_size = compute_words_maxsize(format_names)
-    schema = u"  %-"+ _text(column_size) +"s  %s\n"
-    for name, formatter_class in format_items:
+    formatter_items = sorted(format_items(resolved=True), key=itemgetter(0))
+    formatter_names = [item[0]  for item in formatter_items]
+    column_size = compute_words_maxsize(formatter_names)
+    schema = u"  %-"+ _text(column_size) +"s  %s"
+
+    if title:
+        print_(u"%s" % title)
+    for name, formatter_class in formatter_items:
         formatter_description = getattr(formatter_class, "description", "")
-        stream.write(schema % (name, formatter_description))
+        formatter_error = getattr(formatter_class, "error", None)
+        if formatter_error:
+            # -- DIAGNOSTICS: Indicate if formatter definition has a problem.
+            formatter_description = formatter_error
+        print_(schema % (name, formatter_description))
+
+
+def print_runners(runner_aliases, file=None):
+    """Print a list of known test runner classes that can be used with the
+    command-line option ``--runner=RUNNER_CLASS``.
+
+    :param runner_aliases:  List of known runner aliases (as strings)
+    :param file:  Optional, to redirect print-output to a file.
+    """
+    # MAYBE: file = file or sys.stdout
+    print_ = lambda text: print(text, file=file)
+
+    title = "AVAILABLE RUNNERS:"
+    runner_names = sorted(runner_aliases.keys())
+    column_size = compute_words_maxsize(runner_names)
+    schema = u"  %-"+ _text(column_size) +"s  = %s%s"
+
+    print_(title)
+    for runner_name in runner_names:
+        scoped_class_name = runner_aliases[runner_name]
+        annotation = ""
+        problem = RunnerPlugin.make_problem_description(scoped_class_name)
+        if problem:
+            annotation = "  (problem: %s)" % problem
+
+        print_(schema % (runner_name, scoped_class_name, annotation))
 
 
 # ---------------------------------------------------------------------------

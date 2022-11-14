@@ -13,7 +13,7 @@ import weakref
 
 import six
 
-from behave.api.runner import IRunner
+from behave.api.runner import ITestRunner
 from behave._types import ExceptionUtil
 from behave.capture import CaptureController
 from behave.exception import ConfigError
@@ -557,8 +557,7 @@ def path_getrootdir(path):
 
 
 class ModelRunner(object):
-    """
-    Test runner for a behave model (features).
+    """Test runner for a behave model (features).
     Provides the core functionality of a test runner and
     the functional API needed by model elements.
 
@@ -914,5 +913,5 @@ class Runner(ModelRunner):
 # -----------------------------------------------------------------------------
 # REGISTER RUNNER-CLASSES:
 # -----------------------------------------------------------------------------
-IRunner.register(ModelRunner)
-IRunner.register(Runner)
+ITestRunner.register(ModelRunner)
+ITestRunner.register(Runner)

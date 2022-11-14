@@ -14,7 +14,7 @@ from six import add_metaclass
 
 
 @add_metaclass(ABCMeta)
-class IRunner(object):
+class ITestRunner(object):
     """Interface that a test runner-class should provide:
 
     * Constructor: with config parameter object (at least) and some kw-args.

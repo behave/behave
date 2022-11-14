@@ -15,12 +15,13 @@ mock  >= 4.0;   python_version >= '3.6'
 PyHamcrest >= 2.0.2; python_version >= '3.0'
 PyHamcrest <  2.0;   python_version <  '3.0'
 
-jsonschema
-
 # -- NEEDED: By some tests (as proof of concept)
 # NOTE: path.py-10.1 is required for python2.6
 # HINT: path.py => path (python-install-package was renamed for python3)
 path.py >=11.5.0,<13.0; python_version <  '3.5'
 path >= 13.1.0;         python_version >= '3.5'
+
+# -- PYTHON2 BACKPORTS:
+pathlib;    python_version <= '3.4'
 
 -r ../issue.features/py.requirements.txt

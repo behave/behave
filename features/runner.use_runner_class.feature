@@ -127,7 +127,7 @@ Feature: User-provided runner class (extension-point)
     @own_runner
     @cmdline
     @config_file
-    Scenario: Use runner on command-line overrides runner in config-file
+    Scenario: Runner on command-line overrides runner in config-file
       Given a file named "behave.ini" with:
         """
         [behave]
@@ -149,19 +149,19 @@ Feature: User-provided runner class (extension-point)
     Background: Bad runner classes
       Given a file named "my/bad_example.py" with:
         """
-        from behave.api.runner import IRunner
+        from behave.api.runner import ITestRunner
         class NotRunner1(object): pass
         class NotRunner2(object):
             run = True
 
-        class ImcompleteRunner1(IRunner): # NO-CTOR
+        class IncompleteRunner1(ITestRunner): # NO-CTOR
             def run(self): pass
 
-        class ImcompleteRunner2(IRunner): # NO-RUN-METHOD
+        class IncompleteRunner2(ITestRunner): # NO-RUN-METHOD
             def __init__(self, config):
                 self.config = config
 
-        class ImcompleteRunner3(IRunner): # BAD-RUN-METHOD
+        class IncompleteRunner3(ITestRunner): # BAD-RUN-METHOD
             def __init__(self, config):
                 self.config = config
             run = True
@@ -175,23 +175,29 @@ Feature: User-provided runner class (extension-point)
 
     Scenario Outline: Bad cmdline with --runner=<runner_class> (<syndrome>)
       When I run "behave -f plain --runner=<runner_class>"
-      Then it should fail with:
+      Then it should fail
+      And the command output should match:
         """
         <failure_message>
         """
       But note that "problem: <case>"
 
       Examples:
-        | syndrome       | runner_class                 | failure_message                                             | case |
-        | UNKNOWN_MODULE | unknown:Runner1              | ModuleNotFoundError: No module named 'unknown'              | Python module does not exist (or was not found) |
-        | UNKNOWN_CLASS  | my:UnknownClass              | ClassNotFoundError: my:UnknownClass                         | Runner class does not exist in module. |
-        | UNKNOWN_CLASS  | my.bad_example:42            | ClassNotFoundError: my.bad_example:42                       | runner_class=number  |
-        | BAD_CLASS      | my.bad_example:NotRunner1    | InvalidClassError: my.bad_example:NotRunner1: not subclass-of behave.api.runner.IRunner | Specified runner_class is not a runner. |
-        | BAD_CLASS      | my.bad_example:NotRunner2    | InvalidClassError: my.bad_example:NotRunner2: not subclass-of behave.api.runner.IRunner | Runner class does not behave properly. |
-        | BAD_FUNCTION   | my.bad_example:return_none   | InvalidClassError: my.bad_example:return_none: not a class  | runner_class is a function. |
-        | BAD_VALUE      | my.bad_example:CONSTANT_1    | InvalidClassError: my.bad_example:CONSTANT_1: not a class   | runner_class is a constant number. |
-        | INCOMPLETE_CLASS | my.bad_example:ImcompleteRunner1 | TypeError: Can't instantiate abstract class ImcompleteRunner1 with abstract methods __init__ | Constructor is missing |
-        | INCOMPLETE_CLASS | my.bad_example:ImcompleteRunner2 | TypeError: Can't instantiate abstract class ImcompleteRunner2 with abstract methods run | run() method is missing |
+        | syndrome         | runner_class                     | failure_message                                                                                 | case                                            |
+        | UNKNOWN_MODULE   | unknown:Runner1                  | ModuleNotFoundError: No module named 'unknown'                                                  | Python module does not exist (or was not found) |
+        | UNKNOWN_CLASS    | my:UnknownClass                  | ClassNotFoundError: my:UnknownClass                                                             | Runner class does not exist in module.          |
+        | UNKNOWN_CLASS    | my.bad_example:42                | ClassNotFoundError: my.bad_example:42                                                           | runner_class=number                             |
+        | BAD_CLASS        | my.bad_example:NotRunner1        | InvalidClassError: my.bad_example:NotRunner1: not subclass-of behave.api.runner.ITestRunner     | Specified runner_class is not a runner.         |
+        | BAD_CLASS        | my.bad_example:NotRunner2        | InvalidClassError: my.bad_example:NotRunner2: not subclass-of behave.api.runner.ITestRunner     | Runner class does not behave properly.          |
+        | BAD_FUNCTION     | my.bad_example:return_none       | InvalidClassError: my.bad_example:return_none: not a class                                      | runner_class is a function.                     |
+        | BAD_VALUE        | my.bad_example:CONSTANT_1        | InvalidClassError: my.bad_example:CONSTANT_1: not a class                                       | runner_class is a constant number.              |
+        | INCOMPLETE_CLASS | my.bad_example:IncompleteRunner1 | TypeError: Can't instantiate abstract class IncompleteRunner1 with abstract method(s)? __init__ | Constructor is missing  |
+        | INCOMPLETE_CLASS | my.bad_example:IncompleteRunner2 | TypeError: Can't instantiate abstract class IncompleteRunner2 with abstract method(s)? run      | run() method is missing |
+
+        # -- PYTHON VERSION SENSITIVITY on INCOMPLETE_CLASS with API TypeError exception:
+        # Since Python 3.9: "... methods ..." is only used in plural case (if multiple methods are missing).
+        #   "TypeError: Can't instantiate abstract class <CLASS_NAME> with abstract method <METHOD_NAME>" ( for Python.version >= 3.9)
+        #   "TypeError: Can't instantiate abstract class <CLASS_NAME> with abstract methods <METHOD_NAME>" (for Python.version < 3.9)
 
 
     Scenario Outline: Weird cmdline with --runner=<runner_class> (<syndrome>)
@@ -207,7 +213,7 @@ Feature: User-provided runner class (extension-point)
         | NO_CLASS | 42             | ConfigError: runner=42 (RUNNER-ALIAS NOT FOUND)   | runner_class.module=number  |
         | NO_CLASS | 4.23           | ConfigError: runner=4.23 (RUNNER-ALIAS NOT FOUND) | runner_class.module=floating-point-number  |
         | NO_CLASS | True           | ConfigError: runner=True (RUNNER-ALIAS NOT FOUND) | runner_class.module=bool  |
-        | INVALID_CLASS | my.bad_example:ImcompleteRunner3 | InvalidClassError: my.bad_example:ImcompleteRunner3: run() is not callable | run is a bool-value (no method) |
+        | INVALID_CLASS | my.bad_example:IncompleteRunner3 | InvalidClassError: my.bad_example:IncompleteRunner3: run() is not callable | run is a bool-value (no method) |
 
 
   Rule: Bad cases with config-file
@@ -215,19 +221,19 @@ Feature: User-provided runner class (extension-point)
     Background:
       Given a file named "my/bad_example.py" with:
         """
-        from behave.api.runner import IRunner
+        from behave.api.runner import ITestRunner
         class NotRunner1(object): pass
         class NotRunner2(object):
             run = True
 
-        class ImcompleteRunner1(IRunner): # NO-CTOR
+        class IncompleteRunner1(ITestRunner): # NO-CTOR
             def run(self): pass
 
-        class ImcompleteRunner2(IRunner): # NO-RUN-METHOD
+        class IncompleteRunner2(ITestRunner): # NO-RUN-METHOD
             def __init__(self, config):
                 self.config = config
 
-        class ImcompleteRunner3(IRunner): # BAD-RUN-METHOD
+        class IncompleteRunner3(ITestRunner): # BAD-RUN-METHOD
             def __init__(self, config):
                 self.config = config
             run = True
@@ -253,12 +259,10 @@ Feature: User-provided runner class (extension-point)
       But note that "problem: <case>"
 
       Examples:
-        | syndrome       | runner_class                 | failure_message                                | case |
-        | UNKNOWN_MODULE | unknown:Runner1              | ModuleNotFoundError: No module named 'unknown' | Python module does not exist (or was not found) |
-        | UNKNOWN_CLASS  | my:UnknownClass              | ClassNotFoundError: my:UnknownClass            | Runner class does not exist in module.  |
-        | BAD_CLASS      | my.bad_example:NotRunner1    | InvalidClassError: my.bad_example:NotRunner1: not subclass-of behave.api.runner.IRunner | Specified runner_class is not a runner. |
-        | BAD_CLASS      | my.bad_example:NotRunner2    | InvalidClassError: my.bad_example:NotRunner2: not subclass-of behave.api.runner.IRunner | Runner class does not behave properly.  |
-        | BAD_FUNCTION   | my.bad_example:return_none   | InvalidClassError: my.bad_example:return_none: not a class | runner_class=function |
-        | BAD_VALUE      | my.bad_example:CONSTANT_1    | InvalidClassError: my.bad_example:CONSTANT_1: not a class  | runner_class=number   |
-
-
+        | syndrome       | runner_class               | failure_message                                                                             | case                                            |
+        | UNKNOWN_MODULE | unknown:Runner1            | ModuleNotFoundError: No module named 'unknown'                                              | Python module does not exist (or was not found) |
+        | UNKNOWN_CLASS  | my:UnknownClass            | ClassNotFoundError: my:UnknownClass                                                         | Runner class does not exist in module.          |
+        | BAD_CLASS      | my.bad_example:NotRunner1  | InvalidClassError: my.bad_example:NotRunner1: not subclass-of behave.api.runner.ITestRunner | Specified runner_class is not a runner.         |
+        | BAD_CLASS      | my.bad_example:NotRunner2  | InvalidClassError: my.bad_example:NotRunner2: not subclass-of behave.api.runner.ITestRunner | Runner class does not behave properly.          |
+        | BAD_FUNCTION   | my.bad_example:return_none | InvalidClassError: my.bad_example:return_none: not a class                                  | runner_class=function                           |
+        | BAD_VALUE      | my.bad_example:CONSTANT_1  | InvalidClassError: my.bad_example:CONSTANT_1: not a class                                   | runner_class=number                             |

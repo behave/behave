@@ -2,13 +2,8 @@ import os.path
 import sys
 import tempfile
 import six
-import pytest
 from behave import configuration
-from behave.api.runner import IRunner
 from behave.configuration import Configuration, UserData
-from behave.exception import ClassNotFoundError, InvalidClassError
-from behave.runner import Runner as DefaultRunnerClass
-from behave.runner_plugin import RunnerPlugin
 from unittest import TestCase
 
 
@@ -103,107 +98,8 @@ class TestConfiguration(object):
 
 
 # -----------------------------------------------------------------------------
-# TEST SUPPORT:
-# -----------------------------------------------------------------------------
-# -- TEST-RUNNER CLASS EXAMPLES:
-class CustomTestRunner(IRunner):
-    """Custom, dummy runner"""
-
-    def __init__(self, config, **kwargs):
-        self.config = config
-
-    def run(self):
-        return True     # OOPS: Failed.
-
-
-# -- BAD TEST-RUNNER CLASS EXAMPLES:
-# PROBLEM: Is not a class
-INVALID_TEST_RUNNER_CLASS0 = True
-
-
-class InvalidTestRunner1(object):
-    """PROBLEM: Missing IRunner.register(InvalidTestRunner)."""
-    def run(self, features): pass
-
-
-class InvalidTestRunner2(IRunner):
-    """PROBLEM: run() method signature differs"""
-    def run(self, features): pass
-
-
-# -----------------------------------------------------------------------------
 # TEST SUITE:
 # -----------------------------------------------------------------------------
-class TestConfigurationRunner(object):
-    """Test the runner-plugin configuration."""
-
-    def test_runner_default(self, capsys):
-        config = Configuration("")
-        runner = RunnerPlugin().make_runner(config)
-        assert config.runner == configuration.DEFAULT_RUNNER_CLASS_NAME
-        assert isinstance(runner, DefaultRunnerClass)
-
-    def test_runner_with_normal_runner_class(self, capsys):
-        config = Configuration(["--runner=behave.runner:Runner"])
-        runner = RunnerPlugin().make_runner(config)
-        assert isinstance(runner, DefaultRunnerClass)
-
-    def test_runner_with_own_runner_class(self):
-        config = Configuration(["--runner=tests.unit.test_configuration:CustomTestRunner"])
-        runner = RunnerPlugin().make_runner(config)
-        assert isinstance(runner, CustomTestRunner)
-
-    def test_runner_with_unknown_module(self, capsys):
-        with pytest.raises(ImportError):
-            config = Configuration(["--runner=unknown_module:Runner"])
-            runner = RunnerPlugin().make_runner(config)
-        captured = capsys.readouterr()
-        if six.PY2:
-            assert "No module named unknown_module" in captured.out
-        else:
-            assert "No module named 'unknown_module'" in captured.out
-
-    def test_runner_with_unknown_class(self, capsys):
-        with pytest.raises(ClassNotFoundError) as exc_info:
-            config = Configuration(["--runner=behave.runner:UnknownRunner"])
-            RunnerPlugin().make_runner(config)
-
-        captured = capsys.readouterr()
-        assert "FAILED to load runner-class" in captured.out
-        assert "ClassNotFoundError: behave.runner:UnknownRunner" in captured.out
-
-        expected = "behave.runner:UnknownRunner"
-        assert exc_info.type is ClassNotFoundError
-        assert exc_info.match(expected)
-
-    def test_runner_with_invalid_runner_class0(self):
-        with pytest.raises(TypeError) as exc_info:
-            config = Configuration(["--runner=tests.unit.test_configuration:INVALID_TEST_RUNNER_CLASS0"])
-            RunnerPlugin().make_runner(config)
-
-        expected = "tests.unit.test_configuration:INVALID_TEST_RUNNER_CLASS0: not a class"
-        assert exc_info.type is InvalidClassError
-        assert exc_info.match(expected)
-
-    def test_runner_with_invalid_runner_class1(self):
-        with pytest.raises(TypeError) as exc_info:
-            config = Configuration(["--runner=tests.unit.test_configuration:InvalidTestRunner1"])
-            RunnerPlugin().make_runner(config)
-
-        expected = "tests.unit.test_configuration:InvalidTestRunner1: not subclass-of behave.api.runner.IRunner"
-        assert exc_info.type is InvalidClassError
-        assert exc_info.match(expected)
-
-    def test_runner_with_invalid_runner_class2(self):
-        with pytest.raises(TypeError) as exc_info:
-            config = Configuration(["--runner=tests.unit.test_configuration:InvalidTestRunner2"])
-            RunnerPlugin().make_runner(config)
-
-        expected = "Can't instantiate abstract class InvalidTestRunner2 with abstract methods __init__"
-        assert exc_info.type is TypeError
-        assert exc_info.match(expected)
-
-
 class TestConfigurationUserData(TestCase):
     """Test userdata aspects in behave.configuration.Configuration class."""
 
