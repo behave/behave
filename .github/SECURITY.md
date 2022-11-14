@@ -14,12 +14,11 @@ HINT: Older versions are not supported.
 
 ## Reporting a Vulnerability
 
-SHORT VERSION: Please report security issues by emailing to [behave-security@noreply.github.com](mailto:jenisys@users.noreply.github.com) .
+Please report security issues by using the new
+[Github vulnerability reporting mechanism](https://github.com/behave/behave/security/advisories)
+that is enabled for this repository.
 
-If you believe you’ve found something in Django which has security implications, 
-please send a description of the issue via email to the email address mentioned above (see: SHORT VERSION).
-Mail sent to that address reaches the security team.
+SEE ALSO:
 
-Once you’ve submitted an issue via email, you should receive an acknowledgment from a member of the security team within 48 hours, 
-and depending on the action to be taken, you may receive further followup emails.
-
+* https://github.com/behave/behave/security/advisories
+* https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability
