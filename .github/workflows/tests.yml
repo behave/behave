@@ -19,7 +19,7 @@ jobs:
         # PREPARED: python-version: ['3.9', '2.7', '3.10', '3.8', 'pypy-2.7', 'pypy-3.8']
         # PREPARED: os: [ubuntu-latest, windows-latest]
         os: [ubuntu-latest]
-        python-version: ["3.10", "3.9", "2.7"]
+        python-version: ["3.11", "3.10", "3.9", "2.7"]
         exclude:
           - os: windows-latest
             python-version: "2.7"
@@ -31,7 +31,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
           cache-dependency-path: 'py.requirements/*.txt'
-      # DISABLED:
+      # -- DISABLED:
       # - name: Show Python version
       #  run: python --version
       - name: Install Python package dependencies

@@ -18,9 +18,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # PREPARED: python-version: ['3.10', '3.9']
         os: [windows-latest]
-        python-version: ["3.10", "3.9"]
+        python-version: ["3.11", "3.10", "3.9"]
     steps:
       - uses: actions/checkout@v3
       # DISABLED: name: Setup Python ${{ matrix.python-version }} on platform=${{ matrix.os }}
@@ -29,7 +28,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
           cache-dependency-path: 'py.requirements/*.txt'
-      # DISABLED:
+      # -- DISABLED:
       # - name: Show Python version
       #   run: python --version
       - name: Install Python package dependencies
