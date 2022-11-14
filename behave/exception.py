@@ -7,6 +7,8 @@ Behave exception classes.
 """
 
 from __future__ import absolute_import
+# -- USE MODERN EXCEPTION CLASSES:
+# COMPATIBILITY: Emulated if not supported yet by Python version.
 from behave.compat.exceptions import FileNotFoundError, ModuleNotFoundError
 
 
@@ -48,6 +50,10 @@ class InvalidFilenameError(ValueError):
 # RELATED: class ModuleNotFoundError(ImportError): -- Since Python 3.6
 class ClassNotFoundError(ImportError):
     """Used if module to import exists, but class with this name does not exist."""
+
+
+class ObjectNotFoundError(ImportError):
+    """Used if module to import exists, but object with this name does not exist."""
 
 
 class InvalidClassError(TypeError):

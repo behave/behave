@@ -32,6 +32,7 @@ CLEANUPS:
 
 ENHANCEMENTS:
 
+* User-defined formatters: Improve diagnostics if bad formatter is used (ModuleNotFound, ...)
 * active-tags: Added ``ValueObject`` class for enhanced control of comparison mechanism
   (supports: equals, less-than, less-or-equal, greater-than, greater-or-equal, contains, ...)
 * Add support for Gherkin v6 grammar and syntax in ``*.feature`` files

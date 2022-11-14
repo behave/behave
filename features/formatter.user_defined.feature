@@ -114,14 +114,14 @@ Feature: Use a user-defined Formatter
     When I run "behave -f <formatter.class> features/passing.feature"
     Then it should fail with:
       """
-      error: format=<formatter.class> is unknown
+      error: BAD_FORMAT=<formatter.class> (problem: <formatter.error>)
       """
 
     Examples:
-      | formatter.class                         | case            |
-      | my.unknown_module:SomeFormatter         | Unknown module  |
-      | behave_ext.formatter_one:UnknownClass   | Unknown class   |
-      | behave_ext.formatter_one:NotAFormatter  | Invalid Formatter class |
+      | formatter.class                         | formatter.error     | case            |
+      | my.unknown_module:SomeFormatter         | ModuleNotFoundError | Unknown module  |
+      | behave_ext.formatter_one:UnknownClass   | ClassNotFoundError  | Unknown class   |
+      | behave_ext.formatter_one:NotAFormatter  | InvalidClassError   | Invalid Formatter class |
 
 
   @formatter.registered_by_name
@@ -185,12 +185,12 @@ Feature: Use a user-defined Formatter
     When I run "behave -f <formatter.name> features/passing.feature"
     Then it should fail with:
       """
-      error: format=<formatter.name> is unknown
+      error: BAD_FORMAT=<formatter.name> (problem: <formatter.error>)
       """
 
     Examples:
-      | formatter.name | formatter.class                        | case            |
-      | unknown1       | my.unknown_module:SomeFormatter        | Unknown module  |
-      | unknown2       | behave_ext.formatter_one:UnknownClass  | Unknown class   |
-      | invalid1       | behave_ext.formatter_one:NotAFormatter | Invalid Formatter class |
+      | formatter.name | formatter.class                        | formatter.error     | case            |
+      | unknown1       | my.unknown_module:SomeFormatter        | ModuleNotFoundError | Unknown module  |
+      | unknown2       | behave_ext.formatter_one:UnknownClass  | ClassNotFoundError  | Unknown class   |
+      | invalid1       | behave_ext.formatter_one:NotAFormatter | InvalidClassError   | Invalid Formatter class |
 
