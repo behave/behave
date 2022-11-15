@@ -48,7 +48,7 @@ def parse_tag_expression_v2(tag_expression_text):
     if not isinstance(text, six.string_types):
         # -- ASSUME: List of strings
         assert isinstance(text, (list, tuple))
-        text = " and ".join(text)
+        text = " and ".join(f"({t})" for t in text)
 
     if "@" in text:
         # -- NORMALIZE: tag-expression text => Remove '@' tag decorators.
