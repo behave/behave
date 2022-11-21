@@ -69,33 +69,37 @@ class RunnerPlugin(object):
         self.runner_aliases = runner_aliases or {}
 
     @staticmethod
-    def is_runner_class_valid(runner_class):
+    def is_class_valid(runner_class):
         run_method = getattr(runner_class, "run", None)
         return (inspect.isclass(runner_class) and
                 issubclass(runner_class, ITestRunner) and
                 callable(run_method))
 
     @staticmethod
-    def check_runner_class(runner_class, runner_class_name=None):
+    def validate_class(runner_class, runner_class_name=None):
         """Check if a runner class supports the Runner API constraints."""
         if not runner_class_name:
             runner_class_name = make_scoped_class_name(runner_class)
 
         if not inspect.isclass(runner_class):
-            schema = "{0}: not a class"
-            raise InvalidClassError(schema.format(runner_class_name))
+            raise InvalidClassError("is not a class")
         elif not issubclass(runner_class, ITestRunner):
-            schema = "{0}: not subclass-of behave.api.runner.ITestRunner"
-            raise InvalidClassError(schema.format(runner_class_name))
+            message = "is not a subclass-of 'behave.api.runner:ITestRunner'"
+            raise InvalidClassError(message)
 
         run_method = getattr(runner_class, "run", None)
         if not callable(run_method):
-            schema = "{0}: run() is not callable"
-            raise InvalidClassError(schema.format(runner_class_name))
+            raise InvalidClassError("run() is not callable")
 
+        undefined_steps = getattr(runner_class, "undefined_steps", None)
+        if undefined_steps is None:
+            raise InvalidClassError("undefined_steps: missing attribute or property")
+        # MAYBE:
+        # elif not callable(undefined_steps):
+        #     raise InvalidClassError("undefined_steps is not callable")
 
     @classmethod
-    def load_runner_class(cls, runner_class_name, verbose=True):
+    def load_class(cls, runner_class_name, verbose=True):
         """Loads a runner class by using its scoped-class-name, like:
         `my.module:Class1`.
 
@@ -112,9 +116,9 @@ class RunnerPlugin(object):
             runner_class = getattr(module, class_name, Unknown)
             if runner_class is Unknown:
                 raise ClassNotFoundError(runner_class_name)
-            cls.check_runner_class(runner_class, runner_class_name)
+            cls.validate_class(runner_class, runner_class_name)
             return runner_class
-        except (ImportError, TypeError) as e:
+        except (ImportError, InvalidClassError, TypeError) as e:
             # -- CASE: ModuleNotFoundError, ClassNotFoundError, InvalidClassError, ...
             if verbose:
                 print("BAD_RUNNER_CLASS: FAILED to load runner.class=%s (%s)" % \
@@ -122,7 +126,7 @@ class RunnerPlugin(object):
             raise
 
     @classmethod
-    def make_problem_description(cls, scoped_class_name):
+    def make_problem_description(cls, scoped_class_name, use_details=False):
         """Check runner class for problems.
 
         :param scoped_class_name:  Runner class name (as string).
@@ -132,9 +136,11 @@ class RunnerPlugin(object):
         # -- STEP: Check runner for problems
         problem_description = ""
         try:
-            RunnerPlugin.load_runner_class(scoped_class_name, verbose=False)
+            cls.load_class(scoped_class_name, verbose=False)
         except (ImportError, TypeError) as e:
             problem_description = e.__class__.__name__
+            if use_details:
+                problem_description = "%s: %s" % (problem_description, str(e))
         return problem_description
 
     def make_runner(self, config, **runner_kwargs):
@@ -162,9 +168,9 @@ class RunnerPlugin(object):
             if scoped_class_name == runner_name and ":" not in scoped_class_name:
                 # -- CASE: runner-alias is not in config-file section="behave.runner".
                 raise ConfigError("runner=%s (RUNNER-ALIAS NOT FOUND)" % scoped_class_name)
-            runner_class = self.load_runner_class(scoped_class_name)
+            runner_class = self.load_class(scoped_class_name)
         else:
-            self.check_runner_class(runner_class)
+            self.validate_class(runner_class)
 
         runner = runner_class(config, **runner_kwargs)
         return runner
