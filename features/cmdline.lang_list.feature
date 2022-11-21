@@ -10,7 +10,7 @@ Feature: Command-line options: Use behave --lang-list
     When I run "behave --lang-list"
     Then it should pass with:
         """
-        Languages available:
+        AVAILABLE LANGUAGES:
           af: Afrikaans / Afrikaans
           am: հայերեն / Armenian
           amh: አማርኛ / Amharic

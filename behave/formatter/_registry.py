@@ -1,11 +1,34 @@
 # -*- coding: utf-8 -*-
-
+import inspect
 import sys
 import warnings
 from behave.formatter.base import Formatter, StreamOpener
 from behave.importer import LazyDict, LazyObject, parse_scoped_name, load_module
 from behave.exception import ClassNotFoundError
 import six
+
+
+# -----------------------------------------------------------------------------
+# FORMATTER BAD CASES:
+# -----------------------------------------------------------------------------
+class BadFormatterClass(object):
+    """Placeholder class if a formatter class is invalid."""
+    def __init__(self, name, formatter_class):
+        self.name = name
+        self.formatter_class = formatter_class
+        self._error_text = None
+
+    @property
+    def error(self):
+        from behave.importer import make_scoped_class_name
+        if self._error_text is None:
+            error_text = ""
+            if not inspect.isclass(self.formatter_class):
+                error_text = "InvalidClassError: is not a class"
+            elif not is_formatter_class_valid(self.formatter_class):
+                error_text = "InvalidClassError: is not a subclass-of Formatter"
+            self._error_text = error_text
+        return self._error_text
 
 
 # -----------------------------------------------------------------------------
@@ -22,6 +45,16 @@ def format_items(resolved=False):
     if resolved:
         # -- ENSURE: All formatter classes are loaded (and resolved).
         _formatter_registry.load_all(strict=False)
+
+    # -- BETTER DIAGNOSTICS: Ensure problematic cases are covered.
+    for name, formatter_class in _formatter_registry.items():
+        if isinstance(formatter_class, BadFormatterClass):
+            continue
+        elif not is_formatter_class_valid(formatter_class):
+            if not hasattr(formatter_class, "error"):
+                bad_formatter_class = BadFormatterClass(name, formatter_class)
+                _formatter_registry[name] = bad_formatter_class
+
     return iter(_formatter_registry.items())
 
 
@@ -80,7 +113,10 @@ def load_formatter_class(scoped_class_name):
     formatter_module = load_module(module_name)
     formatter_class = getattr(formatter_module, class_name, None)
     if formatter_class is None:
-        raise ClassNotFoundError("CLASS NOT FOUND: %s" % scoped_class_name)
+        raise ClassNotFoundError(scoped_class_name)
+    elif not is_formatter_class_valid(formatter_class):
+        # -- BETTER DIAGNOSTICS:
+        formatter_class = BadFormatterClass(scoped_class_name, formatter_class)
     return formatter_class
 
 
@@ -97,14 +133,24 @@ def select_formatter_class(formatter_name):
     :raises: ValueError, if formatter name is invalid.
     """
     try:
-        return _formatter_registry[formatter_name]
+        formatter_class = _formatter_registry[formatter_name]
+        return formatter_class
+        # if not is_formatter_class_valid(formatter_class):
+        #     formatter_class = BadFormatterClass(formatter_name, formatter_class)
+        #     _formatter_registry[formatter_name] = formatter_class
+        # return formatter_class
     except KeyError:
         # -- NOT-FOUND:
         if ":" not in formatter_name:
             raise
         # -- OTHERWISE: SCOPED-NAME, try to load a user-specific formatter.
         # MAY RAISE: ImportError
-        return load_formatter_class(formatter_name)
+        formatter_class = load_formatter_class(formatter_name)
+        return formatter_class
+
+
+def is_formatter_class_valid(formatter_class):
+    return inspect.isclass(formatter_class) and issubclass(formatter_class, Formatter)
 
 
 def is_formatter_valid(formatter_name):
@@ -115,7 +161,7 @@ def is_formatter_valid(formatter_name):
     """
     try:
         formatter_class = select_formatter_class(formatter_name)
-        return issubclass(formatter_class, Formatter)
+        return is_formatter_class_valid(formatter_class)
     except (LookupError, ImportError, ValueError):
         return False
 

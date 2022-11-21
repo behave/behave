@@ -42,6 +42,7 @@ ENHANCEMENTS:
 * Select-by-location: Add support for "Scenario container" (Feature, Rule, ScenarioOutline) (related to: #391)
 * pull  #988: setup.py: Add category to install additional formatters (html) (provided-by: bittner)
 * pull  #895: UPDATE: i18n/gherkin-languages.json from cucumber repository #895 (related to: #827)
+* issue #889: Warn or error about incorrectly configured formatter aliases (provided by: jenisys, submitted by: bittner)
 * pull  #827: Fixed keyword translation in Estonian #827 (provided by: ookull)
 * issue #740: Enhancement: possibility to add cleanup to be called upon leaving outer context stack frames (submitted by: nizwiz, dcvmoole)
 * issue #678: Scenario Outline: Support tags with commas and semicolons (provided by: lawnmowerlatte, pull #679)

@@ -7,7 +7,7 @@ Feature: Issue #31 "behave --format help" raises an error
     Then it should pass
     And the command output should contain:
       """
-      Available formatters:
+      AVAILABLE FORMATTERS:
         json           JSON dump of test run
         json.pretty    JSON dump of test run (human readable)
         null           Provides formatter that does not output anything.

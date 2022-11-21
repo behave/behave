@@ -162,7 +162,7 @@ Feature: Use a user-defined Formatter
     When I run "behave -f help"
     Then it should pass with:
       """
-      Available formatters:
+      AVAILABLE FORMATTERS:
       """
     And the command output should contain:
       """
