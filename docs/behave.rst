@@ -55,10 +55,6 @@ You may see the same information presented below at any time using ``behave
 
     Directory in which to store JUnit reports.
 
-.. option:: --runner-class
-
-    Tells Behave to use a specific runner. (default: %(default)s)
-
 .. option:: -f, --format
 
     Specify a formatter. If none is specified the default formatter is
@@ -182,7 +178,7 @@ You may see the same information presented below at any time using ``behave
 
 .. option:: -r, --runner
 
-    Use own runner class, like: behave.runner:Runner
+    Use own runner class, like: "behave.runner:Runner"
 
 .. option:: -s, --no-source
 
@@ -397,13 +393,6 @@ Configuration Parameters
     Directory in which to store JUnit reports.
 
 .. index::
-    single: configuration param; runner_class
-
-.. describe:: runner_class : text
-
-    Tells Behave to use a specific runner. (default: %(default)s)
-
-.. index::
     single: configuration param; default_format
 
 .. describe:: default_format : text
@@ -575,7 +564,7 @@ Configuration Parameters
 
 .. describe:: runner : text
 
-    Use own runner class, like: behave.runner:Runner
+    Use own runner class, like: "behave.runner:Runner"
 
 .. index::
     single: configuration param; show_source
