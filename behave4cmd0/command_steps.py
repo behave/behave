@@ -421,6 +421,47 @@ def step_command_output_should_contain_not_exactly_with_multiline_text(context):
 
 
 # -----------------------------------------------------------------------------
+# STEP DEFINITIONS: command output should/should_not match
+# -----------------------------------------------------------------------------
+@then(u'the command output should match /{pattern}/')
+@then(u'the command output should match "{pattern}"')
+def step_command_output_should_match_pattern(context, pattern):
+    """Verifies that command output matches the ``pattern``.
+
+    :param pattern: Regular expression pattern to use (as string or compiled).
+
+    .. code-block:: gherkin
+
+        # -- STEP-SCHEMA: Then the command output should match /{pattern}/
+        Scenario:
+          When I run `echo Hello world`
+          Then the command output should match /Hello \\w+/
+    """
+    # steputil.assert_attribute_exists(context, "command_result")
+    text = context.command_result.output.strip()
+    textutil.assert_text_should_match_pattern(text, pattern)
+
+@then(u'the command output should not match /{pattern}/')
+@then(u'the command output should not match "{pattern}"')
+def step_command_output_should_not_match_pattern(context, pattern):
+    # steputil.assert_attribute_exists(context, "command_result")
+    text = context.command_result.output
+    textutil.assert_text_should_not_match_pattern(text, pattern)
+
+@then(u'the command output should match')
+def step_command_output_should_match_with_multiline_text(context):
+    assert context.text is not None, "ENSURE: multiline text is provided."
+    pattern = context.text
+    step_command_output_should_match_pattern(context, pattern)
+
+@then(u'the command output should not match')
+def step_command_output_should_not_match_with_multiline_text(context):
+    assert context.text is not None, "ENSURE: multiline text is provided."
+    pattern = context.text
+    step_command_output_should_not_match_pattern(context, pattern)
+
+
+# -----------------------------------------------------------------------------
 # STEPS FOR: Directories
 # -----------------------------------------------------------------------------
 @step(u'I remove the directory "{directory}"')

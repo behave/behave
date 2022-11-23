@@ -180,6 +180,10 @@ You may see the same information presented below at any time using ``behave
 
     Alias for --no-snippets --no-source.
 
+.. option:: -r, --runner
+
+    Use own runner class, like: behave.runner:Runner
+
 .. option:: -s, --no-source
 
     Don't print the file and line of the step definition with the steps.
@@ -565,6 +569,13 @@ Configuration Parameters
 .. describe:: quiet : bool
 
     Alias for --no-snippets --no-source.
+
+.. index::
+    single: configuration param; runner
+
+.. describe:: runner : text
+
+    Use own runner class, like: behave.runner:Runner
 
 .. index::
     single: configuration param; show_source

@@ -13,6 +13,7 @@ import weakref
 
 import six
 
+from behave.api.runner import ITestRunner
 from behave._types import ExceptionUtil
 from behave.capture import CaptureController
 from behave.exception import ConfigError
@@ -556,8 +557,7 @@ def path_getrootdir(path):
 
 
 class ModelRunner(object):
-    """
-    Test runner for a behave model (features).
+    """Test runner for a behave model (features).
     Provides the core functionality of a test runner and
     the functional API needed by model elements.
 
@@ -582,7 +582,7 @@ class ModelRunner(object):
         self.features = features or []
         self.hooks = {}
         self.formatters = []
-        self.undefined_steps = []
+        self._undefined_steps = []
         self.step_registry = step_registry
         self.capture_controller = CaptureController(config)
 
@@ -590,21 +590,27 @@ class ModelRunner(object):
         self.feature = None
         self.hook_failures = 0
 
-    # @property
-    def _get_aborted(self):
-        value = False
-        if self.context:
-            value = self.context.aborted
-        return value
+    @property
+    def undefined_steps(self):
+        return self._undefined_steps
 
-    # @aborted.setter
-    def _set_aborted(self, value):
+    @property
+    def aborted(self):
+        """Indicates that test run is aborted by the user or system."""
+        if self.context:
+            return self.context.aborted
+        # -- OTHERWISE
+        return False
+
+    @aborted.setter
+    def aborted(self, value):
+        """Mark the test run as aborted."""
         # pylint: disable=protected-access
         assert self.context, "REQUIRE: context, but context=%r" % self.context
-        self.context._set_root_attribute("aborted", bool(value))
+        if self.context:
+            self.context._set_root_attribute("aborted", bool(value))
 
-    aborted = property(_get_aborted, _set_aborted,
-                       doc="Indicates that test run is aborted by the user.")
+    # DISABLED: aborted = property(_get_aborted, _set_aborted, doc="...")
 
     def abort(self, reason=None):
         """Abort the test run.
@@ -908,3 +914,10 @@ class Runner(ModelRunner):
         stream_openers = self.config.outputs
         self.formatters = make_formatters(self.config, stream_openers)
         return self.run_model()
+
+
+# -----------------------------------------------------------------------------
+# REGISTER RUNNER-CLASSES:
+# -----------------------------------------------------------------------------
+ITestRunner.register(ModelRunner)
+ITestRunner.register(Runner)

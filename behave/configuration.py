@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 import argparse
+import inspect
 import logging
 import os
 import re
 import sys
 import shlex
 import six
-from importlib import import_module
 from six.moves import configparser
 
 from behave.model import ScenarioOutline
@@ -30,7 +30,13 @@ if six.PY2:
 
 
 # -----------------------------------------------------------------------------
-# CONFIGURATION DATA TYPES:
+# CONSTANTS:
+# -----------------------------------------------------------------------------
+DEFAULT_RUNNER_CLASS_NAME = "behave.runner:Runner"
+
+
+# -----------------------------------------------------------------------------
+# CONFIGURATION DATA TYPES and TYPE CONVERTERS:
 # -----------------------------------------------------------------------------
 class LogLevel(object):
     names = [
@@ -66,16 +72,6 @@ class LogLevel(object):
 # -----------------------------------------------------------------------------
 # CONFIGURATION SCHEMA:
 # -----------------------------------------------------------------------------
-
-def valid_python_module(path):
-    try:
-        module_path, class_name = path.rsplit('.', 1)
-        module = import_module(module_path)
-        return getattr(module, class_name)
-    except (ValueError, AttributeError, ImportError):
-        raise argparse.ArgumentTypeError("No module named '%s' was found." % path)
-
-
 options = [
     (("-c", "--no-color"),
      dict(action="store_false", dest="color",
@@ -123,11 +119,6 @@ options = [
      dict(metavar="PATH", dest="junit_directory",
           default="reports",
           help="""Directory in which to store JUnit reports.""")),
-
-    (("--runner-class",),
-     dict(action="store",
-          default="behave.runner.Runner", type=valid_python_module,
-          help="Tells Behave to use a specific runner. (default: %(default)s)")),
 
     ((),  # -- CONFIGFILE only
      dict(dest="default_format",
@@ -283,6 +274,11 @@ options = [
     (("-q", "--quiet"),
      dict(action="store_true",
           help="Alias for --no-snippets --no-source.")),
+
+    (("-r", "--runner"),
+     dict(dest="runner", action="store", metavar="RUNNER_CLASS",
+          default=DEFAULT_RUNNER_CLASS_NAME,
+          help='Use own runner class, like: "behave.runner:Runner"')),
 
     (("-s", "--no-source"),
      dict(action="store_false", dest="show_source",
@@ -442,6 +438,7 @@ def read_configuration(path):
     # SCHEMA: config_section: data_name
     special_config_section_map = {
         "behave.formatters": "more_formatters",
+        "behave.runners":    "more_runners",
         "behave.userdata":   "userdata",
     }
     for section_name, data_name in special_config_section_map.items():
@@ -518,6 +515,7 @@ class Configuration(object):
         log_capture=True,
         logging_format="%(levelname)s:%(name)s:%(message)s",
         logging_level=logging.INFO,
+        runner=DEFAULT_RUNNER_CLASS_NAME,
         steps_catalog=False,
         summary=True,
         junit=False,
@@ -585,6 +583,7 @@ class Configuration(object):
         self.steps_catalog = None
         self.userdata = None
         self.wip = None
+        self.verbose = verbose
 
         defaults = self.defaults.copy()
         for name, value in six.iteritems(kwargs):
@@ -601,6 +600,8 @@ class Configuration(object):
         self.environment_file = "environment.py"
         self.userdata_defines = None
         self.more_formatters = None
+        self.more_runners = None
+        self.runner_aliases = dict(default=DEFAULT_RUNNER_CLASS_NAME)
         if load_config:
             load_configuration(self.defaults, verbose=verbose)
         parser = setup_parser()
@@ -669,6 +670,7 @@ class Configuration(object):
         self.setup_stage(self.stage)
         self.setup_model()
         self.setup_userdata()
+        self.setup_runner_aliases()
 
         # -- FINALLY: Setup Reporters and Formatters
         # NOTE: Reporters and Formatters can now use userdata information.
@@ -682,10 +684,13 @@ class Configuration(object):
             self.reporters.append(SummaryReporter(self))
 
         self.setup_formats()
-        unknown_formats = self.collect_unknown_formats()
-        if unknown_formats:
-            parser.error("format=%s is unknown" % ", ".join(unknown_formats))
-
+        bad_formats_and_errors = self.select_bad_formats_with_errors()
+        if bad_formats_and_errors:
+            bad_format_parts = []
+            for name, error in bad_formats_and_errors:
+                message = "%s (problem: %s)" % (name, error)
+                bad_format_parts.append(message)
+            parser.error("BAD_FORMAT=%s" % ", ".join(bad_format_parts))
 
     def setup_outputs(self, args_outfiles=None):
         if self.outputs:
@@ -708,15 +713,30 @@ class Configuration(object):
             for name, scoped_class_name in self.more_formatters.items():
                 _format_registry.register_as(name, scoped_class_name)
 
-    def collect_unknown_formats(self):
-        unknown_formats = []
+    def setup_runner_aliases(self):
+        if self.more_runners:
+            for name, scoped_class_name in self.more_runners.items():
+                self.runner_aliases[name] = scoped_class_name
+
+    def select_bad_formats_with_errors(self):
+        bad_formats = []
         if self.format:
             for format_name in self.format:
-                if (format_name == "help" or
-                        _format_registry.is_formatter_valid(format_name)):
+                formatter_valid = _format_registry.is_formatter_valid(format_name)
+                if format_name == "help" or formatter_valid:
                     continue
-                unknown_formats.append(format_name)
-        return unknown_formats
+
+                try:
+                    _ = _format_registry.select_formatter_class(format_name)
+                    bad_formats.append((format_name, "InvalidClassError"))
+                except Exception as e:
+                    formatter_error = e.__class__.__name__
+                    if formatter_error == "KeyError":
+                        formatter_error = "LookupError"
+                    if self.verbose:
+                        formatter_error += ": %s" % str(e)
+                    bad_formats.append((format_name, formatter_error))
+        return bad_formats
 
     @staticmethod
     def build_name_re(names):

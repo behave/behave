@@ -2,10 +2,8 @@ import os.path
 import sys
 import tempfile
 import six
-import pytest
 from behave import configuration
 from behave.configuration import Configuration, UserData
-from behave.runner import Runner as BaseRunner
 from unittest import TestCase
 
 
@@ -27,7 +25,9 @@ foo    = bar
 answer = 42
 """
 
-
+# -----------------------------------------------------------------------------
+# TEST SUPPORT:
+# -----------------------------------------------------------------------------
 ROOTDIR_PREFIX = ""
 if sys.platform.startswith("win"):
     # -- OR: ROOTDIR_PREFIX = os.path.splitdrive(sys.executable)
@@ -38,10 +38,9 @@ if sys.platform.startswith("win"):
     ROOTDIR_PREFIX = os.environ.get("BEHAVE_ROOTDIR_PREFIX", ROOTDIR_PREFIX_DEFAULT)
 
 
-class CustomTestRunner(BaseRunner):
-    """Custom, dummy runner"""
-
-
+# -----------------------------------------------------------------------------
+# TEST SUITE:
+# -----------------------------------------------------------------------------
 class TestConfiguration(object):
 
     def test_read_file(self):
@@ -97,21 +96,10 @@ class TestConfiguration(object):
         assert "STAGE2_environment.py" == config.environment_file
         del os.environ["BEHAVE_STAGE"]
 
-    def test_settings_runner_class(self, capsys):
-        config = Configuration("")
-        assert BaseRunner == config.runner_class
 
-    def test_settings_runner_class_custom(self, capsys):
-        config = Configuration(["--runner-class=tests.unit.test_configuration.CustomTestRunner"])
-        assert CustomTestRunner == config.runner_class
-
-    def test_settings_runner_class_invalid(self, capsys):
-        with pytest.raises(SystemExit):
-            Configuration(["--runner-class=does.not.exist.Runner"])
-        captured = capsys.readouterr()
-        assert "No module named 'does.not.exist.Runner' was found." in captured.err
-
-
+# -----------------------------------------------------------------------------
+# TEST SUITE:
+# -----------------------------------------------------------------------------
 class TestConfigurationUserData(TestCase):
     """Test userdata aspects in behave.configuration.Configuration class."""
 
