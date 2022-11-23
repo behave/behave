@@ -13,6 +13,9 @@ BACKWARD-INCOMPATIBLE:
   - DEPRECATING: ``tag-expressions v1`` (old-style)
   - BUT: Currently, tag-expression version is automatically detected (and used).
 
+* CLI: Cleanup command-line short-options that are seldom used
+  (short-options for: --no-skipped (-k), --no-multiline (-m), --no-source (-s)).
+
 GOALS:
 
 - Improve support for Windows (continued)
@@ -26,6 +29,7 @@ DEVELOPMENT:
 
 CLEANUPS:
 
+* CLI: Remove unused option ``--expand``
 * Remove ``stdout_capture``, ``stderr_capture``, ``log_capture``
   attributes from ``behave.runner.Context`` class
   (use: ``captured`` attribute instead).

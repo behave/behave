@@ -141,7 +141,7 @@ options = [
           help="""Specify name annotation schema for scenario outline
                   (default="{name} -- @{row.id} {examples.name}").""")),
 
-    (("-k", "--no-skipped"),
+    (("--no-skipped",),
      dict(action="store_false", dest="show_skipped",
           help="Don't print skipped steps (due to tags).")),
 
@@ -160,10 +160,9 @@ options = [
                   This is the default behaviour. This switch is used to
                   override a configuration file setting.""")),
 
-    (("-m", "--no-multiline"),
+    (("--no-multiline",),
      dict(action="store_false", dest="show_multiline",
-          help="""Don't print multiline strings and tables under
-                  steps.""")),
+          help="""Don't print multiline strings and tables under steps.""")),
 
     (("--multiline", ),
      dict(action="store_true", dest="show_multiline",
@@ -280,7 +279,7 @@ options = [
           default=DEFAULT_RUNNER_CLASS_NAME,
           help='Use own runner class, like: "behave.runner:Runner"')),
 
-    (("-s", "--no-source"),
+    (("--no-source",),
      dict(action="store_false", dest="show_source",
           help="""Don't print the file and line of the step definition with the
                   steps.""")),
@@ -341,10 +340,6 @@ options = [
           help="""Only run scenarios tagged with "wip". Additionally: use the
                   "plain" formatter, do not capture stdout or logging output
                   and stop at the first failure.""")),
-
-    (("-x", "--expand"),
-     dict(action="store_true",
-          help="Expand scenario outline tables in output.")),
 
     (("--lang",),
      dict(metavar="LANG",

@@ -65,7 +65,7 @@ You may see the same information presented below at any time using ``behave
     Show a catalog of all available step definitions. SAME AS:
     --format=steps.catalog --dry-run --no-summary -q
 
-.. option:: -k, --no-skipped
+.. option:: --no-skipped
 
     Don't print skipped steps (due to tags).
 
@@ -83,7 +83,7 @@ You may see the same information presented below at any time using ``behave
     Print snippets for unimplemented steps. This is the default behaviour.
     This switch is used to override a configuration file setting.
 
-.. option:: -m, --no-multiline
+.. option:: --no-multiline
 
     Don't print multiline strings and tables under steps.
 
@@ -180,7 +180,7 @@ You may see the same information presented below at any time using ``behave
 
     Use own runner class, like: "behave.runner:Runner"
 
-.. option:: -s, --no-source
+.. option:: --no-source
 
     Don't print the file and line of the step definition with the steps.
 
@@ -224,10 +224,6 @@ You may see the same information presented below at any time using ``behave
     Only run scenarios tagged with "wip". Additionally: use the "plain"
     formatter, do not capture stdout or logging output and stop at the
     first failure.
-
-.. option:: -x, --expand
-
-    Expand scenario outline tables in output.
 
 .. option:: --lang
 
@@ -632,13 +628,6 @@ Configuration Parameters
     Only run scenarios tagged with "wip". Additionally: use the "plain"
     formatter, do not capture stdout or logging output and stop at the
     first failure.
-
-.. index::
-    single: configuration param; expand
-
-.. describe:: expand : bool
-
-    Expand scenario outline tables in output.
 
 .. index::
     single: configuration param; lang
