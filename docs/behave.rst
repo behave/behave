@@ -55,6 +55,11 @@ You may see the same information presented below at any time using ``behave
 
     Directory in which to store JUnit reports.
 
+.. option:: -j, --jobs, --parallel
+
+    Number of concurrent jobs to use (default: 1). Only supported by test
+    runners that support parallel execution.
+
 .. option:: -f, --format
 
     Specify a formatter. If none is specified the default formatter is
@@ -387,6 +392,14 @@ Configuration Parameters
 .. describe:: junit_directory : text
 
     Directory in which to store JUnit reports.
+
+.. index::
+    single: configuration param; jobs
+
+.. describe:: jobs : positive_number
+
+    Number of concurrent jobs to use (default: 1). Only supported by test
+    runners that support parallel execution.
 
 .. index::
     single: configuration param; default_format

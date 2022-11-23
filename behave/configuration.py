@@ -69,6 +69,14 @@ class LogLevel(object):
         return logging.getLevelName(level)
 
 
+def positive_number(text):
+    """Converts a string into a positive integer number."""
+    value = int(text)
+    if value < 0:
+        raise ValueError("POSITIVE NUMBER, but was: %s" % text)
+    return value
+
+
 # -----------------------------------------------------------------------------
 # CONFIGURATION SCHEMA:
 # -----------------------------------------------------------------------------
@@ -120,9 +128,14 @@ options = [
           default="reports",
           help="""Directory in which to store JUnit reports.""")),
 
+    (("-j", "--jobs", "--parallel"),
+     dict(metavar="NUMBER", dest="jobs", default=1, type=positive_number,
+          help="""Number of concurrent jobs to use (default: %(default)s).
+                  Only supported by test runners that support parallel execution.""")),
+
     ((),  # -- CONFIGFILE only
-     dict(dest="default_format",
-          help="Specify default formatter (default: pretty).")),
+     dict(dest="default_format", default="pretty",
+          help="Specify default formatter (default: %(default)s).")),
 
 
     (("-f", "--format"),
@@ -500,6 +513,7 @@ class Configuration(object):
     # pylint: disable=too-many-instance-attributes
     defaults = dict(
         color='never' if sys.platform == "win32" else os.getenv('BEHAVE_COLOR', 'auto'),
+        jobs=1,
         show_snippets=True,
         show_skipped=True,
         dry_run=False,

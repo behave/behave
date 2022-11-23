@@ -17,6 +17,8 @@ import textwrap
 from behave import configuration
 from behave.__main__ import TAG_HELP
 
+
+positive_number = configuration.positive_number
 cmdline = []
 config = []
 indent = "    "
@@ -51,9 +53,31 @@ for fixed, keywords in configuration.options:
                 assert len(opt) == 2
                 dest = opt[1:]
 
+    # -- COMMON PART:
+    action = keywords.get("action", "store")
+    data_type = keywords.get("type", None)
+    default_value = keywords.get("default", None)
+    if action == "store":
+        type = "text"
+        if data_type is positive_number:
+            type = "positive_number"
+        if data_type is int:
+            type = "number"
+    elif action in ("store_true","store_false"):
+        type = "bool"
+        default_value = False
+        if action == "store_true":
+            default_value = True
+    elif action == "append":
+        type = "sequence<text>"
+    else:
+        raise ValueError("unknown action %s" % action)
+
     # -- CASE: command-line option
     text = re.sub(r"\s+", " ", keywords["help"]).strip()
     text = text.replace("%%", "%")
+    if default_value and "%(default)s" in text:
+        text = text.replace("%(default)s", str(default_value))
     text = textwrap.fill(text, 70, initial_indent="", subsequent_indent=indent)
     if fixed:
         # -- COMMAND-LINE OPTIONS (CONFIGFILE only have empty fixed):
@@ -66,22 +90,14 @@ for fixed, keywords in configuration.options:
         continue
 
     # -- CASE: configuration-file parameter
-    action = keywords.get("action", "store")
-    if action == "store":
-        type = "text"
-    elif action in ("store_true","store_false"):
-        type = "bool"
-    elif action == "append":
-        type = "sequence<text>"
-    else:
-        raise ValueError("unknown action %s" % action)
-
     if action == "store_false":
         # -- AVOID: Duplicated descriptions, use only case:true.
         continue
 
     text = re.sub(r"\s+", " ", keywords.get("config_help", keywords["help"])).strip()
     text = text.replace("%%", "%")
+    if default_value and "%(default)s" in text:
+        text = text.replace("%(default)s", str(default_value))
     text = textwrap.fill(text, 70, initial_indent="", subsequent_indent=indent)
     config.append(config_param_schema.format(param=dest, type=type, text=text))
 
