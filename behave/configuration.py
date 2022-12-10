@@ -477,9 +477,9 @@ def load_configuration(defaults, verbose=False):
         defaults.update(read_configuration(filename))
 
     if verbose:
-        print("Using defaults:")
-        for k, v in six.iteritems(defaults):
-            print("%15s %s" % (k, v))
+        print("Using CONFIGURATION DEFAULTS:")
+        for k, v in sorted(six.iteritems(defaults)):
+            print("%18s: %s" % (k, v))
 
 
 def setup_parser():
