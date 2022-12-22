@@ -605,7 +605,7 @@ class Configuration(object):
             load_configuration(self.defaults, verbose=verbose)
         parser = setup_parser()
         parser.set_defaults(**self.defaults)
-        args = parser.parse_args(command_args)
+        args, self.unknown_args = parser.parse_known_args(command_args)
         for key, value in six.iteritems(args.__dict__):
             if key.startswith("_") and key not in self.cmdline_only_options:
                 continue

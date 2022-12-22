@@ -5,6 +5,7 @@ This module provides Runner class to run behave feature files (or model elements
 
 from __future__ import absolute_import, print_function, with_statement
 
+import argparse
 import contextlib
 import os.path
 import sys
@@ -568,6 +569,11 @@ class ModelRunner(object):
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self, config, features=None, step_registry=None):
+
+        self.runner_args = dict()
+        if config and config.unknown_args:
+            self.runner_args = self.get_parser().parse_args(config.unknown_args)
+
         self.config = config
         self.features = features or []
         self.hooks = {}
@@ -592,6 +598,18 @@ class ModelRunner(object):
         # pylint: disable=protected-access
         assert self.context, "REQUIRE: context, but context=%r" % self.context
         self.context._set_root_attribute("aborted", bool(value))
+
+    def get_parser(self):
+        """Return a parser to parse extra command line arguments.
+
+        "Unknown" command line arguments are tolerated by behave's main argument parser, and passed
+        to the runner implementation. The default implementation of the extra argument parser is
+        the empty parser, i.e. it will reject any unknown argument and fail.
+
+        Custom runner implementors may override this function to return an argparse parser, which
+        accepts specific arguments.
+        """
+        return argparse.ArgumentParser()
 
     aborted = property(_get_aborted, _set_aborted,
                        doc="Indicates that test run is aborted by the user.")
