@@ -446,7 +446,8 @@ class PathManager(object):
 
     def __exit__(self, *crap):
         for path in self.paths:
-            sys.path.remove(path)
+            if path in sys.path:
+                sys.path.remove(path)
         self.paths = None
 
     def add(self, path):
