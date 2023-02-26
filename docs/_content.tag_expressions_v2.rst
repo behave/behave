@@ -1,9 +1,9 @@
 Tag-Expressions v2
 -------------------------------------------------------------------------------
 
-:pypi:`cucumber-tag-expressions` are now supported and superceed the old-style
+:pypi:`cucumber-tag-expressions` are now supported and supersedes the old-style
 tag-expressions (which are deprecating). :pypi:`cucumber-tag-expressions` are much
-more readible and flexible to select tags on command-line.
+more readable and flexible to select tags on command-line.
 
 .. code-block:: sh
 
@@ -22,7 +22,7 @@ Example:
 .. code-block:: sh
 
     # -- SELECT-BY-TAG-EXPRESSION (with tag-expressions v2):
-    # Sellect all features / scenarios with both "@foo" and "@bar" tags.
+    # Select all features / scenarios with both "@foo" and "@bar" tags.
     $ behave --tags="@foo and @bar" features/
 
 
