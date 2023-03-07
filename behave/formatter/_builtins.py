@@ -28,6 +28,9 @@ _BUILTIN_FORMATS = [
     ("steps.doc",     "behave.formatter.steps:StepsDocFormatter"),
     ("steps.catalog", "behave.formatter.steps:StepsCatalogFormatter"),
     ("steps.usage",   "behave.formatter.steps:StepsUsageFormatter"),
+    ("steps.undefined",   "behave.formatter.steps:StepsUndefinedFormatter"),
+    ("steps.unused",  "behave.formatter.steps:StepsUnusedFormatter"),
+    ("steps.unusedundefined", "behave.formatter.steps:StepsUnusedUndefinedFormatter"),
     ("sphinx.steps",  "behave.formatter.sphinx_steps:SphinxStepsFormatter"),
 ]
 

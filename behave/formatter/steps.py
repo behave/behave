@@ -488,6 +488,76 @@ class StepsUsageFormatter(AbstractStepsFormatter):
             self.stream.write(schema % (step_text, step.location))
 
 # -----------------------------------------------------------------------------
+# CLASS: StepsUndefinedFormatter
+# -----------------------------------------------------------------------------
+class StepsUndefinedFormatter(StepsUsageFormatter):
+    """
+    Provides formatter class that shows lists undefined steps.
+
+    EXAMPLE:
+        $ behave --dry-run -f steps.undefined features/
+        ...
+
+    .. note::
+        Supports behave dry-run mode.
+    """
+    name = "steps.undefined"
+    description = "Shows undefined steps."
+    doc_prefix = make_indentation(4)
+    min_location_column = 40
+
+    def report(self):
+        self.report_undefined_steps()
+        self.stream.write("\n")
+
+# -----------------------------------------------------------------------------
+# CLASS: StepsUnusedFormatter
+# -----------------------------------------------------------------------------
+class StepsUnusedFormatter(StepsUsageFormatter):
+    """
+    Provides formatter class that shows lists unused steps.
+
+    EXAMPLE:
+        $ behave --dry-run -f steps.unused features/
+        ...
+
+    .. note::
+        Supports behave dry-run mode.
+    """
+    name = "steps.unused"
+    description = "Shows unused steps."
+    doc_prefix = make_indentation(4)
+    min_location_column = 40
+
+    def report(self):
+        self.report_unused_step_definitions()
+        self.stream.write("\n")
+
+# -----------------------------------------------------------------------------
+# CLASS: StepsUnusedUndefinedFormatter
+# -----------------------------------------------------------------------------
+class StepsUnusedUndefinedFormatter(StepsUsageFormatter):
+    """
+    Provides formatter class that shows lists unused steps.
+
+    EXAMPLE:
+        $ behave --dry-run -f steps.unusedundefined features/
+        ...
+
+    .. note::
+        Supports behave dry-run mode.
+    """
+    name = "steps.unusedundefined"
+    description = "Shows unused steps."
+    doc_prefix = make_indentation(4)
+    min_location_column = 40
+
+    def report(self):
+        self.report_unused_step_definitions()
+        self.report_undefined_steps()
+        self.stream.write("\n")
+
+# -----------------------------------------------------------------------------
 # UTILITY FUNCTIONS:
 # -----------------------------------------------------------------------------
 def steps_contain(steps, step):
