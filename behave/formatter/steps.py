@@ -334,9 +334,12 @@ class StepsCatalogFormatter(StepsDocFormatter):
 class StepsUsageFormatter(AbstractStepsFormatter):
     """
     Provides formatter class that shows how step definitions are used by steps.
+    If the 'steps.usage.classes' contains comma-separated list of the
+    classes, only these will be printed.
 
     EXAMPLE:
         $ behave --dry-run -f steps.usage features/
+        $ behave --dry-run -f steps.usage -D steps.usage.classes=unused,undefined
         ...
 
     .. note::
@@ -346,11 +349,18 @@ class StepsUsageFormatter(AbstractStepsFormatter):
     description = "Shows how step definitions are used by steps."
     doc_prefix = make_indentation(4)
     min_location_column = 40
+    classes = frozenset(["used", "unused", "undefined"])
 
     def __init__(self, stream_opener, config):
         super(StepsUsageFormatter, self).__init__(stream_opener, config)
         self.step_usage_database = {}
         self.undefined_steps = []
+
+        key = "steps.usage.classes"
+        if key in self.config.userdata:
+            classes_req = set(self.config.userdata[key].strip().split(","))
+            if classes_req.issubset(self.classes):
+                self.classes = classes_req
 
     def reset(self):
         super(StepsUsageFormatter, self).reset()
@@ -426,6 +436,9 @@ class StepsUsageFormatter(AbstractStepsFormatter):
     def report_used_step_definitions(self):
         # -- STEP: Used step definitions.
         # ORDERING: Sort step definitions by file location.
+        if "used" not in self.classes:
+            return
+
         get_location = lambda x: x[0].location
         step_definition_items = self.step_usage_database.items()
         step_definition_items = sorted(step_definition_items, key=get_location)
@@ -448,7 +461,7 @@ class StepsUsageFormatter(AbstractStepsFormatter):
 
     def report_unused_step_definitions(self):
         unused_step_definitions = self.select_unused_step_definitions()
-        if not unused_step_definitions:
+        if not unused_step_definitions or "unused" not in self.classes:
             return
 
         # -- STEP: Prepare report for unused step definitions.
@@ -469,7 +482,7 @@ class StepsUsageFormatter(AbstractStepsFormatter):
             self.stream.write(schema % (step_text, step_definition.location))
 
     def report_undefined_steps(self):
-        if not self.undefined_steps:
+        if not self.undefined_steps or "undefined" not in self.classes:
             return
 
         # -- STEP: Undefined steps.
