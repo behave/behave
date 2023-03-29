@@ -743,10 +743,15 @@ class Parser(object):
                     step_type = self.last_step_type
                 elif step_type in ("and", "but"):
                     if not self.last_step_type:
+                        found_step_type = False
                         if self.scenario_container and self.scenario_container.background:
-                            last_background_step = self.scenario_container.background.steps[-1]
-                            self.last_step_type = last_background_step.step_type
-                        else:
+                            if self.scenario_container.background.steps:
+                                # -- HINT: Rule may have default background w/o steps.
+                                last_background_step = self.scenario_container.background.steps[-1]
+                                self.last_step_type = last_background_step.step_type
+                                found_step_type = True
+
+                        if not found_step_type:
                             raise ParserError(u"No previous step",
                                               self.line, self.filename)
                     step_type = self.last_step_type
