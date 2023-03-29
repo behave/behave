@@ -408,6 +408,35 @@ Feature: Stuff
             ('then', 'But', 'not the bad stuff', None, None),
         ])
 
+    def test_parses_feature_with_a_scenario_with_background_and_and(self):
+        doc = u"""
+Feature: Stuff
+  Background:
+    Given some background
+    And more background
+
+  Scenario: Doing stuff
+    And with the background
+    When I do stuff
+    Then stuff happens
+""".lstrip()
+        feature = parser.parse_feature(doc)
+        assert feature
+        assert feature.name == "Stuff"
+        assert len(feature.scenarios) == 1
+        assert feature.background
+        assert_compare_steps(feature.background.steps, [
+            ('given', 'Given', 'some background', None, None),
+            ('given', 'And', 'more background', None, None)
+        ])
+
+        assert feature.scenarios[0].name == "Doing stuff"
+        assert_compare_steps(feature.scenarios[0].steps, [
+            ('given', 'And', 'with the background', None, None),
+            ('when', 'When', 'I do stuff', None, None),
+            ('then', 'Then', 'stuff happens', None, None),
+        ])
+
     def test_parses_feature_with_a_step_with_a_string_argument(self):
         doc = u'''
 Feature: Stuff
