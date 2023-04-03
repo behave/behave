@@ -1711,7 +1711,7 @@ Then the last step has a final table:
             ("then",  "Then",  "the last step has a final table", None, table2),
         ])
 
-    def test_parse_steps_with_malformed_table(self):
+    def test_parse_steps_with_malformed_table_fails(self):
         text = u'''
 Given a step with a malformed table:
     | Name   | City |
@@ -1720,3 +1720,27 @@ Given a step with a malformed table:
 '''.lstrip()
         with pytest.raises(parser.ParserError):
             parser.parse_steps(text)
+
+    def test_parse_steps_with_multiline_text_before_any_step_fails(self):
+        text = u'''
+  """
+  BAD MULTI-LINE TEXT (before any step)
+  """
+Given another step
+'''.lstrip()
+        with pytest.raises(parser.ParserError) as exc:
+            parser.parse_steps(text)
+
+        assert exc.match("Multi-line text before any step")
+
+    def test_parse_steps_with_datatable_before_any_step_fails(self):
+        text = u'''
+          | name  | birthyear |
+          | Alice | 1980 |
+          | Bob   | 2005 |
+        Given another step
+        '''.lstrip()
+        with pytest.raises(parser.ParserError) as exc:
+            parser.parse_steps(text)
+
+        assert exc.match("TABLE-START without step detected")
