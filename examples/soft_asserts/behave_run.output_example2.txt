@@ -1,0 +1,44 @@
+# -- HINT: EXECUTE: ../../bin/behave -f plain
+
+Feature: Use Soft Assertions in behave
+
+  Scenario: Failing with Soft Assertions -- CASE 1
+    Given a minimum number value of "5" ... passed
+    Then the numbers "2" and "12" are in the valid range ... failed
+Assertion Failed: soft assertion failures:
+1. Expected <2> to be greater than or equal to <5>, but was not.
+
+  Scenario: Failing with Soft Assertions -- CASE 2
+    Given a minimum number value of "5" ... passed
+    Then the number "4" is in the valid range ... failed
+Assertion Failed: Expected <4> to be greater than or equal to <5>, but was not.
+    And the number "8" is in the valid range ... passed
+    But note that "the step-2 is expected to fail" ... passed
+    But note that "the step-3 should be executed and should pass" ... passed
+
+  Scenario: Failing with Soft Assertions -- CASE 1 and CASE 2
+    Given a minimum number value of "5" ... passed
+    Then the number "2" is in the valid range ... failed
+Assertion Failed: Expected <2> to be greater than or equal to <5>, but was not.
+    And the numbers "3" and "4" are in the valid range ... failed
+Assertion Failed: soft assertion failures:
+1. Expected <3> to be greater than or equal to <5>, but was not.
+2. Expected <4> to be greater than or equal to <5>, but was not.
+    And the number "8" is in the valid range ... passed
+    But note that "the step-2 and step-3 are expected to fail" ... passed
+    But note that "the step-4 should be executed and should pass" ... passed
+
+  Scenario: Passing
+    Given a step passes ... passed
+    And note that "this scenario should be executed and should pass" ... passed
+
+
+Failing scenarios:
+  features/soft_asserts.feature:5  Failing with Soft Assertions -- CASE 1
+  features/soft_asserts.feature:17  Failing with Soft Assertions -- CASE 2
+  features/soft_asserts.feature:28  Failing with Soft Assertions -- CASE 1 and CASE 2
+
+0 features passed, 1 failed, 0 skipped
+1 scenario passed, 3 failed, 0 skipped
+11 steps passed, 4 failed, 1 skipped, 0 undefined
+Took 0m0.001s
