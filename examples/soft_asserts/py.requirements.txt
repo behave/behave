@@ -1,0 +1,4 @@
+assertpy >= 1.1
+
+-r ../../py.requirements/basic.txt
+-r ../../py.requirements/testing.txt
