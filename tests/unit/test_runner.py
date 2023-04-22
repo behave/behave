@@ -7,7 +7,6 @@ from platform import python_implementation
 import os.path
 import sys
 import warnings
-import tempfile
 import unittest
 import six
 from six import StringIO
@@ -623,18 +622,18 @@ class TestRunner(object):
 
         r.capture_controller.log_capture.abandon.assert_called_with()
 
-    def test_exec_file(self):
-        fn = tempfile.mktemp()
-        with open(fn, "w") as f:
+    def test_exec_file(self, tmp_path):
+        filename = str(tmp_path/"example.py")
+        with open(filename, "w") as f:
             f.write("spam = __file__\n")
-        g = {}
-        l = {}
-        runner_util.exec_file(fn, g, l)
-        assert "__file__" in l
+        my_globals = {}
+        my_locals = {}
+        runner_util.exec_file(filename, my_globals, my_locals)
+        assert "__file__" in my_locals
         # pylint: disable=too-many-format-args
-        assert "spam" in l, '"spam" variable not set in locals (%r)' % (g, l)
+        assert "spam" in my_locals, '"spam" variable not set in locals (%r)' % (my_globals, my_locals)
         # pylint: enable=too-many-format-args
-        assert l["spam"] == fn
+        assert my_locals["spam"] == filename
 
     def test_run_returns_true_if_everything_passed(self):
         r = runner.Runner(Mock())
