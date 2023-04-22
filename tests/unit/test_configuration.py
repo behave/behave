@@ -1,6 +1,5 @@
 import os.path
 import sys
-import tempfile
 import six
 import pytest
 from behave import configuration
@@ -67,8 +66,8 @@ class TestConfiguration(object):
         ("filename", "contents"),
         list(TEST_CONFIGS)
     )
-    def test_read_file(self, filename, contents):
-        tndir = tempfile.mkdtemp()
+    def test_read_file(self, filename, contents, tmp_path):
+        tndir = str(tmp_path)
         file_path = os.path.normpath(os.path.join(tndir, filename))
         with open(file_path, "w") as fp:
             fp.write(contents)
