@@ -35,33 +35,36 @@ enter the newly created directory "behave-<version>" and run::
     pip install .
 
 
-Using the Github Repository
+Using the GitHub Repository
 ---------------------------
 
 :Category: Bleeding edge
 :Precondition: :pypi:`pip` is installed
 
 Run the following command
-to install the newest version from the `Github repository`_::
-
+to install the newest version from the `GitHub repository`_::
 
     pip install git+https://github.com/behave/behave
 
-To install a tagged version from the `Github repository`_, use::
+To install a tagged version from the `GitHub repository`_, use::
 
     pip install git+https://github.com/behave/behave@<tag>
 
 where <tag> is the placeholder for an `existing tag`_.
 
-.. _`Github repository`: https://github.com/behave/behave
+When installing extras, use ``<tag>#egg=behave[...]``, e.g.::
+
+    pip install git+https://github.com/behave/behave@v1.2.7.dev3#egg=behave[toml]
+
+.. _`GitHub repository`: https://github.com/behave/behave
 .. _`existing tag`:      https://github.com/behave/behave/tags
 
 
 Optional Dependencies
 ---------------------
 
-If needed, additional dependencies can be installed using ``pip install``
-with one of the following installation targets.
+If needed, additional dependencies ("extras") can be installed using
+``pip install`` with one of the following installation targets.
 
 ======================= ===================================================================
 Installation Target     Description
