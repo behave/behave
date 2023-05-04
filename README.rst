@@ -19,9 +19,9 @@ behave
     :target: https://pypi.python.org/pypi/behave/
     :alt: License
 
-.. image:: https://badges.gitter.im/Join%20Chat.svg
+.. image:: https://badges.gitter.im/join_chat.svg
    :alt: Join the chat at https://gitter.im/behave/behave
-   :target: https://gitter.im/behave/behave?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+   :target: https://app.gitter.im/#/room/#behave_behave:gitter.im
 
 
 .. |logo| image:: https://raw.github.com/behave/behave/master/docs/_static/behave_logo1.png
