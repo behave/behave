@@ -2,11 +2,14 @@
 # BEHAVE: PYTHON PACKAGE REQUIREMENTS: For documentation generation
 # ============================================================================
 # REQUIRES: pip >= 8.0
-# AVOID: shponx v4.4.0 and newer -- Problems w/ new link check suggestion warnings
+# AVOID: sphinx v4.4.0 and newer -- Problems w/ new link check suggestion warnings
+#        urllib3 v2.0+ only supports OpenSSL 1.1.1+, 'ssl' module is compiled with
+#        v1.0.2, see: https://github.com/urllib3/urllib3/issues/2168
 
 sphinx >=1.6,<4.4
 sphinx-autobuild
 sphinx_bootstrap_theme >= 0.6.0
+urllib3 < 2.0.0
 
 # -- SUPPORT: sphinx-doc translations (prepared)
 sphinx-intl >= 0.9.11
