@@ -124,7 +124,8 @@ setup(
             "PyHamcrest >= 2.0.2; python_version >= '3.0'",
             "PyHamcrest <  2.0;   python_version <  '3.0'",
             "pytest-cov",
-            "tox",
+            "tox   >= 1.8.1,<4.0",   # -- HINT: tox >= 4.0 has breaking changes.
+            "virtualenv < 20.22.0",  # -- SUPPORT FOR: Python 2.7, Python <= 3.6
             "invoke >=1.7.0,<2.0; python_version <  '3.6'",
             "invoke >=1.7.0;      python_version >= '3.6'",
             # -- HINT, was RENAMED: path.py => path (for python3)

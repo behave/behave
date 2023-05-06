@@ -26,7 +26,6 @@ path >= 13.1.0;         python_version >= '3.5'
 tomli >= 1.1.0;  python_version >=  '3.0' and python_version < '3.11'
 toml  >= 0.10.2; python_version <  '3.0'
 
-
 # -- PYTHON2 BACKPORTS:
 pathlib;    python_version <= '3.4'
 
