@@ -125,9 +125,10 @@ setup(
             "PyHamcrest <  2.0;   python_version <  '3.0'",
             "pytest-cov",
             "tox",
-            "invoke >= 1.4.0",
-            # -- HINT: path.py => path (python-install-package was renamed for python3)
-            "path >= 13.1.0;    python_version >= '3.5'",
+            "invoke >=1.7.0,<2.0; python_version <  '3.6'",
+            "invoke >=1.7.0;      python_version >= '3.6'",
+            # -- HINT, was RENAMED: path.py => path (for python3)
+            "path    >= 13.1.0; python_version >= '3.5'",
             "path.py >= 11.5.0; python_version <  '3.5'",
             "pycmd",
             "pathlib; python_version <= '3.4'",
