@@ -8,12 +8,13 @@
 #  * http://www.pip-installer.org/
 # ============================================================================
 
-invoke==1.4.1
+invoke >=1.7.0,<2.0; python_version <  '3.6'
+invoke >=1.7.0;      python_version >= '3.6'
 pycmd
-six==1.15.0
+six >= 1.15.0
 
-# -- HINT: path.py => path (python-install-package was renamed for python3)
-path >= 13.1.0;    python_version >= '3.5'
+# -- HINT, was RENAMED: path.py => path (for python3)
+path    >= 13.1.0; python_version >= '3.5'
 path.py >= 11.5.0; python_version <  '3.5'
 
 # -- PYTHON2 BACKPORTS:
