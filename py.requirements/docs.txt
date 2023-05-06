@@ -11,8 +11,7 @@ sphinx-autobuild
 sphinx_bootstrap_theme >= 0.6.0
 
 # -- NEEDED FOR: RTD (as temporary fix)
-urllib3 <  2.0.0; python_version <  '3.10'
-urllib3 >= 2.0.0; python_version >= '3.10'
+urllib3 < 2.0.0; python_version < '3.8'
 
 # -- SUPPORT: sphinx-doc translations (prepared)
 sphinx-intl >= 0.9.11
