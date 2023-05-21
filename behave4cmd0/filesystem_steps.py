@@ -63,6 +63,7 @@ def step_directory_named_dirname(context, path):
     assert os.path.isdir(path_)
 
 
+@given(u'the directory "{directory}" should exist')
 @then(u'the directory "{directory}" should exist')
 def step_the_directory_should_exist(context, directory):
     path_ = directory
@@ -71,6 +72,7 @@ def step_the_directory_should_exist(context, directory):
     assert_that(os.path.isdir(path_))
 
 
+@given(u'the directory "{directory}" should not exist')
 @then(u'the directory "{directory}" should not exist')
 def step_the_directory_should_not_exist(context, directory):
     path_ = directory
