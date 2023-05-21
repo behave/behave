@@ -57,14 +57,15 @@ IDEA:
         | bar      | CURRENT | xxx     |
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
+import logging
 from behave import given, when, then, step
-from behave4cmd0.command_steps import \
-    step_file_should_contain_multiline_text, \
-    step_file_should_not_contain_multiline_text
 from behave.configuration import LogLevel
 from behave.log_capture import LoggingCapture
-import logging
+from behave4cmd0.filesystem_steps import (
+    step_file_should_contain_multiline_text,
+    step_file_should_not_contain_multiline_text)
+
 
 # -----------------------------------------------------------------------------
 # STEP UTILS:
