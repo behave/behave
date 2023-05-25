@@ -693,12 +693,15 @@ class ModelRunner(object):
 
     def run_model(self, features=None):
         # pylint: disable=too-many-branches
+        if features is None:
+            features = self.features
+        if not any((f.should_run(self.config) for f in features)):
+            print("No active features.")
+            return False
         if not self.context:
             self.context = Context(self)
         if self.step_registry is None:
             self.step_registry = the_step_registry
-        if features is None:
-            features = self.features
 
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
         context = self.context
