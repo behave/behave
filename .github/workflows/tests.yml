@@ -4,9 +4,26 @@
 
 name: tests
 on:
+  workflow_dispatch:
   push:
+    branches: [ "main", "release/**" ]
+    paths:
+      - "**/*.py"
+      - "**/*.feature"
+      - "py.requirements/**"
+      - "*.cfg"
+      - "*.ini"
+      - "*.toml"
   pull_request:
-    branches: [ main ]
+    types: [opened, reopened, review_requested]
+    branches: [ "main" ]
+    paths:
+      - "**/*.py"
+      - "**/*.feature"
+      - "py.requirements/**"
+      - "*.cfg"
+      - "*.ini"
+      - "*.toml"
 
 jobs:
   test:
