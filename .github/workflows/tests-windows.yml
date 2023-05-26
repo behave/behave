@@ -4,9 +4,27 @@
 
 name: tests-windows
 on:
+  workflow_dispatch:
   push:
+    branches: [ "main", "release/**" ]
+    paths:
+      - "**/*.py"
+      - "**/*.feature"
+      - "py.requirements/**"
+      - "*.cfg"
+      - "*.ini"
+      - "*.toml"
   pull_request:
-    branches: [ main ]
+    types: [opened, reopened, review_requested]
+    branches: [ "main" ]
+    paths:
+      - "**/*.py"
+      - "**/*.feature"
+      - "py.requirements/**"
+      - "*.cfg"
+      - "*.ini"
+      - "*.toml"
+
 
 # -- TEST BALLOON: Fix encoding="cp1252" problems by using "UTF-8"
 env:
