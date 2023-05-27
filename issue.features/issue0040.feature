@@ -41,7 +41,7 @@ Feature: Issue #40 Test Summary Scenario/Step Counts are incorrect for Scenario 
             |Alice|
             |Bob  |
       """
-    When I run "behave -c -f plain features/issue40_1.feature"
+    When I run "behave --no-color -f plain features/issue40_1.feature"
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
@@ -62,7 +62,7 @@ Feature: Issue #40 Test Summary Scenario/Step Counts are incorrect for Scenario 
             |Alice|
             |Bob  |
       """
-    When I run "behave -c -f plain features/issue40_2G.feature"
+    When I run "behave --no-color -f plain features/issue40_2G.feature"
     Then it should fail with:
       """
       0 scenarios passed, 2 failed, 0 skipped
@@ -83,7 +83,7 @@ Feature: Issue #40 Test Summary Scenario/Step Counts are incorrect for Scenario 
             |Alice|
             |Bob  |
       """
-    When I run "behave -c -f plain features/issue40_2W.feature"
+    When I run "behave --no-color -f plain features/issue40_2W.feature"
     Then it should fail with:
       """
       0 scenarios passed, 2 failed, 0 skipped
@@ -104,7 +104,7 @@ Feature: Issue #40 Test Summary Scenario/Step Counts are incorrect for Scenario 
             |Alice|
             |Bob  |
       """
-    When I run "behave -c -f plain features/issue40_2T.feature"
+    When I run "behave --no-color -f plain features/issue40_2T.feature"
     Then it should fail with:
       """
       0 scenarios passed, 2 failed, 0 skipped
@@ -125,7 +125,7 @@ Feature: Issue #40 Test Summary Scenario/Step Counts are incorrect for Scenario 
             |Alice|
             |Bob  |
       """
-    When I run "behave -c -f plain features/issue40_3W.feature"
+    When I run "behave --no-color -f plain features/issue40_3W.feature"
     Then it should fail with:
       """
       1 scenario passed, 1 failed, 0 skipped
@@ -146,7 +146,7 @@ Feature: Issue #40 Test Summary Scenario/Step Counts are incorrect for Scenario 
             |Alice|
             |Bob  |
       """
-    When I run "behave -c -f plain features/issue40_3W.feature"
+    When I run "behave --no-color -f plain features/issue40_3W.feature"
     Then it should fail with:
       """
       1 scenario passed, 1 failed, 0 skipped

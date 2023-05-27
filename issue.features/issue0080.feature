@@ -36,7 +36,7 @@ Feature: Issue #80: source file names not properly printed with python3
         """
 
   Scenario: Show step locations
-    When I run "behave -c -f pretty --no-timings features/basic.feature"
+    When I run "behave --no-color -f pretty --no-timings features/basic.feature"
     Then it should pass
     And the command output should contain:
         """

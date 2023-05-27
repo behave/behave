@@ -81,7 +81,7 @@ Feature: Scenario Outline -- Improvements
       """
 
   Scenario: Unique File Locations in generated scenarios
-    When I run "behave -f pretty -c features/named_examples.feature"
+    When I run "behave -f pretty --no-color features/named_examples.feature"
     Then it should pass with:
       """
       Scenario Outline: Named Examples -- @1.1 Alice  # features/named_examples.feature:7

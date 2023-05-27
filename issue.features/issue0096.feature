@@ -67,7 +67,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
                    Then  a step passes
                    """
         '''
-    When I run "behave -c features/issue96_case1.feature"
+    When I run "behave --no-color features/issue96_case1.feature"
     Then it should fail with:
         """
         Assertion Failed: FAILED SUB-STEP: When a step fails
@@ -86,7 +86,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
                    Then a step passes
                    """
         '''
-    When I run "behave -c features/issue96_case2.feature"
+    When I run "behave --no-color features/issue96_case2.feature"
     Then it should fail with:
         """
         RuntimeError: Alice is alive
@@ -109,7 +109,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
                    Then a step passes
                    """
         '''
-    When I run "behave -c features/issue96_case3.feature"
+    When I run "behave --no-color features/issue96_case3.feature"
     Then it should fail with:
         """
         Assertion Failed: FAILED SUB-STEP: When a step fails with stdout "STDOUT: Alice is alive"
@@ -134,7 +134,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
                    Then a step passes
                    """
         '''
-    When I run "behave -c features/issue96_case4.feature"
+    When I run "behave --no-color features/issue96_case4.feature"
     Then it should fail with:
         """
         Assertion Failed: FAILED SUB-STEP: When a step fails with stderr "STDERR: Alice is alive"
@@ -164,7 +164,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
                Then a step fails
             ''')
         """
-    When I run "behave -c features/issue96_case5.feature"
+    When I run "behave --no-color features/issue96_case5.feature"
     Then it should fail with:
         """
         HOOK-ERROR in before_scenario: AssertionError: FAILED SUB-STEP: Then a step fails

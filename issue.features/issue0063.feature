@@ -49,7 +49,7 @@ Feature: Issue #63: 'ScenarioOutline' object has no attribute 'stdout'
             |Alice|
             |Bob  |
       """
-    When I run "behave -c --junit features/issue63_case1.feature"
+    When I run "behave --no-color --junit features/issue63_case1.feature"
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
@@ -74,7 +74,7 @@ Feature: Issue #63: 'ScenarioOutline' object has no attribute 'stdout'
             |Alice|
             |Bob  |
       """
-    When I run "behave -c --junit features/issue63_case2.feature"
+    When I run "behave --no-color --junit features/issue63_case2.feature"
     Then it should fail with:
       """
       0 scenarios passed, 2 failed, 0 skipped

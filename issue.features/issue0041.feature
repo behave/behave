@@ -37,7 +37,7 @@ Feature: Issue #41 Missing Steps are duplicated in a Scenario Outline
             |Alice|
             |Bob  |
       """
-    When I run "behave -c -f plain features/issue41_missing1.feature"
+    When I run "behave --no-color -f plain features/issue41_missing1.feature"
     Then it should fail with:
       """
       0 steps passed, 0 failed, 4 skipped, 2 undefined
@@ -74,7 +74,7 @@ Feature: Issue #41 Missing Steps are duplicated in a Scenario Outline
             |Alice|
             |Bob  |
       """
-    When I run "behave -c -f plain features/issue41_missing2.feature"
+    When I run "behave --no-color -f plain features/issue41_missing2.feature"
     Then it should fail with:
       """
       2 steps passed, 0 failed, 2 skipped, 2 undefined
@@ -111,7 +111,7 @@ Feature: Issue #41 Missing Steps are duplicated in a Scenario Outline
             |Alice|
             |Bob  |
       """
-    When I run "behave -c -f plain features/issue41_missing3.feature"
+    When I run "behave --no-color -f plain features/issue41_missing3.feature"
     Then it should fail with:
       """
       4 steps passed, 0 failed, 0 skipped, 2 undefined

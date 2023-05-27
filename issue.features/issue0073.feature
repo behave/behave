@@ -202,7 +202,7 @@ Feature: Issue #73: the current_matcher is not predictable
             When  a step passes
             Then  another step passes
         """
-    When I run "behave -c -f pretty --no-timings features/passing3.feature"
+    When I run "behave --no-color -f pretty --no-timings features/passing3.feature"
     Then it should pass with:
         """
         3 scenarios passed, 0 failed, 0 skipped

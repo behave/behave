@@ -38,7 +38,7 @@ Feature: Issue #44 Shell-like comments are removed in Multiline Args
             Ipsum lorem.
             """
       '''
-    When I run "behave -c -f pretty features/issue44_test.feature"
+    When I run "behave --no-color -f pretty features/issue44_test.feature"
     Then it should pass
     And  the command output should contain:
         """
