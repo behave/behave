@@ -47,7 +47,7 @@ Feature: Issue #69: JUnitReporter: Fault when processing ScenarioOutlines with f
             |Alice|
             |Bob  |
       """
-    When I run "behave -c --junit features/issue63_case2.feature"
+    When I run "behave --no-color --junit features/issue63_case2.feature"
     Then it should fail with:
       """
       0 scenarios passed, 2 failed, 0 skipped

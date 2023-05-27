@@ -38,7 +38,7 @@ Feature: Default Formatter
     @no_configfile
     Scenario: Pretty formatter is used as default formatter if no other is defined
       Given a file named "behave.ini" does not exist
-      When I run "behave -c features/"
+      When I run "behave --no-color features/"
       Then it should pass with:
         """
         2 features passed, 0 failed, 0 skipped

@@ -32,7 +32,7 @@ Feature: Issue #83: behave.__main__:main() Various sys.exit issues
             When  a step passes
             Then  a step passes
         """
-    When I run "behave -c features/passing.feature"
+    When I run "behave --no-color features/passing.feature"
     Then it should pass
     And  the command returncode is "0"
 
@@ -44,7 +44,7 @@ Feature: Issue #83: behave.__main__:main() Various sys.exit issues
             Given a step passes
             When2 a step passes
         """
-    When I run "behave -c features/invalid_with_ParseError.feature"
+    When I run "behave --no-color features/invalid_with_ParseError.feature"
     Then it should fail
     And  the command returncode is non-zero
     And  the command output should contain:
@@ -60,7 +60,7 @@ Feature: Issue #83: behave.__main__:main() Various sys.exit issues
           Scenario:
             Given a step passes
         """
-    When I run "behave -c features/passing2.feature"
+    When I run "behave --no-color features/passing2.feature"
     Then it should fail
     And  the command returncode is non-zero
     And  the command output should contain:

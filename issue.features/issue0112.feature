@@ -31,7 +31,7 @@ Feature: Issue #112: Improvement to AmbiguousStep error
         def step_given_I_buy(context, amount, product):
             pass
         """
-    When I run "behave -c features/syndrome112.feature"
+    When I run "behave --no-color features/syndrome112.feature"
     Then it should pass with:
         """
         1 feature passed, 0 failed, 0 skipped
@@ -55,7 +55,7 @@ Feature: Issue #112: Improvement to AmbiguousStep error
         def step_given_I_buy2(context, number, items):
             pass
         """
-    When I run "behave -c features/syndrome112.feature"
+    When I run "behave --no-color features/syndrome112.feature"
     Then it should fail
     And the command output should contain:
         """

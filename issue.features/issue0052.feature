@@ -35,7 +35,7 @@ Feature: Issue #52 Summary counts are wrong with option --tags
         Scenario: N2
           Given passing
       """
-    When I run "behave --junit -c --tags @done features/tagged_scenario1.feature"
+    When I run "behave --junit --no-color --tags @done features/tagged_scenario1.feature"
     Then it should pass with:
       """
       1 feature passed, 0 failed, 0 skipped
@@ -57,7 +57,7 @@ Feature: Issue #52 Summary counts are wrong with option --tags
         Scenario: N2
           Given passing
       """
-    When I run "behave --junit -c --tags @done features/tagged_scenario2.feature"
+    When I run "behave --junit --no-color --tags @done features/tagged_scenario2.feature"
     Then it should fail
     And  the command output should contain:
       """

@@ -62,7 +62,7 @@ Feature: Issue #81: Allow defining steps in a separate library
         """
         from step_library42.alice_steps import *
         """
-    When I run "behave -c -f pretty features/use_step_library.feature"
+    When I run "behave --no-color -f pretty features/use_step_library.feature"
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
@@ -101,7 +101,7 @@ Feature: Issue #81: Allow defining steps in a separate library
         from step_library42.bob_steps import when_I_use_steps_from_this_step_library
         from step_library42.bob_steps import then_these_steps_are_executed
         """
-    When I run "behave -c -f pretty features/use_step_library.feature"
+    When I run "behave --no-color -f pretty features/use_step_library.feature"
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
@@ -122,7 +122,7 @@ Feature: Issue #81: Allow defining steps in a separate library
         from step_library42.alice_steps import *
         """
     And   an empty file named "features/steps/__init__.py"
-    When I run "behave -c -f pretty features/use_step_library.feature"
+    When I run "behave --no-color -f pretty features/use_step_library.feature"
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped

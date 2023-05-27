@@ -3,7 +3,7 @@ Feature: Scenario Outline -- Parametrized Scenarios
   As a test writer
   I want to use the DRY principle when writing scenarios
   So that I am more productive and my work is less error-prone.
-  
+
   . COMMENT:
   .   A Scenario Outline is basically a parametrized Scenario template.
   .   It is instantiated for each examples row with the corresponding data.
@@ -348,7 +348,7 @@ Feature: Scenario Outline -- Parametrized Scenarios
             | 001 | Alice |
             | 002 | Bob   |
       """
-    When I run "behave -f pretty -c --no-timings features/parametrized_tags.feature"
+    When I run "behave -f pretty --no-color --no-timings features/parametrized_tags.feature"
     Then it should pass with:
       """
       @foo @outline.e1 @outline.row.1.1 @outline.ID.001
@@ -382,7 +382,7 @@ Feature: Scenario Outline -- Parametrized Scenarios
             | 002 | Bob\tMarley  | Placeholder value w/ tab        |
             | 003 | Joe\nCocker  | Placeholder value w/ newline    |
       """
-    When I run "behave -f pretty -c --no-source features/parametrized_tags2.feature"
+    When I run "behave -f pretty --no-color --no-source features/parametrized_tags2.feature"
     Then it should pass with:
       """
       @outline.name.Alice_Cooper

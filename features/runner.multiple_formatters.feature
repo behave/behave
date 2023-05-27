@@ -214,7 +214,7 @@ Feature: Multiple Formatter with different outputs
         outfiles = output/plain.out
         """
       And I remove the directory "output"
-      When I run "behave -c -f pretty -o output/pretty.out -f progress -o output/progress.out features/"
+      When I run "behave --no-color -f pretty -o output/pretty.out -f progress -o output/progress.out features/"
       Then it should pass
       And the file "output/progress.out" should contain:
         """
