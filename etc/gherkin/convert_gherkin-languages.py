@@ -11,13 +11,15 @@ REQUIRES:
   * six
   * PyYAML
 
-.. _cucumber: https://github.com/cucumber/cucumber/
-.. _`gherkin-languages.json`: https://raw.githubusercontent.com/cucumber/cucumber/master/gherkin/gherkin-languages.json
+.. _cucumber: https://github.com/cucumber/common
+.. _gherkin: https://github.com/cucumber/gherkin
+.. _`gherkin-languages.json`: https://raw.githubusercontent.com/cucumber/gherkin/main/gherkin-languages.json
 
 .. seealso::
 
-    * https://github.com/cucumber/cucumber/blob/master/gherkin/gherkin-languages.json
-    * https://raw.githubusercontent.com/cucumber/cucumber/master/gherkin/gherkin-languages.json
+    * https://github.com/cucumber/gherkin/blob/main/gherkin-languages.json
+    * https://raw.githubusercontent.com/cucumber/gherkin/main/gherkin-languages.json
+    * https://github.com/cucumber/common
 
 .. note::
 
@@ -42,7 +44,8 @@ __version__ = "1.0"
 
 STEP_KEYWORDS = (u"and", u"but", u"given", u"when", u"then")
 GHERKIN_LANGUAGES_JSON_URL = \
-    "https://raw.githubusercontent.com/cucumber/cucumber/master/gherkin/gherkin-languages.json"
+    "https://raw.githubusercontent.com/cucumber/gherkin/main/gherkin-languages.json"
+
 
 
 def download_file(source_url, filename=None):
@@ -133,9 +136,10 @@ def gherkin_languages_to_python_module(gherkin_languages_path, output_file=None,
 # FROM:   "gherkin-languages.json"
 # SOURCE: {gherkin_languages_json_url}
 # pylint: disable=line-too-long, too-many-lines, missing-docstring, invalid-name
+# ruff: noqa: E501
 """
 Gherkin keywords in the different I18N languages, like:
- 
+
 * English
 * French
 * German
@@ -164,8 +168,8 @@ languages = \\
 
 
 def main(args=None):
-    """Main function to generate the "behave/i18n.py" module from the
-    the "gherkin-languages.json" file.
+    """Main function to generate the "behave/i18n.py" module
+    from the "gherkin-languages.json" file.
 
     :param args:  List of command-line args (if None: Use ``sys.argv``)
     :return: 0, on success (or sys.exit(NON_ZERO_NUMBER) on failure).

@@ -18,6 +18,7 @@ Feature: Command-line options: Use behave --lang-list
           ar: العربية / Arabic
           ast: asturianu / Asturian
           az: Azərbaycanca / Azerbaijani
+          be: Беларуская / Belarusian
           bg: български / Bulgarian
           bm: Bahasa Melayu / Malay
           bs: Bosanski / Bosnian

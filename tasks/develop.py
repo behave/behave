@@ -13,9 +13,7 @@ import requests
 # -----------------------------------------------------------------------------
 # CONSTANTS:
 # -----------------------------------------------------------------------------
-# DISABLED: OLD LOCATION:
-# GHERKIN_LANGUAGES_URL = "https://raw.githubusercontent.com/cucumber/cucumber/master/gherkin/gherkin-languages.json"
-GHERKIN_LANGUAGES_URL = "https://raw.githubusercontent.com/cucumber/common/main/gherkin/gherkin-languages.json"
+GHERKIN_LANGUAGES_URL = "https://raw.githubusercontent.com/cucumber/gherkin/main/gherkin-languages.json"
 
 
 # -----------------------------------------------------------------------------
@@ -38,7 +36,7 @@ def update_gherkin(ctx, dry_run=False, verbose=False):
         print('Downloading "gherkin-languages.json" from github:cucumber ...')
         download_request = requests.get(GHERKIN_LANGUAGES_URL)
         assert download_request.ok
-        print('Download finished: OK (size={0})'.format(len(download_request.content)))
+        print("Download finished: OK (size={0})".format(len(download_request.content)))
         with open(gherkin_languages_file, "wb") as f:
             f.write(download_request.content)
 
