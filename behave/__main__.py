@@ -141,7 +141,7 @@ def run_behave(config, runner_class=None):
 
     if config.show_snippets and runner and runner.undefined_steps:
         print_undefined_step_snippets(runner.undefined_steps,
-                                      colored=config.color)
+                                      colored=config.has_colored_mode())
 
     return_code = 0
     if failed:

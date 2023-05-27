@@ -98,6 +98,7 @@ setup(
         "mock  >= 4.0;   python_version >= '3.6'",
         "PyHamcrest >= 2.0.2; python_version >= '3.0'",
         "PyHamcrest <  2.0;   python_version <  '3.0'",
+        "assertpy >= 1.1",
 
         # -- HINT: path.py => path (python-install-package was renamed for python3)
         "path >= 13.1.0;         python_version >= '3.5'",

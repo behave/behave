@@ -10,7 +10,7 @@ from invoke import task, Collection
 
 # -- TASK-LIBRARY:
 # PREPARED: from invoke_cleanup import cleanup_tasks, cleanup_dirs, cleanup_files
-from .invoke_cleanup import cleanup_tasks, cleanup_dirs, cleanup_files
+from invoke_cleanup import cleanup_tasks, cleanup_dirs, cleanup_files
 
 
 # ---------------------------------------------------------------------------

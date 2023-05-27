@@ -12,7 +12,7 @@ from path import Path
 
 # -- TASK-LIBRARY:
 # PREPARED: from invoke_cleanup import cleanup_tasks, cleanup_dirs
-from .invoke_cleanup import cleanup_tasks, cleanup_dirs
+from invoke_cleanup import cleanup_tasks, cleanup_dirs
 
 
 # -----------------------------------------------------------------------------

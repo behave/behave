@@ -12,4 +12,4 @@
 
 -r basic.txt
 -r develop.txt
--r json.txt
+-r jsonschema.txt

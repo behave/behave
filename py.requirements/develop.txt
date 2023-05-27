@@ -23,7 +23,7 @@ twine >= 1.13.0
 modernize >= 0.5
 
 # -- STATIC CODE ANALYSIS:
-pylint
+-r pylinters.txt
 
 # -- REQUIRES: testing
 -r testing.txt
