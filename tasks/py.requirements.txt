@@ -21,5 +21,7 @@ path.py >= 11.5.0; python_version <  '3.5'
 pathlib;    python_version <= '3.4'
 backports.shutil_which; python_version <= '3.3'
 
+git+https://github.com/jenisys/invoke-cleanup@v0.3.7
+
 # -- SECTION: develop
 requests

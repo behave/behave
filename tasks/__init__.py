@@ -35,8 +35,8 @@ import sys
 from invoke import Collection
 
 # -- TASK-LIBRARY:
-# PREPARED: import invoke_cleanup as cleanup
-from . import invoke_cleanup as cleanup
+# DISABLED: from . import invoke_cleanup as cleanup
+import invoke_cleanup as cleanup
 from . import docs
 from . import test
 from . import release

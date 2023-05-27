@@ -1,0 +1,8 @@
+# ============================================================================
+# PYTHON PACKAGE REQUIREMENTS FOR: behave -- Static Code Analysis Tools
+# ============================================================================
+# SEE: https://github.com/charliermarsh/ruff
+
+# -- STATIC CODE ANALYSIS:
+pylint
+ruff >= 0.0.270
