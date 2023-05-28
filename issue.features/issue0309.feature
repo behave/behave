@@ -37,6 +37,7 @@ Feature: Issue #309 -- behave --lang-list fails on Python3
           ar: العربية / Arabic
           ast: asturianu / Asturian
           az: Azərbaycanca / Azerbaijani
+          be: Беларуская / Belarusian
           bg: български / Bulgarian
           bm: Bahasa Melayu / Malay
           bs: Bosanski / Bosnian
