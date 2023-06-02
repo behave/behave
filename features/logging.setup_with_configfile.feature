@@ -39,6 +39,30 @@ Feature: Setup logging subsystem by using a logging configfile
               | baz      | DEBUG | Hello Emily  |
             And another step fails
         """
+    And a file named "features/example.global_logging.feature" with:
+        """
+        Feature:
+          Scenario: Global Logging
+            Given a step uses a local logger
+            And a step uses a global logger
+        """
+    And a file named "features/steps/steps.py" with:
+        """
+        from behave import step
+
+        import logging
+
+        g_log = logging.getLogger('global')
+
+        @step('a step uses a global logger')
+        def global_logger(context):
+            g_log.info('Hello Global')
+
+        @step('a step uses a local logger')
+        def local_logger(context):
+            l_log = logging.getLogger('local')
+            l_log.info('Hello Local')
+        """
     And a file named "behave.ini" with:
         """
         [behave]
@@ -135,3 +159,55 @@ Feature: Setup logging subsystem by using a logging configfile
         | foo.bar  | WARN  | Hello Charly |
         | bar      | INFO  | Hello Dora   |
         | baz      | DEBUG | Hello Emily  |
+
+  Scenario: Setup logging subsystem with configfile without preserving existing loggers (original behavior)
+    Given a file named "features/environment.py" with:
+        """
+        def before_all(context):
+            context.config.setup_logging(configfile="behave_logging.ini",
+                                         disable_existing_loggers=True)
+        """
+    And I use the log record configuration:
+        | property | value |
+        | format   | LOG.%(levelname)-8s  %(name)-10s: %(message)s |
+    When I run "behave -f plain features/example.global_logging.feature"
+    Then it should pass
+    And the file "behave.log" should contain the log records:
+        | category | level | message      |
+        | local    | INFO  | Hello Local  |
+    But the file "behave.log" should not contain the log records:
+        | category | level | message      |
+        | global   | INFO  | Hello Global |
+
+  Scenario: Setup logging subsystem with configfile and implicitely preserve existing loggers
+    Given a file named "features/environment.py" with:
+        """
+        def before_all(context):
+            context.config.setup_logging(configfile="behave_logging.ini")
+        """
+    And I use the log record configuration:
+        | property | value |
+        | format   | LOG.%(levelname)-8s  %(name)-10s: %(message)s |
+    When I run "behave -f plain features/example.global_logging.feature"
+    Then it should pass
+    And the file "behave.log" should contain the log records:
+        | category | level | message      |
+        | local    | INFO  | Hello Local  |
+        | global   | INFO  | Hello Global |
+
+  Scenario: Setup logging subsystem with configfile and explicitely preserve existing loggers
+    Given a file named "features/environment.py" with:
+        """
+        def before_all(context):
+            context.config.setup_logging(configfile="behave_logging.ini",
+                                         disable_existing_loggers=False)
+        """
+    And I use the log record configuration:
+        | property | value |
+        | format   | LOG.%(levelname)-8s  %(name)-10s: %(message)s |
+    When I run "behave -f plain features/example.global_logging.feature"
+    Then it should pass
+    And the file "behave.log" should contain the log records:
+        | category | level | message      |
+        | local    | INFO  | Hello Local  |
+        | global   | INFO  | Hello Global |

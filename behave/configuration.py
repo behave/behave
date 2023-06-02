@@ -905,14 +905,16 @@ class Configuration(object):
         :param level:       Logging level of root logger.
                             If None, use :attr:`logging_level` value.
         :param configfile:  Configuration filename for fileConfig() setup.
-        :param kwargs:      Passed to :func:`logging.basicConfig()`
+        :param kwargs:      Passed to :func:`logging.basicConfig()` or
+                            :func:`logging.config.fileConfig()`
         """
         if level is None:
             level = self.logging_level      # pylint: disable=no-member
 
         if configfile:
             from logging.config import fileConfig
-            fileConfig(configfile)
+            disable_existing_loggers = kwargs.pop("disable_existing_loggers", False)
+            fileConfig(configfile, disable_existing_loggers=disable_existing_loggers, **kwargs)
         else:
             # pylint: disable=no-member
             format_ = kwargs.pop("format", self.logging_format)
