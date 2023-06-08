@@ -36,10 +36,12 @@ EXAMPLES:
     --tags="not (@fixme or @xfail)"
 
 NOTES:
+
 * The tag-prefix "@" is optional.
 * An empty tag-expression is "true" (select-anything).
 
 TAG-INHERITANCE:
+
 * A Rule inherits the tags of its Feature
 * A Scenario inherits the tags of its Feature or Rule.
 * A Scenario of a ScenarioOutline/ScenarioTemplate inherit tags

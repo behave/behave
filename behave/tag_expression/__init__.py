@@ -37,7 +37,10 @@ class TagExpressionProtocol(Enum):
     """
     ANY = 1
     STRICT = 2
-    DEFAULT = ANY
+
+    @classmethod
+    def default(cls):
+        return cls.ANY
 
     @classmethod
     def choices(cls):
@@ -64,7 +67,7 @@ class TagExpressionProtocol(Enum):
     @classmethod
     def current(cls):
         """Return currently selected protocol instance."""
-        return getattr(cls, "_current", cls.DEFAULT)
+        return getattr(cls, "_current", cls.default())
 
     @classmethod
     def use(cls, member):

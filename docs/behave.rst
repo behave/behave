@@ -15,14 +15,13 @@ Command-Line Arguments
 You may see the same information presented below at any time using ``behave
 -h``.
 
-.. option:: -c, --no-color
+.. option:: -C, --no-color
 
-    Disable the use of ANSI color escapes.
+    Disable colored mode.
 
 .. option:: --color
 
-    Use ANSI color escapes. Defaults to %(const)r. This switch is used to
-    override a configuration file setting.
+    Use colored mode or not (default: auto).
 
 .. option:: -d, --dry-run
 
@@ -255,31 +254,29 @@ You may see the same information presented below at any time using ``behave
 Tag Expression
 --------------
 
-Scenarios inherit tags that are declared on the Feature level.
-The simplest TAG_EXPRESSION is simply a tag::
+TAG-EXPRESSIONS selects Features/Rules/Scenarios by using their tags.
+A TAG-EXPRESSION is a boolean expression that references some tags.
 
-    --tags=@dev
+EXAMPLES:
 
-You may even leave off the "@" - behave doesn't mind.
+    --tags=@smoke
+    --tags="not @xfail"
+    --tags="@smoke or @wip"
+    --tags="@smoke and @wip"
+    --tags="(@slow and not @fixme) or @smoke"
+    --tags="not (@fixme or @xfail)"
 
-You can also exclude all features / scenarios that have a tag,
-by using boolean NOT::
+NOTES:
 
-    --tags="not @dev"
+* The tag-prefix "@" is optional.
+* An empty tag-expression is "true" (select-anything).
 
-A tag expression can also use a logical OR::
+TAG-INHERITANCE:
 
-    --tags="@dev or @wip"
-
-The --tags option can be specified several times,
-and this represents logical AND,
-for instance this represents the boolean expression::
-
-    --tags="(@foo or not @bar) and @zap"
-
-You can also exclude several tags::
-
-    --tags="not (@fixme or @buggy)"
+* A Rule inherits the tags of its Feature
+* A Scenario inherits the tags of its Feature or Rule.
+* A Scenario of a ScenarioOutline/ScenarioTemplate inherit tags
+  from this ScenarioOutline/ScenarioTemplate and its Example table.
 
 
 .. _docid.behave.configuration-files:
@@ -355,10 +352,9 @@ Configuration Parameters
 .. index::
     single: configuration param; color
 
-.. describe:: color : text
+.. describe:: color : Colored (Enum)
 
-    Use ANSI color escapes. Defaults to %(const)r. This switch is used to
-    override a configuration file setting.
+    Use colored mode or not (default: auto).
 
 .. index::
     single: configuration param; dry_run
@@ -572,6 +568,16 @@ Configuration Parameters
 .. describe:: paths : sequence<text>
 
     Specify default feature paths, used when none are provided.
+
+.. index::
+    single: configuration param; tag_expression_protocol
+
+.. describe:: tag_expression_protocol : TagExpressionProtocol (Enum)
+
+    Specify the tag-expression protocol to use (default: any). With "any",
+    tag-expressions v2 and v2 are supported (in auto-detect mode).
+    With "strict", only tag-expressions v2 is supported (better error
+    diagnostics).
 
 .. index::
     single: configuration param; quiet
