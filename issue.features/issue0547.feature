@@ -7,14 +7,14 @@ Feature: Issue 547 -- behave crashes when adding a step definition with optional
       Given a new working directory
       And a file named "features/environment.py" with:
         """
-        from behave import register_type, use_step_matcher
+        from behave import register_type, use_default_step_matcher
         import parse
 
         @parse.with_pattern(r"optional\s+")
         def parse_optional_word(text):
             return text.strip()
 
-        use_step_matcher("cfparse")
+        use_default_step_matcher("cfparse")
         register_type(opt_=parse_optional_word)
         """
       And a file named "features/steps/steps.py" with:

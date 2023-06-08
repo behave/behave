@@ -45,8 +45,8 @@ Feature: Issue #73: the current_matcher is not predictable
     Given a new working directory
     And   a file named "features/environment.py" with:
         """
-        from behave import use_step_matcher
-        use_step_matcher("re")
+        from behave import use_default_step_matcher
+        use_default_step_matcher("re")
         """
     And   a file named "features/steps/regexp_steps.py" with:
         """
@@ -76,8 +76,8 @@ Feature: Issue #73: the current_matcher is not predictable
     Given a new working directory
     And   a file named "features/environment.py" with:
         """
-        from behave import use_step_matcher
-        use_step_matcher("re")
+        from behave import use_default_step_matcher
+        use_default_step_matcher("re")
         """
      And   a file named "features/steps/eparse_steps.py" with:
          """
@@ -125,8 +125,8 @@ Feature: Issue #73: the current_matcher is not predictable
     Given a new working directory
     And   a file named "features/environment.py" with:
         """
-        from behave import use_step_matcher
-        use_step_matcher("re")
+        from behave import use_default_step_matcher
+        use_default_step_matcher("re")
         """
      And   a file named "features/steps/given_steps.py" with:
          """

@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+# pylint: disable=wildcard-import,unused-wildcard-import
 """
 Unit test facade to protect pytest runner from Python 3.4/3.5 grammar changes.
 
@@ -15,10 +16,11 @@ _python_version = sys.version_info[:2]
 if _python_version >= (3, 4):
     # -- PROTECTED-IMPORT:
     # Older Python version have problems with grammer extensions (yield-from).
-    #  from ._test_async_step34 import TestAsyncStepDecorator34, TestAsyncContext, TestAsyncStepRun34
-    from ._test_async_step34 import *
+    #  from ._test_async_step34 import TestAsyncStepDecorator34
+    #  from ._test_async_step34 import TestAsyncContext, TestAsyncStepRun34
+    from ._test_async_step34 import *  # noqa: F403
 if _python_version >= (3, 5):
     # -- PROTECTED-IMPORT:
     # Older Python version have problems with grammer extensions (async/await).
     #  from ._test_async_step35 import TestAsyncStepDecorator35, TestAsyncStepRun35
-    from ._test_async_step35 import *
+    from ._test_async_step35 import *  # noqa: F403

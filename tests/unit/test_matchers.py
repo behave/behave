@@ -3,8 +3,11 @@ from __future__ import absolute_import, with_statement
 import pytest
 from mock import Mock, patch
 import parse
-from behave.matchers import Match, Matcher, ParseMatcher, RegexMatcher, \
-    SimplifiedRegexMatcher, CucumberRegexMatcher
+from behave.exception import NotSupportedWarning
+from behave.matchers import (
+    Match, Matcher,
+    ParseMatcher, CFParseMatcher,
+    RegexMatcher, SimplifiedRegexMatcher, CucumberRegexMatcher)
 from behave import matchers, runner
 
 
@@ -38,6 +41,7 @@ class TestMatcher(object):
 
 class TestParseMatcher(object):
     # pylint: disable=invalid-name, no-self-use
+    STEP_MATCHER_CLASS = ParseMatcher
 
     def setUp(self):
         self.recorded_args = None
@@ -45,17 +49,29 @@ class TestParseMatcher(object):
     def record_args(self, *args, **kwargs):
         self.recorded_args = (args, kwargs)
 
+    def test_register_type__can_register_own_type_converters(self):
+        def parse_number(text):
+            return int(text)
+
+        # -- EXPECT:
+        this_matcher_class = self.STEP_MATCHER_CLASS
+        this_matcher_class.custom_types.clear()
+        this_matcher_class.register_type(Number=parse_number)
+        assert "Number" in this_matcher_class.custom_types
+
     def test_returns_none_if_parser_does_not_match(self):
         # pylint: disable=redefined-outer-name
         # REASON: parse
-        matcher = ParseMatcher(None, 'a string')
+        this_matcher_class = self.STEP_MATCHER_CLASS
+        matcher = this_matcher_class(None, 'a string')
         with patch.object(matcher.parser, 'parse') as parse:
             parse.return_value = None
             assert matcher.match('just a random step') is None
 
     def test_returns_arguments_based_on_matches(self):
+        this_matcher_class = self.STEP_MATCHER_CLASS
         func = lambda x: -x
-        matcher = ParseMatcher(func, 'foo')
+        matcher = this_matcher_class(func, 'foo')
 
         results = parse.Result([1, 2, 3], {'foo': 'bar', 'baz': -45.3},
                                {
@@ -83,8 +99,9 @@ class TestParseMatcher(object):
             assert have == expected
 
     def test_named_arguments(self):
+        this_matcher_class = self.STEP_MATCHER_CLASS
         text = "has a {string}, an {integer:d} and a {decimal:f}"
-        matcher = ParseMatcher(self.record_args, text)
+        matcher = this_matcher_class(self.record_args, text)
         context = runner.Context(Mock())
 
         m = matcher.match("has a foo, an 11 and a 3.14159")
@@ -95,31 +112,174 @@ class TestParseMatcher(object):
             'decimal': 3.14159
         })
 
+    def test_named_arguments_with_own_types(self):
+        @parse.with_pattern(r"[A-Za-z][A-Za-z0-9_\-]*")
+        def parse_word(text):
+            return text.strip()
+
+        @parse.with_pattern(r"\d+")
+        def parse_number(text):
+            return int(text)
+
+        this_matcher_class = self.STEP_MATCHER_CLASS
+        this_matcher_class.register_type(Number=parse_number,
+                                         Word=parse_word)
+
+        pattern = "has a {word:Word}, a {number:Number}"
+        matcher = this_matcher_class(self.record_args, pattern)
+        context = runner.Context(Mock())
+
+        m = matcher.match("has a foo, a 42")
+        m.run(context)
+        expected = {
+            "word": "foo",
+            "number": 42,
+        }
+        assert self.recorded_args, ((context,) == expected)
+
+
     def test_positional_arguments(self):
+        this_matcher_class = self.STEP_MATCHER_CLASS
         text = "has a {}, an {:d} and a {:f}"
-        matcher = ParseMatcher(self.record_args, text)
+        matcher = this_matcher_class(self.record_args, text)
         context = runner.Context(Mock())
 
         m = matcher.match("has a foo, an 11 and a 3.14159")
         m.run(context)
         assert self.recorded_args == ((context, 'foo', 11, 3.14159), {})
 
+
+class TestCFParseMatcher(TestParseMatcher):
+    STEP_MATCHER_CLASS = CFParseMatcher
+
+    # def test_
+    def test_named_optional__without_value(self):
+        @parse.with_pattern(r"\d+")
+        def parse_number(text):
+            return int(text)
+
+        this_matcher_class = self.STEP_MATCHER_CLASS
+        this_matcher_class.register_type(Number=parse_number)
+
+        pattern = "has an optional number={number:Number?}."
+        matcher = this_matcher_class(self.record_args, pattern)
+        context = runner.Context(Mock())
+
+        m = matcher.match("has an optional number=.")
+        m.run(context)
+        expected = {
+            "number": None,
+        }
+        assert self.recorded_args, ((context,) == expected)
+
+
+    def test_named_optional__with_value(self):
+        @parse.with_pattern(r"\d+")
+        def parse_number(text):
+            return int(text)
+
+        this_matcher_class = self.STEP_MATCHER_CLASS
+        this_matcher_class.register_type(Number=parse_number)
+
+        pattern = "has an optional number={number:Number?}."
+        matcher = this_matcher_class(self.record_args, pattern)
+        context = runner.Context(Mock())
+
+        m = matcher.match("has an optional number=42.")
+        m.run(context)
+        expected = {
+            "number": 42,
+        }
+        assert self.recorded_args, ((context,) == expected)
+
+    def test_named_many__with_values(self):
+        @parse.with_pattern(r"\d+")
+        def parse_number(text):
+            return int(text)
+
+        this_matcher_class = self.STEP_MATCHER_CLASS
+        this_matcher_class.register_type(Number=parse_number)
+
+        pattern = "has numbers={number:Number+};"
+        matcher = this_matcher_class(self.record_args, pattern)
+        context = runner.Context(Mock())
+
+        m = matcher.match("has numbers=1, 2, 3;")
+        m.run(context)
+        expected = {
+            "numbers": [1, 2, 3],
+        }
+        assert self.recorded_args, ((context,) == expected)
+
+    def test_named_many0__with_empty_list(self):
+        @parse.with_pattern(r"\d+")
+        def parse_number(text):
+            return int(text)
+
+        this_matcher_class = self.STEP_MATCHER_CLASS
+        this_matcher_class.register_type(Number=parse_number)
+
+        pattern = "has numbers={number:Number*};"
+        matcher = this_matcher_class(self.record_args, pattern)
+        context = runner.Context(Mock())
+
+        m = matcher.match("has numbers=;")
+        m.run(context)
+        expected = {
+            "numbers": [],
+        }
+        assert self.recorded_args, ((context,) == expected)
+
+
+    def test_named_many0__with_values(self):
+        @parse.with_pattern(r"\d+")
+        def parse_number(text):
+            return int(text)
+
+        this_matcher_class = self.STEP_MATCHER_CLASS
+        this_matcher_class.register_type(Number=parse_number)
+
+        pattern = "has numbers={number:Number+};"
+        matcher = this_matcher_class(self.record_args, pattern)
+        context = runner.Context(Mock())
+
+        m = matcher.match("has numbers=1, 2, 3;")
+        m.run(context)
+        expected = {
+            "numbers": [1, 2, 3],
+        }
+        assert self.recorded_args, ((context,) == expected)
+
+
 class TestRegexMatcher(object):
     # pylint: disable=invalid-name, no-self-use
-    MATCHER_CLASS = RegexMatcher
+    STEP_MATCHER_CLASS = RegexMatcher
+
+    def test_register_type__is_not_supported(self):
+        def parse_number(text):
+            return int(text)
+
+        this_matcher_class = self.STEP_MATCHER_CLASS
+        with pytest.raises(NotSupportedWarning) as exc_info:
+            this_matcher_class.register_type(Number=parse_number)
+
+        excecption_text = exc_info.exconly()
+        class_name = this_matcher_class.__name__
+        expected = "NotSupportedWarning: {0}.register_type".format(class_name)
+        assert expected in excecption_text
 
     def test_returns_none_if_regex_does_not_match(self):
-        RegexMatcher = self.MATCHER_CLASS
-        matcher = RegexMatcher(None, 'a string')
+        this_matcher_class = self.STEP_MATCHER_CLASS
+        matcher = this_matcher_class(None, 'a string')
         regex = Mock()
         regex.match.return_value = None
         matcher.regex = regex
         assert matcher.match('just a random step') is None
 
     def test_returns_arguments_based_on_groups(self):
-        RegexMatcher = self.MATCHER_CLASS
+        this_matcher_class = self.STEP_MATCHER_CLASS
         func = lambda x: -x
-        matcher = RegexMatcher(func, 'foo')
+        matcher = this_matcher_class(func, 'foo')
 
         regex = Mock()
         regex.groupindex = {'foo': 4, 'baz': 5}
@@ -156,7 +316,7 @@ class TestRegexMatcher(object):
 
 
 class TestSimplifiedRegexMatcher(TestRegexMatcher):
-    MATCHER_CLASS = SimplifiedRegexMatcher
+    STEP_MATCHER_CLASS = SimplifiedRegexMatcher
 
     def test_steps_with_same_prefix_are_not_ordering_sensitive(self):
         # -- RELATED-TO: issue #280
@@ -193,7 +353,7 @@ class TestSimplifiedRegexMatcher(TestRegexMatcher):
 
 
 class TestCucumberRegexMatcher(TestRegexMatcher):
-    MATCHER_CLASS = CucumberRegexMatcher
+    STEP_MATCHER_CLASS = CucumberRegexMatcher
 
     def test_steps_with_same_prefix_are_not_ordering_sensitive(self):
         # -- RELATED-TO: issue #280
@@ -227,10 +387,14 @@ class TestCucumberRegexMatcher(TestRegexMatcher):
 
 
 def test_step_matcher_current_matcher():
-    current_matcher = matchers.current_matcher
-    for name, klass in list(matchers.matcher_mapping.items()):
-        matchers.use_step_matcher(name)
-        matcher = matchers.get_matcher(lambda x: -x, 'foo')
+    step_matcher_factory = matchers.get_matcher_factory()
+    for name, klass in list(step_matcher_factory.matcher_mapping.items()):
+        current_matcher1 = matchers.use_step_matcher(name)
+        current_matcher2 = step_matcher_factory.current_matcher
+        matcher = matchers.make_matcher(lambda x: -x, "foo")
         assert isinstance(matcher, klass)
+        assert current_matcher1 is klass
+        assert current_matcher2 is klass
 
-    matchers.current_matcher = current_matcher
+    # -- CLEANUP: Revert to default matcher
+    step_matcher_factory.use_default_step_matcher()
