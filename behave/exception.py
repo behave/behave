@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+# ruff: noqa: F401
 # pylint: disable=redefined-builtin,unused-import
 """
 Behave exception classes.
@@ -7,11 +8,28 @@ Behave exception classes.
 """
 
 from __future__ import absolute_import, print_function
-# -- USE MODERN EXCEPTION CLASSES:
-# COMPATIBILITY: Emulated if not supported yet by Python version.
-from behave.compat.exceptions import (
-    FileNotFoundError, ModuleNotFoundError  # noqa: F401
-)
+# -- RE-EXPORT: Exception class(es) here (provided in other places).
+#   USE MODERN EXCEPTION CLASSES: FileNotFoundError, ModuleNotFoundError
+#   COMPATIBILITY: Emulated if not supported yet by Python version.
+from behave.compat.exceptions import (FileNotFoundError, ModuleNotFoundError)  # noqa: F401
+from behave.tag_expression.parser import TagExpressionError
+
+
+__all__ = [
+    "ClassNotFoundError",
+    "ConfigError",
+    "ConstraintError",
+    "FileNotFoundError",
+    "InvalidClassError",
+    "InvalidFileLocationError",
+    "InvalidFilenameError",
+    "ModuleNotFoundError",
+    "NotSupportedWarning",
+    "ObjectNotFoundError",
+    "ResourceExistsError",
+    "TagExpressionError",
+]
+
 
 # ---------------------------------------------------------------------------
 # EXCEPTION/ERROR CLASSES:

@@ -105,6 +105,38 @@ class TagExpression(object):
             and_parts.append(u",".join(or_terms))
         return u" ".join(and_parts)
 
+    def __repr__(self):
+        class_name = self.__class__.__name__ +"_v1"
+        and_parts = []
+        # TODO
+        # for or_terms in self.ands:
+        #     or_parts = []
+        #     for or_term in or_terms.split():
+        #
+        #     or_expression = u"Or(%s)" % u",".join(or_terms)
+        #     and_parts.append(or_expression)
+        if len(self.ands) == 0:
+            expression = u"True()"
+        elif len(self.ands) >= 1:
+            and_parts = []
+            for or_terms in self.ands:
+                or_parts = []
+                for or_term in or_terms:
+                    or_parts.extend(or_term.split())
+                and_parts.append(u"Or(%s)" % ", ".join(or_parts))
+            expression = u"And(%s)" % u",".join([and_part for and_part in and_parts])
+            if len(self.ands) == 1:
+                expression = and_parts[0]
+
+        # expression = u"And(%s)" % u",".join([or_term.split()
+        #                                      for or_terms in self.ands
+        #                                      for or_term in or_terms])
+        return "<%s: expression=%s>" % (class_name, expression)
+
     if six.PY2:
         __unicode__ = __str__
-        __str__ = lambda self: self.__unicode__().encode("utf-8")
+        __str__ = lambda self: self.__unicode__().encode("utf-8")  # noqa: E731
+
+    # -- API COMPATIBILITY TO: TagExpressions v2
+    def to_string(self, pretty=True):
+        return str(self)

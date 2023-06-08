@@ -17,7 +17,7 @@ from __future__ import absolute_import
 from cucumber_tag_expressions.parser import (
     TagExpressionParser as _TagExpressionParser,
     # PROVIDE: Similar interface like: cucumber_tag_expressions.parser
-    TagExpressionError
+    TagExpressionError  # noqa: F401
 )
 from cucumber_tag_expressions.model import Literal
 from .model_ext import Matcher
