@@ -18,6 +18,7 @@ from behave.tag_expression.parser import TagExpressionError
 __all__ = [
     "ClassNotFoundError",
     "ConfigError",
+    "ConfigTypeError",
     "ConstraintError",
     "FileNotFoundError",
     "InvalidClassError",
@@ -51,6 +52,9 @@ class ResourceExistsError(ConstraintError):
 
 class ConfigError(Exception):
     """Used if the configuration is (partially) invalid."""
+
+class ConfigParamTypeError(ConfigError):
+    """Used if a config-param has the wrong type."""
 
 
 # ---------------------------------------------------------------------------
