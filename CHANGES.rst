@@ -61,6 +61,7 @@ FIXED:
 * FIXED: Some tests related to python3.11
 * FIXED: Some tests related to python3.9
 * FIXED: active-tag logic if multiple tags with same category exists.
+* issue #1070: Color support detection: Fails for WindowsTerminal (provided by: jenisys)
 * issue #1116: behave erroring in pretty format in pyproject.toml (submitted by: morning-sunn)
 * issue #1061: Scenario should inherit Rule tags (submitted by: testgitdl)
 * issue #1054: TagExpressions v2: AND concatenation is faulty (submitted by: janoskut)
