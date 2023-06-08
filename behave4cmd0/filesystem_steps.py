@@ -137,6 +137,7 @@ def step_file_named_filename_does_not_exist(context, filename):
     step_file_named_filename_should_not_exist(context, filename)
 
 
+@given(u'a file named "{filename}" should exist')
 @then(u'a file named "{filename}" should exist')
 def step_file_named_filename_should_exist(context, filename):
     command_util.ensure_workdir_exists(context)
@@ -144,6 +145,7 @@ def step_file_named_filename_should_exist(context, filename):
     assert_that(os.path.exists(filename_) and os.path.isfile(filename_))
 
 
+@given(u'a file named "{filename}" should not exist')
 @then(u'a file named "{filename}" should not exist')
 def step_file_named_filename_should_not_exist(context, filename):
     command_util.ensure_workdir_exists(context)
