@@ -24,6 +24,8 @@ import shlex
 import six
 from six.moves import configparser
 
+from behave._types import Unknown
+from behave.exception import ConfigParamTypeError
 from behave.model import ScenarioOutline
 from behave.model_core import FileLocation
 from behave.formatter.base import StreamOpener
@@ -31,9 +33,8 @@ from behave.formatter import _registry as _format_registry
 from behave.reporter.junit import JUnitReporter
 from behave.reporter.summary import SummaryReporter
 from behave.tag_expression import make_tag_expression, TagExpressionProtocol
-from behave.userdata import UserData, parse_user_define
-from behave._types import Unknown
 from behave.textutil import select_best_encoding, to_texts
+from behave.userdata import UserData, parse_user_define
 
 # -- PYTHON 2/3 COMPATIBILITY:
 # SINCE Python 3.2: ConfigParser = SafeConfigParser
@@ -487,7 +488,6 @@ def configfile_options_iter(config):
         # -- FINALLY:
         action = keywords.get("action", "store")
         value_type = keywords.get("type", None)
-        # OLD: yield dest, action, value_type
         yield ConfigFileOption(dest, action, value_type)
 
 
@@ -545,7 +545,8 @@ def read_configparser(path):
             this_config[param_name] = config.getboolean("behave", dest)
         elif action == "append":
             value_parts = config.get("behave", dest).splitlines()
-            this_config[param_name] = [part.strip() for part in value_parts]
+            value_type = value_type or six.text_type
+            this_config[param_name] = [value_type(part.strip()) for part in value_parts]
         elif action not in CONFIGFILE_EXCLUDED_ACTIONS:  # pragma: no cover
             raise ValueError('action "%s" not implemented' % action)
 
@@ -600,6 +601,12 @@ def read_toml_config(path):
             # -- TOML SPECIFIC:
             #  TOML has native arrays and quoted strings.
             #  There is no need to split by newlines or strip values.
+            value_type = value_type or six.text_type
+            if not isinstance(raw_value, list):
+                message = "%s = %r (expected: list<%s>, was: %s)" % \
+                          (param_name, raw_value, value_type.__name__,
+                           type(raw_value).__name__)
+                raise ConfigParamTypeError(message)
             this_config[param_name] = raw_value
         elif action not in CONFIGFILE_EXCLUDED_ACTIONS:
             raise ValueError('action "%s" not implemented' % action)

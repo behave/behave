@@ -289,7 +289,8 @@ def main(args=None):
         config = Configuration(args)
         return run_behave(config)
     except ConfigError as e:
-        print("ConfigError: %s" % e)
+        exception_class_name = e.__class__.__name__
+        print("%s: %s" % (exception_class_name, e))
     except TagExpressionError as e:
         print("TagExpressionError: %s" % e)
     return 1    # FAILED:
