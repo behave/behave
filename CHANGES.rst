@@ -62,6 +62,7 @@ FIXED:
 * FIXED: Some tests related to python3.9
 * FIXED: active-tag logic if multiple tags with same category exists.
 * issue #1061: Scenario should inherit Rule tags (submitted by: testgitdl)
+* issue #1054: TagExpressions v2: AND concatenation is faulty (submitted by: janoskut)
 * pull  #967: Update __init__.py in behave import to fix pylint (provided by: dsayling)
 * issue #955: setup: Remove attribute 'use_2to3' (submitted by: krisgesling)
 * issue #772: ScenarioOutline.Examples without table (submitted by: The-QA-Geek)
@@ -77,6 +78,7 @@ FIXED:
 MINOR:
 
 * issue #1047: Step type is inherited for generic step if possible (submitted by: zettseb)
+* issue #958: Replace dashes with underscores to comply with setuptools v54.1.0 #958 (submitted by: arrooney)
 * issue #800: Cleanups related to Gherkin parser/ParseError question (submitted by: otstanteplz)
 * pull  #767: FIX: use_fixture_by_tag didn't return the actual fixture in all cases (provided by: jgentil)
 * pull  #751: gherkin: Adding Rule keyword translation in portuguese and spanish to gherkin-languages.json (provided by: dunossauro)

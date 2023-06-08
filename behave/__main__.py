@@ -6,47 +6,44 @@ import sys
 import six
 from behave.version import VERSION as BEHAVE_VERSION
 from behave.configuration import Configuration
-from behave.exception import ConstraintError, ConfigError, \
-    FileNotFoundError, InvalidFileLocationError, InvalidFilenameError, \
-    ModuleNotFoundError, ClassNotFoundError, InvalidClassError
+from behave.exception import (ConstraintError, ConfigError,
+    FileNotFoundError, InvalidFileLocationError, InvalidFilenameError,
+    ModuleNotFoundError, ClassNotFoundError, InvalidClassError,
+    TagExpressionError)
+from behave.importer import make_scoped_class_name
 from behave.parser import ParserError
-from behave.runner import Runner
+from behave.runner import Runner    # noqa: F401
 from behave.runner_util import print_undefined_step_snippets, reset_runtime
-from behave.textutil import compute_words_maxsize, text as _text
 from behave.runner_plugin import RunnerPlugin
-# PREPARED: from behave.importer import make_scoped_class_name
+from behave.textutil import compute_words_maxsize, text as _text
 
 
 # ---------------------------------------------------------------------------
 # CONSTANTS:
 # ---------------------------------------------------------------------------
 DEBUG = __debug__
-TAG_HELP = """
-Scenarios inherit tags that are declared on the Feature level.
-The simplest TAG_EXPRESSION is simply a tag::
+TAG_EXPRESSIONS_HELP = """
+TAG-EXPRESSIONS selects Features/Rules/Scenarios by using their tags.
+A TAG-EXPRESSION is a boolean expression that references some tags.
 
-    --tags=@dev
+EXAMPLES:
 
-You may even leave off the "@" - behave doesn't mind.
+    --tags=@smoke
+    --tags="not @xfail"
+    --tags="@smoke or @wip"
+    --tags="@smoke and @wip"
+    --tags="(@slow and not @fixme) or @smoke"
+    --tags="not (@fixme or @xfail)"
 
-You can also exclude all features / scenarios that have a tag,
-by using boolean NOT::
+NOTES:
+* The tag-prefix "@" is optional.
+* An empty tag-expression is "true" (select-anything).
 
-    --tags="not @dev"
-
-A tag expression can also use a logical OR::
-
-    --tags="@dev or @wip"
-
-The --tags option can be specified several times,
-and this represents logical AND,
-for instance this represents the boolean expression::
-
-    --tags="(@foo or not @bar) and @zap"
-
-You can also exclude several tags::
-
-    --tags="not (@fixme or @buggy)"
+TAG-INHERITANCE:
+* A Rule inherits the tags of its Feature
+* A Scenario inherits the tags of its Feature or Rule.
+* A Scenario of a ScenarioOutline/ScenarioTemplate inherit tags
+  from this ScenarioOutline/ScenarioTemplate and its Example table.
 """.strip()
 
 
@@ -69,7 +66,7 @@ def run_behave(config, runner_class=None):
         return 0
 
     if config.tags_help:
-        print(TAG_HELP)
+        print_tags_help(config)
         return 0
 
     if  config.lang == "help" or config.lang_list:
@@ -109,7 +106,7 @@ def run_behave(config, runner_class=None):
     try:
         reset_runtime()
         runner = RunnerPlugin(runner_class).make_runner(config)
-        # print("USING RUNNER: {0}".format(make_scoped_class_name(runner)))
+        print("USING RUNNER: {0}".format(make_scoped_class_name(runner)))
         failed = runner.run()
     except ParserError as e:
         print(u"ParserError: %s" % e)
@@ -152,6 +149,17 @@ def run_behave(config, runner_class=None):
 # ---------------------------------------------------------------------------
 # MAIN SUPPORT FOR: run_behave()
 # ---------------------------------------------------------------------------
+def print_tags_help(config):
+    print(TAG_EXPRESSIONS_HELP)
+
+    current_tag_expression = config.tag_expression.to_string()
+    print("\nCURRENT TAG_EXPRESSION: {0}".format(current_tag_expression))
+    if config.verbose:
+        # -- SHOW LOW-LEVEL DETAILS:
+        text = repr(config.tag_expression).replace("Literal(", "Tag(")
+        print("  means: {0}".format(text))
+
+
 def print_language_list(file=None):
     """Print list of supported languages, like:
 
@@ -275,9 +283,14 @@ def main(args=None):
     :param args:    Command-line args (or string) to use.
     :return: 0, if successful. Non-zero, in case of errors/failures.
     """
-    config = Configuration(args)
-    return run_behave(config)
-
+    try:
+        config = Configuration(args)
+        return run_behave(config)
+    except ConfigError as e:
+        print("ConfigError: %s" % e)
+    except TagExpressionError as e:
+        print("TagExpressionError: %s" % e)
+    return 1    # FAILED:
 
 if __name__ == "__main__":
     # -- EXAMPLE: main("--version")

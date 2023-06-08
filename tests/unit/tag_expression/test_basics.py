@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from behave.tag_expression import (
-    make_tag_expression, select_tag_expression_parser,
+    make_tag_expression, select_tag_expression_parser4any,
     parse_tag_expression_v1, parse_tag_expression_v2
 )
 from behave.tag_expression.v1 import TagExpression as TagExpressionV1
@@ -19,7 +19,7 @@ def test_make_tag_expression__with_v2():
 
 
 # -----------------------------------------------------------------------------
-# TEST SUITE FOR: select_tag_expression_parser()
+# TEST SUITE FOR: select_tag_expression_parser4any()
 # -----------------------------------------------------------------------------
 @pytest.mark.parametrize("text", [
     "@foo @bar",
@@ -31,8 +31,8 @@ def test_make_tag_expression__with_v2():
     "@foo,@bar",
     "-@xfail -@not_implemented",
 ])
-def test_select_tag_expression_parser__with_v1(text):
-    parser = select_tag_expression_parser(text)
+def test_select_tag_expression_parser4any__with_v1(text):
+    parser = select_tag_expression_parser4any(text)
     assert parser is parse_tag_expression_v1, "tag_expression: %s" % text
 
 
@@ -45,6 +45,6 @@ def test_select_tag_expression_parser__with_v1(text):
     "(@foo and @bar) or @baz",
     "not @xfail or not @not_implemented"
 ])
-def test_select_tag_expression_parser__with_v2(text):
-    parser = select_tag_expression_parser(text)
+def test_select_tag_expression_parser4any__with_v2(text):
+    parser = select_tag_expression_parser4any(text)
     assert parser is parse_tag_expression_v2, "tag_expression: %s" % text

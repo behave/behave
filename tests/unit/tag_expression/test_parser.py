@@ -164,7 +164,8 @@ class TestTagExpressionParser(TagExpressionParserTestBase):
         ("a or not b",  "( a or not ( b ) )"),
         ("not a and b", "( not ( a ) and b )"),
         ("not a or b",  "( not ( a ) or b )"),
-        ("not (a and b) or c", "( not ( ( a and b ) ) or c )"),
+        ("not (a and b) or c", "( not ( a and b ) or c )"),
+        # OLD: ("not (a and b) or c", "( not ( ( a and b ) ) or c )"),
     ])
     def test_parse__ensure_precedence(self, text, expected):
         """Ensures that the operation precedence is parsed correctly."""

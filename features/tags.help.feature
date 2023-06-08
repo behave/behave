@@ -7,6 +7,9 @@ Feature: behave --tags-help option
   . IN ADDITION:
   .  The --tags-help option helps to diagnose tag-expression v2 problems.
 
+  Background:
+    Given a new working directory
+
   Rule: Use --tags-help option to see tag-expression syntax and examples
     Scenario: Shows tag-expression description
       When I run "behave --tags-help"
