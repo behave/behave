@@ -1,6 +1,32 @@
 Version History
 ===============================================================================
 
+Version: 1.4.0 (planning)
+-------------------------------------------------------------------------------
+
+GOALS:
+
+* Drop support for Python 2.7
+* MAYBE: Requires Python >= 3.7 (at least)
+
+DEPRECATIONS:
+
+* DEPRECATED: ``tag-expressions v1`` (old-style tag-expressions)
+
+
+Version: 1.3.0 (planning)
+-------------------------------------------------------------------------------
+
+GOALS:
+
+* Will be released on https://pypi.org
+* Inlude all changes from behave v1.2.7 development
+* Last version minor version with Python 2.7 support
+* ``tag-expressions v2``: Enabled by default ("strict" mode: only v2 supported).
+* ``tag-expressions v1``: Disabled by default (in "strict" mode).
+   BUT: Can be enabled via config-file parameter in "any" mode (supports: v1 and v2).
+
+
 Version: 1.2.7 (unreleased)
 -------------------------------------------------------------------------------
 
@@ -102,9 +128,10 @@ DOCUMENTATION:
 
 BREAKING CHANGES (naming):
 
-* behave.runner.Context._push(layer=None): Was Context._push(layer_name=None)
+* behave.configuration.OPTIONS: was ``behave.configuration.options``
+* behave.runner.Context._push(layer=None): was Context._push(layer_name=None)
 * behave.runner.scoped_context_layer(context, layer=None):
-  Was scoped_context_layer(context.layer_name=None)
+  was scoped_context_layer(context.layer_name=None)
 
 
 .. _`cucumber-tag-expressions`: https://pypi.org/project/cucumber-tag-expressions/
