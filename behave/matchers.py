@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+# -*- coding: UTF-8 -*-
+# pylint: disable=redundant-u-string-prefix
+# pylint: disable=super-with-arguments
+# pylint: disable=consider-using-f-string
+# pylint: disable=useless-object-inheritance
 """
 This module provides the step matchers functionality that matches a
 step definition (as text) with step-functions that implement this step.
@@ -6,12 +10,14 @@ step definition (as text) with step-functions that implement this step.
 
 from __future__ import absolute_import, print_function, with_statement
 import copy
+import inspect
 import re
 import warnings
-import parse
 import six
+import parse
 from parse_type import cfparse
 from behave._types import ChainedExceptionUtil, ExceptionUtil
+from behave.exception import NotSupportedWarning, ResourceExistsError
 from behave.model_core import Argument, FileLocation, Replayable
 
 
@@ -155,6 +161,17 @@ class Matcher(object):
     """
     schema = u"@%s('%s')"   # Schema used to describe step definition (matcher)
 
+    @classmethod
+    def register_type(cls, **kwargs):
+        """Register one (or more) user-defined types used for matching types
+        in step patterns of this matcher.
+        """
+        raise NotImplementedError()
+
+    @classmethod
+    def clear_registered_types(cls):
+        raise NotImplementedError()
+
     def __init__(self, func, pattern, step_type=None):
         self.func = func
         self.pattern = pattern
@@ -225,6 +242,47 @@ class ParseMatcher(Matcher):
     custom_types = {}
     parser_class = parse.Parser
 
+    @classmethod
+    def register_type(cls, **kwargs):
+        r"""
+        Register one (or more) user-defined types used for matching types
+        in step patterns of this matcher.
+
+        A type converter should follow :pypi:`parse` module rules.
+        In general, a type converter is a function that converts text (as string)
+        into a value-type (type converted value).
+
+        EXAMPLE:
+
+        .. code-block:: python
+
+            from behave import register_type, given
+            import parse
+
+
+            # -- TYPE CONVERTER: For a simple, positive integer number.
+            @parse.with_pattern(r"\d+")
+            def parse_number(text):
+                return int(text)
+
+            # -- REGISTER TYPE-CONVERTER: With behave
+            register_type(Number=parse_number)
+            # ALTERNATIVE:
+            current_step_matcher = use_step_matcher("parse")
+            current_step_matcher.register_type(Number=parse_number)
+
+            # -- STEP DEFINITIONS: Use type converter.
+            @given('{amount:Number} vehicles')
+            def step_impl(context, amount):
+                assert isinstance(amount, int)
+        """
+        cls.custom_types.update(**kwargs)
+
+    @classmethod
+    def clear_registered_types(cls):
+        cls.custom_types.clear()
+
+
     def __init__(self, func, pattern, step_type=None):
         super(ParseMatcher, self).__init__(func, pattern, step_type)
         self.parser = self.parser_class(pattern, self.custom_types)
@@ -260,43 +318,26 @@ class CFParseMatcher(ParseMatcher):
     parser_class = cfparse.Parser
 
 
-def register_type(**kw):
-    r"""Registers a custom type that will be available to "parse"
-    for type conversion during step matching.
-
-    Converters should be supplied as ``name=callable`` arguments (or as dict).
-
-    A type converter should follow :pypi:`parse` module rules.
-    In general, a type converter is a function that converts text (as string)
-    into a value-type (type converted value).
-
-    EXAMPLE:
-
-    .. code-block:: python
-
-        from behave import register_type, given
-        import parse
-
-        # -- TYPE CONVERTER: For a simple, positive integer number.
-        @parse.with_pattern(r"\d+")
-        def parse_number(text):
-            return int(text)
-
-        # -- REGISTER TYPE-CONVERTER: With behave
-        register_type(Number=parse_number)
-
-        # -- STEP DEFINITIONS: Use type converter.
-        @given('{amount:Number} vehicles')
-        def step_impl(context, amount):
-            assert isinstance(amount, int)
-    """
-    ParseMatcher.custom_types.update(kw)
-
-
 class RegexMatcher(Matcher):
+    @classmethod
+    def register_type(cls, **kwargs):
+        """
+        Register one (or more) user-defined types used for matching types
+        in step patterns of this matcher.
+
+        NOTE:
+        This functionality is not supported for :class:`RegexMatcher` classes.
+        """
+        raise NotSupportedWarning("%s.register_type" % cls.__name__)
+
+    @classmethod
+    def clear_registered_types(cls):
+        pass  # -- HINT: GRACEFULLY ignored.
+
     def __init__(self, func, pattern, step_type=None):
         super(RegexMatcher, self).__init__(func, pattern, step_type)
         self.regex = re.compile(self.pattern)
+
 
     def check_match(self, step):
         m = self.regex.match(step)
@@ -314,7 +355,8 @@ class RegexMatcher(Matcher):
         return args
 
 class SimplifiedRegexMatcher(RegexMatcher):
-    """Simplified regular expression step-matcher that automatically adds
+    """
+    Simplified regular expression step-matcher that automatically adds
     start-of-line/end-of-line matcher symbols to string:
 
     .. code-block:: python
@@ -332,7 +374,8 @@ class SimplifiedRegexMatcher(RegexMatcher):
 
 
 class CucumberRegexMatcher(RegexMatcher):
-    """Compatible to (old) Cucumber style regular expressions.
+    """
+    Compatible to (old) Cucumber style regular expressions.
     Text must contain start-of-line/end-of-line matcher symbols to string:
 
     .. code-block:: python
@@ -341,79 +384,231 @@ class CucumberRegexMatcher(RegexMatcher):
         def step_impl(context): pass
     """
 
-matcher_mapping = {
-    "parse": ParseMatcher,
-    "cfparse": CFParseMatcher,
-    "re": SimplifiedRegexMatcher,
 
-    # -- BACKWARD-COMPATIBLE REGEX MATCHER: Old Cucumber compatible style.
-    # To make it the default step-matcher use the following snippet:
-    #   # -- FILE: features/environment.py
-    #   from behave import use_step_matcher
-    #   def before_all(context):
-    #       use_step_matcher("re0")
-    "re0": CucumberRegexMatcher,
-}
-current_matcher = ParseMatcher      # pylint: disable=invalid-name
+# -----------------------------------------------------------------------------
+# STEP MATCHER FACTORY (for public API)
+# -----------------------------------------------------------------------------
+class StepMatcherFactory(object):
+    """
+    This class provides functionality for the public API of step-matchers.
+
+    It allows to  change the step-matcher class in use
+    while parsing step definitions.
+    This allows to use multiple step-matcher classes:
+
+    * in the same steps module
+    * in different step modules
+
+    There are several step-matcher classes available in **behave**:
+
+    * **parse** (the default, based on: :pypi:`parse`):
+    * **cfparse** (extends: :pypi:`parse`, requires: :pypi:`parse_type`)
+    * **re** (using regular expressions)
+
+    You may `define your own step-matcher class`_.
+
+    .. _`define your own step-matcher class`: api.html#step-parameters
+
+    parse
+    ------
+
+    Provides a simple parser that replaces regular expressions for
+    step parameters with a readable syntax like ``{param:Type}``.
+    The syntax is inspired by the Python builtin ``string.format()`` function.
+    Step parameters must use the named fields syntax of :pypi:`parse`
+    in step definitions. The named fields are extracted,
+    optionally type converted and then used as step function arguments.
+
+    Supports type conversions by using type converters
+    (see :func:`~behave.register_type()`).
+
+    cfparse
+    -------
+
+    Provides an extended parser with "Cardinality Field" (CF) support.
+    Automatically creates missing type converters for related cardinality
+    as long as a type converter for cardinality=1 is provided.
+    Supports parse expressions like:
+
+    * ``{values:Type+}`` (cardinality=1..N, many)
+    * ``{values:Type*}`` (cardinality=0..N, many0)
+    * ``{value:Type?}``  (cardinality=0..1, optional)
+
+    Supports type conversions (as above).
+
+    re (regex based parser)
+    -----------------------
+
+    This uses full regular expressions to parse the clause text. You will
+    need to use named groups "(?P<name>...)" to define the variables pulled
+    from the text and passed to your ``step()`` function.
+
+    Type conversion is **not supported**.
+    A step function writer may implement type conversion
+    inside the step function (implementation).
+    """
+    MATCHER_MAPPING = {
+        "parse": ParseMatcher,
+        "cfparse": CFParseMatcher,
+        "re": SimplifiedRegexMatcher,
+
+        # -- BACKWARD-COMPATIBLE REGEX MATCHER: Old Cucumber compatible style.
+        # To make it the default step-matcher use the following snippet:
+        #   # -- FILE: features/environment.py
+        #   from behave import use_step_matcher
+        #   def before_all(context):
+        #       use_step_matcher("re0")
+        "re0": CucumberRegexMatcher,
+    }
+    DEFAULT_MATCHER_NAME = "parse"
+
+    def __init__(self, matcher_mapping=None, default_matcher_name=None):
+        if matcher_mapping is None:
+            matcher_mapping = self.MATCHER_MAPPING.copy()
+        if default_matcher_name is None:
+            default_matcher_name = self.DEFAULT_MATCHER_NAME
+
+        self.matcher_mapping = matcher_mapping
+        self.initial_matcher_name = default_matcher_name
+        self.default_matcher_name = default_matcher_name
+        self.default_matcher = matcher_mapping[default_matcher_name]
+        self._current_matcher = self.default_matcher
+        assert self.default_matcher in self.matcher_mapping.values()
+
+    def reset(self):
+        self.use_default_step_matcher(self.initial_matcher_name)
+        self.clear_registered_types()
+
+    @property
+    def current_matcher(self):
+        # -- ENSURE: READ-ONLY access
+        return self._current_matcher
+
+    def register_type(self, **kwargs):
+        """
+        Registers one (or more) custom type that will be available
+        by some matcher classes, like the :class:`ParseMatcher` and its
+        derived classes, for type conversion during step matching.
+
+        Converters should be supplied as ``name=callable`` arguments (or as dict).
+        A type converter should follow the rules of its :class:`Matcher` class.
+        """
+        self.current_matcher.register_type(**kwargs)
+
+    def clear_registered_types(self):
+        for step_matcher_class in self.matcher_mapping.values():
+            step_matcher_class.clear_registered_types()
+
+    def register_step_matcher_class(self, name, step_matcher_class,
+                                    override=False):
+        """Register a new step-matcher class to use.
+
+        :param name:  Name of the step-matcher to use.
+        :param step_matcher_class:  Step-matcher class.
+        :param override:  Use ``True`` to override any existing step-matcher class.
+        """
+        assert inspect.isclass(step_matcher_class)
+        assert issubclass(step_matcher_class, Matcher), "OOPS: %r" % step_matcher_class
+        known_class = self.matcher_mapping.get(name, None)
+        if (not override and
+            known_class is not None and known_class is not step_matcher_class):
+            message = "ALREADY REGISTERED: {name}={class_name}".format(
+                name=name, class_name=known_class.__name__)
+            raise ResourceExistsError(message)
+
+        self.matcher_mapping[name] = step_matcher_class
+
+    def use_step_matcher(self, name):
+        """
+        Changes the step-matcher class to use while parsing step definitions.
+        This allows to use multiple step-matcher classes:
+
+        * in the same steps module
+        * in different step modules
+
+        There are several step-matcher classes available in **behave**:
+
+        * **parse** (the default, based on: :pypi:`parse`):
+        * **cfparse** (extends: :pypi:`parse`, requires: :pypi:`parse_type`)
+        * **re** (using regular expressions)
+
+        :param name:  Name of the step-matcher class.
+        :return: Current step-matcher class that is now in use.
+        """
+        self._current_matcher = self.matcher_mapping[name]
+        return self._current_matcher
+
+    def use_default_step_matcher(self, name=None):
+        """Use the default step-matcher.
+        If a :param:`name` is provided, the default step-matcher is defined.
+
+        :param name:    Optional, use it to specify the default step-matcher.
+        :return: Current step-matcher class (or object).
+        """
+        if name:
+            self.default_matcher = self.matcher_mapping[name]
+            self.default_matcher_name = name
+        self._current_matcher = self.default_matcher
+        return self._current_matcher
+
+    def use_current_step_matcher_as_default(self):
+        self.default_matcher = self._current_matcher
+
+    def make_matcher(self, func, step_text, step_type=None):
+        return self.current_matcher(func, step_text, step_type=step_type)
 
 
+# -- MODULE INSTANCE:
+_the_matcher_factory = StepMatcherFactory()
+
+
+# -----------------------------------------------------------------------------
+# INTERNAL API FUNCTIONS:
+# -----------------------------------------------------------------------------
+def get_matcher_factory():
+    return _the_matcher_factory
+
+
+def make_matcher(func, step_text, step_type=None):
+    return _the_matcher_factory.make_matcher(func, step_text,
+                                             step_type=step_type)
+
+
+def use_current_step_matcher_as_default():
+    return _the_matcher_factory.use_current_step_matcher_as_default()
+
+
+
+# -----------------------------------------------------------------------------
+# PUBLIC API FOR: step-writers
+# -----------------------------------------------------------------------------
 def use_step_matcher(name):
-    """Change the parameter matcher used in parsing step text.
+    return _the_matcher_factory.use_step_matcher(name)
 
-    The change is immediate and may be performed between step definitions in
-    your step implementation modules - allowing adjacent steps to use different
-    matchers if necessary.
 
-    There are several parsers available in *behave* (by default):
+def use_default_step_matcher(name=None):
+    return _the_matcher_factory.use_default_step_matcher(name=name)
 
-    **parse** (the default, based on: :pypi:`parse`)
-        Provides a simple parser that replaces regular expressions for
-        step parameters with a readable syntax like ``{param:Type}``.
-        The syntax is inspired by the Python builtin ``string.format()``
-        function.
-        Step parameters must use the named fields syntax of :pypi:`parse`
-        in step definitions. The named fields are extracted,
-        optionally type converted and then used as step function arguments.
 
-        Supports type conversions by using type converters
-        (see :func:`~behave.register_type()`).
+def register_type(**kwargs):
+    _the_matcher_factory.register_type(**kwargs)
 
-    **cfparse** (extends: :pypi:`parse`, requires: :pypi:`parse_type`)
-        Provides an extended parser with "Cardinality Field" (CF) support.
-        Automatically creates missing type converters for related cardinality
-        as long as a type converter for cardinality=1 is provided.
-        Supports parse expressions like:
 
-        * ``{values:Type+}`` (cardinality=1..N, many)
-        * ``{values:Type*}`` (cardinality=0..N, many0)
-        * ``{value:Type?}``  (cardinality=0..1, optional)
+# -- REUSE DOCSTRINGS:
+register_type.__doc__ = StepMatcherFactory.register_type.__doc__
+use_step_matcher.__doc__ = StepMatcherFactory.use_step_matcher.__doc__
+use_default_step_matcher.__doc__ = (
+    StepMatcherFactory.use_default_step_matcher.__doc__)
 
-        Supports type conversions (as above).
 
-    **re**
-        This uses full regular expressions to parse the clause text. You will
-        need to use named groups "(?P<name>...)" to define the variables pulled
-        from the text and passed to your ``step()`` function.
+# -----------------------------------------------------------------------------
+# BEHAVE EXTENSION-POINT: Add your own step-matcher class(es)
+# -----------------------------------------------------------------------------
+def register_step_matcher_class(name, step_matcher_class, override=False):
+    _the_matcher_factory.register_step_matcher_class(name, step_matcher_class,
+                                                     override=override)
 
-        Type conversion is **not supported**.
-        A step function writer may implement type conversion
-        inside the step function (implementation).
 
-    You may `define your own matcher`_.
-
-    .. _`define your own matcher`: api.html#step-parameters
-    """
-    global current_matcher  # pylint: disable=global-statement
-    current_matcher = matcher_mapping[name]
-
-def step_matcher(name):
-    """
-    DEPRECATED, use :func:`use_step_matcher()` instead.
-    """
-    # -- BACKWARD-COMPATIBLE NAME: Mark as deprecated.
-    warnings.warn("deprecated: Use 'use_step_matcher()' instead",
-                  DeprecationWarning, stacklevel=2)
-    use_step_matcher(name)
-
-def get_matcher(func, pattern):
-    return current_matcher(func, pattern)
+# -- REUSE DOCSTRINGS:
+register_step_matcher_class.__doc__ = (
+    StepMatcherFactory.register_step_matcher_class.__doc__)

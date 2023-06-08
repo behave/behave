@@ -6,21 +6,30 @@ Behave exception classes.
 .. versionadded:: 1.2.7
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 # -- USE MODERN EXCEPTION CLASSES:
 # COMPATIBILITY: Emulated if not supported yet by Python version.
-from behave.compat.exceptions import FileNotFoundError, ModuleNotFoundError
-
+from behave.compat.exceptions import (
+    FileNotFoundError, ModuleNotFoundError  # noqa: F401
+)
 
 # ---------------------------------------------------------------------------
 # EXCEPTION/ERROR CLASSES:
 # ---------------------------------------------------------------------------
 class ConstraintError(RuntimeError):
-    """Used if a constraint/precondition is not fulfilled at runtime.
+    """
+    Used if a constraint/precondition is not fulfilled at runtime.
 
     .. versionadded:: 1.2.7
     """
 
+class ResourceExistsError(ConstraintError):
+    """
+    Used if you try to register a resource and another exists already
+    with the same name.
+
+    .. versionadded:: 1.2.7
+    """
 
 class ConfigError(Exception):
     """Used if the configuration is (partially) invalid."""
@@ -61,4 +70,11 @@ class InvalidClassError(TypeError):
 
     * not a class
     * not subclass of a required class
+    """
+
+class NotSupportedWarning(Warning):
+    """
+    Used if a certain functionality is not supported.
+
+    .. versionadded:: 1.2.7
     """

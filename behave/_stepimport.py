@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+# pylint: disable=useless-object-inheritance
+# pylint: disable=super-with-arguments
 """
 This module provides low-level helper functionality during step imports.
 
@@ -15,9 +17,11 @@ from threading import Lock
 from types import ModuleType
 import os.path
 import sys
-from behave import step_registry as _step_registry
-# from behave import matchers as _matchers
 import six
+
+from behave import step_registry as _step_registry
+from behave.matchers import StepMatcherFactory
+from behave.step_registry import StepRegistry
 
 
 # -----------------------------------------------------------------------------
@@ -26,10 +30,22 @@ import six
 def setup_api_with_step_decorators(module, step_registry):
     _step_registry.setup_step_decorators(module, step_registry)
 
-def setup_api_with_matcher_functions(module, matcher_factory):
-    module.use_step_matcher = matcher_factory.use_step_matcher
-    module.step_matcher = matcher_factory.use_step_matcher
-    module.register_type = matcher_factory.register_type
+def setup_api_with_matcher_functions(module, step_matcher_factory):
+    # -- PUBLIC API: Same as behave.api.step_matchers
+    module.use_default_step_matcher = step_matcher_factory.use_default_step_matcher
+    module.use_step_matcher = step_matcher_factory.use_step_matcher
+    module.step_matcher = step_matcher_factory.use_step_matcher
+    module.register_type = step_matcher_factory.register_type
+
+
+class SimpleStepContainer(object):
+    def __init__(self, step_registry=None):
+        if step_registry is None:
+            step_registry = StepRegistry()
+        self.step_matcher_factory = StepMatcherFactory()
+        self.step_registry = step_registry
+        self.step_registry.step_matcher_factory = self.step_matcher_factory
+
 
 # -----------------------------------------------------------------------------
 # FAKE MODULE CLASSES: For step imports
@@ -60,14 +76,20 @@ class StepRegistryModule(FakeModule):
 
 
 class StepMatchersModule(FakeModule):
-    __all__ = ["use_step_matcher", "register_type", "step_matcher"]
+    __all__ = [
+        "use_default_step_matcher",
+        "use_step_matcher",
+        "step_matcher",  # -- DEPRECATING
+        "register_type"
+    ]
 
-    def __init__(self, matcher_factory):
+    def __init__(self, step_matcher_factory):
         super(StepMatchersModule, self).__init__("behave.matchers")
-        self.matcher_factory = matcher_factory
-        setup_api_with_matcher_functions(self, matcher_factory)
-        self.use_default_step_matcher = matcher_factory.use_default_step_matcher
-        self.get_matcher = matcher_factory.make_matcher
+        self.step_matcher_factory = step_matcher_factory
+        setup_api_with_matcher_functions(self, step_matcher_factory)
+        self.make_matcher = step_matcher_factory.make_matcher
+        # -- DEPRECATED-FUNCTION-COMPATIBILITY
+        # self.get_matcher = self.make_matcher
         # self.matcher_mapping = matcher_mapping or _matchers.matcher_mapping.copy()
         # self.current_matcher = current_matcher or _matchers.current_matcher
 
@@ -78,36 +100,19 @@ class StepMatchersModule(FakeModule):
         self.__name__ = "behave.matchers"
         # self.__path__ = [os.path.abspath(here)]
 
-    # def use_step_matcher(self, name):
-    #     self.matcher_factory.use_step_matcher(name)
-    #     # self.current_matcher = self.matcher_mapping[name]
-    #
-    # def use_default_step_matcher(self, name=None):
-    #     self.matcher_factory.use_default_step_matcher(name=None)
-    #
-    # def get_matcher(self, func, pattern):
-    #     # return self.current_matcher
-    #     return self.matcher_factory.make_matcher(func, pattern)
-    #
-    # def register_type(self, **kwargs):
-    #     # _matchers.register_type(**kwargs)
-    #     self.matcher_factory.register_type(**kwargs)
-    #
-    # step_matcher = use_step_matcher
-
 
 class BehaveModule(FakeModule):
     __all__ = StepRegistryModule.__all__ + StepMatchersModule.__all__
 
-    def __init__(self, step_registry, matcher_factory=None):
-        if matcher_factory is None:
-            matcher_factory = step_registry.step_matcher_factory
-        assert matcher_factory is not None
+    def __init__(self, step_registry, step_matcher_factory=None):
+        if step_matcher_factory is None:
+            step_matcher_factory = step_registry.step_step_matcher_factory
+        assert step_matcher_factory is not None
         super(BehaveModule, self).__init__("behave")
         setup_api_with_step_decorators(self, step_registry)
-        setup_api_with_matcher_functions(self, matcher_factory)
-        self.use_default_step_matcher = matcher_factory.use_default_step_matcher
-        assert step_registry.matcher_factory == matcher_factory
+        setup_api_with_matcher_functions(self, step_matcher_factory)
+        self.use_default_step_matcher = step_matcher_factory.use_default_step_matcher
+        assert step_registry.step_matcher_factory == step_matcher_factory
 
         # -- INJECT PYTHON PACKAGE META-DATA:
         # REQUIRED-FOR: Non-fake submodule imports (__path__).
@@ -122,13 +127,13 @@ class StepImportModuleContext(object):
 
     def __init__(self, step_container):
         self.step_registry = step_container.step_registry
-        self.matcher_factory = step_container.matcher_factory
-        assert self.step_registry.matcher_factory == self.matcher_factory
-        self.step_registry.matcher_factory = self.matcher_factory
+        self.step_matcher_factory = step_container.step_matcher_factory
+        assert self.step_registry.step_matcher_factory == self.step_matcher_factory
+        self.step_registry.step_matcher_factory = self.step_matcher_factory
 
         step_registry_module = StepRegistryModule(self.step_registry)
-        step_matchers_module = StepMatchersModule(self.matcher_factory)
-        behave_module = BehaveModule(self.step_registry, self.matcher_factory)
+        step_matchers_module = StepMatchersModule(self.step_matcher_factory)
+        behave_module = BehaveModule(self.step_registry, self.step_matcher_factory)
         self.modules = {
             "behave": behave_module,
             "behave.matchers": step_matchers_module,
@@ -137,14 +142,16 @@ class StepImportModuleContext(object):
         # self.default_matcher = self.step_matchers_module.current_matcher
 
     def reset_current_matcher(self):
-        self.matcher_factory.use_default_step_matcher()
+        self.step_matcher_factory.use_default_step_matcher()
+
 
 _step_import_lock = Lock()
 unknown = object()
 
 @contextmanager
 def use_step_import_modules(step_container):
-    """Redirect any step/type registration to the runner's step-context object
+    """
+    Redirect any step/type registration to the runner's step-context object
     during step imports by using fake modules (instead of using module-globals).
 
     This allows that multiple runners can be used without polluting the
@@ -161,7 +168,8 @@ def use_step_import_modules(step_container):
                 ...
                 import_context.reset_current_matcher()
 
-    :param step_container:  Step context object with step_registry, matcher_factory.
+    :param step_container:
+        Step context object with step_registry, step_matcher_factory.
     """
     orig_modules = {}
     import_context = StepImportModuleContext(step_container)

@@ -6,7 +6,7 @@ step implementations (step definitions). This is necessary to execute steps.
 """
 
 from __future__ import absolute_import
-from behave.matchers import Match, get_matcher
+from behave.matchers import Match, make_matcher
 from behave.textutil import text as _text
 
 # limit import * to just the decorators
@@ -56,7 +56,7 @@ class StepRegistry(object):
                 existing_step = existing.describe()
                 existing_step += u" at %s" % existing.location
                 raise AmbiguousStep(message % (new_step, existing_step))
-        step_definitions.append(get_matcher(func, step_text))
+        step_definitions.append(make_matcher(func, step_text))
 
     def find_step_definition(self, step):
         candidates = self.steps[step.step_type]
