@@ -1,24 +1,30 @@
+from __future__ import absolute_import, print_function
+from contextlib import contextmanager
 import os.path
+from pathlib import Path
 import sys
 import six
 import pytest
 from behave import configuration
-from behave.configuration import Configuration, UserData
+from behave.configuration import (
+    Configuration,
+    ConfigFileOption,
+    UserData,
+    configfile_options_iter
+)
+from behave.tag_expression import TagExpressionProtocol
 from unittest import TestCase
 
 
 # one entry of each kind handled
 # configparser and toml
 TEST_CONFIGS = [
-    (
-        ".behaverc",
-        """[behave]
+    (".behaverc", """[behave]
 outfiles= /absolute/path1
           relative/path2
 paths = /absolute/path3
         relative/path4
-default_tags = @foo,~@bar
-       @zap
+default_tags = (@foo and not @bar) or @zap
 format=pretty
        tag-counter
 stdout_capture=no
@@ -28,12 +34,12 @@ bogus=spam
 foo    = bar
 answer = 42
 """),
-    (
-        "pyproject.toml",
-        """[tool.behave]
+
+    # -- TOML CONFIG-FILE:
+    ("pyproject.toml", """[tool.behave]
 outfiles = ["/absolute/path1", "relative/path2"]
 paths = ["/absolute/path3", "relative/path4"]
-default_tags = ["@foo,~@bar", "@zap"]
+default_tags = ["(@foo and not @bar) or @zap"]
 format = ["pretty", "tag-counter"]
 stdout_capture = false
 bogus = "spam"
@@ -57,22 +63,46 @@ if sys.platform.startswith("win"):
     ROOTDIR_PREFIX = os.environ.get("BEHAVE_ROOTDIR_PREFIX", ROOTDIR_PREFIX_DEFAULT)
 
 
+@contextmanager
+def use_current_directory(directory_path):
+    """Use directory as current directory.
+
+    ::
+
+        with use_current_directory("/tmp/some_directory"):
+            pass # DO SOMETHING in current directory.
+        # -- ON EXIT: Restore old current-directory.
+    """
+    # -- COMPATIBILITY: Use directory-string instead of Path
+    initial_directory = str(Path.cwd())
+    try:
+        os.chdir(str(directory_path))
+        yield directory_path
+    finally:
+        os.chdir(initial_directory)
+
+
 # -----------------------------------------------------------------------------
 # TEST SUITE:
 # -----------------------------------------------------------------------------
 class TestConfiguration(object):
 
-    @pytest.mark.parametrize(
-        ("filename", "contents"),
-        list(TEST_CONFIGS)
-    )
+    @pytest.mark.parametrize(("filename", "contents"), list(TEST_CONFIGS))
     def test_read_file(self, filename, contents, tmp_path):
         tndir = str(tmp_path)
         file_path = os.path.normpath(os.path.join(tndir, filename))
         with open(file_path, "w") as fp:
             fp.write(contents)
+
         # -- WINDOWS-REQUIRES: normpath
+        # DISABLED: pprint(d, sort_dicts=True)
+        from pprint import pprint
+        extra_kwargs = {}
+        if six.PY3:
+            extra_kwargs = {"sort_dicts": True}
+
         d = configuration.read_configuration(file_path)
+        pprint(d, **extra_kwargs)
         assert d["outfiles"] == [
             os.path.normpath(ROOTDIR_PREFIX + "/absolute/path1"),
             os.path.normpath(os.path.join(tndir, "relative/path2")),
@@ -82,7 +112,7 @@ class TestConfiguration(object):
             os.path.normpath(os.path.join(tndir, "relative/path4")),
             ]
         assert d["format"] == ["pretty", "tag-counter"]
-        assert d["default_tags"] == ["@foo,~@bar", "@zap"]
+        assert d["default_tags"] == ["(@foo and not @bar) or @zap"]
         assert d["stdout_capture"] is False
         assert "bogus" not in d
         assert d["userdata"] == {"foo": "bar", "answer": "42"}
@@ -204,3 +234,105 @@ class TestConfigurationUserData(TestCase):
         expected_data = dict(person1="Alice", person2="Bob", person3="Charly")
         assert config.userdata == expected_data
         assert config.userdata_defines is None
+
+
+class TestConfigFileParser(object):
+
+    def test_configfile_iter__verify_option_names(self):
+        config_options = configfile_options_iter(None)
+        config_options_names = [opt[0] for opt in config_options]
+        expected_names = [
+            "color",
+            "default_format",
+            "default_tags",
+            "dry_run",
+            "exclude_re",
+            "format",
+            "include_re",
+            "jobs",
+            "junit",
+            "junit_directory",
+            "lang",
+            "log_capture",
+            "logging_clear_handlers",
+            "logging_datefmt",
+            "logging_filter",
+            "logging_format",
+            "logging_level",
+            "name",
+            "outfiles",
+            "paths",
+            "quiet",
+            "runner",
+            "scenario_outline_annotation_schema",
+            "show_multiline",
+            "show_skipped",
+            "show_snippets",
+            "show_source",
+            "show_timings",
+            "stage",
+            "stderr_capture",
+            "stdout_capture",
+            "steps_catalog",
+            "stop",
+            "summary",
+            "tag_expression_protocol",
+            "tags",
+            "verbose",
+            "wip",
+        ]
+        assert sorted(config_options_names) == expected_names
+
+
+class TestConfigFile(object):
+
+    @staticmethod
+    def make_config_file_with_tag_expression_protocol(value, tmp_path):
+        config_file = tmp_path / "behave.ini"
+        config_file.write_text(u"""
+[behave]
+tag_expression_protocol = {value}
+""".format(value=value))
+        assert config_file.exists()
+
+    @classmethod
+    def check_tag_expression_protocol_with_valid_value(cls, value, tmp_path):
+        TagExpressionProtocol.use(TagExpressionProtocol.default())
+        cls.make_config_file_with_tag_expression_protocol(value, tmp_path)
+        with use_current_directory(tmp_path):
+            config = Configuration()
+            print("USE: tag_expression_protocol.value={0}".format(value))
+            print("USE: config.tag_expression_protocol={0}".format(
+                config.tag_expression_protocol))
+
+        assert config.tag_expression_protocol in TagExpressionProtocol
+        assert TagExpressionProtocol.current() is config.tag_expression_protocol
+
+    @pytest.mark.parametrize("value", TagExpressionProtocol.choices())
+    def test_tag_expression_protocol(self, value, tmp_path):
+        self.check_tag_expression_protocol_with_valid_value(value, tmp_path)
+
+    @pytest.mark.parametrize("value", ["Any", "ANY", "Strict", "STRICT"])
+    def test_tag_expression_protocol__is_not_case_sensitive(self, value, tmp_path):
+        self.check_tag_expression_protocol_with_valid_value(value, tmp_path)
+
+    @pytest.mark.parametrize("value", [
+        "__UNKNOWN__", "v1", "v2",
+        # -- SIMILAR: to valid values
+        ".any", "any.", "_strict", "strict_"
+    ])
+    def test_tag_expression_protocol__with_invalid_value_raises_error(self, value, tmp_path):
+        default_value = TagExpressionProtocol.default()
+        TagExpressionProtocol.use(default_value)
+        self.make_config_file_with_tag_expression_protocol(value, tmp_path)
+        with use_current_directory(tmp_path):
+            with pytest.raises(ValueError) as exc_info:
+                config = Configuration()
+                print("USE: tag_expression_protocol.value={0}".format(value))
+                print("USE: config.tag_expression_protocol={0}".format(
+                    config.tag_expression_protocol))
+
+        assert TagExpressionProtocol.current() is default_value
+        expected = "{value} (expected: any, strict)".format(value=value)
+        assert exc_info.type is ValueError
+        assert expected in str(exc_info.value)
