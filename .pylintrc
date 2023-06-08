@@ -235,7 +235,7 @@ method-naming-style=snake_case
 
 # Regular expression matching correct method names. Overrides method-naming-
 # style. If left empty, method names will be checked with the set naming style.
-method-rgx=[a-z_][a-z0-9_]{2,30}$
+method-rgx=[a-z_][a-z0-9_]{2,40}$
 
 # Naming style matching correct module names.
 module-naming-style=snake_case
@@ -362,7 +362,7 @@ indent-after-paren=4
 indent-string='    '
 
 # Maximum number of characters on a single line.
-max-line-length=85
+max-line-length=100
 
 # Maximum number of lines in a module.
 max-module-lines=1000

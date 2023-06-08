@@ -281,11 +281,11 @@ the preceding step's keyword (so an "and" following a "given" will become a
 
 .. note::
 
-  Step function names do not need to have a unique symbol name, because the
-  text matching selects the step function from the step registry before it is
-  called as anonymous function.  Hence, when *behave* prints out the missing
-  step implementations in a test run, it uses "step_impl" for all functions
-  by default.
+      Step function names do not need to have a unique symbol name, because the
+      text matching selects the step function from the step registry before it is
+      called as anonymous function.  Hence, when *behave* prints out the missing
+      step implementations in a test run, it uses "step_impl" for all functions
+      by default.
 
 If you find you'd like your step implementation to invoke another step you
 may do so with the :class:`~behave.runner.Context` method
@@ -307,77 +307,152 @@ the other two steps as though they had also appeared in the scenario file.
 
 
 .. _docid.tutorial.step-parameters:
+.. _`step parameters`:
 
 Step Parameters
 ---------------
 
-You may find that your feature steps sometimes include very common phrases
-with only some variation. For example:
+Steps sometimes include very common phrases with only one variation
+(one word is different or some words are different).
+For example:
 
 .. code-block:: gherkin
 
-  Scenario: look up a book
-    Given I search for a valid book
-     Then the result page will include "success"
+    # -- FILE: features/example_step_parameters.feature
+    Scenario: look up a book
+      Given I search for a valid book
+       Then the result page will include "success"
 
-  Scenario: look up an invalid book
-    Given I search for a invalid book
-     Then the result page will include "failure"
+    Scenario: look up an invalid book
+      Given I search for a invalid book
+       Then the result page will include "failure"
 
-You may define a single Python step that handles both of those Then
-clauses (with a Given step that puts some text into
-``context.response``):
+You can define one Python step-definition that handles both cases by using `step parameters`_ .
+In this case, the *Then* step verifies the ``context.response`` parameter
+that was stored in the ``context`` by the *Given* step:
 
 .. code-block:: python
+
+    # -- FILE: features/steps/example_steps_with_step_parameters.py
+    # HINT: Step-matcher "parse" is the DEFAULT step-matcher class.
+    from behave import then
 
     @then('the result page will include "{text}"')
     def step_impl(context, text):
         if text not in context.response:
             fail('%r not in %r' % (text, context.response))
 
-There are several parsers available in *behave* (by default):
+There are several step-matcher classes available in **behave**
+that can be used for `step parameters`_.
+You can select another step-matcher class by using
+the :func:`behave.use_step_matcher()` function:
 
-**parse** (the default, based on: :pypi:`parse`)
-    Provides a simple parser that replaces regular expressions for step parameters
-    with a readable syntax like ``{param:Type}``.
-    The syntax is inspired by the Python builtin ``string.format()`` function.
-    Step parameters must use the named fields syntax of :pypi:`parse`
-    in step definitions. The named fields are extracted,
-    optionally type converted and then used as step function arguments.
+.. code-block:: python
 
-    Supports type conversions by using type converters
-    (see :func:`~behave.register_type()`).
+    # -- FILE: features/steps/example_use_step_matcher_in_steps.py
+    # HINTS:
+    #   * "parse" in the DEFAULT step-matcher
+    #   * Use "use_step_matcher(...)" in "features/environment.py" file
+    #     to define your own own default step-matcher.
+    from behave import given, when, use_step_matcher
 
-**cfparse** (extends: :pypi:`parse`, requires: :pypi:`parse_type`)
-    Provides an extended parser with "Cardinality Field" (CF) support.
-    Automatically creates missing type converters for related cardinality
-    as long as a type converter for cardinality=1 is provided.
-    Supports parse expressions like:
+    use_step_matcher("cfparse")
 
-    * ``{values:Type+}`` (cardinality=1..N, many)
-    * ``{values:Type*}`` (cardinality=0..N, many0)
-    * ``{value:Type?}``  (cardinality=0..1, optional).
+    @given('some event named "{event_name}" happens')
+    def step_given_some_event_named_happens(context, event_name):
+        pass    # ... DETAILS LEFT OUT HERE.
 
-    Supports type conversions (as above).
+    use_step_matcher("re")
 
-**re**
-    This uses full regular expressions to parse the clause text. You will
-    need to use named groups "(?P<name>...)" to define the variables pulled
-    from the text and passed to your ``step()`` function.
+    @when('a person named "(?P<name>...)" enters the room')
+    def step_when_person_enters_room(context, name):
+        pass    # ... DETAILS LEFT OUT HERE.
 
-    Type conversion is **not supported**.
+
+Step-matchers
+--------------
+
+There are several step-matcher classes available in **behave**
+that can be used for parsing `step parameters`_:
+
+* **parse** (default step-matcher class, based on: :pypi:`parse`):
+* **cfparse** (extends: :pypi:`parse`, requires: :pypi:`parse_type`):
+* **re** (step-matcher class is based on regular expressions):
+
+
+Step-matcher: parse
+~~~~~~~~~~~~~~~~~~~
+
+This step-matcher class provides a parser based on: :pypi:`parse` module.
+
+It provides a simple parser that replaces regular expressions
+for step parameters with a readable syntax like ``{param:Type}``.
+
+The syntax is inspired by the Python builtin ``string.format()`` function.
+Step parameters must use the named fields syntax of :pypi:`parse`
+in step definitions. The named fields are extracted,
+optionally type converted and then used as step function arguments.
+
+FEATURES:
+
+* Supports named step parameters (and unnamed step parameters)
+* Supports **type conversions** by using type converters
+  (see :func:`~behave.register_type()`).
+
+
+Step-matcher: cfparse
+~~~~~~~~~~~~~~~~~~~~~
+
+This step-matcher class extends the ``parse`` step-matcher
+and provides an extended parser with "Cardinality Field" (CF) support.
+
+It automatically creates missing type converters for other cardinalities
+as long as a type converter for cardinality=1 is provided.
+
+It supports parse expressions like:
+
+* ``{values:Type+}`` (cardinality=1..N, many)
+* ``{values:Type*}`` (cardinality=0..N, many0)
+* ``{value:Type?}``  (cardinality=0..1, optional).
+
+FEATURES:
+
+* Supports named step parameters (and unnamed step parameters)
+* Supports **type conversions** by using type converters
+  (see :func:`~behave.register_type()`).
+
+
+
+Step-matcher: re
+~~~~~~~~~~~~~~~~~~~~~
+
+This step-matcher provides step-matcher class is based on regular expressions.
+It uses full regular expressions to parse the clause text.
+You will need to use named groups "(?P<name>...)" to define the variables pulled
+from the text and passed to your ``step()`` function.
+
+.. hint:: Type conversion is **not supported**.
+
     A step function writer may implement type conversion
     inside the step function (implementation).
 
-To specify which parser to use invoke :func:`~behave.use_step_matcher`
-with the name of the matcher to use. You may change matcher to suit
-specific step functions - the last call to ``use_step_matcher`` before a step
-function declaration will be the one it uses.
 
-.. note::
+To specify which parser to use,
+call the :func:`~behave.use_step_matcher()` function with the name
+of the step-matcher class to use.
 
-  The function :func:`~behave.matchers.step_matcher()` is becoming deprecated.
-  Use :func:`~behave.use_step_matcher()` instead.
+You can change the step-matcher class at any time to suit your needs.
+The following step-definitions use the current step-matcher class.
+
+FEATURES:
+
+* Supports named step parameters (and unnamed step parameters)
+* Supports no type conversions
+
+VARIANTS:
+
+* ``"re0"``: Provides a regex matcher that is compatible with ``cucumber``
+  (regex based step-matcher).
 
 
 Context

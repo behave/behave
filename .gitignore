@@ -18,6 +18,7 @@ reports/
 tools/virtualenvs
 .cache/
 .direnv/
+.fleet/
 .idea/
 .pytest_cache/
 .tox/
