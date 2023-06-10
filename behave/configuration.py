@@ -14,6 +14,7 @@ This module provides the configuration for :mod:`behave`:
 
 from __future__ import absolute_import, print_function
 import argparse
+from collections import namedtuple
 import json
 import logging
 from logging.config import fileConfig as logging_config_fileConfig
@@ -321,8 +322,8 @@ OPTIONS = [
           default=TagExpressionProtocol.default().name.lower(),
           help="""\
 Specify the tag-expression protocol to use (default: %(default)s).
-With "any", tag-expressions v2 and v2 are supported (in auto-detect mode).
-With "strict", only tag-expressions v2 is supported (better error diagnostics).
+With "any", tag-expressions v1 and v2 are supported (in auto-detect mode).
+With "strict", only tag-expressions v2 are supported (better error diagnostics).
 """)),
 
     (("-q", "--quiet"),
@@ -444,7 +445,7 @@ def _values_to_str(data):
 
 
 def has_negated_option(option_words):
-    return any([word.startswith("--no-") for word in option_words])
+    return any(word.startswith("--no-") for word in option_words)
 
 
 def derive_dest_from_long_option(fixed_options):
@@ -453,8 +454,7 @@ def derive_dest_from_long_option(fixed_options):
             return option_name[2:].replace("-", "_")
     return None
 
-# -- TEST-BALLOON:
-from collections import namedtuple
+
 ConfigFileOption = namedtuple("ConfigFileOption", ("dest", "action", "type"))
 
 
@@ -463,7 +463,7 @@ def configfile_options_iter(config):
     def config_has_param(config, param_name):
         try:
             return param_name in config["behave"]
-        except AttributeError as exc:  # pragma: no cover
+        except AttributeError:  # pragma: no cover
             # H-- INT: PY27: SafeConfigParser instance has no attribute "__getitem__"
             return config.has_option("behave", param_name)
         except KeyError:
@@ -474,7 +474,7 @@ def configfile_options_iter(config):
         if has_negated_option(fixed) or action == "store_false":
             # -- SKIP NEGATED OPTIONS, like: --no-color
             continue
-        elif "dest" in keywords:
+        if "dest" in keywords:
             dest = keywords["dest"]
         else:
             # -- CASE: dest=... keyword is missing
@@ -482,7 +482,7 @@ def configfile_options_iter(config):
             dest = derive_dest_from_long_option(fixed)
         if not dest or (dest in CONFIGFILE_EXCLUDED_OPTIONS):
             continue
-        elif skip_missing and not config_has_param(config, dest):
+        if skip_missing and not config_has_param(config, dest):
             continue
 
         # -- FINALLY:
@@ -866,14 +866,14 @@ class Configuration(object):
     def has_colored_mode(self, file=None):
         if self.color in COLOR_ON_VALUES:
             return True
-        elif self.color in COLOR_OFF_VALUES:
+        if self.color in COLOR_OFF_VALUES:
             return False
-        else:
-            # -- AUTO-DETECT: color="auto"
-            output_file = file or sys.stdout
-            isatty = getattr(output_file, "isatty", lambda: True)
-            colored = isatty()
-            return colored
+
+        # -- OTHERWISE in AUTO-DETECT mode: color="auto"
+        output_file = file or sys.stdout
+        isatty = getattr(output_file, "isatty", lambda: True)
+        colored = isatty()
+        return colored
 
     def make_command_args(self, command_args=None, verbose=None):
         # pylint: disable=too-many-branches, too-many-statements
@@ -962,6 +962,11 @@ class Configuration(object):
         """
         Show any BAD-FORMATTER(s) and fail with ``ParseError``if any exists.
         """
+        # -- SANITY-CHECK FIRST: Is correct type used for "config.format"
+        if self.format is not None and not isinstance(self.format, list):
+            parser.error("CONFIG-PARAM-TYPE-ERROR: format = %r (expected: list<%s>, was: %s)" %
+                         (self.format, six.text_type, type(self.format).__name__))
+
         bad_formats_and_errors = self.select_bad_formats_with_errors()
         if bad_formats_and_errors:
             bad_format_parts = []
