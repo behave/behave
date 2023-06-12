@@ -454,16 +454,17 @@
 "pl":
   name: Polish
   native: polski
-  feature: Właściwość
+  feature: "Właściwość|Funkcja|Aspekt|Potrzeba biznesowa"
   background: Założenia
-  scenario: Scenariusz
+  scenario: "Scenariusz|Przykład"
   scenario_outline: Szablon scenariusza
   examples: Przykłady
   given: "*|Zakładając|Mając"
-  when: "*|Jeżeli|Jeśli"
+  when: "*|Jeżeli|Jeśli|Gdy|Kiedy"
   then: "*|Wtedy"
   and: "*|Oraz|I"
   but: "*|Ale"
+  rule: "zasada|reguła"
 "pt":
   name: Portuguese
   native: português
