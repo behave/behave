@@ -52,6 +52,8 @@ DEVELOPMENT:
 
 * Renamed default branch of Git repository to "main" (was: "master").
 * Use github-actions as CI/CD pipeline (and remove Travis as CI).
+* CI: Remove python.version=2.7 for CI pipeline
+  (reason: No longer supported by Github Actions, date: 2023-07).
 
 CLEANUPS:
 
