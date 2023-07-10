@@ -108,6 +108,13 @@ Feature: Help Formatter
         | bad_formatter1 | behave4me.unknown:Formatter               | ModuleNotFoundError | No module named 'behave4me.unknown' |
 
       @not.with_python.min_version=3.6
+      @use.with_pypy=true
+      Examples: For Python < 3.6
+        | formatter_name | formatter_class                           | formatter_syndrome  | problem_description |
+        | bad_formatter1 | behave4me.unknown:Formatter               | ModuleNotFoundError | No module named 'behave4me.unknown' |
+
+      @not.with_python.min_version=3.6
+      @not.with_pypy=true
       Examples: For Python < 3.6
         | formatter_name | formatter_class                           | formatter_syndrome  | problem_description |
         | bad_formatter1 | behave4me.unknown:Formatter               | ModuleNotFoundError | No module named 'unknown' |
