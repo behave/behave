@@ -93,13 +93,20 @@ Feature: Runner Help
 
       @use.with_python.min_version=3.0
       Examples: For Python >= 3.0
-        | runner_name | runner_class                           | runner_syndrome  | problem_description |
-        | bad_runner1 | behave4me.unknown:Runner               | ModuleNotFoundError | No module named 'behave4me.unknown' |
+        | runner_name | runner_class             | runner_syndrome  | problem_description |
+        | bad_runner1 | behave4me.unknown:Runner | ModuleNotFoundError | No module named 'behave4me.unknown' |
 
       @not.with_python.min_version=3.0
+      @use.with_pypy=true
       Examples: For Python < 3.0
-        | runner_name | runner_class                           | runner_syndrome  | problem_description |
-        | bad_runner1 | behave4me.unknown:Runner               | ModuleNotFoundError | No module named 'unknown' |
+        | runner_name | runner_class             | runner_syndrome  | problem_description |
+        | bad_runner1 | behave4me.unknown:Runner | ModuleNotFoundError | No module named 'behave4me.unknown' |
+
+      @not.with_python.min_version=3.0
+      @not.with_pypy=true
+      Examples: For Python < 3.0
+        | runner_name | runner_class             | runner_syndrome  | problem_description |
+        | bad_runner1 | behave4me.unknown:Runner | ModuleNotFoundError | No module named 'unknown' |
 
       Examples:
         | runner_name | runner_class                           | runner_syndrome  | problem_description |

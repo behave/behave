@@ -33,9 +33,8 @@ jobs:
       fail-fast: false
       matrix:
         # PREPARED: os: [ubuntu-latest, macos-latest, windows-latest]
-        # PREPARED: python-version: ["3.11", "3.10", "3.9", "pypy-3.10", "pypy-2.7"]
         os: [ubuntu-latest]
-        python-version: ["3.11", "3.10", "3.9", "pypy-3.10"]
+        python-version: ["3.11", "3.10", "3.9", "pypy-3.10", "pypy-2.7"]
     steps:
       - uses: actions/checkout@v3
       # DISABLED: name: Setup Python ${{ matrix.python-version }} on platform=${{ matrix.os }}
