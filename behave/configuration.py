@@ -18,6 +18,7 @@ from collections import namedtuple
 import json
 import logging
 from logging.config import fileConfig as logging_config_fileConfig
+from logging import _checkLevel as logging_check_level
 import os
 import re
 import sys
@@ -1117,6 +1118,9 @@ class Configuration(object):
         """
         if level is None:
             level = self.logging_level      # pylint: disable=no-member
+        else:
+            # pylint: disable=import-outside-toplevel
+            level = logging_check_level(level)
 
         if configfile:
             logging_config_fileConfig(configfile)
@@ -1127,7 +1131,10 @@ class Configuration(object):
             logging.basicConfig(format=format_, datefmt=datefmt, **kwargs)
         # -- ENSURE: Default log level is set
         #    (even if logging subsystem is already configured).
+        # -- HINT: Ressign to self.logging_level
+        #    NEEDED FOR: behave.log_capture.LoggingCapture, capture
         logging.getLogger().setLevel(level)
+        self.logging_level = level  # pylint: disable=W0201
 
     def setup_model(self):
         if self.scenario_outline_annotation_schema:

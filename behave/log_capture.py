@@ -180,9 +180,10 @@ MemoryHandler = LoggingCapture
 def capture(*args, **kw):
     """Decorator to wrap an *environment file function* in log file capture.
 
-    It configures the logging capture using the *behave* context - the first
-    argument to the function being decorated (so don't use this to decorate
-    something that doesn't have *context* as the first argument.)
+    It configures the logging capture using the *behave* context,
+    the first argument to the function being decorated
+    (so don't use this to decorate something that
+    doesn't have *context* as the first argument).
 
     The basic usage is:
 
@@ -192,9 +193,9 @@ def capture(*args, **kw):
         def after_scenario(context, scenario):
             ...
 
-    The function prints any captured logging (at the level determined by the
-    ``log_level`` configuration setting) directly to stdout, regardless of
-    error conditions.
+    The function prints any captured logging
+    (at the level determined by the ``log_level`` configuration setting)
+    directly to stdout, regardless of error conditions.
 
     It is mostly useful for debugging in situations where you are seeing a
     message like::
@@ -210,8 +211,8 @@ def capture(*args, **kw):
         def after_scenario(context, scenario):
             ...
 
-    This would limit the logging captured to just ERROR and above, and thus
-    only display logged events if they are interesting.
+    This would limit the logging captured to just ERROR and above,
+    and thus only display logged events if they are interesting.
     """
     def create_decorator(func, level=None):
         def f(context, *args):
