@@ -1,5 +1,6 @@
+
 # ============================================================================
-# BEHAVE: PYTHON PACKAGE REQUIREMENTS: All requirements
+# PYTHON PACKAGE REQUIREMENTS: behave extensions
 # ============================================================================
 # DESCRIPTION:
 #    pip install -r <THIS_FILE>
@@ -7,10 +8,8 @@
 # SEE ALSO:
 #  * https://pip.pypa.io/en/stable/user_guide/
 # ============================================================================
-# ALREADY: -r testing.txt
-# ALREADY: -r docs.txt
 
--r basic.txt
--r behave_extensions.txt
--r develop.txt
--r jsonschema.txt
+# -- FORMATTERS:
+# DISABLED: allure-behave
+behave-html-formatter >= 0.9.10; python_version >= '3.6'
+behave-html-pretty-formatter >= 1.9.1; python_version >= '3.6'

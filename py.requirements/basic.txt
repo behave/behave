@@ -5,7 +5,7 @@
 #    pip install -r <THIS_FILE>
 #
 # SEE ALSO:
-#  * http://www.pip-installer.org/
+#  * https://pip.pypa.io/en/stable/user_guide/
 # ============================================================================
 
 cucumber-tag-expressions >= 4.1.0

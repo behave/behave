@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
-"""behave is behaviour-driven development, Python style
+# SPDX-License-Identifier: BSD-2-Clause
+"""
+behave is behaviour-driven development, Python style
 
 Behavior-driven development (or BDD) is an agile software development
 technique that encourages collaboration between developers, QA and

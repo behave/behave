@@ -48,13 +48,13 @@ to install the newest version from the `GitHub repository`_::
 
 To install a tagged version from the `GitHub repository`_, use::
 
-    pip install git+https://github.com/behave/behave@<tag>
+    pip install git+https://github.com/behave/behave@<TAG>
 
-where <tag> is the placeholder for an `existing tag`_.
+where <TAG> is the placeholder for an `existing tag`_.
 
-When installing extras, use ``<tag>#egg=behave[...]``, e.g.::
+When installing extras, use ``<TAG>#egg=behave[...]``, e.g.::
 
-    pip install git+https://github.com/behave/behave@v1.2.7.dev3#egg=behave[toml]
+    pip install git+https://github.com/behave/behave@v1.2.7.dev4#egg=behave[toml]
 
 .. _`GitHub repository`: https://github.com/behave/behave
 .. _`existing tag`:      https://github.com/behave/behave/tags
@@ -79,3 +79,34 @@ Installation Target     Description
 
 .. _`behave-contrib`: https://github.com/behave-contrib
 .. _`pep-518`: https://peps.python.org/pep-0518/#tool-table
+
+
+Specify Dependency to "behave"
+------------------------------
+
+Use the following recipe in the ``"pyproject.toml"`` config-file if:
+
+* your project depends on `behave`_ and
+* you use a ``version`` from the git-repository (or a ``git branch``)
+
+EXAMPLE:
+
+.. code-block:: toml
+
+    # -- FILE: my-project/pyproject.toml
+    # SCHEMA: Use "behave" from git-repository (instead of: https://pypi.org/ )
+    #   "behave @ git+https://github.com/behave/behave.git@<TAG>"
+    #   "behave @ git+https://github.com/behave/behave.git@<BRANCH>"
+    #   "behave[VARIANT] @ git+https://github.com/behave/behave.git@<TAG>" # with VARIANT=develop, docs, ...
+    # SEE: https://peps.python.org/pep-0508/
+
+    [project]
+    name = "my-project"
+    ...
+    dependencies = [
+        "behave @ git+https://github.com/behave/behave.git@v1.2.7.dev4",
+        # OR: "behave[develop] @ git+https://github.com/behave/behave.git@main",
+        ...
+    ]
+
+.. _behave: https://github.com/behave/behave

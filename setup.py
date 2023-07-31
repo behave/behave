@@ -60,7 +60,7 @@ setup(
     long_description=description,
     author="Jens Engel, Benno Rice and Richard Jones",
     author_email="behave-users@googlegroups.com",
-    url="http://github.com/behave/behave",
+    url="https://github.com/behave/behave",
     provides = ["behave", "setuptools_behave"],
     packages = find_packages_by_root_package(BEHAVE),
     py_modules = ["setuptools_behave"],
@@ -79,7 +79,7 @@ setup(
         "cucumber-tag-expressions >= 4.1.0",
         "enum34; python_version < '3.4'",
         "parse >= 1.18.0",
-        "parse_type >= 0.6.0",
+        "parse-type >= 0.6.0",
         "six >= 1.15.0",
         "traceback2; python_version < '3.0'",
 
@@ -90,7 +90,7 @@ setup(
         "colorama >= 0.3.7",
     ],
     tests_require=[
-        "pytest <  5.0; python_version <  '3.0'", # >= 4.2
+        "pytest <  5.0; python_version <  '3.0'", # USE: pytest >= 4.2
         "pytest >= 5.0; python_version >= '3.0'",
         "pytest-html >= 1.19.0,<2.0; python_version <  '3.0'",
         "pytest-html >= 2.0;         python_version >= '3.0'",
@@ -115,8 +115,10 @@ setup(
             "sphinx_bootstrap_theme >= 0.6"
         ],
         "develop": [
-            "coverage",
-            "pytest >=4.2,<5.0; python_version <  '3.0' # pytest >= 4.2",
+            "build >= 0.5.1",
+            "twine >= 1.13.0",
+            "coverage >= 5.0",
+            "pytest >=4.2,<5.0; python_version <  '3.0'",  # pytest >= 4.2
             "pytest >= 5.0; python_version >= '3.0'",
             "pytest-html >= 1.19.0,<2.0; python_version <  '3.0'",
             "pytest-html >= 2.0;         python_version >= '3.0'",
@@ -147,7 +149,7 @@ setup(
     },
     license="BSD",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
@@ -160,6 +162,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: Jython",
         "Programming Language :: Python :: Implementation :: PyPy",

@@ -1,42 +1,205 @@
-# -----------------------------------------------------------------------------
-# SECTION: ruff -- Python linter
-# -----------------------------------------------------------------------------
-# SEE: https://github.com/charliermarsh/ruff
-# Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
-[tool.ruff]
-select = ["E", "F"]
-ignore = []
+# =============================================================================
+# PACKAGE: behave
+# =============================================================================
+# SPDX-License-Identifier: BSD-2-Clause
+# DESCRIPTION:
+#   Provides a "pyproject.toml" for packaging usecases of this package.
+#
+# REASONS:
+#   * Python project will need a "pyproject.toml" soon to be installable with "pip".
+#   * Currently, duplicates information from "setup.py" here.
+#   * "setup.py" is kept until Python 2.7 support is dropped
+#   * "setup.py" is sometimes needed in some weird cases (old pip version, ...)
+#
+# SEE ALSO:
+#   * https://packaging.python.org/en/latest/tutorials/packaging-projects/
+#   * https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
+#   * https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/
+#
+# RELATED: Project-Metadata Schema
+#   * https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
+#   * https://packaging.python.org/en/latest/specifications/core-metadata/
+#   * https://pypi.org/classifiers/
+#   * https://spdx.org/licenses/preview/
+#
+# PEPs: https://peps.python.org/pep-XXXX/
+#   * PEP 508 – Dependency specification for Python Software Packages
+#   * PEP 621 – Storing project metadata in pyproject.toml => CURRENT-SPEC: declaring-project-metadata
+#   * PEP 631 – Dependency specification in pyproject.toml based on PEP 508
+#   * PEP 639 – Improving License Clarity with Better Package Metadata
+# =============================================================================
+# MAYBE: requires = ["setuptools", "setuptools-scm"]
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
-# Allow autofix for all enabled rules (when `--fix`) is provided.
-fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W",
-    "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC",
-    "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF",
-    "TCH", "TID", "TRY", "UP", "YTT"
+
+[project]
+name = "behave"
+authors = [
+    {name = "Jens Engel", email = "jenisys@noreply.github.com"},
+    {name = "Benno Rice"},
+    {name = "Richard Jones"},
 ]
-unfixable = []
-
-# Exclude a variety of commonly ignored directories.
-exclude = [
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".ruff_cache",
-    ".tox",
-    ".venv*",
-    "__pypackages__",
-    "build",
-    "dist",
-    "venv",
+maintainers = [
+    {name = "Jens Engel", email = "jenisys@noreply.github.com"},
+    {name = "Peter Bittner", email = "bittner@noreply.github.com"},
 ]
-per-file-ignores = {}
+description = "behave is behaviour-driven development, Python style"
+readme = "README.rst"
+requires-python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+keywords = [
+    "BDD", "behavior-driven-development", "bdd-framework",
+    "behave", "gherkin", "cucumber-like"
+]
+license = {text = "BSD-2-Clause"}
+# DISABLED: license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: Jython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Software Development :: Testing",
+    "License :: OSI Approved :: BSD License",
+]
+dependencies = [
+    "cucumber-tag-expressions >= 4.1.0",
+    "enum34; python_version < '3.4'",
+    "parse >= 1.18.0",
+    "parse-type >= 0.6.0",
+    "six >= 1.15.0",
+    "traceback2; python_version < '3.0'",
 
-# Same as Black.
-# WAS: line-length = 88
-line-length = 100
+    # -- PREPARED:
+    "win_unicode_console; python_version <= '3.9'",
+    "contextlib2;  python_version < '3.5'",
+    "colorama >= 0.3.7",
 
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-target-version = "py310"
+    # -- SUPPORT: "pyproject.toml" (or: "behave.toml")
+    "tomli>=1.1.0; python_version >=  '3.0' and python_version < '3.11'",
+    "toml>=0.10.2; python_version <  '3.0'",  # py27 support
+]
+dynamic = ["version"]
 
-[tool.ruff.mccabe]
-max-complexity = 10
+
+[project.urls]
+Homepage  = "https://github.com/behave/behave"
+Download  = "https://pypi.org/project/behave/"
+"Source Code" = "https://github.com/behave/behave"
+"Issue Tracker" = "https://github.com/behave/behave/issues/"
+
+
+[project.scripts]
+behave = "behave.__main__:main"
+
+[project.entry-points."distutils.commands"]
+behave_test = "setuptools_behave:behave_test"
+
+
+[project.optional-dependencies]
+develop = [
+    "build >= 0.5.1",
+    "twine >= 1.13.0",
+    "coverage >= 5.0",
+    "pytest >=4.2,<5.0; python_version <  '3.0'",
+    "pytest >= 5.0; python_version >= '3.0'",
+    "pytest-html >= 1.19.0,<2.0; python_version <  '3.0'",
+    "pytest-html >= 2.0;         python_version >= '3.0'",
+    "mock  <  4.0;   python_version <  '3.6'",
+    "mock  >= 4.0;   python_version >= '3.6'",
+    "PyHamcrest >= 2.0.2; python_version >= '3.0'",
+    "PyHamcrest <  2.0;   python_version <  '3.0'",
+    "pytest-cov",
+    "tox   >= 1.8.1,<4.0",   # -- HINT: tox >= 4.0 has breaking changes.
+    "virtualenv < 20.22.0",  # -- SUPPORT FOR: Python 2.7, Python <= 3.6
+    "invoke >=1.7.0,<2.0; python_version <  '3.6'",
+    "invoke >=1.7.0;      python_version >= '3.6'",
+    # -- HINT, was RENAMED: path.py => path (for python3)
+    "path    >= 13.1.0; python_version >= '3.5'",
+    "path.py >= 11.5.0; python_version <  '3.5'",
+    "pycmd",
+    "pathlib; python_version <= '3.4'",
+    "modernize >= 0.5",
+    "pylint",
+    "ruff; python_version >=  '3.7'",
+]
+docs = [
+    "Sphinx >=1.6",
+    "sphinx_bootstrap_theme >= 0.6.0"
+]
+formatters = [
+    "behave-html-formatter >= 0.9.10; python_version >= '3.6'",
+    "behave-html-pretty-formatter >= 1.9.1; python_version >= '3.6'"
+]
+testing = [
+    "pytest <  5.0; python_version <  '3.0'", # >= 4.2
+    "pytest >= 5.0; python_version >= '3.0'",
+    "pytest-html >= 1.19.0,<2.0; python_version <  '3.0'",
+    "pytest-html >= 2.0;         python_version >= '3.0'",
+    "mock  <  4.0;   python_version <  '3.6'",
+    "mock  >= 4.0;   python_version >= '3.6'",
+    "PyHamcrest >= 2.0.2; python_version >= '3.0'",
+    "PyHamcrest <  2.0;   python_version <  '3.0'",
+    "assertpy >= 1.1",
+
+    # -- HINT: path.py => path (python-install-package was renamed for python3)
+    "path >= 13.1.0;         python_version >= '3.5'",
+    "path.py >=11.5.0,<13.0; python_version <  '3.5'",
+    # -- PYTHON2 BACKPORTS:
+    "pathlib;    python_version <= '3.4'",
+]
+# -- BACKWORD-COMPATIBLE SECTION: Can be removed in the future
+# HINT: Package-requirements are now part of "dependencies" parameter above.
+toml = [
+    "tomli>=1.1.0; python_version >=  '3.0' and python_version < '3.11'",
+    "toml>=0.10.2; python_version <  '3.0'",
+]
+
+
+[tool.distutils.bdist_wheel]
+universal = true
+
+
+# -----------------------------------------------------------------------------
+# PACAKING TOOL SPECIFIC PARTS:
+# -----------------------------------------------------------------------------
+[tool.setuptools]
+platforms = ["any"]
+py-modules = ["setuptools_behave"]
+zip-safe = true
+
+[tool.setuptools.cmdclass]
+behave_test = "setuptools_behave.behave_test"
+
+[tool.setuptools.dynamic]
+version = {attr = "behave.version.VERSION"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["behave*"]
+exclude = ["behave4cmd0*", "tests*"]
+namespaces = false
+
+
+
+# -----------------------------------------------------------------------------
+# PYLINT:
+# -----------------------------------------------------------------------------
+[tool.pylint.messages_control]
+disable = "C0330, C0326"
+
+[tool.pylint.format]
+max-line-length = "100"

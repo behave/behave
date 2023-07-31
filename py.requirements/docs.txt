@@ -1,5 +1,5 @@
 # ============================================================================
-# BEHAVE: PYTHON PACKAGE REQUIREMENTS: For documentation generation
+# PYTHON PACKAGE REQUIREMENTS: behave -- For documentation generation
 # ============================================================================
 # REQUIRES: pip >= 8.0
 # AVOID: sphinx v4.4.0 and newer -- Problems w/ new link check suggestion warnings

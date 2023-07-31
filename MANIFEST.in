@@ -13,6 +13,7 @@ include *.rst
 include *.txt
 include *.yml
 include *.yaml
+exclude __*.txt
 include bin/behave*
 include bin/invoke*
 recursive-include .ci           *.yml
@@ -33,3 +34,4 @@ recursive-include py.requirements  *.txt *.rst
 
 prune .tox
 prune .venv*
+prune __*
