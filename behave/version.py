@@ -1,2 +1,2 @@
 # -- BEHAVE-VERSION:
-VERSION = "1.2.7.dev4"
+VERSION = "1.2.7.dev5"

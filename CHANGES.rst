@@ -54,6 +54,7 @@ DEVELOPMENT:
 * Use github-actions as CI/CD pipeline (and remove Travis as CI).
 * CI: Remove python.version=2.7 for CI pipeline
   (reason: No longer supported by Github Actions, date: 2023-07).
+* ADDED: pyproject.toml support (hint: "setup.py" will become DEPRECATED soon)
 
 CLEANUPS:
 

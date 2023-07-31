@@ -54,7 +54,7 @@ where <TAG> is the placeholder for an `existing tag`_.
 
 When installing extras, use ``<TAG>#egg=behave[...]``, e.g.::
 
-    pip install git+https://github.com/behave/behave@v1.2.7.dev4#egg=behave[toml]
+    pip install git+https://github.com/behave/behave@v1.2.7.dev5#egg=behave[toml]
 
 .. _`GitHub repository`: https://github.com/behave/behave
 .. _`existing tag`:      https://github.com/behave/behave/tags
@@ -104,7 +104,7 @@ EXAMPLE:
     name = "my-project"
     ...
     dependencies = [
-        "behave @ git+https://github.com/behave/behave.git@v1.2.7.dev4",
+        "behave @ git+https://github.com/behave/behave.git@v1.2.7.dev5",
         # OR: "behave[develop] @ git+https://github.com/behave/behave.git@main",
         ...
     ]
