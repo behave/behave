@@ -3,5 +3,7 @@
 # ============================================================================
 
 # -- OPTIONAL: For JSON validation
+# DEPRECATING: jsonschema
+# USE INSTEAD: check-jsonschema
 jsonschema >= 1.3.0
-# MAYBE NOW: check-jsonschema
+check-jsonschema

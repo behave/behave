@@ -15,9 +15,9 @@ bump2version >= 0.5.6
 
 # -- RELEASE MANAGEMENT: Push package to pypi.
 twine >= 1.13.0
+build >= 0.5.1
 
 # -- DEVELOPMENT SUPPORT:
-
 # -- PYTHON2/3 COMPATIBILITY: pypa/modernize
 # python-futurize
 modernize >= 0.5
@@ -27,7 +27,7 @@ modernize >= 0.5
 
 # -- REQUIRES: testing
 -r testing.txt
-coverage >= 4.2
+coverage >= 5.0
 pytest-cov
 tox   >= 1.8.1,<4.0     # -- HINT: tox >= 4.0 has breaking changes.
 virtualenv < 20.22.0    # -- SUPPORT FOR: Python 2.7, Python <= 3.6

@@ -1,5 +1,5 @@
 # ============================================================================
-# BEHAVE: PYTHON PACKAGE REQUIREMENTS: ci.tox.txt
+# PYTHON PACKAGE REQUIREMENTS: behave -- ci.tox.txt
 # ============================================================================
 
 -r testing.txt
