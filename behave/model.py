@@ -1773,6 +1773,19 @@ class Step(BasicStatement, Replayable):
         # self.hook_failed = False
         self.reset()
 
+        render_params = {}
+
+        for k, v in runner.context.as_flat().items():
+            try:
+                render_params['ctx:' + k] = str(v)
+            except:
+                pass
+
+        self.name = ScenarioOutlineBuilder.render_template(self.name, params=render_params)
+
+        if self.text:
+            self.text = ScenarioOutlineBuilder.render_template(self.text, params=render_params)
+
         match = runner.step_registry.find_match(self)
         if match is None:
             runner.undefined_steps.append(self)
