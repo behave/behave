@@ -25,3 +25,6 @@ git+https://github.com/jenisys/invoke-cleanup@v0.3.7
 
 # -- SECTION: develop
 requests
+
+# -- DEVELOPMENT SUPPORT: Check "invoke.yaml" config-file(s)
+yamllint >= 1.32.0; python_version >= '3.7'
