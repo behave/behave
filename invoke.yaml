@@ -9,50 +9,55 @@
 # =====================================================
 # MAYBE: tasks: auto_dash_names: false
 
+---
 project:
-    name: behave
+  name: behave
 
 run:
-    echo: true
-    # DISABLED: pty:  true
+  echo: true
 
 sphinx:
-    sourcedir: "docs"
-    destdir:   "build/docs"
-    language: en
-    languages:
-      - de
-      # PREPARED: - zh-CN
+  sourcedir: "docs"
+  destdir: "build/docs"
+  language: en
+  languages:
+    - en
+    - de
+    # PREPARED: - zh-CN
 
 cleanup:
-    extra_directories:
-      - "build"
-      - "dist"
-      - "__WORKDIR__"
-      - reports
+  extra_directories:
+    - "build"
+    - "dist"
+    - "__WORKDIR__"
+    - reports
 
-    extra_files:
-      - "etc/gherkin/gherkin*.json.SAVED"
-      - "etc/gherkin/i18n.py"
+  extra_files:
+    - "etc/gherkin/gherkin*.json.SAVED"
+    - "etc/gherkin/i18n.py"
 
 cleanup_all:
-    extra_directories:
-      - .hypothesis
-      - .pytest_cache
-      - .direnv
+  extra_directories:
+    - .hypothesis
+    - .pytest_cache
+    - .direnv
+    - .tox
+    - ".venv*"
 
-    extra_files:
-      - "**/testrun*.json"
-      - ".done.*"
-      - "*.lock"
-      - "*.log"
-      - .coverage
-      - rerun.txt
+  extra_files:
+    - "**/testrun*.json"
+    - ".done.*"
+    - "*.lock"
+    - "*.log"
+    - .coverage
+    - rerun.txt
 
 behave_test:
-    scopes:
-      - features
-      - tools/test-features
-      - issue.features
-    args: features tools/test-features issue.features
-
+  scopes:
+    - features
+    - tools/test-features
+    - issue.features
+  args:
+    - features
+    - tools/test-features
+    - issue.features

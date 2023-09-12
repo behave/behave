@@ -6,6 +6,8 @@ Invoke test tasks.
 from __future__ import print_function
 import os.path
 import sys
+
+import six
 from invoke import task, Collection
 
 # -- TASK-LIBRARY:
@@ -137,9 +139,14 @@ def select_by_prefix(args, prefixes):
 
 def grouped_by_prefix(args, prefixes):
     """Group behave args by (directory) scope into multiple test-runs."""
+    if isinstance(args, six.string_types):
+        args = args.strip().split()
+    if not isinstance(args, list):
+        raise TypeError("args.type=%s (expected: list, string)" % type(args))
+
     group_args = []
     current_scope = None
-    for arg in args.strip().split():
+    for arg in args:
         assert not arg.startswith("-"), "REQUIRE: arg, not options"
         scope = select_prefix_for(arg, prefixes)
         if scope != current_scope:
@@ -180,7 +187,7 @@ namespace.configure({
     # "behave_test": behave.namespace._configuration["behave_test"],
     "behave_test": {
         "scopes":   ["features", "issue.features"],
-        "args":     "features issue.features",
+        "args":     ["features", "issue.features"],
         "format":   "progress",
         "options":  "",  # -- NOTE:  Overide in configfile "invoke.yaml"
         "coverage_options": "",
