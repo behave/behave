@@ -4,7 +4,6 @@ This module provides Runner class to run behave feature files (or model elements
 """
 
 from __future__ import absolute_import, print_function, with_statement
-
 import contextlib
 import os.path
 import sys
@@ -191,6 +190,44 @@ class Context(object):
         .. versionadded:: 1.2.7
         """
         self._set_root_attribute("aborted", True)
+
+    def use_or_assign_param(self, name, value):
+        """Use an existing context parameter (aka: attribute) or
+        assign a value to new context parameter (if it does not exist yet).
+
+        :param name:   Context parameter name (as string)
+        :param value:  Parameter value for new parameter.
+        :return: Existing or newly created parameter.
+
+        .. versionadded:: 1.2.7
+        """
+        if name not in self:
+            # -- CASE: New, missing param -- Assign parameter-value.
+            setattr(self, name, value)
+            return value
+        # -- OTHERWISE: Use existing param
+        return getattr(self, name, None)
+
+
+    def use_or_create_param(self, name, factory_func, *args, **kwargs):
+        """Use an existing context parameter (aka: attribute) or
+        create a new parameter if it does not exist yet.
+
+        :param name:   Context parameter name (as string)
+        :param factory_func: Factory function, used if parameter is created.
+        :param args: Positional args for ``factory_func()`` on create.
+        :param kwargs: Named args for ``factory_func()`` on create.
+        :return: Existing or newly created parameter.
+
+        .. versionadded:: 1.2.7
+        """
+        if name not in self:
+            # -- CASE: New, missing param -- Create it.
+            param_value = factory_func(*args, **kwargs)
+            setattr(self, name, param_value)
+            return param_value
+        # -- OTHERWISE: Use existing param
+        return getattr(self, name, None)
 
     @staticmethod
     def ignore_cleanup_error(context, cleanup_func, exception):
