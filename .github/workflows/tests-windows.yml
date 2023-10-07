@@ -37,9 +37,9 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
-        python-version: ["3.11", "3.10", "3.9"]
+        python-version: ["3.12", "3.11", "3.10", "3.9"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # DISABLED: name: Setup Python ${{ matrix.python-version }} on platform=${{ matrix.os }}
       - uses: actions/setup-python@v4
         with:
