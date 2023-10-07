@@ -233,16 +233,13 @@ Feature: User-specific Configuration Data (userdata)
         """
     And a file named "features/environment.py" with:
         """
-        try:
-            import configparser
-        except:
-            import ConfigParser as configparser   # -- PY2
+        from behave.configuration import ConfigParser
 
         def before_all(context):
             userdata = context.config.userdata
             configfile = userdata.get("configfile", "userconfig.ini")
             section = userdata.get("config_section", "behave.userdata")
-            parser = configparser.SafeConfigParser()
+            parser = ConfigParser()
             parser.read(configfile)
             if parser.has_section(section):
                 userdata.update(parser.items(section))
