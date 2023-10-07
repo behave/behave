@@ -45,6 +45,21 @@ def use_current_directory(directory_path):
         os.chdir(initial_directory)
 
 
+def make_exception_message4abstract_method(class_name, method_name):
+    """
+    Creates a regexp matcher object for the TypeError exception message
+    that is raised if an abstract method is encountered.
+    """
+    # -- RAISED AS: TypeError
+    # UNTIL python 3.11: Can't instantiate abstract class <CLASS> with abstract method <METHOD>
+    # FROM  python 3.12: Can't instantiate abstract class <CLASS> without an implementation for abstract method '<METHOD>'
+    message = """
+Can't instantiate abstract class {class_name} (with|without an implementation for) abstract method(s)? (')?{method_name}(')?
+""".format(class_name=class_name, method_name=method_name).strip()
+    return message
+
+
+
 # -----------------------------------------------------------------------------
 # TEST SUPPORT: TEST RUNNER CLASS CANDIDATES -- GOOD EXAMPLES
 # -----------------------------------------------------------------------------
@@ -264,8 +279,7 @@ custom = {this_module}:CustomTestRunner
             config = Configuration(["--runner=%s:%s" % (self.THIS_MODULE_NAME, class_name)])
             RunnerPlugin().make_runner(config)
 
-        expected = "Can't instantiate abstract class %s with abstract method(s)? __init__" % \
-                   class_name
+        expected = make_exception_message4abstract_method(class_name, method_name="__init__")
         assert exc_info.type is TypeError
         assert exc_info.match(expected)
 
@@ -275,8 +289,7 @@ custom = {this_module}:CustomTestRunner
             config = Configuration(["--runner=%s:%s" % (self.THIS_MODULE_NAME, class_name)])
             RunnerPlugin().make_runner(config)
 
-        expected = "Can't instantiate abstract class %s with abstract method(s)? run" % \
-                   class_name
+        expected = make_exception_message4abstract_method(class_name, method_name="run")
         assert exc_info.type is TypeError
         assert exc_info.match(expected)
 
@@ -287,7 +300,6 @@ custom = {this_module}:CustomTestRunner
             config = Configuration(["--runner=%s:%s" % (self.THIS_MODULE_NAME, class_name)])
             RunnerPlugin().make_runner(config)
 
-        expected = "Can't instantiate abstract class %s with abstract method(s)? undefined_steps" % \
-                   class_name
+        expected = make_exception_message4abstract_method(class_name, "undefined_steps")
         assert exc_info.type is TypeError
         assert exc_info.match(expected)

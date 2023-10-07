@@ -87,8 +87,9 @@ CLARIFICATION:
 
 FIXED:
 
-* FIXED: Some tests related to python3.11
-* FIXED: Some tests related to python3.9
+* FIXED: Some tests for python-3.12
+* FIXED: Some tests related to python-3.11
+* FIXED: Some tests related to python-3.9
 * FIXED: active-tag logic if multiple tags with same category exists.
 * issue #1120: Logging ignoring level set in setup_logging (submitted by: j7an)
 * issue #1070: Color support detection: Fails for WindowsTerminal (provided by: jenisys)

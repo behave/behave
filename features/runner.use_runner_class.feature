@@ -325,19 +325,27 @@ Feature: User-provided Test Runner Class (extension-point)
         | BAD_CLASS        | behave_example.bad_runner:NotRunner2        | InvalidClassError: is not a subclass-of 'behave.api.runner:ITestRunner'  | Runner class does not behave properly.          |
         | BAD_FUNCTION     | behave_example.bad_runner:return_none       | InvalidClassError: is not a class                                        | runner_class is a function.                     |
         | BAD_VALUE        | behave_example.bad_runner:CONSTANT_1        | InvalidClassError: is not a class                                        | runner_class is a constant number.              |
-        | INCOMPLETE_CLASS | behave_example.incomplete:IncompleteRunner1 | TypeError: Can't instantiate abstract class IncompleteRunner1 with abstract method(s)? __init__ | Constructor is missing  |
-        | INCOMPLETE_CLASS | behave_example.incomplete:IncompleteRunner2 | TypeError: Can't instantiate abstract class IncompleteRunner2 with abstract method(s)? run      | run() method is missing |
         | INVALID_CLASS    | behave_example.incomplete:IncompleteRunner4 | InvalidClassError: run\(\) is not callable                                 | run is a bool-value (no method) |
 
-      @use.with_python.min_version=3.3
-      Examples: BAD_CASE2
+      Examples: BAD_CASE (python <= 3.11)
         | syndrome         | runner_class                                | failure_message                                                          | case                                            |
-        | INCOMPLETE_CLASS | behave_example.incomplete:IncompleteRunner3 | TypeError: Can't instantiate abstract class IncompleteRunner3 with abstract method(s)? undefined_steps  | undefined_steps property is missing |
+        | INCOMPLETE_CLASS | behave_example.incomplete:IncompleteRunner1 | TypeError: Can't instantiate abstract class IncompleteRunner1 (with\|without an implementation for) abstract method(s)? (')?__init__(')? | Constructor is missing  |
+        | INCOMPLETE_CLASS | behave_example.incomplete:IncompleteRunner2 | TypeError: Can't instantiate abstract class IncompleteRunner2 (with\|without an implementation for) abstract method(s)? (')?run(')?      | run() method is missing |
+
+      @use.with_python.min_version=3.3
+      # DISABLED: @use.with_python.max_version=3.11
+      Examples: BAD_CASE4
+        | syndrome         | runner_class                                | failure_message                                                          | case                                            |
+        | INCOMPLETE_CLASS | behave_example.incomplete:IncompleteRunner3 | TypeError: Can't instantiate abstract class IncompleteRunner3 (with\|without an implementation for) abstract method(s)? (')?undefined_steps(')? | undefined_steps property is missing |
 
         # -- PYTHON VERSION SENSITIVITY on INCOMPLETE_CLASS with API TypeError exception:
         # Since Python 3.9: "... methods ..." is only used in plural case (if multiple methods are missing).
         #   "TypeError: Can't instantiate abstract class <CLASS_NAME> with abstract method <METHOD_NAME>" ( for Python.version >= 3.9)
         #   "TypeError: Can't instantiate abstract class <CLASS_NAME> with abstract methods <METHOD_NAME>" (for Python.version < 3.9)
+        #
+        # Since Python 3.12:
+        # NEW: "TypeError: Can't instantiate abstract class <CLASS_NAME> without implementation for abstract method '<METHOD_NAME>'"
+        # OLD: "TypeError: Can't instantiate abstract class <CLASS_NAME> with abstract methods <METHOD_NAME>" (for Python.version < 3.12)
 
 
   Rule: Use own Test Runner-by-Name (BAD CASES)
@@ -450,11 +458,11 @@ Feature: User-provided Test Runner Class (extension-point)
 
       Examples: BAD_CASE
         | runner_name                 | runner_class                                | syndrome            | problem_description                                   | case                                            |
-        | NAME_FOR_INCOMPLETE_CLASS_1 | behave_example.incomplete:IncompleteRunner1 | TypeError           | Can't instantiate abstract class IncompleteRunner1 with abstract method(s)? __init__ | Constructor is missing  |
-        | NAME_FOR_INCOMPLETE_CLASS_2 | behave_example.incomplete:IncompleteRunner2 | TypeError           | Can't instantiate abstract class IncompleteRunner2 with abstract method(s)? run      | run() method is missing |
+        | NAME_FOR_INCOMPLETE_CLASS_1 | behave_example.incomplete:IncompleteRunner1 | TypeError           | Can't instantiate abstract class IncompleteRunner1 (with\|without an implementation for) abstract method(s)? (')?__init__(')? | Constructor is missing  |
+        | NAME_FOR_INCOMPLETE_CLASS_2 | behave_example.incomplete:IncompleteRunner2 | TypeError           | Can't instantiate abstract class IncompleteRunner2 (with\|without an implementation for) abstract method(s)? (')?run(')?      | run() method is missing |
         | NAME_FOR_INCOMPLETE_CLASS_4 | behave_example.incomplete:IncompleteRunner4 | InvalidClassError   | run\(\) is not callable                               | run is a bool-value (no method) |
 
       @use.with_python.min_version=3.3
       Examples: BAD_CASE2
         | runner_name                 | runner_class                                | syndrome            | problem_description                                   | case                                            |
-        | NAME_FOR_INCOMPLETE_CLASS_3 | behave_example.incomplete:IncompleteRunner3 | TypeError           | Can't instantiate abstract class IncompleteRunner3 with abstract method(s)? undefined_steps | missing-property |
+        | NAME_FOR_INCOMPLETE_CLASS_3 | behave_example.incomplete:IncompleteRunner3 | TypeError           | Can't instantiate abstract class IncompleteRunner3 (with\|without an implementation for) abstract method(s)? (')?undefined_steps(')? | missing-property |
