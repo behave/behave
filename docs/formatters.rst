@@ -100,14 +100,51 @@ More Formatters
 
 The following contributed formatters are currently known:
 
-============== =========================================================================
-Name           Description
-============== =========================================================================
-allure         :pypi:`allure-behave`, an Allure formatter for behave.
-html           :pypi:`behave-html-formatter`, a simple HTML formatter for behave.
-teamcity       :pypi:`behave-teamcity`, a formatter for JetBrains TeamCity CI testruns
-               with behave.
-============== =========================================================================
+==============         =========================================================================
+Name                   Description
+==============         =========================================================================
+allure                 :pypi:`allure-behave`, an Allure formatter for behave.
+html                   :pypi:`behave-html-formatter` & `behave-html-pretty-formatter`, 
+                        2 simple HTML formatters for behave.
+teamcity               :pypi:`behave-teamcity`, a formatter for JetBrains TeamCity CI testruns
+                       with behave.
+==============         =========================================================================
+
+EXAMPLE_Html-Pretty:
+Installation
+    python3 -m pip install behave-html-pretty-formatter
+Usage
+    To use it with behave create behave.ini file in project folder (or in home) with following content:
+    
+    # -- FILE: behave.ini
+    # Define ALIAS for PrettyHTMLFormatter.
+    [behave.formatters]
+    html-pretty = behave_html_pretty_formatter:PrettyHTMLFormatter
+    
+    # Optional configuration of PrettyHTMLFormmater
+    # also possible to use "behave ... -D behave.formatter.html-pretty.{setting}={value}".
+    [behave.userdata]
+    behave.formatter.html-pretty.title_string = Test Suite Reporter
+    # Example usecase, print {before/after}_scenarios as steps with attached data.
+    behave.formatter.html-pretty.pseudo_steps = false
+    # Structure of the result html page readable(pretty) or condensed.
+    behave.formatter.html-pretty.pretty_output = true
+    # The '%' must be escaped in ini format.
+    behave.formatter.html-pretty.date_format = %%d-%%m-%%Y %%H:%%M:%%S
+    # Defines if the summary is expanded upon start.
+    behave.formatter.html-pretty.show_summary = false
+    # Defines if the user is interested in what steps are not executed.
+    behave.formatter.html-pretty.show_unexecuted_steps = true
+    
+    # Following will be formatted in summary section as "tester: worker1".
+    behave.additional-info.tester=worker1
+    # Can be used multiple times.
+    behave.additional-info.location=lab2
+    and then use it by running behave with -f/--format parameter, e.g.
+    
+    behave -f help
+    behave -f html-pretty
+    behave -f html-pretty -o behave-report.html
 
 The usage of a custom formatter can be simplified if a formatter alias is defined for.
 
