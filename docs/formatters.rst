@@ -104,16 +104,16 @@ The following contributed formatters are currently known:
 Name                   Description
 ==============         =========================================================================
 allure                 :pypi:`allure-behave`, an Allure formatter for behave.
-html                   :pypi:`behave-html-formatter` & `behave-html-pretty-formatter`, 
-                        2 simple HTML formatters for behave.
+html                   :pypi:`behave-html-formatter`, a simple HTML formatters for behave.
+html-pretty            :pypi:`behave-html-pretty-formatter`, a pretty HTML formatter for behave.
 teamcity               :pypi:`behave-teamcity`, a formatter for JetBrains TeamCity CI testruns
                        with behave.
 ==============         =========================================================================
 
-EXAMPLE_Html-Pretty:
-Installation
-    python3 -m pip install behave-html-pretty-formatter
-Usage
+The useage of a html pretty formatter:
+
+.. code-block:: ini
+
     To use it with behave create behave.ini file in project folder (or in home) with following content:
     
     # -- FILE: behave.ini
@@ -145,6 +145,7 @@ Usage
     behave -f help
     behave -f html-pretty
     behave -f html-pretty -o behave-report.html
+
 
 The usage of a custom formatter can be simplified if a formatter alias is defined for.
 
