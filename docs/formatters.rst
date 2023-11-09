@@ -138,7 +138,7 @@ For example:
 .. code-block:: python
 
     # -- FILE: features/steps/screenshot_example_steps.py
-    from behave import fiven, when
+    from behave import given, when
     from behave4example.web_browser.util import take_screenshot_and_attach_to_scenario
 
     @given(u'I open the Google webpage')
