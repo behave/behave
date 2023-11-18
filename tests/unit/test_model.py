@@ -762,3 +762,9 @@ class TestModelRow(unittest.TestCase):
         assert data1["name"] == u"Alice"
         assert data1["sex"] == u"female"
         assert data1["age"] == u"12"
+
+    def test_contains(self):
+        assert "name" in self.row
+        assert "sex" in self.row
+        assert "age" in self.row
+        assert "non-existent-header" not in self.row

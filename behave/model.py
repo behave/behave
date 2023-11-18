@@ -2081,6 +2081,9 @@ class Row(object):
                 raise KeyError('"%s" is not a row heading' % name)
         return self.cells[index]
 
+    def __contains__(self, item):
+        return item in self.headings
+
     def __repr__(self):
         return "<Row %r>" % (self.cells,)
 
