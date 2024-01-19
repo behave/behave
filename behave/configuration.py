@@ -783,7 +783,7 @@ class Configuration(object):
         # -- STEP: Load config-file(s) and parse command-line
         command_args = self.make_command_args(command_args, verbose=verbose)
         if load_config:
-            load_configuration(self.defaults, verbose=verbose)
+            load_configuration(self.defaults, verbose=self.verbose)
         parser = setup_parser()
         parser.set_defaults(**self.defaults)
         args = parser.parse_args(command_args)
