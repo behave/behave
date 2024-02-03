@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       # DISABLED: name: Setup Python ${{ matrix.python-version }} on platform=${{ matrix.os }}
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
