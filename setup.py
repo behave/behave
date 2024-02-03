@@ -111,8 +111,16 @@ setup(
     },
     extras_require={
         "docs": [
-            "sphinx >= 1.6",
-            "sphinx_bootstrap_theme >= 0.6"
+            "sphinx >= 1.6,<4.4",
+            "sphinx_bootstrap_theme >= 0.6",
+            # -- CONSTRAINTS UNTIL: sphinx > 5.0 can be used -- 2024-01
+            # PROBLEM: sphinxcontrib-applehelp v1.0.8 requires sphinx > 5.0
+            # SEE: https://stackoverflow.com/questions/77848565/sphinxcontrib-applehelp-breaking-sphinx-builds-with-sphinx-version-less-than-5-0
+            "sphinxcontrib-applehelp==1.0.4",
+            "sphinxcontrib-devhelp==1.0.2",
+            "sphinxcontrib-htmlhelp==2.0.1",
+            "sphinxcontrib-qthelp==1.0.3",
+            "sphinxcontrib-serializinghtml==1.1.5",
         ],
         "develop": [
             "build >= 0.5.1",
