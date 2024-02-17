@@ -8,7 +8,7 @@
 #  * http://www.pip-installer.org/
 # ============================================================================
 
-invoke >=1.7.0,<2.0; python_version <  '3.6'
+invoke >=2.2,<2.3; python_version <  '3.6'
 invoke >=1.7.0;      python_version >= '3.6'
 pycmd
 six >= 1.15.0
