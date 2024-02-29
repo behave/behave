@@ -1773,6 +1773,11 @@ class Step(BasicStatement, Replayable):
         # self.hook_failed = False
         self.reset()
 
+        skip_step_untested = False
+        runner.run_hook("before_step", runner.context, self)
+        if self.hook_failed:
+            skip_step_untested = True
+            
         match = runner.step_registry.find_match(self)
         if match is None:
             runner.undefined_steps.append(self)
@@ -1795,11 +1800,6 @@ class Step(BasicStatement, Replayable):
 
         if capture:
             runner.start_capture()
-
-        skip_step_untested = False
-        runner.run_hook("before_step", runner.context, self)
-        if self.hook_failed:
-            skip_step_untested = True
 
         start = time.time()
         if not skip_step_untested:
