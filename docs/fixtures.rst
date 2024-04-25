@@ -253,8 +253,6 @@ provide a slightly different fixture implementation:
     An fixture-setup-error that occurs when the browser object is created,
     is not covered by these solutions and not so easy to solve.
 
-
-
 Composite Fixtures
 ------------------------------------------------------------------------------
 
@@ -306,4 +304,13 @@ Solution 2:
         ])
         return the_composite
 
+Understanding yielded and return values in Fixtures
+------------------------------------------------------------------------------
 
+The yielded or returned value is not used by the framework or passed into the
+test steps. Values to be used by steps should be explicitly set in the context
+object or passed in some other way. 
+
+When using fixtures programmatically via use_fixture and related calls, the 
+returned or yielded values can be utilized. The values may be useful to tag composition or interception code but they are not consumed by or passed by the framework to 
+a tagged scenario or feature.
