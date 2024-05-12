@@ -5,10 +5,6 @@
 # -- BUILD-SYSTEM: invoke
 -r invoke.txt
 
-# -- HINT: path.py => path (python-install-package was renamed for python3)
-path.py >= 11.5.0; python_version <  '3.5'
-path >= 13.1.0;    python_version >= '3.5'
-
 # -- CONFIGURATION MANAGEMENT (helpers):
 # FORMER: bumpversion >= 0.4.0
 bump2version >= 0.5.6
