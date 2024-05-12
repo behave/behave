@@ -2,29 +2,34 @@
 behave
 ======
 
-
-.. image:: https://github.com/behave/behave/actions/workflows/tests.yml/badge.svg
-    :target: https://github.com/behave/behave/actions/workflows/tests.yml
-    :alt: CI Build Status
-
-.. image:: https://readthedocs.org/projects/behave/badge/?version=latest
-    :target: http://behave.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
-
-.. image:: https://img.shields.io/pypi/v/behave.svg
+.. |badge.latest_version| image:: https://img.shields.io/pypi/v/behave.svg
     :target: https://pypi.python.org/pypi/behave
     :alt: Latest Version
 
-.. image:: https://img.shields.io/pypi/l/behave.svg
+.. |badge.license| image:: https://img.shields.io/pypi/l/behave.svg
     :target: https://pypi.python.org/pypi/behave/
     :alt: License
 
-.. image:: https://badges.gitter.im/join_chat.svg
-   :alt: Join the chat at https://gitter.im/behave/behave
+.. |badge.CI_status| image:: https://github.com/behave/behave/actions/workflows/tests.yml/badge.svg
+    :target: https://github.com/behave/behave/actions/workflows/tests.yml
+    :alt: CI Build Status
+
+.. |badge.docs_status| image:: https://readthedocs.org/projects/behave/badge/?version=latest
+    :target: http://behave.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
+.. |badge.discussions| image:: https://img.shields.io/badge/chat-github_discussions-darkgreen
+   :target: https://github.com/behave/behave/discussions
+   :alt: Discussions at https://github.com/behave/behave/discussions
+
+.. |badge.gitter| image:: https://badges.gitter.im/join_chat.svg
    :target: https://app.gitter.im/#/room/#behave_behave:gitter.im
+   :alt: Chat at https://gitter.im/behave/behave
 
 
 .. |logo| image:: https://raw.github.com/behave/behave/master/docs/_static/behave_logo1.png
+
+|badge.latest_version| |badge.license| |badge.CI_status| |badge.docs_status| |badge.discussions| |badge.gitter|
 
 behave is behavior-driven development, Python style.
 
