@@ -5,7 +5,7 @@ SEE: https://github.com/behave/behave/issues/1054
 from __future__ import absolute_import, print_function
 from behave.__main__ import run_behave
 from behave.configuration import Configuration
-from behave.tag_expression import make_tag_expression
+from behave.tag_expression.builder import make_tag_expression
 import pytest
 from assertpy import assert_that
 

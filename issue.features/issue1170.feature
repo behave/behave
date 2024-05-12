@@ -4,8 +4,8 @@ Feature: Issue #1170 -- Tag Expression Auto Detection Problem
   . DESCRIPTION OF SYNDROME (OBSERVED BEHAVIOR):
   . TagExpression v2 wildcard matching does not work if one dashed-tag is used.
   .
-  . WORKAROUND:
-  . * Use TagExpression auto-detection in strict mode
+  . WORKAROUND-UNTIL-FIXED:
+  . * Use TagExpression auto-detection in v2 mode (or strict mode)
 
 
   Background: Setup
@@ -31,31 +31,62 @@ Feature: Issue #1170 -- Tag Expression Auto Detection Problem
           Then some step passes
       """
 
-  @xfailed
-  Scenario: Use one TagExpression Term with Wildcard -- BROKEN
+
+  Scenario: Use one TagExpression Term with Wildcard in default mode (AUTO-DETECT)
     When I run `behave --tags="file-test*" features/syndrome_1170.feature`
     Then it should pass with:
       """
-      0 features passed, 0 failed, 1 skipped
-      0 scenarios passed, 0 failed, 3 skipped
+      2 scenarios passed, 0 failed, 1 skipped
       """
-    And note that "TagExpression auto-detection seems to select TagExpressionV1"
-    And note that "no scenarios is selected/executed"
-    But note that "first two scenarios should have been executed"
+    And note that "TagExpression auto-detection should to select TagExpressionV2"
+    And note that "first two scenarios should have been executed"
+    But note that "last scenario should be skipped"
 
 
-  Scenario: Use one TagExpression Term with Wildcard -- Strict Mode
+  Scenario: Use one TagExpression Term with Wildcard in AUTO Mode (explicit: auto-detect)
     Given a file named "behave.ini" with:
       """
-      # -- ENSURE: Only TagExpression v2 is used (with auto-detection in strict mode)
+      # -- ENSURE: Use TagExpression v1 or v2 (with auto-detection)
+      [behave]
+      tag_expression_protocol = auto_detect
+      """
+    When I run `behave --tags="file-test*" features/syndrome_1170.feature`
+    Then it should pass with:
+      """
+      2 scenarios passed, 0 failed, 1 skipped
+      """
+    And note that "TagExpression auto-detection should to select TagExpressionV2"
+    And note that "first two scenarios should have been executed"
+    But note that "last scenario should be skipped"
+
+
+  Scenario: Use one TagExpression Term with Wildcard in V2 Mode
+    Given a file named "behave.ini" with:
+      """
+      # -- ENSURE: Only TagExpressions v2 is used
+      [behave]
+      tag_expression_protocol = v2
+      """
+    When I run `behave --tags="file-test*" features/syndrome_1170.feature`
+    Then it should pass with:
+      """
+      2 scenarios passed, 0 failed, 1 skipped
+      """
+    And note that "TagExpressions v2 are used"
+    And note that "first two scenarios are selected/executed"
+
+
+  Scenario: Use one TagExpression Term with Wildcard in STRICT Mode
+    Given a file named "behave.ini" with:
+      """
+      # -- ENSURE: Only TagExpressions v2 is used with strict mode
       [behave]
       tag_expression_protocol = strict
       """
     When I run `behave --tags="file-test*" features/syndrome_1170.feature`
     Then it should pass with:
       """
-      1 feature passed, 0 failed, 0 skipped
       2 scenarios passed, 0 failed, 1 skipped
       """
-    And note that "TagExpression auto-detection seems to select TagExpressionV2"
+    And note that "TagExpressions v2 are used"
     And note that "first two scenarios are selected/executed"

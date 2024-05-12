@@ -9,7 +9,7 @@ from __future__ import absolute_import
 import itertools
 from six.moves import range
 import pytest
-from behave.tag_expression import TagExpression
+from behave.tag_expression.v1 import TagExpression as TagExpressionV1
 
 
 has_combinations = hasattr(itertools, "combinations")
@@ -96,7 +96,7 @@ if has_combinations:
         tag_combinations = all_combinations(tags)
 
         def test_matches__foo(self):
-            tag_expression = TagExpression(["@foo"])
+            tag_expression = TagExpressionV1(["@foo"])
             expected = [
                 # -- WITH 0 tags: None
                 "@foo",
@@ -106,7 +106,7 @@ if has_combinations:
                                                self.tag_combinations, expected)
 
         def test_matches__not_foo(self):
-            tag_expression = TagExpression(["-@foo"])
+            tag_expression = TagExpressionV1(["-@foo"])
             expected = [
                 NO_TAGS,
                 "@other",
@@ -127,7 +127,7 @@ if has_combinations:
 
         # -- LOGICAL-OR CASES:
         def test_matches__foo_or_bar(self):
-            tag_expression = TagExpression(["@foo,@bar"])
+            tag_expression = TagExpressionV1(["@foo,@bar"])
             expected = [
                 # -- WITH 0 tags: None
                 "@foo", "@bar",
@@ -138,7 +138,7 @@ if has_combinations:
                                                self.tag_combinations, expected)
 
         def test_matches__foo_or_not_bar(self):
-            tag_expression = TagExpression(["@foo,-@bar"])
+            tag_expression = TagExpressionV1(["@foo,-@bar"])
             expected = [
                 NO_TAGS,
                 "@foo", "@other",
@@ -149,7 +149,7 @@ if has_combinations:
                                                self.tag_combinations, expected)
 
         def test_matches__not_foo_or_not_bar(self):
-            tag_expression = TagExpression(["-@foo,-@bar"])
+            tag_expression = TagExpressionV1(["-@foo,-@bar"])
             expected = [
                 NO_TAGS,
                 "@foo", "@bar", "@other",
@@ -160,7 +160,7 @@ if has_combinations:
 
         # -- LOGICAL-AND CASES:
         def test_matches__foo_and_bar(self):
-            tag_expression = TagExpression(["@foo", "@bar"])
+            tag_expression = TagExpressionV1(["@foo", "@bar"])
             expected = [
                 # -- WITH 0 tags: None
                 # -- WITH 1 tag:  None
@@ -171,7 +171,7 @@ if has_combinations:
                                                self.tag_combinations, expected)
 
         def test_matches__foo_and_not_bar(self):
-            tag_expression = TagExpression(["@foo", "-@bar"])
+            tag_expression = TagExpressionV1(["@foo", "-@bar"])
             expected = [
                 # -- WITH 0 tags: None
                 # -- WITH 1 tag:  None
@@ -183,7 +183,7 @@ if has_combinations:
                                                self.tag_combinations, expected)
 
         def test_matches__not_foo_and_not_bar(self):
-            tag_expression = TagExpression(["-@foo", "-@bar"])
+            tag_expression = TagExpressionV1(["-@foo", "-@bar"])
             expected = [
                 NO_TAGS,
                 "@other",
@@ -211,7 +211,7 @@ if has_combinations:
 
         # -- LOGICAL-OR CASES:
         def test_matches__foo_or_bar_or_zap(self):
-            tag_expression = TagExpression(["@foo,@bar,@zap"])
+            tag_expression = TagExpressionV1(["@foo,@bar,@zap"])
             matched = [
                 # -- WITH 0 tags: None
                 # -- WITH 1 tag:
@@ -242,7 +242,7 @@ if has_combinations:
                                                self.tag_combinations, mismatched)
 
         def test_matches__foo_or_not_bar_or_zap(self):
-            tag_expression = TagExpression(["@foo,-@bar,@zap"])
+            tag_expression = TagExpressionV1(["@foo,-@bar,@zap"])
             matched = [
                 # -- WITH 0 tags:
                 NO_TAGS,
@@ -275,7 +275,7 @@ if has_combinations:
 
 
         def test_matches__foo_or_not_bar_or_not_zap(self):
-            tag_expression = TagExpression(["foo,-@bar,-@zap"])
+            tag_expression = TagExpressionV1(["foo,-@bar,-@zap"])
             matched = [
                 # -- WITH 0 tags:
                 NO_TAGS,
@@ -306,7 +306,7 @@ if has_combinations:
                                                self.tag_combinations, mismatched)
 
         def test_matches__not_foo_or_not_bar_or_not_zap(self):
-            tag_expression = TagExpression(["-@foo,-@bar,-@zap"])
+            tag_expression = TagExpressionV1(["-@foo,-@bar,-@zap"])
             matched = [
                 # -- WITH 0 tags:
                 NO_TAGS,
@@ -337,7 +337,7 @@ if has_combinations:
                                                self.tag_combinations, mismatched)
 
         def test_matches__foo_and_bar_or_zap(self):
-            tag_expression = TagExpression(["@foo", "@bar,@zap"])
+            tag_expression = TagExpressionV1(["@foo", "@bar,@zap"])
             matched = [
                 # -- WITH 0 tags:
                 # -- WITH 1 tag:
@@ -368,7 +368,7 @@ if has_combinations:
                                                self.tag_combinations, mismatched)
 
         def test_matches__foo_and_bar_or_not_zap(self):
-            tag_expression = TagExpression(["@foo", "@bar,-@zap"])
+            tag_expression = TagExpressionV1(["@foo", "@bar,-@zap"])
             matched = [
                 # -- WITH 0 tags:
                 # -- WITH 1 tag:
@@ -401,7 +401,7 @@ if has_combinations:
                                                self.tag_combinations, mismatched)
 
         def test_matches__foo_and_bar_and_zap(self):
-            tag_expression = TagExpression(["@foo", "@bar", "@zap"])
+            tag_expression = TagExpressionV1(["@foo", "@bar", "@zap"])
             matched = [
                 # -- WITH 0 tags:
                 # -- WITH 1 tag:
@@ -432,7 +432,7 @@ if has_combinations:
                                                self.tag_combinations, mismatched)
 
         def test_matches__not_foo_and_not_bar_and_not_zap(self):
-            tag_expression = TagExpression(["-@foo", "-@bar", "-@zap"])
+            tag_expression = TagExpressionV1(["-@foo", "-@bar", "-@zap"])
             matched = [
                 # -- WITH 0 tags:
                 NO_TAGS,

@@ -574,10 +574,10 @@ Configuration Parameters
 
 .. describe:: tag_expression_protocol : TagExpressionProtocol (Enum)
 
-    Specify the tag-expression protocol to use (default: any). With "any",
-    tag-expressions v2 and v2 are supported (in auto-detect mode).
-    With "strict", only tag-expressions v2 is supported (better error
-    diagnostics).
+    Specify the tag-expression protocol to use (default: auto_detect).
+    With "v1", only tag-expressions v1 are supported. With "v2", only
+    tag-expressions v2 are supported. With "auto_detect", tag-
+    expressions v1 and v2 are auto-detected.
 
 .. index::
     single: configuration param; quiet

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
-from behave.tag_expression import TagExpression
+from behave.tag_expression.v1 import TagExpression as TagExpressionV1
 import pytest
 import unittest
 
@@ -11,7 +11,7 @@ import unittest
 # ----------------------------------------------------------------------------
 class TestTagExpressionNoTags(unittest.TestCase):
     def setUp(self):
-        self.e = TagExpression([])
+        self.e = TagExpressionV1([])
 
     def test_should_match_empty_tags(self):
         assert self.e.check([])
@@ -22,7 +22,7 @@ class TestTagExpressionNoTags(unittest.TestCase):
 
 class TestTagExpressionFoo(unittest.TestCase):
     def setUp(self):
-        self.e = TagExpression(['foo'])
+        self.e = TagExpressionV1(['foo'])
 
     def test_should_not_match_no_tags(self):
         assert not self.e.check([])
@@ -36,7 +36,7 @@ class TestTagExpressionFoo(unittest.TestCase):
 
 class TestTagExpressionNotFoo(unittest.TestCase):
     def setUp(self):
-        self.e = TagExpression(['-foo'])
+        self.e = TagExpressionV1(['-foo'])
 
     def test_should_match_no_tags(self):
         assert self.e.check([])
@@ -55,7 +55,7 @@ class TestTagExpressionFooAndBar(unittest.TestCase):
     # -- LOGIC: @foo and @bar
 
     def setUp(self):
-        self.e = TagExpression(['foo', 'bar'])
+        self.e = TagExpressionV1(['foo', 'bar'])
 
     def test_should_not_match_no_tags(self):
         assert not self.e.check([])
@@ -108,7 +108,7 @@ class TestTagExpressionFooAndNotBar(unittest.TestCase):
     # -- LOGIC: @foo and not @bar
 
     def setUp(self):
-        self.e = TagExpression(['foo', '-bar'])
+        self.e = TagExpressionV1(['foo', '-bar'])
 
     def test_should_not_match_no_tags(self):
         assert not self.e.check([])
@@ -162,14 +162,14 @@ class TestTagExpressionNotBarAndFoo(TestTagExpressionFooAndNotBar):
     # LOGIC: not @bar and @foo == @foo and not @bar
 
     def setUp(self):
-        self.e = TagExpression(['-bar', 'foo'])
+        self.e = TagExpressionV1(['-bar', 'foo'])
 
 
 class TestTagExpressionNotFooAndNotBar(unittest.TestCase):
     # -- LOGIC: not @bar and not @foo
 
     def setUp(self):
-        self.e = TagExpression(['-foo', '-bar'])
+        self.e = TagExpressionV1(['-foo', '-bar'])
 
     def test_should_match_no_tags(self):
         assert self.e.check([])
@@ -223,7 +223,7 @@ class TestTagExpressionNotBarAndNotFoo(TestTagExpressionNotFooAndNotBar):
     # LOGIC: not @bar and not @foo == not @foo and not @bar
 
     def setUp(self):
-        self.e = TagExpression(['-bar', '-foo'])
+        self.e = TagExpressionV1(['-bar', '-foo'])
 
 
 # ----------------------------------------------------------------------------
@@ -231,7 +231,7 @@ class TestTagExpressionNotBarAndNotFoo(TestTagExpressionNotFooAndNotBar):
 # ----------------------------------------------------------------------------
 class TestTagExpressionFooOrBar(unittest.TestCase):
     def setUp(self):
-        self.e = TagExpression(['foo,bar'])
+        self.e = TagExpressionV1(['foo,bar'])
 
     def test_should_not_match_no_tags(self):
         assert not self.e.check([])
@@ -284,12 +284,12 @@ class TestTagExpressionBarOrFoo(TestTagExpressionFooOrBar):
     # -- REUSE: Test suite due to symmetry in reversed expression
     # LOGIC: @bar or @foo == @foo or @bar
     def setUp(self):
-        self.e = TagExpression(['bar,foo'])
+        self.e = TagExpressionV1(['bar,foo'])
 
 
 class TestTagExpressionFooOrNotBar(unittest.TestCase):
     def setUp(self):
-        self.e = TagExpression(['foo,-bar'])
+        self.e = TagExpressionV1(['foo,-bar'])
 
     def test_should_match_no_tags(self):
         assert self.e.check([])
@@ -342,12 +342,12 @@ class TestTagExpressionNotBarOrFoo(TestTagExpressionFooOrNotBar):
     # -- REUSE: Test suite due to symmetry in reversed expression
     # LOGIC: not @bar or @foo == @foo or not @bar
     def setUp(self):
-        self.e = TagExpression(['-bar,foo'])
+        self.e = TagExpressionV1(['-bar,foo'])
 
 
 class TestTagExpressionNotFooOrNotBar(unittest.TestCase):
     def setUp(self):
-        self.e = TagExpression(['-foo,-bar'])
+        self.e = TagExpressionV1(['-foo,-bar'])
 
     def test_should_match_no_tags(self):
         assert self.e.check([])
@@ -400,7 +400,7 @@ class TestTagExpressionNotBarOrNotFoo(TestTagExpressionNotFooOrNotBar):
     # -- REUSE: Test suite due to symmetry in reversed expression
     # LOGIC: not @bar or @foo == @foo or not @bar
     def setUp(self):
-        self.e = TagExpression(['-bar,-foo'])
+        self.e = TagExpressionV1(['-bar,-foo'])
 
 
 # ----------------------------------------------------------------------------
@@ -408,7 +408,7 @@ class TestTagExpressionNotBarOrNotFoo(TestTagExpressionNotFooOrNotBar):
 # ----------------------------------------------------------------------------
 class TestTagExpressionFooOrBarAndNotZap(unittest.TestCase):
     def setUp(self):
-        self.e = TagExpression(['foo,bar', '-zap'])
+        self.e = TagExpressionV1(['foo,bar', '-zap'])
 
     def test_should_match_foo(self):
         assert self.e.check(['foo'])
@@ -473,7 +473,7 @@ class TestTagExpressionFooOrBarAndNotZap(unittest.TestCase):
 # ----------------------------------------------------------------------------
 class TestTagExpressionFoo3OrNotBar4AndZap5(unittest.TestCase):
     def setUp(self):
-        self.e = TagExpression(['foo:3,-bar', 'zap:5'])
+        self.e = TagExpressionV1(['foo:3,-bar', 'zap:5'])
 
     def test_should_count_tags_for_positive_tags(self):
         assert self.e.limits == {'foo': 3, 'zap': 5}
@@ -484,7 +484,7 @@ class TestTagExpressionFoo3OrNotBar4AndZap5(unittest.TestCase):
 
 class TestTagExpressionParsing(unittest.TestCase):
     def setUp(self):
-        self.e = TagExpression([' foo:3 , -bar ', ' zap:5 '])
+        self.e = TagExpressionV1([' foo:3 , -bar ', ' zap:5 '])
 
     def test_should_have_limits(self):
         assert self.e.limits == {'zap': 5, 'foo': 3}
@@ -492,18 +492,18 @@ class TestTagExpressionParsing(unittest.TestCase):
 
 class TestTagExpressionTagLimits(unittest.TestCase):
     def test_should_be_counted_for_negative_tags(self):
-        e = TagExpression(['-todo:3'])
+        e = TagExpressionV1(['-todo:3'])
         assert e.limits == {'todo': 3}
 
     def test_should_be_counted_for_positive_tags(self):
-        e = TagExpression(['todo:3'])
+        e = TagExpressionV1(['todo:3'])
         assert e.limits == {'todo': 3}
 
     def test_should_raise_an_error_for_inconsistent_limits(self):
         with pytest.raises(Exception):
-            _ = TagExpression(['todo:3', '-todo:4'])
+            _ = TagExpressionV1(['todo:3', '-todo:4'])
 
     def test_should_allow_duplicate_consistent_limits(self):
-        e = TagExpression(['todo:3', '-todo:3'])
+        e = TagExpressionV1(['todo:3', '-todo:3'])
         assert e.limits == {'todo': 3}
 
