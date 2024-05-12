@@ -88,6 +88,10 @@ setup(
         "contextlib2;  python_version < '3.5'",
         # DISABLED: "contextlib2 >= 21.6.0;  python_version < '3.5'",
         "colorama >= 0.3.7",
+
+        # -- SUPPORT: "pyproject.toml" (or: "behave.toml")
+        "tomli>=1.1.0; python_version >=  '3.0' and python_version < '3.11'",
+        "toml>=0.10.2; python_version <  '3.0'",  # py27 support
     ],
     tests_require=[
         "pytest <  5.0; python_version <  '3.0'", # USE: pytest >= 4.2
@@ -111,16 +115,19 @@ setup(
     },
     extras_require={
         "docs": [
-            "sphinx >= 1.6,<4.4",
+            "sphinx >= 7.3.7;   python_version >= '3.7'",
+            "sphinx >=1.6,<4.4; python_version < '3.7'",
             "sphinx_bootstrap_theme >= 0.6",
             # -- CONSTRAINTS UNTIL: sphinx > 5.0 can be used -- 2024-01
             # PROBLEM: sphinxcontrib-applehelp v1.0.8 requires sphinx > 5.0
             # SEE: https://stackoverflow.com/questions/77848565/sphinxcontrib-applehelp-breaking-sphinx-builds-with-sphinx-version-less-than-5-0
-            "sphinxcontrib-applehelp==1.0.4",
-            "sphinxcontrib-devhelp==1.0.2",
-            "sphinxcontrib-htmlhelp==2.0.1",
-            "sphinxcontrib-qthelp==1.0.3",
-            "sphinxcontrib-serializinghtml==1.1.5",
+            "sphinxcontrib-applehelp >= 1.0.8; python_version >= '3.7'",
+            "sphinxcontrib-htmlhelp >= 2.0.5;  python_version >= '3.7'",
+            # DISABLED: "sphinxcontrib-applehelp==1.0.4",
+            # DISABLED: "sphinxcontrib-devhelp==1.0.2",
+            # DISABLED: "sphinxcontrib-htmlhelp==2.0.1",
+            # DISABLED: "sphinxcontrib-qthelp==1.0.3",
+            # DISABLED: "sphinxcontrib-serializinghtml==1.1.5",
         ],
         "develop": [
             "build >= 0.5.1",

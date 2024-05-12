@@ -19,8 +19,6 @@ contextlib2; python_version < '3.5'
 win_unicode_console >= 0.5;  python_version < '3.6'
 colorama >= 0.3.7
 
-# -- DISABLED PYTHON 2.6 SUPPORT:
-# REQUIRES: pip >= 6.0
-# argparse;    python_version <= '2.6'
-# ordereddict; python_version <= '2.6'
-# importlib;   python_version <= '2.6'
+# -- SUPPORT: "pyproject.toml" (or: "behave.toml")
+tomli>=1.1.0; python_version >=  '3.0' and python_version < '3.11'
+toml>=0.10.2; python_version <  '3.0'  # py27 support

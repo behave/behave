@@ -102,11 +102,10 @@ EXAMPLE:
 
     [project]
     name = "my-project"
-    ...
     dependencies = [
         "behave @ git+https://github.com/behave/behave.git@v1.2.7.dev5",
         # OR: "behave[develop] @ git+https://github.com/behave/behave.git@main",
-        ...
     ]
+
 
 .. _behave: https://github.com/behave/behave
