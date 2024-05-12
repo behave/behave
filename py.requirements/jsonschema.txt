@@ -6,4 +6,4 @@
 # DEPRECATING: jsonschema
 # USE INSTEAD: check-jsonschema
 jsonschema >= 1.3.0
-check-jsonschema
+check-jsonschema; python_version >= '3.7'
