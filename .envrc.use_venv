@@ -1,6 +1,7 @@
 # ===========================================================================
 # PROJECT ENVIRONMENT SETUP: .envrc.use_venv
 # ===========================================================================
+# REQUIRES: direnv >= 2.21.0  -- NEEDED FOR: venv support
 # DESCRIPTION:
 #   Setup and use a Python virtual environment (venv).
 #   On entering the directory: Creates and activates a venv for a python version.
