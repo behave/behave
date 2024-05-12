@@ -34,7 +34,7 @@ from behave.formatter.base import StreamOpener
 from behave.formatter import _registry as _format_registry
 from behave.reporter.junit import JUnitReporter
 from behave.reporter.summary import SummaryReporter
-from behave.tag_expression import make_tag_expression, TagExpressionProtocol
+from behave.tag_expression import TagExpressionProtocol, make_tag_expression
 from behave.textutil import select_best_encoding, to_texts
 from behave.userdata import UserData, parse_user_define
 
@@ -318,13 +318,14 @@ OPTIONS = [
      dict(dest="paths", action="append",
           help="Specify default feature paths, used when none are provided.")),
     ((),  # -- CONFIGFILE only
-     dict(dest="tag_expression_protocol", type=TagExpressionProtocol.parse,
+     dict(dest="tag_expression_protocol", type=TagExpressionProtocol.from_name,
           choices=TagExpressionProtocol.choices(),
-          default=TagExpressionProtocol.default().name.lower(),
+          default=TagExpressionProtocol.DEFAULT.name.lower(),
           help="""\
 Specify the tag-expression protocol to use (default: %(default)s).
-With "any", tag-expressions v1 and v2 are supported (in auto-detect mode).
-With "strict", only tag-expressions v2 are supported (better error diagnostics).
+With "v1", only tag-expressions v1 are supported.
+With "v2", only tag-expressions v2 are supported.
+With "auto_detect", tag-expressions v1 and v2 are auto-detected.
 """)),
 
     (("-q", "--quiet"),
@@ -751,7 +752,7 @@ class Configuration(object):
         runner=DEFAULT_RUNNER_CLASS_NAME,
         steps_catalog=False,
         summary=True,
-        tag_expression_protocol=TagExpressionProtocol.default(),
+        tag_expression_protocol=TagExpressionProtocol.DEFAULT,
         junit=False,
         stage=None,
         userdata={},

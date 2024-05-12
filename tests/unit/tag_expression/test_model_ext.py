@@ -2,10 +2,7 @@
 # pylint: disable=bad-whitespace
 
 from __future__ import absolute_import
-from behave.tag_expression.model import Expression, Literal
-from behave.tag_expression.model_ext import Matcher
-# NOT-NEEDED: from cucumber_tag_expressions.model import Literal, Matcher
-# NOT-NEEDED: from cucumber_tag_expressions.model import And, Or,  Not, True_
+from behave.tag_expression.model import Literal, Matcher, Never
 import pytest
 
 
@@ -54,3 +51,13 @@ class TestMatcher(object):
     def test_evaluate_with_contains_pattern(self, expected, tag, case):
         expression = Matcher("*.foo.*")
         assert expression.evaluate([tag]) == expected
+
+class TestNever(object):
+    @pytest.mark.parametrize("tags, case", [
+        ([], "no_tags"),
+        (["foo", "bar"], "some tags"),
+        (["foo", "other"], "some tags2"),
+    ])
+    def test_evaluate_returns_false(self, tags, case):
+        expression = Never()
+        assert expression.evaluate(tags) is False

@@ -42,6 +42,8 @@ class ModelElement(object):
 # -----------------------------------------------------------------------------
 def convert_tag_expression(text):
     return make_tag_expression(text.strip())
+
+
 register_type(TagExpression=convert_tag_expression)
 
 

@@ -297,7 +297,7 @@ tag_expression_protocol = {value}
 
     @classmethod
     def check_tag_expression_protocol_with_valid_value(cls, value, tmp_path):
-        TagExpressionProtocol.use(TagExpressionProtocol.default())
+        TagExpressionProtocol.use(TagExpressionProtocol.DEFAULT)
         cls.make_config_file_with_tag_expression_protocol(value, tmp_path)
         with use_current_directory(tmp_path):
             config = Configuration()
@@ -312,17 +312,25 @@ tag_expression_protocol = {value}
     def test_tag_expression_protocol(self, value, tmp_path):
         self.check_tag_expression_protocol_with_valid_value(value, tmp_path)
 
-    @pytest.mark.parametrize("value", ["Any", "ANY", "Strict", "STRICT"])
+    @pytest.mark.parametrize("value", [
+        "v1", "V1",
+        "v2", "V2",
+        "auto_detect", "AUTO_DETECT", "Auto_detect",
+        # -- DEPRECATING:
+        "strict", "STRICT", "Strict",
+    ])
     def test_tag_expression_protocol__is_not_case_sensitive(self, value, tmp_path):
         self.check_tag_expression_protocol_with_valid_value(value, tmp_path)
 
     @pytest.mark.parametrize("value", [
-        "__UNKNOWN__", "v1", "v2",
+        "__UNKNOWN__",
         # -- SIMILAR: to valid values
-        ".any", "any.", "_strict", "strict_"
+        "v1_", "_v2",
+        ".auto", "auto_detect.",
+        "_strict", "strict_"
     ])
     def test_tag_expression_protocol__with_invalid_value_raises_error(self, value, tmp_path):
-        default_value = TagExpressionProtocol.default()
+        default_value = TagExpressionProtocol.DEFAULT
         TagExpressionProtocol.use(default_value)
         self.make_config_file_with_tag_expression_protocol(value, tmp_path)
         with use_current_directory(tmp_path):
@@ -332,7 +340,8 @@ tag_expression_protocol = {value}
                 print("USE: config.tag_expression_protocol={0}".format(
                     config.tag_expression_protocol))
 
+        choices = ", ".join(TagExpressionProtocol.choices())
+        expected = "{value} (expected: {choices})".format(value=value, choices=choices)
         assert TagExpressionProtocol.current() is default_value
-        expected = "{value} (expected: any, strict)".format(value=value)
         assert exc_info.type is ValueError
         assert expected in str(exc_info.value)
