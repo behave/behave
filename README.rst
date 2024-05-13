@@ -101,10 +101,10 @@ we recommend the `tutorial`_ and then the `feature testing language`_ and
 `api`_ references.
 
 
-.. _`Install *behave*.`: http://behave.readthedocs.io/en/stable/install.html
-.. _`tutorial`: http://behave.readthedocs.io/en/stable/tutorial.html#features
-.. _`feature testing language`: http://behave.readthedocs.io/en/stable/gherkin.html
-.. _`api`: http://behave.readthedocs.io/en/stable/api.html
+.. _`Install *behave*.`: https://behave.readthedocs.io/en/stable/install.html
+.. _`tutorial`: https://behave.readthedocs.io/en/stable/tutorial.html#features
+.. _`feature testing language`: https://behave.readthedocs.io/en/stable/gherkin.html
+.. _`api`: https://behave.readthedocs.io/en/stable/api.html
 
 
 More Information
@@ -115,10 +115,10 @@ More Information
 * `changelog`_ (latest changes)
 
 
-.. _behave documentation: http://behave.readthedocs.io/
-.. _changelog:      https://github.com/behave/behave/blob/master/CHANGES.rst
+.. _behave documentation: https://behave.readthedocs.io/
+.. _changelog:      https://github.com/behave/behave/blob/main/CHANGES.rst
 .. _behave.example: https://github.com/behave/behave.example
 
-.. _`latest edition`: http://behave.readthedocs.io/en/latest/
-.. _`stable edition`: http://behave.readthedocs.io/en/stable/
-.. _PDF:              https://media.readthedocs.org/pdf/behave/latest/behave.pdf
+.. _`latest edition`: https://behave.readthedocs.io/en/latest/
+.. _`stable edition`: https://behave.readthedocs.io/en/stable/
+.. _PDF:              https://behave.readthedocs.io/_/downloads/en/stable/pdf/
