@@ -9,15 +9,13 @@
 .. _`C++ scope guard`:  https://en.wikibooks.org/wiki/More_C++_Idioms/Scope_Guard
 
 .. _Cucumber:   https://cucumber.io/
-.. _Lettuce:    http://lettuce.it/
-
-.. _Selenium:   http://docs.seleniumhq.org/
+.. _Selenium:   https://docs.seleniumhq.org/
 
 .. _PyCharm:        https://www.jetbrains.com/pycharm/
-.. _Eclipse:        http://www.eclipse.org/
+.. _Eclipse:        https://www.eclipse.org/
 .. _VisualStudio:   https://www.visualstudio.com/
 
 .. _`PyCharm BDD`: https://blog.jetbrains.com/pycharm/2014/09/feature-spotlight-behavior-driven-development-in-pycharm/
-.. _`Cucumber-Eclipse`: http://cucumber.github.io/cucumber-eclipse/
+.. _`Cucumber-Eclipse`: https://cucumber.github.io/cucumber-eclipse/
 
-.. _ctags:      http://ctags.sourceforge.net/
+.. _ctags:      https://ctags.sourceforge.net/
