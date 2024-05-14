@@ -57,7 +57,7 @@ extlinks = {
     "issue":  ("https://github.com/behave/behave/issues/%s", "issue #%s"),
     "pull":  ("https://github.com/behave/behave/issues/%s", "PR #%s"),
     "github": ("https://github.com/%s", "github:/"),
-    "pypi": ("https://pypi.org/project/%s", None),
+    "pypi": ("https://pypi.org/project/%s", "%s"),
     "youtube": ("https://www.youtube.com/watch?v=%s", "youtube:video=%s"),
 
     # -- CUCUMBER RELATED:
