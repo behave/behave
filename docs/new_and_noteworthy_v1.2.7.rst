@@ -36,11 +36,16 @@ A Rule (or: business rule) allows to group multiple Scenario(s)/Example(s)::
         Scenario*           #< CARDINALITY: 0..N (many)
         ScenarioOutline*    #< CARDINALITY: 0..N (many)
 
-Gherkin v6 keyword aliases::
+Gherkin v6 keyword aliases:
 
-    | Concept          | Preferred Keyword | Alias(es)          |
-    | Scenario         | Example           | Scenario           |
-    | Scenario Outline | Scenario Outline  | Scenario Template  |
+==================  =================== ======================
+Concept             Preferred Keyword   Alias(es)
+==================  =================== ======================
+Scenario            Example             Scenario
+Scenario Outline    Scenario Outline    Scenario Template
+Examples            Examples            Scenarios
+==================  =================== ======================
+
 
 Example:
 
