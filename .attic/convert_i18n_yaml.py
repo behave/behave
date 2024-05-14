@@ -50,7 +50,7 @@ def main(args=None):
         parser.error("YAML file not found: %s" % options.yaml_file)
 
     # -- STEP 1: Load YAML data.
-    languages = yaml.load(open(options.yaml_file))
+    languages = yaml.safe_load(open(options.yaml_file))
     languages = yaml_normalize(languages)
 
     # -- STEP 2: Generate python module with i18n data.
