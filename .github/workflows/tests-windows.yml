@@ -64,16 +64,17 @@ jobs:
           behave --format=progress3 tools/test-features
           behave --format=progress3 issue.features
       - name: Upload test reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test reports
           path: |
             build/testing/report.xml
             build/testing/report.html
+            # MAYBE: build/behave.reports/
         if: ${{ job.status == 'failure' }}
         # MAYBE: if: ${{ always() }}
-      - name: Upload behave test reports
-        uses: actions/upload-artifact@v3
-        with:
-          name: behave.reports
-          path: build/behave.reports/
+#      - name: Upload behave test reports
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: behave.reports
+#          path: build/behave.reports/
