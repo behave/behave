@@ -6,7 +6,7 @@ step implementations (step definitions). This is necessary to execute steps.
 """
 
 from __future__ import absolute_import
-from behave.matchers import Match, make_matcher
+from behave.matchers import Match, MatchWithError, make_matcher
 from behave.textutil import text as _text
 
 # limit import * to just the decorators
@@ -49,7 +49,16 @@ class StepRegistry(object):
                 # -- EXACT-STEP: Same step function is already registered.
                 # This may occur when a step module imports another one.
                 return
-            elif existing.match(step_text):     # -- SIMPLISTIC
+
+            matched = existing.match(step_text)
+            if matched is None or isinstance(matched, MatchWithError):
+                # -- CASES:
+                #  - step-mismatch (None)
+                #  - matching the step caused a type-converter function error
+                #    REASON: Bad type-converter function is used.
+                continue
+
+            if isinstance(matched, Match):
                 message = u"%s has already been defined in\n  existing step %s"
                 new_step = u"@%s('%s')" % (step_type, step_text)
                 existing.step_type = step_type
