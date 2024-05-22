@@ -91,6 +91,7 @@ FIXED:
 * FIXED: Some tests related to python-3.11
 * FIXED: Some tests related to python-3.9
 * FIXED: active-tag logic if multiple tags with same category exists.
+* issue #1177: Bad type-converter pattern: MatchWithError is turned into AmbiguousStep (submitted by: omrischwarz)
 * issue #1170: TagExpression auto-detection is not working properly (submitted by: Luca-morphy)
 * issue #1154: Config-files are not shown in verbose mode (submitted by: soblom)
 * issue #1120: Logging ignoring level set in setup_logging (submitted by: j7an)

@@ -47,7 +47,6 @@ class StepParseError(ValueError):
             ChainedExceptionUtil.set_cause(self, exc_cause)
 
 
-
 # -----------------------------------------------------------------------------
 # SECTION: Model Elements
 # -----------------------------------------------------------------------------
@@ -208,7 +207,6 @@ class Matcher(object):
             schema = self.schema
         return schema % (step_type, self.pattern)
 
-
     def check_match(self, step):
         """Match me against the "step" name supplied.
 
@@ -224,7 +222,8 @@ class Matcher(object):
         # -- PROTECT AGAINST: Type conversion errors (with ParseMatcher).
         try:
             result = self.check_match(step)
-        except Exception as e:  # pylint: disable=broad-except
+        except (StepParseError, ValueError, TypeError) as e:
+            # -- TYPE-CONVERTER ERROR occurred.
             return MatchWithError(self.func, e)
 
         if result is None:
