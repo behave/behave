@@ -4,6 +4,7 @@ from __future__ import absolute_import, with_statement
 from mock import Mock, patch
 from six.moves import range     # pylint: disable=redefined-builtin
 from behave import step_registry
+from behave.matchers import ParseMatcher
 
 
 class TestStepRegistry(object):
@@ -15,17 +16,17 @@ class TestStepRegistry(object):
         #  with patch('behave.matchers.make_matcher') as make_matcher:
         with patch('behave.step_registry.make_matcher') as make_matcher:
             func = lambda x: -x
-            pattern = 'just a test string'
-            magic_object = object()
+            pattern = u"just a test string"
+            magic_object = Mock()
             make_matcher.return_value = magic_object
 
             for step_type in list(registry.steps.keys()):
-                l = []
-                registry.steps[step_type] = l
+                registered_steps = []
+                registry.steps[step_type] = registered_steps
 
                 registry.add_step_definition(step_type.upper(), pattern, func)
-                make_matcher.assert_called_with(func, pattern)
-                assert l == [magic_object]
+                make_matcher.assert_called_with(func, pattern, step_type)
+                assert registered_steps == [magic_object]
 
     def test_find_match_with_specific_step_type_also_searches_generic(self):
         registry = step_registry.StepRegistry()

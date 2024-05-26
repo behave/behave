@@ -324,18 +324,20 @@ class TestSimplifiedRegexMatcher(TestRegexMatcher):
         def step_func1(context): pass   # pylint: disable=multiple-statements
         def step_func2(context): pass   # pylint: disable=multiple-statements
         # pylint: enable=unused-argument
-        matcher1 = SimplifiedRegexMatcher(step_func1, "I do something")
-        matcher2 = SimplifiedRegexMatcher(step_func2, "I do something more")
+        text1 = u"I do something"
+        text2 = u"I do something more"
+        matcher1 = SimplifiedRegexMatcher(step_func1, text1)
+        matcher2 = SimplifiedRegexMatcher(step_func2, text2)
 
         # -- CHECK: ORDERING SENSITIVITY
-        matched1 = matcher1.match(matcher2.pattern)
-        matched2 = matcher2.match(matcher1.pattern)
+        matched1 = matcher1.match(text2)
+        matched2 = matcher2.match(text1)
         assert matched1 is None
         assert matched2 is None
 
         # -- CHECK: Can match itself (if step text is simple)
-        matched1 = matcher1.match(matcher1.pattern)
-        matched2 = matcher2.match(matcher2.pattern)
+        matched1 = matcher1.match(text1)
+        matched2 = matcher2.match(text2)
         assert isinstance(matched1, Match)
         assert isinstance(matched2, Match)
 
@@ -363,16 +365,18 @@ class TestCucumberRegexMatcher(TestRegexMatcher):
         # pylint: enable=unused-argument
         matcher1 = CucumberRegexMatcher(step_func1, "^I do something$")
         matcher2 = CucumberRegexMatcher(step_func2, "^I do something more$")
+        text1 = matcher1.pattern[1:-1]
+        text2 = matcher2.pattern[1:-1]
 
         # -- CHECK: ORDERING SENSITIVITY
-        matched1 = matcher1.match(matcher2.pattern[1:-1])
-        matched2 = matcher2.match(matcher1.pattern[1:-1])
+        matched1 = matcher1.match(text2)
+        matched2 = matcher2.match(text1)
         assert matched1 is None
         assert matched2 is None
 
         # -- CHECK: Can match itself (if step text is simple)
-        matched1 = matcher1.match(matcher1.pattern[1:-1])
-        matched2 = matcher2.match(matcher2.pattern[1:-1])
+        matched1 = matcher1.match(text1)
+        matched2 = matcher2.match(text2)
         assert isinstance(matched1, Match)
         assert isinstance(matched2, Match)
 

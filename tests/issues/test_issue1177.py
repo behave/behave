@@ -9,6 +9,10 @@ from __future__ import absolute_import, print_function
 import sys
 
 from behave._stepimport import use_step_import_modules, SimpleStepContainer
+from behave.configuration import Configuration
+from behave.matchers import Match, StepParseError
+from behave.parser import parse_step
+from behave.runner import Context, ModelRunner
 import parse
 import pytest
 
@@ -35,10 +39,24 @@ def test_parse_expr(parse_bool):
     assert result is None
 
 
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="REQUIRES: Python >= 3.11")
+def test_parse_with_bad_type_converter_pattern_raises_not_implemented_error():
+    # -- HINT: re.error is only raised for Python >= 3.11
+    # FAILURE-POINT: parse.Parser._match_re property -- compiles _match_re
+    parser = parse.Parser("Light is on: {answer:Bool}",
+                          extra_types=dict(Bool=parse_bool_bad))
+
+    # -- PROBLEM POINT:
+    with pytest.raises(NotImplementedError) as exc_info:
+        _ = parser.parse("Light is on: true")
+
+    expected = "Group names (e.g. (?P<name>) can cause failure, as they are not escaped properly:"
+    assert expected in str(exc_info.value)
+
+
 # -- SYNDROME: NotImplementedError is only raised for Python >= 3.11
-@pytest.mark.skipif(sys.version_info < (3, 11),
-                    reason="Python >= 3.11: NotImplementedError is raised")
-def test_syndrome():
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="REQUIRES: Python >= 3.11")
+def test_syndrome(capsys):
     """
     Ensure that no AmbiguousStepError is raised
     when another step is added after the one with the BAD TYPE-CONVERTER PATTERN.
@@ -54,30 +72,26 @@ def test_syndrome():
         def then_first_step(ctx, value):
             assert isinstance(value, bool), "%r" % value
 
-        with pytest.raises(NotImplementedError) as excinfo1:
-            # -- CASE: Another step is added
-            # EXPECTED: No AmbiguousStepError is raised.
-            @then(u'first step and more')
-            def then_second_step(ctx, value):
-                assert isinstance(value, bool), "%r" % value
+        # -- ENSURE: No AmbiguousStepError is raised when another step is added.
+        @then(u'first step and more')
+        def then_second_step(ctx):
+            pass
 
-    # -- CASE: Manually add step to step-registry
-    # EXPECTED: No AmbiguousStepError is raised.
-    with pytest.raises(NotImplementedError) as excinfo2:
-        step_text = u'first step and other'
-        def then_third_step(ctx, value): pass
-        this_step_registry.add_step_definition("then", step_text, then_third_step)
+    # -- ENSURE: BAD-STEP-DEFINITION is not registered in step_registry
+    step = parse_step(u'Then this step is "true"')
+    assert this_step_registry.find_step_definition(step) is None
 
-    assert "Group names (e.g. (?P<name>) can cause failure" in str(excinfo1.value)
-    assert "Group names (e.g. (?P<name>) can cause failure" in str(excinfo2.value)
+    # -- ENSURE: BAD-STEP-DEFINITION is shown in output.
+    captured = capsys.readouterr()
+    expected = """BAD-STEP-DEFINITION: @then('first step is "{value:Bool}"')"""
+    assert expected in captured.err
+    assert "RAISED EXCEPTION: NotImplementedError:Group names (e.g. (?P<name>)" in captured.err
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 11),
-                    reason="Python < 3.11 -- NotImpplementedError is not raised")
-def test_syndrome_for_py310_and_older():
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="REQUIRES: Python >= 3.11")
+def test_bad_step_is_not_registered_if_regex_compile_fails(capsys):
     """
-    Ensure that no AmbiguousStepError is raised
-    when another step is added after the one with the BAD TYPE-CONVERTER PATTERN.
+    Ensure that step-definition is not registered if parse-expression compile fails.
     """
     step_container = SimpleStepContainer()
     this_step_registry = step_container.step_registry
@@ -90,14 +104,26 @@ def test_syndrome_for_py310_and_older():
         def then_first_step(ctx, value):
             assert isinstance(value, bool), "%r" % value
 
-        # -- CASE: Another step is added
-        # EXPECTED: No AmbiguousStepError is raised.
-        @then(u'first step and mpre')
-        def then_second_step(ctx, value):
+    # -- ENSURE: Step-definition is not registered in step-registry.
+    step = parse_step(u'Then first step is "true"')
+    step_matcher = this_step_registry.find_step_definition(step)
+    assert step_matcher is None
+
+
+@pytest.mark.skipif(sys.version_info >= (3, 11), reason="REQUIRES: Python < 3.11")
+def test_bad_step_is_registered_if_regex_compile_succeeds(capsys):
+    step_container = SimpleStepContainer()
+    this_step_registry = step_container.step_registry
+    with use_step_import_modules(step_container):
+        from behave import then, register_type
+
+        register_type(Bool=parse_bool_bad)
+
+        @then(u'first step is "{value:Bool}"')
+        def then_first_step(ctx, value):
             assert isinstance(value, bool), "%r" % value
 
-    # -- CASE: Manually add step to step-registry
-    # EXPECTED: No AmbiguousStepError is raised.
-    step_text = u'first step and other'
-    def then_third_step(ctx, value): pass
-    this_step_registry.add_step_definition("then", step_text, then_third_step)
+    # -- ENSURE: Step-definition is not registered in step-registry.
+    step = parse_step(u'Then first step is "true"')
+    step_matcher = this_step_registry.find_step_definition(step)
+    assert step_matcher is not None
