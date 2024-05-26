@@ -142,23 +142,41 @@ class MatchWithError(Match):
         raise StepParseError(exc_cause=self.stored_error)
 
 
-
-
 # -----------------------------------------------------------------------------
-# SECTION: Matchers
+# SECTION: Step Matchers
 # -----------------------------------------------------------------------------
 class Matcher(object):
-    """Pull parameters out of step names.
+    """
+    Provides an abstract base class for step-matcher classes.
+
+    Matches steps from "*.feature" files (Gherkin files)
+    and extracts step-parameters for these steps.
+
+    RESPONSIBILITIES:
+
+    * Matches steps from "*.feature" files (or not)
+    * Returns :class:`Match` objects if this step-matcher matches
+      that is used to run the step-definition function w/ its parameters.
+    * Compile parse-expression/regular-expression to detect
+      BAD STEP-DEFINITION(s) early.
 
     .. attribute:: pattern
 
-       The match pattern attached to the step function.
+        The match pattern attached to the step function.
 
     .. attribute:: func
 
-       The step function the pattern is being attached to.
+        The associated step-definition function to use for this pattern.
+
+    .. attribute:: location
+
+        File location of the step-definition function.
     """
-    schema = u"@%s('%s')"   # Schema used to describe step definition (matcher)
+    # -- DESCRIBE-SCHEMA FOR STEP-DEFINITIONS (step-matchers):
+    SCHEMA = u"@{this.step_type}('{this.pattern}')"
+    SCHEMA_AT_LOCATION = SCHEMA + u" at {this.location}"
+    SCHEMA_WITH_LOCATION = SCHEMA + u"  # {this.location}"
+    SCHEMA_AS_STEP = u"{this.step_type} {this.pattern}"
 
     @classmethod
     def register_type(cls, **kwargs):
@@ -174,7 +192,7 @@ class Matcher(object):
     def __init__(self, func, pattern, step_type=None):
         self.func = func
         self.pattern = pattern
-        self.step_type = step_type
+        self.step_type = step_type or "step"
         self._location = None
 
     # -- BACKWARD-COMPATIBILITY:
@@ -202,44 +220,115 @@ class Matcher(object):
         :param schema:  Text schema to use.
         :return: Textual description of this step definition (matcher).
         """
-        step_type = self.step_type or "step"
         if not schema:
-            schema = self.schema
-        return schema % (step_type, self.pattern)
+            schema = self.SCHEMA
 
-    def check_match(self, step):
-        """Match me against the "step" name supplied.
+        # -- SUPPORT: schema = "{this.step_type} {this.pattern}"
+        return schema.format(this=self)
+
+    def compile(self):
+        """
+        Compiles the regular-expression pattern (if necessary).
+
+        NOTES:
+        - This allows to detect some errors with BAD regular expressions early.
+        - Must be implemneted by derived classes.
+
+        :return: Self (to support daisy-chaining)
+        """
+        raise NotImplementedError()
+
+    def check_match(self, step_text):
+        """
+        Match me against the supplied "step_text".
 
         Return None, if I don't match otherwise return a list of matches as
         :class:`~behave.model_core.Argument` instances.
 
         The return value from this function will be converted into a
         :class:`~behave.matchers.Match` instance by *behave*.
-        """
-        raise NotImplementedError
 
-    def match(self, step):
+        :param step_text: Step text that should be matched (as string).
+        :return: A list of matched-arguments (on match). None, on mismatch.
+        :raises: ValueError, re.error, ...
+        """
+        raise NotImplementedError()
+
+    def match(self, step_text):
         # -- PROTECT AGAINST: Type conversion errors (with ParseMatcher).
         try:
-            result = self.check_match(step)
-        except (StepParseError, ValueError, TypeError) as e:
+            matched_args = self.check_match(step_text)
+        # MAYBE: except (StepParseError, ValueError, TypeError) as e:
+        except NotImplementedError:
+            # -- CASES:
+            # - check_match() is not implemented
+            # - check_match() raises NotImplementedError (on: re.error)
+            raise
+        except Exception as e:
             # -- TYPE-CONVERTER ERROR occurred.
             return MatchWithError(self.func, e)
 
-        if result is None:
+        if matched_args is None:
             return None     # -- NO-MATCH
-        return Match(self.func, result)
+        return Match(self.func, matched_args)
+
+    def matches(self, step_text):
+        """
+        Checks if :param:`step_text` matches this step-definition/step-matcher.
+
+        :param step_text: Step text to check.
+        :return: True, if step is matched. False, otherwise.
+        """
+        if self.pattern == step_text:
+            # -- SIMPLISTIC CASE: No step-parameters.
+            return True
+
+        # -- HINT: Ignore MatchWithError here.
+        matched = self.match(step_text)
+        return (matched and isinstance(matched, Match) and
+                not isinstance(matched, MatchWithError))
 
     def __repr__(self):
         return u"<%s: %r>" % (self.__class__.__name__, self.pattern)
 
 
 class ParseMatcher(Matcher):
-    """Uses :class:`~parse.Parser` class to be able to use simpler
-    parse expressions compared to normal regular expressions.
+    r"""
+    Provides a step-matcher that uses parse-expressions.
+    Parse-expressions provide a simpler syntax compared to regular expressions.
+    Parse-expressions are :func:`string.format()` expressions but for parsing.
+
+    RESPONSIBILITIES:
+
+    * Provides parse-expressions, like: "a positive number {number:PositiveNumber}"
+    * Support for custom type-converter functions
+
+    COLLABORATORS:
+
+    * :class:`~parse.Parser` to support parse-expressions.
+
+    EXAMPLE:
+
+    .. code-block:: python
+
+        from behave import register_type, given, use_step_matcher
+        import parse
+
+        # -- TYPE CONVERTER: For a simple, positive integer number.
+        @parse.with_pattern(r"\d+")
+        def parse_number(text):
+            return int(text)
+
+        register_type(Number=parse_number)
+
+        @given('{amount:Number} vehicles')
+        def step_given_amount_vehicles(ctx, amount):
+            assert isinstance(amount, int)
+            print("{amount} vehicles".format(amount=amount))}
     """
     custom_types = {}
     parser_class = parse.Parser
+    case_sensitive = True
 
     @classmethod
     def register_type(cls, **kwargs):
@@ -250,30 +339,6 @@ class ParseMatcher(Matcher):
         A type converter should follow :pypi:`parse` module rules.
         In general, a type converter is a function that converts text (as string)
         into a value-type (type converted value).
-
-        EXAMPLE:
-
-        .. code-block:: python
-
-            from behave import register_type, given
-            import parse
-
-
-            # -- TYPE CONVERTER: For a simple, positive integer number.
-            @parse.with_pattern(r"\d+")
-            def parse_number(text):
-                return int(text)
-
-            # -- REGISTER TYPE-CONVERTER: With behave
-            register_type(Number=parse_number)
-            # ALTERNATIVE:
-            current_step_matcher = use_step_matcher("parse")
-            current_step_matcher.register_type(Number=parse_number)
-
-            # -- STEP DEFINITIONS: Use type converter.
-            @given('{amount:Number} vehicles')
-            def step_impl(context, amount):
-                assert isinstance(amount, int)
         """
         cls.custom_types.update(**kwargs)
 
@@ -281,43 +346,102 @@ class ParseMatcher(Matcher):
     def clear_registered_types(cls):
         cls.custom_types.clear()
 
-
     def __init__(self, func, pattern, step_type=None):
         super(ParseMatcher, self).__init__(func, pattern, step_type)
-        self.parser = self.parser_class(pattern, self.custom_types)
+        self.parser = self.parser_class(pattern, self.custom_types,
+                                        case_sensitive=self.case_sensitive)
 
     @property
     def regex_pattern(self):
         # -- OVERWRITTEN: Pattern as regex text.
         return self.parser._expression  # pylint: disable=protected-access
 
-    def check_match(self, step):
+    def compile(self):
+        """
+        Compiles internal regular-expression.
+
+        Compiles "parser._match_re" which may lead to error (always)
+        if a BAD regular expression is used (or: BAD TYPE-CONVERTER).
+        """
+        # -- HINT: Triggers implicit compile of "self.parser._match_re"
+        _ = self.parser.parse("")
+        return self
+
+    def check_match(self, step_text):
+        """
+        Checks if the :param:`step_text` is matched (or not).
+
+        :param step_text: Step text to check.
+        :return: step-args if step was matched, None otherwise.
+        :raises ValueError: If type-converter functions fails.
+        """
         # -- FAILURE-POINT: Type conversion of parameters may fail here.
         #    NOTE: Type converter should raise ValueError in case of PARSE ERRORS.
-        result = self.parser.parse(step)
-        if not result:
+        matched = self.parser.parse(step_text)
+        if not matched:
             return None
 
         args = []
-        for index, value in enumerate(result.fixed):
-            start, end = result.spans[index]
-            args.append(Argument(start, end, step[start:end], value))
-        for name, value in result.named.items():
-            start, end = result.spans[name]
-            args.append(Argument(start, end, step[start:end], value, name))
+        for index, value in enumerate(matched.fixed):
+            start, end = matched.spans[index]
+            args.append(Argument(start, end, step_text[start:end], value))
+        for name, value in matched.named.items():
+            start, end = matched.spans[name]
+            args.append(Argument(start, end, step_text[start:end], value, name))
         args.sort(key=lambda x: x.start)
         return args
 
 
 class CFParseMatcher(ParseMatcher):
-    """Uses :class:`~parse_type.cfparse.Parser` instead of "parse.Parser".
-    Provides support for automatic generation of type variants
-    for fields with CardinalityField part.
+    """
+    Provides a step-matcher that uses parse-expressions with cardinality-fields.
+    Parse-expressions use simpler syntax compared to normal regular expressions.
+
+    Cardinality-fields provide a compact syntax for cardinalities:
+
+    * many:  "+" (cardinality: ``1..N``)
+    * many0: "*" (cardinality: ``0..N``)
+    * optional: "?" (cardinality: ``0..1``)
+
+    Regular expressions and type-converters for cardinality-fields are
+    generated by the parser if a type-converter for the cardinality=1 is registered.
+
+    COLLABORATORS:
+
+    * :class:`~parse_type.cfparse.Parser` is used to support parse-expressions
+      with cardinality-field support.
+
+    EXAMPLE:
+
+    .. code-block:: python
+
+        from behave import register_type, given, use_step_matcher
+        use_step_matcher("cfparse")
+        # ... -- OMITTED: Provide type-converter function for Number
+
+        @given(u'{amount:Number+} as numbers')  # CARDINALITY-FIELD: Many-Numbers
+        def step_many_numbers(ctx, numbers):
+            assert isinstance(numbers, list)
+            assert isinstance(numbers[0], int)
+            print("numbers = %r" % numbers)
+
+        step_matcher = CFParseMatcher(step_many_numbers, "{amount:Number+} as numbers")
+        matched = step_matcher.matches("1, 2, 3 as numbers")
+        assert matched is True
+        # -- STEP MATCHES: numbers = [1, 2, 3]
     """
     parser_class = cfparse.Parser
 
 
 class RegexMatcher(Matcher):
+    """
+    Provides a step-matcher that uses regular-expressions
+
+    RESPONSIBILITIES:
+
+    * Custom type-converters are NOT SUPPORTED.
+    """
+
     @classmethod
     def register_type(cls, **kwargs):
         """
@@ -335,49 +459,80 @@ class RegexMatcher(Matcher):
 
     def __init__(self, func, pattern, step_type=None):
         super(RegexMatcher, self).__init__(func, pattern, step_type)
-        self.regex = re.compile(self.pattern)
+        self._regex = None  # -- HINT: Defer re.compile(self.pattern)
 
+    @property
+    def regex(self):
+        if self._regex is None:
+            # self._regex = re.compile(self.pattern)
+            self._regex = re.compile(self.pattern, re.UNICODE)
+        return self._regex
 
-    def check_match(self, step):
-        m = self.regex.match(step)
-        if not m:
+    @regex.setter
+    def regex(self, value):
+        self._regex = value
+
+    @property
+    def regex_pattern(self):
+        """Return the regex pattern that is used for matching steps."""
+        return self.regex.pattern
+
+    def compile(self):
+        # -- HINT: Compiles "parser._match_re" which may lead to error (always).
+        _ = self.regex  # -- HINT: IMPLICIT-COMPILE
+        return self
+
+    def check_match(self, step_text):
+        matched = self.regex.match(step_text)
+        if not matched:
             return None
 
-        groupindex = dict((y, x) for x, y in self.regex.groupindex.items())
+        group_index = dict((y, x) for x, y in self.regex.groupindex.items())
         args = []
-        for index, group in enumerate(m.groups()):
+        for index, group in enumerate(matched.groups()):
             index += 1
-            name = groupindex.get(index, None)
-            args.append(Argument(m.start(index), m.end(index), group,
-                                 group, name))
+            name = group_index.get(index, None)
+            args.append(Argument(matched.start(index), matched.end(index),
+                                 group, group, name))
 
         return args
+
 
 class SimplifiedRegexMatcher(RegexMatcher):
     """
     Simplified regular expression step-matcher that automatically adds
-    start-of-line/end-of-line matcher symbols to string:
+    START_OF_LINE/END_OF_LINE regular-expression markers to the string.
+
+    EXAMPLE:
 
     .. code-block:: python
 
-        @when(u'a step passes')     # re.pattern = "^a step passes$"
-        def step_impl(context): pass
+        from behave import when, use_step_matcher
+        use_step_matcher("re")
+
+        @when(u'a step passes')  # re.pattern = "^a step passes$"
+        def step_impl(context):
+            pass
     """
 
     def __init__(self, func, pattern, step_type=None):
         assert not (pattern.startswith("^") or pattern.endswith("$")), \
             "Regular expression should not use begin/end-markers: "+ pattern
-        expression = "^%s$" % pattern
+        expression = r"^%s$" % pattern
         super(SimplifiedRegexMatcher, self).__init__(func, expression, step_type)
-        self.pattern = pattern
 
 
 class CucumberRegexMatcher(RegexMatcher):
     """
     Compatible to (old) Cucumber style regular expressions.
-    Text must contain start-of-line/end-of-line matcher symbols to string:
+    Step-text must contain START_OF_LINE/END_OF_LINE markers.
+
+    EXAMPLE:
 
     .. code-block:: python
+
+        from behave import when, use_step_matcher
+        use_step_matcher("re0")
 
         @when(u'^a step passes$')   # re.pattern = "^a step passes$"
         def step_impl(context): pass
