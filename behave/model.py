@@ -826,7 +826,7 @@ class Background(BasicStatement, Replayable):
 
     @property
     def all_steps(self):
-        return self.iter_steps()
+        return list(self.iter_steps())
 
     @property
     def duration(self):
