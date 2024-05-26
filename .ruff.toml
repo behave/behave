@@ -2,21 +2,10 @@
 # SECTION: ruff -- Python linter
 # -----------------------------------------------------------------------------
 # SEE: https://github.com/charliermarsh/ruff
+# SEE: https://docs.astral.sh/ruff/configuration/
 # SEE: https://beta.ruff.rs/docs/configuration/#using-rufftoml
 # Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
 
-select = ["E", "F"]
-ignore = []
-
-# Allow autofix for all enabled rules (when `--fix`) is provided.
-fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W",
-    "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC",
-    "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF",
-    "TCH", "TID", "TRY", "UP", "YTT"
-]
-unfixable = []
-
-# Exclude a variety of commonly ignored directories.
 exclude = [
     ".direnv",
     ".eggs",
@@ -29,15 +18,34 @@ exclude = [
     "dist",
     "venv",
 ]
-per-file-ignores = {}
-
-# Same as Black.
 # WAS: line-length = 88
 line-length = 100
+indent-width = 4
+target-version = "py312"
+
+
+[lint]
+select = ["E", "F"]
+ignore = []
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W",
+    "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC",
+    "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF",
+    "TCH", "TID", "TRY", "UP", "YTT"
+]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+per-file-ignores = {}
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-target-version = "py310"
 
-[mccabe]
+
+[lint.mccabe]
 max-complexity = 10
+
+
+[format]
+quote-style = "double"
+indent-style = "space"
