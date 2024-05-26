@@ -782,6 +782,7 @@ class Parser(object):
                         line.lower().startswith(kw.lower())):
                     # -- CASE: Line does not start w/ a step-keyword.
                     continue
+
                 # -- HINT: Trailing SPACE is used for most keywords.
                 # BUT: Keywords in some languages (like Chinese, Japanese, ...)
                 #      do not need a whitespace as word separator.
@@ -792,9 +793,16 @@ class Parser(object):
                     step_type = self.last_step_type
                 elif step_type in ("and", "but"):
                     if not self.last_step_type:
-                        raise ParserError(u"No previous step",
-                                          self.line, self.filename)
+                        # -- BEST-EFFORT: Try to use last background.step.
+                        self.last_step_type = self._select_last_background_step_type()
+                        if not self.last_step_type:
+                            msg = u"{step_type}-STEP REQUIRES: An previous Given/When/Then step."
+                            raise ParserError(msg.format(step_type=step_type.upper()),
+                                              self.line, self.filename)
+
+                    assert self.last_step_type is not None
                     step_type = self.last_step_type
+                    assert step_type is not None
                 else:
                     self.last_step_type = step_type
 
@@ -803,6 +811,30 @@ class Parser(object):
                                   keyword, step_type, step_text_after_keyword)
                 return step
         return None
+
+    def _select_last_background_step_type(self):
+        # -- CASES:
+        # * CASE 1: With background.steps/background.inherited_steps
+        #   - Feature with Background and background.steps
+        #   - Rule with Background and background.steps
+        #   - Rule with Background w/o background.steps but w/ inherited steps
+        #
+        # * CASE 2: No background.steps
+        #   - Feature without Background
+        #   - Feature with Background but w/o background.steps
+        #   - Rule without Background
+        #   - Rule with Background w/o background.steps and w/o inherited steps
+        last_background_step_type = None
+        if self.scenario_container and self.scenario_container.background:
+            # -- HINT: Consider background.steps and inherited steps.
+            this_background = self.scenario_container.background
+            this_background_steps = (this_background.steps or
+                                     this_background.inherited_steps)
+            if this_background_steps:
+                # -- HINT: Feature/Rule may have background w/o steps.
+                last_background_step = this_background_steps[-1]
+                last_background_step_type = last_background_step.step_type
+        return last_background_step_type
 
     def parse_steps(self, text, filename=None):
         """Parse support for execute_steps() functionality that
