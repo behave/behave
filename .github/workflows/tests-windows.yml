@@ -39,7 +39,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
-        python-version: ["3.12", "3.11", "3.10", "3.9"]
+        python-version: ["3.12", "3.11", "3.10"]
     steps:
       - uses: actions/checkout@v4
       # DISABLED: name: Setup Python ${{ matrix.python-version }} on platform=${{ matrix.os }}
@@ -51,18 +51,25 @@ jobs:
       # -- DISABLED:
       # - name: Show Python version
       #   run: python --version
+      # -- SPEED-UP: Use "uv" to speed up installation of package dependencies.
+      - name: Install uv
+        run: python -m pip install -U uv
       - name: Install Python package dependencies
         run: |
-          python -m pip install -U pip setuptools wheel
-          pip install --upgrade -r py.requirements/ci.github.testing.txt
-          pip install -e .
+          python -m uv pip install -U pip setuptools wheel
+          python -m uv pip install --upgrade -r py.requirements/ci.github.testing.txt
+          python -m uv pip install -e .
+          # -- OLD:
+          # python -m pip install -U pip setuptools wheel
+          # pip install --upgrade -r py.requirements/ci.github.testing.txt
+          # pip install -e .
       - name: Run tests
         run: pytest
       - name: Run behave tests
         run: |
-          behave --format=progress3 features
-          behave --format=progress3 tools/test-features
-          behave --format=progress3 issue.features
+          behave --format=progress features
+          behave --format=progress tools/test-features
+          behave --format=progress issue.features
       - name: Upload test reports
         uses: actions/upload-artifact@v4
         with:
