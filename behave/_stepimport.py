@@ -30,6 +30,7 @@ from behave.step_registry import StepRegistry
 def setup_api_with_step_decorators(module, step_registry):
     _step_registry.setup_step_decorators(module, step_registry)
 
+
 def setup_api_with_matcher_functions(module, step_matcher_factory):
     # -- PUBLIC API: Same as behave.api.step_matchers
     module.use_default_step_matcher = step_matcher_factory.use_default_step_matcher
@@ -79,19 +80,20 @@ class StepMatchersModule(FakeModule):
     __all__ = [
         "use_default_step_matcher",
         "use_step_matcher",
-        "step_matcher",  # -- DEPRECATING
         "register_type"
+        # -- DEPRECATING:
+        "step_matcher",
     ]
 
     def __init__(self, step_matcher_factory):
         super(StepMatchersModule, self).__init__("behave.matchers")
         self.step_matcher_factory = step_matcher_factory
         setup_api_with_matcher_functions(self, step_matcher_factory)
-        self.make_matcher = step_matcher_factory.make_matcher
+        self.make_step_matcher = step_matcher_factory.make_step_matcher
         # -- DEPRECATED-FUNCTION-COMPATIBILITY
-        # self.get_matcher = self.make_matcher
-        # self.matcher_mapping = matcher_mapping or _matchers.matcher_mapping.copy()
         # self.current_matcher = current_matcher or _matchers.current_matcher
+        # self.get_matcher = self.make_step_matcher
+        # self.matcher_mapping = ...
 
         # -- INJECT PYTHON PACKAGE META-DATA:
         # REQUIRED-FOR: Non-fake submodule imports (__path__).

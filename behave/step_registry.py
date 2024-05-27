@@ -8,7 +8,7 @@ step implementations (step definitions). This is necessary to execute steps.
 from __future__ import absolute_import, print_function
 import sys
 
-from behave.matchers import make_matcher
+from behave.matchers import make_step_matcher
 from behave.textutil import text as _text
 
 # limit import * to just the decorators
@@ -119,7 +119,7 @@ class StepRegistry(object):
     def add_step_definition(self, keyword, step_text, func):
         new_step_type = keyword.lower()
         step_text = _text(step_text)
-        new_step_matcher = make_matcher(func, step_text, new_step_type)
+        new_step_matcher = make_step_matcher(func, step_text, new_step_type)
         if not self.is_good_step_definition(new_step_matcher):
             # -- CASE: BAD STEP-DEFINITION -- Ignore it.
             return

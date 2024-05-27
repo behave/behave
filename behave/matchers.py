@@ -143,18 +143,47 @@ class MatchWithError(Match):
 
 
 # -----------------------------------------------------------------------------
+# SECTION: TypeRegistry for Step Matchers (provide: TypeRegistry protocol)
+# -----------------------------------------------------------------------------
+class TypeRegistry(dict):
+    def register_type(self, **kwargs):
+        """
+        Register one (or more) user-defined types used for matching types
+        in step patterns of this matcher.
+        """
+        self.update(**kwargs)
+
+    def has_type(self, name):
+        return name in self
+
+
+class TypeRegistryNotSupported():
+    """
+    Placeholder class for a type-registry if custom types are not supported.
+    """
+    def register_type(self, **kwargs):
+        raise NotSupportedWarning("register_type")
+
+    def has_type(self, name):
+        return False
+
+    def clear(self):
+        pass
+
+
+# -----------------------------------------------------------------------------
 # SECTION: Step Matchers
 # -----------------------------------------------------------------------------
 class Matcher(object):
     """
     Provides an abstract base class for step-matcher classes.
 
-    Matches steps from "*.feature" files (Gherkin files)
+    Matches steps from ``*.feature`` files (Gherkin files)
     and extracts step-parameters for these steps.
 
     RESPONSIBILITIES:
 
-    * Matches steps from "*.feature" files (or not)
+    * Matches steps from ``*.feature`` files (or not)
     * Returns :class:`Match` objects if this step-matcher matches
       that is used to run the step-definition function w/ its parameters.
     * Compile parse-expression/regular-expression to detect
@@ -172,22 +201,36 @@ class Matcher(object):
 
         File location of the step-definition function.
     """
+    NAME = None  # -- HINT: Must be specified by derived class.
+    CUSTOM_TYPES = TypeRegistryNotSupported()
+
     # -- DESCRIBE-SCHEMA FOR STEP-DEFINITIONS (step-matchers):
     SCHEMA = u"@{this.step_type}('{this.pattern}')"
     SCHEMA_AT_LOCATION = SCHEMA + u" at {this.location}"
     SCHEMA_WITH_LOCATION = SCHEMA + u"  # {this.location}"
     SCHEMA_AS_STEP = u"{this.step_type} {this.pattern}"
 
+    # -- IMPLEMENT ADAPTER FOR: TypeRegistry protocol
     @classmethod
     def register_type(cls, **kwargs):
         """Register one (or more) user-defined types used for matching types
         in step patterns of this matcher.
         """
-        raise NotImplementedError()
+        try:
+            cls.CUSTOM_TYPES.register_type(**kwargs)
+        except NotSupportedWarning:
+            # -- HINT: Provide DERIVED_CLASS name as failure context.
+            message = "{cls.__name__}.register_type".format(cls=cls)
+            raise NotSupportedWarning(message)
+
+    @classmethod
+    def has_registered_type(cls, name):
+        return cls.CUSTOM_TYPES.has_type(name)
 
     @classmethod
     def clear_registered_types(cls):
-        raise NotImplementedError()
+        cls.CUSTOM_TYPES.clear()
+    # -- END-OF: TypeRegistry protocol
 
     def __init__(self, func, pattern, step_type=None):
         self.func = func
@@ -274,7 +317,7 @@ class Matcher(object):
 
     def matches(self, step_text):
         """
-        Checks if :param:`step_text` matches this step-definition/step-matcher.
+        Checks if ``step_text`` parameter matches this step-definition (step-matcher).
 
         :param step_text: Step text to check.
         :return: True, if step is matched. False, otherwise.
@@ -326,30 +369,17 @@ class ParseMatcher(Matcher):
             assert isinstance(amount, int)
             print("{amount} vehicles".format(amount=amount))}
     """
-    custom_types = {}
-    parser_class = parse.Parser
-    case_sensitive = True
+    NAME = "parse"
+    PARSER_CLASS = parse.Parser
+    CASE_SENSITIVE = True
+    CUSTOM_TYPES = TypeRegistry()
 
-    @classmethod
-    def register_type(cls, **kwargs):
-        r"""
-        Register one (or more) user-defined types used for matching types
-        in step patterns of this matcher.
-
-        A type converter should follow :pypi:`parse` module rules.
-        In general, a type converter is a function that converts text (as string)
-        into a value-type (type converted value).
-        """
-        cls.custom_types.update(**kwargs)
-
-    @classmethod
-    def clear_registered_types(cls):
-        cls.custom_types.clear()
-
-    def __init__(self, func, pattern, step_type=None):
+    def __init__(self, func, pattern, step_type=None, custom_types=None):
+        if custom_types is None:
+            custom_types = self.CUSTOM_TYPES
         super(ParseMatcher, self).__init__(func, pattern, step_type)
-        self.parser = self.parser_class(pattern, self.custom_types,
-                                        case_sensitive=self.case_sensitive)
+        self.parser = self.PARSER_CLASS(pattern, extra_types=custom_types,
+                                        case_sensitive=self.CASE_SENSITIVE)
 
     @property
     def regex_pattern(self):
@@ -369,7 +399,7 @@ class ParseMatcher(Matcher):
 
     def check_match(self, step_text):
         """
-        Checks if the :param:`step_text` is matched (or not).
+        Checks if the ``step_text`` parameter is matched (or not).
 
         :param step_text: Step text to check.
         :return: step-args if step was matched, None otherwise.
@@ -430,7 +460,8 @@ class CFParseMatcher(ParseMatcher):
         assert matched is True
         # -- STEP MATCHES: numbers = [1, 2, 3]
     """
-    parser_class = cfparse.Parser
+    NAME = "cfparse"
+    PARSER_CLASS = cfparse.Parser
 
 
 class RegexMatcher(Matcher):
@@ -441,21 +472,8 @@ class RegexMatcher(Matcher):
 
     * Custom type-converters are NOT SUPPORTED.
     """
-
-    @classmethod
-    def register_type(cls, **kwargs):
-        """
-        Register one (or more) user-defined types used for matching types
-        in step patterns of this matcher.
-
-        NOTE:
-        This functionality is not supported for :class:`RegexMatcher` classes.
-        """
-        raise NotSupportedWarning("%s.register_type" % cls.__name__)
-
-    @classmethod
-    def clear_registered_types(cls):
-        pass  # -- HINT: GRACEFULLY ignored.
+    NAME = "re0"
+    CUSTOM_TYPES = TypeRegistryNotSupported()
 
     def __init__(self, func, pattern, step_type=None):
         super(RegexMatcher, self).__init__(func, pattern, step_type)
@@ -514,6 +532,7 @@ class SimplifiedRegexMatcher(RegexMatcher):
         def step_impl(context):
             pass
     """
+    NAME = "re"
 
     def __init__(self, func, pattern, step_type=None):
         assert not (pattern.startswith("^") or pattern.endswith("$")), \
@@ -537,6 +556,7 @@ class CucumberRegexMatcher(RegexMatcher):
         @when(u'^a step passes$')   # re.pattern = "^a step passes$"
         def step_impl(context): pass
     """
+    NAME = "re0"
 
 
 # -----------------------------------------------------------------------------
@@ -601,33 +621,35 @@ class StepMatcherFactory(object):
     A step function writer may implement type conversion
     inside the step function (implementation).
     """
-    MATCHER_MAPPING = {
-        "parse": ParseMatcher,
-        "cfparse": CFParseMatcher,
-        "re": SimplifiedRegexMatcher,
-
-        # -- BACKWARD-COMPATIBLE REGEX MATCHER: Old Cucumber compatible style.
-        # To make it the default step-matcher use the following snippet:
-        #   # -- FILE: features/environment.py
-        #   from behave import use_step_matcher
-        #   def before_all(context):
-        #       use_step_matcher("re0")
-        "re0": CucumberRegexMatcher,
-    }
+    STEP_MATCHER_CLASSES = [
+        ParseMatcher,
+        CFParseMatcher,
+        SimplifiedRegexMatcher,
+        CucumberRegexMatcher,  # -- SAME AS: RegexMatcher
+    ]
     DEFAULT_MATCHER_NAME = "parse"
 
-    def __init__(self, matcher_mapping=None, default_matcher_name=None):
-        if matcher_mapping is None:
-            matcher_mapping = self.MATCHER_MAPPING.copy()
+    @classmethod
+    def make_step_matcher_class_mapping(cls, step_matcher_classes=None):
+        if step_matcher_classes is None:
+            step_matcher_classes = cls.STEP_MATCHER_CLASSES
+        # -- USING: dict-comprehension
+        return {step_matcher_class.NAME: step_matcher_class
+                for step_matcher_class in step_matcher_classes}
+
+    def __init__(self, step_matcher_class_mapping=None, default_matcher_name=None):
+        if step_matcher_class_mapping is None:
+            step_matcher_class_mapping = self.make_step_matcher_class_mapping()
         if default_matcher_name is None:
             default_matcher_name = self.DEFAULT_MATCHER_NAME
 
-        self.matcher_mapping = matcher_mapping
+        assert default_matcher_name in step_matcher_class_mapping
+        self.step_matcher_class_mapping = step_matcher_class_mapping
         self.initial_matcher_name = default_matcher_name
         self.default_matcher_name = default_matcher_name
-        self.default_matcher = matcher_mapping[default_matcher_name]
+        self.default_matcher = self.step_matcher_class_mapping[default_matcher_name]
         self._current_matcher = self.default_matcher
-        assert self.default_matcher in self.matcher_mapping.values()
+        assert self.default_matcher in self.step_matcher_class_mapping.values()
 
     def reset(self):
         self.use_default_step_matcher(self.initial_matcher_name)
@@ -649,8 +671,11 @@ class StepMatcherFactory(object):
         """
         self.current_matcher.register_type(**kwargs)
 
+    def has_registered_type(self, name):
+        return self.current_matcher.has_registered_type(name)
+
     def clear_registered_types(self):
-        for step_matcher_class in self.matcher_mapping.values():
+        for step_matcher_class in self.step_matcher_class_mapping.values():
             step_matcher_class.clear_registered_types()
 
     def register_step_matcher_class(self, name, step_matcher_class,
@@ -663,14 +688,14 @@ class StepMatcherFactory(object):
         """
         assert inspect.isclass(step_matcher_class)
         assert issubclass(step_matcher_class, Matcher), "OOPS: %r" % step_matcher_class
-        known_class = self.matcher_mapping.get(name, None)
+        known_class = self.step_matcher_class_mapping.get(name, None)
         if (not override and
             known_class is not None and known_class is not step_matcher_class):
             message = "ALREADY REGISTERED: {name}={class_name}".format(
                 name=name, class_name=known_class.__name__)
             raise ResourceExistsError(message)
 
-        self.matcher_mapping[name] = step_matcher_class
+        self.step_matcher_class_mapping[name] = step_matcher_class
 
     def use_step_matcher(self, name):
         """
@@ -689,18 +714,20 @@ class StepMatcherFactory(object):
         :param name:  Name of the step-matcher class.
         :return: Current step-matcher class that is now in use.
         """
-        self._current_matcher = self.matcher_mapping[name]
+        self._current_matcher = self.step_matcher_class_mapping[name]
         return self._current_matcher
 
     def use_default_step_matcher(self, name=None):
         """Use the default step-matcher.
-        If a :param:`name` is provided, the default step-matcher is defined.
+
+        If ``name`` argument is provided, this name is used to define this
+        step-matcher as the new default step-matcher.
 
         :param name:    Optional, use it to specify the default step-matcher.
         :return: Current step-matcher class (or object).
         """
         if name:
-            self.default_matcher = self.matcher_mapping[name]
+            self.default_matcher = self.step_matcher_class_mapping[name]
             self.default_matcher_name = name
         self._current_matcher = self.default_matcher
         return self._current_matcher
@@ -708,44 +735,48 @@ class StepMatcherFactory(object):
     def use_current_step_matcher_as_default(self):
         self.default_matcher = self._current_matcher
 
-    def make_matcher(self, func, step_text, step_type=None):
+    def make_step_matcher(self, func, step_text, step_type=None):
         return self.current_matcher(func, step_text, step_type=step_type)
+
+    # -- BACKWARD-COMPATIBILITY:
+    def make_matcher(self, func, step_text, step_type=None):
+        warnings.warn("DEPRECATED: Use make_step_matchers() instead.", DeprecationWarning)
+        return self.make_step_matcher(func, step_text, step_type=step_type)
 
 
 # -- MODULE INSTANCE:
-_the_matcher_factory = StepMatcherFactory()
+_the_step_matcher_factory = StepMatcherFactory()
 
 
 # -----------------------------------------------------------------------------
-# INTERNAL API FUNCTIONS:
+# API FUNCTIONS:
 # -----------------------------------------------------------------------------
-def get_matcher_factory():
-    return _the_matcher_factory
+def get_step_matcher_factory():
+    return _the_step_matcher_factory
 
 
-def make_matcher(func, step_text, step_type=None):
-    return _the_matcher_factory.make_matcher(func, step_text,
-                                             step_type=step_type)
+def make_step_matcher(func, step_text, step_type=None):
+    return _the_step_matcher_factory.make_step_matcher(func, step_text,
+                                                       step_type=step_type)
 
 
 def use_current_step_matcher_as_default():
-    return _the_matcher_factory.use_current_step_matcher_as_default()
-
+    return _the_step_matcher_factory.use_current_step_matcher_as_default()
 
 
 # -----------------------------------------------------------------------------
 # PUBLIC API FOR: step-writers
 # -----------------------------------------------------------------------------
 def use_step_matcher(name):
-    return _the_matcher_factory.use_step_matcher(name)
+    return _the_step_matcher_factory.use_step_matcher(name)
 
 
 def use_default_step_matcher(name=None):
-    return _the_matcher_factory.use_default_step_matcher(name=name)
+    return _the_step_matcher_factory.use_default_step_matcher(name=name)
 
 
 def register_type(**kwargs):
-    _the_matcher_factory.register_type(**kwargs)
+    _the_step_matcher_factory.register_type(**kwargs)
 
 
 # -- REUSE DOCSTRINGS:
@@ -759,10 +790,23 @@ use_default_step_matcher.__doc__ = (
 # BEHAVE EXTENSION-POINT: Add your own step-matcher class(es)
 # -----------------------------------------------------------------------------
 def register_step_matcher_class(name, step_matcher_class, override=False):
-    _the_matcher_factory.register_step_matcher_class(name, step_matcher_class,
-                                                     override=override)
+    _the_step_matcher_factory.register_step_matcher_class(name, step_matcher_class,
+                                                          override=override)
 
 
 # -- REUSE DOCSTRINGS:
 register_step_matcher_class.__doc__ = (
     StepMatcherFactory.register_step_matcher_class.__doc__)
+
+
+# -----------------------------------------------------------------------------
+# BACKWARD-COMPATIBILITY:
+# -----------------------------------------------------------------------------
+def get_matcher_factory():
+    warnings.warn("DEPRECATED: Use get_step_matcher_factory() instead", DeprecationWarning)
+    return get_step_matcher_factory()
+
+
+def make_matcher(func, step_text, step_type=None):
+    warnings.warn("DEPRECATED: Use make_step_matcher() instead", DeprecationWarning)
+    return make_step_matcher(func, step_text, step_type=step_type)

@@ -55,9 +55,9 @@ class TestParseMatcher(object):
 
         # -- EXPECT:
         this_matcher_class = self.STEP_MATCHER_CLASS
-        this_matcher_class.custom_types.clear()
+        this_matcher_class.clear_registered_types()
         this_matcher_class.register_type(Number=parse_number)
-        assert "Number" in this_matcher_class.custom_types
+        assert this_matcher_class.has_registered_type("Number")
 
     def test_returns_none_if_parser_does_not_match(self):
         # pylint: disable=redefined-outer-name
@@ -391,11 +391,11 @@ class TestCucumberRegexMatcher(TestRegexMatcher):
 
 
 def test_step_matcher_current_matcher():
-    step_matcher_factory = matchers.get_matcher_factory()
-    for name, klass in list(step_matcher_factory.matcher_mapping.items()):
+    step_matcher_factory = matchers.get_step_matcher_factory()
+    for name, klass in list(step_matcher_factory.step_matcher_class_mapping.items()):
         current_matcher1 = matchers.use_step_matcher(name)
         current_matcher2 = step_matcher_factory.current_matcher
-        matcher = matchers.make_matcher(lambda x: -x, "foo")
+        matcher = matchers.make_step_matcher(lambda x: -x, "foo")
         assert isinstance(matcher, klass)
         assert current_matcher1 is klass
         assert current_matcher2 is klass

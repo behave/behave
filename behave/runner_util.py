@@ -669,15 +669,17 @@ def print_undefined_step_snippets(undefined_steps, stream=None, colored=True):
     stream.write(msg)
     stream.flush()
 
+
 def reset_runtime():
-    """Reset runtime environment.
+    """
+    Reset runtime environment.
     Best effort to reset module data to initial state.
     """
     # pylint: disable=import-outside-toplevel
     from behave import step_registry
-    from behave import matchers
-    # -- RESET 1: behave.step_registry
+    from behave.matchers import get_step_matcher_factory
+    # -- RESET STEP 1: behave.step_registry
     step_registry.registry = step_registry.StepRegistry()
     step_registry.setup_step_decorators(None, step_registry.registry)
-    # -- RESET 2: behave.matchers
-    matchers.get_matcher_factory().reset()
+    # -- RESET STEP 2: behave.matchers
+    get_step_matcher_factory().reset()

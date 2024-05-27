@@ -13,19 +13,18 @@ class TestStepRegistry(object):
     def test_add_step_definition_adds_to_lowercased_keyword(self):
         registry = step_registry.StepRegistry()
         # -- MONKEYPATCH-PROBLEM:
-        #  with patch('behave.matchers.make_matcher') as make_matcher:
-        with patch('behave.step_registry.make_matcher') as make_matcher:
+        with patch("behave.step_registry.make_step_matcher") as make_step_matcher:
             func = lambda x: -x
             pattern = u"just a test string"
             magic_object = Mock()
-            make_matcher.return_value = magic_object
+            make_step_matcher.return_value = magic_object
 
             for step_type in list(registry.steps.keys()):
                 registered_steps = []
                 registry.steps[step_type] = registered_steps
 
                 registry.add_step_definition(step_type.upper(), pattern, func)
-                make_matcher.assert_called_with(func, pattern, step_type)
+                make_step_matcher.assert_called_with(func, pattern, step_type)
                 assert registered_steps == [magic_object]
 
     def test_find_match_with_specific_step_type_also_searches_generic(self):
