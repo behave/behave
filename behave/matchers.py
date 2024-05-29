@@ -145,7 +145,26 @@ class MatchWithError(Match):
 # -----------------------------------------------------------------------------
 # SECTION: TypeRegistry for Step Matchers (provide: TypeRegistry protocol)
 # -----------------------------------------------------------------------------
+# from typing import Protocol, ParamSpec
+# from abc import abstractmethod
+# P = ParamSpec("P")
+#
+# class TypeRegistryProtocol(Protocol):
+#     @abstractmethod
+#     def register_type(self, **kwargs: P.kwargs) -> None:
+#         ...
+#
+#     @abstractmethod
+#     def has_type(self, name: str) -> bool:
+#         return False
+#
+#     def clear(self) -> None:
+#         ...
+#
+#
 class TypeRegistry(dict):
+    # -- IMPLEMENTS: TypeRegistryProtocol and dict-Protocol
+
     def register_type(self, **kwargs):
         """
         Register one (or more) user-defined types used for matching types
@@ -161,6 +180,7 @@ class TypeRegistryNotSupported():
     """
     Placeholder class for a type-registry if custom types are not supported.
     """
+    # -- IMPLEMENTS: TypeRegistryProtocol
     def register_type(self, **kwargs):
         raise NotSupportedWarning("register_type")
 
@@ -202,7 +222,7 @@ class Matcher(object):
         File location of the step-definition function.
     """
     NAME = None  # -- HINT: Must be specified by derived class.
-    CUSTOM_TYPES = TypeRegistryNotSupported()
+    TYPE_REGISTRY = TypeRegistryNotSupported()
 
     # -- DESCRIBE-SCHEMA FOR STEP-DEFINITIONS (step-matchers):
     SCHEMA = u"@{this.step_type}('{this.pattern}')"
@@ -217,7 +237,7 @@ class Matcher(object):
         in step patterns of this matcher.
         """
         try:
-            cls.CUSTOM_TYPES.register_type(**kwargs)
+            cls.TYPE_REGISTRY.register_type(**kwargs)
         except NotSupportedWarning:
             # -- HINT: Provide DERIVED_CLASS name as failure context.
             message = "{cls.__name__}.register_type".format(cls=cls)
@@ -225,11 +245,11 @@ class Matcher(object):
 
     @classmethod
     def has_registered_type(cls, name):
-        return cls.CUSTOM_TYPES.has_type(name)
+        return cls.TYPE_REGISTRY.has_type(name)
 
     @classmethod
     def clear_registered_types(cls):
-        cls.CUSTOM_TYPES.clear()
+        cls.TYPE_REGISTRY.clear()
     # -- END-OF: TypeRegistry protocol
 
     def __init__(self, func, pattern, step_type=None):
@@ -372,11 +392,11 @@ class ParseMatcher(Matcher):
     NAME = "parse"
     PARSER_CLASS = parse.Parser
     CASE_SENSITIVE = True
-    CUSTOM_TYPES = TypeRegistry()
+    TYPE_REGISTRY = TypeRegistry()
 
     def __init__(self, func, pattern, step_type=None, custom_types=None):
         if custom_types is None:
-            custom_types = self.CUSTOM_TYPES
+            custom_types = self.TYPE_REGISTRY
         super(ParseMatcher, self).__init__(func, pattern, step_type)
         self.parser = self.PARSER_CLASS(pattern, extra_types=custom_types,
                                         case_sensitive=self.CASE_SENSITIVE)
@@ -473,7 +493,7 @@ class RegexMatcher(Matcher):
     * Custom type-converters are NOT SUPPORTED.
     """
     NAME = "re0"
-    CUSTOM_TYPES = TypeRegistryNotSupported()
+    TYPE_REGISTRY = TypeRegistryNotSupported()
 
     def __init__(self, func, pattern, step_type=None):
         super(RegexMatcher, self).__init__(func, pattern, step_type)
