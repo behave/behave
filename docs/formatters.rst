@@ -36,6 +36,7 @@ The following formatters are currently supported:
 Name           Mode     Description
 ============== ======== ================================================================
 help           normal   Shows all registered formatters.
+bad_steps      dry-run  Shows BAD STEP-DEFINITIONS (if any exist).
 json           normal   JSON dump of test run
 json.pretty    normal   JSON dump of test run (human readable)
 plain          normal   Very basic formatter with maximum compatibility

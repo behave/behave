@@ -11,6 +11,7 @@ Summary:
 * `Support for emojis in feature files and steps`_
 * `Improve Active-Tags Logic`_
 * `Active-Tags: Use ValueObject for better Comparisons`_
+* `Detect bad step definitions`_
 
 .. _`Example Mapping`: https://cucumber.io/blog/example-mapping-introduction/
 .. _`Example Mapping Webinar`: https://cucumber.io/blog/example-mapping-webinar/
@@ -313,3 +314,30 @@ execution of an scenario to a temperature range, like:
         "supported_payment_method": ValueObject(payment_methods, operator.contains),
     }
     ...
+
+
+Detect Bad Step Definitions
+-------------------------------------------------------------------------------
+
+The **regular expression** (:mod:`re`) module in Python has increased the checks
+when bad regular expression patterns are used. Since `Python >= 3.11`,
+an :class:`re.error` exception may be raised on some regular expressions.
+The exception is raised when the bad regular expression is compiled
+(on :func:`re.compile()`).
+
+``behave`` has added the following support:
+
+* Detects a bad step-definition when they are added to the step-registry.
+* Reports a bad step-definition and their exception during this step.
+* bad step-definitions are not registered in the step-registry.
+* A bad step-definition is like an UNDEFINED step-definition.
+* A :class:`~behave.formatter.bad_steps.BadStepsFormatter` formatter was added that shows any BAD STEP DEFINITIONS
+
+
+.. note:: More Information on BAD STEP-DEFINITIONS:
+
+    * `features/formatter.bad_steps.feature`_
+    * `features/runner.bad_steps.feature`_
+
+.. _`features/formatter.bad_steps.feature`: https://github.com/behave/behave/blob/main/features/formatter.bad_steps.feature
+.. _`features/runner.bad_steps.feature`: https://github.com/behave/behave/blob/main/features/runner.bad_steps.feature
