@@ -29,6 +29,7 @@ _BUILTIN_FORMATS = [
     ("steps.catalog", "behave.formatter.steps:StepsCatalogFormatter"),
     ("steps.usage",   "behave.formatter.steps:StepsUsageFormatter"),
     ("sphinx.steps",  "behave.formatter.sphinx_steps:SphinxStepsFormatter"),
+    ("bad_steps", "behave.formatter.bad_steps:BadStepsFormatter"),
 ]
 
 # -----------------------------------------------------------------------------

@@ -26,40 +26,45 @@ class AmbiguousStep(ValueError):
     pass
 
 
-class BadStepDefinitionErrorHandler(object):
+class BadStepDefinitionCollector(object):
     BAD_STEP_DEFINITION_MESSAGE = """\
 BAD-STEP-DEFINITION: {step}
   LOCATION: {step_location}
 """.strip()
     BAD_STEP_DEFINITION_MESSAGE_WITH_ERROR = BAD_STEP_DEFINITION_MESSAGE + """
-RAISED EXCEPTION: {error.__class__.__name__}:{error}"""
+  RAISED EXCEPTION: {error.__class__.__name__}:{error}"""
 
-    def __init__(self):
-        self.bad_step_definitions = []
+    def __init__(self, bad_step_definitions=None, file=None):
+        self.bad_step_definitions = bad_step_definitions or []
+        self.file = file or sys.stdout
 
     def clear(self):
         self.bad_step_definitions = []
 
-    def on_error(self, step_matcher, error):
-        self.bad_step_definitions.append(step_matcher)
-        self.print(step_matcher, error)
-
     def print_all(self):
-        print("BAD STEP-DEFINITIONS[%d]:" % len(self.bad_step_definitions))
-        for index, bad_step_definition in enumerate(self.bad_step_definitions):
-            print("%d. " % index, end="")
-            self.print(bad_step_definition, error=None)
+        print("BAD STEP-DEFINITIONS[%d]:" % len(self.bad_step_definitions),
+              file=self.file)
+        for bad_step_definition in self.bad_step_definitions:
+            print("- ", end="")
+            self.print(bad_step_definition, error=None, file=self.file)
 
     # -- CLASS METHODS:
     @classmethod
-    def print(cls, step_matcher, error=None):
+    def print(cls, step_matcher, error=None, file=None):
         message = cls.BAD_STEP_DEFINITION_MESSAGE_WITH_ERROR
         if error is None:
             message = cls.BAD_STEP_DEFINITION_MESSAGE
 
         print(message.format(step=step_matcher.describe(),
                              step_location=step_matcher.location,
-                             error=error), file=sys.stderr)
+                             error=error), file=file)
+
+
+class BadStepDefinitionErrorHandler(BadStepDefinitionCollector):
+
+    def on_error(self, step_matcher, error):
+        self.bad_step_definitions.append(step_matcher)
+        self.print(step_matcher, error, file=self.file)
 
     @classmethod
     def raise_error(cls, step_matcher, error):
@@ -73,7 +78,7 @@ class StepRegistry(object):
 
     def __init__(self):
         self.steps = dict(given=[], when=[], then=[], step=[])
-        self.error_handler = self.BAD_STEP_DEFINITION_HANDLER_CLASS()
+        self.error_handler = self.BAD_STEP_DEFINITION_HANDLER_CLASS(file=sys.stderr)
 
     def clear(self):
         """

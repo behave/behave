@@ -785,6 +785,8 @@ class ModelRunner(object):
         for reporter in self.config.reporters:
             reporter.end()
 
+        # -- MAYBE: BAD STEP-DEFINITIONS: Unused BAD STEPS should not cause FAILURE.
+        # bad_step_definitions = self.step_registry.error_handler.bad_step_definitions
         failed = ((failed_count > 0) or self.aborted or (self.hook_failures > 0)
                   or (len(self.undefined_steps) > undefined_steps_initial_size)
                   or cleanups_failed)

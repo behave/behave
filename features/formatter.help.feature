@@ -25,6 +25,7 @@ Feature: Help Formatter
       And the command output should contain:
         """
         AVAILABLE FORMATTERS:
+          bad_steps      Show BAD STEP-DEFINITION(s) (if any exist)
           json           JSON dump of test run
           json.pretty    JSON dump of test run (human readable)
           null           Provides formatter that does not output anything.
