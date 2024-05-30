@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: UTF-8 -*-
 import inspect
 import sys
 import warnings
@@ -20,7 +20,6 @@ class BadFormatterClass(object):
 
     @property
     def error(self):
-        from behave.importer import make_scoped_class_name
         if self._error_text is None:
             error_text = ""
             if not inspect.isclass(self.formatter_class):

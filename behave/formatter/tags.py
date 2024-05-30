@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: UTF-8 -*-
 """
 Collects data how often a tag count is used and where.
 
@@ -123,7 +123,7 @@ class TagsFormatter(AbstractTagsFormatter):
 
     def report_tag_counts_by_usage(self):
         # -- PREPARE REPORT:
-        compare_tag_counts_size = lambda x: len(self.tag_counts[x])
+        compare_tag_counts_size = lambda x: len(self.tag_counts[x])  # noqa: E731
         ordered_tags = sorted(list(self.tag_counts.keys()),
                               key=compare_tag_counts_size)
         tag_maxsize = compute_words_maxsize(ordered_tags)
