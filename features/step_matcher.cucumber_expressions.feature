@@ -92,15 +92,6 @@ Feature: Use StepMatcher with CucumberExpressions
             # -- HINT: Use StepMatcher4CucumberExpressions as default step-matcher.
             use_step_matcher_for_cucumber_expressions()
             """
-        And a file named "features/cucumber_expression.feature" with:
-            """
-            Feature: Use CucumberExpressions in Step Definitions
-                Scenario: User selects a color twice
-                  Given I am on the profile settings page
-                  When I select the "red" theme colour
-                  But  I select the "blue" theme color
-                  Then the profile color should be "blue"
-            """
 
   @fixture.behave.override_background
   Rule: Use predefined ParameterType(s)
@@ -172,6 +163,15 @@ Feature: Use StepMatcher with CucumberExpressions
                 assert isinstance(the_color, Color)
                 assert ctx.selected_color == the_color
             """
+        And a file named "features/cucumber_expression.feature" with:
+            """
+            Feature: Use CucumberExpressions in Step Definitions
+                Scenario: User selects a color twice
+                  Given I am on the profile settings page
+                  When I select the "red" theme colour
+                  But  I select the "blue" theme color
+                  Then the profile color should be "blue"
+            """
         When I run "behave -f plain features/cucumber_expression.feature"
         Then it should pass with:
           """
@@ -222,6 +222,15 @@ Feature: Use StepMatcher with CucumberExpressions
                 assert isinstance(the_color, Color)
                 assert ctx.selected_color == the_color
             """
+        And a file named "features/cucumber_expression.feature" with:
+            """
+            Feature: Use CucumberExpressions in Step Definitions
+                Scenario: User selects a color twice
+                  Given I am on the profile settings page
+                  When I select the "red" theme colour
+                  But  I select the "blue" theme color
+                  Then the profile color should be "blue"
+            """
         When I run "behave -f plain features/cucumber_expression.feature"
         Then it should pass with:
           """
@@ -241,7 +250,7 @@ Feature: Use StepMatcher with CucumberExpressions
         And note that "step-definitions with CucumberExpressions can be used"
 
     Scenario: Use TypeBuilder for Many Items
-        And a file named "features/steps/color_steps.py" with:
+        And a file named "features/steps/many_color_steps.py" with:
           """
           from typing import List
           from behave import given, when, then
