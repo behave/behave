@@ -13,9 +13,11 @@ import copy
 import inspect
 import re
 import warnings
+
 import six
 import parse
 from parse_type import cfparse
+
 from behave._types import ChainedExceptionUtil, ExceptionUtil
 from behave.exception import NotSupportedWarning, ResourceExistsError
 from behave.model_core import Argument, FileLocation, Replayable
@@ -812,6 +814,54 @@ use_default_step_matcher.__doc__ = (
 def register_step_matcher_class(name, step_matcher_class, override=False):
     _the_step_matcher_factory.register_step_matcher_class(name, step_matcher_class,
                                                           override=override)
+
+
+def has_registered_step_matcher_class(name_or_class):
+    """
+    Indicates if a ``step_matcher_class`` is already registered or not.
+
+    This supports to auto-register a ``step_matcher_class`` when it is first used.
+
+    EXAMPLE::
+
+        # -- FILE: cuke4behave/__init__.py
+        from behave.matchers import (Matcher,
+            has_registered_step_matcher_class,
+            register_step_matcher_class,
+            use_step_matcher
+        )
+
+        class CucumberExpressionsStepMatcher(Matcher):
+            NAME = "cucumber_expressions"
+            ...
+
+        def use_step_matcher_for_cucumber_expressions():
+            this_class = CucumberExpressionsStepMatcher
+            if not has_registered_step_matcher_class(this_class.NAME):
+                # -- AUTO-REGISTER: On first use of this step-matcher-class
+                register_step_matcher_class(this_class.NAME, the_class)
+            use_step_matcher(this_class.NAME)
+
+        # -- FILE: features/steps/example_steps.py
+        from behave import given, when then
+        from cuke4behave import use_step_matcher_for_cucumber_expressions
+
+        use_step_matcher_for_cucumber_expressions()
+
+        @given('a person named {string}')
+        def step_given_a_person_named(ctx, name):
+            pass
+    """
+    step_matcher_class_mapping = _the_step_matcher_factory.step_matcher_class_mapping
+    if isinstance(name_or_class, six.string_types):
+        name = name_or_class
+        return name in step_matcher_class_mapping
+    if not inspect.isclass(name_or_class):
+        raise TypeError("%r (expected: string, class" % name_or_class)
+
+    # -- CASE 2: Check if step_matcher_class is registered.
+    step_matcher_class = name_or_class
+    return step_matcher_class in step_matcher_class_mapping.values()
 
 
 # -- REUSE DOCSTRINGS:

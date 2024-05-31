@@ -65,6 +65,7 @@ CLEANUPS:
 
 ENHANCEMENTS:
 
+* Add support for step-definitions (step-matchers) with `CucumberExpressions`_
 * User-defined formatters: Improve diagnostics if bad formatter is used (ModuleNotFound, ...)
 * active-tags: Added ``ValueObject`` class for enhanced control of comparison mechanism
   (supports: equals, less-than, less-or-equal, greater-than, greater-or-equal, contains, ...)
@@ -144,6 +145,7 @@ BREAKING CHANGES (naming):
 
 
 .. _`cucumber-tag-expressions`: https://pypi.org/project/cucumber-tag-expressions/
+.. _`CucumberExpressions`: https://github.com/cucumber/cucumber-expressions
 
 
 Version: 1.2.6 (2018-02-25)
