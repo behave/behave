@@ -177,8 +177,9 @@ todo_include_todos = False
 # DISABLED: html_theme = "sphinx_nefertiti"
 html_theme = "furo"
 
-if ON_READTHEDOCS:
-    html_theme = "default"
+# -- DISABLED: Use html_theme = "furo" now.
+# if ON_READTHEDOCS:
+#    html_theme = "default"
 
 if html_theme == "furo":
     # -- SEE: https://pradyunsg.me/furo/customisation/
