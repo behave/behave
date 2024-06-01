@@ -21,6 +21,11 @@ furo >= 2024.04.27; python_version >= '3.8'
 # DISABLED: sphinx-nefertiti >= 0.3.3; python_version >= '3.9'
 # DISABLED: sphinx_bootstrap_theme >= 0.6.0
 
+# -- SPHINX-EXTENSIONS:
+# SPHINX-COPYBUTTON:
+#   SEE: https://github.com/executablebooks/sphinx-copybutton
+sphinx-copybutton >= 0.5.2; python_version >= '3.7'
+
 # -- NEEDED FOR: RTD (as temporary fix)
 urllib3 < 2.0.0; python_version < '3.8'
 

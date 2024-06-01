@@ -9,31 +9,30 @@ Tag-Expressions v2 are based on :pypi:`cucumber-tag-expressions` with some exten
 * Some boolean-logic-expressions where not possible with Tag-Expressions v1
 * Therefore, Tag-Expressions v2 supersedes the old-style tag-expressions.
 
-EXAMPLES:
 
-.. code-block:: sh
+.. code-block:: gherkin
+    :caption: TAG-EXPRESSION EXAMPLES
 
-    # -- SIMPLE TAG-EXPRESSION EXAMPLES:
-    # EXAMPLE 1: Select features/scenarios that have the tags: @a and @b
+    # -- EXAMPLE 1: Select features/scenarios that have the tags: @a and @b
     @a and @b
 
-    # EXAMPLE 2: Select features/scenarios that have the tag: @a or @b
+    # -- EXAMPLE 2: Select features/scenarios that have the tag: @a or @b
     @a or @b
 
-    # EXAMPLE 3: Select features/scenarios that do not have the tag: @a
+    # -- EXAMPLE 3: Select features/scenarios that do not have the tag: @a
     not @a
 
-    # -- MORE TAG-EXPRESSION EXAMPLES:
-    # HINT: Boolean expressions can be grouped with parenthesis.
-    # EXAMPLE 4: Select features/scenarios that have the tags: @a but not @b
+    # -- EXAMPLE 4: Select features/scenarios that have the tags: @a but not @b
     @a and not @b
 
-    # EXAMPLE 5: Select features/scenarios that have the tags: (@a or @b) but not @c
+    # -- EXAMPLE 5: Select features/scenarios that have the tags: (@a or @b) but not @c
+    # HINT: Boolean expressions can be grouped with parenthesis.
     (@a or @b) and not @c
 
 COMMAND-LINE EXAMPLE:
 
 .. code-block:: sh
+    :caption: USING: Tag-Expressions v2 with ``behave``
 
     # -- SELECT-BY-TAG-EXPRESSION (with tag-expressions v2):
     # Select all features / scenarios with both "@foo" and "@bar" tags.
@@ -62,17 +61,17 @@ Tag Matching with Tag-Expressions
 Tag-Expressions v2 support **partial string/tag matching** with wildcards.
 This supports tag-expressions:
 
-=================== ========================
-Tag Matching Idiom  Tag-Expression Example
-=================== ========================
-``tag-starts-with`` ``@foo.*`` or ``foo.*``
-``tag-ends-with``   ``@*.one`` or ``*.one``
-``tag-contains``    ``@*foo*`` or ``*foo*``
-=================== ========================
+=================== =========== =========== ===================================================
+Tag Matching Idiom  Example 1   Example 2   Description
+=================== =========== =========== ===================================================
+``tag.starts_with`` ``@foo.*``  ``foo.*``   Search for tags that start with a ``prefix``.
+``tag.ends_with``   ``@*.one``  ``*.one``   Search for tags that end with a ``suffix``.
+``tag.contains``    ``@*foo*``  ``*foo*``   Search for tags that contain a ``part``.
+=================== =========== =========== ===================================================
 
 .. code-block:: gherkin
+    :caption: FILE: features/one.feature
 
-    # -- FILE: features/one.feature
     Feature: Alice
 
       @foo.one
@@ -91,6 +90,7 @@ The following command-line will select all features / scenarios with tags
 that start with "@foo.":
 
 .. code-block:: sh
+    :caption: USAGE EXAMPLE: Run behave with tag-matching expressions
 
     $ behave -f plain --tags="@foo.*" features/one.feature
     Feature: Alice
@@ -125,8 +125,8 @@ This allows a user to select:
 EXAMPLE:
 
 .. code-block:: ini
+    :caption: FILE: behave.ini
 
-    # -- FILE: behave.ini
     # SPECIFY WHICH TAG-EXPRESSION-PROTOCOL SHOULD BE USED:
     #   SUPPORTED VALUES: v1, v2, auto_detect
     #   CURRENT DEFAULT:  auto_detect

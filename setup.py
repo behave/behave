@@ -124,6 +124,8 @@ setup(
             # SEE: https://stackoverflow.com/questions/77848565/sphinxcontrib-applehelp-breaking-sphinx-builds-with-sphinx-version-less-than-5-0
             "sphinxcontrib-applehelp >= 1.0.8; python_version >= '3.7'",
             "sphinxcontrib-htmlhelp >= 2.0.5;  python_version >= '3.7'",
+            # -- SPHINX-EXTENSIONS:
+            "sphinx-copybutton >= 0.5.2; python_version >= '3.7'",
         ],
         "develop": [
             "build >= 0.5.1",

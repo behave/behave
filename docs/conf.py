@@ -35,6 +35,7 @@ extensions = [
     "sphinx.ext.extlinks",
     "sphinx.ext.todo",
     "sphinx.ext.intersphinx",
+    "sphinx_copybutton",
 ]
 optional_extensions = [
     # -- DISABLED: "sphinxcontrib.youtube",
@@ -52,7 +53,7 @@ for optional_module_name in optional_extensions:
 
 
 extlinks = {
-    "this": ("https://github.com/behave/behave/blob/main/%s", "%s"),
+    "this": ("https://github.com/behave/behave/blob/main/%s", "%s"),  # AKA: this_repo
     "behave": ("https://github.com/behave/behave", None),
     "behave.example": ("https://github.com/behave/behave.example", None),
     "issue":  ("https://github.com/behave/behave/issues/%s", "issue #%s"),
