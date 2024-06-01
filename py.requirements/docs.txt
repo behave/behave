@@ -13,7 +13,13 @@
 sphinx >= 7.3.7;   python_version >= '3.7'
 sphinx >=1.6,<4.4; python_version < '3.7'
 sphinx-autobuild
-sphinx_bootstrap_theme >= 0.6.0
+
+# -- SPHINX-THEMES:
+# SEE: https://www.sphinx-doc.org/en/master/usage/theming.html
+# SEE: https://sphinx-themes.org
+furo >= 2024.04.27; python_version >= '3.8'
+# DISABLED: sphinx-nefertiti >= 0.3.3; python_version >= '3.9'
+# DISABLED: sphinx_bootstrap_theme >= 0.6.0
 
 # -- NEEDED FOR: RTD (as temporary fix)
 urllib3 < 2.0.0; python_version < '3.8'
