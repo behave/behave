@@ -136,7 +136,6 @@ class FileLocation(object):
       * "{filename}:{line}" or
       * "{filename}" (if line number is not present)
     """
-    __pychecker__ = "missingattrs=line"     # -- Ignore warnings for 'line'.
 
     def __init__(self, filename, line=None):
         if PLATFORM_WIN:

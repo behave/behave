@@ -88,7 +88,6 @@ class LazyObject(object):
         :raise ModuleNotFoundError: If module is not found or cannot be imported.
         :raise ClassNotFoundError:  If class/object is not found in module.
         """
-        __pychecker__ = "unusednames=obj,type"
         resolved_object = None
         if not self.resolved_object:
             # -- SETUP-ONCE: Lazy load the real object.
@@ -108,7 +107,6 @@ class LazyObject(object):
 
     def __set__(self, obj, value):
         """Implement descriptor protocol."""
-        __pychecker__ = "unusednames=obj"
         self.resolved_object = value
 
     def get(self):
