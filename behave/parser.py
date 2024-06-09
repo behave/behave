@@ -354,7 +354,7 @@ class Parser(object):
 
             Oracle, oracle, ... what went wrong?
 
-        :param line:  Text line where parse failure occured (as string).
+        :param line:  Text line where parse failure occurred (as string).
         :return: Reason (as string) if an explanation is found.
                  Otherwise, empty string or None.
         """
@@ -699,7 +699,7 @@ class Parser(object):
                            self.feature.filename, self.line)
 
         # -- SUPPORT: Escaped-pipe(s) in Gherkin cell values.
-        #    Search for pipe(s) that are not preceeded with an escape char.
+        #    Search for pipe(s) that are not preceded with an escape char.
         cells = [cell.replace("\\|", "|").strip()
                  for cell in re.split(r"(?<!\\)\|", line[1:-1])]
         if self.table is None:

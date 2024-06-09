@@ -26,12 +26,14 @@ _BUILTIN_FORMATS = [
     ("tags.location", "behave.formatter.tags:TagsLocationFormatter"),
     ("steps",         "behave.formatter.steps:StepsFormatter"),
     ("steps.doc",     "behave.formatter.steps:StepsDocFormatter"),
+    ("steps.bad", "behave.formatter.bad_steps:BadStepsFormatter"),
     ("steps.catalog", "behave.formatter.steps:StepsCatalogFormatter"),
     ("steps.code",    "behave.formatter.steps_code:StepWithCodeFormatter"),
+    ("steps.missing", "behave.contrib.formatter_missing_steps:MissingStepsFormatter"),
     ("steps.usage",   "behave.formatter.steps:StepsUsageFormatter"),
     ("sphinx.steps",  "behave.formatter.sphinx_steps:SphinxStepsFormatter"),
-    ("bad_steps", "behave.formatter.bad_steps:BadStepsFormatter"),
 ]
+
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS:

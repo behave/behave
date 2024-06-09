@@ -11,7 +11,8 @@ else:
 
 
 class Unknown(object):
-    """Placeholder for unknown/missing information, distinguishable from None.
+    """
+    Placeholder for unknown/missing information, distinguishable from None.
 
     .. code-block:: python
 
@@ -24,9 +25,10 @@ class Unknown(object):
 
 
 class ExceptionUtil(object):
-    """Provides a utility class for accessing/modifying exception information.
+    """
+    Provides a utility class for accessing/modifying exception information.
 
-    .. seealso:: PEP-3134 Chained excpetions
+    .. seealso:: PEP-3134 Chained exceptions
     """
     # pylint: disable=no-init
 
@@ -66,10 +68,11 @@ class ExceptionUtil(object):
 
 
 class ChainedExceptionUtil(ExceptionUtil):
-    """Provides a utility class for accessing/modifying exception information
+    """
+    Provides a utility class for accessing/modifying exception information
     related to chained exceptions.
 
-    .. seealso:: PEP-3134 Chained excpetions
+    .. seealso:: PEP-3134 Chained exceptions
     """
     # pylint: disable=no-init
 

@@ -275,8 +275,8 @@ class StepsCatalogFormatter(StepsDocFormatter):
     step definitions. The primary purpose is to provide help for a test writer.
 
     In order to ease work for non-programmer testers, the technical details of
-    the steps (i.e. function name, source location) are ommited and the
-    steps are shown as they would apprear in a feature file (no noisy '@',
+    the steps (i.e. function name, source location) are omitted and the
+    steps are shown as they would appear in a feature file (no noisy '@',
     or '(', etc.).
 
     Also, the output is sorted by step type (Given, When, Then)

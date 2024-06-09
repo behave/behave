@@ -183,7 +183,7 @@ def text_normalize(text):
     """
     # if not isinstance(text, str):
     if isinstance(text, bytes):
-        # -- MAYBE: command.ouput => bytes, encoded stream output.
+        # -- MAYBE: command.output => bytes, encoded stream output.
         text = codecs.decode(text)
     lines = [ line.strip()  for line in text.splitlines()  if line.strip() ]
     return "\n".join(lines)

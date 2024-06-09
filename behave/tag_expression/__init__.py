@@ -3,7 +3,7 @@
 """
 Common module for tag-expressions:
 
-* v1: old tag expressions (deprecating; superceeded by: cucumber-tag-expressions)
+* v1: old tag expressions (deprecating; superseded by: cucumber-tag-expressions)
 * v2: cucumber-tag-expressions (with wildcard extension)
 
 .. seealso::

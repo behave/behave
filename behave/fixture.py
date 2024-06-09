@@ -188,7 +188,7 @@ def use_fixture(fixture_func, context, *fixture_args, **fixture_kwargs):
     """Use fixture (function) and call it to perform its setup-part.
 
     The fixture-function is similar to a :func:`contextlib.contextmanager`
-    (and contains a yield-statement to seperate setup and cleanup part).
+    (and contains a yield-statement to separate setup and cleanup part).
     If it contains a yield-statement, it registers a context-cleanup function
     to the context object to perform the fixture-cleanup at the end of the
     current scoped when the context layer is removed
@@ -292,7 +292,7 @@ def use_composite_fixture_with(context, fixture_funcs_with_params):
     safe-cleanup is needed even if an setup-fixture-error occurs.
 
     This function ensures that fixture-cleanup is performed
-    for every fixture that was setup before the setup-error occured.
+    for every fixture that was setup before the setup-error occurred.
 
     .. code-block:: python
 

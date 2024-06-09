@@ -226,7 +226,7 @@ class TestAsyncStepRunPy34:
                 1 / 0   # XFAIL-HERE: Raises ZeroDivisionError
 
         # pylint: enable=import-outside-toplevel, unused-argument
-        # -- RUN ASYNC-STEP: Verify that raised exeception is detected.
+        # -- RUN ASYNC-STEP: Verify that raised exception is detected.
         context = Context(runner=Runner(config={}))
         with pytest.raises(ZeroDivisionError):
             when_async_step_raises_exception(context)

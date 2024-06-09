@@ -19,7 +19,7 @@ special characters correctly.
 And I also have UTF-8 as my console charset. Running this code leads to
 "Assertion Failed: 'ascii' codec can't encode characters in position 0-5: ordinal not in range(128)" error.
 
-That is becase behave.textutil.text returns six.text_type(e) where 'e' is exception (https://github.com/behave/behave/blob/master/behave/textutil.py#L83).
+That is because behave.textutil.text returns six.text_type(e) where 'e' is exception (https://github.com/behave/behave/blob/master/behave/textutil.py#L83).
 
 Changing line 83 to six.text_type(value) solves this issue.
 """

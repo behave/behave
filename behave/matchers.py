@@ -130,7 +130,7 @@ class MatchWithError(Match):
     """Match class when error occur during step-matching
 
     REASON:
-      * Type conversion error occured.
+      * Type conversion error occurred.
       * ...
     """
     def __init__(self, func, error):

@@ -44,7 +44,7 @@ class Status(Enum):
     * executing: Marks the steps during execution (used in a formatter)
 
     .. versionadded:: 1.2.6
-        Superceeds string-based status values.
+        Supersedes string-based status values.
     """
     untested = 0
     skipped = 1

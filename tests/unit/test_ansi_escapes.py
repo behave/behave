@@ -50,7 +50,7 @@ def colorize_text(text, colors=None):
 # TEST SUITE
 # --------------------------------------------------------------------------
 def test_module_setup():
-    """Ensure that the module setup (aliases, escapes) occured."""
+    """Ensure that the module setup (aliases, escapes) occurred."""
     # colors_count = len(ansi_escapes.colors)
     aliases_count = len(ansi_escapes.aliases)
     escapes_count = len(ansi_escapes.escapes)

@@ -40,8 +40,8 @@ class MissingStepsFormatter(StepsUsageFormatter):
 
             {step_snippets}
     """
-    name = "missing-steps"
-    description = "Writes implementation for missing step definitions."
+    name = "steps.missing"
+    description = "Shows undefined/missing steps definitions, implements them."
     template = STEP_MODULE_TEMPLATE
     scope = "behave.formatter.missing_steps"
 

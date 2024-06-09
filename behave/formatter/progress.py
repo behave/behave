@@ -261,7 +261,7 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
     #         self.stream.write("\n")
 
     # -- PROGRESS FORMATTER DETAILS:
-    # @overriden
+    # @override
     def report_feature_completed(self):
         # -- SKIP: self.report_feature_duration()
         has_scenarios = self.current_feature and self.current_scenario
@@ -294,6 +294,6 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
                     unicode_errors += 1
 
             if unicode_errors:
-                msg = u"HINT: %d unicode errors occured during failure reporting.\n"
+                msg = u"HINT: %d unicode errors occurred during failure reporting.\n"
                 self.stream.write(msg % unicode_errors)
             self.stream.flush()

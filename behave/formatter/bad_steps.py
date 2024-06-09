@@ -29,8 +29,8 @@ class BadStepsFormatter(Formatter):
     Formatter that prints BAD_STEP_DEFINITIONS if any exist
     at the end of the test-run.
     """
-    name = "bad_steps"
-    description = "Show BAD STEP-DEFINITION(s) (if any exist)"
+    name = "steps.bad"
+    description = "Shows BAD STEP-DEFINITION(s) (if any exist)."
     PRINTER_CLASS = BadStepDefinitionCollector
 
     def __init__(self, stream_opener, config):

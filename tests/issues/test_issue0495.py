@@ -40,7 +40,7 @@ class SimpleContext(object): pass
 # -----------------------------------------------------------------------------
 @pytest.mark.parametrize("log_message", [
     u"Hello Alice",             # case: unproblematic (GOOD CASE)
-    u"Ärgernis ist überall",    # case: unicode-string
+    u"Ärgernis ist überall",    # case: unicode-string  # codespell:ignore ist
     "Ärgernis",                 # case: byte-string (use encoding-declaration above)
 ])
 def test_issue(log_message):

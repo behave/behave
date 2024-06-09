@@ -25,7 +25,6 @@ Feature: Help Formatter
       And the command output should contain:
         """
         AVAILABLE FORMATTERS:
-          bad_steps      Show BAD STEP-DEFINITION(s) (if any exist)
           json           JSON dump of test run
           json.pretty    JSON dump of test run (human readable)
           null           Provides formatter that does not output anything.
@@ -37,9 +36,11 @@ Feature: Help Formatter
           rerun          Emits scenario file locations of failing scenarios
           sphinx.steps   Generate sphinx-based documentation for step definitions.
           steps          Shows step definitions (step implementations).
+          steps.bad      Shows BAD STEP-DEFINITION(s) (if any exist).
           steps.catalog  Shows non-technical documentation for step definitions.
           steps.code     Shows executed steps combined with their code.
           steps.doc      Shows documentation for step definitions.
+          steps.missing  Shows undefined/missing steps definitions, implements them.
           steps.usage    Shows how step definitions are used by steps.
           tags           Shows tags (and how often they are used).
           tags.location  Shows tags and the location where they are used.

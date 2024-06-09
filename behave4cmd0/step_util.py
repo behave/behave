@@ -30,7 +30,7 @@ def print_differences(actual, expected):
 @contextlib.contextmanager
 def on_assert_failed_print_details(actual, expected):
     """
-    Print text details in case of assertation failed errors.
+    Print text details in case of assertion failed errors.
 
     .. sourcecode:: python
 
@@ -47,7 +47,7 @@ def on_assert_failed_print_details(actual, expected):
 @contextlib.contextmanager
 def on_error_print_details(actual, expected):
     """
-    Print text details in case of assertation failed errors.
+    Print text details in case of assertion failed errors.
 
     .. sourcecode:: python
 

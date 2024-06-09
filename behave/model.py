@@ -144,7 +144,7 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
 
     .. attribute:: hook_failed
 
-        Indicates if a hook failure occured while running this feature.
+        Indicates if a hook failure occurred while running this feature.
 
     .. attribute:: filename
 
@@ -503,7 +503,7 @@ class Feature(ScenarioContainer):
 
     .. attribute:: hook_failed
 
-        Indicates if a hook failure occured while running this feature.
+        Indicates if a hook failure occurred while running this feature.
 
         .. versionadded:: 1.2.6
 
@@ -647,7 +647,7 @@ class Rule(ScenarioContainer):
 
     .. attribute:: hook_failed
 
-        Indicates if a hook failure occured while running this feature.
+        Indicates if a hook failure occurred while running this feature.
 
         .. versionadded:: 1.2.6
 
@@ -896,7 +896,7 @@ class Scenario(TagAndStatusStatement, Replayable):
 
     .. attribute:: hook_failed
 
-        Indicates if a hook failure occured while running this scenario.
+        Indicates if a hook failure occurred while running this scenario.
 
         .. versionadded:: 1.2.6
 
@@ -1693,7 +1693,7 @@ class Step(BasicStatement, Replayable):
 
     .. attribute:: hook_failed
 
-        Indicates if a hook failure occured while running this step.
+        Indicates if a hook failure occurred while running this step.
 
         .. versionadded:: 1.2.6
 

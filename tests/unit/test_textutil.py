@@ -231,20 +231,20 @@ class TestObjectToTextConversion(object):
     def test_text__with_assert_failed_and_bytes_message(self, message):
         # -- ONLY PYTHON2: Use case makes no sense for Python 3.
         bytes_message = message.encode(self.ENCODING)
-        decode_error_occured = False
+        decode_error_occurred = False
         with pytest.raises(AssertionError) as e:
             try:
                 assert False, bytes_message
             except UnicodeDecodeError as uni_error:
                 # -- SINCE: Python 2.7.15
-                decode_error_occured = True
+                decode_error_occurred = True
                 expected_decode_error = "'ascii' codec can't decode byte 0xc3 in position 0"
                 assert expected_decode_error in str(uni_error)
                 assert False, bytes_message.decode(self.ENCODING)
 
         # -- FOR: pytest < 5.0
         # expected = u"AssertionError: %s" % message
-        print("decode_error_occured(ascii)=%s" % decode_error_occured)
+        print("decode_error_occurred(ascii)=%s" % decode_error_occurred)
         text2 = text(e.value)
         assert message in text2, "OOPS: text=%r" % text2
 

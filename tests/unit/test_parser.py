@@ -1280,12 +1280,14 @@ Fonctionnalit\xe9: testing stuff
         ])
 
     def test_parses_french_multi_word(self):
+        # codespell:ignore donné
         doc = u"""
-Fonctionnalit\xe9: testing stuff
+Fonctionnalité: testing stuff
   Oh my god, it's full of stuff...
 
-  Sc\xe9nario: test stuff
-    Etant donn\xe9 I am testing stuff
+  Scénario: test stuff
+    # codespell:ignore donné
+    Etant donné I am testing stuff
     Alors it should work
 """.lstrip()
         feature = parse_feature(doc, 'fr')
@@ -1294,9 +1296,10 @@ Fonctionnalit\xe9: testing stuff
 
         assert len(feature.scenarios) == 1
         assert feature.scenarios[0].name == "test stuff"
+        # codespell:ignore donné
         assert_compare_steps(feature.scenarios[0].steps, [
-            ('given', u'Etant donn\xe9', 'I am testing stuff', None, None),
-            ('then', 'Alors', 'it should work', None, None),
+            ("given", u"Etant donné", u"I am testing stuff", None, None),
+            ("then", u"Alors", u"it should work", None, None),
         ])
     test_parses_french_multi_word.go = 1
 

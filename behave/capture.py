@@ -68,7 +68,7 @@ class Captured(object):
         return self
 
     def make_report(self):
-        """Makes a detailled report of the captured output data.
+        """Makes a detailed report of the captured output data.
 
         :returns: Report as string.
         """
