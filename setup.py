@@ -110,6 +110,9 @@ setup(
         "path.py >=11.5.0,<13.0; python_version <  '3.5'",
         # -- PYTHON2 BACKPORTS:
         "pathlib;    python_version <= '3.4'",
+
+        # -- EXTRA PYTHON PACKAGES: Used for some tests
+        "freezegun >= 1.5.1; python_version > '3.7'",
     ],
     cmdclass = {
         "behave_test": behave_test,

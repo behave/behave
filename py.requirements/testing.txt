@@ -27,4 +27,7 @@ path >= 13.1.0;         python_version >= '3.5'
 # -- PYTHON2 BACKPORTS:
 pathlib;    python_version <= '3.4'
 
+# -- EXTRA PYTHON MODULES:
+freezegun >= 1.5.1; python_version > '3.7'
+
 -r ../issue.features/py.requirements.txt
