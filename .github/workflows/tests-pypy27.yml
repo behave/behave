@@ -48,11 +48,12 @@ jobs:
            pip install -e .
       - name: Run tests
         run: pytest
-      - name: Run behave tests
-        run: |
-          behave --format=progress features
-          behave --format=progress tools/test-features
-          behave --format=progress issue.features
+      - name: "Run behave tests: features ..."
+        run: behave --format=progress3 features
+      - name: "Run behave tests: issue.features ..."
+        run: behave --format=progress3 issue.features
+      - name: "Run behave tests: tools/test-features ..."
+        run: behave --format=progress3 tools/test-features
       - name: Upload test reports
         uses: actions/upload-artifact@v4
         with:
