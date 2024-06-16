@@ -21,6 +21,10 @@ modernize >= 0.5
 # -- STATIC CODE ANALYSIS:
 -r pylinters.txt
 
+# -- CODE EXPLORATIONS:
+# SEE: https://github.com/gabotechs/dep-tree
+python-dep-tree; python_version >= '3.7'
+
 # -- REQUIRES: testing
 -r testing.txt
 coverage >= 5.0
