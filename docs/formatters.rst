@@ -47,6 +47,8 @@ progress3      normal   Shows detailed progress for each step of a scenario.
 rerun          normal   Emits scenario file locations of failing scenarios
 sphinx.steps   dry-run  Generate sphinx-based documentation for step definitions.
 steps          dry-run  Shows step definitions (step implementations).
+steps.catalog  dry-run  Shows non-technical documentation for step definitions.
+steps.code     dry-run  Shows executed steps combined with their code.
 steps.doc      dry-run  Shows documentation for step definitions.
 steps.usage    dry-run  Shows how step definitions are used by steps (in feature files).
 tags           dry-run  Shows tags (and how often they are used).

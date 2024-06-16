@@ -38,6 +38,7 @@ Feature: Help Formatter
           sphinx.steps   Generate sphinx-based documentation for step definitions.
           steps          Shows step definitions (step implementations).
           steps.catalog  Shows non-technical documentation for step definitions.
+          steps.code     Shows executed steps combined with their code.
           steps.doc      Shows documentation for step definitions.
           steps.usage    Shows how step definitions are used by steps.
           tags           Shows tags (and how often they are used).

@@ -66,6 +66,7 @@ CLEANUPS:
 ENHANCEMENTS:
 
 * Add support for step-definitions (step-matchers) with `CucumberExpressions`_
+* Add formatter: steps.code -- Shows steps with code-section.
 * User-defined formatters: Improve diagnostics if bad formatter is used (ModuleNotFound, ...)
 * active-tags: Added ``ValueObject`` class for enhanced control of comparison mechanism
   (supports: equals, less-than, less-or-equal, greater-than, greater-or-equal, contains, ...)
