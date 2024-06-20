@@ -41,9 +41,15 @@ Feature: Auto-retry failed scenarios (a number of times)
         from behave.contrib.scenario_autoretry import patch_scenario_with_autoretry
 
         def before_feature(context, feature):
+            userdata = context.config.userdata
+            delay = userdata.get("USER_SET_DELAY", "0")
+            delay = float(delay) if "." in delay else int(delay)
+            backoff = userdata.getint("USER_SET_BACKOFF", 1)
+            max_attempts = userdata.getint("USER_MAX_ATTEMPTS", 2)
             for scenario in feature.scenarios:
                 if "autoretry" in scenario.effective_tags:
-                    patch_scenario_with_autoretry(scenario, max_attempts=2)
+                    patch_scenario_with_autoretry(scenario, max_attempts=max_attempts,
+                                                  delay=delay, backoff=backoff)
         """
     And a file named "features/unreliable.feature" with:
         """
@@ -129,3 +135,122 @@ Feature: Auto-retry failed scenarios (a number of times)
           Given an unreliable step fails sometimes ... passed
           Then another step passes ... passed
         """        
+
+  Scenario: A delay can be added between scenarios to allow for issues to recover
+    When I run "behave -f plain -D UNRELIABLE_FAULTPOS=3 -D USER_SET_DELAY=0.1 features/unreliable.feature"
+    Then it should pass with:
+        """
+        2 scenarios passed, 0 failed, 0 skipped
+        5 steps passed, 0 failed, 0 skipped, 0 undefined
+        """
+    And the command output should contain:
+        """
+        AUTO-RETRY SCENARIO (attempt 1) Delaying retry for 0.1s
+        """
+    But the command output should not contain:
+        """
+        AUTO-RETRY SCENARIO (attempt 2) Delaying retry for 0.1s
+        """
+    And the command output should contain:
+        """
+        Scenario: A1
+          Given a step passes ... passed
+          When an unreliable step fails sometimes ... passed
+          Then another unreliable step fails sometimes ... passed
+      
+        Scenario: A2
+          Given an unreliable step fails sometimes ... failed
+        Assertion Failed: UNRELIABLE-STEP FAILURE
+        AUTO-RETRY SCENARIO (attempt 1) Delaying retry for 0.1s
+      
+        Scenario: A2
+          Given an unreliable step fails sometimes ... passed
+          Then another step passes ... passed
+        """
+
+  Scenario: A backoff factor can be passed in to increase the delay inbetween retries
+    When I run "behave -f plain -D UNRELIABLE_FAULTPOS=1  -D USER_MAX_ATTEMPTS=3  -D USER_SET_DELAY=0.1 -D USER_SET_BACKOFF=2 features/unreliable.feature"
+    Then it should fail with:
+        """
+        0 scenarios passed, 2 failed, 0 skipped
+        1 step passed, 2 failed, 2 skipped, 0 undefined
+        """
+    And the command output should contain:
+        """
+        AUTO-RETRY SCENARIO (attempt 1) Delaying retry for 0.1s
+        """
+    And the command output should contain:
+        """
+        AUTO-RETRY SCENARIO (attempt 2) Delaying retry for 0.2s
+        """
+    And the command output should not contain:
+        """
+        AUTO-RETRY SCENARIO (attempt 3) Delaying retry for 0.4s
+        """
+    And the command output should contain:
+        """
+        Scenario: A1
+          Given a step passes ... passed
+          When an unreliable step fails sometimes ... failed
+        Assertion Failed: UNRELIABLE-STEP FAILURE
+        AUTO-RETRY SCENARIO (attempt 1) Delaying retry for 0.1s
+      
+        Scenario: A1
+        Given a step passes ... passed
+        When an unreliable step fails sometimes ... failed
+        Assertion Failed: UNRELIABLE-STEP FAILURE
+        AUTO-RETRY SCENARIO (attempt 2) Delaying retry for 0.2s
+      
+        Scenario: A1
+          Given a step passes ... passed
+          When an unreliable step fails sometimes ... failed
+        Assertion Failed: UNRELIABLE-STEP FAILURE
+        AUTO-RETRY SCENARIO FAILED (after 3 attempts)
+      
+        Scenario: A2
+          Given an unreliable step fails sometimes ... failed
+        Assertion Failed: UNRELIABLE-STEP FAILURE
+        AUTO-RETRY SCENARIO (attempt 1) Delaying retry for 0.1s
+      
+        Scenario: A2
+          Given an unreliable step fails sometimes ... failed
+        Assertion Failed: UNRELIABLE-STEP FAILURE
+        AUTO-RETRY SCENARIO (attempt 2) Delaying retry for 0.2s
+      
+        Scenario: A2
+          Given an unreliable step fails sometimes ... failed
+        Assertion Failed: UNRELIABLE-STEP FAILURE
+        AUTO-RETRY SCENARIO FAILED (after 3 attempts)
+          """
+
+  Scenario: An int value delay can be used and is formatted correctly
+    When I run "behave -f plain -D UNRELIABLE_FAULTPOS=3 -D USER_SET_DELAY=1 features/unreliable.feature"
+    Then it should pass with:
+        """
+        2 scenarios passed, 0 failed, 0 skipped
+        5 steps passed, 0 failed, 0 skipped, 0 undefined
+        """
+    And the command output should contain:
+        """
+        AUTO-RETRY SCENARIO (attempt 1) Delaying retry for 1s
+        """
+    But the command output should not contain:
+        """
+        AUTO-RETRY SCENARIO (attempt 2) Delaying retry for 2s
+        """
+    And the command output should contain:
+        """
+        Scenario: A1
+          Given a step passes ... passed
+          When an unreliable step fails sometimes ... passed
+          Then another unreliable step fails sometimes ... passed
+      
+        Scenario: A2
+          Given an unreliable step fails sometimes ... failed
+        Assertion Failed: UNRELIABLE-STEP FAILURE
+        AUTO-RETRY SCENARIO (attempt 1) Delaying retry for 1s
+      
+        Scenario: A2
+          Given an unreliable step fails sometimes ... passed
+          Then another step passes ... passed
+        """
