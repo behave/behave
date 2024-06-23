@@ -1,8 +1,8 @@
 # -- REQUIRES: Python >= 3.5
-
+import asyncio
 from behave import step
 from behave.api.async_step import async_run_until_complete
-import asyncio
+
 
 @step('an async-step waits {duration:f} seconds')
 @async_run_until_complete

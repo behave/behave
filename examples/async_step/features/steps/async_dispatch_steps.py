@@ -1,11 +1,15 @@
 # -*- coding: UTF-8 -*-
 # REQUIRES: Python >= 3.4/3.5
 
+import sys
 from behave import given, then, step
 from behave.api.async_step import use_or_create_async_context
 from behave.python_feature import PythonFeature
 from hamcrest import assert_that, equal_to, empty
 import asyncio
+
+
+PYTHON_VERSION = sys.version_info[:2]
 
 
 # ---------------------------------------------------------------------------
@@ -39,8 +43,12 @@ def step_dispatch_async_call(context, param):
 @then('the collected result of the async-calls is "{expected}"')
 def step_collected_async_call_result_is(context, expected):
     async_context = context.async_context1
+    wait_kwargs = {}
+    if PYTHON_VERSION < (3, 10):
+        # -- HINT on asyncio.wait: loop parameter was removed in Python 3.10
+        wait_kwargs = dict(loop=async_context.loop)
     done, pending = async_context.loop.run_until_complete(
-        asyncio.wait(async_context.tasks, loop=async_context.loop))
+        asyncio.wait(async_context.tasks, **wait_kwargs))
 
     parts = [task.result() for task in done]
     joined_result = ", ".join(sorted(parts))
