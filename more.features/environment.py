@@ -1,11 +1,13 @@
 # -*- coding: UTF-8 -*-
 
 from behave.tag_matcher import ActiveTagMatcher, setup_active_tag_values
-from behave import python_feature
+from behave.active_tag import python_feature
+
 
 # -- MATCHES ANY TAGS: @use.with_{category}={value}
 # NOTE: active_tag_value_provider provides category values for active tags.
-active_tag_value_provider = python_feature.ACTIVE_TAG_VALUE_PROVIDER.copy()
+active_tag_value_provider = {}
+active_tag_value_provider.update(python_feature.ACTIVE_TAG_VALUE_PROVIDER)
 active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
 
