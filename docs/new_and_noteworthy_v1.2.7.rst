@@ -13,6 +13,10 @@ Summary:
 * `Active-Tags: Use ValueObject for better Comparisons`_
 * `Detect bad step definitions`_
 
+BREAKING CHANGES:
+
+* `Gherkin Parser strips no longer trailing colon from step`_
+
 .. _`Example Mapping`: https://cucumber.io/blog/example-mapping-introduction/
 .. _`Example Mapping Webinar`: https://cucumber.io/blog/example-mapping-webinar/
 .. _`Gherkin v6 grammar`: https://github.com/cucumber/cucumber/blob/master/gherkin/gherkin.berp
@@ -341,3 +345,74 @@ The exception is raised when the bad regular expression is compiled
 
 .. _`features/formatter.bad_steps.feature`: https://github.com/behave/behave/blob/main/features/formatter.bad_steps.feature
 .. _`features/runner.bad_steps.feature`: https://github.com/behave/behave/blob/main/features/runner.bad_steps.feature
+
+
+Gherkin Parser strips no longer trailing colon from step
+-------------------------------------------------------------------------------
+
+In the past, the Gherkin parser removed a trailing colon (`:`) on steps
+that had a text or table section.
+
+EXAMPLE:
+
+.. code-block:: gherkin
+    :caption: FILE: features/parser_example.feature
+
+    Feature:
+      Scenario:
+        Given a file named "some_file.txt" with:
+          """
+          Lorem ipsum, ipsum lorem, ...
+          """
+
+.. code-block:: python
+    :caption: FILE: features/steps/filesystem_steps.py
+
+    # -- OLD IMPLEMENTATION:
+    from behave import given, when, then
+    from pathlib import Path
+
+    @given('a file named "{filename}" with')  #< HINT: Ends without colon
+    def step_write_file_with_contents(ctx, filename):
+        Path(filename).write_text(ctx.text, encoding="UTF-8")
+
+The behaviour of the Gherkin parser was changed:
+
+* Trailing colon character is no longer removed on steps with text/table section
+
+REASONS:
+
+* The new behaviour is more natural and much simpler.
+* The step writer can define whatever is needed.
+* Fixes a problem in PyCharm IDE where the lookup of the step-definition in such a case is not working.
+
+EXAMPLE 2:
+
+.. code-block:: python
+    :caption: FILE: features/steps/filesystem_steps.py
+
+    # -- NEW IMPLEMENTATION:
+    from behave import given, when, then
+    from pathlib import Path
+
+    @given('a file named "{filename}" with:')  #< HINT: Ends with colon
+    def step_write_file_with_contents(ctx, filename):
+        Path(filename).write_text(ctx.text, encoding="UTF-8")
+
+.. hint::
+
+    The old behaviour of the Gherkin parser can be (re-)enabled
+    by setting the following environment variable before using `behave`_:
+
+    .. code-block:: bash
+        :caption: On UNIX: Using bash shell
+
+        export BEHAVE_STRIP_STEPS_WITH_TRAILING_COLON="yes"
+
+    .. code-block:: shell
+        :caption: On WINDOWS: Using cmd shell
+
+        set BEHAVE_STRIP_STEPS_WITH_TRAILING_COLON="yes"
+
+
+.. include:: _common_extlinks.rst

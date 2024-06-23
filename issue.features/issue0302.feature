@@ -12,6 +12,7 @@ Feature: Issue #302: Cannot escape pipe in table field value
         from hamcrest import assert_that, equal_to
 
         @step(u'I use table data with')
+        @step(u'I use table data with:')
         def step_use_table_data_with_table(context):
             assert context.table, "REQUIRE: context.table is provided"
             context.table.require_columns(["name", "value"])

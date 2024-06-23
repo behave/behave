@@ -42,6 +42,7 @@ Keyword aliases:
 
 from __future__ import absolute_import, with_statement
 import logging
+import os
 import re
 import sys
 import six
@@ -49,9 +50,17 @@ from behave import model, i18n
 from behave.textutil import text as _text
 
 
+# -----------------------------------------------------------------------------
+# CONSTANTS
+# -----------------------------------------------------------------------------
 DEFAULT_LANGUAGE = "en"
+BEHAVE_STRIP_STEPS_WITH_TRAILING_COLON = os.environ.get(
+    "BEHAVE_STRIP_STEPS_WITH_TRAILING_COLON", "no") == "yes"
 
 
+# -----------------------------------------------------------------------------
+# GHERKIN PARSE FUNCTIONS:
+# -----------------------------------------------------------------------------
 def parse_file(filename, language=None):
     with open(filename, "rb") as f:
         # file encoding is assumed to be utf8. Oh, yes.
@@ -170,6 +179,7 @@ class ParserError(Exception):
 class Parser(object):
     """Feature file parser for behave."""
     # pylint: disable=too-many-instance-attributes
+    STRIP_STEPS_WITH_TRAILING_COLON = BEHAVE_STRIP_STEPS_WITH_TRAILING_COLON
 
     def __init__(self, language=None, variant=None):
         if not variant:
@@ -379,6 +389,10 @@ class Parser(object):
             return "No feature found."
         # -- FINALLY: No glue what went wrong.
         return None
+
+    def _normalize_step_name(self, step):
+        if self.STRIP_STEPS_WITH_TRAILING_COLON and step.name.endswith(":"):
+            step.name = step.name[:-1]
 
     def action(self, line):
         if line.strip().startswith("#") and self.state != "multiline_text":
@@ -645,8 +659,7 @@ class Parser(object):
             this_step = self.statement.steps[-1]
             text = u"\n".join(self.lines)
             this_step.text = model.Text(text, u"text/plain", self.multiline_start)
-            if this_step.name.endswith(":"):
-                this_step.name = this_step.name[:-1]
+            self._normalize_step_name(this_step)
 
             # -- RESET INTERNALS: For next step
             self.lines = []
@@ -685,8 +698,7 @@ class Parser(object):
                 # -- CASE: Data table of a step
                 step = self.statement.steps[-1]
                 step.table = self.table
-                if step.name.endswith(":"):
-                    step.name = step.name[:-1]
+                self._normalize_step_name(step)
 
             # -- RESET: Parameters for parsing the next step(s).
             self.table = None

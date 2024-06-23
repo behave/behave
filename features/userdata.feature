@@ -33,6 +33,7 @@ Feature: User-specific Configuration Data (userdata)
         from hamcrest import assert_that, equal_to
 
         @step('the following user-data is provided')
+        @step('the following user-data is provided:')
         def step_userdata_is_provided_with_table(context):
             assert context.table, "REQUIRE: table"
             context.table.require_columns(["name", "value"])
@@ -47,6 +48,7 @@ Feature: User-specific Configuration Data (userdata)
                     assert False, "MISSING: userdata %s" % name
 
         @step('I modify the user-data with')
+        @step('I modify the user-data with:')
         def step_modify_userdata_with_table(context):
             assert context.table, "REQUIRE: table"
             context.table.require_columns(["name", "value"])

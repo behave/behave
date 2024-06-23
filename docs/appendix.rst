@@ -11,6 +11,7 @@ Appendix
 
     formatters
     context_attributes
+    appendix.environment_variables
     parse_expressions
     regular_expressions
     test_domains

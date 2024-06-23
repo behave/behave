@@ -34,6 +34,7 @@ def step_undefined_step_snippets_section_exists(context):
             """
     ''')
 
+
 @then(u'an undefined-step snippet should exist for "{step}"')
 def step_undefined_step_snippet_should_exist_for(context, step):
     """
@@ -68,6 +69,7 @@ Then the command output should not contain:
 
 
 @then(u'undefined-step snippets should exist for')
+@then(u'undefined-step snippets should exist for:')
 def step_undefined_step_snippets_should_exist_for_table(context):
     """
     Checks if undefined-step snippets are provided.
@@ -85,6 +87,7 @@ def step_undefined_step_snippets_should_exist_for_table(context):
 
 
 @then(u'undefined-step snippets should not exist for')
+@then(u'undefined-step snippets should not exist for:')
 def step_undefined_step_snippets_should_not_exist_for_table(context):
     """
     Checks if undefined-step snippets are not provided.

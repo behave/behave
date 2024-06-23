@@ -374,8 +374,8 @@ class ExampleSteps(object):
         step_definitions = [
             ("step", "a step passes", cls.step_passes),
             ("step", "a step fails",  cls.step_fails),
-            ("step", "a step with text",     cls.step_with_text),
-            ("step", "a step with a table",  cls.step_with_table),
+            ("step", "a step with text:",     cls.step_with_text),
+            ("step", "a step with a table:",  cls.step_with_table),
         ]
         for keyword, pattern, func in step_definitions:
             step_registry.add_step_definition(keyword, pattern, func)

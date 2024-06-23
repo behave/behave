@@ -6,7 +6,9 @@ Feature: Execute nested steps that use a table
       """
       from behave import given, when, then, step
       import six
+
       @given('the following nested steps')
+      @given('the following nested steps:')
       def step_given_following_nested_steps(context):
           assert context.text, "ENSURE: multi-line text is provided."
           context.nested_steps = six.text_type(context.text)
@@ -22,6 +24,7 @@ Feature: Execute nested steps that use a table
           assert expected_step in context.steps_called
 
       @then('the table should be equal to')
+      @then('the table should be equal to:')
       def then_table_should_be_equal_to(context):
           assert context.table, "ENSURE: table is provided."
           expected_table = context.table
@@ -30,6 +33,7 @@ Feature: Execute nested steps that use a table
 
       # -- SPECIAL-STEP:
       @step('I setup an address book with')
+      @step('I setup an address book with:')
       def step_setup_address_book_with_friends(context):
           assert context.table, "ENSURE: table is provided."
           if not hasattr(context, "steps_called"):

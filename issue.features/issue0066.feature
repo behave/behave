@@ -13,12 +13,14 @@ Feature: Issue #66: context.text and context.table are not cleared
       import six
 
       @given(u'a step with multiline text')
+      @given(u'a step with multiline text:')
       def step(context):
           assert context.text is not None
           assert context.text, "Ensure non-empty"
           assert isinstance(context.text, six.string_types)
 
       @given(u'a step with a table')
+      @given(u'a step with a table:')
       def step(context):
           assert context.table is not None
 

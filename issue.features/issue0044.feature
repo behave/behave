@@ -12,10 +12,12 @@ Feature: Issue #44 Shell-like comments are removed in Multiline Args
       from hamcrest import assert_that, equal_to
 
       @given(u'a multiline text argument with')
+      @given(u'a multiline text argument with:')
       def step(context):
           context.expected_text = context.text
 
       @then(u'the multiline text argument should be')
+      @then(u'the multiline text argument should be:')
       def step(context):
           assert_that(context.text, equal_to(context.expected_text))
       """

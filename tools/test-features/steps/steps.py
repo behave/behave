@@ -4,6 +4,7 @@ from __future__ import absolute_import
 import logging
 from behave import given, when, then, register_type
 from six.moves import zip
+from assertpy import assert_that
 
 
 spam_log = logging.getLogger('spam')
@@ -22,8 +23,8 @@ def step_impl(context):
 
 @given("stuff has been set up")
 def step_impl(context):
-    assert context.testing_stuff is True
-    assert context.stuff_set_up is True
+    assert_that(context.testing_stuff).is_equal_to(True)
+    assert_that(context.stuff_set_up).is_equal_to(True)
 
 
 @when("I exercise it work")
@@ -49,10 +50,11 @@ def step_impl(context, suffix):
 
 @then('we should get the {combination}')
 def step_impl(context, combination):
-    assert context.combination == combination
+    assert_that(context.combination).is_equal_to(combination)
 
 
 @given('some body of text')
+@given('some body of text:')
 def step_impl(context):
     assert context.text
     context.saved_text = context.text
@@ -67,10 +69,11 @@ nisi ut aliquip ex ea commodo consequat.'''
 @then('the text is as expected')
 def step_impl(context):
     assert context.saved_text, 'context.saved_text is %r!!' % (context.saved_text, )
-    context.saved_text.assert_equals(TEXT)
+    assert_that(context.saved_text).is_equal_to(TEXT)
 
 
 @given('some initial data')
+@given('some initial data:')
 def step_impl(context):
     assert context.table
     context.saved_table = context.table
@@ -87,15 +90,15 @@ TABLE_DATA = [
 def step_impl(context):
     assert context.saved_table, 'context.saved_table is %r!!' % (context.saved_table, )
     for expected, got in zip(TABLE_DATA, iter(context.saved_table)):
-        assert expected['name'] == got['name']
-        assert expected['department'] == got['department']
+        assert_that(expected["name"]).is_equal_to(got["name"])
+        assert_that(expected["department"]).is_equal_to(got["department"])
 
 
 @then('the text is substituted as expected')
 def step_impl(context):
     assert context.saved_text, 'context.saved_text is %r!!' % (context.saved_text, )
     expected = TEXT.replace('ipsum', context.active_outline['ipsum'])
-    context.saved_text.assert_equals(expected)
+    assert_that(context.saved_text).is_equal_to(expected)
 
 
 TABLE_DATA = [
@@ -141,5 +144,5 @@ def step_impl(context, argument):
 
 @then('we get "{argument}" parsed')
 def step_impl(context, argument):
-    assert context.argument == argument
+    assert_that(context.argument).is_equal_to(argument)
 

@@ -87,6 +87,7 @@ def step_it_should_fail(context):
 
 
 @then(u'it should pass with')
+@then(u'it should pass with:')
 def step_it_should_pass_with(context):
     '''
     EXAMPLE:
@@ -104,6 +105,7 @@ def step_it_should_pass_with(context):
 
 
 @then(u'it should fail with')
+@then(u'it should fail with:')
 def step_it_should_fail_with(context):
     '''
     EXAMPLE:
@@ -133,8 +135,6 @@ def step_command_output_should_contain_text(context, text):
     actual_output = context.command_result.output
     with on_assert_failed_print_details(actual_output, expected_text):
         textutil.assert_normtext_should_contain(actual_output, expected_text)
-
-
 
 
 @then(u'the command output should not contain "{text}"')
@@ -191,6 +191,7 @@ def step_command_output_should_not_contain_exactly_text(context, text):
 
 
 @then(u'the command output should contain')
+@then(u'the command output should contain:')
 def step_command_output_should_contain(context):
     '''
     EXAMPLE:
@@ -207,6 +208,7 @@ def step_command_output_should_contain(context):
 
 
 @then(u'the command output should not contain')
+@then(u'the command output should not contain:')
 def step_command_output_should_not_contain(context):
     '''
     EXAMPLE:
@@ -224,6 +226,7 @@ def step_command_output_should_not_contain(context):
 
 
 @then(u'the command output should contain {count:d} times')
+@then(u'the command output should contain {count:d} times:')
 def step_command_output_should_contain_multiple_times(context, count):
     '''
     EXAMPLE:
@@ -241,6 +244,7 @@ def step_command_output_should_contain_multiple_times(context, count):
 
 
 @then(u'the command output should contain exactly')
+@then(u'the command output should contain exactly:')
 def step_command_output_should_contain_exactly_with_multiline_text(context):
     assert context.text is not None, "REQUIRE: multi-line text"
     text = context.text.rstrip()
@@ -248,6 +252,7 @@ def step_command_output_should_contain_exactly_with_multiline_text(context):
 
 
 @then(u'the command output should not contain exactly')
+@then(u'the command output should not contain exactly:')
 def step_command_output_should_contain_not_exactly_with_multiline_text(context):
     assert context.text is not None, "REQUIRE: multi-line text"
     text = context.text.rstrip()
@@ -275,6 +280,7 @@ def step_command_output_should_match_pattern(context, pattern):
     text = context.command_result.output.strip()
     textutil.assert_text_should_match_pattern(text, pattern)
 
+
 @then(u'the command output should not match /{pattern}/')
 @then(u'the command output should not match "{pattern}"')
 def step_command_output_should_not_match_pattern(context, pattern):
@@ -282,13 +288,17 @@ def step_command_output_should_not_match_pattern(context, pattern):
     text = context.command_result.output
     textutil.assert_text_should_not_match_pattern(text, pattern)
 
+
 @then(u'the command output should match')
+@then(u'the command output should match:')
 def step_command_output_should_match_with_multiline_text(context):
     assert context.text is not None, "ENSURE: multiline text is provided."
     pattern = context.text
     step_command_output_should_match_pattern(context, pattern)
 
+
 @then(u'the command output should not match')
+@then(u'the command output should not match:')
 def step_command_output_should_not_match_with_multiline_text(context):
     assert context.text is not None, "ENSURE: multiline text is provided."
     pattern = context.text

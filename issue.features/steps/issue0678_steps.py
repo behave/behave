@@ -4,6 +4,7 @@
 from __future__ import absolute_import, print_function
 from behave import given, when, then
 
+
 @given(u'I inspect the tags of the current scenario')
 @when(u'I inspect the tags of the current scenario')
 def step_inspect_scenario_tags(context):

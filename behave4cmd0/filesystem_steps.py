@@ -180,12 +180,14 @@ def step_file_should_not_contain_text(context, filename, text):
 
 
 @then(u'the file "{filename}" should contain')
+@then(u'the file "{filename}" should contain:')
 def step_file_should_contain_multiline_text(context, filename):
     assert context.text is not None, "REQUIRE: multiline text"
     step_file_should_contain_text(context, filename, context.text)
 
 
 @then(u'the file "{filename}" should not contain')
+@then(u'the file "{filename}" should not contain:')
 def step_file_should_not_contain_multiline_text(context, filename):
     assert context.text is not None, "REQUIRE: multiline text"
     step_file_should_not_contain_text(context, filename, context.text)
@@ -195,6 +197,7 @@ def step_file_should_not_contain_multiline_text(context, filename):
 # STEPS FOR CREATING FILES WITH FILE CONTENTS:
 # -----------------------------------------------------------------------------
 @given(u'a file named "{filename}" and encoding="{encoding}" with')
+@given(u'a file named "{filename}" and encoding="{encoding}" with:')
 def step_a_file_named_filename_and_encoding_with(context, filename, encoding):
     """Creates a textual file with the content provided as docstring."""
     assert context.text is not None, "ENSURE: multiline text is provided."
@@ -206,6 +209,7 @@ def step_a_file_named_filename_and_encoding_with(context, filename, encoding):
 
 
 @given(u'a file named "{filename}" with')
+@given(u'a file named "{filename}" with:')
 def step_a_file_named_filename_with(context, filename):
     """Creates a textual file with the content provided as docstring."""
     step_a_file_named_filename_and_encoding_with(context, filename, "UTF-8")

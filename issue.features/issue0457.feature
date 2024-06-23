@@ -13,11 +13,13 @@ Feature: Issue #457 -- Double-quotes in error messages of JUnit XML reports
         from behave import step
 
         @step('{word:w} step fails with message')
+        @step('{word:w} step fails with message:')
         def step_fails(context, word):
             assert context.text
             assert False, "FAILED: "+ context.text
 
         @step('{word:w} step fails with error and message')
+        @step('{word:w} step fails with error and message:')
         def step_fails2(context, word):
             assert context.text
             raise RuntimeError(context.text)

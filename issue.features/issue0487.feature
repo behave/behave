@@ -33,6 +33,7 @@ Feature: Issue #487 -- UnicodeEncodeError with ZBSP in multi-line text
         from behave import step
 
         @step('I use {special_unicode_char:w} in text')
+        @step('I use {special_unicode_char:w} in text:')
         def step_use_ZBSP_with_text(context, special_unicode_char):
             assert context.text
             print(u"TEXT: %s" % context.text)
@@ -67,25 +68,25 @@ Feature: Issue #487 -- UnicodeEncodeError with ZBSP in multi-line text
       And the command output should contain:
         '''
         Scenario Outline: Use special unicode char (MACOS command key symbol) -- @1.1
-          Given I use ZBSP in text ... passed
+          Given I use ZBSP in text: ... passed
             """
             HERE we use a ==>⌘<== SPECIAL UNICODE CHAR.
             """
 
         Scenario Outline: Use special unicode char (copyright sign) -- @1.2
-          Given I use ZBSP in text ... passed
+          Given I use ZBSP in text: ... passed
             """
             HERE we use a ==>©<== SPECIAL UNICODE CHAR.
             """
 
         Scenario Outline: Use special unicode char (Euro sign (currency)) -- @1.3
-          Given I use ZBSP in text ... passed
+          Given I use ZBSP in text: ... passed
             """
             HERE we use a ==>€<== SPECIAL UNICODE CHAR.
             """
 
         Scenario Outline: Use special unicode char (special space) -- @1.4
-          Given I use ZBSP in text ... passed
+          Given I use ZBSP in text: ... passed
             """
             HERE we use a ==>xxx XXX<== SPECIAL UNICODE CHAR.
             """

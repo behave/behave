@@ -25,6 +25,7 @@ Feature: Step dialect for generic steps
             pass
 
         @step('a multi-line text step with')
+        @step('a multi-line text step with:')
         def step_with_multiline_text(context):
             assert context.text is not None, "REQUIRE: multi-line text"
 
@@ -37,6 +38,7 @@ Feature: Step dialect for generic steps
             assert False, "XFAIL-STEP"
 
         @step('a table step with')
+        @step('a table step with:')
         def step_with_table(context):
             assert context.table, "REQUIRES: table"
             context.table.require_columns(["name", "age"])
@@ -148,7 +150,7 @@ Feature: Step dialect for generic steps
 
         Scenario:
           * a step passes ... passed
-          * a multi-line text step with ... passed
+          * a multi-line text step with: ... passed
             """
             First line of multi-line text.
             Second-line of multi-line text.
@@ -179,7 +181,7 @@ Feature: Step dialect for generic steps
       Feature:
         Scenario:
           * a step passes ... passed
-          * a table step with ... passed
+          * a table step with: ... passed
               | name  | age |
               | Alice | 10  |
               | Bob   | 12  |

@@ -83,16 +83,16 @@ Given a simple multi-line text:
     Hello Alice
     <param_2> <param_3>
     __FINI__
-    """ 
+    """
 '''.strip()
         expected_text = u'''\
-Given a simple multi-line text
+Given a simple multi-line text:
     """
     Param_1
     Hello Alice
     Hello Bob
     __FINI__
-    """ 
+    """
 '''.strip()
         params = dict(param_1="Param_1", param_2="Hello", param_3="Bob")
         self.assert_make_step_for_row(step_text, expected_text, params)
@@ -119,7 +119,7 @@ Given a simple data table:
     | Lorem ipsum | 1234   | Ipsum lorem |
 '''.strip()
         expected_text = u'''\
-Given a simple data table
+Given a simple data table:
     | Column_1    | Column_2 | Hello_Column_3 |
     | Lorem ipsum | 1234     | Ipsum lorem    |
 '''.strip()
@@ -135,7 +135,7 @@ Given a simple data table:
     | <param_2> <param_3> | Ipsum lorem |
 '''.strip()
         expected_text = u'''\
-Given a simple data table
+Given a simple data table:
     | Column_1    | Column_2    |
     | Lorem ipsum | Cell_1      |
     | Hello Alice | Ipsum lorem |

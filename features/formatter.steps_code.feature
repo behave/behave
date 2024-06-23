@@ -147,6 +147,7 @@ Feature: StepWithCode Formatter
                 self.role = role
 
         @given(u'a company with the following persons')
+        @given(u'a company with the following persons:')
         def step_given_company_with_persons(ctx):
             assert_that(ctx.table).is_not_none()
             company_persons = []
@@ -171,12 +172,13 @@ Feature: StepWithCode Formatter
         """
         Feature: step.table
           Scenario: S1
-            Given a company with the following persons  ...  passed
+            Given a company with the following persons:  ...  passed
               | Name  | Role      |
               | Alice | CEO       |
               | Bob   | Developer |
               # -- CODE: features/steps/table_steps.py:9
               @given(u'a company with the following persons')
+              @given(u'a company with the following persons:')
               def step_given_company_with_persons(ctx):
                   assert_that(ctx.table).is_not_none()
                   company_persons = []
@@ -198,6 +200,7 @@ Feature: StepWithCode Formatter
         from io import open
 
         @given(u'a special file named "{filename}" with')
+        @given(u'a special file named "{filename}" with:')
         def step_given_file_named_with_contents(ctx, filename):
             with open(filename, "w+", encoding="UTF-8") as f:
                 f.write(ctx.text)
@@ -221,13 +224,14 @@ Feature: StepWithCode Formatter
         '''
         Feature: step.text
           Scenario: T1
-            Given a special file named "example.some_file.txt" with  ...  passed
+            Given a special file named "example.some_file.txt" with:  ...  passed
               """
               Lorem ipsum.
               Ipsum lorem ...
               """
               # -- CODE: features/steps/text_steps.py:4
               @given(u'a special file named "{filename}" with')
+              @given(u'a special file named "{filename}" with:')
               def step_given_file_named_with_contents(ctx, filename):
                   with open(filename, "w+", encoding="UTF-8") as f:
                       f.write(ctx.text)

@@ -15,6 +15,7 @@ def convert_comma_list(text):
     text = text.strip()
     return [part.strip()  for part in text.split(",")]
 
+
 def convert_model_element_tags(text):
     return parse_tags(text.strip())
 
@@ -77,6 +78,7 @@ class BehaveModelBuilder(object):
                 self.build_unknown(statement, name, row_index=row_index)
         return Model(self.features)
 
+
 def run_model_with_cmdline(model, cmdline):
     reset_model(model.features)
     command_args = cmdline
@@ -88,6 +90,7 @@ def run_model_with_cmdline(model, cmdline):
                            log_capture=False)
     model_runner = ModelRunner(config, model.features)
     return model_runner.run()
+
 
 def collect_selected_and_skipped_scenarios(model):  # pylint: disable=invalid-name
     selected = []
@@ -101,5 +104,3 @@ def collect_selected_and_skipped_scenarios(model):  # pylint: disable=invalid-na
                 assert scenario.status != Status.untested
                 selected.append(scenario)
     return (selected, skipped)
-
-

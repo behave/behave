@@ -6,7 +6,7 @@ from behave import when
 import os
 import sys
 
-# XXX
+# -- TODO:
 # # -- VARIANT 1:
 # @when(u'I click on ${environment_variable:w}')
 # def step_impl(context, environment_variable):

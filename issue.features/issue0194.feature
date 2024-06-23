@@ -52,6 +52,7 @@ Feature: Issue #194: Nested steps prevent that original stdout/stderr is restore
             write_text_to(stream, text)
 
         @step('I execute the following steps')
+        @step('I execute the following steps:')
         def step_execute_steps(context):
             assert context.text, "REQUIRE: context.text"
             context.execute_steps(context.text)

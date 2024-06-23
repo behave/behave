@@ -16,6 +16,7 @@ Feature: Issue #67: JSON formatter cannot serialize tables.
       from behave import given, when, then
 
       @given(u'I add the following employees')
+      @given(u'I add the following employees:')
       def step(context):
           pass  # -- SKIP: Table processing here.
 
@@ -24,6 +25,7 @@ Feature: Issue #67: JSON formatter cannot serialize tables.
           context.department = department
 
       @then(u'I get the following employees')
+      @then(u'I get the following employees:')
       def step(context):
           pass  # -- SKIP: Table processing here.
       """

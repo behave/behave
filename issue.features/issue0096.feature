@@ -51,6 +51,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
             raise RuntimeError(message)
 
         @step(u'the following steps should pass')
+        @step(u'the following steps should pass:')
         def step_following_steps_should_pass(context):
             context.execute_steps(context.text.strip())
         """

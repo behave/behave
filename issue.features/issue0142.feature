@@ -11,6 +11,7 @@ Feature: Issue #142: --junit flag fails to output with step table data: TypeErro
         from behave import given, when, then, step
 
         @then('use table data with')
+        @then('use table data with:')
         def step_impl(context):
             pass
         """

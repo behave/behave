@@ -6,6 +6,7 @@ import os.path
 from behave import given, when, then
 import six
 
+
 @given(u'I create a symlink from "{source}" to "{dest}"')
 @when(u'I create a symlink from "{source}" to "{dest}"')
 def step_create_symlink(context, source, dest):

@@ -72,7 +72,7 @@ Feature: Capture log output
         And the command output should contain:
             """
             Scenario: Passing
-              Given I create log records with ... passed
+              Given I create log records with: ... passed
                 | category | level | message      |
                 | root     | FATAL | Hello Alice  |
                 | foo      | ERROR | Hello Bob    |
@@ -105,7 +105,7 @@ Feature: Capture log output
             """
             Feature:
               Scenario: Failing
-                Given I create log records with ... passed
+                Given I create log records with: ... passed
                   | category | level | message      |
                   | root     | FATAL | Hello Alice  |
                   | foo      | ERROR | Hello Bob    |

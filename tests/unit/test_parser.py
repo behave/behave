@@ -405,7 +405,7 @@ Feature: Stuff
         assert len(feature.scenarios) == 1
         assert feature.scenarios[0].name == "Doing stuff"
         assert_compare_steps(feature.scenarios[0].steps, [
-            ('given', 'Given', 'there is stuff', "So\nMuch\nStuff", None),
+            ('given', 'Given', 'there is stuff:', "So\nMuch\nStuff", None),
             ('then', 'Then', 'stuff happens', None, None),
         ])
 
@@ -430,7 +430,7 @@ Feature: Stuff
         assert feature.scenarios[0].name == "Doing stuff"
         string = "So\n  Much\n    Stuff\n  Has\nIndents"
         assert_compare_steps(feature.scenarios[0].steps, [
-            ('given', 'Given', 'there is stuff', string, None),
+            ('given', 'Given', 'there is stuff:', string, None),
             ('then', 'Then', 'stuff happens', None, None),
         ])
 
@@ -455,7 +455,7 @@ Feature: Stuff
         assert len(feature.scenarios) == 1
         assert feature.scenarios[0].name == "Doing stuff"
         assert_compare_steps(feature.scenarios[0].steps, [
-            ('given', 'Given', 'there is stuff', "So\n\nMuch\n\n\nStuff", None),
+            ('given', 'Given', 'there is stuff:', "So\n\nMuch\n\n\nStuff", None),
             ('then', 'Then', 'stuff happens', None, None),
         ])
 
@@ -486,8 +486,8 @@ Feature: Multiline
         text2 = "Alpha.\n\nOmega."
         # pylint: disable=bad-whitespace
         assert_compare_steps(feature.scenarios[0].steps, [
-            ('given', 'Given', 'a multiline argument with', text1, None),
-            ('given', 'And',   'a multiline argument with', text2, None),
+            ('given', 'Given', 'a multiline argument with:', text1, None),
+            ('given', 'And',   'a multiline argument with:', text2, None),
             ('then', 'Then', 'empty middle lines are not stripped', None, None),
         ])
 
@@ -509,7 +509,7 @@ Feature: Stuff
         assert len(feature.scenarios) == 1
         assert feature.scenarios[0].name == "Doing stuff"
         assert_compare_steps(feature.scenarios[0].steps, [
-            ('given', 'Given', 'there is stuff', "So\nMuch\n# Derp", None),
+            ('given', 'Given', 'there is stuff:', "So\nMuch\n# Derp", None),
             ('then', 'Then', 'stuff happens', None, None),
         ])
 
@@ -539,7 +539,7 @@ Feature: Stuff
             ]
         )
         assert_compare_steps(feature.scenarios[0].steps, [
-            ('given', 'Given', 'we classify stuff', None, table),
+            ('given', 'Given', 'we classify stuff:', None, table),
             ('then', 'Then', 'stuff is in buckets', None, None),
         ])
 
@@ -570,7 +570,7 @@ Feature:
             ]
         )
         assert_compare_steps(feature.scenarios[0].steps, [
-            ('given', 'Given', 'we have special cell values', None, table),
+            ('given', 'Given', 'we have special cell values:', None, table),
         ])
 
     def test_parses_feature_with_a_scenario_outline(self):
@@ -894,7 +894,7 @@ Feature: Stuff
             ('given', 'Given', 'we are testing', None, None),
             ('given', 'And', 'this is only a test', None, None),
             ('given', 'But', 'this is an important test', None, None),
-            ('when', 'When', 'we test with a multiline string', string, None),
+            ('when', 'When', 'we test with a multiline string:', string, None),
             ('then', 'Then', 'we want it to work', None, None),
         ])
 
@@ -956,7 +956,7 @@ Feature: Stuff
         )
         assert_compare_steps(feature.scenarios[3].steps, [
             ('given', 'Given', 'we have <Stuff>', None, None),
-            ('when', 'When', 'we do stuff with a table', None, table),
+            ('when', 'When', 'we do stuff with a table:', None, table),
             ('then', 'Then', 'we have <Things>', None, None),
         ])
 
@@ -1745,8 +1745,8 @@ Then every step will be parsed without errors
         text1 = "Lorem ipsum\nIpsum lorem"
         text2 = "Ipsum lorem\nLorem ipsum"
         assert_compare_steps(steps, [
-            ("given", "Given", "a step with multi-line text", text1, None),
-            ("when",  "When",  "I have a step with multi-line text", text2, None),
+            ("given", "Given", "a step with multi-line text:", text1, None),
+            ("when",  "When",  "I have a step with multi-line text:", text2, None),
             ("then",  "Then",  "every step will be parsed without errors",
              None, None),
         ])
@@ -1767,7 +1767,7 @@ Then the last step has multi-line text:
         text2 = "Lorem ipsum\nIpsum lorem"
         assert_compare_steps(steps, [
             ("given", "Given", "a simple step", None, None),
-            ("then",  "Then",  "the last step has multi-line text", text2, None),
+            ("then",  "Then",  "the last step has multi-line text:", text2, None),
         ])
 
     def test_parse_steps_with_table(self):
@@ -1799,8 +1799,8 @@ Then every step will be parsed without errors
             [ u"USA",      u"Washington" ],
             ])
         assert_compare_steps(steps, [
-            ("given", "Given", "a step with a table", None, table1),
-            ("when",  "When",  "I have a step with a table", None, table2),
+            ("given", "Given", "a step with a table:", None, table1),
+            ("when",  "When",  "I have a step with a table:", None, table2),
             ("then",  "Then",  "every step will be parsed without errors",
              None, None),
         ])
@@ -1823,7 +1823,7 @@ Then the last step has a final table:
             ])
         assert_compare_steps(steps, [
             ("given", "Given", "a simple step", None, None),
-            ("then",  "Then",  "the last step has a final table", None, table2),
+            ("then",  "Then",  "the last step has a final table:", None, table2),
         ])
 
     def test_parse_steps_with_malformed_table_fails(self):

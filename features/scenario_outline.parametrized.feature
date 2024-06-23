@@ -47,10 +47,12 @@ Feature: Scenario Outline -- Parametrized Scenarios
           context.param_value = value
 
       @step('a step with text')
+      @step('a step with text:')
       def step_with_param_value(context):
           assert context.text is not None, "REQUIRE: text"
 
       @step('a step with table')
+      @step('a step with table:')
       def step_with_param_value(context):
           assert context.table is not None, "REQUIRE: table"
 
@@ -171,7 +173,7 @@ Feature: Scenario Outline -- Parametrized Scenarios
     Then it should pass with:
       '''
       Scenario Outline: Use parametrized step with text -*-
-          Given a step with text ... passed
+          Given a step with text: ... passed
             """
             Hello Alice;
             Travel agency: Pony express
@@ -198,7 +200,7 @@ Feature: Scenario Outline -- Parametrized Scenarios
     Then it should pass with:
       """
       Scenario Outline: Use parametrized step with table -*-
-        Given a step with table ... passed
+        Given a step with table: ... passed
           | Id  | Name  | Travel Agency | row id   |
           | 001 | Alice | Pony express  | <row.id> |
       """

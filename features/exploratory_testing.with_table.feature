@@ -23,6 +23,7 @@ Feature: Exploratory Testing with Tables and Table Annotations
       }
 
       @when('I query the database with')
+      @when('I query the database with:')
       def step_query_database_and_update_table(context):
           assert context.table, "REQUIRE: table"
           context.table.require_column("Name")
@@ -51,11 +52,13 @@ Feature: Exploratory Testing with Tables and Table Annotations
           pass
 
       @then('I inspect the table')
+      @then('I inspect the table:')
       def step_inspect_table(context):
           assert context.current_table
           context.table = context.current_table
 
       @then('the table contains')
+      @then('the table contains:')
       def step_inspect_table(context):
           assert context.table, "REQUIRE: table"
           assert context.current_table, "REQUIRE: current_table"

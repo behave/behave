@@ -53,6 +53,7 @@ from hamcrest import assert_that, equal_to
 # STEP DEFINITIONS:
 # -----------------------------------------------------------------------------
 @given('a behave model with')
+@given('a behave model with:')
 def step_given_a_behave_model_with_table(context):
     """
     Build a behave feature model from a tabular description.
@@ -78,6 +79,7 @@ def step_when_run_behave_model_with_hint(context, hint):
 
 
 @then('the following scenarios are selected with cmdline')
+@then('the following scenarios are selected with cmdline:')
 def step_then_scenarios_are_selected_with_cmdline(context):
     """
     .. code-block:: Gherkin
