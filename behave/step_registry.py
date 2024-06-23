@@ -183,16 +183,42 @@ class StepRegistry(object):
         return decorator
 
 
+# -----------------------------------------------------------------------------
+# MODULE DATA:
+# -----------------------------------------------------------------------------
+# -- STEP-DECORATOR PLACEHOLDERS (setup at end of this module):
+class _StepDecorator:
+    pass
+
+
 registry = StepRegistry()
 
-# -- Create the decorators
-# pylint: disable=redefined-outer-name
+# -- LOWER-CASE STEP-DECORATORS:
+given = _StepDecorator()
+when = _StepDecorator()
+then = _StepDecorator()
+step = _StepDecorator()
+# -- TITLE-CASE STEP-DECORATORS:
+Given = _StepDecorator()
+When = _StepDecorator()
+Then = _StepDecorator()
+Step = _StepDecorator()
+
+
+# -----------------------------------------------------------------------------
+# MODULE SETUP SUPPORT:
+# -----------------------------------------------------------------------------
 def setup_step_decorators(run_context=None, registry=registry):
+    """
+    Setup (and creates) the step-decorators used by step-writers.
+    """
+    # pylint: disable=redefined-outer-name
     if run_context is None:
         run_context = globals()
     for step_type in ("given", "when", "then", "step"):
         step_decorator = registry.make_decorator(step_type)
         run_context[step_type.title()] = run_context[step_type] = step_decorator
+
 
 # -----------------------------------------------------------------------------
 # MODULE INIT:
