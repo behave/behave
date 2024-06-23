@@ -6,7 +6,7 @@ Simplifies to specify runtime constraints in
 * features/steps/*.py" files
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import six
 import sys
 from behave.exception import ConstraintError
@@ -21,13 +21,12 @@ def require_min_python_version(minimal_version):
     :param minimal_version: Minimum version (as string, tuple)
     :raises: behave.exception.ConstraintError
     """
-    python_version = sys.version_info
     if isinstance(minimal_version, six.string_types):
-        python_version = float("%s.%s" % sys.version_info[:2])
-        minimal_version = float(minimal_version)
+        minimal_version = tuple([int(x) for x in minimal_version.split('.')])
     elif not isinstance(minimal_version, tuple):
-        raise TypeError("string or tuple (was: %s)" % type(minimal_version))
+        raise ValueError("{!r} (expected: tuple, string)".format(minimal_version))
 
+    python_version = sys.version_info[:2]
     if python_version < minimal_version:
         raise ConstraintError("python >= %s expected (was: %s)" % \
                               (minimal_version, python_version))
