@@ -920,11 +920,17 @@ class Runner(ModelRunner):
     def load_step_definitions(self, extra_step_paths=None):
         if extra_step_paths is None:
             extra_step_paths = []
+
         # -- Allow steps to import other stuff from the steps dir
         # NOTE: Default matcher can be overridden in "environment.py" hook.
+        # Load step modules from subdirectories within the steps directory
         steps_dir = os.path.join(self.base_dir, self.config.steps_dir)
-        step_paths = [steps_dir] + list(extra_step_paths)
-        load_step_modules(step_paths)
+        for root, dirs, files in os.walk(steps_dir):
+            for file in files:
+                if file.endswith('.py') and not file.startswith('__init__'):
+                    step_file = os.path.join(root, file)
+                    if os.path.isfile(step_file):  # Ensure it's a file
+                        load_step_modules([root])  # Load from the directory
 
     def feature_locations(self):
         return collect_feature_locations(self.config.paths)
