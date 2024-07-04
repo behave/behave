@@ -11,7 +11,7 @@ This module provides the configuration for :mod:`behave`:
 * config-file loading and storing params in Configuration object(s)
 * command-line parsing and storing params in Configuration object(s)
 """
-
+from behave.configuration import Configuration
 from __future__ import absolute_import, print_function
 import argparse
 from collections import namedtuple
@@ -56,7 +56,6 @@ if _TOML_AVAILABLE:  # pragma: no cover
             import tomli as tomllib
     except ImportError:
         _TOML_AVAILABLE = False
-
 
 # -----------------------------------------------------------------------------
 # CONSTANTS:
@@ -115,7 +114,6 @@ COLOR_DEFAULT_OFF = "off"
 COLOR_ON_VALUES = ("on", "always")
 COLOR_OFF_VALUES = ("off", "never")
 
-
 OPTIONS = [
     (("-C", "--no-color"),
      dict(dest="color", action="store_const", const=COLOR_DEFAULT_OFF,
@@ -172,7 +170,6 @@ OPTIONS = [
      dict(dest="default_format", default="pretty",
           help="Specify default formatter (default: %(default)s).")),
 
-
     (("-f", "--format"),
      dict(dest="format", action="append",
           help="""Specify a formatter. If none is specified the default
@@ -212,7 +209,7 @@ OPTIONS = [
      dict(dest="show_multiline", action="store_false",
           help="""Don't print multiline strings and tables under steps.""")),
 
-    (("--multiline", ),
+    (("--multiline",),
      dict(dest="show_multiline", action="store_true",
           help="""Print multiline strings and tables under steps.
                   This is the default behaviour. This switch is used to
@@ -338,7 +335,7 @@ With "auto_detect", tag-expressions v1 and v2 are auto-detected.
           help='Use own runner class, like: "behave.runner:Runner"')),
 
     (("--no-source",),
-     dict( dest="show_source", action="store_false",
+     dict(dest="show_source", action="store_false",
           help="""Don't print the file and line of the step definition with the
                   steps.""")),
 
@@ -379,7 +376,7 @@ With "auto_detect", tag-expressions v1 and v2 are auto-detected.
                          tag expressions in configuration files.""")),
 
     (("-T", "--no-timings"),
-     dict( dest="show_timings", action="store_false",
+     dict(dest="show_timings", action="store_false",
           help="""Don't print the time taken for each step.""")),
 
     (("--show-timings",),
@@ -419,7 +416,6 @@ With "auto_detect", tag-expressions v1 and v2 are auto-detected.
      dict(action="store_true", help="Show version.")),
 ]
 
-
 # -- CONFIG-FILE SKIPS:
 # * Skip SOME_HELP options, like: --tags-help, --lang-list, ...
 # * Skip --no-<name> options (action: "store_false", "store_const")
@@ -440,10 +436,10 @@ RAW_VALUE_OPTIONS = frozenset([
 
 def _values_to_str(data):
     return json.loads(json.dumps(data),
-        parse_float=str,
-        parse_int=str,
-        parse_constant=str
-    )
+                      parse_float=str,
+                      parse_int=str,
+                      parse_constant=str
+                      )
 
 
 def has_negated_option(option_words):
@@ -462,6 +458,7 @@ ConfigFileOption = namedtuple("ConfigFileOption", ("dest", "action", "type"))
 
 def configfile_options_iter(config):
     skip_missing = bool(config)
+
     def config_has_param(config, param_name):
         try:
             return param_name in config["behave"]
@@ -525,7 +522,7 @@ def format_outfiles_coupling(config_data, config_dir):
 def read_configparser(path):
     # pylint: disable=too-many-locals, too-many-branches
     config = ConfigParser()
-    config.optionxform = str    # -- SUPPORT: case-sensitive keys
+    config.optionxform = str  # -- SUPPORT: case-sensitive keys
     config.read(path)
     this_config = {}
 
@@ -559,8 +556,8 @@ def read_configparser(path):
     # SCHEMA: config_section: data_name
     special_config_section_map = {
         "behave.formatters": "more_formatters",
-        "behave.runners":    "more_runners",
-        "behave.userdata":   "userdata",
+        "behave.runners": "more_runners",
+        "behave.userdata": "userdata",
     }
     for section_name, data_name in special_config_section_map.items():
         this_config[data_name] = {}
@@ -620,8 +617,8 @@ def read_toml_config(path):
     # SCHEMA: config_section: data_name
     special_config_section_map = {
         "formatters": "more_formatters",
-        "runners":    "more_runners",
-        "userdata":   "userdata",
+        "runners": "more_runners",
+        "userdata": "userdata",
     }
     for section_name, data_name in special_config_section_map.items():
         this_config[data_name] = {}
@@ -733,6 +730,7 @@ def setup_config_file_parser():
         parser.add_argument(*fixed, **keywords)
     return parser
 
+
 class Configuration(object):
     """Configuration object for behave and behave runners."""
     # pylint: disable=too-many-instance-attributes
@@ -757,8 +755,8 @@ class Configuration(object):
         stage=None,
         userdata={},
         # -- SPECIAL:
-        default_format="pretty",    # -- Used when no formatters are configured.
-        default_tags="",            # -- Used when no tags are defined.
+        default_format="pretty",  # -- Used when no formatters are configured.
+        default_tags="",  # -- Used when no tags are defined.
         config_tags=None,
         scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}"
     )
@@ -1118,7 +1116,7 @@ class Configuration(object):
         :param kwargs:      Passed to :func:`logging.basicConfig()`
         """
         if level is None:
-            level = self.logging_level      # pylint: disable=no-member
+            level = self.logging_level  # pylint: disable=no-member
         else:
             # pylint: disable=import-outside-toplevel
             level = logging_check_level(level)
@@ -1194,3 +1192,47 @@ class Configuration(object):
         if self.userdata_defines:
             # -- REAPPLY: Cmd-line defines (override configuration file data).
             self.userdata.update(self.userdata_defines)
+
+
+class Configuration(object):
+    def __init__(self, command_args=None):
+        self.command_args = command_args or sys.argv
+        self.dynamic_examples_csv = None  # Initialize to None
+        self.userdata = {}
+
+    def parse_args(self, args=None):
+        parser = argparse.ArgumentParser()
+        self.add_default_options(parser)
+        self.add_custom_options(parser)  # Add custom options
+        config = parser.parse_args(args)
+        self.dynamic_examples_csv = config.dynamic_examples_csv  # Save CSV path
+        self.update_userdata(config)
+        return config
+
+    def add_default_options(self, parser):
+        # Add default options if needed
+        pass
+
+    def add_custom_options(self, parser):
+        # Add custom options
+        parser.add_argument("--dynamic-examples-csv", help="Path to the CSV file for dynamic examples",
+                            dest="dynamic_examples_csv")
+
+    def update_userdata(self, config):
+        # Update userdata with custom option
+        if config.dynamic_examples_csv:
+            self.userdata['dynamic_examples_csv'] = config.dynamic_examples_csv
+
+
+class DynamicExamplesConfiguration(Configuration):
+    def __init__(self, *args, **kwargs):
+        super(DynamicExamplesConfiguration, self).__init__(*args, **kwargs)
+        self.dynamic_examples_csv = None
+
+    def parse_args(self, args=None):
+        parser = self.parser
+        parser.add_argument("--dynamic-examples-csv", help="Path to the CSV file for dynamic examples",
+                            dest="dynamic_examples_csv")
+        config = parser.parse_args(args)
+        self.dynamic_examples_csv = config.dynamic_examples_csv
+        return config

@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 # FILE: features/environment.py
 
+
 from __future__ import absolute_import, print_function
 from behave4cmd0.setup_command_shell import setup_command_shell_processors4behave
 from behave import fixture
@@ -9,7 +10,7 @@ import behave.active_tag.python_feature
 from behave.fixture import use_fixture_by_tag
 from behave.tag_matcher import \
     ActiveTagMatcher, setup_active_tag_values, print_active_tags
-
+from behave.dynamic_examples import load_examples_from_csv
 
 # -----------------------------------------------------------------------------
 # ACTIVE TAGS:
@@ -69,6 +70,9 @@ def before_all(context):
 def before_feature(context, feature):
     if active_tag_matcher.should_exclude_with(feature.tags):
         feature.skip(reason=active_tag_matcher.exclude_reason)
+    elif context.config.userdata.get("dynamic_examples_csv"):
+        csv_file_path = context.config.userdata["dynamic_examples_csv"]
+        load_examples_from_csv(feature, csv_file_path)
 
 
 def before_scenario(context, scenario):
@@ -86,10 +90,12 @@ def before_tag(context, tag):
 # -----------------------------------------------------------------------------
 def setup_context_with_global_params_test(context):
     context.global_name = "env:Alice"
-    context.global_age  = 12
+    context.global_age = 12
+
 
 def setup_python_path():
     # -- NEEDED-FOR: formatter.user_defined.feature
     import os
     PYTHONPATH = os.environ.get("PYTHONPATH", "")
-    os.environ["PYTHONPATH"] = "."+ os.pathsep + PYTHONPATH
+    os.environ["PYTHONPATH"] = "." + os.pathsep + PYTHONPATH
+

@@ -217,6 +217,33 @@ The table is available to the Python step code as the ".table" attribute
 in the :class:`~behave.runner.Context` variable passed into each step
 function. The table for the example above could be accessed like so:
 
+Dynamic Examples from CSV
+=========================
+
+You can dynamically populate examples tables in your feature files using data from a CSV file. To do this, use the `--dynamic-examples-csv` option when running Behave.
+
+Example:
+
+.. code-block:: console
+
+    behave --dynamic-examples-csv=path/to/your/data.csv
+
+Ensure your feature files have the `@dynamic` tag for the scenarios you want to populate from the CSV file.
+
+Example feature file:
+
+.. code-block:: gherkin
+
+    Feature: csv file
+
+      @dynamic
+      Scenario Outline: Load data from csv
+        Then just print <username> <email> <password>
+        Examples: Dynamic
+          | username | email | password |
+          | .        | .     | .        |
+
+
 .. code-block:: python
 
     @given('a set of specific users')
