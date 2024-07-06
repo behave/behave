@@ -315,6 +315,7 @@ class TestScenarioRun(unittest.TestCase):
 
         assert scenario.should_run_with_name_select(self.config)
 
+
 class TestScenarioOutline(unittest.TestCase):
     # pylint: disable=invalid-name
 

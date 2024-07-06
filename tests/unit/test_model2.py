@@ -7,7 +7,7 @@ from __future__ import absolute_import, print_function
 from behave.model import ScenarioOutline, ScenarioOutlineBuilder, Table, Tag, Row
 from behave.model_describe import ModelDescriptor
 from behave.textutil import text
-from behave.parser import parse_step, parse_tags
+from behave.parser import parse_feature, parse_step, parse_tags
 import six
 import pytest
 
@@ -67,13 +67,11 @@ class TestScenarioOutlineBuilder(object):
         params = dict(firstname="Alice", lastname="Beauville")
         self.assert_make_step_for_row(step_text, expected_text, params)
 
-
     def test_make_step_for_row__with_placeholders_in_step(self):
         step_text = u'Given a person with "<firstname> <lastname>"'
         expected_text = u'Given a person with "Alice Beauville"'
         params = dict(firstname="Alice", lastname="Beauville")
         self.assert_make_step_for_row(step_text, expected_text, params)
-
 
     def test_make_step_for_row__with_placeholders_in_text(self):
         step_text = u'''\
@@ -97,7 +95,6 @@ Given a simple multi-line text:
         params = dict(param_1="Param_1", param_2="Hello", param_3="Bob")
         self.assert_make_step_for_row(step_text, expected_text, params)
 
-
     def test_make_step_for_row__without_placeholders_in_table(self):
         step_text = u'''\
 Given a simple data table
@@ -110,7 +107,6 @@ Given a simple data table
     | Lorem ipsum | Ipsum lorem |
 '''.strip()          # NOTE: Formatting changes whitespace.
         self.assert_make_step_for_row(step_text, expected_text, params=None)
-
 
     def test_make_step_for_row__with_placeholders_in_table_headings(self):
         step_text = u'''\
@@ -125,7 +121,6 @@ Given a simple data table:
 '''.strip()
         params = dict(param_1="Column_1", param_2="Hello", param_3="Column_3")
         self.assert_make_step_for_row(step_text, expected_text, params)
-
 
     def test_make_step_for_row__with_placeholders_in_table_cells(self):
         step_text = u'''\
@@ -143,7 +138,6 @@ Given a simple data table:
 
         params = dict(param_1="Cell_1", param_2="Hello", param_3="Alice")
         self.assert_make_step_for_row(step_text, expected_text, params)
-
 
     @pytest.mark.parametrize("tag_template,expected", [
         (u"@use.with_category1=<param_1>", u"use.with_category1=PARAM_1"),
@@ -176,6 +170,47 @@ Given a simple data table:
         params = dict(param_1="PARAM_1", param_2="PARAM_2", param_3="UNUSED")
         expected_tags = [expected]
         self.assert_make_row_tags(tag_template, expected_tags, params)
+
+    def test_build_scenarios_with_parametrized_background_steps(self):
+        """
+        Ensure that placeholders in background steps are supported.
+
+        RELATED TO: Issue #1183
+        """
+        text = u"""
+Feature:
+  Background:
+    Given a person named "<name>"
+
+  Scenario Outline:
+    Then the birth year of this person is "<birth year>"
+
+    Examples:
+      | name  | birth year |
+      | Alice | 1995 |
+      | Bob   | 1985 |
+"""
+        feature = parse_feature(text)
+        expected_step_names = [
+            [
+                u'a person named "Alice"',
+                u'the birth year of this person is "1995"',
+            ],
+            [
+                u'a person named "Bob"',
+                u'the birth year of this person is "1985"',
+            ],
+        ]
+
+        scenarios = list(feature.iter_scenarios())
+        assert len(scenarios) == 2
+
+        scenario0_steps = list(scenarios[0].all_steps)
+        scenario1_steps = list(scenarios[1].all_steps)
+        assert scenario0_steps[0].name == expected_step_names[0][0]
+        assert scenario0_steps[1].name == expected_step_names[0][1]
+        assert scenario1_steps[0].name == expected_step_names[1][0]
+        assert scenario1_steps[1].name == expected_step_names[1][1]
 
 
 class TestTag(object):

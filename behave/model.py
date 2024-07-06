@@ -927,16 +927,17 @@ class Scenario(TagAndStatusStatement, Replayable):
     continue_after_failed_step = False
 
     def __init__(self, filename, line, keyword, name, tags=None, steps=None,
-                 description=None, parent=None):
+                 description=None, parent=None,
+                 background=None, background_steps=None):
         tags = tags or []
         super(Scenario, self).__init__(filename, line, keyword, name, tags,
                                        parent=parent)
         self.description = description or []
         self.steps = steps or []
-        self.background = None
+        self.background = background
         self.feature = None  # REFER-TO: owner=Feature
         self.hook_failed = False
-        self._background_steps = None
+        self._background_steps = background_steps
         self._use_background = True
         self._row = None
         self.was_dry_run = False
@@ -998,7 +999,7 @@ class Scenario(TagAndStatusStatement, Replayable):
 
         .. versionadded:: 1.2.7
         """
-        if self.background is not None:
+        if self.background is not None:  # MAYBE: and self.use_background:
             return itertools.chain(self.background_steps, self.steps)
         return iter(self.steps)
 
@@ -1295,6 +1296,22 @@ class ScenarioOutlineBuilder(object):
         return "<" in tag and ">" in tag
 
     @classmethod
+    def is_parametrized_step(cls, step):
+        if not isinstance(step, Step):
+            raise TypeError("%r (expected: Step)" % step)
+
+        step_text = step.name
+        return cls.is_parametrized_tag(step_text)
+
+    @classmethod
+    def has_parametrized_steps(cls, steps):
+        for step in steps:
+            if cls.is_parametrized_step(step):
+                return True
+        # -- OTHERWISE:
+        return False
+
+    @classmethod
     def make_row_tags(cls, outline_tags, row, params=None):
         if not outline_tags:
             return []
@@ -1356,6 +1373,14 @@ class ScenarioOutlineBuilder(object):
                                                         example, row, params)
                 row_tags = self.make_row_tags(scenario_outline.tags, row, params)
                 row_tags.extend(example.tags)
+                background_steps = None
+                if self.has_parametrized_steps(scenario_outline.background_steps):
+                    background_steps = []
+                    the_background_steps = copy_and_reset_steps(scenario_outline.background_steps)
+                    for background_step in the_background_steps:
+                        this_step = self.make_step_for_row(background_step, row, params)
+                        background_steps.append(this_step)
+
                 new_steps = []
                 for outline_step in scenario_outline.steps:
                     new_step = self.make_step_for_row(outline_step, row, params)
@@ -1366,11 +1391,12 @@ class ScenarioOutlineBuilder(object):
                 scenario_line = row.line
                 scenario = Scenario(scenario_outline.filename, scenario_line,
                                     scenario_outline.keyword,
-                                    scenario_name, row_tags, new_steps)
+                                    scenario_name, row_tags, new_steps,
+                                    description=scenario_outline.description,
+                                    parent=scenario_outline,
+                                    background=scenario_outline.background,
+                                    background_steps=background_steps)
                 scenario.feature = scenario_outline.feature
-                scenario.parent = scenario_outline
-                scenario.background = scenario_outline.background
-                scenario.description = scenario_outline.description
                 scenario._row = row     # pylint: disable=protected-access
                 scenarios.append(scenario)
         return scenarios
