@@ -2,10 +2,6 @@
 # FILE: features/environment.py
 
 from __future__ import absolute_import, print_function
-
-from behave.model import ScenarioOutline
-from behave.contrib.csv_table_from_file import load_dynamic_examples_from_csv
-
 from behave4cmd0.setup_command_shell import setup_command_shell_processors4behave
 from behave import fixture
 import behave.active_tag.python
@@ -72,18 +68,6 @@ def before_all(context):
 def before_feature(context, feature):
     if active_tag_matcher.should_exclude_with(feature.tags):
         feature.skip(reason=active_tag_matcher.exclude_reason)
-    else:
-        for scenario in feature.scenarios:
-            if isinstance(scenario, ScenarioOutline):
-                for example in scenario.examples:
-                    from_file_tag = next((tag for tag in example.tags if tag.startswith('from_file=')), None)
-                    if from_file_tag:
-                        file_path = from_file_tag.split('=')[1]
-                        try:
-                            load_dynamic_examples_from_csv(example, file_path)
-                        except FileNotFoundError as e:
-                            scenario.skip(reason=str(e))
-                            break  # Skip further examples if one fails
 
 
 def before_scenario(context, scenario):
