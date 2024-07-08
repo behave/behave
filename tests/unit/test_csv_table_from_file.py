@@ -1,123 +1,89 @@
 import pytest
-from mock import Mock, patch, mock_open
-from behave.model import Feature, ScenarioOutline, Table, Row
 import os
-import logging
-
+import csv
+from mock import MagicMock, patch
+from os.path import dirname, abspath, join
 from behave.contrib.csv_table_from_file import read_examples_table_data_from_csv, \
-    preprocess_and_read_examples_table_data_from_csv
+    preprocess_and_read_examples_table_data_from_csv, logger
+from behave.model import Table, Feature, Examples
 
 
-class Example:
-    def __init__(self):
-        self.table = None
+@pytest.fixture
+def mock_example():
+    mock = MagicMock()
+    mock.table = None
+    mock.tags = []
+    return mock
 
 
 @pytest.fixture
 def mock_feature():
-    """
-    Fixture that provides a mocked Feature object for testing.
-
-    Returns:
-        Mock: Mocked Feature object.
-    """
-    feature = Mock(spec=Feature)
-    feature.filename = 'test.feature'
-    return feature
+    mock = MagicMock()
+    mock.filename = '/path/to/feature.feature'
+    return mock
 
 
-@pytest.fixture
-def mock_scenario_outline():
-    """
-    Fixture that provides a mocked ScenarioOutline object with an example.
-
-    Returns:
-        Mock: Mocked ScenarioOutline object.
-    """
-    scenario_outline = Mock(spec=ScenarioOutline)
-    example1 = Example()
-    scenario_outline.examples = [example1]
-    return scenario_outline
+def test_read_examples_table_data_from_csv(mock_example):
+    mock_example.table = Table(headings=[], rows=[])
+    csv_path = join(dirname(abspath(__file__)), 'test.csv')  # Construct path to test.csv
+    read_examples_table_data_from_csv(mock_example, csv_path)
+    assert len(mock_example.table.rows) == 2
+    assert mock_example.table.headings == ['value1', 'value2', 'value3']
+    assert mock_example.table.rows[0]['value1'] == '1'
+    assert mock_example.table.rows[0]['value2'] == '2'
+    assert mock_example.table.rows[0]['value3'] == '3'
 
 
-@patch('behave.contrib.csv_table_from_file.open', new_callable=mock_open,
-       read_data="column1,column2\ndata1,data2\ndata3,data4")
-@patch('behave.contrib.csv_table_from_file.os.path.exists', return_value=True)
-def test_read_examples_table_data_from_csv(mock_exists, mock_open):
-    """
-    Test case for reading examples table data from a CSV file.
-
-    Args:
-        mock_exists (MagicMock): Mock for os.path.exists.
-        mock_open (MockOpen): Mock for open function with mock_open.
-
-    """
-    example = Example()
-    example.table = Table(headings=[], rows=[])
-
-    read_examples_table_data_from_csv(example, 'dummy.csv')
-
-    # Construct expected rows using behave's Row objects
-    expected_rows = [
-        Row(headings=['column1', 'column2'], cells=['data1', 'data2'], line=2),
-        Row(headings=['column1', 'column2'], cells=['data3', 'data4'], line=3)
-    ]
-
-    assert example.table.headings == ['column1', 'column2']
-    assert example.table.rows == expected_rows
-
-
-@patch('behave.contrib.csv_table_from_file.os.path.exists', return_value=False)
-def test_read_examples_table_data_from_csv_file_not_found(mock_exists):
-    """
-    Test case for handling scenario where the CSV file is not found.
-
-    Args:
-        mock_exists (MagicMock): Mock for os.path.exists.
-    """
-    example = Example()
+def test_read_examples_table_data_from_csv_nonexistent_file(mock_example):
     with pytest.raises(FileNotFoundError):
-        read_examples_table_data_from_csv(example, 'dummy.csv')
+        read_examples_table_data_from_csv(mock_example, 'nonexistent.csv')
 
 
-@patch('behave.contrib.csv_table_from_file.os.path.exists', return_value=True)
+def test_read_examples_table_data_from_csv_non_csv_file(mock_example):
+    with pytest.raises(ValueError):
+        read_examples_table_data_from_csv(mock_example, join(dirname(abspath(__file__)), 'not_csv.txt'))
+
+
+def test_read_examples_table_data_from_csv_empty_file(mock_example):
+    empty_csv_path = join(dirname(abspath(__file__)), 'empty.csv')
+    with open(empty_csv_path, 'w', newline='') as empty_csv:
+        writer = csv.writer(empty_csv)
+        writer.writerow([])
+    read_examples_table_data_from_csv(mock_example, empty_csv_path)
+    assert len(mock_example.table.rows) == 0
+    os.remove(empty_csv_path)
+
+
 @patch('behave.contrib.csv_table_from_file.read_examples_table_data_from_csv')
-def test_preprocess_and_read_examples_table_data_from_csv(mock_read, mock_exists, mock_feature, mock_scenario_outline):
-    """
-    Test case for preprocessing and reading examples table data from CSV files.
+def test_preprocess_and_read_examples_table_data_from_csv(mock_read_csv, mock_feature):
 
-    Args:
-        mock_read (MagicMock): Mock for read_examples_table_data_from_csv function.
-        mock_exists (MagicMock): Mock for os.path.exists.
-        mock_feature (Mock): Mocked Feature object.
-        mock_scenario_outline (Mock): Mocked ScenarioOutline object.
-    """
+    mock_scenario_outline = MagicMock()
+    mock_examples_with_tag = MagicMock()
+    mock_examples_without_tag = MagicMock()
+
+    script_dir = dirname(abspath(__file__))
+    csv_filename = 'test.csv'
+    mock_examples_with_tag.tags = ['@from_file={}'.format(join(script_dir, csv_filename))]
+    mock_examples_without_tag.tags = []
+
+    mock_scenario_outline.examples = [mock_examples_with_tag, mock_examples_without_tag]
     mock_feature.iter_scenario_outlines.return_value = [mock_scenario_outline]
 
     preprocess_and_read_examples_table_data_from_csv(mock_feature)
 
-    base_path = os.path.splitext(mock_feature.filename)[0]
-    csv_file_path = f"{base_path}.csv"
+    expected_csv_path = join(dirname(abspath(__file__)), 'test.csv')
+    mock_read_csv.assert_called_once_with(mock_examples_with_tag, expected_csv_path)
+    assert len(mock_read_csv.call_args_list) == 1
 
-    mock_read.assert_called_with(mock_scenario_outline.examples[0], csv_file_path)
 
-
-@patch('behave.contrib.csv_table_from_file.os.path.exists', return_value=False)
-def test_preprocess_and_read_examples_table_data_from_csv_file_not_found(mock_exists, mock_feature,
-                                                                         mock_scenario_outline, caplog):
-    """
-    Test case for handling scenario where the CSV file is not found during preprocessing.
-
-    Args:
-        mock_exists (MagicMock): Mock for os.path.exists.
-        mock_feature (Mock): Mocked Feature object.
-        mock_scenario_outline (Mock): Mocked ScenarioOutline object.
-        caplog (pytest.LogCaptureFixture): Fixture for capturing log messages.
-    """
+def test_preprocess_and_read_examples_table_data_from_csv_nonexistent_csv(mock_feature):
+    mock_examples_with_tag = MagicMock()
+    mock_examples_with_tag.tags = ['@from_file={}'.format(join(dirname(abspath(__file__)), 'nonexistent.csv'))]
+    csv_file_path = join(dirname(abspath(__file__)), 'nonexistent.csv')
+    mock_scenario_outline = MagicMock()
+    mock_scenario_outline.examples = [mock_examples_with_tag]
     mock_feature.iter_scenario_outlines.return_value = [mock_scenario_outline]
 
-    with caplog.at_level(logging.WARNING):
+    with patch('behave.contrib.csv_table_from_file.logger.warning') as mock_warning:
         preprocess_and_read_examples_table_data_from_csv(mock_feature)
-
-    assert "CSV file not found" in caplog.text
-
+        mock_warning.assert_called_once_with(f'No file found: {csv_file_path}')
