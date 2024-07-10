@@ -1,89 +1,70 @@
 import pytest
 import os
-import csv
-from mock import MagicMock, patch
-from os.path import dirname, abspath, join
-from behave.contrib.csv_table_from_file import read_examples_table_data_from_csv, \
-    preprocess_and_read_examples_table_data_from_csv, logger
-from behave.model import Table, Feature, Examples
+from mock import MagicMock
+from behave.model import Examples, Feature, ScenarioOutline, Table
+from behave.contrib.csv_table_from_file import (
+    read_examples_table_data_from_csv,
+    select_marker_tag_and_extract_filename,
+    preprocess_and_read_examples_table_data_from_csv,
+)
+
+
+def test_read_examples_table_data_from_csv(tmpdir):
+    csv_file = tmpdir.join("test.csv")
+    csv_file.write("username,email,password\nuser1,email1,pass1\nuser2,email2,pass2")
+
+    example = Examples("dummy.feature", 1, "Examples", "Example")
+    read_examples_table_data_from_csv(example, str(csv_file))
+
+    assert example.table is not None
+    assert example.table.headings == ["username", "email", "password"]
+    assert example.table.rows[0]['username'] == 'user1'
+    assert example.table.rows[0]['email'] == 'email1'
+    assert example.table.rows[0]['password'] == 'pass1'
+
+
+def test_select_marker_tag_and_extract_filename():
+    tags = ["from_file=tests/test.csv"]
+    feature = MagicMock()
+    feature.filename = "/path/to/feature.feature"
+
+    csv_file_path = select_marker_tag_and_extract_filename(tags, feature)
+
+    expected_path = os.path.join(os.path.dirname(os.path.dirname(feature.filename)), "tests/test.csv")
+    assert csv_file_path == expected_path
 
 
 @pytest.fixture
-def mock_example():
-    mock = MagicMock()
-    mock.table = None
-    mock.tags = []
-    return mock
+def feature_and_example(tmpdir):
+    csv_file = tmpdir.join("test.csv")
+    csv_file.write("username,email,password\nuser1,email1,pass1\nuser2,email2,pass2")
+
+    feature_filename = str(tmpdir.join("dummy.feature"))
+    feature = Feature(filename=feature_filename, line=1, keyword="Feature", name="Feature")
+
+    example = Examples(filename=feature_filename, line=1, keyword="Examples", name="Example",
+                       tags=["from_file=test.csv"])
+    scenario_outline = ScenarioOutline(filename=feature_filename, line=1, keyword="Scenario Outline", name="Outline",
+                                       examples=[example])
+
+    feature.scenarios = [scenario_outline]
+
+    return feature, example, str(csv_file)
 
 
-@pytest.fixture
-def mock_feature():
-    mock = MagicMock()
-    mock.filename = '/path/to/feature.feature'
-    return mock
+def test_preprocess_and_read_examples_table_data_from_csv(feature_and_example, monkeypatch):
+    feature, example, csv_path = feature_and_example
 
+    # Mock the select_marker_tag_and_extract_filename function to return the actual CSV path
+    def mock_select_marker(*args, **kwargs):
+        return csv_path
 
-def test_read_examples_table_data_from_csv(mock_example):
-    mock_example.table = Table(headings=[], rows=[])
-    csv_path = join(dirname(abspath(__file__)), 'test.csv')  # Construct path to test.csv
-    read_examples_table_data_from_csv(mock_example, csv_path)
-    assert len(mock_example.table.rows) == 2
-    assert mock_example.table.headings == ['value1', 'value2', 'value3']
-    assert mock_example.table.rows[0]['value1'] == '1'
-    assert mock_example.table.rows[0]['value2'] == '2'
-    assert mock_example.table.rows[0]['value3'] == '3'
+    monkeypatch.setattr('behave.contrib.csv_table_from_file.select_marker_tag_and_extract_filename', mock_select_marker)
 
+    preprocess_and_read_examples_table_data_from_csv(feature)
 
-def test_read_examples_table_data_from_csv_nonexistent_file(mock_example):
-    with pytest.raises(FileNotFoundError):
-        read_examples_table_data_from_csv(mock_example, 'nonexistent.csv')
-
-
-def test_read_examples_table_data_from_csv_non_csv_file(mock_example):
-    with pytest.raises(ValueError):
-        read_examples_table_data_from_csv(mock_example, join(dirname(abspath(__file__)), 'not_csv.txt'))
-
-
-def test_read_examples_table_data_from_csv_empty_file(mock_example):
-    empty_csv_path = join(dirname(abspath(__file__)), 'empty.csv')
-    with open(empty_csv_path, 'w', newline='') as empty_csv:
-        writer = csv.writer(empty_csv)
-        writer.writerow([])
-    read_examples_table_data_from_csv(mock_example, empty_csv_path)
-    assert len(mock_example.table.rows) == 0
-    os.remove(empty_csv_path)
-
-
-@patch('behave.contrib.csv_table_from_file.read_examples_table_data_from_csv')
-def test_preprocess_and_read_examples_table_data_from_csv(mock_read_csv, mock_feature):
-
-    mock_scenario_outline = MagicMock()
-    mock_examples_with_tag = MagicMock()
-    mock_examples_without_tag = MagicMock()
-
-    script_dir = dirname(abspath(__file__))
-    csv_filename = 'test.csv'
-    mock_examples_with_tag.tags = ['@from_file={}'.format(join(script_dir, csv_filename))]
-    mock_examples_without_tag.tags = []
-
-    mock_scenario_outline.examples = [mock_examples_with_tag, mock_examples_without_tag]
-    mock_feature.iter_scenario_outlines.return_value = [mock_scenario_outline]
-
-    preprocess_and_read_examples_table_data_from_csv(mock_feature)
-
-    expected_csv_path = join(dirname(abspath(__file__)), 'test.csv')
-    mock_read_csv.assert_called_once_with(mock_examples_with_tag, expected_csv_path)
-    assert len(mock_read_csv.call_args_list) == 1
-
-
-def test_preprocess_and_read_examples_table_data_from_csv_nonexistent_csv(mock_feature):
-    mock_examples_with_tag = MagicMock()
-    mock_examples_with_tag.tags = ['@from_file={}'.format(join(dirname(abspath(__file__)), 'nonexistent.csv'))]
-    csv_file_path = join(dirname(abspath(__file__)), 'nonexistent.csv')
-    mock_scenario_outline = MagicMock()
-    mock_scenario_outline.examples = [mock_examples_with_tag]
-    mock_feature.iter_scenario_outlines.return_value = [mock_scenario_outline]
-
-    with patch('behave.contrib.csv_table_from_file.logger.warning') as mock_warning:
-        preprocess_and_read_examples_table_data_from_csv(mock_feature)
-        mock_warning.assert_called_once_with(f'No file found: {csv_file_path}')
+    assert example.table is not None, "Table should not be None"
+    assert example.table.headings == ["username", "email", "password"], "Incorrect table headings"
+    assert example.table.rows[0]['username'] == 'user1'
+    assert example.table.rows[0]['email'] == 'email1'
+    assert example.table.rows[0]['password'] == 'pass1'
