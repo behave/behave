@@ -2,13 +2,6 @@
 # FILE: features/environment.py
 
 from __future__ import absolute_import, print_function
-
-import copy
-import csv
-import os
-
-from behave.model import ScenarioOutline
-
 from behave4cmd0.setup_command_shell import setup_command_shell_processors4behave
 from behave import fixture
 import behave.active_tag.python
@@ -72,35 +65,9 @@ def before_all(context):
     print_active_tags_summary()
 
 
-def load_dynamic_examples_from_csv(example, file_path):
-    if os.path.exists(file_path):
-        orig = copy.deepcopy(example.table.rows[0])  # Make a deep copy of the original header row
-        example.table.rows = []  # Clear existing rows
-        with open(file_path, 'r') as csv_file:
-            csv_reader = csv.reader(csv_file)
-            for row in csv_reader:
-                new_row = copy.deepcopy(orig)
-                new_row.cells = [str(cell) for cell in row]
-                example.table.rows.append(new_row)
-    else:
-        raise FileNotFoundError(f"CSV file not found: {file_path}")
-
-
 def before_feature(context, feature):
     if active_tag_matcher.should_exclude_with(feature.tags):
         feature.skip(reason=active_tag_matcher.exclude_reason)
-    else:
-        for scenario in feature.scenarios:
-            if isinstance(scenario, ScenarioOutline):
-                for example in scenario.examples:
-                    from_file_tag = next((tag for tag in example.tags if tag.startswith('from_file=')), None)
-                    if from_file_tag:
-                        file_path = from_file_tag.split('=')[1]
-                        try:
-                            load_dynamic_examples_from_csv(example, file_path)
-                        except FileNotFoundError as e:
-                            scenario.skip(reason=str(e))
-                            break  # Skip further examples if one fails
 
 
 def before_scenario(context, scenario):
