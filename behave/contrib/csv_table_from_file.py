@@ -143,11 +143,6 @@ def read_examples_table_data_from_csv(example: Examples, file_path: Path) -> Non
                 new_row_data.append(cell)
             example.table.add_row(new_row_data)
 
-        # -- FINALLY:
-        if data_rows:
-            # -- MARK: Example (table) as modified.
-            example.modified = True
-
 
 def process_examples_tables_with_marker_tag_and_use_csv_file(feature: Feature,
                                                              strict: bool = False) -> int:
