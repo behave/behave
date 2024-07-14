@@ -13,8 +13,25 @@ from enum import Enum
 
 
 PLATFORM_WIN = sys.platform.startswith("win")
+
+
 def posixpath_normalize(path):
     return path.replace("\\", "/")
+
+
+def make_relpath_if_possible(filename, base_directory=None):
+    if base_directory is None:
+        base_directory = os.getcwd()
+
+    try:
+        # -- NEEDS: abspath?
+        filename = os.path.relpath(filename, base_directory)
+    except ValueError:
+        # -- WINDOWS: Different drives used for filename, base_directory
+        # RELATED TO: Issue #599
+        # MAYBE: filename = os.path.abspath(filename)
+        pass
+    return filename
 
 
 # -----------------------------------------------------------------------------
@@ -161,7 +178,7 @@ class FileLocation(object):
         :param start: Base path or start directory (default=current dir).
         :return: Relative path from start to filename
         """
-        return os.path.relpath(self.filename, start)
+        return make_relpath_if_possible(self.filename, start)
 
     def exists(self):
         return os.path.exists(self.filename)
@@ -251,13 +268,7 @@ class FileLocation(object):
         line_number = function_code.co_firstlineno
 
         curdir = curdir or os.getcwd()
-        try:
-            filename = os.path.relpath(filename, curdir)
-        except ValueError:
-            # WINDOWS-SPECIFIC (#599):
-            # If a step-function comes from a different disk drive,
-            # a relative path will fail: Keep the absolute path.
-            pass
+        filename = make_relpath_if_possible(filename, curdir)
         return cls(filename, line_number)
 
 
@@ -267,7 +278,7 @@ class FileLocation(object):
 class BasicStatement(object):
     def __init__(self, filename, line, keyword, name):
         filename = filename or '<string>'
-        filename = os.path.relpath(filename, os.getcwd())   # -- NEEDS: abspath?
+        filename = make_relpath_if_possible(filename, os.getcwd())   # -- NEEDS: abspath?
         self.location = FileLocation(filename, line)
         assert isinstance(keyword, six.text_type)
         assert isinstance(name, six.text_type)
