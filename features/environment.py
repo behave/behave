@@ -10,7 +10,6 @@ from behave.fixture import use_fixture_by_tag
 from behave.tag_matcher import \
     ActiveTagMatcher, setup_active_tag_values, print_active_tags
 
-
 # -----------------------------------------------------------------------------
 # ACTIVE TAGS:
 # -----------------------------------------------------------------------------
@@ -86,10 +85,11 @@ def before_tag(context, tag):
 # -----------------------------------------------------------------------------
 def setup_context_with_global_params_test(context):
     context.global_name = "env:Alice"
-    context.global_age  = 12
+    context.global_age = 12
+
 
 def setup_python_path():
     # -- NEEDED-FOR: formatter.user_defined.feature
     import os
     PYTHONPATH = os.environ.get("PYTHONPATH", "")
-    os.environ["PYTHONPATH"] = "."+ os.pathsep + PYTHONPATH
+    os.environ["PYTHONPATH"] = "." + os.pathsep + PYTHONPATH

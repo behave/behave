@@ -1334,7 +1334,7 @@ class ScenarioOutlineBuilder(object):
         new_step.name = cls.render_template(new_step.name, row, params)
         if new_step.text:
             new_step.text = cls.render_template(new_step.text, row)
-        if new_step.table:
+        if new_step.table is not None:
             for name, value in row.items():
                 placeholder = u"<%s>" % name
                 for i, cell in enumerate(new_step.table.headings):
@@ -1343,6 +1343,38 @@ class ScenarioOutlineBuilder(object):
                     for i, cell in enumerate(step_row.cells):
                         step_row.cells[i] = cell.replace(placeholder, value)
         return new_step
+
+    def make_scenario_for(self, example, row, scenario_template, params):
+        scenario_name = self.make_scenario_name(scenario_template.name,
+                                                example, row, params)
+        row_tags = self.make_row_tags(scenario_template.tags, row, params)
+        row_tags.extend(example.tags)
+        background_steps = None
+        if self.has_parametrized_steps(scenario_template.background_steps):
+            background_steps = []
+            the_background_steps = copy_and_reset_steps(scenario_template.background_steps)
+            for background_step in the_background_steps:
+                this_step = self.make_step_for_row(background_step, row, params)
+                background_steps.append(this_step)
+
+        new_steps = []
+        for outline_step in scenario_template.steps:
+            new_step = self.make_step_for_row(outline_step, row, params)
+            new_steps.append(new_step)
+
+        # -- STEP: Make Scenario name for this row.
+        # scenario_line = example.line + 2 + row_index
+        scenario_line = row.line
+        scenario = Scenario(scenario_template.filename, scenario_line,
+                            scenario_template.keyword,
+                            scenario_name, row_tags, new_steps,
+                            description=scenario_template.description,
+                            parent=scenario_template,
+                            background=scenario_template.background,
+                            background_steps=background_steps)
+        scenario.feature = scenario_template.feature
+        scenario._row = row  # pylint: disable=protected-access
+        return scenario
 
     def build_scenarios(self, scenario_outline):
         """Build scenarios for a ScenarioOutline from its examples."""
@@ -1358,7 +1390,7 @@ class ScenarioOutlineBuilder(object):
             example.index = example_index+1
             params["examples.name"] = example.name
             params["examples.index"] = _text(example.index)
-            if not example.table:
+            if example.table is None:
                 # -- SYNDROME: Examples keyword without table
                 print("ERROR: ScenarioOutline.Examples: Has NO-TABLE syndrome ({0})"\
                       .format(example.location))
@@ -1369,36 +1401,11 @@ class ScenarioOutlineBuilder(object):
                 row.id = "%d.%d" % (example.index, row.index)
                 params["row.id"] = row.id
                 params["row.index"] = _text(row.index)
-                scenario_name = self.make_scenario_name(scenario_outline.name,
-                                                        example, row, params)
-                row_tags = self.make_row_tags(scenario_outline.tags, row, params)
-                row_tags.extend(example.tags)
-                background_steps = None
-                if self.has_parametrized_steps(scenario_outline.background_steps):
-                    background_steps = []
-                    the_background_steps = copy_and_reset_steps(scenario_outline.background_steps)
-                    for background_step in the_background_steps:
-                        this_step = self.make_step_for_row(background_step, row, params)
-                        background_steps.append(this_step)
-
-                new_steps = []
-                for outline_step in scenario_outline.steps:
-                    new_step = self.make_step_for_row(outline_step, row, params)
-                    new_steps.append(new_step)
-
-                # -- STEP: Make Scenario name for this row.
-                # scenario_line = example.line + 2 + row_index
-                scenario_line = row.line
-                scenario = Scenario(scenario_outline.filename, scenario_line,
-                                    scenario_outline.keyword,
-                                    scenario_name, row_tags, new_steps,
-                                    description=scenario_outline.description,
-                                    parent=scenario_outline,
-                                    background=scenario_outline.background,
-                                    background_steps=background_steps)
-                scenario.feature = scenario_outline.feature
-                scenario._row = row     # pylint: disable=protected-access
+                scenario = self.make_scenario_for(example, row, scenario_outline, params)
                 scenarios.append(scenario)
+
+            # -- RESET: Examples.table.modified flag.
+            example.table.modified = False
         return scenarios
 
 
@@ -1487,6 +1494,16 @@ class ScenarioOutline(Scenario):
         self.examples = examples or []
         self._scenarios = []
 
+    def _expected_scenarios_count(self):
+        return sum(len(example.table.rows)
+                   for example in self.examples
+                   if example.table is not None)
+
+    def _is_any_example_table_modified(self):
+        return any(example.table.modified
+                   for example in self.examples
+                   if example.table is not None)
+
     def reset(self):
         """Reset runtime temporary data like before a test run."""
         super(ScenarioOutline, self).reset()
@@ -1498,18 +1515,18 @@ class ScenarioOutline(Scenario):
         """Return the scenarios with the steps altered to take the values from
         the examples.
         """
-        if self._scenarios:
-            return self._scenarios
+        needs_rebuild_scenarios = self._is_any_example_table_modified()
+        if needs_rebuild_scenarios:
+            # -- BUILD SCENARIOS (once): For this ScenarioOutline from examples.
+            builder = ScenarioOutlineBuilder(self.annotation_schema)
+            self._scenarios = builder.build_scenarios(self)
 
-        # -- BUILD SCENARIOS (once): For this ScenarioOutline from examples.
-        builder = ScenarioOutlineBuilder(self.annotation_schema)
-        self._scenarios = builder.build_scenarios(self)
         return self._scenarios
 
     @property
     def effective_tags(self):
         """Compute effective tags of this ScenarioOutline/ScenarioTemplate.
-        This is includes the own tags and the inherited tags from the parents.
+        This includes the own tags and the inherited tags from the parents.
         Note that parametrized tags are filter out.
 
         :return: Set of effective tags
@@ -1584,7 +1601,6 @@ class ScenarioOutline(Scenario):
         # -- NOTHING SELECTED:
         return False
 
-
     def mark_skipped(self):
         """Marks this scenario outline (and all its scenarios/steps) as skipped.
         Note that this method may be called before the scenario outline
@@ -1629,6 +1645,7 @@ class ScenarioOutline(Scenario):
         runner.context._set_root_attribute("active_outline", None)
         return failed_count > 0
 
+
 class Examples(TagStatement, Replayable):
     """A table parsed from a `scenario outline`_ in a *feature file*.
 
@@ -1656,6 +1673,12 @@ class Examples(TagStatement, Replayable):
     .. attribute:: line
 
        The line number of the *feature file* where the example was found.
+
+    .. attribute:: modified
+
+        Marker to indicate if this Examples table data was modified (by a user).
+
+        .. versionadded:: 1.2.7
 
     .. _`examples`: gherkin.html#examples
     """
@@ -1907,12 +1930,18 @@ class Table(Replayable):
 
     .. attribute:: headings
 
-       The headings of the table as a list of strings.
+        The headings of the table as a list of strings.
 
     .. attribute:: rows
 
-       An list of instances of :class:`~behave.model.Row` that make up the body
-       of the table in the *feature file*.
+        An list of instances of :class:`~behave.model.Row` that make up the body
+        of the table in the *feature file*.
+
+    .. attribute:: modified
+
+        Indicates if this table was modified (or not rendered yet).
+
+        .. versionadded:: 1.2.7
 
     Tables are also comparable, for what that's worth. Headings and row data
     are compared.
@@ -1921,20 +1950,36 @@ class Table(Replayable):
     """
     type = "table"
 
-    def __init__(self, headings, line=None, rows=None):
+    def __init__(self, headings, rows=None, line=None):
         Replayable.__init__(self)
         self.headings = headings
-        self.line = line
         self.rows = []
+        self.line = line or 0
+        self.modified = True
+
         if rows:
-            for row in rows:
-                self.add_row(row, line)
+            for index, row in enumerate(rows):
+                self.add_row(row, line+index+1)
+
+    def clear(self, headings=None, keep_headings=True):
+        if keep_headings and not headings:
+            headings = self.headings
+        self.headings = headings or []
+        self.rows = []
+        self.modified = True
 
     def add_row(self, row, line=None):
+        if line is None:
+            line = self.line + len(self.rows) + 1
+        if isinstance(row, Row):
+            assert row.headings == self.headings
+            row = row.cells
         self.rows.append(Row(self.headings, row, line))
+        self.modified = True
 
     def add_column(self, column_name, values=None, default_value=u""):
-        """Adds a new column to this table.
+        """
+        Adds a new column to this table.
         Uses :param:`default_value` for new cells (if :param:`values` are
         not provided). param:`values` are extended with :param:`default_value`
         if values list is smaller than the number of table rows.
@@ -1960,6 +2005,7 @@ class Table(Replayable):
         for row, value in zip(self.rows, values):
             assert len(row.cells) == new_column_index
             row.cells.append(value)
+        self.modified = True
         return new_column_index
 
     def remove_column(self, column_name):
@@ -1972,6 +2018,7 @@ class Table(Replayable):
         assert isinstance(column_index, int)
         assert column_index < len(self.headings)
         del self.headings[column_index]
+        self.modified = True
         for row in self.rows:
             assert column_index < len(row.cells)
             del row.cells[column_index]
@@ -1979,6 +2026,7 @@ class Table(Replayable):
     def remove_columns(self, column_names):
         for column_name in column_names:
             self.remove_column(column_name)
+        self.modified = True
 
     def has_column(self, column_name):
         return column_name in self.headings
@@ -2057,6 +2105,34 @@ class Table(Replayable):
         assert self == data
         raise NotImplementedError
 
+    @classmethod
+    def from_dicts(cls, headings, table_data, line=None):
+        """
+        Create Table from list-of-dicts (as row-data).
+
+        :param headings:  List of headings (column-names; as strings).
+        :param table_data:  List of dict-objects (as row datas).
+        :param line:  Line number of this table (as int; optional).
+        :return: Table object.
+        """
+        if table_data and not isinstance(table_data[0], dict):
+            raise TypeError("%r (expected: List[dict]" % table_data)
+
+        this_table_data = [Row.from_dict(headings, data)
+                           for data in table_data]
+        return cls(headings, rows=this_table_data, line=line)
+
+    @classmethod
+    def from_data(cls, headings, table_data=None, line=0):
+        if table_data and isinstance(table_data[0], dict):
+            # -- CASE: List-of-dicts, one row-data object (as dict)
+            table = cls.from_dicts(headings, table_data, line=line)
+        else:
+            # -- CASE: Without table_data (None)
+            # -- CASE: List-of-lists or List-of-Rows
+            table = Table(headings, rows=table_data, line=line)
+        return table
+
 
 class Row(object):
     """One row of a `table`_ parsed from a *feature file*.
@@ -2090,12 +2166,12 @@ class Row(object):
     .. _`table`: gherkin.html#table
     """
     def __init__(self, headings, cells, line=None, comments=None):
+        for cell in cells:
+            assert isinstance(cell, six.text_type)
         self.headings = headings
-        self.comments = comments
-        for c in cells:
-            assert isinstance(c, six.text_type)
         self.cells = cells
         self.line = line
+        self.comments = comments
 
     def __getitem__(self, name):
         try:
@@ -2140,6 +2216,14 @@ class Row(object):
         """
         from behave.compat.collections import OrderedDict
         return OrderedDict(self.items())
+
+    @classmethod
+    def from_dict(cls, headings, row_data, **kwargs):
+        cells = []
+        for name in headings:
+            cell = row_data.get(name) or ""
+            cells.append(cell)
+        return cls(headings, cells, **kwargs)
 
 
 class Tag(six.text_type):
