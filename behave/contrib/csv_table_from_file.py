@@ -1,8 +1,9 @@
 # -*- coding: UTF-8 -*-
+# HINT: PYTHON3 only
 # pylint: disable=line-too-long
 """
-Provides functionality to dynamically populate Examples tables in Behave
-feature files from CSV files based on @from_file tags.
+This module provides a functionality to read the Examples table of a ScenarioOutline
+from a CSV file by using ``@from_file={csv_filename}`` tags.
 
 EXAMPLE:
 
@@ -10,137 +11,186 @@ EXAMPLE:
 
     # -- FILE: features/example.feature
     Feature: Example Feature
-    Scenario Outline: Example Scenario
+      Scenario Outline: Example Scenario
         Given get <username> and <email> and <password>
-        @from_file=testdata.csv
+
+        @from_file=test_data.csv
         Examples:
-          | username | email              | password |
+          | username | email | password |
 
-        @from_file=testdata2.csv
+        @from_file=some_subdir/test_data2.csv
         Examples:
-          | username | email              | password |
-
-
-.. code-block:: csv
-
-    # -- FILE: testdata.csv
-    username,email,password
-    user1,email1@example.com,pass1
-    user2,email2@example.com,pass2
-
-    # -- FILE: testdata2.csv
-    username,email,password
-    user3,email3@example.com,pass3
-    user4,email4@example.com,pass4
+          | username | email | password |
 
 .. code-block:: python
 
     # -- FILE: features/environment.py
-    from behave.contrib.csv_table_from_file import preprocess_and_read_examples_table_data_from_csv
+    from behave.contrib.csv_table_from_file import (
+        process_examples_tables_with_marker_tag_and_use_csv_file
+    )
 
     def before_feature(context, feature):
-        preprocess_and_read_examples_table_data_from_csv(feature)
+        # -- PROCESS: Any ScenarioOutline.examples[x].table(s)
+        process_examples_tables_with_marker_tag_and_use_csv_file(feature)
+
+Using the table data CSV files:
+
+.. code-block:: csv
+
+    # -- TABLE DATA FILE: features/test_data.csv
+    username,email,password
+    user1,email1@example.com,pass1
+    user2,email2@example.com,pass2
+
+.. code-block:: csv
+
+    # -- TABLE DATA FILE: features/some_subdir/test_data2.csv
+    username,email,password
+    user3,email3@example.com,pass3
+    user4,email4@example.com,pass4
+
+LIMITATIONS:
+
+* FileLocation on command line:
+  FileLocation mechanism for generated Scenarios of a ScenarioOutline will not work.
+  The FileLocation uses the Examples table row "line" in this feature file to refer
+  to the corresponding generated Scenario.
 """
 
 import csv
 import logging
-import os
-from typing import List, Optional
+from pathlib import Path
+from typing import List, Optional, Tuple
 
-from behave.model import ScenarioOutline, Examples, Table, Feature
+from behave.model import Feature, Examples, Table, Row
+
 
 logger = logging.getLogger(__name__)
 
 
-def read_examples_table_data_from_csv(example: Examples, file_path: str) -> None:
+def select_marker_tag_and_extract_filename(tags: List[str]) -> Optional[str]:
     """
-    Reads data from a CSV file and populates the example's table with the data.
+    Extract the CSV filename from the first matching marker-tag.
+
+    * Supports only tags, like: "@from_file=<FILENAME>"
+    * Returns only filename for first tag
+
+    :param List[str] tags: List of tags of an Examples object.
+    :return: The CSV filename if any is found in tags. None, otherwise.
+    :rtype: Optional[str]
+    """
+    for tag in tags:
+        if tag.startswith("from_file="):
+            # -- FOUND MARKER-TAG SCHEMA: @from_file={filename}
+            filename = tag.split('=', 1)[1]
+            return filename
+
+    # -- NOTHING FOUND:
+    return None
+
+
+def select_examples_tables_with_marker_tag(feature: Feature) -> List[Tuple[Examples, str]]:
+    """
+    Query function to select all Examples with the marker-tag "from_file={filename}".
+
+    :return: Generator of (example, csv_filename) tuples.
+    """
+    for scenario_template in feature.iter_scenario_outlines():
+        for example in scenario_template.examples:
+            csv_filename = select_marker_tag_and_extract_filename(example.tags)
+            if csv_filename:
+                yield (example, csv_filename)
+
+
+def read_examples_table_data_from_csv(example: Examples, file_path: Path) -> None:
+    """
+    Reads CSV table data from a CSV file and append it to this example's table.
 
     The CSV file should have a header row matching the example table headings,
     followed by rows of data. This function updates the example's table with
     the data read from the CSV file.
 
-    Args:
-        example (Examples): The Examples object to populate with CSV data.
-        file_path (str): Path to the CSV file containing data.
+    NOTE: ``example.table.headings`` define a view on the CSV file data.
 
-    Raises:
-        FileNotFoundError: If the specified file_path does not exist.
-        ValueError: If the file is not a CSV file.
+    :param Examples example: The Examples object to populate with CSV data.
+    :param Path file_path: Path to the CSV file that contains the table data.
+    :raises FileNotFoundError: If the specified file_path does not exist.
+    :raises ValueError: If the file is not a CSV file.
     """
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f'No file found: {file_path}')
+    if not file_path.exists():
+        raise FileNotFoundError(file_path)
+    if not file_path.suffix == ".csv":
+        raise ValueError(f"{file_path} (expected: CSV file)")
+    if not example.table:
+        # -- GRACEFULLY IGNORE: Gherkin parser should take care of this.
+        # NOTE: example.table.headings are needed as data-view for CSV data.
+        return
 
-    if not file_path.endswith('.csv'):
-        raise ValueError(f'File is not a CSV file: {file_path}')
+    column_names = example.table.headings
+    with open(file_path, "r") as csv_file:
+        # -- USE: csv.DictReader to provide data-view on CSV table data.
+        csv_reader = csv.DictReader(csv_file)
+        data_rows = list(csv_reader)
 
-    with open(file_path, 'r') as csv_file:
-        csv_reader = csv.reader(csv_file)
-        rows = list(csv_reader)
+        # -- STEP: Add CVS data rows to the table.
+        # HINT: Missing CSV data value is None (in BAD-CSV-FILES).
+        # MAYBE: Keep track of missing BAD_CSV_TABLE_DATA
+        for data_row in data_rows:
+            # new_row_data = [(data_row.get(name) or "") for name in column_names]
+            new_row_data = []
+            for name in column_names:
+                cell = data_row.get(name) or ""  # -- ENSURE: string
+                new_row_data.append(cell)
+            example.table.add_row(new_row_data)
 
-        if rows:
-            if example.table is None:
-                example.table = Table(headings=[], rows=[])
-
-            if not example.table.headings:
-                example.table.headings = rows[0]
-
-            for row in rows[1:]:
-                example.table.add_row(row)
+        # -- FINALLY:
+        if data_rows:
+            # -- MARK: Example (table) as modified.
+            example.modified = True
 
 
-def select_marker_tag_and_extract_filename(tags: List[str], feature: Feature) -> Optional[str]:
+def process_examples_tables_with_marker_tag_and_use_csv_file(feature: Feature,
+                                                             strict: bool = False) -> int:
     """
-    Helper function to extract the CSV file path from the example's tags and handle relative paths.
+    Processes ScenarioOutlines and their Examples table in this feature.
+    If the marker-tag "@from_file={filename}" is present in Examples table tags,
+    the CSV table data is read from the CSV file and appended to the Examples table.
 
-    Args:
-        tags (List[str]): List of tags associated with the example.
-        feature (Feature): The Feature object containing scenarios and scenario outlines.
-
-    Returns:
-        Optional[str]: The CSV file path if found in tags, None otherwise.
+    :param Feature feature: The Feature object to be processed.
+    :param bool strict: If ``True``, any error will be raised as exception.
+    :return:
+        * Number of marker-tags found in Examples table tags (if number is positive/zero).
+        * Number of processing errors (if number is negative).
+    :raises ValueError: If the file is not a CSV file (in strict mode)
+    :raises FileNotFoundError: If CSV file does not exist (in strict mode).
     """
-    for tag in tags:
-        if tag.startswith("from_file="):
-            csv_file_path = tag.split('=', 1)[1]
-            proj_dir = os.path.dirname(os.path.dirname(feature.filename))
-            csv_file_path = os.path.join(proj_dir, csv_file_path)
-            return csv_file_path
-    return None
+    counts = 0
+    errors = 0
 
+    def handle_exception(ex):
+        nonlocal errors
+        nonlocal strict
+        message = "{e.__class__.__name__}: {e}"
+        logger.error(message)
+        errors += 1
+        if strict:
+            raise
 
-def preprocess_and_read_examples_table_data_from_csv(feature: Feature) -> None:
-    """
-    Preprocesses and reads data from CSV files for scenario outlines in the given feature.
+    logger.info(f"PROCESSING: {feature.filename}")
+    work_directory = Path(feature.filename).parent
 
-    This function processes each scenario outline within the feature, checks for
-    an "from_file" tag in the examples table, and if present, reads data from the
-    specified CSV file to populate the examples table.
+    for example, csv_filename in select_examples_tables_with_marker_tag(feature):
+        try:
+            counts += 1
+            csv_file_path = work_directory/csv_filename
+            logger.info(f"Loading table data from CSV file: {csv_file_path}")
+            read_examples_table_data_from_csv(example, csv_file_path)
+        except ValueError as e:
+            handle_exception(e)
+        except FileNotFoundError as e:
+            handle_exception(e)
 
-    Args:
-        feature (Feature): The Feature object containing scenarios and scenario outlines.
-
-    Raises:
-        ValueError: If the CSV file path specified in the tag is not a valid CSV file.
-        FileNotFoundError: If the specified CSV file does not exist.
-    """
-    logger.info(f"Processing feature file: {feature.filename}")
-
-    for scenario in feature.scenarios:
-        if isinstance(scenario, ScenarioOutline):
-            for example in scenario.examples:
-                csv_file_path = select_marker_tag_and_extract_filename(example.tags, feature)
-
-                if not csv_file_path:
-                    logger.info(
-                        f"No 'from_file' tag found for example table in {feature.filename}, example: {example.name}")
-                    continue
-
-                logger.info(f"Loading data from CSV file: {csv_file_path} for example table.")
-                try:
-                    read_examples_table_data_from_csv(example, csv_file_path)
-                    logger.info(f"Successfully loaded data from CSV file: {csv_file_path} for example table.")
-                except ValueError as ve:
-                    logger.error(str(ve))
-                except FileNotFoundError as ve:
-                    logger.debug(f"CSV file not found: {csv_file_path}")
+    if errors:
+        return -errors
+    # -- WITHOUT ERRORS:
+    return counts

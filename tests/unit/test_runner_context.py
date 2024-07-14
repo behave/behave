@@ -474,10 +474,11 @@ Then a step passes
         with patch("behave.step_registry.registry", self.step_registry):
             # pylint: disable=bad-whitespace, bad-continuation
             result = self.context.execute_steps(doc)
-            expected_table = Table([u"Name", u"Age"], 0, [
+            expected_table = Table([u"Name", u"Age"], rows=[
                     [u"Alice", u"12"],
                     [u"Bob",   u"23"],
-            ])
+                ], line=0
+            )
             assert result is True
             assert expected_table == ExampleSteps.table
 

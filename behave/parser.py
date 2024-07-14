@@ -244,7 +244,7 @@ class Parser(object):
                 continue
             self.action(line)
 
-        if self.table:
+        if self.table is not None:
             self.action_table("")
 
         feature = self.feature
@@ -307,7 +307,7 @@ class Parser(object):
                                          tags=self.tags)
         self.statement = template
         self.scenario_container.add_scenario(template)
-        # OLD: self.feature.add_scenario(self.statement)
+
         # -- RESET STATE:
         self.tags = []
 
@@ -325,7 +325,6 @@ class Parser(object):
 
         # -- RESET STATE:
         self.tags = []
-
 
     def diagnose_feature_usage_error(self):
         if self.feature:
@@ -716,7 +715,8 @@ class Parser(object):
                  for cell in re.split(r"(?<!\\)\|", line[1:-1])]
         if self.table is None:
             # -- CASE: First row of the table
-            self.table = model.Table(cells, self.line)
+            headings = cells
+            self.table = model.Table(headings, line=self.line)
         else:
             # -- CASE: Following rows of the table
             if len(cells) != len(self.table.headings):
@@ -756,7 +756,7 @@ class Parser(object):
             self.action(line)
 
         # -- FINALLY:
-        if self.table:
+        if self.table is not None:
             self.action_table("")
         steps = self.statement.steps
         return steps
@@ -874,7 +874,7 @@ class Parser(object):
             self.action(line)
 
         # -- FINALLY:
-        if self.table:
+        if self.table is not None:
             self.action_table("")
         steps = self.statement.steps
         return steps

@@ -9,7 +9,7 @@ import six
 from six.moves import range     # pylint: disable=redefined-builtin
 from six.moves import zip       # pylint: disable=redefined-builtin
 from behave.model_core import Status
-from behave.model import Feature, Scenario, ScenarioOutline, Step
+from behave.model import Examples, Feature, Scenario, ScenarioOutline, Step
 from behave.model import Table, Row
 from behave.matchers import NoMatch
 from behave.runner import Context
@@ -39,7 +39,6 @@ class TestFeatureRun(unittest.TestCase):
         self.context = self.runner.context = Mock()
         self.formatters = self.runner.formatters = [Mock()]
         self.run_hook = self.runner.run_hook = Mock()
-
 
     def test_formatter_feature_called(self):
         feature = Feature("foo.feature", 1, u"Feature", u"foo",
@@ -316,13 +315,34 @@ class TestScenarioRun(unittest.TestCase):
         assert scenario.should_run_with_name_select(self.config)
 
 
-class TestScenarioOutline(unittest.TestCase):
+class TestScenarioOutline(object):
     # pylint: disable=invalid-name
+
+    @staticmethod
+    def make_scenario_outline(**kwargs):
+        filename = kwargs.pop("filename", "foo.feature")
+        line_number = kwargs.pop("line", 17)
+        keyword = kwargs.pop("keyword", u"Scenario Outline")
+        name = kwargs.pop("name", u"foo")
+        outline = ScenarioOutline(filename=filename, line=line_number,
+                                  keyword=keyword, name=name, **kwargs)
+        return outline
+
+    @classmethod
+    def make_scenario_outline_with_table(cls, table_headings, table_data, **kwargs):
+        outline = cls.make_scenario_outline(**kwargs)
+        exanple = Examples(outline.filename, outline.line+10, u"Examples", u"")
+        exanple.table = Table.from_data(["column1"], [
+            ["cell_1_1"],
+            ["cell_2_1"],
+        ])
+        outline.examples.append(exanple)
+        return outline
 
     def test_run_calls_run_on_each_generated_scenario(self):
         # pylint: disable=protected-access
-        outline = ScenarioOutline("foo.feature", 17, u"Scenario Outline",
-                                  u"foo")
+        outline = self.make_scenario_outline()
+        # -- OVERRIDE: outline._scenarios
         outline._scenarios = [Mock(), Mock()]
         for scenario in outline._scenarios:
             scenario.run.return_value = False
@@ -337,8 +357,12 @@ class TestScenarioOutline(unittest.TestCase):
 
     def test_run_stops_on_first_failure_if_requested(self):
         # pylint: disable=protected-access
-        outline = ScenarioOutline("foo.feature", 17, u"Scenario Outline",
-                                  u"foo")
+        outline = self.make_scenario_outline_with_table(["column1"], [
+            ["cell_1_1"],
+            ["cell_2_1"],
+        ])
+        _generate_scenarios = outline.scenarios
+        # -- OVERRIDE: outline._scenarios
         outline._scenarios = [Mock(), Mock()]
         outline._scenarios[0].run.return_value = True
 
@@ -354,8 +378,14 @@ class TestScenarioOutline(unittest.TestCase):
 
     def test_run_sets_context_variable_for_outline(self):
         # pylint: disable=protected-access
-        outline = ScenarioOutline("foo.feature", 17, u"Scenario Outline",
-                                  u"foo")
+        outline = self.make_scenario_outline_with_table([u"column1"], [
+            [u"one"],
+            [u"two"],
+            [u"three"],
+        ])
+        _generate_scenarios = outline.scenarios
+
+        # -- OVERRIDE: outline._scenarios
         outline._scenarios = [Mock(), Mock(), Mock()]
         for scenario in outline._scenarios:
             scenario.run.return_value = False
@@ -376,58 +406,80 @@ class TestScenarioOutline(unittest.TestCase):
 
     def test_run_should_pass_when_all_examples_pass(self):
         # pylint: disable=protected-access
-        outline = ScenarioOutline("foo.feature", 17, u"Scenario Outline",
-                                  u"foo")
+        outline = self.make_scenario_outline_with_table([u"column1"], [
+            [u"one"],
+            [u"two"],
+            [u"three"],
+        ])
+        _generate_scenarios = outline.scenarios
+
+        # -- OVERRIDE: outline._scenarios
         outline._scenarios = [Mock(), Mock(), Mock()]
         for scenario in outline._scenarios:
             scenario.run.return_value = False
 
         runner = Mock()
-        context = runner.context = Mock()
+        runner.context = Mock()
         config = runner.config = Mock()
         config.stop = True
 
-        resultFailed = outline.run(runner)
-        assert resultFailed is False
+        result_failed = outline.run(runner)
+        assert result_failed is False
 
     def test_run_should_fail_when_first_examples_fails(self):
-        outline = ScenarioOutline("foo.feature", 17, u"Scenario Outline",
-                                  u"foo")
+        outline = self.make_scenario_outline_with_table([u"column1"], [
+            [u"one"],
+            [u"two"],
+        ])
+        _generate_scenarios = outline.scenarios
         failed = True
+
+        # -- OVERRIDE: outline._scenarios
         # pylint: disable=protected-access
         outline._scenarios = [Mock(), Mock()]
         outline._scenarios[0].run.return_value = failed
         outline._scenarios[1].run.return_value = not failed
 
         runner = Mock()
-        context = runner.context = Mock()
+        runner.context = Mock()
         config = runner.config = Mock()
         config.stop = True
 
-        resultFailed = outline.run(runner)
-        assert resultFailed is True
+        result_failed = outline.run(runner)
+        assert result_failed is True
 
     def test_run_should_fail_when_last_examples_fails(self):
-        outline = ScenarioOutline("foo.feature", 17, u"Scenario Outline",
-                                  u"foo")
+        outline = self.make_scenario_outline_with_table([u"column1"], [
+            [u"one"],
+            [u"two"],
+        ])
+        _generate_scenarios = outline.scenarios
         failed = True
+
+        # -- OVERRIDE: outline._scenarios
         # pylint: disable=protected-access
         outline._scenarios = [Mock(), Mock()]
         outline._scenarios[0].run.return_value = not failed
         outline._scenarios[1].run.return_value = failed
 
         runner = Mock()
-        context = runner.context = Mock()
+        runner.context = Mock()
         config = runner.config = Mock()
         config.stop = True
 
-        resultFailed = outline.run(runner)
-        assert resultFailed is True
+        result_failed = outline.run(runner)
+        assert result_failed is True
 
     def test_run_should_fail_when_middle_examples_fails(self):
-        outline = ScenarioOutline("foo.feature", 17, u"Scenario Outline",
-                                  u"foo")
+        outline = self.make_scenario_outline_with_table([u"column1"], [
+            [u"one"],
+            [u"two"],
+            [u"three"],
+        ])
+        _generate_scenarios = outline.scenarios
         failed = True
+
+        # -- OVERRIDE: outline._scenarios
         # pylint: disable=protected-access
         outline._scenarios = [Mock(), Mock(), Mock()]
         outline._scenarios[0].run.return_value = not failed
@@ -435,12 +487,12 @@ class TestScenarioOutline(unittest.TestCase):
         outline._scenarios[2].run.return_value = not failed
 
         runner = Mock()
-        context = runner.context = Mock()
+        runner.context = Mock()
         config = runner.config = Mock()
         config.stop = True
 
-        resultFailed = outline.run(runner)
-        assert resultFailed is True
+        result_failed = outline.run(runner)
+        assert result_failed is True
 
 
 def raiser(exception):
@@ -663,96 +715,112 @@ class TestStepRun(unittest.TestCase):
         assert "toads" in step.error_message
 
 
-class TestTableModel(unittest.TestCase):
+class TestTableModel(object):
     # pylint: disable=invalid-name
-    HEAD = [u"type of stuff", u"awesomeness", u"ridiculousness"]
-    DATA = [
+    HEADINGS = [u"type of stuff", u"awesomeness", u"ridiculousness"]
+    TABLE_DATA = [
         [u"fluffy", u"large", u"frequent"],
         [u"lint", u"low", u"high"],
         [u"green", u"variable", u"awkward"],
     ]
 
-    def setUp(self):
-        self.table = Table(self.HEAD, 0, self.DATA)
+    @classmethod
+    def make_table(cls):
+        return Table(cls.HEADINGS, rows=cls.TABLE_DATA, line=0)
 
     def test_equivalence(self):
-        t1 = self.table
-        self.setUp()
-        assert t1 == self.table
+        table_1 = self.make_table()
+        table_2 = self.make_table()
+        assert table_1 == table_2
 
     def test_table_iteration(self):
-        for i, row in enumerate(self.table):
+        table = self.make_table()
+        for i, row in enumerate(table):
             for j, cell in enumerate(row):
-                assert cell == self.DATA[i][j]
+                assert cell == self.TABLE_DATA[i][j]
 
     def test_table_row_by_index(self):
+        table = self.make_table()
         for i in range(3):
-            assert self.table[i] == Row(self.HEAD, self.DATA[i], 0)
+            assert table[i] == Row(self.HEADINGS, self.TABLE_DATA[i], 0)
 
     def test_table_row_name(self):
-        assert self.table[0]["type of stuff"] == "fluffy"
-        assert self.table[1]["awesomeness"] == "low"
-        assert self.table[2]["ridiculousness"] == "awkward"
+        table = self.make_table()
+        assert table[0]["type of stuff"] == "fluffy"
+        assert table[1]["awesomeness"] == "low"
+        assert table[2]["ridiculousness"] == "awkward"
 
     def test_table_row_index(self):
-        assert self.table[0][0] == "fluffy"
-        assert self.table[1][1] == "low"
-        assert self.table[2][2] == "awkward"
+        table = self.make_table()
+        assert table[0][0] == "fluffy"
+        assert table[1][1] == "low"
+        assert table[2][2] == "awkward"
 
     def test_table_row_keyerror(self):
+        table = self.make_table()
         with pytest.raises(KeyError):
             # pylint: disable=pointless-statement
-            self.table[0]["spam"]
+            table[0]["spam"]
 
     def test_table_row_items(self):
-        assert list(self.table[0].items()) == list(zip(self.HEAD, self.DATA[0]))
+        table = self.make_table()
+        assert list(table[0].items()) == list(zip(self.HEADINGS, self.TABLE_DATA[0]))
 
 
-class TestModelRow(unittest.TestCase):
+class TestModelRow(object):
     # pylint: disable=invalid-name, bad-whitespace
-    HEAD = [u"name",  u"sex",   u"age"]
-    DATA = [u"Alice", u"female", u"12"]
+    HEADINGS = [u"name",  u"sex",   u"age"]
+    ROW_DATA = [u"Alice", u"female", u"12"]
 
-    def setUp(self):
-        self.row = Row(self.HEAD, self.DATA, 0)
+    @classmethod
+    def make_row(cls):
+        return Row(cls.HEADINGS, cls.ROW_DATA, 0)
 
     def test_len(self):
-        assert len(self.row) == 3
+        row = self.make_row()
+        assert len(row) == 3
 
     def test_getitem_with_valid_colname(self):
         # pylint: disable=bad-whitespace
-        assert self.row["name"] == u"Alice"
-        assert self.row["sex"] == u"female"
-        assert self.row["age"] == u"12"
+        row = self.make_row()
+        assert row["name"] == u"Alice"
+        assert row["sex"] == u"female"
+        assert row["age"] == u"12"
 
     def test_getitem_with_unknown_colname(self):
+        row = self.make_row()
         with pytest.raises(KeyError):
             # pylint: disable=pointless-statement
-            self.row["__UNKNOWN_COLUMN__"]
+            row["__UNKNOWN_COLUMN__"]
 
     def test_getitem_with_valid_index(self):
-        assert self.row[0] == u"Alice"
-        assert self.row[1] == u"female"
-        assert self.row[2] == u"12"
+        row = self.make_row()
+        assert row[0] == u"Alice"
+        assert row[1] == u"female"
+        assert row[2] == u"12"
 
     def test_getitem_with_invalid_index(self):
-        colsize = len(self.row)
-        assert colsize == 3
+        row = self.make_row()
+        columns_size = len(row)
+        assert columns_size == 3
         with pytest.raises(IndexError):
-            self.row[colsize]   # pylint: disable=pointless-statement
+            row[columns_size]   # pylint: disable=pointless-statement
 
     def test_get_with_valid_colname(self):
         # pylint: disable=bad-whitespace
-        assert self.row.get("name") == u"Alice"
-        assert self.row.get("sex") ==  u"female"
-        assert self.row.get("age") ==  u"12"
+        row = self.make_row()
+        assert row.get("name") == u"Alice"
+        assert row.get("sex") ==  u"female"
+        assert row.get("age") ==  u"12"
 
     def test_getitem_with_unknown_colname_should_return_default(self):
-        assert self.row.get("__UNKNOWN_COLUMN__", "XXX") == u"XXX"
+        row = self.make_row()
+        assert row.get("__UNKNOWN_COLUMN__", "XXX") == u"XXX"
 
     def test_as_dict(self):
-        data1 = self.row.as_dict()
-        data2 = dict(self.row.as_dict())
+        row = self.make_row()
+        data1 = row.as_dict()
+        data2 = dict(row.as_dict())
         assert isinstance(data1, dict)
         assert isinstance(data2, dict)
         assert isinstance(data1, OrderedDict)
@@ -765,7 +833,8 @@ class TestModelRow(unittest.TestCase):
         assert data1["age"] == u"12"
 
     def test_contains(self):
-        assert "name" in self.row
-        assert "sex" in self.row
-        assert "age" in self.row
-        assert "non-existent-header" not in self.row
+        row = self.make_row()
+        assert "name" in row
+        assert "sex" in row
+        assert "age" in row
+        assert "non-existent-header" not in row

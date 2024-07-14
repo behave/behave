@@ -1,8 +1,6 @@
 @issue
 Feature: Issue #772 -- Syndrome: ScenarioOutline with Examples keyword w/o Table
 
-
-
   Background: Setup
     Given a new working directory
     And a file named "features/syndrome_772.feature" with:
@@ -26,6 +24,6 @@ Feature: Issue #772 -- Syndrome: ScenarioOutline with Examples keyword w/o Table
     Then it should pass with:
       """
       Feature: Examples without table
-      ERROR: ScenarioOutline.Examples: Has NO-TABLE syndrome (features/syndrome_772.feature:7)
       """
     And the command output should not contain "Parser failure in state"
+    # OLD: ERROR: ScenarioOutline.Examples: Has NO-TABLE syndrome (features/syndrome_772.feature:7)

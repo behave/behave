@@ -529,14 +529,13 @@ Feature: Stuff
         assert feature.name == "Stuff"
         assert len(feature.scenarios) == 1
         assert feature.scenarios[0].name == "Doing stuff"
-        table = Table(
-            [u'type of stuff', u'awesomeness', u'ridiculousness'],
-            0,
-            [
-                [u'fluffy', u'large', u'frequent'],
-                [u'lint', u'low', u'high'],
-                [u'green', u'variable', u'awkward'],
-            ]
+        table = Table([u'type of stuff', u'awesomeness', u'ridiculousness'],
+                      rows=[
+                          [u'fluffy', u'large', u'frequent'],
+                          [u'lint', u'low', u'high'],
+                          [u'green', u'variable', u'awkward'],
+                      ],
+                      line=0
         )
         assert_compare_steps(feature.scenarios[0].steps, [
             ('given', 'Given', 'we classify stuff:', None, table),
@@ -559,15 +558,14 @@ Feature:
 '''.lstrip()
         feature = parse_feature(doc)
         assert len(feature.scenarios) == 1
-        table = Table(
-            [u"name", u"value"],
-            0,
-            [
+        table = Table([u"name", u"value"],
+            rows=[
                 [u"alice",  u"one|two"],
                 [u"bob",    u"|one"],
                 [u"charly", u"one|"],
                 [u"doro",   u"one|two|three|four"],
-            ]
+            ],
+            line=0
         )
         assert_compare_steps(feature.scenarios[0].steps, [
             ('given', 'Given', 'we have special cell values:', None, table),
@@ -594,15 +592,14 @@ Feature: Stuff
         assert len(feature.scenarios) == 1
         assert feature.scenarios[0].name == "Doing all sorts of stuff"
 
-        table = Table(
-            [u'Stuff', u'Things'],
-            0,
-            [
+        table = Table([u'Stuff', u'Things'],
+            rows=[
                 [u'wool', u'felt'],
                 [u'cotton', u'thread'],
                 [u'wood', u'paper'],
                 [u'explosives', u'hilarity'],
-            ]
+            ],
+            line=0
         )
         assert feature.scenarios[0].examples[0].name == "Some stuff"
         assert feature.scenarios[0].examples[0].table == table
@@ -642,24 +639,22 @@ Feature: Stuff
             ('then', 'Then', 'we have <Things>', None, None),
         ])
 
-        table = Table(
-            [u'Stuff', u'Things'],
-            0,
-            [
+        table = Table([u'Stuff', u'Things'],
+            rows=[
                 [u'wool', u'felt'],
                 [u'cotton', u'thread'],
-            ]
+            ],
+            line=0
         )
         assert feature.scenarios[0].examples[0].name == "Some stuff"
         assert feature.scenarios[0].examples[0].table == table
 
-        table = Table(
-            [u'Stuff', u'Things'],
-            0,
-            [
+        table = Table([u'Stuff', u'Things'],
+            rows=[
                 [u'wood', u'paper'],
                 [u'explosives', u'hilarity'],
-            ]
+            ],
+            line=0
         )
         assert feature.scenarios[0].examples[1].name == "Some other stuff"
         assert feature.scenarios[0].examples[1].table == table
@@ -695,15 +690,14 @@ Feature: Stuff
             ('then', 'Then', 'we have <Things>', None, None),
         ])
 
-        table = Table(
-            [u'Stuff', u'Things'],
-            0,
-            [
+        table = Table([u'Stuff', u'Things'],
+            rows=[
                 [u'wool', u'felt'],
                 [u'cotton', u'thread'],
                 [u'wood', u'paper'],
                 [u'explosives', u'hilarity'],
-            ]
+            ],
+            line=0
         )
         assert feature.scenarios[0].examples[0].name == "Some stuff"
         assert feature.scenarios[0].examples[0].table == table
@@ -734,12 +728,12 @@ Feature: Alice
             ("given", "Given", "we have <Stuff>", None, None),
         ])
 
-        table = Table(
-            [u"Stuff", u"Things"], 0,
-            [
+        table = Table([u"Stuff", u"Things"],
+            rows=[
                 [u"wool", u"felt"],
                 [u"cotton", u"thread"],
-            ]
+            ],
+            line=0
         )
         assert scenario_outline.examples[0].name == "Charly"
         assert scenario_outline.examples[0].table == table
@@ -779,12 +773,12 @@ Feature: Alice
             ("given", "Given", "we have <Stuff>", None, None),
         ])
 
-        table = Table(
-            [u"Stuff", u"Things"], 0,
-            [
+        table = Table([u"Stuff", u"Things"],
+            rows=[
                 [u"wool", u"felt"],
                 [u"cotton", u"thread"],
-            ]
+            ],
+            line=0
         )
         assert scenario_outline.examples[0].name == "Charly"
         assert scenario_outline.examples[0].table == table
@@ -900,22 +894,20 @@ Feature: Stuff
 
         assert feature.scenarios[1].name == "Gosh this is long"
         assert feature.scenarios[1].tags == []
-        table = Table(
-            [u'length', u'width', u'height'],
-            0,
-            [
+        table = Table([u'length', u'width', u'height'],
+            rows=[
                 [u'1', u'2', u'3'],
                 [u'4', u'5', u'6'],
-            ]
+            ],
+            line=0
         )
         assert feature.scenarios[1].examples[0].name == "Initial"
         assert feature.scenarios[1].examples[0].table == table
-        table = Table(
-            [u'length', u'width', u'height'],
-            0,
-            [
+        table = Table([u'length', u'width', u'height'],
+            rows=[
                 [u'7', u'8', u'9'],
-            ]
+            ],
+            line=0
         )
         assert feature.scenarios[1].examples[1].name == "Subsequent"
         assert feature.scenarios[1].examples[1].table == table
@@ -932,27 +924,25 @@ Feature: Stuff
             ('then', 'Then', "we don't really mind", None, None),
         ])
 
-        table = Table(
-            [u'Stuff', u'Things'],
-            0,
-            [
+        table = Table([u'Stuff', u'Things'],
+            rows=[
                 [u'wool', u'felt'],
                 [u'cotton', u'thread'],
                 [u'wood', u'paper'],
                 [u'explosives', u'hilarity'],
-            ]
+            ],
+            line=0
         )
         assert feature.scenarios[3].name == "Doing all sorts of stuff"
         assert feature.scenarios[3].tags == [Tag(u'stuff', 1), Tag(u'derp', 1)]
         assert feature.scenarios[3].examples[0].name == "Some stuff"
         assert feature.scenarios[3].examples[0].table == table
-        table = Table(
-            [u'a', u'b', u'c', u'd', u'e'],
-            0,
-            [
+        table = Table([u'a', u'b', u'c', u'd', u'e'],
+            rows=[
                 [u'1', u'2', u'3', u'4', u'5'],
                 [u'6', u'7', u'8', u'9', u'10'],
-            ]
+            ],
+            line=0
         )
         assert_compare_steps(feature.scenarios[3].steps, [
             ('given', 'Given', 'we have <Stuff>', None, None),
@@ -1788,16 +1778,22 @@ Then every step will be parsed without errors
         assert len(steps) == 3
         # -- EXPECTED STEP DATA:
         #     SCHEMA: step_type, keyword, name, text, table
-        table1 = Table([u"Name", u"Age"], 0, [
-            [ u"Alice", u"12" ],
-            [ u"Bob",   u"23" ],
-            ])
-        table2 = Table([u"Country", u"Capital"], 0, [
-            [ u"France",   u"Paris" ],
-            [ u"Germany",  u"Berlin" ],
-            [ u"Spain",    u"Madrid" ],
-            [ u"USA",      u"Washington" ],
-            ])
+        table1 = Table([u"Name", u"Age"],
+                       rows=[
+                        [ u"Alice", u"12" ],
+                        [ u"Bob",   u"23" ],
+                       ],
+                       line=0
+        )
+        table2 = Table([u"Country", u"Capital"],
+                       rows=[
+                         [ u"France",   u"Paris" ],
+                         [ u"Germany",  u"Berlin" ],
+                         [ u"Spain",    u"Madrid" ],
+                         [ u"USA",      u"Washington" ],
+                       ],
+                       line=0
+        )
         assert_compare_steps(steps, [
             ("given", "Given", "a step with a table:", None, table1),
             ("when",  "When",  "I have a step with a table:", None, table2),
@@ -1817,10 +1813,13 @@ Then the last step has a final table:
         assert len(steps) == 2
         # -- EXPECTED STEP DATA:
         #     SCHEMA: step_type, keyword, name, text, table
-        table2 = Table([u"Name", u"City"], 0, [
-            [ u"Alonso", u"Barcelona" ],
-            [ u"Bred",   u"London" ],
-            ])
+        table2 = Table([u"Name", u"City"],
+                       rows=[
+                           [ u"Alonso", u"Barcelona" ],
+                           [ u"Bred",   u"London" ],
+                       ],
+                       line=0
+        )
         assert_compare_steps(steps, [
             ("given", "Given", "a simple step", None, None),
             ("then",  "Then",  "the last step has a final table:", None, table2),
