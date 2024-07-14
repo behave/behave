@@ -62,7 +62,7 @@ import logging
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from behave.model import Feature, Examples, Table, Row
+from behave.model import Feature, Examples
 
 
 logger = logging.getLogger(__name__)

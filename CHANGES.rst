@@ -77,6 +77,7 @@ ENHANCEMENTS:
 * Use cucumber "gherkin-languages.json" now (simplify: Gherkin v6 aliases, language usage)
 * Support emojis in ``*.feature`` files and steps
 * Select-by-location: Add support for "Scenario container" (Feature, Rule, ScenarioOutline) (related to: #391)
+* pull #1185: Read Examples table data from CSV file (provided-by: rajanmanwansh)
 * issue #1183: Support Background Steps with Placeholders for Scenario Outlines (submitted by: hemendra0851)
 * pull #1097: Support And-Step as initial Scenario step if Background Steps exist (provided-by: aneeshdurg)
 * pull  #988: setup.py: Add category to install additional formatters (html) (provided-by: bittner)

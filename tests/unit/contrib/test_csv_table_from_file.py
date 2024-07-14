@@ -13,9 +13,7 @@ if six.PY2:
 # IMPORTS:
 # -----------------------------------------------------------------------------
 from collections import OrderedDict
-from pathlib import Path
 from textwrap import dedent
-from typing import List, Optional, Self
 from behave.contrib.csv_table_from_file import (
     read_examples_table_data_from_csv,
     select_marker_tag_and_extract_filename,
