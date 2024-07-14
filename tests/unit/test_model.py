@@ -332,9 +332,9 @@ class TestScenarioOutline(object):
     def make_scenario_outline_with_table(cls, table_headings, table_data, **kwargs):
         outline = cls.make_scenario_outline(**kwargs)
         exanple = Examples(outline.filename, outline.line+10, u"Examples", u"")
-        exanple.table = Table.from_data(["column1"], [
-            ["cell_1_1"],
-            ["cell_2_1"],
+        exanple.table = Table.from_data([u"column1"], [
+            [u"cell_1_1"],
+            [u"cell_2_1"],
         ])
         outline.examples.append(exanple)
         return outline

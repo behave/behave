@@ -29,14 +29,14 @@ from behave.parser import parse_feature
 # -----------------------------------------------------------------------------
 # TEST SUPPORT:
 # -----------------------------------------------------------------------------
-def ensure_directory_for_file_exists(file_path: Path):
+def ensure_directory_for_file_exists(file_path):
     this_directory = file_path.parent
     if not this_directory.is_dir():
         this_directory.mkdir(parents=True)
     assert this_directory.is_dir()
 
 
-def table_to_list_of_dicts(table: Table) -> list:
+def table_to_list_of_dicts(table):
     return [row.as_dict() for row in table.rows]
 
 
@@ -251,7 +251,7 @@ def test_select_marker_tag_and_extract_filename__without_matching_tag_returns_no
     "subdir/test_data.csv",
 ])
 def test_process_examples_tables_with_marker_tag__good_case(csv_filename, tmp_path):
-    text = dedent(f"""
+    text = dedent("""
         Feature:
           Scenario Outline:
             Given person login with username="<username>"
@@ -259,7 +259,7 @@ def test_process_examples_tables_with_marker_tag__good_case(csv_filename, tmp_pa
             @from_file={csv_filename}
             Examples:
               | username | email | password |
-        """)
+        """.format(csv_filename=csv_filename))
     feature_path = tmp_path/"some.feature"
     csv_file_path = tmp_path/csv_filename
     ensure_directory_for_file_exists(csv_file_path)
@@ -293,7 +293,7 @@ def test_process_examples_tables_with_marker_tag__causes_rebuild_scenarios(csv_f
     Ensure that the new, extended ScenarioOutline.example.table data
     causes that its ScenarioOutline.scenarios are rebuild/regenerated.
     """
-    text = dedent(f"""
+    text = dedent("""
         Feature:
           Scenario Outline:
             Given person login with username="<username>"
@@ -302,7 +302,7 @@ def test_process_examples_tables_with_marker_tag__causes_rebuild_scenarios(csv_f
             Examples:
               | username | email                | password |
               | Cerberus | cerberus@nowhere.org | pass_0   |
-        """)
+        """.format(csv_filename=csv_filename))
     feature_path = tmp_path/"some.feature"
     csv_file_path = tmp_path/csv_filename
     ensure_directory_for_file_exists(csv_file_path)

@@ -2167,7 +2167,8 @@ class Row(object):
     """
     def __init__(self, headings, cells, line=None, comments=None):
         for cell in cells:
-            assert isinstance(cell, six.text_type)
+            assert isinstance(cell, six.text_type), \
+                "%s:%s (excepted: unicode-string)" % (type(cell), cell)
         self.headings = headings
         self.cells = cells
         self.line = line
