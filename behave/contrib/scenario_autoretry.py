@@ -36,9 +36,10 @@ EXAMPLE:
 from __future__ import print_function
 import functools
 from behave.model import ScenarioOutline
+from time import sleep
 
 
-def patch_scenario_with_autoretry(scenario, max_attempts=3):
+def patch_scenario_with_autoretry(scenario, max_attempts=3, delay=0, backoff=1):
     """Monkey-patches :func:`~behave.model.Scenario.run()` to auto-retry a
     scenario that fails. The scenario is retried a number of times
     before its failure is accepted.
@@ -48,17 +49,29 @@ def patch_scenario_with_autoretry(scenario, max_attempts=3):
 
     :param scenario:        Scenario or ScenarioOutline to patch.
     :param max_attempts:    How many times the scenario can be run.
+    :param delay:           Time to wait between scenario retries.
+    :param backoff:         Backoff factor to increase the delay per retry.
     """
     def scenario_run_with_retries(scenario_run, *args, **kwargs):
+        _delay = delay
+        delay_message = ""
         for attempt in range(1, max_attempts+1):
             if not scenario_run(*args, **kwargs):
                 if attempt > 1:
                     message = u"AUTO-RETRY SCENARIO PASSED (after {0} attempts)"
                     print(message.format(attempt))
                 return False    # -- NOT-FAILED = PASSED
+
             # -- SCENARIO FAILED:
             if attempt < max_attempts:
-                print(u"AUTO-RETRY SCENARIO (attempt {0})".format(attempt))
+                if delay:
+                    if attempt > 1:
+                        _delay *= backoff
+                    delay_message = u" Delaying retry for {0}s".format(_delay)
+
+                print(u"AUTO-RETRY SCENARIO (attempt {0}){1}".format(attempt, delay_message))
+                sleep(_delay)
+
         message = u"AUTO-RETRY SCENARIO FAILED (after {0} attempts)"
         print(message.format(max_attempts))
         return True
