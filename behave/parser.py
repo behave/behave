@@ -237,7 +237,7 @@ class Parser(object):
         self.reset()
         self.filename = filename
 
-        for line in text.split("\n"):
+        for line in text.splitlines():
             self.line += 1
             if not line.strip() and self.state != "multiline_text":
                 # -- SKIP EMPTY LINES, except in multiline string args.
@@ -666,9 +666,7 @@ class Parser(object):
             self.state = "steps"    # NEXT-STATE: Accept additional step(s).
             return True
 
-        # -- SPECIAL CASE: Strip trailing whitespace (whitespace normalization).
-        # HINT: Required for Windows line-endings, like "\r\n", etc.
-        text_line = line[self.multiline_leading:].rstrip()
+        text_line = line[self.multiline_leading:]
         self.lines.append(text_line)
 
         # -- BETTER DIAGNOSTICS: May remove non-whitespace in execute_steps()
@@ -748,7 +746,7 @@ class Parser(object):
         self.statement = self.rule
         self.state = "rule"
 
-        for line in text.split("\n"):
+        for line in text.splitlines():
             self.line += 1
             if not line.strip() and self.state != "multiline_text":
                 # -- SKIP EMPTY LINES, except in multiline string args.
@@ -866,7 +864,7 @@ class Parser(object):
         self.statement = model.Scenario(filename, 0, u"scenario", u"")
         self.state = "steps"
 
-        for line in text.split("\n"):
+        for line in text.splitlines():
             self.line += 1
             if not line.strip() and self.state != "multiline_text":
                 # -- SKIP EMPTY LINES, except in multiline string args.
