@@ -237,7 +237,7 @@ class Parser(object):
         self.reset()
         self.filename = filename
 
-        for line in text.split("\n"):
+        for line in text.splitlines():
             self.line += 1
             if not line.strip() and self.state != "multiline_text":
                 # -- SKIP EMPTY LINES, except in multiline string args.
@@ -597,15 +597,6 @@ class Parser(object):
         # pylint: disable=R0911
         #   R0911   Too many return statements (8/6)
         stripped = line.lstrip()
-        # if self.statement.steps:
-        #     # -- ENSURE: Multi-line text follows a step.
-        #     if stripped.startswith('"""') or stripped.startswith("'''"):
-        #         # -- CASE: Multi-line text (docstring) after a step detected.
-        #         self.state = "multiline_text"
-        #         self.multiline_start = self.line
-        #         self.multiline_terminator = stripped[:3]
-        #         self.multiline_leading = line.index(stripped[0])
-        #         return True
 
         if stripped.startswith('"""') or stripped.startswith("'''"):
             # -- CASE: Multi-line text (docstring) after a step detected.
@@ -748,7 +739,7 @@ class Parser(object):
         self.statement = self.rule
         self.state = "rule"
 
-        for line in text.split("\n"):
+        for line in text.splitlines():
             self.line += 1
             if not line.strip() and self.state != "multiline_text":
                 # -- SKIP EMPTY LINES, except in multiline string args.
@@ -866,7 +857,7 @@ class Parser(object):
         self.statement = model.Scenario(filename, 0, u"scenario", u"")
         self.state = "steps"
 
-        for line in text.split("\n"):
+        for line in text.splitlines():
             self.line += 1
             if not line.strip() and self.state != "multiline_text":
                 # -- SKIP EMPTY LINES, except in multiline string args.
