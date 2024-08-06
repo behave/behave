@@ -120,7 +120,7 @@ setup(
     extras_require={
         "docs": [
             "sphinx >= 7.3.7;   python_version >= '3.7'",
-            "sphinx >=1.6,<4.4; python_version < '3.7'",
+            "sphinx >=4.5,<5; python_version < '3.7'",
             "furo >= 2024.04.27; python_version >= '3.8'",
             # -- CONSTRAINTS UNTIL: sphinx > 5.0 can be used -- 2024-01
             # PROBLEM: sphinxcontrib-applehelp v1.0.8 requires sphinx > 5.0
