@@ -97,7 +97,7 @@ setup(
     tests_require=[
         "pytest <  5.0; python_version <  '3.0'", # USE: pytest >= 4.2
         "pytest >= 5.0; python_version >= '3.0'",
-        "pytest-html >= 1.19.0,<2.0; python_version <  '3.0'",
+        "pytest-html >=4.1.1,<4.2; python_version <  '3.0'",
         "pytest-html >= 2.0;         python_version >= '3.0'",
         "mock  <  4.0;   python_version <  '3.6'",
         "mock  >= 4.0;   python_version >= '3.6'",
@@ -136,7 +136,7 @@ setup(
             "coverage >= 5.0",
             "pytest >=4.2,<5.0; python_version <  '3.0'",  # pytest >= 4.2
             "pytest >= 5.0; python_version >= '3.0'",
-            "pytest-html >= 1.19.0,<2.0; python_version <  '3.0'",
+            "pytest-html >=4.1.1,<4.2; python_version <  '3.0'",
             "pytest-html >= 2.0;         python_version >= '3.0'",
             "mock  <  4.0;   python_version <  '3.6'",
             "mock  >= 4.0;   python_version >= '3.6'",
