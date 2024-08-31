@@ -18,6 +18,10 @@ build >= 0.5.1
 # python-futurize
 modernize >= 0.5
 
+# -- PYTHON 3 TYPE HINTS:
+typing-extensions; python_version >= '3.8'
+typer >= 0.12.5;   python_version >= '3.7'
+
 # -- STATIC CODE ANALYSIS:
 -r pylinters.txt
 

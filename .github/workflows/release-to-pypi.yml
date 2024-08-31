@@ -1,0 +1,59 @@
+# =============================================================================
+# GITHUB ACTIONS WORKFLOW: Publish/release this package on PyPI
+# =============================================================================
+# RELATED: Github actions -- Publishing a Python package
+#   * https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+#   * https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-python#publishing-to-pypi
+#   * https://github.com/actions/starter-workflows/blob/main/ci/python-publish.yml
+#
+# RELATED TO: pypi.org
+#   * https://docs.pypi.org/trusted-publishers/
+#   * https://docs.pypi.org/trusted-publishers/adding-a-publisher/
+#
+# RELATED: Github actions workflows
+#   * https://docs.github.com/en/actions/writing-workflows
+#   * https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs
+#   * https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#release
+#
+# GITHUB ACTIONS:
+#   * https://github.com/actions/checkout
+#   * https://github.com/pypa/gh-action-pypi-publish
+# =============================================================================
+
+# -- STATE: PREPARED_ONLY
+name: release-to-pypi
+on:
+   release:
+     types: [published]
+     tags:
+       - v1.*
+permissions:
+  contents: read
+
+jobs:
+  publish-package:
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.ref, 'refs/tags/v1.') }}
+    environment:
+      name: pypi
+      url:  https://pypi.org/p/behave
+    permissions:
+      id-token: write  # REQUIRED-FOR: Trusted publishing.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: "Install Python package dependencies (with: uv)"
+        run: |
+          python -m pip install -U uv
+          python -m uv pip install -U pip setuptools wheel build twine
+      - name: Build this package
+        run: python -m build
+      - name: Check this package (before upload)
+        run: twine check dist/*
+      - name: Upload this package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          print-hash: true
+          verbose: true
