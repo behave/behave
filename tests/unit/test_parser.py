@@ -984,6 +984,38 @@ Feature: Stuff
         with pytest.raises(ParserError):
             parse_feature(text)
 
+    def test_parses_multiline_text_and_preserves_trailing_whitespace(self):
+        # -- ISSUE 1189: Parser removes trailing whitespace in multiline text string.
+        doc = u'''
+Feature: Multiline
+
+  Scenario: Multiline Text with Trailing Whitespace
+    Given a multiline argument with:
+      """
+      Trailing    
+      whitespace at   
+      the end of each   
+      line      
+      """
+    Then the trailing whitespace in each line ist not stripped
+'''.lstrip()
+        feature = parse_feature(doc)
+        assert feature is not None
+        assert feature.name == "Multiline"
+        assert len(feature.scenarios) == 1
+        assert feature.scenarios[0].name == "Multiline Text with Trailing Whitespace"
+        text = "\n".join([
+            "Trailing    ",
+            "whitespace at   ",
+            "the end of each   ",
+            "line      ",
+        ])
+        # pylint: disable=bad-whitespace
+        assert_compare_steps(feature.scenarios[0].steps, [
+            ('given', 'Given', 'a multiline argument with:', text, None),
+            ('then', 'Then', 'the trailing whitespace in each line ist not stripped', None, None),
+        ])
+
 
 class TestParser4AndButSteps(object):
     def test_parse_scenario_with_and_and_but(self):
