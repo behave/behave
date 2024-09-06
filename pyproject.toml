@@ -123,7 +123,7 @@ develop = [
     "mock  <  4.0;   python_version <  '3.6'",
     "mock  >= 4.0;   python_version >= '3.6'",
     "PyHamcrest >= 2.0.2; python_version >= '3.0'",
-    "PyHamcrest <  2.0;   python_version <  '3.0'",
+    "PyHamcrest <2.2;   python_version <  '3.0'",
     "pytest-cov",
     "tox   >= 1.8.1,<4.0",   # -- HINT: tox >= 4.0 has breaking changes.
     "virtualenv < 20.22.0",  # -- SUPPORT FOR: Python 2.7, Python <= 3.6
@@ -162,7 +162,7 @@ testing = [
     "mock  <  4.0;   python_version <  '3.6'",
     "mock  >= 4.0;   python_version >= '3.6'",
     "PyHamcrest >= 2.0.2; python_version >= '3.0'",
-    "PyHamcrest <  2.0;   python_version <  '3.0'",
+    "PyHamcrest <2.2;   python_version <  '3.0'",
     "assertpy >= 1.1",
 
     # -- HINT: path.py => path (python-install-package was renamed for python3)
