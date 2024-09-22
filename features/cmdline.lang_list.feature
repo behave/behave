@@ -63,6 +63,7 @@ Feature: Command-line options: Use behave --lang-list
           lv: latviešu / Latvian
           mk-Cyrl: Македонски / Macedonian
           mk-Latn: Makedonski (Latinica) / Macedonian (Latin)
+          ml: മലയാളം / Malayalam
           mn: монгол / Mongolian
           mr: मराठी / Marathi
           ne: नेपाली / Nepali

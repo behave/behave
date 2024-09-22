@@ -278,7 +278,7 @@
       "Nə vaxt ki "
     ]
   },
-    "be": {
+  "be": {
     "and": [
       "* ",
       "I ",
@@ -630,7 +630,7 @@
     "name": "Danish",
     "native": "dansk",
     "rule": [
-      "Rule"
+      "Regel"
     ],
     "scenario": [
       "Eksempel",
@@ -1132,7 +1132,7 @@
     "name": "Esperanto",
     "native": "Esperanto",
     "rule": [
-      "Rule"
+      "Regulo"
     ],
     "scenario": [
       "Ekzemplo",
@@ -1401,14 +1401,14 @@
   "ga": {
     "and": [
       "* ",
-      "Agus"
+      "Agus "
     ],
     "background": [
       "Cúlra"
     ],
     "but": [
       "* ",
-      "Ach"
+      "Ach "
     ],
     "examples": [
       "Samplaí"
@@ -1418,15 +1418,15 @@
     ],
     "given": [
       "* ",
-      "Cuir i gcás go",
-      "Cuir i gcás nach",
-      "Cuir i gcás gur",
-      "Cuir i gcás nár"
+      "Cuir i gcás go ",
+      "Cuir i gcás nach ",
+      "Cuir i gcás gur ",
+      "Cuir i gcás nár "
     ],
     "name": "Irish",
     "native": "Gaeilge",
     "rule": [
-      "Rule"
+      "Riail"
     ],
     "scenario": [
       "Sampla",
@@ -1437,14 +1437,14 @@
     ],
     "then": [
       "* ",
-      "Ansin"
+      "Ansin "
     ],
     "when": [
       "* ",
-      "Nuair a",
-      "Nuair nach",
-      "Nuair ba",
-      "Nuair nár"
+      "Nuair a ",
+      "Nuair nach ",
+      "Nuair ba ",
+      "Nuair nár "
     ]
   },
   "gj": {
@@ -1474,7 +1474,7 @@
     "name": "Gujarati",
     "native": "ગુજરાતી",
     "rule": [
-      "Rule"
+      "નિયમ"
     ],
     "scenario": [
       "ઉદાહરણ",
@@ -1886,7 +1886,8 @@
   "it": {
     "and": [
       "* ",
-      "E "
+      "E ",
+      "Ed "
     ],
     "background": [
       "Contesto"
@@ -2132,15 +2133,15 @@
   "ko": {
     "and": [
       "* ",
-      "그리고"
+      "그리고 "
     ],
     "background": [
       "배경"
     ],
     "but": [
       "* ",
-      "하지만",
-      "단"
+      "하지만 ",
+      "단 "
     ],
     "examples": [
       "예"
@@ -2150,8 +2151,8 @@
     ],
     "given": [
       "* ",
-      "조건",
-      "먼저"
+      "조건 ",
+      "먼저 "
     ],
     "name": "Korean",
     "native": "한국어",
@@ -2166,12 +2167,12 @@
     ],
     "then": [
       "* ",
-      "그러면"
+      "그러면 "
     ],
     "when": [
       "* ",
-      "만일",
-      "만약"
+      "만일 ",
+      "만약 "
     ]
   },
   "lt": {
@@ -2532,7 +2533,7 @@
     "name": "Dutch",
     "native": "Nederlands",
     "rule": [
-      "Rule"
+      "Regel"
     ],
     "scenario": [
       "Voorbeeld",
@@ -3014,7 +3015,6 @@
       "Правило"
     ],
     "scenario": [
-      "Пример",
       "Сценарио",
       "Пример"
     ],
@@ -3133,7 +3133,7 @@
   "ta": {
     "and": [
       "* ",
-      "மேலும்  ",
+      "மேலும் ",
       "மற்றும் "
     ],
     "background": [
@@ -3141,7 +3141,7 @@
     ],
     "but": [
       "* ",
-      "ஆனால்  "
+      "ஆனால் "
     ],
     "examples": [
       "எடுத்துக்காட்டுகள்",
@@ -3575,7 +3575,7 @@
     "name": "Vietnamese",
     "native": "Tiếng Việt",
     "rule": [
-      "Rule"
+      "Quy tắc"
     ],
     "scenario": [
       "Tình huống",
@@ -3641,6 +3641,47 @@
     "when": [
       "* ",
       "当"
+    ]
+  },
+  "ml": {
+    "and": [
+      "* ",
+      "ഒപ്പം"
+    ],
+    "background": [
+      "പശ്ചാത്തലം"
+    ],
+    "but": [
+      "* ",
+      "പക്ഷേ"
+    ],
+    "examples": [
+      "ഉദാഹരണങ്ങൾ"
+    ],
+    "feature": [
+      "സവിശേഷത"
+    ],
+    "given": [
+      "* ",
+      "നൽകിയത്"
+    ],
+    "name": "Malayalam",
+    "native": "മലയാളം",
+    "rule": [
+      "നിയമം"
+    ],
+    "scenario": [
+      "രംഗം"
+    ],
+    "scenarioOutline": [
+      "സാഹചര്യത്തിന്റെ രൂപരേഖ"
+    ],
+    "then": [
+      "* ",
+      "പിന്നെ"
+    ],
+    "when": [
+      "എപ്പോൾ"
     ]
   },
   "zh-TW": {
