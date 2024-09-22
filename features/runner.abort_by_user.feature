@@ -45,7 +45,7 @@ Feature: Test run can be aborted by the user
     Given a file named "features/aborting_in_step.feature" with:
         """
         Feature: User aborts test run in a step definition
-          Scenario:
+          Scenario: One
             Given a step passes
             When another step passes
 
@@ -54,32 +54,35 @@ Feature: Test run can be aborted by the user
             When the user aborts the test run
             Then third step passes
 
-          Scenario:
+          Scenario: Third
             Then last step passes
         """
     And an empty file named "features/environment.py"
     When I run "behave -f plain -T features/aborting_in_step.feature"
     Then it should fail with:
         """
-        0 features passed, 1 failed, 0 skipped
-        1 scenario passed, 1 failed, 0 skipped, 1 untested
-        3 steps passed, 1 failed, 1 skipped, 1 untested
+        0 features passed, 0 failed, 1 error, 0 skipped
+        1 scenario passed, 0 failed, 1 error, 0 skipped, 1 untested
+        3 steps passed, 0 failed, 1 error, 1 skipped, 1 untested
         """
     And the command output should contain:
         """
         Feature: User aborts test run in a step definition
 
-        Scenario:
-          Given a step passes ... passed
-          When another step passes ... passed
+          Scenario: One
+            Given a step passes ... passed
+            When another step passes ... passed
 
-        Scenario: User aborts here
-          Given first step passes ... passed
-          When the user aborts the test run ... failed
+          Scenario: User aborts here
+            Given first step passes ... passed
+            When the user aborts the test run ... error
         ABORTED: By user (KeyboardInterrupt).
 
-        ABORTED: By user.
 
+        ABORTED: By user.
+        """
+    And the command output should not contain:
+        """
         Failing scenarios:
           features/aborting_in_step.feature:6  User aborts here
         """

@@ -431,8 +431,8 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
       When I run "behave -f <format> features/exception_with_ptext.feature"
       Then it should fail with:
         """
-        0 scenarios passed, 1 failed, 0 skipped
-        1 step passed, 1 failed, 0 skipped
+        0 scenarios passed, 0 failed, 1 error, 0 skipped
+        1 step passed, 0 failed, 1 error, 0 skipped
         """
       And the command output should contain:
         """

@@ -1,17 +1,31 @@
-Feature: Pending Step (Exists with NotImplementedError Marker)
+Feature: Pending Step (Step exists with StepNotImplementedError Marker)
 
    . TERMINOLOGY:
-   .  * An undefined step is a step without matching step implementation.
-   .  * A pending step exists,
-   .    but contains only the undefined step snippet as implementation,
-   .    that marks it as NotImplemented.
+   .  * A pending step exists and is registered in the step-registry.
+   .  * BUT: step-function is not implemented yet (StepNotImplementedError)
    .
-   . RELATED TO:
+   . SPECIFICATION:
+   .  * A pending step exists and is registered in the step-registry.
+   .  * Therefore, a binding exists between the step-pattern and step-function.
+   .  * A pending step raises a StepNotImplemented exception.
+   .  * A pending step is passed if its scenario has a @wip tag.
+   .  * A pending step is passed if its scenario inherits a @wip tag.
+   .  * A pending step fails with error otherwise.
+   .  * Pending steps are not detected in dry-run mode
+   .    (because the step-function is not executed)
+   .
+   . EXCEPTION(s) FOR PENDING STEPS:
+   .  * StepNotImplementedError
+   .  * PendingStepError (alternative; derived from: StepNotImplementedError)
+   .
+   . RELATED: Undefined steps
+   .  * An undefined step is not found in the step-registry.
+   .  * Therefore, no binding exists between step-pattern and step-function.
+   .
+   . SEE ALSO:
    .  * step.undefined_steps.feature
 
-
-    @setup
-    Scenario: Feature Setup
+    Background:
       Given a new working directory
       And a file named "behave.ini" with:
         """
@@ -19,110 +33,187 @@ Feature: Pending Step (Exists with NotImplementedError Marker)
         show_skipped = false
         show_timings = false
         """
-      And a file named "features/steps/passing_steps.py" with:
+      And a file named "features/steps/use_behave4cmd_steps.py" with:
         """
-        from behave import step
-
-        @step('{word:w} step passes')
-        def step_passes(context, word):
-            pass
-
-        @step('{word:w} step fails')
-        def step_fails(context, word):
-            assert False, "XFAIL"
+        import behave4cmd0.passing_steps
         """
       And a file named "features/steps/pending_steps.py" with:
         """
         from behave import given, when, then
+        from behave.api.pending_step import StepNotImplementedError
 
-        @given('a pending step is used')
+        @given(u'a pending step is used')
         def step_pending_given(context):
-            raise NotImplementedError('STEP: Given a pending step is used')
+            raise StepNotImplementedError('STEP: Given a pending step is used')
 
-        @when('a pending step is used')
+        @when(u'a pending step is used')
         def step_pending_when(context):
-            raise NotImplementedError('STEP: When a pending step is used')
+            raise StepNotImplementedError('STEP: When a pending step is used')
 
-        @then('a pending step is used')
+        @then(u'a pending step is used')
         def step_pending_then(context):
-            raise NotImplementedError('STEP: Then a pending step is used')
-        """
-      And a file named "features/use_pending_steps.feature" with:
-        """
-        Feature:
-          Scenario: 1
-            Given a step passes
-            And a pending step is used
-            When another step passes
-
-          Scenario: 2
-            Given a step passes
-            When a pending step is used
-            Then some step passes
-
-          Scenario: 3
-            Given a step passes
-            When another step passes
-            Then a pending step is used
+            raise StepNotImplementedError('STEP: Then a pending step is used')
         """
 
-    Scenario: Pending given step (not implemented)
-      When I run "behave -f plain features/use_pending_steps.feature:2"
-      Then it should fail
-      And the command output should contain:
-        """
-        Feature:
-           Scenario: 1
-             Given a step passes ... passed
-               And a pending step is used ... failed
-        """
-      But the command output should contain:
-        """
-        NotImplementedError: STEP: Given a pending step is used
-        """
-      And the command output should contain:
-        """
-        File "features/steps/pending_steps.py", line 5, in step_pending_given
-          raise NotImplementedError('STEP: Given a pending step is used')
-        """
+    Rule: Pending Step passes in wip-mode
 
-    Scenario: Pending when step (not implemented)
-      When I run "behave -f plain features/use_pending_steps.feature:7"
-      Then it should fail
-      And the command output should contain:
-        """
-        Feature:
-           Scenario: 2
-             Given a step passes ... passed
-              When a pending step is used ... failed
-        """
-      But the command output should contain:
-        """
-        NotImplementedError: STEP: When a pending step is used
-        """
-      And the command output should contain:
-        """
-        File "features/steps/pending_steps.py", line 9, in step_pending_when
-          raise NotImplementedError('STEP: When a pending step is used')
-        """
-
-    Scenario: Pending then step (not implemented)
-      When I run "behave -f plain features/use_pending_steps.feature:12"
-      Then it should fail
-      And the command output should contain:
-        """
-        Feature:
-          Scenario: 3
+      Scenario: Pending steps pass if scenario has @wip tag
+        Given a file named "features/use_wip_sceanrio_and_pending.feature" with:
+          """
+          Feature:
+            @wip
+            Scenario: Alice (has @wip tag)
+              Given a step passes
+              And a pending step is used
+              When another step passes
+          """
+        When I run "behave -f plain features/use_wip_sceanrio_and_pending.feature"
+        Then it should pass with:
+          """
+          1 scenario passed, 0 failed, 0 skipped
+          2 steps passed, 0 failed, 0 skipped, 1 pending_warn
+          """
+        And the command output should contain:
+          """
+          Scenario: Alice (has @wip tag)
             Given a step passes ... passed
+            And a pending step is used ... pending_warn
             When another step passes ... passed
-            Then a pending step is used ... failed
-        """
-      But the command output should contain:
-        """
-        NotImplementedError: STEP: Then a pending step is used
-        """
-      And the command output should contain:
-        """
-        File "features/steps/pending_steps.py", line 13, in step_pending_then
-          raise NotImplementedError('STEP: Then a pending step is used')
-        """
+          """
+
+      Scenario: Pending steps pass if scenario has inherited @wip tag
+        Given a file named "features/use_wip_feature_and_pending.feature" with:
+          """
+          @wip
+          Feature:
+            Scenario: Bob (inherits @wip tag)
+              Given a step passes
+              And a pending step is used
+              When another step passes
+          """
+        When I run "behave -f plain features/use_wip_feature_and_pending.feature"
+        Then it should pass with:
+          """
+          1 scenario passed, 0 failed, 0 skipped
+          2 steps passed, 0 failed, 0 skipped, 1 pending_warn
+          """
+        And the command output should contain:
+          """
+          Scenario: Bob (inherits @wip tag)
+            Given a step passes ... passed
+            And a pending step is used ... pending_warn
+            When another step passes ... passed
+          """
+
+      Scenario: Pending steps pass with --wip option
+        Given a file named "features/use_pending.feature" with:
+          """
+          Feature:
+            @wip
+            Scenario: Charly
+              Given a step passes
+              And a pending step is used
+              When another step passes
+
+            Scenario: Doro
+              Given a step passes
+              And a pending step is used
+              When another step passes
+          """
+        When I run "behave -f plain --wip features/use_pending.feature"
+        Then it should pass with:
+          """
+          1 scenario passed, 0 failed, 1 skipped
+          2 steps passed, 0 failed, 3 skipped, 1 pending_warn
+          """
+        And the command output should contain:
+          """
+          Scenario: Charly
+            Given a step passes ... passed
+            And a pending step is used ... pending_warn
+            When another step passes ... passed
+          """
+        And note that "the --wip option automatically selects @wip tags"
+
+    Rule: Pending Step fails with error in non wip-mode
+      Background:
+        And a file named "features/use_pending_steps.feature" with:
+          """
+          Feature:
+            Scenario: One
+              Given a step passes
+              And a pending step is used
+              When another step passes
+
+            Scenario: Two
+              Given a step passes
+              When a pending step is used
+              Then some step passes
+
+            Scenario: Three
+              Given a step passes
+              When another step passes
+              Then a pending step is used
+          """
+
+      Scenario: Pending given step causes scenario to fail with error
+        When I run "behave -f plain features/use_pending_steps.feature:2"
+        Then it should fail
+        And the command output should contain:
+          """
+          Feature:
+             Scenario: One
+               Given a step passes ... passed
+               And a pending step is used ... pending
+          """
+        But the command output should contain:
+          """
+          StepNotImplementedError: STEP: Given a pending step is used
+          """
+        # And the command output should contain:
+        #  """
+        #  File "features/steps/pending_steps.py", line 5, in step_pending_given
+        #    raise StepNotImplementedError('STEP: Given a pending step is used')
+        #  """
+
+      # XXX_JE_TODO
+      Scenario: Pending when step causes scenario to fail with error
+        When I run "behave -f plain features/use_pending_steps.feature:8"
+        Then it should fail
+        And the command output should contain:
+          """
+          Feature:
+             Scenario: Two
+               Given a step passes ... passed
+                When a pending step is used ... pending
+          """
+        But the command output should contain:
+          """
+          StepNotImplementedError: STEP: When a pending step is used
+          """
+        # And the command output should contain:
+        #  """
+        #  File "features/steps/pending_steps.py", line 9, in step_pending_when
+        #    raise StepNotImplementedError('STEP: When a pending step is used')
+        #  """
+
+      Scenario: Pending then step causes scenario to fail with error
+        When I run "behave -f plain features/use_pending_steps.feature:13"
+        Then it should fail
+        And the command output should contain:
+          """
+          Feature:
+            Scenario: Three
+              Given a step passes ... passed
+              When another step passes ... passed
+              Then a pending step is used ... pending
+          """
+        But the command output should contain:
+          """
+          StepNotImplementedError: STEP: Then a pending step is used
+          """
+        # And the command output should contain:
+        #  """
+        #  File "features/steps/pending_steps.py", line 13, in step_pending_then
+        #    raise StepNotImplementedError('STEP: Then a pending step is used')
+        #  """

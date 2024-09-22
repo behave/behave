@@ -169,7 +169,7 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
 
   @use.with_python.min_version=3.8
   Scenario: Junit report for skipped scenario is shown and counted with --show-skipped (py.version >= 3.8)
-    When I run "behave --junit -t @tag1 --show-skipped"
+    When I run "behave --junit -t @tag1 --show-skipped -f plain"
     Then it should pass with:
       """
       2 features passed, 0 failed, 1 skipped

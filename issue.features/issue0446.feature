@@ -64,7 +64,7 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
       When I run "behave -f plain --junit features/before_scenario_failure.feature"
       Then it should fail with:
         """
-        0 scenarios passed, 1 failed, 0 skipped
+        0 scenarios passed, 0 failed, 1 hook_error, 0 skipped
         """
       And the command output should contain:
         """
@@ -93,7 +93,7 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
       When I run "behave -f plain --junit features/before_scenario_failure.feature"
       Then it should fail with:
         """
-        0 scenarios passed, 1 failed, 0 skipped
+        0 scenarios passed, 0 failed, 1 hook_error, 0 skipped
         """
       And the command output should contain:
         """
@@ -127,7 +127,7 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
       When I run "behave -f plain --junit features/after_scenario_failure.feature"
       Then it should fail with:
         """
-        0 scenarios passed, 1 failed, 0 skipped
+        0 scenarios passed, 0 failed, 1 hook_error, 0 skipped
         """
       And the command output should contain:
         """
@@ -158,7 +158,7 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
       When I run "behave -f plain --junit features/after_scenario_failure.feature"
       Then it should fail with:
         """
-        0 scenarios passed, 1 failed, 0 skipped
+        0 scenarios passed, 0 failed, 1 hook_error, 0 skipped
         """
       And the command output should contain:
         """

@@ -2,10 +2,12 @@ Feature: Undefined Step
 
   . TERMINOLOGY:
   .  * An undefined step is a step without matching step implementation.
+  .  * An undefined step is not found in the step-registry.
+  .  * Therefore, there exist no binding between the step-pattern and its step-function.
   .
   . SPECIFICATION:
   .  * An undefined step should be reported after the run.
-  .  * An undefined step should cause its scenario to fail.
+  .  * An undefined step should cause its scenario to fail with an error (except: dry-run mode).
   .  * If an undefined step is detected the remaining scenario steps are skipped.
   .  * All undefined steps in a scenario should be reported (issue #42).
   .  * Undefined steps should be detected even after a step fails in a scenario.
@@ -15,33 +17,38 @@ Feature: Undefined Step
   .    This allows to prepare scenarios that are not intended to run (yet).
   .  * Option --dry-run should discover undefined steps, too.
   .
+  . RELATED: Pending step
+  .  * A pending is registered in the step-registry but not implemented.
+  .  * Therefore, a binding between the step-pattern and its step-function exists.
+  .  * A pending step should use the StepNotImplementedError exception.
+  .
   . RELATED TO:
   .  * issue #42  Multiple undefined steps in same scenario are detected.
 
 
-    @setup
-    Scenario: Feature Setup
-      Given a new working directory
-      And a file named "features/steps/passing_steps.py" with:
-        """
-        from behave import step
+  Background: Setup
+    Given a new working directory
+    And a file named "features/steps/passing_steps.py" with:
+      """
+      from behave import step
 
-        @step('a step passes')
-        def step_passes(context):
-            pass
+      @step('a step passes')
+      def step_passes(context):
+          pass
 
-        @step('a step fails')
-        def step_fails(context):
-            assert False, "XFAIL"
-        """
-      And a file named "features/undefined_last_step.feature" with:
-        """
-        Feature:
-          Scenario:
-            Given a step passes
-            When an undefined step is used
-        """
+      @step('a step fails')
+      def step_fails(context):
+          assert False, "XFAIL"
+      """
+    And a file named "features/undefined_last_step.feature" with:
+      """
+      Feature:
+        Scenario:
+          Given a step passes
+          When an undefined step is used
+      """
 
+  Rule: Basics
     Scenario: An undefined step should be reported
       When I run "behave -f plain -T features/undefined_last_step.feature"
       Then it should fail
@@ -56,9 +63,10 @@ Feature: Undefined Step
         """
         You can implement step definitions for undefined steps with these snippets:
 
+        from behave.api.pending_step import StepNotImplementedError
         @when(u'an undefined step is used')
         def step_impl(context):
-            raise NotImplementedError(u'STEP: When an undefined step is used')
+            raise StepNotImplementedError(u'STEP: When an undefined step is used')
         """
       And an undefined-step snippet should exist for "When an undefined step is used"
 
@@ -67,8 +75,8 @@ Feature: Undefined Step
       When I run "behave -f plain features/undefined_last_step.feature"
       Then it should fail with:
         """
-        0 features passed, 1 failed, 0 skipped
-        0 scenarios passed, 1 failed, 0 skipped
+        0 features passed, 0 failed, 1 error, 0 skipped
+        0 scenarios passed, 0 failed, 1 error, 0 skipped
         1 step passed, 0 failed, 0 skipped, 1 undefined
         """
 
@@ -86,8 +94,8 @@ Feature: Undefined Step
       When I run "behave -f plain -T features/undefined_step_and_more.feature"
       Then it should fail with:
         """
-        0 features passed, 1 failed, 0 skipped
-        0 scenarios passed, 1 failed, 0 skipped
+        0 features passed, 0 failed, 1 error, 0 skipped
+        0 scenarios passed, 0 failed, 1 error, 0 skipped
         1 step passed, 0 failed, 2 skipped, 1 undefined
         """
       And the command output should contain:
@@ -112,8 +120,8 @@ Feature: Undefined Step
       When I run "behave -f plain -T features/two_undefined_steps1.feature"
       Then it should fail with:
         """
-        0 features passed, 1 failed, 0 skipped
-        0 scenarios passed, 1 failed, 0 skipped
+        0 features passed, 0 failed, 1 error, 0 skipped
+        0 scenarios passed, 0 failed, 1 error, 0 skipped
         1 step passed, 0 failed, 1 skipped, 2 undefined
         """
       And the command output should contain:
@@ -149,8 +157,8 @@ Feature: Undefined Step
       When I run "behave -f plain -T features/two_undefined_steps2.feature"
       Then it should fail with:
         """
-        0 features passed, 1 failed, 0 skipped
-        0 scenarios passed, 2 failed, 0 skipped
+        0 features passed, 0 failed, 1 error, 0 skipped
+        0 scenarios passed, 0 failed, 2 error, 0 skipped
         1 step passed, 0 failed, 1 skipped, 2 undefined
         """
       And the command output should contain:
@@ -188,8 +196,8 @@ Feature: Undefined Step
       When I run "behave -f plain -T features/undefined_step_in_scenario_outline.feature"
       Then it should fail with:
         """
-        0 features passed, 1 failed, 0 skipped
-        0 scenarios passed, 4 failed, 0 skipped
+        0 features passed, 0 failed, 1 error, 0 skipped
+        0 scenarios passed, 2 failed, 2 error, 0 skipped
         2 steps passed, 2 failed, 4 skipped, 4 undefined
         """
       And an undefined-step snippet should exist for "When an undefined step is used"
@@ -214,7 +222,7 @@ Feature: Undefined Step
         """
 
 
-    Scenario: Two undefined step in Scenario Outline
+    Scenario: Two undefined steps in Scenario Outline
       Given a file named "features/two_undefined_step_in_scenario_outline.feature" with:
         """
         Feature:
@@ -234,8 +242,8 @@ Feature: Undefined Step
       When I run "behave -f plain features/two_undefined_step_in_scenario_outline.feature"
       Then it should fail with:
         """
-        0 features passed, 1 failed, 0 skipped
-        0 scenarios passed, 4 failed, 0 skipped
+        0 features passed, 0 failed, 1 error, 0 skipped
+        0 scenarios passed, 2 failed, 2 error, 0 skipped
         2 steps passed, 2 failed, 4 skipped, 8 undefined
         """
       And undefined-step snippets should exist for:
@@ -244,7 +252,10 @@ Feature: Undefined Step
         | Then another undefined step is used |
 
 
-    Scenario: Undefined steps are detected if scenario is selected via tag
+  Rule: Multiple Scenarios with undefined steps
+    Background:
+      HINT: Other background.steps are inherited from outer background.
+
       Given a file named "features/undefined_steps_with_tagged_scenario.feature" with:
         """
         Feature:
@@ -266,42 +277,44 @@ Feature: Undefined Step
             Given an undefined step Delta
             Then a step fails
         """
-      When I run "behave -f plain --tags=@selected features/undefined_steps_with_tagged_scenario.feature"
-      Then it should fail with:
-        """
-        0 features passed, 1 failed, 0 skipped
-        0 scenarios passed, 2 failed, 1 skipped
-        2 steps passed, 0 failed, 3 skipped, 3 undefined
-        """
-      And undefined-step snippets should exist for:
-        | Step |
-        | Given an undefined step Alice      |
-        | Then an undefined step Bob    |
-        | When an undefined step Charly |
-      But undefined-step snippets should not exist for:
-        | Step |
-        | Given a step passes |
-        | Given an undefined step Delta |
-        | When a step fails |
-        | Then a step fails |
+
+      Scenario: Undefined steps are detected if scenario is selected via tag
+        When I run "behave -f plain --tags=@selected features/undefined_steps_with_tagged_scenario.feature"
+        Then it should fail with:
+          """
+          0 features passed, 0 failed, 1 error, 0 skipped
+          0 scenarios passed, 0 failed, 2 error, 1 skipped
+          2 steps passed, 0 failed, 3 skipped, 3 undefined
+          """
+        And undefined-step snippets should exist for:
+          | Step |
+          | Given an undefined step Alice      |
+          | Then an undefined step Bob    |
+          | When an undefined step Charly |
+        But undefined-step snippets should not exist for:
+          | Step |
+          | Given a step passes |
+          | Given an undefined step Delta |
+          | When a step fails |
+          | Then a step fails |
 
 
-    Scenario: Undefined steps are detected if --dry-run option is used
-      When I run "behave -f plain --dry-run features/undefined_steps_with_tagged_scenario.feature"
-      Then it should fail with:
-        """
-        0 features passed, 0 failed, 0 skipped, 1 untested
-        0 scenarios passed, 0 failed, 0 skipped, 3 untested
-        0 steps passed, 0 failed, 0 skipped, 4 undefined, 4 untested
-        """
-      And undefined-step snippets should exist for:
-        | Step |
-        | Given an undefined step Alice      |
-        | Then an undefined step Bob    |
-        | When an undefined step Charly |
-        | Given an undefined step Delta |
-      But undefined-step snippets should not exist for:
-        | Step |
-        | Given a step passes |
-        | When a step fails |
-        | Then a step fails |
+      Scenario: Undefined steps are detected if --dry-run option is used
+        When I run "behave -f plain --dry-run features/undefined_steps_with_tagged_scenario.feature"
+        Then it should fail with:
+          """
+          0 features passed, 0 failed, 0 skipped, 1 untested
+          0 scenarios passed, 0 failed, 1 error, 0 skipped, 2 untested
+          0 steps passed, 0 failed, 0 skipped, 4 undefined, 4 untested
+          """
+        And undefined-step snippets should exist for:
+          | Step |
+          | Given an undefined step Alice      |
+          | Then an undefined step Bob    |
+          | When an undefined step Charly |
+          | Given an undefined step Delta |
+        But undefined-step snippets should not exist for:
+          | Step |
+          | Given a step passes |
+          | When a step fails |
+          | Then a step fails |

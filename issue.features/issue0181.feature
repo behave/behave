@@ -30,7 +30,8 @@ Feature: Issue #181: Escape apostrophes in undefined steps snippets
         """
         You can implement step definitions for undefined steps with these snippets:
 
+        from behave.api.pending_step import StepNotImplementedError
         @given(u'I\'m using an "undefined step"')
         def step_impl(context):
-            raise NotImplementedError(u'STEP: Given I\'m using an "undefined step"')
+            raise StepNotImplementedError(u'STEP: Given I\'m using an "undefined step"')
         """

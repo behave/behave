@@ -3,12 +3,12 @@
 
 import sys
 import six
+import types
 if six.PY2:
     # -- USE PYTHON2 BACKPORT: With unicode support
     import traceback2 as traceback
 else:
     import traceback
-
 
 class Unknown(object):
     """
@@ -22,6 +22,12 @@ class Unknown(object):
             # -- DO SOMETHING
             ...
     """
+
+
+# -- SINCE: Python 3.10 -- types.NoneType
+NoneType = getattr(types, "NoneType", Unknown)
+if NoneType is Unknown:
+    NoneType = type(None)
 
 
 class ExceptionUtil(object):

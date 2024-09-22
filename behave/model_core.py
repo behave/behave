@@ -55,20 +55,45 @@ class Status(Enum):
         This is caused by filtering mechanisms, like tags, active-tags,
         file-location arg, select-by-name, etc.
 
-    * passed: A model element was executed and passed (without failures).
-    * failed: Failures occurred while executing it.
-    * undefined: Used for undefined-steps (no step implementation was found).
+    * passed: Model element is executed and passed (without failures).
+    * failed: Model element is executed and assert-condition failed.
+    * error:  Model element is executed and raised an exception (unexpected).
+    * hook_error:    Failure occured while executing a hook.
+    * pending:       Pending step that leads to an error.
+    * pending_warn:  Pending step that leads is accepted/passed.
+    * undefined:     If a step does not exist (no step implementation was found).
+    * untested_pending:   RESERVED: If a pending step is untested (in dry-run mode).
+    * untested_undefined: If an undefined step is untested (in dry-run mode).
     * executing: Marks the steps during execution (used in a formatter)
 
     .. versionadded:: 1.2.6
         Supersedes string-based status values.
     """
-    untested = 0
-    skipped = 1
-    passed = 2
-    failed = 3
-    undefined = 4
-    executing = 5
+    unknown = 0         # RESERVED: For special cases.
+    untested = 1
+    executing = 2       # Used while executing a model element.
+    skipped = 10
+    passed = 11
+    xfailed = 12        # RESERVED: Used if expected to fail (marked with: @xfail tag)
+    xpassed = 13        # RESERVED: Used if xfailed model-element passes.
+    failed = 20         # If assertion fails (and currently: exception occurs)
+    error = 21          # If unexpected exception occurs.
+    hook_error = 22     # If a hook has failed.
+    cleanup_error = 23  # RESERVED: If exception occurs in cleanup-phase/cleanup-function.
+    # -- FOR STEPS:
+    undefined = 30          # If a step is undefined/unregistered (results in error).
+    pending = 31            # Pending-step (registered but not implemented; results in error)
+    pending_warn = 32       # Pending step that is gracefully accepted
+    untested_pending = 33   # RESERVED: Pending step as untested step (in dry-run mode)
+    untested_undefined = 34 # Undefined steps as untested step (in dry-run mode).
+
+    @property
+    def normalized_name(self):
+        if self is Status.untested_undefined:
+            return Status.undefined.name
+        elif self in (Status.pending_warn, Status.untested_pending):
+            return Status.pending.name
+        return self.name
 
     def __eq__(self, other):
         """Comparison operator equals-to other value.
@@ -89,6 +114,67 @@ class Status(Enum):
             return self.name == other
         return super(Status, self).__eq__(other)
 
+    def __hash__(self):
+        return hash(self.value)
+
+    def has_failed(self):
+        return self.is_error() or self.is_failure()
+
+    def is_passed(self):
+        return self in (Status.passed, Status.xfailed, Status.xpassed,
+                        Status.pending_warn)
+
+    def is_failure(self):
+        return self is Status.failed
+
+    def is_error(self):
+        return self in (Status.error, Status.hook_error, Status.cleanup_error,
+                        Status.undefined, Status.pending)
+
+    def is_untested(self):
+        return self in (Status.untested,
+                        Status.untested_undefined,
+                        Status.untested_pending)
+
+    def is_pending(self):
+        return self in (Status.pending, Status.pending_warn, Status.untested_pending)
+
+    def is_undefined(self):
+        return self in (Status.undefined, Status.untested_undefined)
+
+    def is_final(self):
+        """
+        Indicates that this status is a final-status.
+        """
+        return self in (Status.skipped, Status.passed,
+                        Status.xfailed, Status.xpassed,
+                        Status.failed, Status.error,
+                        Status.hook_error,
+                        # -- USED FOR: STEP is not found/registered
+                        Status.undefined, Status.untested_undefined,
+                        # -- USED FOR: Registered step -- NotImplementedStep/PendingStep
+                        Status.pending, Status.pending_warn)
+
+    def to_status_v0(self):
+        # -- BACKWARD COMPATIBLE STATUS: Convert new enum-values to old ones.
+        cls = self.__class__
+        status_v0_values = [
+            cls.untested,
+            cls.skipped,
+            cls.passed,
+            cls.failed,
+            cls.undefined,
+            cls.executing,
+        ]
+        if self.is_error():
+            return Status.failed
+        elif self.is_pending():
+            return Status.undefined
+        elif self in status_v0_values:
+            return self
+        assert False, "OOPS: status=%s" % self
+        return Status.unknown
+
     @classmethod
     def from_name(cls, name):
         """Select enumeration value by using its name.
@@ -103,6 +189,60 @@ class Status(Enum):
             known_names = ", ".join(cls.__members__.keys())
             raise LookupError("%s (expected: %s)" % (name, known_names))
         return enum_value
+
+
+class ScenarioStatus(object):
+    """
+    Utility class that computes the Scenario status from one of its steps.
+    """
+    @staticmethod
+    def from_step_status(step_status, dry_run=False):
+        assert isinstance(step_status, Status)
+        other_status_values = (Status.skipped, )
+        if step_status.is_error():
+            # -- CASE 1: hook_error, pending-step, undefined-step as error
+            return Status.error
+        elif step_status.is_failure():
+            return Status.failed
+        elif step_status.is_untested():
+            # -- SPECIAL CASE: In dry-run with undefined-step discovery
+            #    Undefined steps should not cause failed scenario.
+            return Status.untested
+        elif step_status is Status.pending_warn:
+            # -- IGNORE: pending-step (as passed in CASE 1)
+            step_status = Status.passed
+        elif step_status != Status.passed:
+            assert step_status in other_status_values, "status=%s" % step_status
+            return step_status
+        return Status.passed
+
+    @classmethod
+    def from_step(cls, step, dry_run=False):
+        return cls.from_step_status(step.status, dry_run=dry_run)
+
+
+class OuterStatus(object):
+    """
+    Used for feature(s) and rule(s) to derive their status
+    from one of its contained model-elements (like: scenarios).
+    """
+
+    @staticmethod
+    def from_inner_status(status):
+        assert isinstance(status, Status)
+        if status.is_error():
+            return Status.error
+        elif status.is_failure():
+            return Status.failed
+        elif status is Status.pending_warn:
+            # -- FOR: Scenario.status based on contained step(s)
+            return Status.passed
+        # -- OTHERWISE:
+        return status
+
+    @classmethod
+    def from_inner_model_element(cls, model_element):
+        return cls.from_inner_status(model_element.status)
 
 
 class Argument(object):
@@ -280,8 +420,8 @@ class BasicStatement(object):
         filename = filename or '<string>'
         filename = make_relpath_if_possible(filename, os.getcwd())   # -- NEEDS: abspath?
         self.location = FileLocation(filename, line)
-        assert isinstance(keyword, six.text_type)
-        assert isinstance(name, six.text_type)
+        assert isinstance(keyword, six.text_type), "ACTUAL: %s:%r" % (type(keyword), keyword)
+        assert isinstance(name, six.text_type), "ACTUAL: %s:%r" % (type(keyword), keyword)
         self.keyword = keyword
         self.name = name
         # -- SINCE: 1.2.6
@@ -373,7 +513,6 @@ class TagAndStatusStatement(BasicStatement):
     * tags (as: taggable statement)
     * status (has a result after a test run)
     """
-    final_status = (Status.passed, Status.failed, Status.skipped)
 
     def __init__(self, filename, line, keyword, name, tags, parent=None):
         super(TagAndStatusStatement, self).__init__(filename, line, keyword, name)
@@ -409,7 +548,7 @@ class TagAndStatusStatement(BasicStatement):
 
     @property
     def status(self):
-        if self._cached_status not in self.final_status:
+        if not self._cached_status.is_final():
             # -- RECOMPUTE: As long as final status is not reached.
             self._cached_status = self.compute_status()
         return self._cached_status
@@ -428,7 +567,7 @@ class TagAndStatusStatement(BasicStatement):
         self.clear_status()
 
     def compute_status(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
 
 class Replayable(object):

@@ -81,6 +81,7 @@ from behave.model import Rule, Scenario, ScenarioOutline, Step
 from behave.model_core import Status
 from behave.formatter import ansi_escapes
 from behave.model_describe import ModelDescriptor
+from behave.summary import SummaryCollector, SummaryCounts, StatusCounts
 from behave.textutil import indent, make_indentation, text as _text
 from behave.userdata import UserDataNamespace
 import six
@@ -219,6 +220,7 @@ class JUnitReporter(Reporter):
 
     def __init__(self, config):
         super(JUnitReporter, self).__init__(config)
+        self._summary_collector = SummaryCollector()
         self.setup_with_userdata(config.userdata)
 
     def setup_with_userdata(self, userdata):
@@ -243,6 +245,20 @@ class JUnitReporter(Reporter):
         self.show_skipped_always = config.getbool("show_skipped_always",
                                               self.show_skipped_always)
 
+    @property
+    def feature_failed_counts(self):
+        summary_counts4features = self._summary_collector.summary_counts.features
+        return summary_counts4features.get(Status.failed, 0)
+
+    @property
+    def feature_error_counts(self):
+        summary_counts4features = self._summary_collector.summary_counts.features
+        error_status_values = (Status.error, Status.hook_error)
+        counts = 0
+        for error_status in (Status.error, Status.hook_error):
+            counts += summary_counts4features.get(error_status, 0)
+        return counts
+
     def make_feature_filename(self, feature):
         filename = None
         for path in self.config.paths:
@@ -266,8 +282,10 @@ class JUnitReporter(Reporter):
             # -- SKIP-OUTPUT: If skipped features should not be shown.
             return
 
+        self._summary_collector.visit_feature(feature)
         feature_filename = self.make_feature_filename(feature)
         classname = feature_filename
+        # XXX_JE_TODO
         report = FeatureReportData(feature, feature_filename)
         now = datetime.now()
 
@@ -336,6 +354,19 @@ class JUnitReporter(Reporter):
         # KeyError("Step with status={0} not found".format(status))
         return None
     # pylint: enable=line-too-long
+
+    @classmethod
+    def select_step_with_any_status(cls, desired_statuses, steps):
+        """
+        .. versionchanged:: 1.2.7
+        """
+        for step in steps:
+            assert isinstance(step, Step), \
+                "TYPE-MISMATCH: step.class=%s"  % step.__class__.__name__
+            if step.status in desired_statuses:
+                return step
+        # -- NOT-FOUND:
+        return None
 
     def describe_step(self, step):
         status_text = _text(step.status.name)
@@ -407,7 +438,7 @@ class JUnitReporter(Reporter):
         if not feature_name:
             feature_name = self.make_feature_filename(feature)
 
-        case = ElementTree.Element('testcase')
+        case = ElementTree.Element("testcase")
         case.set(u"classname", u"%s.%s" % (classname, feature_name))
         case.set(u"name", scenario.name or "")
         case.set(u"status", scenario.status.name)
@@ -415,47 +446,29 @@ class JUnitReporter(Reporter):
 
         step = None
         failing_step = None
-        if scenario.status == Status.failed:
-            for status in (Status.failed, Status.undefined):
-                step = self.select_step_with_status(status, scenario)
-                if step:
-                    break
+        failed_statuses = (Status.failed, )
+        error_statuses = (Status.error, Status.hook_error, Status.pending, Status.undefined)
+        skipped_statuses = (Status.skipped, Status.untested)
+
+        if scenario.status.is_error():
             # -- NOTE: Scenario may fail now due to hook-errors.
-            element_name = "failure"
-            if step and isinstance(step.exception, (AssertionError, type(None))):
-                # -- FAILURE: AssertionError
-                assert step.status in (Status.failed, Status.undefined)
-                report.counts_failed += 1
-            else:
-                # -- UNEXPECTED RUNTIME-ERROR:
-                report.counts_errors += 1
-                element_name = "error"
-            # -- COMMON-PART:
-            failure = ElementTree.Element(element_name)
-            if step:
-                step_text = self.describe_step(step).rstrip()
-                text = u"\nFailing step: %s\nLocation: %s\n" % \
-                       (step_text, step.location)
-                message = _text(step.exception).strip()
-                failure.set(u'type', step.exception.__class__.__name__)
-                failure.set(u'message', message)
-                text += _text(step.error_message)
-            else:
-                # -- MAYBE: Hook failure before any step is executed.
-                failure_type = "UnknownError"
-                if scenario.exception:
-                    failure_type = scenario.exception.__class__.__name__
-                failure.set(u'type', failure_type)
-                failure.set(u'message', scenario.error_message.strip() or "")
-                traceback_lines = traceback.format_tb(scenario.exc_traceback)
-                traceback_lines.insert(0, u"Traceback:\n")
-                text = _text(u"".join(traceback_lines))
-            failure.append(CDATA(text))
+            # UNEXPECTED RUNTIME-ERROR:
+            report.counts_errors += 1
+            step = self.select_step_with_any_status(error_statuses, scenario.all_steps)
+            error = self._make_error_element_for(scenario, step)
+            case.append(error)
+            # XXX_JE_TODO: Status.undefined, Status.pending
+        elif scenario.status.is_failure():
+            # -- NOTE: Scenario may fail due to ...
+            report.counts_failed += 1
+            step = self.select_step_with_any_status(failed_statuses, scenario.all_steps)
+            failure = self._make_failure_element_for(scenario, step)
             case.append(failure)
-        elif (scenario.status in (Status.skipped, Status.untested)
-              and self.show_skipped):
+        elif scenario.status in skipped_statuses and self.show_skipped:
             report.counts_skipped += 1
-            step = self.select_step_with_status(Status.undefined, scenario)
+            problematic_statuses = [Status.pending, Status.undefined]
+            step = self.select_step_with_any_status(problematic_statuses, scenario.all_steps)
+            # XXX_JE_WORKMARK
             if step:
                 # -- UNDEFINED-STEP:
                 report.counts_failed += 1
@@ -464,9 +477,10 @@ class JUnitReporter(Reporter):
                 failure.set(u"type", u"undefined")
                 failure.set(u"message", message)
                 case.append(failure)
-            else:
-                skip = ElementTree.Element(u'skipped')
-                case.append(skip)
+
+            # -- ALWAYS ADD TO THE REPORT:
+            skip = ElementTree.Element(u'skipped')
+            case.append(skip)
 
         # Create stdout section for each test case
         stdout = ElementTree.Element(u"system-out")
@@ -491,6 +505,35 @@ class JUnitReporter(Reporter):
 
         if scenario.status != Status.skipped or self.show_skipped:
             report.testcases.append(case)
+
+    def _make_problem_description_for(self, element_name, scenario, step):
+        xml_element = ElementTree.Element(element_name)
+        if step:
+            step_text = self.describe_step(step).rstrip()
+            text = u"\nFailing step: %s\nLocation: %s\n" % \
+                   (step_text, step.location)
+            message = _text(step.exception).strip()
+            xml_element.set(u'type', step.exception.__class__.__name__)
+            xml_element.set(u'message', message)
+            text += _text(step.error_message)
+        else:
+            # -- MAYBE: Hook failure before any step is executed.
+            failure_type = "UnknownError"
+            if scenario.exception:
+                failure_type = scenario.exception.__class__.__name__
+            xml_element.set(u'type', failure_type)
+            xml_element.set(u'message', scenario.error_message.strip() or "")
+            traceback_lines = traceback.format_tb(scenario.exc_traceback)
+            traceback_lines.insert(0, u"Traceback:\n")
+            text = _text(u"".join(traceback_lines))
+        xml_element.append(CDATA(text))
+        return xml_element
+
+    def _make_failure_element_for(self, scenario, step):
+        return self._make_problem_description_for(u"failure", scenario, step)
+
+    def _make_error_element_for(self, scenario, step):
+        return self._make_problem_description_for(u"error", scenario, step)
 
     def _process_run_items_for(self, parent, report):
         for run_item in parent.run_items:

@@ -15,11 +15,12 @@ import six
 from behave.api.runner import ITestRunner
 from behave._types import ExceptionUtil
 from behave.capture import CaptureController
-from behave.exception import ConfigError
+from behave.exception import CleanupError, ConfigError
 from behave.formatter._registry import make_formatters
-from behave.runner_util import \
-    collect_feature_locations, parse_features, \
+from behave.runner_util import (
+    collect_feature_locations, parse_features,
     exec_file, load_step_modules, PathManager
+)
 from behave.step_registry import registry as the_step_registry
 from enum import Enum
 

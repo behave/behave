@@ -27,12 +27,18 @@ class ProgressFormatterBase(Formatter):
     """
     # -- MAP: step.status to short dot_status representation.
     dot_status = {
-        "passed":    ".",
-        "failed":    "F",
-        "error":     "E",   # Caught exception, but not an AssertionError
-        "skipped":   "S",
-        "untested":  "_",
-        "undefined": "U",
+        Status.passed:    ".",
+        Status.failed:    "F",  # AssertionError was raised: assert-failed
+        Status.error:     "E",  # Exception was raised: unexpected (not assert-failed)
+        Status.hook_error: "H", # Exception/AssertionError was rasied by a hook.
+        Status.skipped:   "S",
+        Status.untested:  "_",
+        # -- STEP SPECIFIC:
+        Status.untested_pending:  "p",
+        Status.untested_undefined:  "u",
+        Status.undefined: "U",
+        Status.pending: "P",
+        Status.pending_warn: "p",
     }
     show_timings = False
 
@@ -41,7 +47,8 @@ class ProgressFormatterBase(Formatter):
         # -- ENSURE: Output stream is open.
         self.stream = self.open()
         self.steps = []
-        self.failures = []
+        self.failed_steps = []
+        self.error_steps = []
         self.current_feature = None
         self.current_rule = None
         self.current_scenario = None
@@ -49,7 +56,8 @@ class ProgressFormatterBase(Formatter):
 
     def reset(self):
         self.steps = []
-        self.failures = []
+        self.failed_steps = []
+        self.error_steps = []
         self.current_feature = None
         self.current_rule = None
         self.current_scenario = None
@@ -128,18 +136,26 @@ class ProgressFormatterBase(Formatter):
             self.stream.write(u"  # %.3fs" % self.current_scenario.duration)
         self.stream.write("\n")
 
+    def _report_problem_steps(self, problem, steps):
+        if not steps:
+            return
+
+        # -- NORMAL CASE:
+        separator = "-" * 80
+        self.stream.write(u"%s\n" % separator)
+        for step in steps:
+            self.stream.write(u"%s in step '%s':\n" % (problem, step.name))
+            self.stream.write(u"  Feature:  %s\n" % step.feature.name)
+            self.stream.write(u"  Scenario: %s\n" % step.scenario.name)
+            self.stream.write(u"%s\n" % step.error_message)
+            if step.exception:
+                self.stream.write(u"exception: %s\n" % step.exception)
+        self.stream.write(u"%s\n" % separator)
+
     def report_failures(self):
-        if self.failures:
-            separator = "-" * 80
-            self.stream.write(u"%s\n" % separator)
-            for step in self.failures:
-                self.stream.write(u"FAILURE in step '%s':\n" % step.name)
-                self.stream.write(u"  Feature:  %s\n" % step.feature.name)
-                self.stream.write(u"  Scenario: %s\n" % step.scenario.name)
-                self.stream.write(u"%s\n" % step.error_message)
-                if step.exception:
-                    self.stream.write(u"exception: %s\n" % step.exception)
-            self.stream.write(u"%s\n" % separator)
+        self._report_problem_steps("FAILURE", self.failed_steps)
+        self._report_problem_steps("ERROR", self.error_steps)
+        self.stream.flush()
 
 
 # -----------------------------------------------------------------------------
@@ -158,17 +174,16 @@ class ScenarioProgressFormatter(ProgressFormatterBase):
         """
         if not self.current_scenario:
             return  # SKIP: No results to report for first scenario.
+
         # -- NORMAL-CASE:
-        status_name = self.current_scenario.status.name
-        dot_status = self.dot_status[status_name]
-        if status_name == "failed":
-            # MAYBE TODO: self.failures.append(result)
-            pass
-        self.stream.write(dot_status)
+        status = self.current_scenario.status
+        dot_status_char = self.dot_status[status]
+        self.stream.write(dot_status_char)
         self.stream.flush()
 
     def report_feature_completed(self):
         self.report_feature_duration()
+
 
 # -----------------------------------------------------------------------------
 # CLASS: StepProgressFormatter
@@ -182,16 +197,15 @@ class StepProgressFormatter(ProgressFormatterBase):
 
     def report_step_progress(self, step):
         """Report the progress for each step."""
-        dot_status = self.dot_status[step.status.name]
-        if step.status == Status.failed:
-            if (step.exception and
-                    not isinstance(step.exception, AssertionError)):
-                # -- ISA-ERROR: Some Exception
-                dot_status = self.dot_status["error"]
+        dot_status_char = self.dot_status[step.status]
+        if step.status.has_failed():
             step.feature = self.current_feature
             step.scenario = self.current_scenario
-            self.failures.append(step)
-        self.stream.write(dot_status)
+            if step.status.is_error():
+                self.error_steps.append(step)
+            else:
+                self.failed_steps.append(step)
+        self.stream.write(dot_status_char)
         self.stream.flush()
 
     def report_feature_completed(self):
@@ -241,7 +255,7 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         self.report_scenario_completed()
 
         # -- NEW SCENARIO:
-        assert not self.failures
+        assert not self.failed_steps
         self.current_scenario = scenario
         scenario_name = scenario.name
         prefix = self.scenario_prefix
@@ -273,27 +287,37 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         self.report_scenario_progress()
         self.report_scenario_duration()
         self.report_failures()
-        self.failures = []
+
+        # -- RESET DATA:
+        self.failed_steps = []
+        self.error_steps = []
+
+    def _report_problem_steps(self, problem, problem_steps):
+        if not problem_steps:
+            return
+
+        # -- NORMAL CASE:
+        separator = "-" * 80
+        self.stream.write(u"%s\n" % separator)
+        unicode_errors = 0
+        for step in problem_steps:
+            try:
+                self.stream.write(u"%s in step '%s' (%s):\n" % \
+                                  (problem, step.name, step.location))
+                self.stream.write(u"%s\n" % step.error_message)
+                self.stream.write(u"%s\n" % separator)
+            except UnicodeError as e:
+                self.stream.write(u"%s while reporting failure in %s\n" % \
+                                  (e.__class__.__name__, step.location))
+                self.stream.write(u"ERROR: %s\n" % \
+                                  _text(e, encoding=self.stream.encoding))
+                unicode_errors += 1
+
+        if unicode_errors:
+            msg = u"HINT: %d unicode errors occurred during failure reporting.\n"
+            self.stream.write(msg % unicode_errors)
 
     def report_failures(self):
-        if self.failures:
-            separator = "-" * 80
-            self.stream.write(u"%s\n" % separator)
-            unicode_errors = 0
-            for step in self.failures:
-                try:
-                    self.stream.write(u"FAILURE in step '%s' (%s):\n" % \
-                                      (step.name, step.location))
-                    self.stream.write(u"%s\n" % step.error_message)
-                    self.stream.write(u"%s\n" % separator)
-                except UnicodeError as e:
-                    self.stream.write(u"%s while reporting failure in %s\n" % \
-                                      (e.__class__.__name__, step.location))
-                    self.stream.write(u"ERROR: %s\n" % \
-                                      _text(e, encoding=self.stream.encoding))
-                    unicode_errors += 1
-
-            if unicode_errors:
-                msg = u"HINT: %d unicode errors occurred during failure reporting.\n"
-                self.stream.write(msg % unicode_errors)
-            self.stream.flush()
+        self._report_problem_steps("FAILURE", self.failed_steps)
+        self._report_problem_steps("ERROR", self.error_steps)
+        self.stream.flush()

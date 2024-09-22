@@ -87,7 +87,7 @@ Feature: Issue #457 -- Double-quotes in error messages of JUnit XML reports
       When I run "behave --junit features/fails2.feature"
       Then it should fail with:
         """
-        0 scenarios passed, 1 failed, 0 skipped
+        0 scenarios passed, 0 failed, 1 error, 0 skipped
         """
       And the file "reports/TESTS-fails2.xml" should contain:
         """
@@ -109,7 +109,7 @@ Feature: Issue #457 -- Double-quotes in error messages of JUnit XML reports
       When I run "behave --junit features/fails2.feature"
       Then it should fail with:
         """
-        0 scenarios passed, 1 failed, 0 skipped
+        0 scenarios passed, 0 failed, 1 error, 0 skipped
         """
       And the file "reports/TESTS-fails2.xml" should contain:
         """

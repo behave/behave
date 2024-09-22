@@ -370,7 +370,7 @@ Feature: StepWithCode Formatter
       Then it should fail with:
         """
         0 scenarios passed, 1 failed, 0 skipped
-        1 step passed, 1 failed, 1 skipped, 0 undefined
+        1 step passed, 1 failed, 1 skipped
         """
       And the command output should contain:
         """
@@ -408,7 +408,7 @@ Feature: StepWithCode Formatter
       When I run "behave -f steps.code features/undefined.feature"
       Then it should fail with:
         """
-        0 scenarios passed, 1 failed, 0 skipped
+        0 scenarios passed, 0 failed, 1 error, 0 skipped
         1 step passed, 0 failed, 1 skipped, 1 undefined
         """
       And the command output should contain:
@@ -423,7 +423,7 @@ Feature: StepWithCode Formatter
 
             When a step is UNDEFINED  ...  undefined
 
-        Failing scenarios:
+        Errored scenarios:
           features/undefined.feature:3  With undefined step
         """
       But note that "the undefined step is shown without code-section"

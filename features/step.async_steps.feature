@@ -194,11 +194,11 @@ Feature: Async-Test Support (async-step, ...)
       When I run "behave -f plain features/async_exception35.feature"
       Then it should fail with:
         """
-        1 step passed, 1 failed, 1 skipped
+        1 step passed, 0 failed, 1 error, 1 skipped
         """
       And the command output should contain:
         """
-        When an async-step raises an exception ... failed
+        When an async-step raises an exception ... error
         """
       And the command output should contain:
         """

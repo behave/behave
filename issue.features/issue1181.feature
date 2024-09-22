@@ -47,7 +47,7 @@ Feature: Issue #1181 -- Can I add a Formatter in the before_all() Hook
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      5 steps passed, 0 failed, 0 skipped, 0 undefined
+      5 steps passed, 0 failed, 0 skipped
       """
     And a file named "build/report4me.txt" should exist
     And the file "build/report4me.txt" should contain:

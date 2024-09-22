@@ -15,13 +15,12 @@ import re
 import sys
 from six import string_types
 
-from behave import parser
-# pylint: disable=redefined-builtin
+from behave import parser as gherkin
 from behave.exception import (
-    FileNotFoundError,
-    InvalidFileLocationError, InvalidFilenameError
+    FileNotFoundError,  # pylint: disable=W0622
+    InvalidFileLocationError,
+    InvalidFilenameError
 )
-# pylint: enable=redefined-builtin
 from behave.model_core import FileLocation
 from behave.model import Feature, Rule, ScenarioOutline, Scenario
 from behave.textutil import ensure_stream_with_encoder
@@ -91,7 +90,7 @@ class FeatureLineDatabase(object):
                 self._line_entities = list(self.data.values())
 
             pos = bisect(self._line_numbers, line) - 1
-            pos = max(pos, 0)
+            pos = max(0, pos)
             run_item = self._line_entities[pos]
         return run_item
 
@@ -213,7 +212,7 @@ class FeatureScenarioLocationCollector(object):
         if not scenario_lines:
             return 0    # -- Select all scenarios.
         pos = bisect(scenario_lines, line) - 1
-        pos = max(pos, 0)
+        pos = max(0, pos)
         return scenario_lines[pos]
 
     def discover_selected_scenarios(self, strict=False):
@@ -302,7 +301,7 @@ class FeatureScenarioLocationCollector1(FeatureScenarioLocationCollector):
         if not scenario_lines:
             return 0    # -- Select all scenarios.
         pos = bisect(scenario_lines, line) - 1
-        pos = max(pos, 0)
+        pos = max(0, pos)
         return scenario_lines[pos]
 
     def discover_selected_scenarios(self, strict=False):
@@ -398,10 +397,9 @@ class FeatureListParser(object):
         locations = []
         for line in text.splitlines():
             filename = line.strip()
-            if not filename:
-                continue    # SKIP: Over empty line(s).
-            if filename.startswith('#'):
-                continue    # SKIP: Over comment line(s).
+            if not filename or filename.startswith('#'):
+                # -- SKIP: Over empty or comment line(s).
+                continue
 
             if here and not os.path.isabs(filename):
                 filename = os.path.join(here, line)
@@ -429,7 +427,8 @@ class FeatureListParser(object):
         if not os.path.isfile(filename):
             raise FileNotFoundError(filename)
         here = os.path.dirname(filename) or "."
-        # MAYBE: with codecs.open(filename, encoding="UTF-8") as f:
+        # -- MAYBE BETTER:
+        # contents = codecs.open(filename, "utf-8").read()
         with open(filename) as f:
             contents = f.read()
             return cls.parse(contents, here)
@@ -496,7 +495,7 @@ def parse_features(feature_files, language=None):
         # -- NEW FEATURE:
         assert isinstance(location, FileLocation)
         filename = os.path.abspath(location.filename)
-        feature = parser.parse_file(filename, language=language)
+        feature = gherkin.parse_file(filename, language=language)
         if feature:
             # -- VALID FEATURE:
             # SKIP CORNER-CASE: Feature file without any feature(s).
@@ -603,7 +602,7 @@ def make_undefined_step_snippet(step, language=None):
     """
     if isinstance(step, string_types):
         step_text = step
-        steps = parser.parse_steps(step_text, language=language)
+        steps = gherkin.parse_steps(step_text, language=language)
         step = steps[0]
         assert step, "ParseError: %s" % step_text
 
@@ -612,10 +611,17 @@ def make_undefined_step_snippet(step, language=None):
     if single_quote in step.name:
         step.name = step.name.replace(single_quote, r"\'")
 
-    schema = u"@%s(%s'%s')\ndef step_impl(context):\n"
-    schema += u"    raise NotImplementedError(%s'STEP: %s %s')\n\n"
-    snippet = schema % (step.step_type, prefix, step.name,
-                        prefix, step.step_type.title(), step.name)
+
+    snippet_template = u"""\
+@{step_type}({prefix}'{step_pattern}')
+def step_impl(context):
+    raise StepNotImplementedError({prefix}'STEP: {step_type_titled} {step_pattern}')
+
+"""
+    snippet = snippet_template.format(step_type=step.step_type,
+                                      step_type_titled=step.step_type.title(),
+                                      step_pattern=step.name,
+                                      prefix=prefix)
     return snippet
 
 
@@ -655,18 +661,22 @@ def print_undefined_step_snippets(undefined_steps, stream=None, colored=True):
     if not stream:
         stream = sys.stderr
 
-    msg = u"\nYou can implement step definitions for undefined steps with "
-    msg += u"these snippets:\n\n"
-    msg += u"\n".join(make_undefined_step_snippets(undefined_steps))
+    step_snippets = u"\n".join(make_undefined_step_snippets(undefined_steps))
+    message = u"""
+You can implement step definitions for undefined steps with these snippets:
+
+from behave.api.pending_step import StepNotImplementedError
+{undefined_steps}
+""".format(undefined_steps=step_snippets)
 
     if colored:
         # -- OOPS: Unclear if stream supports ANSI coloring.
         # pylint: disable=import-outside-toplevel
         from behave.formatter.ansi_escapes import escapes
-        msg = escapes['undefined'] + msg + escapes['reset']
+        message = escapes["undefined"] + message + escapes["reset"]
 
     stream = ensure_stream_with_encoder(stream)
-    stream.write(msg)
+    stream.write(message)
     stream.flush()
 
 

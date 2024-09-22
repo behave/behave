@@ -24,10 +24,12 @@ from behave import given, when, then, step
 
 
 class MissingStepsFormatter(StepsUsageFormatter):
-    """Formatter that writes missing steps snippets into a step module file.
+    """
+    Formatter that generates missing steps snippets (aka: undefined steps)
+    into a step module file.
 
-    Reuses StepsUsageFormatter class because it already contains the logic
-    for discovering missing/undefined steps.
+    This class reuses the StepsUsageFormatter class because
+    it already contains the logic for discovering missing/undefined steps.
 
     .. code-block:: ini
 
@@ -35,10 +37,11 @@ class MissingStepsFormatter(StepsUsageFormatter):
         # NOTE: Long text value needs indentation on following lines.
         [behave.userdata]
         behave.formatter.missing_steps.template = # -*- coding: {encoding} -*-
-            # Missing step implementations.
+            # -- MISSING STEP IMPLEMENTATIONS (aka: undefined steps)
             from behave import given, when, then, step
+            from behave.api.pending_step import StepNotImplementedError
 
-            {step_snippets}
+            {undefined_step_snippets}
     """
     name = "steps.missing"
     description = "Shows undefined/missing steps definitions, implements them."
@@ -73,8 +76,10 @@ class MissingStepsFormatter(StepsUsageFormatter):
         step_snippets = make_undefined_step_snippets(self.undefined_steps)
         encoding = self.stream.encoding or "UTF-8"
         function_separator = u"\n\n\n"
-        step_snippets_text = function_separator.join(step_snippets)
+        steps_text = function_separator.join(step_snippets)
         module_text = self.template.format(encoding=encoding,
-                                           step_snippets=step_snippets_text)
+                                           undefined_step_snippets=steps_text,
+                                           # -- BACKWARD-COMPATIBILITY:
+                                           step_snippets=steps_text)
         self.stream.write(module_text)
         self.stream.write("\n")

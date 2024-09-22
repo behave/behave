@@ -45,19 +45,24 @@ Feature: Issue #41 Missing Steps are duplicated in a Scenario Outline
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
+
+      from behave.api.pending_step import StepNotImplementedError
       @given(u'an unknown step')
       def step_impl(context):
-          raise NotImplementedError(u'STEP: Given an unknown step')
+          raise StepNotImplementedError(u'STEP: Given an unknown step')
       """
     But the command output should not contain:
       """
       You can implement step definitions for undefined steps with these snippets:
+
+      from behave.api.pending_step import StepNotImplementedError
       @given(u'an unknown step')
       def step_impl(context):
-          raise NotImplementedError(u'STEP: Given an unknown step')
+          raise StepNotImplementedError(u'STEP: Given an unknown step')
+
       @given(u'an unknown step')
       def step_impl(context):
-          raise NotImplementedError(u'STEP: Given an unknown step')
+          raise StepNotImplementedError(u'STEP: Given an unknown step')
       """
 
   Scenario: Missing When Step
@@ -82,19 +87,23 @@ Feature: Issue #41 Missing Steps are duplicated in a Scenario Outline
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
+      from behave.api.pending_step import StepNotImplementedError
       @when(u'I use an unknown step')
       def step_impl(context):
-          raise NotImplementedError(u'STEP: When I use an unknown step')
+          raise StepNotImplementedError(u'STEP: When I use an unknown step')
       """
     But the command output should not contain:
       """
       You can implement step definitions for undefined steps with these snippets:
+
+      from behave.api.pending_step import StepNotImplementedError
       @when(u'I use an unknown step')
       def step_impl(context):
-          raise NotImplementedError(u'STEP: When I use an unknown step')
+          raise StepNotImplementedError(u'STEP: When I use an unknown step')
+
       @when(u'I use an unknown step')
       def step_impl(context):
-          raise NotImplementedError(u'STEP: When I use an unknown step')
+          raise StepNotImplementedError(u'STEP: When I use an unknown step')
       """
 
   Scenario: Missing Then Step
@@ -114,22 +123,28 @@ Feature: Issue #41 Missing Steps are duplicated in a Scenario Outline
     When I run "behave --no-color -f plain features/issue41_missing3.feature"
     Then it should fail with:
       """
+      0 scenarios passed, 0 failed, 2 error, 0 skipped
       4 steps passed, 0 failed, 0 skipped, 2 undefined
       """
     And the command output should contain:
       """
       You can implement step definitions for undefined steps with these snippets:
+
+      from behave.api.pending_step import StepNotImplementedError
       @then(u'I use an unknown step')
       def step_impl(context):
-          raise NotImplementedError(u'STEP: Then I use an unknown step')
+          raise StepNotImplementedError(u'STEP: Then I use an unknown step')
       """
     But the command output should not contain:
       """
       You can implement step definitions for undefined steps with these snippets:
+
+      from behave.api.pending_step import StepNotImplementedError
       @then(u'I use an unknown step')
       def step_impl(context):
-          raise NotImplementedError(u'STEP: Then I use an unknown step')
+          raise StepNotImplementedError(u'STEP: Then I use an unknown step')
+
       @then(u'I use an unknown step')
       def step_impl(context):
-          raise NotImplementedError(u'STEP: Then I use an unknown step')
+          raise StepNotImplementedError(u'STEP: Then I use an unknown step')
       """

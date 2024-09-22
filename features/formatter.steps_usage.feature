@@ -255,11 +255,11 @@ Feature: Steps Usage Formatter
               Given a step is undefined
               Then another step is undefined
           """
-        When I run "behave --dry-run -f steps.usage features/alice.feature features/undefined.feature"
+        When I run "behave --dry-run -f steps.usage -f plain features/alice.feature features/undefined.feature"
         Then it should fail with:
           """
-          0 features passed, 0 failed, 0 skipped, 2 untested
-          0 scenarios passed, 0 failed, 0 skipped, 3 untested
+          0 features passed, 0 failed, 1 error, 0 skipped, 1 untested
+          0 scenarios passed, 0 failed, 1 error, 0 skipped, 2 untested
           0 steps passed, 0 failed, 0 skipped, 2 undefined, 6 untested
           """
         And the command output should contain:
@@ -294,7 +294,7 @@ Feature: Steps Usage Formatter
     @corner.case
     Scenario: StepsUsageFormatter shows all locations of undefined step usage
 
-        Ensure that all location are shown where an undefined step is used
+        Ensure that all location are shown where an undefined step is used.
 
         Given a file named "features/undefined_duplicates.feature" with:
           """
@@ -309,10 +309,10 @@ Feature: Steps Usage Formatter
               Given a step passes
               And a step is undefined
           """
-        When I run "behave --dry-run -f steps.usage features/undefined_duplicates.feature"
+        When I run "behave --dry-run -f steps.usage -f plain features/undefined_duplicates.feature"
         Then it should fail with:
           """
-          0 scenarios passed, 0 failed, 0 skipped, 2 untested
+          0 scenarios passed, 0 failed, 1 error, 0 skipped, 1 untested
           0 steps passed, 0 failed, 0 skipped, 3 undefined, 2 untested
           """
         And the command output should contain:
@@ -321,6 +321,15 @@ Feature: Steps Usage Formatter
             Given a step is undefined               # features/undefined_duplicates.feature:4
             And a step is undefined                 # features/undefined_duplicates.feature:5
             And a step is undefined                 # features/undefined_duplicates.feature:10
+          """
+        And the command output should contain:
+          """
+          Feature: With undefined steps
+            Scenario: Same undefined step used twice
+              Given a step is undefined ... undefined
+
+            Scenario: Same undefined step used again
+              Given a step passes ... untested
           """
 
     @use_outline
@@ -385,7 +394,7 @@ Feature: Steps Usage Formatter
         When I run "behave --dry-run -f steps.usage features/scenario_outline_with_undefined.feature"
         Then it should fail with:
           """
-          0 scenarios passed, 0 failed, 0 skipped, 2 untested
+          0 scenarios passed, 0 failed, 2 error, 0 skipped
           0 steps passed, 0 failed, 0 skipped, 4 undefined
            """
         And the command output should contain:

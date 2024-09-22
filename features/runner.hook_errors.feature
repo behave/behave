@@ -158,7 +158,7 @@ Feature: Hooks processing in case of errors (exceptions)
           Feature: Alice
           called_hook:after_feature
 
-          0 features passed, 1 failed, 0 skipped
+          0 features passed, 0 failed, 1 hook_error, 0 skipped
           0 scenarios passed, 0 failed, 0 skipped, 1 untested
           0 steps passed, 0 failed, 0 skipped, 1 untested
           """
@@ -175,7 +175,7 @@ Feature: Hooks processing in case of errors (exceptions)
               Given a step passes ... passed
           HOOK-ERROR in after_feature: RuntimeError: FAIL
 
-          0 features passed, 1 failed, 0 skipped
+          0 features passed, 0 failed, 1 hook_error, 0 skipped
           1 scenario passed, 0 failed, 0 skipped
           1 step passed, 0 failed, 0 skipped
           """
@@ -192,11 +192,11 @@ Feature: Hooks processing in case of errors (exceptions)
             Scenario: A1
           called_hook:after_scenario
 
-          Failing scenarios:
+          Errored scenarios:
             features/passing.feature:4  A1
 
-          0 features passed, 1 failed, 0 skipped
-          0 scenarios passed, 1 failed, 0 skipped
+          0 features passed, 0 failed, 1 error, 0 skipped
+          0 scenarios passed, 0 failed, 1 hook_error, 0 skipped
           0 steps passed, 0 failed, 0 skipped, 1 untested
           """
       But note that "the after_scenario hook is called, too."
@@ -214,11 +214,11 @@ Feature: Hooks processing in case of errors (exceptions)
           HOOK-ERROR in after_scenario: RuntimeError: FAIL
 
 
-          Failing scenarios:
+          Errored scenarios:
             features/passing.feature:4  A1
 
-          0 features passed, 1 failed, 0 skipped
-          0 scenarios passed, 1 failed, 0 skipped
+          0 features passed, 0 failed, 1 error, 0 skipped
+          0 scenarios passed, 0 failed, 1 hook_error, 0 skipped
           1 step passed, 0 failed, 0 skipped
           """
 
@@ -230,18 +230,18 @@ Feature: Hooks processing in case of errors (exceptions)
           Feature: Alice
 
             Scenario: A1
-              Given a step passes ... failed
+              Given a step passes ... hook_error
 
           Captured stdout:
             HOOK-ERROR in before_step: RuntimeError: FAIL
             called_hook:after_step
 
-          Failing scenarios:
+          Errored scenarios:
             features/passing.feature:4  A1
 
-          0 features passed, 1 failed, 0 skipped
-          0 scenarios passed, 1 failed, 0 skipped
-          0 steps passed, 1 failed, 0 skipped
+          0 features passed, 0 failed, 1 error, 0 skipped
+          0 scenarios passed, 0 failed, 1 error, 0 skipped
+          0 steps passed, 0 failed, 1 hook_error, 0 skipped
           """
       But note that "the after_step hook is called, too."
 
@@ -254,17 +254,17 @@ Feature: Hooks processing in case of errors (exceptions)
           Feature: Alice
 
             Scenario: A1
-              Given a step passes ... failed
+              Given a step passes ... hook_error
 
           Captured stdout:
             HOOK-ERROR in after_step: RuntimeError: FAIL
 
-          Failing scenarios:
+          Errored scenarios:
             features/passing.feature:4  A1
 
-          0 features passed, 1 failed, 0 skipped
-          0 scenarios passed, 1 failed, 0 skipped
-          0 steps passed, 1 failed, 0 skipped
+          0 features passed, 0 failed, 1 error, 0 skipped
+          0 scenarios passed, 0 failed, 1 error, 0 skipped
+          0 steps passed, 0 failed, 1 hook_error, 0 skipped
           """
 
 
@@ -277,7 +277,7 @@ Feature: Hooks processing in case of errors (exceptions)
           Feature: Alice
           called_hook:after_tag: tag=foo
 
-          0 features passed, 1 failed, 0 skipped
+          0 features passed, 0 failed, 1 hook_error, 0 skipped
           0 scenarios passed, 0 failed, 0 skipped, 1 untested
           0 steps passed, 0 failed, 0 skipped, 1 untested
           """
@@ -301,7 +301,7 @@ Feature: Hooks processing in case of errors (exceptions)
               Given a step passes ... passed
           HOOK-ERROR in after_tag(tag=foo): RuntimeError: FAIL
 
-          0 features passed, 1 failed, 0 skipped
+          0 features passed, 0 failed, 1 hook_error, 0 skipped
           1 scenario passed, 0 failed, 0 skipped
           1 step passed, 0 failed, 0 skipped
           """
@@ -318,11 +318,11 @@ Feature: Hooks processing in case of errors (exceptions)
             Scenario: A1
           called_hook:after_tag: tag=soo
 
-          Failing scenarios:
+          Errored scenarios:
             features/passing.feature:4  A1
 
-          0 features passed, 1 failed, 0 skipped
-          0 scenarios passed, 1 failed, 0 skipped
+          0 features passed, 0 failed, 1 error, 0 skipped
+          0 scenarios passed, 0 failed, 1 hook_error, 0 skipped
           0 steps passed, 0 failed, 0 skipped, 1 untested
           """
       But note that "the hook-error in before_tag of the scenario causes it to fail and be skipped (untested)"
@@ -340,11 +340,11 @@ Feature: Hooks processing in case of errors (exceptions)
               Given a step passes ... passed
           HOOK-ERROR in after_tag(tag=soo): RuntimeError: FAIL
 
-          Failing scenarios:
+          Errored scenarios:
             features/passing.feature:4  A1
 
-          0 features passed, 1 failed, 0 skipped
-          0 scenarios passed, 1 failed, 0 skipped
+          0 features passed, 0 failed, 1 error, 0 skipped
+          0 scenarios passed, 0 failed, 1 hook_error, 0 skipped
           1 step passed, 0 failed, 0 skipped
           """
       But note that "the hook-error in after_tag of the scenario causes it to fail"

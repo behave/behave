@@ -403,7 +403,7 @@ Feature: Fixture
     When I run "behave -f plain features/invalid_fixture.feature"
     Then it should fail with:
       """
-      1 scenario passed, 1 failed, 0 skipped
+      1 scenario passed, 0 failed, 1 error, 0 skipped
       2 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
@@ -447,7 +447,7 @@ Feature: Fixture
     When I run "behave -f plain features/bad_fixture.feature"
     Then it should fail with:
       """
-      1 scenario passed, 1 failed, 0 skipped
+      1 scenario passed, 0 failed, 1 error, 0 skipped
       2 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
@@ -509,7 +509,7 @@ Feature: Fixture
     When I run "behave -f plain features/bad_fixture2.feature"
     Then it should fail with:
       """
-      1 scenario passed, 1 failed, 0 skipped
+      1 scenario passed, 0 failed, 1 error, 0 skipped
       2 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:

@@ -8,24 +8,38 @@ from mock import Mock, patch
 import six
 from six.moves import range     # pylint: disable=redefined-builtin
 from six.moves import zip       # pylint: disable=redefined-builtin
+
+from behave._stepimport import use_step_import_modules
+from behave.capture import CaptureController
+from behave.compat.collections import OrderedDict
+from behave.configuration import Configuration
+from behave.matchers import NoMatch
 from behave.model_core import Status
 from behave.model import Examples, Feature, Scenario, ScenarioOutline, Step
 from behave.model import Table, Row
-from behave.matchers import NoMatch
-from behave.runner import Context
-from behave.capture import CaptureController
-from behave.configuration import Configuration
-from behave.compat.collections import OrderedDict
-from behave import step_registry
+from behave.parser import parse_steps, parse_scenario
+from behave.runner import ModelRunner, Context
+from behave._stepimport import SimpleStepContainer
 
+
+traceback_modname = "traceback"  # pylint: disable=unused-import
 if six.PY2:
     # pylint: disable=unused-import
     traceback_modname = "traceback2"
-else:
-    # pylint: disable=unused-import
-    traceback_modname = "traceback"
 
 
+# -----------------------------------------------------------------------------
+# TEST SUPPORT
+# -----------------------------------------------------------------------------
+def raiser(exception):
+    def func(*args, **kwargs):    # pylint: disable=unused-argument
+        raise exception
+    return func
+
+
+# -----------------------------------------------------------------------------
+# TEST SUITE
+# -----------------------------------------------------------------------------
 class TestFeatureRun(unittest.TestCase):
     # pylint: disable=invalid-name
 
@@ -45,7 +59,6 @@ class TestFeatureRun(unittest.TestCase):
                           background=Mock())
 
         feature.run(self.runner)
-
         self.formatters[0].feature.assert_called_with(feature)
 
     def test_formatter_background_called_when_feature_has_background(self):
@@ -53,14 +66,12 @@ class TestFeatureRun(unittest.TestCase):
                           background=Mock())
 
         feature.run(self.runner)
-
         self.formatters[0].background.assert_called_with(feature.background)
 
     def test_formatter_background_not_called_when_feature_has_no_background(self):
         feature = Feature("foo.feature", 1, u"Feature", u"foo")
 
         feature.run(self.runner)
-
         assert not self.formatters[0].background.called
 
     def test_run_runs_scenarios(self):
@@ -204,11 +215,6 @@ class TestScenarioRun(unittest.TestCase):
         for step in steps:
             step.run.assert_called_with(self.runner)
 
-    if six.PY3:
-        stringio_target = "io.StringIO"
-    else:
-        stringio_target = "StringIO.StringIO"
-
     def test_handles_stdout_and_log_capture(self):
         self.config.stdout_capture = True
         self.config.log_capture = True
@@ -219,52 +225,15 @@ class TestScenarioRun(unittest.TestCase):
                             steps=steps)
 
         scenario.run(self.runner)
-
         self.runner.setup_capture.assert_called_with()
         self.runner.teardown_capture.assert_called_with()
 
-    def test_failed_step_causes_remaining_steps_to_be_skipped(self):
+
+    def test_undefined_step_causes_errored_scenario_status(self):
         self.config.stdout_capture = False
         self.config.log_capture = False
         self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
-
-        steps = [Mock(), Mock()]
-        scenario = Scenario("foo.feature", 17, u"Scenario", u"foo",
-                            steps=steps)
-        steps[0].run.return_value = False
-        steps[1].step_type = "when"
-        steps[1].name = "step1"
-
-        def step1_function(context):    # pylint: disable=unused-argument
-            pass
-        my_step_registry = step_registry.StepRegistry()
-        my_step_registry.add_step_definition("when", "step1", step1_function)
-
-        with patch("behave.step_registry.registry", my_step_registry):
-            assert scenario.run(self.runner)
-            assert steps[1].status == Status.skipped
-
-    def test_failed_step_causes_context_failure_to_be_set(self):
-        self.config.stdout_capture = False
-        self.config.log_capture = False
-        self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
-
-        steps = [
-            Mock(step_type="given", name="step0"),
-            Mock(step_type="then", name="step1"),
-        ]
-        scenario = Scenario("foo.feature", 17, u"Scenario", u"foo",
-                            steps=steps)
-        steps[0].run.return_value = False
-
-        assert scenario.run(self.runner)
-        # pylint: disable=protected-access
-        self.context._set_root_attribute.assert_called_with("failed", True)
-
-    def test_undefined_step_causes_failed_scenario_status(self):
-        self.config.stdout_capture = False
-        self.config.log_capture = False
-        self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
+        self.config.dry_run = False
 
         passed_step = Mock()
         undefined_step = Mock()
@@ -277,9 +246,10 @@ class TestScenarioRun(unittest.TestCase):
         undefined_step.run.return_value = False
         undefined_step.status = Status.undefined
 
-        assert scenario.run(self.runner)
+        runFailed = scenario.run(self.runner)
+        assert runFailed is True
         assert undefined_step.status == Status.undefined
-        assert scenario.status == Status.failed
+        assert scenario.status == Status.error
         # pylint: disable=protected-access
         self.context._set_root_attribute.assert_called_with("failed", True)
 
@@ -294,28 +264,124 @@ class TestScenarioRun(unittest.TestCase):
 
         scenario.run(self.runner)
 
-        assert False not in [s.status == Status.skipped for s in steps]
+        assert all([step.status == Status.skipped for step in steps])
         assert scenario.status == Status.skipped
 
     def test_scenario_hooks_not_run_if_scenario_not_being_run(self):
         self.config.tag_expression.check.return_value = False  # pylint: disable=no-member
 
         scenario = Scenario("foo.feature", 17, u"Scenario", u"foo")
-
         scenario.run(self.runner)
-
         assert not self.run_hook.called
 
     def test_should_run_with_name_select(self):
         scenario_name = u"first scenario"
         scenario = Scenario("foo.feature", 17, u"Scenario", scenario_name)
+
         self.config.name = ["first .*", "second .*"]
         self.config.name_re = Configuration.build_name_re(self.config.name)
-
         assert scenario.should_run_with_name_select(self.config)
 
 
-class TestScenarioOutline(object):
+class TestScenarioRun2(object):
+    """Some additional tests for "Scenario.run()" using pytest."""
+    @classmethod
+    def make_runner(cls):
+        config = Mock()
+        config.dry_run = False
+        config.stdout_capture = False
+        config.log_capture = False
+        config.tag_expression.check.return_value = True  # pylint: disable=no-member
+
+        runner = ModelRunner(config)
+        runner.context = Context(runner)
+        runner.aborted = False
+        runner.feature = Mock()
+        runner.feature.tags = []
+        runner.formatters = [Mock()]
+        runner.run_hook = Mock()
+        return runner
+
+    @classmethod
+    def make_mock_runner(cls):
+        config = Mock()
+        config.dry_run = False
+        config.stdout_capture = False
+        config.log_capture = False
+        config.tag_expression.check.return_value = True  # pylint: disable=no-member
+
+        runner = Mock(config=config)
+        runner.context = Mock(runner=runner)
+        runner.aborted = False
+        runner.feature = Mock()
+        runner.feature.tags = []
+        runner.formatters = [Mock()]
+        runner.run_hook = Mock()
+        return runner
+
+    def test_failed_step_causes_context_failure_to_be_set(self):
+        runner = self.make_mock_runner()
+        steps = [
+            Mock(step_type="given", name="step0", status=Status.failed),
+            Mock(step_type="then", name="step1", status=Status.passed),
+        ]
+        scenario = Scenario("foo.feature", 17, u"Scenario", u"foo", steps=steps)
+        steps[0].run.return_value = False
+
+        # pylint: disable=protected-access
+        assert scenario.run(runner)
+        runner.context._set_root_attribute.assert_called_with("failed", True)
+
+    @pytest.mark.parametrize("failed_status", [Status.error, Status.failed])
+    def test_failed_step_causes_remaining_steps_to_be_skipped(self, failed_status):
+        runner = self.make_runner()
+        steps_text = u"""
+            Given step0
+            When step1
+        """
+        scenario_kwargs = dict(
+            filename="foo.feature", line=17, keyword=u"Scenario", name=u"foo"
+        )
+        steps = parse_steps(steps_text)
+        scenario = Scenario(steps=steps, **scenario_kwargs)
+        scenario_text = u"""
+            Scenario: Fails in step0
+              Given step0
+              When step1
+        """
+        scenario = parse_scenario(scenario_text)
+
+        # -- REGISTER STEPS:
+        step_container = SimpleStepContainer()
+        with use_step_import_modules(step_container):
+            from behave import given, when
+            @when(u'step1')
+            def step_for_step1(ctx):
+                print("CALLED: step1")
+                pass
+
+            if failed_status == Status.failed:
+                # -- VARIANT 1: AssertionError is raised (or: assert fails)
+                @given(u'step0')
+                def step_for_step0A(ctx):
+                    print("CALLED: step0-A")
+                    raise AssertionError("FAILED-OOPS")
+            else:
+                # -- VARIANT 2: Any other Exception is raised
+                @given(u'step0')
+                def step_for_step0E(ctx):
+                    print("CALLED: step0-E")
+                    raise Exception("ERROR-OOPS")
+
+        runner.step_registry = step_container.step_registry
+        run_scenario_failed = scenario.run(runner)
+        assert run_scenario_failed
+        assert scenario.steps[1].status == Status.skipped
+        assert scenario.steps[0].status == failed_status
+        assert scenario.status == failed_status
+
+
+class TestScenarioOutline(unittest.TestCase):
     # pylint: disable=invalid-name
 
     @staticmethod
@@ -495,12 +561,6 @@ class TestScenarioOutline(object):
         assert result_failed is True
 
 
-def raiser(exception):
-    def func(*args, **kwargs):    # pylint: disable=unused-argument
-        raise exception
-    return func
-
-
 class TestStepRun(unittest.TestCase):
     # pylint: disable=invalid-name
 
@@ -514,6 +574,10 @@ class TestStepRun(unittest.TestCase):
         self.config = self.runner.config = Mock()
         self.config.outputs = [None]
         self.context = self.runner.context = Mock()
+        current_scenario = Mock()
+        current_scenario.tags = []
+        current_scenario.effective_tags = []
+        self.context.scenario = current_scenario
         print("context is %s" % self.context)
         self.formatters = self.runner.formatters = [Mock()]
         self.stdout_capture = self.capture_controller.stdout_capture = Mock()
@@ -528,10 +592,21 @@ class TestStepRun(unittest.TestCase):
         step = Step("foo.feature", 17, u"Given", "given", u"foo")
         self.runner.step_registry.find_match.return_value = None
         self.runner.undefined_steps = []
+        self.runner.config.dry_run = False
         assert not step.run(self.runner)
 
         assert step in self.runner.undefined_steps
         assert step.status == Status.undefined
+
+    def test_run_appends_step_to_undefined_when_no_match_found_in_dry_run_mode(self):
+        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        self.runner.step_registry.find_match.return_value = None
+        self.runner.undefined_steps = []
+        self.runner.config.dry_run = True
+        assert not step.run(self.runner)
+
+        assert step in self.runner.undefined_steps
+        assert step.status == Status.untested_undefined
 
     def test_run_reports_undefined_step_via_formatter_when_not_quiet(self):
         step = Step("foo.feature", 17, u"Given", "given", u"foo")
@@ -607,7 +682,6 @@ class TestStepRun(unittest.TestCase):
                 (("after_step", self.context, step), {}),
             ]
 
-
     def test_run_sets_table_if_present(self):
         step = Step("foo.feature", 17, u"Given", "given", u"foo",
                     table=Mock())
@@ -632,13 +706,18 @@ class TestStepRun(unittest.TestCase):
         assert step.status == Status.passed
         assert step.error_message is None
 
-    def test_run_sets_status_to_failed_on_assertion_error(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+    def test_run_sets_status_to_failed_on_assertion_error_with_capture(self):
         self.runner.context = Context(self.runner)
+        current_scenario = Mock()
+        current_scenario.tags = []
+        current_scenario.effective_tags = []
+        self.runner.context.scenario = current_scenario
         self.runner.config.stdout_capture = True
         self.runner.config.log_capture = False
         self.runner.capture_controller = CaptureController(self.runner.config)
         self.runner.capture_controller.setup_capture(self.runner.context)
+
+        step = Step("foo.feature", 17, u"Given", "given", u"foo")
         step.error_message = None
         match = Mock()
         match.run.side_effect = raiser(AssertionError("whee"))
@@ -649,7 +728,20 @@ class TestStepRun(unittest.TestCase):
         assert step.error_message.startswith("Assertion Failed")
 
     @patch("%s.format_exc" % traceback_modname)
-    def test_run_sets_status_to_failed_on_exception(self, format_exc):
+    def test_run_sets_status_to_failed_on_assertion_error(self, format_exc):
+        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step.error_message = None
+        match = Mock()
+        match.run.side_effect = raiser(AssertionError("whee"))
+        self.runner.step_registry.find_match.return_value = match
+        format_exc.return_value = "Assertion Failed: whee"
+
+        step.run(self.runner)
+        assert step.status == Status.failed
+        assert step.error_message == format_exc.return_value
+
+    @patch("%s.format_exc" % traceback_modname)
+    def test_run_sets_status_to_error_on_exception(self, format_exc):
         step = Step("foo.feature", 17, u"Given", "given", u"foo")
         step.error_message = None
         match = Mock()
@@ -658,7 +750,7 @@ class TestStepRun(unittest.TestCase):
         format_exc.return_value = "something to do with an exception"
 
         step.run(self.runner)
-        assert step.status == Status.failed
+        assert step.status == Status.error
         assert step.error_message == format_exc.return_value
 
     @patch("time.time")
@@ -697,7 +789,7 @@ class TestStepRun(unittest.TestCase):
         match = Mock()
         self.runner.step_registry.find_match.return_value = match
         self.stdout_capture.getvalue.return_value = "frogs"
-        match.run.side_effect = raiser(Exception("halibut"))
+        match.run.side_effect = raiser(AssertionError("halibut"))
 
         assert not step.run(self.runner)
         assert "Captured stdout:" in step.error_message
@@ -709,6 +801,28 @@ class TestStepRun(unittest.TestCase):
         self.runner.step_registry.find_match.return_value = match
         self.log_capture.getvalue.return_value = "toads"
         match.run.side_effect = raiser(AssertionError("kipper"))
+
+        assert not step.run(self.runner)
+        assert "Captured logging:" in step.error_message
+        assert "toads" in step.error_message
+
+    def test_run_appends_any_captured_stdout_on_error(self):
+        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        match = Mock()
+        self.runner.step_registry.find_match.return_value = match
+        self.stdout_capture.getvalue.return_value = "frogs"
+        match.run.side_effect = raiser(Exception("halibut"))
+
+        assert not step.run(self.runner)
+        assert "Captured stdout:" in step.error_message
+        assert "frogs" in step.error_message
+
+    def test_run_appends_any_captured_logging_on_error(self):
+        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        match = Mock()
+        self.runner.step_registry.find_match.return_value = match
+        self.log_capture.getvalue.return_value = "toads"
+        match.run.side_effect = raiser(RuntimeError("kipper"))
 
         assert not step.run(self.runner)
         assert "Captured logging:" in step.error_message

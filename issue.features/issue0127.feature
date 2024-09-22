@@ -54,5 +54,5 @@ Feature: Issue #127: Strip trailing colons
         """
         @given(u'the following superusers exist:')
         def step_impl(context):
-            raise NotImplementedError(u'STEP: Given the following superusers exist:')
+            raise StepNotImplementedError(u'STEP: Given the following superusers exist:')
         """

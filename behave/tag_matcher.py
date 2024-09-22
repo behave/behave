@@ -151,7 +151,7 @@ class TagMatcher(object):
         :return: True, if scenario/feature should be excluded from the run-set.
         :return: False, if scenario/feature should run.
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
 
 class ActiveTagMatcher(TagMatcher):

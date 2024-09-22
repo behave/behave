@@ -58,6 +58,21 @@ class ConfigParamTypeError(ConfigError):
 
 
 # ---------------------------------------------------------------------------
+# EXCEPTION/ERROR CLASSES: Related to Steps
+# ---------------------------------------------------------------------------
+class StepNotImplementedError(NotImplementedError):
+    """Should be raised if a step is not implemented yet."""
+
+
+class PendingStepError(StepNotImplementedError):
+    """Alternative to StepNotImplementedError for a pending step."""
+
+
+class CleanupError(RuntimeError):
+    """Used if exception is raised during cleanup/cleanup-function."""
+
+
+# ---------------------------------------------------------------------------
 # EXCEPTION/ERROR CLASSES: Related to File Handling
 # ---------------------------------------------------------------------------
 # -- SINCE: Python 3.3 -- FileNotFoundError is built-in exception

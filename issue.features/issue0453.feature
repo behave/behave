@@ -32,7 +32,7 @@ Feature: Issue #453 -- Unicode output problem when Exception is raised in step
       Then it should fail with:
         """
         Scenario:
-          Given an exception with special chars is raised ... failed
+          Given an exception with special chars is raised ... error
         """
       And the command output should contain:
         """

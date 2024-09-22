@@ -123,15 +123,15 @@ Feature: Progress3 Formatter
         When I run "behave -f progress3 features/scenario_with_steps.feature"
         Then it should fail with:
             """
-            0 features passed, 1 failed, 0 skipped
-            0 scenarios passed, 1 failed, 0 skipped
+            0 features passed, 0 failed, 1 error, 0 skipped
+            0 scenarios passed, 0 failed, 1 error, 0 skipped
             """
         And the command output should contain:
             """
             Feature with scenario    # features/scenario_with_steps.feature
-                Simple scenario with error in the step  ....E
+              Simple scenario with error in the step  ....E
             --------------------------------------------------------------------------------
-            FAILURE in step 'a step raises an error "Error message here"' (features/scenario_with_steps.feature:7):
+            ERROR in step 'a step raises an error "Error message here"' (features/scenario_with_steps.feature:7):
             """
         And the command output should contain:
             """
