@@ -46,7 +46,7 @@ Feature: Issue #81: Allow defining steps in a separate library
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        3 steps passed, 0 failed, 0 skipped, 0 undefined
+        3 steps passed, 0 failed, 0 skipped
         """
     And the command output should contain:
         """
@@ -66,7 +66,7 @@ Feature: Issue #81: Allow defining steps in a separate library
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        3 steps passed, 0 failed, 0 skipped, 0 undefined
+        3 steps passed, 0 failed, 0 skipped
         """
     And the command output should contain:
         """
@@ -105,7 +105,7 @@ Feature: Issue #81: Allow defining steps in a separate library
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        3 steps passed, 0 failed, 0 skipped, 0 undefined
+        3 steps passed, 0 failed, 0 skipped
         """
     And the command output should contain:
         """
@@ -126,7 +126,7 @@ Feature: Issue #81: Allow defining steps in a separate library
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        3 steps passed, 0 failed, 0 skipped, 0 undefined
+        3 steps passed, 0 failed, 0 skipped
         """
     And the command output should contain:
         """

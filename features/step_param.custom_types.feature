@@ -116,13 +116,13 @@ Feature: Parse custom data types in step parameters (type transformation)
     When I run "behave -f plain features/example.type_conversion_fails.feature"
     Then it should fail with:
         """
-        1 scenario passed, 1 failed, 0 skipped
-        1 step passed, 1 failed, 0 skipped, 0 undefined
+        1 scenario passed, 0 failed, 1 error, 0 skipped
+        1 step passed, 0 failed, 1 error, 0 skipped
         """
     And the command output should contain:
         """
         Scenario: BadType raises ValueError during type conversion
-          Given a param with "BadType:BAD_VALUE" ... failed
+          Given a param with "BadType:BAD_VALUE" ... error
         Traceback (most recent call last):
         """
     And the command output should contain:

@@ -46,7 +46,7 @@ Feature: Default Tags with tag-expressions v1
     Then it should pass with:
       """
       1 scenario passed, 0 failed, 1 skipped
-      2 steps passed, 0 failed, 1 skipped, 0 undefined
+      2 steps passed, 0 failed, 1 skipped
       """
     And the command output should contain "Scenario: Bob"
     But the command output should not contain "Scenario: Alice"
@@ -63,7 +63,7 @@ Feature: Default Tags with tag-expressions v1
     Then it should pass with:
       """
       1 scenario passed, 0 failed, 1 skipped
-      1 step passed, 0 failed, 2 skipped, 0 undefined
+      1 step passed, 0 failed, 2 skipped
       """
     And the command output should contain "Scenario: Alice"
     But the command output should not contain "Scenario: Bob"
@@ -81,7 +81,7 @@ Feature: Default Tags with tag-expressions v1
     Then it should pass with:
       """
       1 scenario passed, 0 failed, 1 skipped
-      2 steps passed, 0 failed, 1 skipped, 0 undefined
+      2 steps passed, 0 failed, 1 skipped
       """
     And the command output should contain "Scenario: Bob"
     But the command output should not contain "Scenario: Alice"
@@ -99,7 +99,7 @@ Feature: Default Tags with tag-expressions v1
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain "Scenario: Alice"
     But the command output should contain "Scenario: Bob"

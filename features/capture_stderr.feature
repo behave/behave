@@ -83,7 +83,7 @@ Feature: Capture stderr output and show it in case of failures/errors
         Then it should fail with:
             """
             0 scenarios passed, 1 failed, 0 skipped
-            1 step passed, 1 failed, 1 skipped, 0 undefined
+            1 step passed, 1 failed, 1 skipped
             """
         And the command output should contain:
             """
@@ -107,7 +107,7 @@ Feature: Capture stderr output and show it in case of failures/errors
         Then it should fail with:
             """
             0 scenarios passed, 1 failed, 0 skipped
-            1 step passed, 1 failed, 1 skipped, 0 undefined
+            1 step passed, 1 failed, 1 skipped
             """
         And the command output should contain:
             """
@@ -151,7 +151,7 @@ Feature: Capture stderr output and show it in case of failures/errors
         Then it should fail with:
             """
             0 scenarios passed, 1 failed, 0 skipped
-            1 step passed, 1 failed, 1 skipped, 0 undefined
+            1 step passed, 1 failed, 1 skipped
             """
         And the command output should contain:
             """

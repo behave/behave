@@ -138,7 +138,7 @@ Feature: Issue #194: Nested steps prevent that original stdout/stderr is restore
     Then it should fail with:
         """
         0 scenarios passed, 2 failed, 0 skipped
-        5 steps passed, 2 failed, 0 skipped, 0 undefined
+        5 steps passed, 2 failed, 0 skipped
         """
     And note that "the summary is only shown if hooks have no errors"
     And the command output should contain:
@@ -188,7 +188,7 @@ Feature: Issue #194: Nested steps prevent that original stdout/stderr is restore
     Then it should fail with:
         """
         0 scenarios passed, 2 failed, 0 skipped
-        5 steps passed, 2 failed, 0 skipped, 0 undefined
+        5 steps passed, 2 failed, 0 skipped
         """
     And note that "the summary is only shown if hooks have no errors"
     And the command output should contain:

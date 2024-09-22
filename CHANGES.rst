@@ -43,6 +43,7 @@ BACKWARD-INCOMPATIBLE:
   (short-options for: --no-skipped (-k), --no-multiline (-m), --no-source (-s)).
 
 * parser: No longer strips trailing colon from steps with text/table section.
+* Undefined steps need to use StepNotImplementedError (was: NotImplementedError)
 
 GOALS:
 

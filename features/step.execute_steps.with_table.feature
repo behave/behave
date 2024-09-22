@@ -64,6 +64,6 @@ Feature: Execute nested steps that use a table
         """
         1 feature passed, 0 failed, 0 skipped
         1 scenario passed, 0 failed, 0 skipped
-        4 steps passed, 0 failed, 0 skipped, 0 undefined
+        4 steps passed, 0 failed, 0 skipped
         """
 

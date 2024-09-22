@@ -74,7 +74,7 @@ Feature: Issue #1180 -- Negative Time Problem with Summary Reporter
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      4 steps passed, 0 failed, 0 skipped, 0 undefined
+      4 steps passed, 0 failed, 0 skipped
       """
     But the command output should match /Took -\d+m\d+\.\d+s/
     And note that "Test run duration is negative"
@@ -86,7 +86,7 @@ Feature: Issue #1180 -- Negative Time Problem with Summary Reporter
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      4 steps passed, 0 failed, 0 skipped, 0 undefined
+      4 steps passed, 0 failed, 0 skipped
       """
     And the command output should match /Took \d+m\d+\.\d+s/
     But the command output should not match /Took -\d+m\d+\.\d+s/

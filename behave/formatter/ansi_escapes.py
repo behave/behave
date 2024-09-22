@@ -24,12 +24,17 @@ colors = {
 }
 
 aliases = {
-    "untested":     "cyan",     # SAME-COLOR AS: skipped
+    "untested":     "cyan",         # SAME-COLOR AS: skipped
+    "untested_pending": "cyan",     # SAME-COLOR AS: skipped
+    "untested_undefined": "cyan",   # SAME-COLOR AS: skipped
+    "executing":    "grey",
     "undefined":    "yellow",
     "pending":      "yellow",
-    "executing":    "grey",
-    "failed":       "red",
+    "pending_warn": "yellow",
     "passed":       "green",
+    "failed":       "red",
+    "error":        "red",
+    "hook_error":   "red",
     "outline":      "cyan",
     "skipped":      "cyan",
     "comments":     "grey",

@@ -59,7 +59,7 @@ Feature: Basic directory layout (Variant 1B)
             """
             2 features passed, 0 failed, 0 skipped
             2 scenarios passed, 0 failed, 0 skipped
-            5 steps passed, 0 failed, 0 skipped, 0 undefined
+            5 steps passed, 0 failed, 0 skipped
             """
 
     Scenario: Run behave with one feature file
@@ -68,7 +68,7 @@ Feature: Basic directory layout (Variant 1B)
             """
             1 feature passed, 0 failed, 0 skipped
             1 scenario passed, 0 failed, 0 skipped
-            3 steps passed, 0 failed, 0 skipped, 0 undefined
+            3 steps passed, 0 failed, 0 skipped
             """
 
 
@@ -83,5 +83,5 @@ Feature: Basic directory layout (Variant 1B)
             """
             2 features passed, 0 failed, 0 skipped
             2 scenarios passed, 0 failed, 0 skipped
-            5 steps passed, 0 failed, 0 skipped, 0 undefined
+            5 steps passed, 0 failed, 0 skipped
             """

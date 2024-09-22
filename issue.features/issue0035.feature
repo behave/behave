@@ -42,7 +42,7 @@ Feature: Issue #35 Plain Formatter shows wrong steps when tag-selection is used
       """
       1 feature passed, 0 failed, 0 skipped
       1 scenario passed, 0 failed, 1 skipped
-      3 steps passed, 0 failed, 3 skipped, 0 undefined
+      3 steps passed, 0 failed, 3 skipped
       """
     And the command output should contain:
       """
@@ -60,7 +60,7 @@ Feature: Issue #35 Plain Formatter shows wrong steps when tag-selection is used
       """
       1 feature passed, 0 failed, 0 skipped
       1 scenario passed, 0 failed, 1 skipped
-      3 steps passed, 0 failed, 3 skipped, 0 undefined
+      3 steps passed, 0 failed, 3 skipped
       """
     And the command output should contain:
       """

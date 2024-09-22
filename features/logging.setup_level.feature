@@ -67,7 +67,7 @@ Feature: Setup logging_level
     Then it should fail with:
         """
         1 scenario passed, 1 failed, 0 skipped
-        3 steps passed, 1 failed, 0 skipped, 0 undefined
+        3 steps passed, 1 failed, 0 skipped
         """
     And the command output should contain:
         """
@@ -96,7 +96,7 @@ Feature: Setup logging_level
     Then it should fail with:
         """
         1 scenario passed, 1 failed, 0 skipped
-        3 steps passed, 1 failed, 0 skipped, 0 undefined
+        3 steps passed, 1 failed, 0 skipped
         """
     And the command output should contain:
         """
@@ -125,7 +125,7 @@ Feature: Setup logging_level
     Then it should fail with:
         """
         1 scenario passed, 1 failed, 0 skipped
-        3 steps passed, 1 failed, 0 skipped, 0 undefined
+        3 steps passed, 1 failed, 0 skipped
         """
     And the command output should contain the following log records:
         | category | level   | message |
@@ -152,7 +152,7 @@ Feature: Setup logging_level
       Then it should fail with:
         """
         1 scenario passed, 1 failed, 0 skipped
-        3 steps passed, 1 failed, 0 skipped, 0 undefined
+        3 steps passed, 1 failed, 0 skipped
         """
     And the command output should contain the following log records:
         | category | level   | message |

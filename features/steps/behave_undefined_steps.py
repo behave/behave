@@ -44,13 +44,14 @@ def step_undefined_step_snippet_should_exist_for(context, step):
     EXAMPLE:
         Then an undefined-step snippet should exist for "Given an undefined step"
     """
-    undefined_step_snippet  = make_undefined_step_snippet(step)
+    undefined_step_snippet = make_undefined_step_snippet(step)
+    undefined_step_text = text_indent(undefined_step_snippet, 4)
     context.execute_steps(u'''\
 Then the command output should contain:
     """
     {undefined_step_snippet}
     """
-    '''.format(undefined_step_snippet=text_indent(undefined_step_snippet, 4)))
+    '''.format(undefined_step_snippet=undefined_step_text))
 
 
 @then(u'an undefined-step snippet should not exist for "{step}"')
@@ -60,12 +61,13 @@ def step_undefined_step_snippet_should_not_exist_for(context, step):
     in behave command output (last command).
     """
     undefined_step_snippet  = make_undefined_step_snippet(step)
+    undefined_step_text = text_indent(undefined_step_snippet, 4)
     context.execute_steps(u'''\
 Then the command output should not contain:
     """
     {undefined_step_snippet}
     """
-    '''.format(undefined_step_snippet=text_indent(undefined_step_snippet, 4)))
+    '''.format(undefined_step_snippet=undefined_step_text))
 
 
 @then(u'undefined-step snippets should exist for')

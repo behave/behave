@@ -3,6 +3,7 @@ Test issue #1177.
 
 .. seealso:: https://github.com/behave/behave/issues/1177
 """
+
 # -- IMPORTS:
 from __future__ import absolute_import, print_function
 
@@ -111,6 +112,7 @@ def test_bad_step_is_not_registered_if_regex_compile_fails(capsys):
 
 
 @pytest.mark.skipif(sys.version_info >= (3, 11), reason="REQUIRES: Python < 3.11")
+@pytest.mark.filterwarnings("ignore:Flags not at the start of the expression.*:DeprecationWarning")
 def test_bad_step_is_registered_if_regex_compile_succeeds(capsys):
     step_container = SimpleStepContainer()
     this_step_registry = step_container.step_registry

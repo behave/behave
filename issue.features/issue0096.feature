@@ -94,7 +94,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
         """
     And the command output should contain:
         """
-        Assertion Failed: FAILED SUB-STEP: When a step raises an error "Alice is alive"
+        Assertion Failed: ERROR SUB-STEP: When a step raises an error "Alice is alive"
         Substep info: Traceback (most recent call last):
         """
 

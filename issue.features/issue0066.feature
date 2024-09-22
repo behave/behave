@@ -59,7 +59,7 @@ Feature: Issue #66: context.text and context.table are not cleared
     Then it should pass with:
       """
       1 scenario passed, 0 failed, 0 skipped
-      4 steps passed, 0 failed, 0 skipped, 0 undefined
+      4 steps passed, 0 failed, 0 skipped
       """
 
   Scenario: Ensure table data is cleared for next step
@@ -78,5 +78,5 @@ Feature: Issue #66: context.text and context.table are not cleared
     Then it should pass with:
       """
       1 scenario passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """

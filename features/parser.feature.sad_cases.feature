@@ -22,7 +22,7 @@ Feature: Parsing a Feature File without a Feature or with several Features
           """
           0 features passed, 0 failed, 0 skipped
           0 scenarios passed, 0 failed, 0 skipped
-          0 steps passed, 0 failed, 0 skipped, 0 undefined
+          0 steps passed, 0 failed, 0 skipped
           """
 
 
@@ -38,7 +38,7 @@ Feature: Parsing a Feature File without a Feature or with several Features
         """
         0 features passed, 0 failed, 0 skipped
         0 scenarios passed, 0 failed, 0 skipped
-        0 steps passed, 0 failed, 0 skipped, 0 undefined
+        0 steps passed, 0 failed, 0 skipped
         """
 
 
@@ -53,7 +53,7 @@ Feature: Parsing a Feature File without a Feature or with several Features
         """
         0 features passed, 0 failed, 0 skipped
         0 scenarios passed, 0 failed, 0 skipped
-        0 steps passed, 0 failed, 0 skipped, 0 undefined
+        0 steps passed, 0 failed, 0 skipped
         """
 
 
@@ -69,7 +69,7 @@ Feature: Parsing a Feature File without a Feature or with several Features
         """
         0 features passed, 0 failed, 0 skipped
         0 scenarios passed, 0 failed, 0 skipped
-        0 steps passed, 0 failed, 0 skipped, 0 undefined
+        0 steps passed, 0 failed, 0 skipped
         """
 
     @no_feature
@@ -83,8 +83,8 @@ Feature: Parsing a Feature File without a Feature or with several Features
       When I run "behave -f plain features/only_text.feature"
       Then it should fail with:
         """
-        Failed to parse "{__WORKDIR__}/features/only_text.feature":
-        Parser failure in state=init at line 1: "This File: Contains only text without keywords."
+        ParserError: Failed to parse "{__WORKDIR__}/features/only_text.feature":
+        Parser failure in state=initial at line 1: "This File: Contains only text without keywords."
         REASON: No feature found.
         """
 
@@ -102,8 +102,8 @@ Feature: Parsing a Feature File without a Feature or with several Features
       When I run "behave -f plain features/naked_scenario_only.feature"
       Then it should fail with:
         """
-        Failed to parse "{__WORKDIR__}/features/naked_scenario_only.feature":
-        Parser failure in state=init at line 1: "Scenario:"
+        ParserError: Failed to parse "{__WORKDIR__}/features/naked_scenario_only.feature":
+        Parser failure in state=initial at line 1: "Scenario:"
         REASON: Scenario may not occur before Feature.
         """
 

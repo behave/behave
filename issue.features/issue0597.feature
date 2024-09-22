@@ -50,7 +50,7 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
 
       1 feature passed, 0 failed, 0 skipped
       1 scenario passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
 
   @only.with_python2=true
@@ -74,8 +74,8 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
     When  I run "behave -f plain features/"
     Then it should fail with:
       """
-      0 features passed, 1 failed, 0 skipped
-      0 scenarios passed, 1 failed, 0 skipped
+      0 features passed, 0 failed, 1 error, 0 skipped
+      0 scenarios passed, 0 failed, 1 error, 0 skipped
       0 steps passed, 0 failed, 2 skipped, 1 undefined
       """
     And the command output should contain:
@@ -87,9 +87,10 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
       """
       You can implement step definitions for undefined steps with these snippets:
 
+      from behave.api.pending_step import StepNotImplementedError
       @given(u'allé')
       def step_impl(context):
-          raise NotImplementedError(u'STEP: Given allé')
+          raise StepNotImplementedError(u'STEP: Given allé')
       """
     But note that "python2 uses encoding=ascii"
     And note that "encoding-hint in steps file solves the problem"
@@ -118,7 +119,7 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
       """
       1 feature passed, 0 failed, 0 skipped
       1 scenario passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
       """
@@ -129,6 +130,6 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
       """
       @given(u'allé')
       def step_impl(context):
-          raise NotImplementedError(u'STEP: Given allé')
+          raise StepNotImplementedError(u'STEP: Given allé')
       """
     But note that "python3 discovers encoding (or uses encoding=UTF-8)"

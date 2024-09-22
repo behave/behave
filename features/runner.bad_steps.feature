@@ -60,8 +60,9 @@ Feature: Runner should show Bad Step Definitions
             """
         And an empty file named "features/none.feature"
 
+
   Rule: Unused BAD STEP-DEFINITIONS do not cause test run to fail
-    Scenario: Runner detects BAD STEP DEFINITIONS in dry-run mode
+    Scenario: Runner detects unused BAD STEP DEFINITIONS in dry-run mode
         When I run "behave --dry-run -f plain features/"
         Then it should pass with:
           """
@@ -81,7 +82,7 @@ Feature: Runner should show Bad Step Definitions
           """
         But note that "the step-registry error handler shows each BAD STEP DEFINITIONS with their error"
 
-    Scenario: Runner detects BAD STEP DEFINITIONS in normal mode
+    Scenario: Runner detects unused BAD STEP DEFINITIONS in normal mode
         When I run "behave -f plain features/"
         Then it should pass with:
           """
@@ -103,7 +104,7 @@ Feature: Runner should show Bad Step Definitions
 
 
   Rule: Used BAD STEP-DEFINITIONS cause test run to fail
-    Scenario: Test run fails detects BAD STEP DEFINITIONS in normal mode
+    Scenario: Runner detects used BAD STEP DEFINITIONS in normal mode
         Given a file named "features/use_bad_step.feature" with:
           """
           Feature: Failing
@@ -114,12 +115,46 @@ Feature: Runner should show Bad Step Definitions
         When I run "behave -f plain features/use_bad_step.feature"
         Then it should fail with:
           """
-          Failing scenarios:
-            features/use_bad_step.feature:2  Uses BAD STEP -- Expected to fail
-
-          0 features passed, 1 failed, 0 skipped
-          0 scenarios passed, 1 failed, 0 skipped
+          0 features passed, 0 failed, 1 error, 0 skipped
+          0 scenarios passed, 0 failed, 1 error, 0 skipped
           0 steps passed, 0 failed, 1 skipped, 1 undefined
+          """
+        And the command output should contain:
+          """
+          Errored scenarios:
+            features/use_bad_step.feature:2  Uses BAD STEP -- Expected to fail
+          """
+        And the command output should contain:
+          """
+          Scenario: Uses BAD STEP -- Expected to fail
+              Given the bad light is switched ON ... undefined
+          """
+        And the command output should contain:
+          """
+          BAD-STEP-DEFINITION: @given('the bad light is switched {state:BadBool}')
+            LOCATION: features/steps/bad_steps1.py:14
+            RAISED EXCEPTION: NotImplementedError:Group names (e.g. (?P<name>) can cause failure, as they are not escaped properly:
+          """
+
+    Scenario: Runner detects used BAD STEP DEFINITIONS in dry-run mode
+        Given a file named "features/use_bad_step.feature" with:
+          """
+          Feature: Failing
+            Scenario: Uses BAD STEP -- Expected to fail
+              Given the bad light is switched ON
+              When another step passes
+          """
+        When I run "behave -f plain --dry-run features/use_bad_step.feature"
+        Then it should fail with:
+          """
+          0 features passed, 0 failed, 1 error, 0 skipped
+          0 scenarios passed, 0 failed, 1 error, 0 skipped
+          0 steps passed, 0 failed, 0 skipped, 1 undefined, 1 untested
+          """
+        And the command output should contain:
+          """
+          Errored scenarios:
+            features/use_bad_step.feature:2  Uses BAD STEP -- Expected to fail
           """
         And the command output should contain:
           """

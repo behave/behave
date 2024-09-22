@@ -112,7 +112,7 @@ Feature: Async-Test Support (async-step, ...)
       When I run "behave -f plain --show-timings features/async_timeout35.feature"
       Then it should fail with:
         """
-        0 steps passed, 1 failed, 0 skipped, 0 undefined
+        0 steps passed, 1 failed, 0 skipped
         """
       And the command output should contain:
         """
@@ -153,7 +153,7 @@ Feature: Async-Test Support (async-step, ...)
       When I run "behave -f plain features/async_failure.feature"
       Then it should fail with:
         """
-        1 step passed, 1 failed, 1 skipped, 0 undefined
+        1 step passed, 1 failed, 1 skipped
         """
       And the command output should contain:
         """
@@ -194,11 +194,11 @@ Feature: Async-Test Support (async-step, ...)
       When I run "behave -f plain features/async_exception35.feature"
       Then it should fail with:
         """
-        1 step passed, 1 failed, 1 skipped, 0 undefined
+        1 step passed, 0 failed, 1 error, 1 skipped
         """
       And the command output should contain:
         """
-        When an async-step raises an exception ... failed
+        When an async-step raises an exception ... error
         """
       And the command output should contain:
         """
@@ -229,7 +229,7 @@ Feature: Async-Test Support (async-step, ...)
       When I run "behave -f plain --show-timings features/async_timeout34.feature"
       Then it should fail with:
         """
-        0 steps passed, 1 failed, 0 skipped, 0 undefined
+        0 steps passed, 1 failed, 0 skipped
         """
       And the command output should contain:
         """
@@ -283,7 +283,7 @@ Feature: Async-Test Support (async-step, ...)
       When I run "behave -f plain --show-timings features/async_dispatch.feature"
       Then it should pass with:
         """
-        3 steps passed, 0 failed, 0 skipped, 0 undefined
+        3 steps passed, 0 failed, 0 skipped
         """
       And the command output should contain:
         """

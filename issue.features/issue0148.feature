@@ -49,8 +49,8 @@ Feature: Issue #148: Substeps do not fail
     Then it should fail with:
         """
         0 features passed, 1 failed, 0 skipped
-        0 scenarios passed, 2 failed, 0 skipped
-        2 steps passed, 2 failed, 2 skipped, 0 undefined
+        0 scenarios passed, 1 failed, 1 error, 0 skipped
+        2 steps passed, 1 failed, 1 error, 2 skipped
         """
     And the command output should contain:
         """
@@ -62,7 +62,7 @@ Feature: Issue #148: Substeps do not fail
         """
           Scenario: Failing test with substeps
             Given a step passes ... passed
-            When I do something with stupid substeps ... failed
+            When I do something with stupid substeps ... error
         """
     And the command output should contain:
         """
@@ -86,7 +86,7 @@ Feature: Issue #148: Substeps do not fail
         """
         0 features passed, 1 failed, 0 skipped
         0 scenarios passed, 2 failed, 0 skipped
-        2 steps passed, 2 failed, 2 skipped, 0 undefined
+        2 steps passed, 2 failed, 2 skipped
         """
     And the command output should contain:
         """

@@ -61,7 +61,7 @@ class AbstractTagsFormatter(Formatter):
             self.tag_counts[tag].append(model_element)
 
     def report_tags(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
 
 # -----------------------------------------------------------------------------

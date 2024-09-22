@@ -40,7 +40,7 @@ Feature: Issue #111: Comment following @wip tag results in scenario being ignore
         """
         1 feature passed, 0 failed, 0 skipped
         2 scenarios passed, 0 failed, 0 skipped
-        2 steps passed, 0 failed, 0 skipped, 0 undefined
+        2 steps passed, 0 failed, 0 skipped
         """
 
   Scenario: Ensure 2nd scenario can be selected with other tag
@@ -49,5 +49,5 @@ Feature: Issue #111: Comment following @wip tag results in scenario being ignore
         """
         1 feature passed, 0 failed, 0 skipped
         1 scenario passed, 0 failed, 1 skipped
-        1 step passed, 0 failed, 1 skipped, 0 undefined
+        1 step passed, 0 failed, 1 skipped
         """

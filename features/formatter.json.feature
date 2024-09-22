@@ -333,21 +333,21 @@ Feature: JSON Formatter
           """
       And the command output should contain:
           """
-                    "embeddings": [
-                      {
-                        "data": "Zm9vYmFy",
-                        "mime_type": "text/plain"
-                      }
-                    ],
+          "embeddings": [
+            {
+              "data": "Zm9vYmFy",
+              "mime_type": "text/plain"
+            }
+          ],
           """
       And the command output should contain:
           """
-                    "embeddings": [
-                      {
-                        "data": "cmVk",
-                        "mime_type": "text/plain"
-                      }
-                    ],
+          "embeddings": [
+            {
+              "data": "cmVk",
+              "mime_type": "text/plain"
+            }
+          ],
           """
 
 

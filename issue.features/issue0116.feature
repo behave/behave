@@ -54,7 +54,7 @@ Feature: Issue #116: SummaryReporter shows failed scenarios list
 
         0 features passed, 2 failed, 0 skipped
         3 scenarios passed, 2 failed, 0 skipped
-        3 steps passed, 2 failed, 0 skipped, 0 undefined
+        3 steps passed, 2 failed, 0 skipped
         """
 
   Scenario: Summary hides list of failed scenarios when all scenarios pass
@@ -63,7 +63,7 @@ Feature: Issue #116: SummaryReporter shows failed scenarios list
         """
         2 features passed, 0 failed, 0 skipped
         3 scenarios passed, 0 failed, 2 skipped
-        3 steps passed, 0 failed, 2 skipped, 0 undefined
+        3 steps passed, 0 failed, 2 skipped
         """
     But the command output should not contain:
         """

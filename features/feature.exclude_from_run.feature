@@ -88,7 +88,7 @@ Feature: Exclude Feature from Test Run
             """
             1 feature passed, 0 failed, 1 skipped
             1 scenario passed, 0 failed, 2 skipped
-            2 steps passed, 0 failed, 4 skipped, 0 undefined
+            2 steps passed, 0 failed, 4 skipped
             """
         And the command output should contain:
             """

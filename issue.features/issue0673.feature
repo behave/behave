@@ -32,7 +32,7 @@ Feature: Issue #673 -- @given and @Given step decorators with wildcard import
       When I run "behave -f pretty --no-color features/basic.feature"
       Then it should pass with:
         """
-        3 steps passed, 0 failed, 0 skipped, 0 undefined
+        3 steps passed, 0 failed, 0 skipped
         """
       And the command output should contain:
         """

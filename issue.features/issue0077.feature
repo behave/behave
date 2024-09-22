@@ -63,7 +63,7 @@ Feature: Issue #77: Does not capture stdout from sub-processes
     Then it should pass with:
         """
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
     And the command output should contain:
         """
@@ -80,8 +80,8 @@ Feature: Issue #77: Does not capture stdout from sub-processes
     When I run "behave -f plain features/issue77_hello_FAIL.feature"
     Then it should fail with:
         """
-        0 scenarios passed, 1 failed, 0 skipped
-        0 steps passed, 1 failed, 0 skipped, 0 undefined
+        0 scenarios passed, 0 failed, 1 error, 0 skipped
+        0 steps passed, 0 failed, 1 error, 0 skipped
         """
     And the command output should contain:
         """

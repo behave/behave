@@ -32,9 +32,23 @@ else:
     import traceback
 
 
+# -- XXX_JE_TEST_BALLOON:
+try:
+    import charset_normalizer
+except ImportError:
+    charset_normalizer = None
+
+
+# -----------------------------------------------------------------------------
+# TEST SUPPORT:
+# -----------------------------------------------------------------------------
 def problematic_step_impl(context):
     raise Exception(u"по русски")
 
+
+# -----------------------------------------------------------------------------
+# TEST SUITE:
+# -----------------------------------------------------------------------------
 @pytest.mark.parametrize("encoding", [None, "UTF-8", "unicode_escape"])
 def test_issue(encoding):
     """
@@ -49,12 +63,22 @@ def test_issue(encoding):
         Exception: по русски
     """
     context = None
-    text2 = ""
+    text2 = b""
     expected_text = u"по русски"
     try:
         problematic_step_impl(context)
     except Exception:
-        text2 =  traceback.format_exc()
+        text2 = traceback.format_exc()
+        if charset_normalizer:
+            if isinstance(text2, (bytes, bytearray)):
+                charset_detector = charset_normalizer.from_bytes(text2)
+            else:
+                assert isinstance(text2, six.text_type)
+                charset_detector = charset_normalizer.from_bytes(text2.encode())
+            best_encoding = charset_detector.best().encoding
+            print("CHARSET_DETECTOR.best.encoding=%s (encoding=%s)" %
+                  (best_encoding, encoding))
+            # DISABLED: encoding = best_encoding
 
     text3 = text(text2, encoding)
     print(u"EXCEPTION-TEXT: %s" % text3)

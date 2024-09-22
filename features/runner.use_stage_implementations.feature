@@ -77,7 +77,7 @@ Feature: Use Alternate Step Implementations for Each Test Stage
         """
         1 feature passed, 0 failed, 0 skipped
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
     And the command output should contain:
         """
@@ -92,7 +92,7 @@ Feature: Use Alternate Step Implementations for Each Test Stage
         """
         1 feature passed, 0 failed, 0 skipped
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
     And the command output should contain:
         """
@@ -107,7 +107,7 @@ Feature: Use Alternate Step Implementations for Each Test Stage
         """
         1 feature passed, 0 failed, 0 skipped
         1 scenario passed, 0 failed, 0 skipped
-        1 step passed, 0 failed, 0 skipped, 0 undefined
+        1 step passed, 0 failed, 0 skipped
         """
     And the command output should contain:
         """

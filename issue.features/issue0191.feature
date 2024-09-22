@@ -103,7 +103,7 @@ Feature: Issue #191 Using context.execute_steps() may change context.table/.text
     Then it should pass with:
       """
       1 scenario passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
 
   @nested_steps.with_table
@@ -129,7 +129,7 @@ Feature: Issue #191 Using context.execute_steps() may change context.table/.text
     Then it should pass with:
       """
       1 scenario passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
 
 
@@ -155,7 +155,7 @@ Feature: Issue #191 Using context.execute_steps() may change context.table/.text
     Then it should pass with:
       """
       1 scenario passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
 
   @nested_steps.with_text
@@ -179,5 +179,5 @@ Feature: Issue #191 Using context.execute_steps() may change context.table/.text
     Then it should pass with:
       """
       1 scenario passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """

@@ -77,7 +77,7 @@ Feature: Use a user-defined Formatter
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
 
   @use_formatter.class
@@ -89,7 +89,7 @@ Feature: Use a user-defined Formatter
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
 
 
@@ -99,7 +99,7 @@ Feature: Use a user-defined Formatter
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
 
     Examples:
@@ -138,7 +138,7 @@ Feature: Use a user-defined Formatter
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
     But the command output should not contain:
       """

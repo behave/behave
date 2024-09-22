@@ -51,7 +51,7 @@ Feature: Issue #69: JUnitReporter: Fault when processing ScenarioOutlines with f
     Then it should fail with:
       """
       0 scenarios passed, 2 failed, 0 skipped
-      2 steps passed, 2 failed, 2 skipped, 0 undefined
+      2 steps passed, 2 failed, 2 skipped
       """
     But the command output should not contain:
       """

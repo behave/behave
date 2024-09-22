@@ -432,7 +432,7 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
         CALLED: bad_cleanup_bar -- PART_1
         CLEANUP-ERROR in bad_cleanup_bar: ValueError: CLEANUP-OOPS
         Traceback (most recent call last):
-          File "{__CWD__}/behave/runner.py", line 275, in _do_cleanups
+          File "{__CWD__}/behave/runner.py", line 276, in _do_cleanups
             cleanup_func()
           File "features/environment.py", line 9, in bad_cleanup_bar
             raise ValueError("CLEANUP-OOPS")

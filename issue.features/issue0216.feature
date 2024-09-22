@@ -52,8 +52,8 @@ Feature: Issue #216: ANSI escape sequences are used while using --wip option
     When I run "behave --wip features"
     Then it should fail with:
       """
-      0 features passed, 1 failed, 0 skipped
-      0 scenarios passed, 1 failed, 0 skipped, 1 untested
+      0 features passed, 0 failed, 1 error, 0 skipped
+      0 scenarios passed, 0 failed, 1 error, 0 skipped, 1 untested
       1 step passed, 0 failed, 1 skipped, 1 undefined, 1 untested
       """
     And the command output should contain:
@@ -70,8 +70,8 @@ Feature: Issue #216: ANSI escape sequences are used while using --wip option
     When I run "behave --wip --show-skipped features"
     Then it should fail with:
       """
-      0 features passed, 1 failed, 0 skipped
-      0 scenarios passed, 1 failed, 0 skipped, 1 untested
+      0 features passed, 0 failed, 1 error, 0 skipped
+      0 scenarios passed, 0 failed, 1 error, 0 skipped, 1 untested
       1 step passed, 0 failed, 1 skipped, 1 undefined, 1 untested
       """
     And the command output should contain:
@@ -88,8 +88,8 @@ Feature: Issue #216: ANSI escape sequences are used while using --wip option
     When I run "behave --wip -f pretty features"
     Then it should fail with:
       """
-      0 features passed, 1 failed, 0 skipped
-      0 scenarios passed, 1 failed, 0 skipped, 1 untested
+      0 features passed, 0 failed, 1 error, 0 skipped
+      0 scenarios passed, 0 failed, 1 error, 0 skipped, 1 untested
       1 step passed, 0 failed, 1 skipped, 1 undefined, 1 untested
       """
     And the command output should contain:
@@ -111,8 +111,8 @@ Feature: Issue #216: ANSI escape sequences are used while using --wip option
     When I run "behave --wip -f pretty --color features"
     Then it should fail with:
       """
-      0 features passed, 1 failed, 0 skipped
-      0 scenarios passed, 1 failed, 0 skipped, 1 untested
+      0 features passed, 0 failed, 1 error, 0 skipped
+      0 scenarios passed, 0 failed, 1 error, 0 skipped, 1 untested
       1 step passed, 0 failed, 1 skipped, 1 undefined, 1 untested
       """
     And the command output should contain:

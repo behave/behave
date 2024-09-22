@@ -47,7 +47,7 @@ Feature: Issue #84: behave.runner behave does not reliably detected failed test 
         """
         1 feature passed, 1 failed, 0 skipped
         1 scenario passed, 1 failed, 0 skipped
-        3 steps passed, 1 failed, 2 skipped, 0 undefined
+        3 steps passed, 1 failed, 2 skipped
         """
 
   Scenario: First feature passes, second feature fails
@@ -56,7 +56,7 @@ Feature: Issue #84: behave.runner behave does not reliably detected failed test 
         """
         1 feature passed, 1 failed, 0 skipped
         1 scenario passed, 1 failed, 0 skipped
-        3 steps passed, 1 failed, 2 skipped, 0 undefined
+        3 steps passed, 1 failed, 2 skipped
         """
 
   Scenario: First feature passes, second fails, last passes
@@ -65,5 +65,5 @@ Feature: Issue #84: behave.runner behave does not reliably detected failed test 
         """
         2 features passed, 1 failed, 0 skipped
         2 scenarios passed, 1 failed, 0 skipped
-        6 steps passed, 1 failed, 2 skipped, 0 undefined
+        6 steps passed, 1 failed, 2 skipped
         """

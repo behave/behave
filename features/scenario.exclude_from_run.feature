@@ -88,7 +88,7 @@ Feature: Exclude Scenario from Test Run
         Then it should pass with:
             """
             2 scenarios passed, 0 failed, 1 skipped
-            2 steps passed, 0 failed, 3 skipped, 0 undefined
+            2 steps passed, 0 failed, 3 skipped
             """
         And the command output should contain:
             """
@@ -118,7 +118,7 @@ Feature: Exclude Scenario from Test Run
         Then it should pass with:
             """
             1 scenario passed, 0 failed, 2 skipped
-            1 step passed, 0 failed, 4 skipped, 0 undefined
+            1 step passed, 0 failed, 4 skipped
             """
         And the command output should contain:
             """
@@ -169,7 +169,7 @@ Feature: Exclude Scenario from Test Run
         Then it should pass with:
             """
             0 scenarios passed, 0 failed, 2 skipped
-            2 steps passed, 0 failed, 5 skipped, 0 undefined
+            2 steps passed, 0 failed, 5 skipped
             """
         And the command output should contain:
             """
@@ -212,6 +212,6 @@ Feature: Exclude Scenario from Test Run
         Then it should fail with:
             """
             1 scenario passed, 1 failed, 0 skipped
-            2 steps passed, 1 failed, 0 skipped, 0 undefined
+            2 steps passed, 1 failed, 0 skipped
             """
         But note that "the scenarios are not marked as skipped (SKIP-TOO-LATE)"

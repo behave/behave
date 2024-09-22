@@ -46,7 +46,7 @@ Feature: Issue #67: JSON formatter cannot serialize tables.
     Then it should pass with:
       """
       1 scenario passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped, 0 undefined
+      3 steps passed, 0 failed, 0 skipped
       """
     But the command output should not contain:
       """
@@ -87,6 +87,6 @@ Feature: Issue #67: JSON formatter cannot serialize tables.
     Then it should pass with:
       """
       2 scenarios passed, 0 failed, 0 skipped
-      6 steps passed, 0 failed, 0 skipped, 0 undefined
+      6 steps passed, 0 failed, 0 skipped
       """
 

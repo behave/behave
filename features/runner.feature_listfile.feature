@@ -61,7 +61,7 @@ Feature: Feature Listfile (List of feature filenames/directories)
       """
       2 features passed, 0 failed, 0 skipped
       2 scenarios passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      2 steps passed, 0 failed, 0 skipped
       """
 
 
@@ -76,7 +76,7 @@ Feature: Feature Listfile (List of feature filenames/directories)
       """
       2 features passed, 0 failed, 0 skipped
       2 scenarios passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      2 steps passed, 0 failed, 0 skipped
       """
 
   Scenario: Use @feature_listfile with some empty lines
@@ -91,7 +91,7 @@ Feature: Feature Listfile (List of feature filenames/directories)
       """
       2 features passed, 0 failed, 0 skipped
       2 scenarios passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      2 steps passed, 0 failed, 0 skipped
       """
 
   Scenario: Use @feature_listfile with some comment lines
@@ -106,7 +106,7 @@ Feature: Feature Listfile (List of feature filenames/directories)
       """
       2 features passed, 0 failed, 0 skipped
       2 scenarios passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped, 0 undefined
+      2 steps passed, 0 failed, 0 skipped
       """
 
   Scenario: Use @feature_listfile with wildcards (Case 1)

@@ -11,7 +11,11 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.{py,rst,ini,txt}]
+[{*.{md,rst,txt}}]
+indent_style = space
+indent_size = 4
+
+[{*.{py,ini}}]
 indent_style = space
 indent_size = 4
 

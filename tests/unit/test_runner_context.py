@@ -399,6 +399,7 @@ class TestContext_ExecuteSteps(unittest.TestCase):
         runner_ = Mock()
         self.config = runner_.config = Mock()
         runner_.config.verbose = False
+        runner_.config.dry_run = False
         runner_.config.stdout_capture = False
         runner_.config.stderr_capture = False
         runner_.config.log_capture = False

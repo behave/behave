@@ -54,7 +54,7 @@ Feature: Issue #162 Unnecessary ContextMaskWarnings when assert fails or excepti
     Then it should fail with:
       """
       1 scenario passed, 1 failed, 0 skipped
-      2 steps passed, 1 failed, 1 skipped, 0 undefined
+      2 steps passed, 1 failed, 1 skipped
       """
     But the command output should not contain:
       """
@@ -77,8 +77,8 @@ Feature: Issue #162 Unnecessary ContextMaskWarnings when assert fails or excepti
     When I run "behave -f plain features/example0162_exception_raised.feature"
     Then it should fail with:
       """
-      1 scenario passed, 1 failed, 0 skipped
-      2 steps passed, 1 failed, 1 skipped, 0 undefined
+      1 scenario passed, 0 failed, 1 error, 0 skipped
+      2 steps passed, 0 failed, 1 error, 1 skipped
       """
     But the command output should not contain:
       """

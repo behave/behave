@@ -55,7 +55,7 @@ Feature: Issue #231: Display the output of the last print command
     Then it should fail with:
       """
       0 scenarios passed, 1 failed, 0 skipped
-      2 steps passed, 1 failed, 0 skipped, 0 undefined
+      2 steps passed, 1 failed, 0 skipped
       """
     And the command output should contain:
       """
@@ -68,7 +68,7 @@ Feature: Issue #231: Display the output of the last print command
     Then it should fail with:
       """
       0 scenarios passed, 1 failed, 0 skipped
-      1 step passed, 1 failed, 0 skipped, 0 undefined
+      1 step passed, 1 failed, 0 skipped
       """
     And the command output should contain:
       """

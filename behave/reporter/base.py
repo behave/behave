@@ -36,7 +36,7 @@ class Reporter(object):
         :param feature:  Feature object (as :class:`behave.model.Feature`)
         """
         assert feature.status != Status.undefined
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def end(self):
         """

@@ -41,7 +41,7 @@ Feature: Issue #766 -- UnicodeEncodeError in PrettyFormatter
       """
       1 feature passed, 0 failed, 0 skipped
       1 scenario passed, 0 failed, 0 skipped
-      1 step passed, 0 failed, 0 skipped, 0 undefine
+      1 step passed, 0 failed, 0 skipped
       """
     And the command output should not contain "UnicodeEncodeError"
     And the command output should not contain "Traceback"

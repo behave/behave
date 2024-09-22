@@ -71,7 +71,7 @@ Feature: Issue #1002 -- ScenarioOutline with Empty Placeholder Values in Example
       2 scenarios passed, 0 failed, 0 skipped
       2 steps passed, 0 failed, 0 skipped
       """
-    And the command output should not contain "NotImplementedError"
+    And the command output should not contain "StepNotImplementedError"
 
 
   Scenario: SOLUTION 2: Use a placeholder type -- AnyText
@@ -98,7 +98,7 @@ Feature: Issue #1002 -- ScenarioOutline with Empty Placeholder Values in Example
       2 scenarios passed, 0 failed, 0 skipped
       2 steps passed, 0 failed, 0 skipped
       """
-    And the command output should not contain "NotImplementedError"
+    And the command output should not contain "StepNotImplementedError"
 
 
   Scenario: SOLUTION 3: Use a placeholder type -- Unquoted_or_Empty
@@ -125,7 +125,7 @@ Feature: Issue #1002 -- ScenarioOutline with Empty Placeholder Values in Example
       2 scenarios passed, 0 failed, 0 skipped
       2 steps passed, 0 failed, 0 skipped
       """
-    And the command output should not contain "NotImplementedError"
+    And the command output should not contain "StepNotImplementedError"
 
 
   Scenario: SOLUTION 4: Use a placeholder type -- OptionalUnquoted
@@ -154,7 +154,7 @@ Feature: Issue #1002 -- ScenarioOutline with Empty Placeholder Values in Example
       2 scenarios passed, 0 failed, 0 skipped
       2 steps passed, 0 failed, 0 skipped
       """
-    And the command output should not contain "NotImplementedError"
+    And the command output should not contain "StepNotImplementedError"
 
 
   Scenario: SOLUTION 5: Use a placeholder type -- OptionalWord
@@ -183,4 +183,4 @@ Feature: Issue #1002 -- ScenarioOutline with Empty Placeholder Values in Example
       2 scenarios passed, 0 failed, 0 skipped
       2 steps passed, 0 failed, 0 skipped
       """
-    And the command output should not contain "NotImplementedError"
+    And the command output should not contain "StepNotImplementedError"

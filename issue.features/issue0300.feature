@@ -45,5 +45,5 @@ Feature: Issue #300 -- UnicodeDecodeError when read steps.py
         Then it should pass with:
             """
             1 scenario passed, 0 failed, 0 skipped
-            2 steps passed, 0 failed, 0 skipped, 0 undefined
+            2 steps passed, 0 failed, 0 skipped
             """

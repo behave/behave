@@ -111,7 +111,7 @@ Feature: Active Tags
       Then it should pass with:
         """
         1 scenario passed, 0 failed, 1 skipped
-        2 steps passed, 0 failed, 1 skipped, 0 undefined
+        2 steps passed, 0 failed, 1 skipped
         """
       And the command output should contain:
         """
@@ -140,7 +140,7 @@ Feature: Active Tags
       Then it should pass with:
         """
         1 scenario passed, 0 failed, 1 skipped
-        2 steps passed, 0 failed, 1 skipped, 0 undefined
+        2 steps passed, 0 failed, 1 skipped
         """
       And the command output should contain:
         """
@@ -316,7 +316,7 @@ Feature: Active Tags
       Then it should pass with:
         """
         2 scenarios passed, 0 failed, 0 skipped
-        4 steps passed, 0 failed, 0 skipped, 0 undefined
+        4 steps passed, 0 failed, 0 skipped
         """
       And the command output should contain:
         """
@@ -354,7 +354,7 @@ Feature: Active Tags
       Then it should pass with:
         """
         0 scenarios passed, 0 failed, 1 skipped
-        0 steps passed, 0 failed, 2 skipped, 0 undefined
+        0 steps passed, 0 failed, 2 skipped
         """
       And the command output should contain:
         """
@@ -380,7 +380,7 @@ Feature: Active Tags
       Then it should pass with:
         """
         1 scenario passed, 0 failed, 1 skipped
-        2 steps passed, 0 failed, 2 skipped, 0 undefined
+        2 steps passed, 0 failed, 2 skipped
         """
       And the command output should contain:
         """

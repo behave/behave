@@ -40,7 +40,7 @@ Feature: Issue 573 Select scenarios fails with empty Scenarios
             """
             0 features passed, 0 failed, 0 skipped, 1 untested
             0 scenarios passed, 0 failed, 1 skipped, 1 untested
-            0 steps passed, 0 failed, 0 skipped, 0 undefined
+            0 steps passed, 0 failed, 0 skipped
             """
 
     Scenario: Select scenarios by name and run them
@@ -55,7 +55,7 @@ Feature: Issue 573 Select scenarios fails with empty Scenarios
             """
             1 feature passed, 0 failed, 0 skipped
             1 scenario passed, 0 failed, 1 skipped
-            1 step passed, 0 failed, 0 skipped, 0 undefined
+            1 step passed, 0 failed, 0 skipped
             """
 
     Scenario: Select scenarios by name with partial name and run them
@@ -70,5 +70,5 @@ Feature: Issue 573 Select scenarios fails with empty Scenarios
             """
             1 feature passed, 0 failed, 0 skipped
             1 scenario passed, 0 failed, 1 skipped
-            1 step passed, 0 failed, 0 skipped, 0 undefined
+            1 step passed, 0 failed, 0 skipped
             """
