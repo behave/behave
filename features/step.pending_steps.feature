@@ -176,10 +176,13 @@ Feature: Pending Step (Step exists with StepNotImplementedError Marker)
         #    raise StepNotImplementedError('STEP: Given a pending step is used')
         #  """
 
-      # XXX_JE_TODO
       Scenario: Pending when step causes scenario to fail with error
         When I run "behave -f plain features/use_pending_steps.feature:8"
-        Then it should fail
+        Then it should fail with:
+          """
+          0 scenarios passed, 0 failed, 1 error, 2 skipped
+          1 step passed, 0 failed, 7 skipped, 1 pending
+          """
         And the command output should contain:
           """
           Feature:

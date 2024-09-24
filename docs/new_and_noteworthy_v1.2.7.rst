@@ -4,7 +4,7 @@ Noteworthy in Version 1.2.7
 Summary:
 
 * Support `Gherkin v6 grammar`_ (to simplify usage of `Example Mapping`_)
-* Use/Support :pypi:`cucumber-tag-expressions` (superceed: old-style tag-expressions)
+* Use/Support :pypi:`cucumber-tag-expressions` (supercedes: old-style tag-expressions)
 * :pypi:`cucumber-tag-expressions` are extended by "tag-matching"
   to match partial tag names, like: ``@foo.*``
 * `Select-by-location for Scenario Containers`_ (Feature, Rule, ScenarioOutline)
@@ -12,6 +12,9 @@ Summary:
 * `Improve Active-Tags Logic`_
 * `Active-Tags: Use ValueObject for better Comparisons`_
 * `Detect bad step definitions`_
+* `Distinguish between Failures and Errors`_
+* `Support for Pending Steps`_
+* `Step definitions with Cucumber-Expressions`_
 
 BREAKING CHANGES:
 
@@ -33,13 +36,18 @@ Grammar changes:
 
 A Rule (or: business rule) allows to group multiple Scenario(s)/Example(s)::
 
-    # -- RULE GRAMMAR PSEUDO-CODE:
+.. code-block::
+
+    :caption: RULE GRAMMAR (PSEUDO-CODE)
+
     @tag1 @tag2
     Rule: Optional Rule Title...
+
         Description?        #< CARDINALITY: 0..1 (optional)
         Background?         #< CARDINALITY: 0..1 (optional)
         Scenario*           #< CARDINALITY: 0..N (many)
         ScenarioOutline*    #< CARDINALITY: 0..N (many)
+
 
 Gherkin v6 keyword aliases:
 
@@ -52,12 +60,12 @@ Examples            Examples            Scenarios
 ==================  =================== ======================
 
 
-Example:
+EXAMPLE:
 
 .. code-block:: gherkin
+    :caption: FILE: features/example_with_rules.feature
 
-    # -- FILE: features/example_with_rules.feature
-    # USING: Gherkin v6
+    # -- USING: Gherkin v6
     Feature: With Rules
 
       Background: Feature.Background
@@ -158,11 +166,11 @@ Support for Emojis in Feature Files and Steps
 * You can now use ``language=emoji (em)`` in ``*.feature`` files ;-)
 
 .. literalinclude:: ../features/i18n_emoji.feature
-    :prepend:  # -- FILE: features/i18n_emoji.feature
+    :caption: FILE: features/i18n_emoji.feature
     :language: gherkin
 
 .. literalinclude:: ../features/steps/i18n_emoji_steps.py
-    :prepend:  # -- FILE: features/steps/i18n_emoji_steps.py
+    :caption: FILE: features/steps/i18n_emoji_steps.py
     :language: python
 
 
@@ -179,16 +187,24 @@ The active-tag computation logic was slightly changed (and fixed):
 All active-tags with same category are combined into one category tag-group.
 The following logical expression is used for active-tags with the same category::
 
+.. code-block:: gherkin
+
+    :caption: ALGORITHM: Active-Tag Expressions
+
     category_tag_group.enabled := positive-tag-expression and not negative-tag-expression
+
       positive-tag-expression  := enabled(tag1) or enabled(tag2) or ...
       negative-tag-expression  := enabled(tag3) or enabled(tag4) or ...
-       tag1, tag2 are positive-tags, like @use.with_category=value
-       tag3, tag4 are negative-tags, like @not.with_category=value
+
+        enabled(tag) := TRUE, if positibe/negative active-tag is TRUE.
+        tag1, tag2 are positive-tags, like @use.with_category=value
+        tag3, tag4 are negative-tags, like @not.with_category=value
 
 
 EXAMPLE:
 
 .. code-block:: gherkin
+    :caption: FILE: features/active_tag.example.feature
 
     Feature: Active-Tag Example
 
@@ -216,6 +232,10 @@ Active-Tags: Use ValueObject for better Comparisons
 The current mechanism of active-tags only supports the ``equals / equal-to`` comparison
 mechanism to determine if the ``tag.value`` matches the ``current.value``, like::
 
+.. code-block:: gherkin
+
+    :caption: NAME SCHEMA: Active-tags
+
     # -- SCHEMA: "@use.with_{category}={value}" or "@not.with_{category}={value}"
     @use.with_browser=Safari    # HINT: tag.value = "Safari"
 
@@ -228,7 +248,8 @@ the user to provide an own comparison method (and type conversion support).
 
 **EXAMPLE 1:**
 
-.. code:: gherkin
+.. code-block:: gherkin
+    :caption: FILE: features/active_tags.example1.feature
 
     Feature: Active-Tag Example 1 with ValueObject
 
@@ -236,9 +257,9 @@ the user to provide an own comparison method (and type conversion support).
       Scenario: Only run if temperature >= 15 degrees Celcius
         ...
 
-.. code:: python
+.. code-block:: python
+    :caption: FILE: features/environment.py
 
-    # -- FILE: features/environment.py
     import operator
     from behave.tag_matcher import ActiveTagMatcher, ValueObject
     from my_system.sensors import Sensors
@@ -269,7 +290,8 @@ the user to provide an own comparison method (and type conversion support).
 A slightly more complex situation arises, if you need to constrain the
 execution of an scenario to a temperature range, like:
 
-.. code:: gherkin
+.. code-block:: gherkin
+    :caption: FILE: features/active_tags.example2.feature
 
     Feature: Active-Tag Example 2 with Min/Max Value Range
 
@@ -278,9 +300,9 @@ execution of an scenario to a temperature range, like:
       Scenario: Only run if temperature is between 10 and 70 degrees Celcius
         ...
 
-.. code:: python
+.. code-block:: python
+    :caption: FILE: features/environment.py
 
-    # -- FILE: features/environment.py
     ...
     current_temperature = Sensors().get_temperature()
     active_tag_value_provider = {
@@ -294,7 +316,8 @@ execution of an scenario to a temperature range, like:
 
 **EXAMPLE 3:**
 
-.. code:: gherkin
+.. code-block:: gherkin
+    :caption: FILE: features/active_tags.example3.feature
 
     Feature: Active-Tag Example 3 with Contains/Contained-in Comparison
 
@@ -304,10 +327,10 @@ execution of an scenario to a temperature range, like:
 
       # OR: @use.with_supported_payment_methods.contains_value=VISA
 
-.. code:: python
+.. code-block:: python
+    :caption: FILE: features/environment.py
 
-    # -- FILE: features/environment.py
-    # NORMALLY:
+    # -- NORMALLY:
     #  from my_system.payment import get_supported_payment_methods
     #  payment_methods = get_supported_payment_methods()
     ...
@@ -340,8 +363,9 @@ The exception is raised when the bad regular expression is compiled
 
 .. note:: More Information on BAD STEP-DEFINITIONS:
 
-    * `features/formatter.bad_steps.feature`_
-    * `features/runner.bad_steps.feature`_
+    * :this:`features/formatter.bad_steps.feature`
+    * :this:`features/runner.bad_steps.feature`
+
 
 .. _`features/formatter.bad_steps.feature`: https://github.com/behave/behave/blob/main/features/formatter.bad_steps.feature
 .. _`features/runner.bad_steps.feature`: https://github.com/behave/behave/blob/main/features/runner.bad_steps.feature
@@ -415,4 +439,207 @@ EXAMPLE 2:
         set BEHAVE_STRIP_STEPS_WITH_TRAILING_COLON="yes"
 
 
+Distinguish between Failures and Errors
+-------------------------------------------------------------------------------
+
+`behave`_ distinguishes now between failures and errors:
+
+* a **failure** is caused by an assert-mismatch (or: :class:`AssertionError` is raised)
+* an **error** is caused normally when an "unexpected" exception is caught.
+
+In addition, an **error** occurs if:
+
+* a hook error occurs
+* a pending step is detected (:class:`behave.api.pending_step.StepNotImplementedError`)
+* a undefined step is detected
+
+
+Support for Pending Steps
+-------------------------------------------------------------------------------
+
+`behave` provides now better support for **pending steps**.
+
+* A pending step has a binding between the step-pattern and its step-function.
+* Therefore, a pending step registers itself in the step registry
+* But a pending step is not yet implemented
+  (marked-by: :class:`behave.api.pending_step.StepNotImplementedError` )
+
+A **pending step** looks like:
+
+.. code-block:: python
+
+    # -- FILE: features/steps/pending_step_example.py
+    from behave import given, when, then
+    from behave.api.pending_step import StepNotImplementedError
+
+    @given('a pending step')
+    def step_given_a_pending_step(ctx):
+        raise StepNotImplementedError("Given a pending step")
+
+A pending step causes an error during the test run.
+But you can mark a scenario temporarily with the `@wip` tag
+to let any of its pending steps pass:
+
+.. code-block:: gherkin
+
+    # -- FILE: features/pending_step.feature
+    Feature: Example
+
+      @wip
+      Scenario: With @wip tag and pending step
+        Given a step passes
+        When a pending step is used
+        Then another step passes
+
+.. code-block:: bash
+
+    $ behave -f plain features/pending_step.feature
+    Feature: Example
+
+      Scenario: With @wip tag and pending step
+        Given a step passes ... passed
+        When a pending step is used ... pending_warn
+        When another step passes ... passed
+
+    ...
+    1 scenario passed, 0 failed, 0 skipped
+    2 steps passed, 0 failed, 0 skipped, 1 pending_warn
+
+Without the `@wip` marker, a scenario with pending steps causes an error:
+
+.. code-block:: bash
+
+    $ behave -f plain features/other_pending_step.feature
+    Feature: Example 2
+
+      Scenario: Without @wip tag but with pending step
+        Given a step passes ... passed
+        When a pending step is used ... pending
+
+    ...
+    0 scenarios passed, 0 failed, 1 error, 0 skipped
+    1 step passed, 0 failed, 1 skipped, 1 pending
+
+
+.. note:: More Information on **pending steps** and **undefined steps**:
+
+    * `features/step.pending_steps.feature`_
+    * `features/step.undefined_steps.feature`_
+
+.. _`features/step.pending_steps.feature`: https://github.com/behave/behave/blob/main/features/step.pending_steps.feature
+.. _`features/step.undefined_steps.feature`: https://github.com/behave/behave/blob/main/features/step.undefined_steps.feature
+
+
+Step Definitions with Cucumber-Expressions
+-------------------------------------------------------------------------------
+
+Support for a step definitions with `cucumber-expressions`_ was added to `behave`_
+by providing the :mod:`behave.cucumber_expression` module.
+
+`Cucumber-expressions`_:
+
+* Provide a simple syntax for step-parameters (aka: placeholders) compared to regular-expressions
+* Provide a simple syntax for optional or alternative (unmatched) text parts.
+* Provide support for parameter types and type conversions
+* Provide a number of predefined parameter types, like: ``{int}``, ``{word}``, ``{string}``, ...
+* Similar to ``parse-expressions`` that are normally used in `behave`_
+  (hint: ``parse-expressions`` was one of the descendants that lead to the development of `cucumber-expressions`_)
+
+
+**EXAMPLE 1:**
+
+Use the :func:`use_step_matcher_for_cucumber_expressions() <behave.cucumber_expression.use_step_matcher_for_cucumber_expressions()>`
+function to enable this step-matcher before any step definitions with `cucumber-expressions`_ are used.
+It is possible to do this:
+
+* in the ``features/environment.py`` file (as default step-matcher)
+* in each ``features/steps/*.py`` steps file
+
+.. literalinclude:: ../examples/cucumber-expressions/features/environment.py
+    :caption: FILE: features/environment.py
+
+
+In this example, we want to use the :class:`Color <example4me.color.Color>` enum as ``parameter_type`` (placeholder)
+in the steps definitions:
+
+.. literalinclude:: ../examples/cucumber-expressions/example4me/color.py
+    :caption: FILE: example4me/color.py
+
+
+We provide the necessary steps with the additional ``parameter_type=color``
+by using the ``Color.from_name()`` function as type converter/transformer.
+
+.. literalinclude:: ../examples/cucumber-expressions/features/steps/color_steps.py
+    :caption: FILE: features/steps/color_steps.py
+    :end-before:  # -- STEP DEFINITIONS:
+    :append: ...
+
+
+After the ``parameter_type=color`` is defined, we can use it as ``{color}`` placeholder
+in the step definitions:
+
+.. literalinclude:: ../examples/cucumber-expressions/features/steps/color_steps.py
+    :caption: FILE: features/steps/color_steps.py (continued)
+    :prepend:
+        # -- STEP DEFINITIONS:
+    :start-after:  # -- STEP DEFINITIONS:
+
+
+.. literalinclude:: ../examples/cucumber-expressions/features/cucumber_expression.feature
+    :caption: FILE: features/cucumber_expression.feature
+    :language: gherkin
+
+
+**EXAMPLE 2: Use TypeBuilder.make_enum()**
+
+The solution in "EXAMPLE 1" can be simplified by using the :class:`TypeBuilder <behave.cucumber_expression.TypeBuilder>` class.
+It provides a :func:`TypeBuilder.make_enum()` that generates a ``parse-function`` for an :class:`Enum` class or a dict-mapping.
+This ``parse-function`` provides a type converter/transformer and its regular-expression pattern (as attribute), like:
+
+.. literalinclude:: ../examples/cucumber-expressions/features/steps/color_steps2.py.disabled
+    :language: python
+    :caption: FILE: features/steps/color_steps.py (ALTERNATIVE)
+    :emphasize-lines: 9,14,16
+    :end-before: # -- STEP DEFINITIONS:
+    :append: ...
+
+
+**MORE:**
+
+In addition, the :class:`TypeBuilder <behave.cucumber_expression.TypeBuilder>` class
+provides support to compose ``parse-functions`` (aka: type converters)
+and regular-expression patterns from other ``parse-functions`` or data, like:
+
+* :func:`TypeBuilder.make_enum() <behave.cucumber_expression.TypeBuilder.make_enum()>`:
+  Builds a ``parse-function`` and regex-pattern for an :class:`Enum <enum.Enum>` class
+  or a key/value mapping (aka: :class:`dict`).
+
+* :func:`TypeBuilder.make_choice() <behave.cucumber_expression.TypeBuilder.make_choice()>`:
+  Builds a ``parse-function`` and regex-pattern for a list of string values.
+
+* :func:`TypeBuilder.make_variant() <behave.cucumber_expression.TypeBuilder.make_variant()>`:
+  Builds a ``parse-function`` and regex-pattern from a list of
+  ``parse-functions`` (and their patterns) as alternative types.
+
+* :func:`TypeBuilder.with_many() <behave.cucumber_expression.TypeBuilder.with_many()>`:
+  Builds a ``parse-function`` and regex-pattern for **many items** based on the
+  ``parse-function`` of one item
+
+
+.. seealso:: `cucumber-expressions`_
+
+    * Repository: https://github.com/cucumber/cucumber-expressions
+    * :this:`features/step_matcher.cucumber_expressions.feature`
+
+.. seealso:: parse-expressions
+
+    * :pypi:`parse`
+    * :pypi:`parse-type` (and :class:`TypeBuilder <behave.cucumber_expression.TypeBuilder>` core functionality)
+
+.. note::
+
+    A ``parameter_type`` can only be defined once (maybe: Use the ``environment-file`` or ...).
+
+
+.. _`cucumber-expressions`: https://github.com/cucumber/cucumber-expressions
 .. include:: _common_extlinks.rst
