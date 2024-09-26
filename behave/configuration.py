@@ -590,7 +590,6 @@ def read_toml_config(path):
         config_tool = config["tool"]
     except KeyError:
         # -- SPECIAL CASE: A pyproject.toml may not contain a tool section.
-        #  Skip the parsing in that case.
         return this_config
 
     for dest, action, value_type in configfile_options_iter(config_tool):
