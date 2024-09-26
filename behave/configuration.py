@@ -585,8 +585,13 @@ def read_toml_config(path):
         # -- HINT: Use simple dictionary for "config".
         config = json.loads(json.dumps(tomllib.load(toml_file)))
 
-    config_tool = config["tool"]
     this_config = {}
+    try:
+        config_tool = config["tool"]
+    except KeyError:
+        # -- SPECIAL CASE: A pyproject.toml may not contain a tool section.
+        #  Skip the parsing in that case.
+        return this_config
 
     for dest, action, value_type in configfile_options_iter(config_tool):
         param_name = dest
