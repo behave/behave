@@ -29,33 +29,46 @@ on:
 
 jobs:
   test:
-    # -- EXAMPLE: runs-on: ubuntu-latest
-    runs-on: ${{ matrix.os }}
+    # -- HINT: runs-on: ubuntu-latest
+    # PREPARED: os: [ubuntu-latest, macos-latest, windows-latest]
+    # DISABLED: runs-on: ${{ matrix.os }}
+    runs-on: "ubuntu-latest"
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
-        # PREPARED: os: [ubuntu-latest, macos-latest, windows-latest]
-        os: [ubuntu-latest]
+        # DISABLED: os: ["ubuntu-latest"]
         python-version: ["3.12", "3.11", "3.10", "pypy-3.10"]
+        experimental: [false]
+        include:
+          - python-version: "3.13.0-rc.3"
+            experimental: true
     steps:
       - uses: actions/checkout@v4
       # DISABLED: name: Setup Python ${{ matrix.python-version }} on platform=${{ matrix.os }}
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
-          cache-dependency-path: 'py.requirements/*.txt'
+          # DISABLED: cache: 'pip'
+          # DISABLED: cache-dependency-path: 'py.requirements/*.txt'
       # -- DISABLED:
       # - name: Show Python version
       #   run: python --version
-
-      # -- SPEED-UP: Use "uv" to speed up installation of package dependencies.
+      - name: setup-uv -- Speed-up Python package installations ...
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            **/pyproject.toml
+            **/py.requirements/ci.github.testing.txt
+            **/py.requirements/basic.txt
+            **/py.requirements/testing.txt
       - name: "Install Python package dependencies (with: uv)"
         run: |
-          python -m pip install -U uv
-          python -m uv pip install -U pip setuptools wheel
-          python -m uv pip install --upgrade -r py.requirements/ci.github.testing.txt
-          python -m uv pip install -e .
+          uv pip install --system -U pip setuptools wheel
+          uv pip install --system -U -r py.requirements/ci.github.testing.txt
+          uv pip install --system -e .
+
       - name: Run tests
         run: pytest
       - name: "Run behave tests: features ..."
