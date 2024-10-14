@@ -62,7 +62,11 @@ Feature: Runner should show Bad Step Definitions
 
 
   Rule: Unused BAD STEP-DEFINITIONS do not cause test run to fail
+    @not.with_python.min_version=3.13
     Scenario: Runner detects unused BAD STEP DEFINITIONS in dry-run mode
+
+        HINT: Python <= 3.12 uses "error" exception (instead of: PatternError).
+
         When I run "behave --dry-run -f plain features/"
         Then it should pass with:
           """
@@ -82,7 +86,35 @@ Feature: Runner should show Bad Step Definitions
           """
         But note that "the step-registry error handler shows each BAD STEP DEFINITIONS with their error"
 
+#    @use.with_python.min_version=3.13
+#    Scenario: Runner detects unused BAD STEP DEFINITIONS in dry-run mode
+#
+#        HINT: Python >= 3.13 uses "ParseError" exception.
+#
+#        When I run "behave --dry-run -f plain features/"
+#        Then it should pass with:
+#          """
+#          BAD-STEP-DEFINITION: @given('the bad light is switched {state:BadBool}')
+#            LOCATION: features/steps/bad_steps1.py:14
+#            RAISED EXCEPTION: NotImplementedError:Group names (e.g. (?P<name>) can cause failure, as they are not escaped properly:
+#          """
+#        And the command output should contain:
+#          """
+#          BAD-STEP-DEFINITION: @step('^some bad light is switched (?P<status>(?i)ON|(?i)OFF)$')
+#            LOCATION: features/steps/bad_steps2.py:6
+#            RAISED EXCEPTION: PatternError:global flags not at the start of the expression at position 39
+#          """
+#        And the command output should not contain:
+#          """
+#          BAD-STEP-DEFINITION: @step('good light is switched (?P<status>ON|OFF)')
+#          """
+#        But note that "the step-registry error handler shows each BAD STEP DEFINITIONS with their error"
+
+    @not.with_python.min_version=3.13
     Scenario: Runner detects unused BAD STEP DEFINITIONS in normal mode
+
+        HINT: Python <= 3.12 uses "error" exception.
+
         When I run "behave -f plain features/"
         Then it should pass with:
           """
@@ -102,6 +134,29 @@ Feature: Runner should show Bad Step Definitions
           """
         But note that "the step-registry error handler shows each BAD STEP DEFINITIONS with their error"
 
+#    @use.with_python.min_version=3.13
+#    Scenario: Runner detects unused BAD STEP DEFINITIONS in normal mode
+#
+#        HINT: Python >= 3.13 uses "PatternError" exception.
+#
+#        When I run "behave -f plain features/"
+#        Then it should pass with:
+#          """
+#          BAD-STEP-DEFINITION: @given('the bad light is switched {state:BadBool}')
+#            LOCATION: features/steps/bad_steps1.py:14
+#            RAISED EXCEPTION: NotImplementedError:Group names (e.g. (?P<name>) can cause failure, as they are not escaped properly:
+#          """
+#        And the command output should contain:
+#          """
+#          BAD-STEP-DEFINITION: @step('^some bad light is switched (?P<status>(?i)ON|(?i)OFF)$')
+#            LOCATION: features/steps/bad_steps2.py:6
+#            RAISED EXCEPTION: PatternError:global flags not at the start of the expression at position 39
+#          """
+#        And the command output should not contain:
+#          """
+#          BAD-STEP-DEFINITION: @step('good light is switched (?P<status>ON|OFF)')
+#          """
+#        But note that "the step-registry error handler shows each BAD STEP DEFINITIONS with their error"
 
   Rule: Used BAD STEP-DEFINITIONS cause test run to fail
     Scenario: Runner detects used BAD STEP DEFINITIONS in normal mode
