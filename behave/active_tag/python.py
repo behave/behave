@@ -54,6 +54,9 @@ class VersionValueObject(ValueObject):
 # -----------------------------------------------------------------------------
 # ACTIVE-TAGS
 # -----------------------------------------------------------------------------
+# HINTS:
+#   PYTHON_VERSION  = (3, 12)
+#   PYTHON_VERSION3 = (3, 12, 7)
 ACTIVE_TAG_VALUE_PROVIDER = {
     "python2": BoolValueObject(six.PY2),
     "python3": BoolValueObject(six.PY3),

@@ -374,9 +374,11 @@ Feature: Hooks processing in case of errors (exceptions)
           """
       And the command output should contain:
           """
-            self.hooks[name](context, *args)
           File "features/environment.py", line 21, in before_feature
             cause_hook_to_fail()
+          """
+      And the command output should contain:
+          """
           File "features/environment.py", line 4, in cause_hook_to_fail
             raise RuntimeError("FAIL")
           """

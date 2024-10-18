@@ -337,6 +337,7 @@ class ActiveTagMatcher(TagMatcher):
             return True
 
         current_value = self.value_provider.get(group_category, Unknown)
+        # MAYBE: print(f"ACTIVE_TAG.is_tag_group_enabled:{group_category}: current_value={current_value}")
         if current_value is Unknown and self.ignore_unknown_categories:
             # -- CASE: Unknown category, ignore it.
             return True
@@ -366,10 +367,12 @@ class ActiveTagMatcher(TagMatcher):
         if not positive_tags_matched:
             tag_expression1 = True
         tag_group_enabled = bool(tag_expression1 and not tag_expression2)
+        # print(f"ACTIVE_TAG.is_tag_group_enabled: {group_category}.enabled={tag_group_enabled}")
         return tag_group_enabled
 
     def should_exclude_with(self, tags):
-        group_categories = self.group_active_tags_by_category(tags)
+        # print(f"ACTIVE_TAG.should_exclude_with: tags={tags};")
+        group_categories = list(self.group_active_tags_by_category(tags))
         for group_category, category_tag_pairs in group_categories:
             if not self.is_tag_group_enabled(group_category, category_tag_pairs):
                 # -- LOGICAL-AND SHORTCUT: Any false => Makes everything false
@@ -377,8 +380,10 @@ class ActiveTagMatcher(TagMatcher):
                     current_value = self.value_provider.get(group_category, None)
                     reason = "%s (but: %s)" % (group_category, current_value)
                     self.exclude_reason = reason
+                # print(f"ACTIVE_TAG.should_exclude_with: verdict=true, reason={self.exclude_reason} (categories: {group_categories})")
                 return True     # SHOULD-EXCLUDE: not enabled = not False
         # -- LOGICAL-AND: All parts are True
+        # print(f"ACTIVE_TAG.should_exclude_with: verdict=false (categories: {group_categories})")
         return False    # SHOULD-EXCLUDE: not enabled = not True
 
     def select_active_tags(self, tags):
