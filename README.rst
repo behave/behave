@@ -26,10 +26,14 @@ behave
    :target: https://app.gitter.im/#/room/#behave_behave:gitter.im
    :alt: Chat at https://gitter.im/behave/behave
 
+.. |badge.gurubase| image:: https://img.shields.io/badge/Gurubase-Ask%20behave%20Guru-006BFF
+   :target: https://gurubase.io/g/behave
+   :alt: Ask behave Guru at https://gurubase.io/g/behave
+
 
 .. |logo| image:: https://raw.github.com/behave/behave/master/docs/_static/behave_logo1.png
 
-|badge.latest_version| |badge.license| |badge.CI_status| |badge.docs_status| |badge.discussions| |badge.gitter|
+|badge.latest_version| |badge.license| |badge.CI_status| |badge.docs_status| |badge.discussions| |badge.gitter| |badge.gurubase|
 
 behave is behavior-driven development, Python style.
 
