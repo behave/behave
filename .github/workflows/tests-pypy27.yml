@@ -1,5 +1,8 @@
 # -- TEST-VARIANT: pypy-27 on ubuntu-latest
 # BASED ON: tests.yml
+# SPECIAL CASE:
+#   - CAN NOT USE: pip install -e .
+#   - MUST USE: python -mbehave ... -- Script seems not to be created.
 
 name: tests-pypy27
 on:
@@ -29,6 +32,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # -- DISABLED: continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
@@ -43,17 +47,17 @@ jobs:
 
       - name: Install Python package dependencies
         run: |
-           python -m pip install -U pip setuptools wheel
-           pip install --upgrade -r py.requirements/ci.github.testing.txt
-           pip install -e .
+           python -m pip install -U pip setuptools setuptools-scm build wheel
+           pip install -U -r py.requirements/ci.github.testing.txt
+           pip install .
       - name: Run tests
         run: pytest
       - name: "Run behave tests: features ..."
-        run: behave --format=progress3 features
+        run: python -mbehave --format=progress3 features
       - name: "Run behave tests: issue.features ..."
-        run: behave --format=progress3 issue.features
+        run: python -mbehave --format=progress3 issue.features
       - name: "Run behave tests: tools/test-features ..."
-        run: behave --format=progress3 tools/test-features
+        run: python -mbehave --format=progress3 tools/test-features
       - name: Upload test reports
         uses: actions/upload-artifact@v4
         with:

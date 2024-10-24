@@ -108,7 +108,6 @@ dependencies = [
     "toml>=0.10.2; python_version <  '3.0'",  # py27 support
 ]
 
-
 [project.urls]
 Homepage  = "https://github.com/behave/behave"
 Documentation = "https://behave.readthedocs.io/en/latest/"
@@ -116,13 +115,8 @@ Repository = "https://github.com/behave/behave"
 Issues = "https://github.com/behave/behave/issues/"
 Changelog = "https://github.com/behave/behave/blob/main/CHANGES.rst"
 
-
 [project.scripts]
 behave = "behave.__main__:main"
-
-[project.entry-points."distutils.commands"]
-behave_test = "setuptools_behave:behave_test"
-
 
 [project.optional-dependencies]
 develop = [
@@ -195,6 +189,7 @@ toml = [
 ]
 
 
+# -- BECOMING-DEPRECATED: Remove it after Python 2.7 support is dropped.
 [tool.distutils.bdist_wheel]
 universal = true
 
@@ -204,7 +199,6 @@ universal = true
 # -----------------------------------------------------------------------------
 [tool.setuptools]
 platforms = ["any"]
-py-modules = ["setuptools_behave"]
 zip-safe = true
 
 [tool.setuptools.dynamic]
