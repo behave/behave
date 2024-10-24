@@ -36,16 +36,17 @@ jobs:
   test:
     # DISABLED: runs-on: ${{ matrix.os }}
     runs-on: "windows-latest"
-    continue-on-error: ${{ matrix.experimental }}
+    # -- PREPARED: continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
         # DISABLED: os: ["windows-latest"]
-        python-version: ["3.12", "3.11", "3.10"]
-        experimental: [false]
-        include:
-          - python-version: "3.13"
-            experimental: true
+        python-version: ["3.13", "3.12", "3.11", "3.10"]
+        # -- PREPARED FOR: Experimental Python versions with "continue-on-error".
+        # experimental: [false]
+        # include:
+        #  - python-version: "3.13"
+        #    experimental: true
     steps:
       - uses: actions/checkout@v4
       # DISABLED: name: Setup Python ${{ matrix.python-version }} on platform=${{ matrix.os }}

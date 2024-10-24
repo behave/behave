@@ -4,8 +4,9 @@ include MANIFEST.in
 include LICENSE
 include .coveragerc
 include .editorconfig
-include .pycheckrc
 include .pylintrc
+include .readthedocs.yaml
+include .ruff.toml
 include *.cfg
 include *.ini
 include *.py
@@ -16,22 +17,20 @@ include *.yaml
 exclude __*.txt
 include bin/behave*
 include bin/invoke*
-recursive-include .ci           *.yml
-recursive-include bin           *.py *.cmd *.sh *.zip *.yml *.json
+recursive-include bin           *.py *.cmd *.sh
 recursive-include behave4cmd0   *.py
+recursive-include docs          *.rst *.txt *.css *.py *.html *.rst-* *.png Makefile
 recursive-include etc           *.xsd *.txt *.json-schema
 recursive-include examples      *.py *.feature *.txt *.rst *.ini
-recursive-include docs          *.rst *.txt *.css *.py *.html *.rst-* *.png Makefile
-recursive-include docs/_themes  *.html *.conf *.css *.css_t LICENSE*
-recursive-include test          *.py
-recursive-include tests         *.py *.txt
-recursive-include tasks         *.py *.zip *.txt *.rst
-recursive-include tools         *.feature *.py *.yml *.sh
 recursive-include features      *.feature *.py *.txt
 recursive-include issue.features  *.feature *.py *.txt
 recursive-include more.features *.feature *.py *.txt *.rst
 recursive-include py.requirements  *.txt *.rst
+recursive-include tasks         *.py *.txt
+recursive-include tests         *.py *.txt
+recursive-include tools         *.feature *.py
 
+prune .direnv
 prune .tox
 prune .venv*
 prune __*
