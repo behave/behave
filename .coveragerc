@@ -3,8 +3,8 @@
 # =========================================================================
 # LANGUAGE: Python
 # SEE ALSO:
-#  * http://nedbatchelder.com/code/coverage/
-#  * http://nedbatchelder.com/code/coverage/config.html
+#  * https://nedbatchelder.com/code/coverage/
+#  * https://nedbatchelder.com/code/coverage/config.html
 # =========================================================================
 
 [run]

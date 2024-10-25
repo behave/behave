@@ -174,7 +174,7 @@ For instance as unit tests, the above examples might become:
         assertEqual(bool(list), True)
 
 .. Other practitioners[who?], particularly in the Ruby community, prefer to split these into two separate examples, based on separate contexts for when the list is empty or has items in. This technique is based on Dave Astels' practice, "One assertion per test"[12].
-.. 12. http://techblog.daveastels.com/tag/bdd/
+.. 12. https://techblog.daveastels.com/tag/bdd/
 
 Sometimes the difference between the context, events and outcomes is made more explicit. For instance:
 

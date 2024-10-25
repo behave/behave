@@ -10,7 +10,7 @@ Tutorials
 For new users, that want to read, understand and explore the concepts in Gherkin
 and `behave`_ (after reading the behave documentation):
 
-* "`Behave by Example <http://behave.github.io/behave.example/>`_"
+* "`Behave by Example <https://behave.github.io/behave.example/>`_"
   (on `github <https://github.com/behave/behave.example>`_)
 
 The following small tutorials provide an introduction how you use `behave`_
@@ -56,10 +56,10 @@ Books
 
     [TDD-Python] Harry Percival,
     `Test-Driven Web Development with Python`_, O'Reilly, June 2014,
-    `Appendix E: BDD <http://chimera.labs.oreilly.com/books/1234000000754/ape.html>`_
+    `Appendix E: BDD <https://chimera.labs.oreilly.com/books/1234000000754/ape.html>`_
     (covers behave)
 
-.. _`Test-Driven Web Development with Python`: http://chimera.labs.oreilly.com/books/1234000000754
+.. _`Test-Driven Web Development with Python`: https://chimera.labs.oreilly.com/books/1234000000754
 
 
 Presentation Videos
@@ -69,7 +69,7 @@ Presentation Videos
   2012-08-12, PyCon Australia.
 
 * Selenium: `First behave python tutorial with selenium`_ (8min), 2015-01-28,
-  http://www.seleniumframework.com/python-basic/first-behave-gherkin/
+  https://www.seleniumframework.com/python-basic/first-behave-gherkin/
 
 * Jessica Ingrasselino: `Automation with Python and Behave`_ (67min), 2015-12-16
 
@@ -89,7 +89,7 @@ Presentation Videos
           PyCon Australia, 2012-08-12
 
         * Selenium: `First behave python tutorial with selenium`_ (8min), 2015-01-28,
-          http://www.seleniumframework.com/python-basic/first-behave-gherkin/
+          https://www.seleniumframework.com/python-basic/first-behave-gherkin/
 
         * Jessica Ingrasselino: `Automation with Python and Behave`_ (67min), 2015-12-16
 
@@ -128,7 +128,7 @@ Presentation Videos
             :width: 600
             :height: 400
 
-        RELATED: http://www.seleniumframework.com/python-basic/what-is-python/
+        RELATED: https://www.seleniumframework.com/python-basic/what-is-python/
 
         Jessica Ingrasselino: `Automation with Python and Behave`_
         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -198,6 +198,6 @@ Find more Information
 
 .. _Behave:     https://github.com/behave/behave
 .. _behave:     https://github.com/behave/behave
-.. _Selenium:   http://docs.seleniumhq.org/
-.. _behave4cmd:     https://github.com/behave/behave4cmd
+.. _behave4cmd: https://github.com/behave/behave4cmd
 .. _behave-django: https://github.com/behave/behave-django
+.. _Selenium:   https://docs.seleniumhq.org/

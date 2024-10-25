@@ -2,7 +2,7 @@
 r"""
 
 Regular expressions for winpath:
-http://regexlib.com/Search.aspx?k=file+name
+https://regexlib.com/Search.aspx?k=file+name
 
 ^(([a-zA-Z]:|\\)\\)?(((\.)|(\.\.)|([^\\/:\*\?"\|<>\. ](([^\\/:\*\?"\|<>\. ])|([^\\/:\*\?"\|<>]*[^\\/:\*\?"\|<>\. ]))?))\\)*[^\\/:\*\?"\|<>\. ](([^\\/:\*\?"\|<>\. ])|([^\\/:\*\?"\|<>]*[^\\/:\*\?"\|<>\. ]))?$
 

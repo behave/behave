@@ -408,7 +408,7 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
       by using the default encoding (normally: ASCII).
       Therefore, the implicit encoding into a normal string often fails.
 
-      SEE ALSO: http://bugs.python.org/issue2517
+      SEE ALSO: https://bugs.python.org/issue2517
       NOTE: Better if encoding hint is provided in python file header.
 
       Given a file named "features/steps/problematic_steps.py" with:

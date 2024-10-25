@@ -22,7 +22,7 @@ Feature: Issue #99: Layout variation "a directory containing your feature files"
     .       +-- environment.py
     .
     . SEE ALSO:
-    .   * http://packages.python.org/behave/gherkin.html#layout-variations
+    .   * https://behave.readthedocs.io/en/latest/gherkin/#layout-variations
 
 
   Background:

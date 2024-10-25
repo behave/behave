@@ -48,7 +48,7 @@ IDE             Plugin              Description
 .. _VisualStudio:   https://visualstudio.microsoft.com/
 
 .. _`PyCharm BDD`: https://blog.jetbrains.com/pycharm/2014/09/feature-spotlight-behavior-driven-development-in-pycharm/
-.. _`Cucumber-Eclipse`: http://cucumber.github.io/cucumber-eclipse/
+.. _`Cucumber-Eclipse`: https://cucumber.github.io/cucumber-eclipse/
 .. _cuke4vs:        https://github.com/henritersteeg/cuke4vs
 
 .. hidden_BROKEN:
@@ -82,11 +82,11 @@ Editor              Plugin                  Description
 .. _`Notepad++`: https://notepad-plus-plus.org/
 .. _gedit:  https://wiki.gnome.org/Apps/Gedit
 .. _vim:    https://www.vim.org/
-.. _`Sublime Text`:    http://www.sublimetext.com
+.. _`Sublime Text`:    https://www.sublimetext.com
 
 .. _`Gherkin editor`: https://archive.codeplex.com/?p=gherkineditor
 .. _gedit_behave:   https://gitlab.com/mcepl/gedit_behave
-.. _`NP++ gherkin`: http://productive.me/develop/cucumbergherkin-syntax-highlighting-for-notepad
+.. _`NP++ gherkin`: https://productive.me/develop/cucumbergherkin-syntax-highlighting-for-notepad
 .. _vim-behave:     https://github.com/rooprob/vim-behave
 .. _vim-cucumber:   https://github.com/tpope/vim-cucumber
 .. _`Cucumber (ST Bundle)`:    https://packagecontrol.io/packages/Cucumber
@@ -104,5 +104,5 @@ Tool                        Description
 =========================== ===========================================================================
 
 .. _gitlab_cucutags:   https://gitlab.com/mcepl/cucutags
-.. _ctags:      http://ctags.sourceforge.net/
+.. _ctags:      https://ctags.sourceforge.net/
 

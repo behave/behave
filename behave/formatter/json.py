@@ -5,7 +5,7 @@ This module provides `JSON`_ formatters for :mod:`behave`:
 * json: Generates compact JSON output
 * json.pretty: Generates readable JSON output
 
-.. _JSON: http://json.org
+.. _JSON: https://json.org
 """
 
 from __future__ import absolute_import

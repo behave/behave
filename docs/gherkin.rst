@@ -312,7 +312,7 @@ mechanics of testing; that is, instead of:
 
 .. code-block:: gherkin
 
-    Given a browser client is used to load the URL "http://website.example/website/home.html"
+    Given a browser client is used to load the URL "https://website.example/website/home.html"
 
 the step could instead simply say:
 
@@ -370,7 +370,7 @@ Examples:
 - Developing a library? Kicking off some kind of action that has an
   observable effect somewhere else.
 
-.. _`requests`: http://docs.python-requests.org/en/master/
+.. _`requests`: https://docs.python-requests.org/en/master/
 .. _`twill`:    https://pypi.org/project/twill
 .. _`selenium`: https://docs.seleniumhq.org/projects/webdriver/
 

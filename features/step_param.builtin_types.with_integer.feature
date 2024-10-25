@@ -20,8 +20,8 @@ Feature: Parse integer data types in step parameters (type transformation)
     ===== =========================================== ============= ================================
 
     SEE ALSO:
-      * http://pypi.python.org/pypi/parse
-      * string.format: http://docs.python.org/library/string.html#format-string-syntax
+      * https://pypi.org/project/parse
+      * string.format: https://docs.python.org/3/library/string.html#format-string-syntax
 
 
   @setup

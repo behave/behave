@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$schema": "https://json-schema.org/draft-04/schema#",
     "title": "behave JSON schema",
     "description": "behave schema for JSON formatter output",
     "type": "array",

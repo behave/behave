@@ -38,7 +38,7 @@ class LoggingCapture(BufferingHandler):
        This is a list of captured logging events as `logging.LogRecords`_.
 
     .. _`logging.LogRecords`:
-       http://docs.python.org/library/logging.html#logrecord-objects
+       https://docs.python.org/3/library/logging.html#logrecord-objects
 
     By default the format of the messages will be::
 

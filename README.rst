@@ -15,7 +15,7 @@ behave
     :alt: CI Build Status
 
 .. |badge.docs_status| image:: https://readthedocs.org/projects/behave/badge/?version=latest
-    :target: http://behave.readthedocs.io/en/latest/?badge=latest
+    :target: https://behave.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
 .. |badge.discussions| image:: https://img.shields.io/badge/chat-github_discussions-darkgreen

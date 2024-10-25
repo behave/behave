@@ -2,7 +2,7 @@
 # PYLINT CONFIGURATION
 # =============================================================================
 # PYLINT-VERSION: XXX_UPDATE: 1.5.x
-# SEE ALSO: http://www.pylint.org/
+# SEE ALSO: https://www.pylint.org/
 # =============================================================================
 
 [MAIN]

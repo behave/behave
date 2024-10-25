@@ -8,7 +8,7 @@ Show all tasks with::
 
 .. seealso::
 
-    * http://pyinvoke.org
+    * https://pyinvoke.org
     * https://github.com/pyinvoke/invoke
 """
 

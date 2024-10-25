@@ -8,8 +8,7 @@ TODO:
   * Solution for requires: table, text
   * i18n keywords
 
-.. seealso::
-    http://sphinx-doc.org/
+.. seealso:: https://sphinx-doc.org/
 
 .. note:: REQUIRES docutils
     :mod:`docutils` are needed to generate step-label for step references.
@@ -102,7 +101,7 @@ class SphinxStepsDocumentGenerator(object):
         doc_generator = SphinxStepsDocumentGenerator(step_definitions, "output")
         doc_generator.write_docs()
 
-    .. seealso:: http://sphinx-doc.org/
+    .. seealso:: https://sphinx-doc.org/
     """
     default_step_definition_doc = """\
 .. todo::

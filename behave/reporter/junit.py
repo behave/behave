@@ -63,9 +63,9 @@ Best sources are:
 * JUnit XML (`ant spec 1`_, `ant spec 2`_)
 
 
-.. _`JUnit XML`:  http://junitpdfreport.sourceforge.net/managedcontent/PdfTranslation
+.. _`JUnit XML`:  https://junitpdfreport.sourceforge.net/managedcontent/PdfTranslation
 .. _`ant spec 1`: https://github.com/windyroad/JUnit-Schema
-.. _`ant spec 2`: http://svn.apache.org/repos/asf/ant/core/trunk/src/main/org/apache/tools/ant/taskdefs/optional/junit/XMLJUnitResultFormatter.java
+.. _`ant spec 2`: https://svn.apache.org/repos/asf/ant/core/trunk/src/main/org/apache/tools/ant/taskdefs/optional/junit/XMLJUnitResultFormatter.java
 """
 # pylint: enable=line-too-long
 
@@ -100,7 +100,7 @@ def CDATA(text=None):   # pylint: disable=invalid-name
     return element
 
 def _compile_invalid_re():
-    # http://stackoverflow.com/questions/1707890/fast-way-to-filter-illegal-xml-unicode-chars-in-python
+    # https://stackoverflow.com/questions/1707890/fast-way-to-filter-illegal-xml-unicode-chars-in-python
     illegal_unichrs = [
         (0x00, 0x08), (0x0B, 0x1F), (0x7F, 0x84), (0x86, 0x9F),
         (0xD800, 0xDFFF), (0xFDD0, 0xFDDF), (0xFFFE, 0xFFFF),

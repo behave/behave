@@ -23,6 +23,7 @@ import os.path
 import sys
 import textwrap
 from jsonschema import validate
+import check_jsonschema
 try:
     import json
 except ImportError:
@@ -51,12 +52,14 @@ def json_loads(text, encoding=None):
         kwargs["encoding"] = encoding
     return json.loads(text, **kwargs)
 
+
 def json_load(filename, encoding=None):
     f = open(filename, "r")
     contents = f.read()
     f.close()
     data = json_loads(contents, encoding=encoding)
     return data
+
 
 def jsonschema_validate(filename, schema, encoding=None):
     data = json_load(filename, encoding=encoding)
@@ -69,8 +72,8 @@ def main(args=None):
     NOTE: Behave's JSON-schema is used per default.
 
     SEE ALSO:
-      * http://json-schema.org/
-      * http://tools.ietf.org/html/draft-zyp-json-schema-04
+      * https://json-schema.org/
+      * https://tools.ietf.org/html/draft-zyp-json-schema-04
     """
     if args is None:
         args = sys.argv[1:]

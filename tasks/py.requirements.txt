@@ -5,7 +5,7 @@
 #    pip install -r <THIS_FILE>
 #
 # SEE ALSO:
-#  * http://www.pip-installer.org/
+#  * https://www.pip-installer.org/
 # ============================================================================
 
 invoke >=1.7.0,<2.0; python_version <  '3.6'

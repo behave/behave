@@ -47,7 +47,7 @@ The issues we had with Lettuce that stopped us using it were:
 * Lettuce uses import hackery so .pyc files are left around and the module
   namespace is polluted.
 
-.. _Lettuce: http://lettuce.it/
+.. _Lettuce: https://github.com/gabrielfalcao/lettuce
 
 Freshen_
 ========

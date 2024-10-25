@@ -39,7 +39,7 @@ extensions = [
 ]
 optional_extensions = [
     # -- DISABLED: "sphinxcontrib.youtube",
-    # http://www.sphinx-doc.org/en/stable/faq.html
+    # https://www.sphinx-doc.org/en/stable/faq.html
     "rinoh.frontend.sphinx",    # ALTERNATIVE FOR: LATEX-PDF
     "rst2pdf.pdfbuilder",       # PDF
 
