@@ -919,12 +919,22 @@ class Runner(ModelRunner):
             self.hooks["before_all"] = self.before_all_default_hook
 
     def load_step_definitions(self, extra_step_paths=None):
+        """
+        Allow steps to import other stuff from the steps dir
+        NOTE: Default matcher can be overridden in "environment.py" hook.
+        Collect directories containing step files
+        """
         if extra_step_paths is None:
             extra_step_paths = []
-        # -- Allow steps to import other stuff from the steps dir
-        # NOTE: Default matcher can be overridden in "environment.py" hook.
+
         steps_dir = os.path.join(self.base_dir, self.config.steps_dir)
-        step_paths = [steps_dir] + list(extra_step_paths)
+        step_paths = set()
+
+        for root, _, files in os.walk(steps_dir):
+            step_paths.add(root)
+
+        step_paths = list(step_paths) + list(extra_step_paths)
+
         load_step_modules(step_paths)
 
     def feature_locations(self):
