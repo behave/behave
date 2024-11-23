@@ -1,5 +1,5 @@
 @issue
-Feature: Issue #1282 -- pyproject.toml that does not contain any [tool] sections
+Feature: Issue #1202 -- pyproject.toml that does not contain any [tool] sections
 
   . DESCRIPTION:
   .   * "behave" fails if "pyproject.toml" file exists without any "[tool]" section
