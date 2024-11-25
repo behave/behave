@@ -300,7 +300,7 @@ tag_expression_protocol = {value}
         TagExpressionProtocol.use(TagExpressionProtocol.DEFAULT)
         cls.make_config_file_with_tag_expression_protocol(value, tmp_path)
         with use_current_directory(tmp_path):
-            config = Configuration()
+            config = Configuration([])
             print("USE: tag_expression_protocol.value={0}".format(value))
             print("USE: config.tag_expression_protocol={0}".format(
                 config.tag_expression_protocol))
@@ -335,7 +335,7 @@ tag_expression_protocol = {value}
         self.make_config_file_with_tag_expression_protocol(value, tmp_path)
         with use_current_directory(tmp_path):
             with pytest.raises(ValueError) as exc_info:
-                config = Configuration()
+                config = Configuration([])
                 print("USE: tag_expression_protocol.value={0}".format(value))
                 print("USE: config.tag_expression_protocol={0}".format(
                     config.tag_expression_protocol))
