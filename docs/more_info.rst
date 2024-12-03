@@ -185,19 +185,31 @@ JetBrains PyCharm:
 .. _`In-Depth Screencast on Testing`: https://blog.jetbrains.com/pycharm/2016/04/in-depth-screencast-on-testing/
 
 
-
 Find more Information
 ------------------------------------------------------------------------------
 
 .. seealso::
 
-    * google:`python-behave examples <https://www.google.com/?q=python-behave%20examples>`_
-    * google:`python-behave tutorials <https://www.google.com/?q=python-behave%20tutorials>`_
-    * google:`python-behave videos <https://www.google.com/?q=python-behave%20videos>`_
+    * `python-behave examples <https://www.google.com/search?q=python-behave%20examples>`_ (Google)
+    * `python-behave tutorials <https://www.google.com/search?q=python-behave%20tutorials>`_ (Google)
+    * `python-behave videos <https://www.google.com/search?q=python-behave%20videos>`_ (Google)
 
 
-.. _Behave:     https://github.com/behave/behave
-.. _behave:     https://github.com/behave/behave
-.. _behave4cmd: https://github.com/behave/behave4cmd
-.. _behave-django: https://github.com/behave/behave-django
-.. _Selenium:   https://docs.seleniumhq.org/
+Get Involved
+------------------------------------------------------------------------------
+
+* `GitHub discussions`_ (user questions and discussions)
+* `GitHub issues`_ (discuss bugs and features)
+* `GitHub pull requests`_ (propose changes, fixes, features)
+* `StackOverflow`_ (tag: python-behave)
+
+
+.. _Behave:                 https://github.com/behave/behave
+.. _behave:                 https://github.com/behave/behave
+.. _behave4cmd:             https://github.com/behave/behave4cmd
+.. _behave-django:          https://github.com/behave/behave-django
+.. _GitHub discussions:     https://github.com/behave/behave/discussions
+.. _GitHub issues:          https://github.com/behave/behave/issues
+.. _GitHub pull requests:   https://github.com/behave/behave/pulls
+.. _Selenium:               https://docs.seleniumhq.org/
+.. _StackOverflow:          https://stackoverflow.com/questions/tagged/python-behave
