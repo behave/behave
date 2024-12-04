@@ -34,22 +34,25 @@ repository (supersedes: ``https://pypi.python.org``):
 IDE Plugins
 ------------------------------------------------------------------------------
 
-=============== =================== ======================================================================================
-IDE             Plugin              Description
-=============== =================== ======================================================================================
-`PyCharm`_      `PyCharm BDD`_      PyCharm 4 (Professional edition) has **built-in support** for `behave`_.
-`PyCharm`_      Gherkin             PyCharm/IDEA editor support for Gherkin.
-`Eclipse`_      `Cucumber-Eclipse`_ Plugin contains editor support for Gherkin.
-`VisualStudio`_ `cuke4vs`_          VisualStudio plugin with editor support for Gherkin.
-=============== =================== ======================================================================================
+=============== ==================== ======================================================================================
+IDE             Plugin               Description
+=============== ==================== ======================================================================================
+`PyCharm`_      `PyCharm BDD`_       PyCharm 4 (Professional edition) has **built-in support** for `behave`_.
+`PyCharm`_      Gherkin              PyCharm/IDEA editor support for Gherkin.
+`Eclipse`_      `Cucumber-Eclipse`_  Plugin contains editor support for Gherkin.
+`VisualStudio`_ `cuke4vs`_           VisualStudio plugin with editor support for Gherkin.
+`VSCode`_       `cucumber-official`_ Official VSCode extension for Cucumber, with Gherkin and `behave`_ support.
+=============== ==================== ======================================================================================
 
 .. _PyCharm:        https://www.jetbrains.com/pycharm/
 .. _Eclipse:        https://www.eclipse.org/
 .. _VisualStudio:   https://visualstudio.microsoft.com/
+.. _VSCode:         https://code.visualstudio.com
 
 .. _`PyCharm BDD`: https://blog.jetbrains.com/pycharm/2014/09/feature-spotlight-behavior-driven-development-in-pycharm/
 .. _`Cucumber-Eclipse`: https://cucumber.github.io/cucumber-eclipse/
 .. _cuke4vs:        https://github.com/henritersteeg/cuke4vs
+.. _`cucumber-official`: https://marketplace.visualstudio.com/items?itemName=CucumberOpen.cucumber-official
 
 .. hidden_BROKEN:
 
