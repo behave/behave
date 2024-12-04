@@ -54,12 +54,12 @@ Books
 
 ..
 
-    [TDD-Python] Harry Percival,
-    `Test-Driven Web Development with Python`_, O'Reilly, June 2014,
-    `Appendix E: BDD <https://chimera.labs.oreilly.com/books/1234000000754/ape.html>`_
-    (covers behave)
+    Harry Percival,
+    `Test-Driven Development with Python`_, 2nd Edition, O'Reilly, August 2017
+    (focuses on Web development with Django, covers Behave in Appendix E: BDD)
 
-.. _`Test-Driven Web Development with Python`: https://chimera.labs.oreilly.com/books/1234000000754
+.. _Test-Driven Development with Python:
+    https://www.oreilly.com/library/view/test-driven-development-with/9781491958698/
 
 
 Presentation Videos
