@@ -108,6 +108,7 @@ Name           Description
 ============== =========================================================================
 allure         :pypi:`allure-behave`, an Allure formatter for behave.
 html           :pypi:`behave-html-formatter`, a simple HTML formatter for behave.
+html-pretty    :pypi:`behave-html-pretty-formatter`, a pretty HTML formatter for behave.
 teamcity       :pypi:`behave-teamcity`, a formatter for JetBrains TeamCity CI testruns
                with behave.
 ============== =========================================================================
@@ -123,6 +124,7 @@ EXAMPLE:
     [behave.formatters]
     allure = allure_behave.formatter:AllureFormatter
     html = behave_html_formatter:HTMLFormatter
+    html-pretty = behave_html_pretty_formatter:PrettyHTMLFormatter
     teamcity = behave_teamcity:TeamcityFormatter
 
 
