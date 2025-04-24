@@ -2023,7 +2023,7 @@ class Table(Replayable):
 
         if rows:
             for index, row in enumerate(rows):
-                self.add_row(row, line+index+1)
+                self.add_row(row, self.line+index+1)
 
     def clear(self, headings=None, keep_headings=True):
         if keep_headings and not headings:
