@@ -137,29 +137,35 @@ class PrettyFormatter(Formatter):
     def match(self, match):
         self._match = match
         self.print_statement()
-        self.print_step(Status.executing, self._match.arguments,
-                        self._match.location, proceed=self.monochrome)
+        if self.colored:
+            self.print_step(
+                Status.executing,
+                self._match.arguments,
+                self._match.location,
+                proceed=self.colored
+            )
         self.stream.flush()
 
     def result(self, step):
-        if self.colored:
-            lines = self.step_lines + 1
-            if self.show_multiline:
-                if step.table:
-                    lines += len(step.table.rows) + 1
-                if step.text:
-                    lines += len(step.text.splitlines()) + 2
-            self.stream.write(up(lines))
+        if len(self.steps) > 0:
             arguments = []
             location = None
             if self._match:
                 arguments = self._match.arguments
                 location = self._match.location
+            if self.colored:
+                lines = self.step_lines + 1
+                if self.show_multiline:
+                    if step.table:
+                        lines += len(step.table.rows) + 1
+                    if step.text:
+                        lines += len(step.text.splitlines()) + 2
+                self.stream.write(up(lines))
             self.print_step(step.status, arguments, location, proceed=True)
-        if step.error_message:
-            self.stream.write(indent(step.error_message.strip(), u"      "))
-            self.stream.write("\n\n")
-        self.stream.flush()
+            if step.error_message:
+                self.stream.write(indent(step.error_message.strip(), u"      "))
+                self.stream.write("\n\n")
+            self.stream.flush()
 
     def arg_format(self, key):
         return self.format(key + "_arg")
