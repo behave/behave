@@ -303,12 +303,19 @@ class Parser(object):
             keyword = self.keywords["scenario"][0]
             self._build_scenario_statement(keyword, line=u"{0}:".format(keyword))
 
+        previous_line = ""
         for line in text.splitlines():
             self.line += 1
             if not line.strip() and self.state != State.MULTILINE_TEXT:
                 # -- SKIP EMPTY LINES, except in multiline string args.
                 continue
-            self.action(line)
+            combined_line = line
+            if previous_line:
+                combined_line = f"{previous_line} {line.lstrip()}"
+            if (feed_line := self.action(combined_line)) is not None:
+                previous_line = feed_line
+            else:
+                previous_line = ""
 
         if self.table is not None:
             self.action_table("")
@@ -474,6 +481,14 @@ class Parser(object):
                 self.language = language
                 self.keywords = i18n.languages[language]
             return
+
+        stripped_line = line.rstrip()
+        if stripped_line.endswith("\\"):
+            if self.state not in [State.SCENARIO, State.STEPS, State.MULTILINE_TEXT]:
+                msg = u"Backslash escape invalid in state %s" % self.state
+                raise ParserError(msg, self.line, self.filename, line)
+            elif self.state != State.MULTILINE_TEXT:
+                return stripped_line[:-1].rstrip()
 
         state_name = self.state.name.lower()
         func = getattr(self, "action_" + state_name, None)
