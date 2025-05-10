@@ -295,6 +295,8 @@ class PrettyFormatter(Formatter):
             step = self.steps.pop(0)
         else:
             step = self.steps[0]
+        # -- FIX: Protect against type-conversion errors/MatchWithError
+        arguments = arguments or []
 
         text_format = self.format(status.name)
         arg_format = self.arg_format(status.name)

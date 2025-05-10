@@ -99,6 +99,7 @@ FIXED:
 * FIXED: Some tests related to python-3.11
 * FIXED: Some tests related to python-3.9
 * FIXED: active-tag logic if multiple tags with same category exists.
+* issue #1231: TypeConverter error causes error in "pretty" formatter (provided-by: rittneje)
 * issue #1202: behave fails with pyproject.toml without any [tool] sections (provided by: con-fah)
 * issue #1177: Bad type-converter pattern: MatchWithError is turned into AmbiguousStep (submitted by: omrischwarz)
 * issue #1170: TagExpression auto-detection is not working properly (submitted by: Luca-morphy)

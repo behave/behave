@@ -126,7 +126,8 @@ class JSONFormatter(Formatter):
 
     def match(self, match):
         args = []
-        for argument in match.arguments:
+        matched_arguments = match.arguments or []
+        for argument in matched_arguments:
             argument_value = argument.value
             if not isinstance(argument_value, self.json_scalar_types):
                 # -- OOPS: Avoid invalid JSON format w/ custom types.
