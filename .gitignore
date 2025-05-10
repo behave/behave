@@ -7,7 +7,6 @@
 build/
 dist/
 __pycache__/
-__pypackages__/
 __WORKDIR__/
 __*/
 __*.txt
@@ -15,7 +14,6 @@ __*.rst
 _build/
 _WORKSPACE/
 reports/
-tools/virtualenvs
 .cache/
 .direnv/
 .fleet/
