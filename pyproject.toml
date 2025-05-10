@@ -64,8 +64,8 @@ keywords = [
     "BDD", "behavior-driven-development", "bdd-framework",
     "behave", "gherkin", "cucumber-like"
 ]
-license = {text = "BSD-2-Clause"}
-# DISABLED: license-files = ["LICENSE"]
+license = "BSD-2-Clause"
+license-files = ["LICENSE"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
@@ -87,7 +87,6 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: Jython",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Software Development :: Testing",
-    "License :: OSI Approved :: BSD License",
 ]
 dependencies = [
     "cucumber-tag-expressions >= 4.1.0",
