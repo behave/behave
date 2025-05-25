@@ -1243,7 +1243,7 @@ class Scenario(TagAndStatusStatement, Replayable):
             failed = True
 
         # -- CAPTURED-OUTPUT:
-        store_captured = (runner.config.junit or self.status == Status.failed)
+        store_captured = (runner.config.junit or self.status.has_failed())
         if store_captured:
             self.captured = runner.capture_controller.captured
 
