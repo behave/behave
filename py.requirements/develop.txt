@@ -35,7 +35,7 @@ coverage >= 5.0
 pytest-cov
 tox   >= 3.28.0,<4.0     # -- HINT: tox >= 4.0 has breaking changes.
 virtualenv >= 20.26.6; python_version >= '3.7'
-virtualenv <  20.22.0; python_version <  '3.7'   # -- SUPPORT FOR: Python 2.7, Python <= 3.6
+virtualenv <20.31.3; python_version <  '3.7'   # -- SUPPORT FOR: Python 2.7, Python <= 3.6
 
 # -- REQUIRED FOR: docs
 -r docs.txt
