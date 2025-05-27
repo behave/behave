@@ -27,14 +27,6 @@ from .testing_support_async import AsyncStepTheory
 #         print("async_step: Should sleep for %.3f seconds" % duration)
 #         await asyncio.sleep(duration)
 #
-# if python_version >= 3.4:
-#     @step('a tagged-coroutine async step waits "{duration:f}" seconds')
-#     @async_run_until_complete
-#     @asyncio.coroutine
-#     def step_async_step_waits_seconds2(context, duration):
-#         print("async_step2: Should sleep for %.3f seconds" % duration)
-#         yield from asyncio.sleep(duration)
-#
 # -----------------------------------------------------------------------------
 # TEST MARKERS:
 # -----------------------------------------------------------------------------
@@ -176,7 +168,6 @@ class TestAsyncStepRunPy35:
         given_async_step_passes(context)
         when_async_step_passes(context)
         assert context.traced_steps == ["async-step1", "async-step2"]
-
 
     def test_async_step_fails(self):
         """ENSURE: Failures in async-steps are detected correctly."""

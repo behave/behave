@@ -53,7 +53,6 @@ for optional_module_name in optional_extensions:
 
 
 extlinks = {
-    "this": ("https://github.com/behave/behave/blob/main/%s", "%s"),  # AKA: this_repo
     "this_repo": ("https://github.com/behave/behave/blob/main/%s", "%s"),
     "behave": ("https://github.com/behave/behave", None),
     "behave.example": ("https://github.com/behave/behave.example", None),

@@ -141,3 +141,73 @@ Feature: Logging to a file
         LOG.WARNING -- foo: LOG_MESSAGE_2
         LOG.INFO -- foo.bar: LOG_MESSAGE_3
         """
+
+  Scenario: Log records for passing/failing steps appear in log-file (2 Scenarios)
+    Given a file named "features/log_records_and_passes.feature" with:
+        """
+        Feature: Log Records and Passing/Failing
+          Scenario: Passing
+            Given I create log records with:
+              | category | level   | message |
+              | root     | ERROR   | LOG_MESSAGE_1 |
+              | foo      | WARNING | LOG_MESSAGE_2 |
+            When another step passing
+
+          Scenario: Failing
+            Given I create log records with:
+              | category | level   | message |
+              | other    | INFO    | LOG_MESSAGE_3 |
+            When another step fails
+        """
+    When I run "behave -f plain features/log_records_and_passes.feature"
+    Then it should fail
+    And the command output should not contain the following log records:
+        | category | level   | message       |
+        | root     | ERROR   | LOG_MESSAGE_1 |
+        | foo      | WARNING | LOG_MESSAGE_2 |
+    And the command output should contain the following log records:
+        | category | level   | message       |
+        | other    | INFO    | LOG_MESSAGE_3 |
+    But the file "behave.log" should contain:
+        """
+        LOGFILE.ERROR -- root: LOG_MESSAGE_1
+        LOGFILE.WARNING -- foo: LOG_MESSAGE_2
+        LOGFILE.INFO -- other: LOG_MESSAGE_3
+        """
+
+  Scenario: Log records for failing/passing steps appear in log-file (2 Features)
+    Given a file named "features/log_records1.failing.feature" with:
+        """
+        Feature: Log Records and Failing 1
+          Scenario: A
+            Given I create log records with:
+              | category | level   | message |
+              | root     | ERROR   | LOG_MESSAGE_1 |
+              | foo      | WARNING | LOG_MESSAGE_2 |
+            When another step fails
+        """
+    And a file named "features/log_records2.passeing.feature" with:
+        """
+        Feature: Log Records and Passing 2
+          Scenario: B
+            Given I create log records with:
+              | category | level   | message |
+              | other2   | INFO    | LOG_MESSAGE_3 |
+            When another step passes
+        """
+    When I run "behave -f plain features"
+    Then it should fail
+    And the command output should contain the following log records:
+        | category | level   | message       |
+        | root     | ERROR   | LOG_MESSAGE_1 |
+        | foo      | WARNING | LOG_MESSAGE_2 |
+    And the command output should not contain the following log records:
+        | category | level   | message       |
+        | other2   | INFO  | LOG_MESSAGE_3 |
+    But the file "behave.log" should contain:
+        """
+        LOGFILE.ERROR -- root: LOG_MESSAGE_1
+        LOGFILE.WARNING -- foo: LOG_MESSAGE_2
+        LOGFILE.INFO -- other2: LOG_MESSAGE_3
+        """
+

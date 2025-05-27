@@ -20,25 +20,6 @@ PYTHON_VERSION = sys.version_info[:2]
 class PythonFeature(object):
 
     @staticmethod
-    def has_asyncio_coroutine_decorator():
-        """Indicates if python supports ``@asyncio.coroutine`` decorator.
-
-        EXAMPLE::
-
-            import asyncio
-            @asyncio.coroutine
-            def async_waits_seconds(duration):
-                yield from asyncio.sleep(duration)
-
-        :returns: True, if this python version supports this feature.
-
-        .. since:: Python >= 3.4
-        .. deprecated:: Since Python 3.8 (use async-function instead)
-        """
-        # -- NOTE: @asyncio.coroutine is deprecated in py3.8, removed in py3.10
-        return (3, 4) <= PYTHON_VERSION < (3, 10)
-
-    @staticmethod
     def has_async_function():
         """Indicates if python supports async-functions / async-keyword.
 
@@ -59,4 +40,4 @@ class PythonFeature(object):
 
     @classmethod
     def has_coroutine(cls):
-        return cls.has_async_function() or cls.has_asyncio_coroutine_decorator()
+        return cls.has_async_function()

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# REQUIRES: Python >= 3.4/3.5
+# REQUIRES: Python >= 3.5
 
 import sys
 from behave import given, then, step
@@ -20,13 +20,6 @@ if PythonFeature.has_async_function():
     # SINCE: Python 3.5 (preferred)
     async def async_func(param):
         await asyncio.sleep(0.2)
-        return str(param).upper()
-elif PythonFeature.has_asyncio_coroutine_decorator():
-    # -- USE: @asyncio.coroutine decorator
-    # SINCE: Python 3.4, deprecated since Python 3.8, removed in Python 3.10
-    @asyncio.coroutine
-    def async_func(param):
-        yield from asyncio.sleep(0.2)
         return str(param).upper()
 
 

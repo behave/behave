@@ -6,8 +6,11 @@ step implementations (step definitions). This is necessary to execute steps.
 """
 
 from __future__ import absolute_import, print_function
+
+import inspect
 import sys
 
+from behave.async_step import AsyncStepFunction
 from behave.matchers import make_step_matcher
 from behave.textutil import text as _text
 
@@ -175,8 +178,16 @@ class StepRegistry(object):
         return None
 
     def make_decorator(self, step_type):
-        def decorator(step_text):
+        """
+        Creates a step decorator for this step type.
+
+        .. versionchanged:: 1.2.7
+            Support for async-step functions was added.
+        """
+        def decorator(step_text, **kwargs):
             def wrapper(func):
+                if inspect.iscoroutinefunction(func):
+                    func = AsyncStepFunction(func, **kwargs)
                 self.add_step_definition(step_type, step_text, func)
                 return func
             return wrapper

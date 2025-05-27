@@ -33,7 +33,7 @@ Update Gherkin Language Specification
 -------------------------------------
 
 An ``invoke`` command will download the latest Gherkin language
-specification and update the `behave/i18n.py`_ module:
+specification and update the :this_repo:`behave/i18n.py` module:
 
 .. code-block:: console
 
@@ -42,12 +42,10 @@ specification and update the `behave/i18n.py`_ module:
 If there were changes this command will have updated two files:
 
 #. ``etc/gherkin/gherkin-languages.json`` (original Cucumber JSON spec)
-#. ``behave/i18n.py`` (Python module generated from the JSON spec)
+#. :this_repo:`behave/i18n.py` (Python module generated from the JSON spec)
 
 Put both under version control and open a PR to merge them.
 
-.. _behave/i18n.py:
-    https://github.com/behave/behave/blob/master/behave/i18n.py
 
 Update Documentation
 --------------------

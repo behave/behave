@@ -65,9 +65,11 @@ CLEANUPS:
 * Remove ``stdout_capture``, ``stderr_capture``, ``log_capture``
   attributes from ``behave.runner.Context`` class
   (use: ``captured`` attribute instead).
+* Remove ``@asyncio.coroutine`` decorator examples and tests.
 
 ENHANCEMENTS:
 
+* Async-steps: Now directly supported by step decorators.
 * logging: Simplify logging to a file in ``Configuration.setup_logging()``.
 * logging: Support additional log-format styles, not only percent-style (since: Python 3.2).
 * Add support for step-definitions (step-matchers) with `CucumberExpressions`_

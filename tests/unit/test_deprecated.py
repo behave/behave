@@ -1,17 +1,35 @@
 # -*- coding: UTF-8 -*-
-# pylint: disable=wildcard-import,unused-wildcard-import
 """
-Unit test facade to protect pytest runner from 3.5 grammar changes:
-
-* Runs tests related to async-steps.
+Verifies that DeprecatedWarnings, PendingDeprecationWarnings work as expected.
 """
 
 from __future__ import absolute_import, print_function
+from behave.api.async_step import (
+    async_run_until_complete,
+    use_or_create_event_loop,
+)
 from behave.capture import CaptureController
 from behave.configuration import Configuration
 from behave.runner import Context, ModelRunner
 from mock import Mock
 import pytest
+
+
+class TestApiAsyncStep:
+    """
+    Covers :mod:`behave.api.async_step`.
+    """
+
+    def test_deprecated_async_run_until_complete(self):
+        """Ensure that the ``@async_run_until_complete`` issues a warning."""
+        with pytest.warns(PendingDeprecationWarning, match=r"@async_run_until_complete.*"):
+            @async_run_until_complete
+            async def async_step_example(ctx):
+                pass
+
+    def test_deprecated_use_or_create_event_loop(self):
+        with pytest.warns(PendingDeprecationWarning, match=r"use_or_create_event_loop:.*"):
+            _ = use_or_create_event_loop()
 
 
 class TestConfiguration(object):

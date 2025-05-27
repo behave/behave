@@ -20,21 +20,6 @@ EXAMPLE:
     async def step_async_step_waits_seconds(context, duration):
         await asyncio.sleep(duration)
 
-.. code-block:: python
-
-    # -- FILE: features/steps/my_async_steps2.py
-    # EXAMPLE REQUIRES: Python >= 3.4
-    from behave import step
-    from behave.api.async_step import async_run_until_complete
-    import asyncio
-
-    @step('a tagged-coroutine async step waits {duration:f} seconds')
-    @async_run_until_complete
-    @asyncio.coroutine
-    def step_async_step_waits_seconds2(context, duration):
-        yield from asyncio.sleep(duration)
-
-
 .. requires:: Python 3.5 (or 3.4) or :mod:`asyncio` backport (like :pypi:`trollius`)
 .. seealso::
     https://docs.python.org/3/library/asyncio.html
@@ -43,32 +28,24 @@ EXAMPLE:
 """
 # pylint: enable=line-too-long
 
-from __future__ import print_function
-# -- REQUIRES: Python >= 3.4
-# MAYBE BACKPORT: trollius
-import functools
-import sys
-from six import string_types
-try:
-    import asyncio
-    has_asyncio = True
-except ImportError:
-    has_asyncio = False
-
-_PYTHON_VERSION = sys.version_info[:2]
+# -- REQUIRES: Python >= 3.5
+from __future__ import absolute_import, print_function
+import warnings as _warnings
 
 
 # -----------------------------------------------------------------------------
 # ASYNC STEP DECORATORS:
 # -----------------------------------------------------------------------------
-def async_run_until_complete(astep_func=None, loop=None, timeout=None,
-                             async_context=None, should_close=False):
-    """Provides a function decorator for async-steps (coroutines).
+def async_run_until_complete(astep_func=None, timeout=None,
+                             loop=None, async_context=None):
+    """
+    Provides a function decorator for async-steps (coroutines).
     Provides an async event loop and runs the async-step until completion
     (or timeout, if specified).
 
     .. code-block:: python
 
+        # -- DEPRECATING: No longer needed (supported by normal step decorators)
         from behave import step
         from behave.api.async_step import async_run_until_complete
         import asyncio
@@ -86,91 +63,46 @@ def async_run_until_complete(astep_func=None, loop=None, timeout=None,
 
     Parameters:
         astep_func: Async step function (coroutine)
-        loop (asyncio.EventLoop):   Event loop to use or None.
         timeout (int, float):       Timeout to wait for async-step completion.
+        loop (asyncio.EventLoop):   Event loop to use or None.
         async_context (name):       Async_context name or object to use.
-        should_close (bool):        Indicates if event loop should be closed.
 
     .. note::
 
-        * If :param:`loop` is None, the default event loop will be used
-          or a new event loop is created.
         * If :param:`timeout` is provided, the event loop waits only the
           specified time.
+        * If :param:`loop` is None, the default event loop will be used
+          or a new event loop is created.
         * :param:`async_context` is only used, if :param:`loop` is None.
         * If :param:`async_context` is a name, it will be used to retrieve
           the real async_context object from the context.
 
+    .. deprecated:: 1.2.7
+        This step decorator is no longer needed. Use normal step decorators instead.
+
+    .. versionremoved:: 1.4.0
+        Support of async-step functions was added to normal step decorators.
     """
-    @functools.wraps(astep_func)
-    def step_decorator(astep_func, context, *args, **kwargs):
-        loop = kwargs.pop("_loop", None)
-        timeout = kwargs.pop("_timeout", None)
-        async_context = kwargs.pop("_async_context", None)
-        should_close = kwargs.pop("_should_close", None)
-
-        if isinstance(loop, string_types):
-            loop = getattr(context, loop, None)
-        elif async_context:
-            if isinstance(async_context, string_types):
-                name = async_context
-                async_context = use_or_create_async_context(context, name)
-                loop = async_context.loop
-            else:
-                assert isinstance(async_context, AsyncContext)
-                loop = async_context.loop
-        if loop is None:
-            if _PYTHON_VERSION < (3, 10):
-                # -- DEPRECATED SINCE: Python 3.10
-                loop = asyncio.get_event_loop()
-            if loop is None:
-                loop = asyncio.new_event_loop()
-                should_close = True
-
-        # -- WORKHORSE:
-        try:
-            if timeout is None:
-                loop.run_until_complete(astep_func(context, *args, **kwargs))
-            else:
-                # MAYBE: loop = asyncio.new_event_loop()
-                # MAYBE: should_close = True
-                task = loop.create_task(astep_func(context, *args, **kwargs))
-                done, pending = loop.run_until_complete(
-                    asyncio.wait([task], timeout=timeout))
-                assert not pending, "TIMEOUT-OCCURED: timeout=%s" % timeout
-                finished_task = done.pop()
-                exception = finished_task.exception()
-                if exception:
-                    raise exception
-        finally:
-            if loop and should_close:
-                # -- MAYBE-AVOID:
-                loop.close()
-
+    message = "@async_run_until_complete (no longer needed)."
+    _warnings.warn(message, PendingDeprecationWarning, stacklevel=2)
+    from behave.async_step import AsyncStepFunction
     if astep_func is None:
         # -- CASE: @decorator(timeout=1.2, ...)
-        # MAYBE: return functools.partial(step_decorator,
-        def wrapped_decorator1(astep_func):
-            @functools.wraps(astep_func)
-            def wrapped_decorator2(context, *args, **kwargs):
-                return step_decorator(astep_func, context, *args,
-                                      _loop=loop,
-                                      _timeout=timeout,
-                                      _async_context=async_context,
-                                      _should_close=should_close, **kwargs)
-            assert callable(astep_func)
-            return wrapped_decorator2
-        return wrapped_decorator1
+        def wrapped_decorator(astep_func):
+            async_step_func = AsyncStepFunction(astep_func,
+                                                timeout=timeout,
+                                                loop=loop,
+                                                async_context=async_context)
+            return async_step_func
+        return wrapped_decorator
     else:
         # -- CASE: @decorator ... or astep = decorator(astep)
-        # MAYBE: return functools.partial(step_decorator, astep_func=astep_func)
         assert callable(astep_func)
-
-        @functools.wraps(astep_func)
-        def wrapped_decorator(context, *args, **kwargs):
-            return step_decorator(astep_func, context, *args, **kwargs)
-        return wrapped_decorator
-
+        async_step_func = AsyncStepFunction(astep_func,
+                                            timeout=timeout,
+                                            loop=loop,
+                                            async_context=async_context)
+        return async_step_func
 
 # -- ALIAS:
 run_until_complete = async_run_until_complete
@@ -236,43 +168,37 @@ class AsyncContext(object):
     default_name = "async_context"
 
     def __init__(self, loop=None, name=None, should_close=False, tasks=None):
-        # DISABLED: loop = asyncio.get_event_loop() or asyncio.new_event_loop()
-        self.loop = use_or_create_event_loop(loop)
+        from behave.async_step import use_or_assign_event_loop
+        self.loop = use_or_assign_event_loop(loop)
         self.tasks = tasks or []
         self.name = name or self.default_name
         self.should_close = should_close
 
     def __del__(self):
+        # print("DIAG: AsyncContext.dtor: {}".format(self.name))
         if self.loop and self.should_close:
             self.close()
 
     def close(self):
         if self.loop and not self.loop.is_closed():
+            # print("DIAG: AsyncContext.close: {}".format(self.name))
             self.loop.close()
-            self.loop = None
+        self.loop = None
 
 
 # -----------------------------------------------------------------------------
 # ASYNC STEP UTILITY FUNCTIONS:
 # -----------------------------------------------------------------------------
 def use_or_create_event_loop(loop=None):
-    if loop:
-        # -- USE: Supplied event loop.
-        return loop
-
-    # -- NORMAL CASE: Try to use the current event loop or create a new one.
-    try:
-        # -- SINCE: Python 3.7
-        return asyncio.get_running_loop()
-    except RuntimeError:
-        return asyncio.new_event_loop()
-    except AttributeError:
-        # -- BACKWARD-COMPATIBLE: For Python < 3.7
-        return asyncio.get_event_loop()
+    from behave.async_step import use_or_assign_event_loop
+    message = "use_or_create_event_loop: Use use_or_assign_event_loop() instead"
+    _warnings.warn(message, PendingDeprecationWarning)
+    return use_or_assign_event_loop(loop)
 
 
 def use_or_create_async_context(context, name=None, loop=None, **kwargs):
-    """Utility function to be used in step implementations to ensure that an
+    """
+    Utility function to be used in step implementations to ensure that an
     :class:`AsyncContext` object is stored in the :param:`context` object.
 
     If no such attribute exists (under the given name),

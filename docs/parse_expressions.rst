@@ -80,7 +80,7 @@ Cardinality            Description
 .. _parse module: https://github.com/r1chardj0n3s/parse
 .. _parse_type: https://github.com/jenisys/parse_type
 .. _string.format: https://docs.python.org/3/library/string.html#format-string-syntax
-.. _CardinalityField: https://github.com/jenisys/parse_type/blob/master/README.rst#extended-parser-with-cardinalityfield-support
+.. _CardinalityField: https://github.com/jenisys/parse_type/blob/main/README.rst#extended-parser-with-cardinalityfield-support
 
 .. _re module: https://docs.python.org/3/library/re.html#module-re
 .. _Python regular expressions: https://docs.python.org/3/library/re.html#module-re

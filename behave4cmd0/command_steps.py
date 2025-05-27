@@ -12,6 +12,8 @@ TODO:
 
 from __future__ import absolute_import, print_function
 
+import re
+
 from behave import when, then, matchers # pylint: disable=no-name-in-module
 from behave4cmd0 import command_shell, command_util, textutil
 from behave4cmd0.step_util import (DEBUG,
@@ -296,8 +298,12 @@ def step_command_output_should_match_pattern(context, pattern):
           Then the command output should match /Hello \\w+/
     """
     # steputil.assert_attribute_exists(context, "command_result")
+    regex_flags = (re.MULTILINE | re.UNICODE | re.DOTALL)
+    compiled_pattern = re.compile(pattern, regex_flags)
     text = context.command_result.output.strip()
-    textutil.assert_text_should_match_pattern(text, pattern)
+    printable_pattern = pattern.replace(r"\(", "(").replace(r"\)", ")")
+    with on_assert_failed_print_details(text, printable_pattern):
+        textutil.assert_text_should_match_pattern(text, compiled_pattern)
 
 
 @then(u'the command output should not match /{pattern}/')

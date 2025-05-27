@@ -17,8 +17,9 @@ from behave.tag_expression.parser import TagExpressionError
 
 __all__ = [
     "ClassNotFoundError",
+    "CleanupError",
     "ConfigError",
-    "ConfigTypeError",
+    "ConfigParamTypeError",
     "ConstraintError",
     "FileNotFoundError",
     "InvalidClassError",
@@ -27,7 +28,10 @@ __all__ = [
     "ModuleNotFoundError",
     "NotSupportedWarning",
     "ObjectNotFoundError",
+    "PendingStepError",
     "ResourceExistsError",
+    "StepNotImplementedError",
+    "StepFunctionTypeError",
     "TagExpressionError",
 ]
 
@@ -63,6 +67,8 @@ class ConfigParamTypeError(ConfigError):
 class StepNotImplementedError(NotImplementedError):
     """Should be raised if a step is not implemented yet."""
 
+class StepFunctionTypeError(TypeError):
+    """Wrong step function type is used."""
 
 class PendingStepError(StepNotImplementedError):
     """Alternative to StepNotImplementedError for a pending step."""

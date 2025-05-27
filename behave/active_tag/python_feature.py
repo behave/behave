@@ -14,15 +14,11 @@ from behave.python_feature import PythonFeature
 # -- PYTHON FEATURE, like: @use.with_python.feature.coroutine=yes
 ACTIVE_TAG_VALUE_PROVIDER = {
     "python.feature.coroutine": BoolValueObject(PythonFeature.has_coroutine()),
-    "python.feature.asyncio.coroutine_decorator":
-        BoolValueObject(PythonFeature.has_asyncio_coroutine_decorator()),
     "python.feature.async_function": BoolValueObject(PythonFeature.has_async_function()),
     "python.feature.async_keyword": BoolValueObject(PythonFeature.has_async_keyword()),
 
     # -- DEPRECATING (older active-tag names):
     "python_has_coroutine": BoolValueObject(PythonFeature.has_coroutine()),
-    "python_has_asyncio.coroutine_decorator":
-        BoolValueObject(PythonFeature.has_asyncio_coroutine_decorator()),
     "python_has_async_function": BoolValueObject(PythonFeature.has_async_function()),
     "python_has_async_keyword": BoolValueObject(PythonFeature.has_async_keyword()),
 }

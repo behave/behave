@@ -1,4 +1,4 @@
-@use.with_python.feature.coroutine=true
+@use.with_python.min_version=3.5
 Feature:
   Scenario:
     Given I dispatch an async-call with param "Alice"

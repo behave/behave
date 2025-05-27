@@ -1,7 +1,8 @@
 # -*- coding: UTF-8 -*-
+# REQUIRES: Python >= 3.5
 # pylint: disable=wildcard-import,unused-wildcard-import
 """
-Unit test facade to protect pytest runner from Python 3.4/3.5 grammar changes.
+Unit test facade to protect pytest runner from Python 3.5 grammar changes.
 
 .. note::
 

@@ -1,7 +1,7 @@
 @use.with_python.min_version=3.5
-Feature: Async-Step Support
+Feature: Async-Step with Step Decorator
 
-  SINCE: behave v1.2.7.dev7
+  DEPRECATING: Better use normal step decorators (since: behave v1.2.7).
 
   As a test writer and step provider
   I want to test async frameworks or protocols (that use asyncio)
@@ -14,10 +14,10 @@ Feature: Async-Step Support
   .     (collects the results of the async-calls and verifies them)
   .
   . TERMINOLOGY: async-step
-  .  An async-step uses an async-function as coroutine using async/await keywords
-  .  (requires: Python >= 3.5).
+  .  An async-step is either
+  .    * an async-function as coroutine using async/await keywords (Python >= 3.5)
   .
-  .  # -- EXAMPLE CASE (since Python 3.5):
+  .  # -- EXAMPLE CASE 1 (since Python 3.5):
   .  async def coroutine1(duration):
   .      await asyncio.sleep(duration)
   .
@@ -26,14 +26,16 @@ Feature: Async-Step Support
   .   The async-step can directly interact with other async-functions.
 
 
-    Scenario: Use Async-Step
+    Scenario: Use Async-Step with Step Decorator
       Given a new working directory
       And a file named "features/steps/async_steps35.py" with:
         """
         from behave import step
+        from behave.api.async_step import async_run_until_complete
         import asyncio
 
         @step('an async-step waits {duration:f} seconds')
+        @async_run_until_complete
         async def step_async_step_waits_seconds(context, duration):
             await asyncio.sleep(duration)
         """
@@ -51,44 +53,18 @@ Feature: Async-Step Support
              Given an async-step waits 0.2 seconds ... passed in 0.2
         """
 
-    Scenario: Use Async-Step with Timeout and NO_TIMEOUT occurs
+
+    Scenario: Use @async_run_until_complete(timeout=...) and TIMEOUT occurs (async-function)
       Given a new working directory
       And a file named "features/steps/async_steps_timeout35.py" with:
         """
         from behave import step
+        from behave.api.async_step import async_run_until_complete
         import asyncio
 
-        @step('an async-step waits {duration:f} seconds with timeout', timeout=0.1)
-        async def step_async_step_waits_seconds_with_timeout(context, duration):
-            await asyncio.sleep(duration)
-        """
-      And a file named "features/async_timeout35.feature" with:
-        """
-        Feature:
-          Scenario:
-            Given an async-step waits 0.010 seconds with timeout
-        """
-      When I run "behave -f plain --show-timings features/async_timeout35.feature"
-      Then it should pass with:
-        """
-        1 step passed, 0 failed, 0 skipped
-        """
-      And the command output should contain:
-        """
-        Given an async-step waits 0.010 seconds with timeout ... passed in 0.01
-        """
-      And the command output should not contain "TIMEOUT"
-
-    Scenario: Use Async-Step with Timeout and TIMEOUT occurs
-      Given a new working directory
-      And a file named "features/steps/async_steps_timeout35.py" with:
-        """
-        from behave import step
-        import asyncio
-
-        # BAD-TIMEOUT-BY-DESIGN
-        @step('an async-step waits {duration:f} seconds with timeout', timeout=0.1)
-        async def step_async_step_waits_seconds_with_timeout(context, duration):
+        @step('an async-step waits {duration:f} seconds with timeout')
+        @async_run_until_complete(timeout=0.1)  # BAD-TIMEOUT-BY-DESIGN
+        async def step_async_step_waits_seconds_with_timeout35(context, duration):
             await asyncio.sleep(duration)
         """
       And a file named "features/async_timeout35.feature" with:
@@ -108,21 +84,24 @@ Feature: Async-Step Support
         """
       And the command output should contain:
         """
-        ASSERT FAILED: TIMEOUT-OCCURED: timeout=0.1
+        Assertion Failed: TIMEOUT-OCCURRED: timeout=0.1
         """
 
     @async_step_fails
-    Scenario: Use Async-Step that fails
+    Scenario: Use @async_run_until_complete and async-step fails (async-function)
       Given a new working directory
       And a file named "features/steps/async_steps_fails35.py" with:
         """
         from behave import step
+        from behave.api.async_step import async_run_until_complete
 
         @step('an async-step passes')
+        @async_run_until_complete
         async def step_async_step_passes(context):
             pass
 
         @step('an async-step fails')
+        @async_run_until_complete
         async def step_async_step_fails(context):
             assert False, "XFAIL in async-step"
         """
@@ -145,21 +124,24 @@ Feature: Async-Step Support
         """
       And the command output should contain:
         """
-        ASSERT FAILED: XFAIL in async-step
+        Assertion Failed: XFAIL in async-step
         """
 
     @async_step_fails
-    Scenario: Use Async-Step that raises error
+    Scenario: Use @async_run_until_complete and async-step raises error (async-function)
       Given a new working directory
       And a file named "features/steps/async_steps_exception35.py" with:
         """
         from behave import step
+        from behave.api.async_step import async_run_until_complete
 
         @step('an async-step passes')
+        @async_run_until_complete
         async def step_async_step_passes(context):
             pass
 
         @step('an async-step raises an exception')
+        @async_run_until_complete
         async def step_async_step_raises_exception(context):
             raise RuntimeError("XFAIL in async-step")
         """
@@ -183,4 +165,32 @@ Feature: Async-Step Support
       And the command output should contain:
         """
         raise RuntimeError("XFAIL in async-step")
+        """
+
+    Scenario: Sync-Step with Async-Step Decorator raises StepFunctionTypeError
+
+      NOTE: This error is raised during the steps loading phase.
+
+      Given a new working directory
+      And a file named "features/steps/sync_steps.py" with:
+        """
+        from behave import step
+        from behave.api.async_step import async_run_until_complete
+        from time import sleep
+
+        @step('a sync-step waits {duration:f} seconds')
+        @async_run_until_complete  # PROBLEM-POINT: Needs async-function
+        def sync_step_waits_seconds(context, duration):
+            sleep(duration)
+        """
+      And a file named "features/async_sync_mismatch.feature" with:
+        """
+        Feature:
+          Scenario:
+            Given an sync-step waits 0.2 seconds
+        """
+      When I run "behave -f plain features/async_sync_mismatch.feature"
+      Then it should fail with:
+        """
+        StepFunctionTypeError: function (NEEDS: async-function)
         """

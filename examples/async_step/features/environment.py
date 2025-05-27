@@ -5,9 +5,9 @@ from behave.api.runtime_constraint import require_min_python_version
 from behave.active_tag import python_feature
 
 # -----------------------------------------------------------------------------
-# REQUIRE: python >= 3.4
+# REQUIRE: python >= 3.5
 # -----------------------------------------------------------------------------
-require_min_python_version("3.4")
+require_min_python_version("3.5")
 
 
 # -----------------------------------------------------------------------------

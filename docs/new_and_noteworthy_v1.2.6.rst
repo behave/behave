@@ -179,9 +179,7 @@ EXAMPLE:
 
 .. seealso::
 
-    * `issue.features/issue0302.feature`_ for details
-
-.. _`issue.features/issue0302.feature`: https://github.com/behave/behave/blob/master/issue.features/issue0302.feature
+    * :this_repo:`issue.features/issue0302.feature` for details
 
 
 Configuration Improvements
@@ -254,9 +252,7 @@ to be skipped.
 
 .. seealso::
 
-    * `features/runner.hook_errors.feature`_ for the detailed specification
-
-.. _`features/runner.hook_errors.feature`: https://github.com/behave/behave/blob/master/features/runner.hook_errors.feature
+    * :this_repo:`features/runner.hook_errors.feature` for the detailed specification
 
 
 Option: Continue after Failed Step in a Scenario
@@ -289,9 +285,7 @@ EXAMPLE:
 
 .. seealso::
 
-    * `features/runner.continue_after_failed_step.feature`_ for the detailed specification
-
-.. _`features/runner.continue_after_failed_step.feature`: https://github.com/behave/behave/blob/master/features/runner.continue_after_failed_step.feature
+    * :this_repo:`features/runner.continue_after_failed_step.feature` for the detailed specification
 
 
 Testing asyncio Frameworks
@@ -327,14 +321,8 @@ A simple example for the implementation of the async-steps is shown for:
 
 .. literalinclude:: ../examples/async_step/features/steps/_async_steps35.py
     :language: python
-    :prepend:
-        # -- FILE: features/steps/async_steps35.py
+    :caption: FILE: features/steps/async_steps35.py
 
-
-.. literalinclude:: ../examples/async_step/features/steps/_async_steps34.py
-    :language: python
-    :prepend:
-        # -- FILE: features/steps/async_steps34.py
 
 When you use the async-step from above in a feature file and run it with behave:
 
@@ -348,7 +336,7 @@ When you use the async-step from above in a feature file and run it with behave:
 
     .. literalinclude:: ../examples/async_step/features/async_run.feature
         :language: gherkin
-        :prepend: # -- FILE: features/async_run.feature
+        :caption: FILE: features/async_run.feature
 
 .. note::
 
@@ -370,7 +358,7 @@ A simple example of this approach is shown in the following feature file:
 
 .. literalinclude:: ../examples/async_step/features/async_dispatch.feature
     :language: gherkin
-    :prepend: # -- FILE: features/async_dispatch.feature
+    :caption: FILE: features/async_dispatch.feature
 
 When you run this feature file:
 
@@ -410,7 +398,8 @@ This functionality is normally used in:
 
 .. code-block:: python
 
-    # -- SIGNATURE: Context.add_cleanup(cleanup_func, *args, **kwargs)
+    :caption: SIGNATURE: Context.add_cleanup(cleanup_func, *args, **kwargs)
+
     # CLEANUP CALL EXAMPLES:
     context.add_cleanup(cleanup0)                       # CALLS LATER: cleanup0()
     context.add_cleanup(cleanup1, 1, 2)                 # CALLS LATER: cleanup1(1, 2)
@@ -424,8 +413,8 @@ This depends on the the context layer when the cleanup function was registered
 Example:
 
 .. code-block:: python
+    :caption: FILE: features/environment.py
 
-    # -- FILE: features/environment.py
     def before_all(context):
         context.add_cleanup(cleanup_me)
         # -- ON CLEANUP: Calls cleanup_me()
@@ -441,9 +430,7 @@ Example:
 
 .. seealso::
 
-    For more details, see `features/runner.context_cleanup.feature`_ .
-
-.. _`features/runner.context_cleanup.feature`: https://github.com/behave/behave/blob/master/features/runner.context_cleanup.feature
+    For more details, see :this_repo:`features/runner.context_cleanup.feature` .
 
 
 Fixtures
@@ -455,8 +442,9 @@ Providing a Fixture
 ~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
+    :caption: FILE: behave4my_project/fixtures.py
 
-    # -- FILE: behave4my_project/fixtures.py  (or in: features/environment.py)
+    # -- ALTERNATIVE-FILE-OPTION: features/environment.py
     from behave import fixture
     from somewhere.browser.firefox import FirefoxBrowser
 
@@ -473,8 +461,8 @@ Using a Fixture
 ~~~~~~~~~~~~~~~
 
 .. code-block:: Gherkin
+    :caption: FILE: features/use_fixture1.feature
 
-    # -- FILE: features/use_fixture1.feature
     Feature: Use Fixture on Scenario Level
 
         @fixture.browser.firefox
@@ -484,8 +472,8 @@ Using a Fixture
         # -- AFTER-SCENARIO: Cleanup fixture.browser.firefox
 
 .. code-block:: python
+    :caption: FILE: features/environment.py
 
-    # -- FILE: features/environment.py
     from behave import use_fixture
     from behave4my_project.fixtures import browser_firefox
 
@@ -497,6 +485,4 @@ Using a Fixture
 .. seealso::
 
     * :ref:`docid.fixtures` description for details
-    * `features/fixture.feature`_
-
-.. _`features/fixture.feature`: https://github.com/behave/behave/blob/master/features/fixture.feature
+    * :this_repo:`features/fixture.feature`

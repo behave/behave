@@ -17,6 +17,7 @@ Summary:
 * `Step definitions with Cucumber-Expressions`_
 * `Improved Logging Support`_
 * `Improved Capture Support`_
+* `Step Decorators: Support for Async-Steps`_
 
 BREAKING CHANGES:
 
@@ -377,12 +378,8 @@ The exception is raised when the bad regular expression is compiled
 
 .. note:: More Information on BAD STEP-DEFINITIONS:
 
-    * :this:`features/formatter.bad_steps.feature`
-    * :this:`features/runner.bad_steps.feature`
-
-
-.. _`features/formatter.bad_steps.feature`: https://github.com/behave/behave/blob/main/features/formatter.bad_steps.feature
-.. _`features/runner.bad_steps.feature`: https://github.com/behave/behave/blob/main/features/runner.bad_steps.feature
+    * :this_repo:`features/formatter.bad_steps.feature`
+    * :this_repo:`features/runner.bad_steps.feature`
 
 
 Gherkin Parser strips no longer trailing colon from step
@@ -482,8 +479,8 @@ Support for Pending Steps
 A **pending step** looks like:
 
 .. code-block:: python
+    :caption: FILE: features/steps/pending_step_example.py
 
-    # -- FILE: features/steps/pending_step_example.py
     from behave import given, when, then
     from behave.api.pending_step import StepNotImplementedError
 
@@ -496,8 +493,8 @@ But you can mark a scenario temporarily with the `@wip` tag
 to let any of its pending steps pass:
 
 .. code-block:: gherkin
+    :caption: FILE: features/pending_step.feature
 
-    # -- FILE: features/pending_step.feature
     Feature: Example
 
       @wip
@@ -507,6 +504,7 @@ to let any of its pending steps pass:
         Then another step passes
 
 .. code-block:: bash
+    :caption: SHELL: Run behave tests
 
     $ behave -f plain features/pending_step.feature
     Feature: Example
@@ -523,6 +521,7 @@ to let any of its pending steps pass:
 Without the `@wip` marker, a scenario with pending steps causes an error:
 
 .. code-block:: bash
+    :caption: SHELL: Run behave tests
 
     $ behave -f plain features/other_pending_step.feature
     Feature: Example 2
@@ -538,11 +537,8 @@ Without the `@wip` marker, a scenario with pending steps causes an error:
 
 .. note:: More Information on **pending steps** and **undefined steps**:
 
-    * `features/step.pending_steps.feature`_
-    * `features/step.undefined_steps.feature`_
-
-.. _`features/step.pending_steps.feature`: https://github.com/behave/behave/blob/main/features/step.pending_steps.feature
-.. _`features/step.undefined_steps.feature`: https://github.com/behave/behave/blob/main/features/step.undefined_steps.feature
+    * :this_repo:`features/step.pending_steps.feature`
+    * :this_repo:`features/step.undefined_steps.feature`
 
 
 Step Definitions with Cucumber-Expressions
@@ -644,7 +640,7 @@ and regular-expression patterns from other ``parse-functions`` or data, like:
 .. seealso:: `cucumber-expressions`_
 
     * Repository: https://github.com/cucumber/cucumber-expressions
-    * :this:`features/step_matcher.cucumber_expressions.feature`
+    * :this_repo:`features/step_matcher.cucumber_expressions.feature`
 
 .. seealso:: parse-expressions
 
@@ -657,6 +653,7 @@ and regular-expression patterns from other ``parse-functions`` or data, like:
 
 
 .. _`cucumber-expressions`: https://github.com/cucumber/cucumber-expressions
+
 
 Improved Logging Support
 -------------------------------------------------------------------------------
@@ -753,6 +750,57 @@ Attribute Name         Old Attribute Name    Description
     A deprecating warning will be emitted if you use the old names.
 
 
+Step Decorators: Support for Async-Steps
+-------------------------------------------------------------------------------
+
+To simplify usage, the normal step decorators directly support async-steps now, like:
+
+.. code-block:: python
+    :caption: FILE: features/steps/async_steps.py
+
+    # -- NOW:
+    import asyncio
+    from behave import given, when, then, step
+
+    @step('a coroutine step waits "{duration:f}" seconds')
+    async def step_coroutine_waits_seconds(ctx, duration: float):
+        await asyncio.sleep(duration)
+
+    @when('I execute the long running command', timeout=20.0)
+    async def step_execute_long_running_command(ctx):
+        # -- HINT: Step fails if step duration exceeds 20 seconds.
+        pass  # ...
+
+.. code-block:: python
+    :caption: FILE: features/steps/async_steps_before.py
+
+    # -- BEFORE:
+    import asyncio
+    from behave import step
+    from behave.api.async_step import async_run_until_complete
+
+    @step('a coroutine step waits "{duration:f}" seconds')
+    @async_run_until_complete
+    async def step_async_step_waits_seconds(ctx, duration: float):
+        await asyncio.sleep(duration)
+
+    @when('I execute the long running command')
+    @async_run_until_complete(timeout=20.0)
+    async def step_execute_long_running_command(ctx):
+        # -- HINT: Fails if step duration exceeds 20 seconds.
+        pass  # ...
+
+
+.. admonition:: DEPRECATING ``@async_run_until_complete`` decorator
+
+    * BETTER: Use nornmal step decorators instead.
+    * The support for ``@async_run_until_complete`` decorator will be removed in behave v1.4.0.
+
+.. seealso::
+
+    * :this_repo:`features/step.async_steps.feature`
+
+
 Changes
 -------------------------------------------------------------------------------
 
@@ -764,5 +812,6 @@ NEW :mod:`behave.model_type` module:
 
 * Moved generic model classes here from :mod:`behave.model_core` module, like:
   :class:`behave.model_core.Status`, :class:`behave.model_core.FileLocation`.
+
 
 .. include:: _common_extlinks.rst
