@@ -6,6 +6,9 @@ import logging
 import functools
 import re
 
+from behave.log_config import (
+    LoggingConfigurator as _LoggingConfigurator
+)
 
 class RecordFilter(object):
     """Implement logging record filtering as per the configuration
@@ -56,6 +59,7 @@ class LoggingCapture(BufferingHandler):
 
     .. __: behave.html#command-line-arguments
     """
+    DEFAULT_FORMAT = "LOG.%(levelname)s:%(name)s:%(message)s"
 
     def __init__(self, config, level=None):
         BufferingHandler.__init__(self, 1000)
@@ -63,15 +67,16 @@ class LoggingCapture(BufferingHandler):
         self.old_handlers = []
         self.old_level = None
 
-        # set my formatter
-        log_format = datefmt = None
+        # -- STEP: Create log-formatter
+        log_format = self.DEFAULT_FORMAT
         if config.logging_format:
             log_format = config.logging_format
-        else:
-            log_format = '%(levelname)s:%(name)s:%(message)s'
+        log_datefmt = None
         if config.logging_datefmt:
-            datefmt = config.logging_datefmt
-        formatter = logging.Formatter(log_format, datefmt)
+            log_datefmt = config.logging_datefmt
+
+        configurator = _LoggingConfigurator(config)
+        formatter = configurator.make_formatter(log_format, log_datefmt)
         self.setFormatter(formatter)
 
         # figure the level we're logging at

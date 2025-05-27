@@ -20,7 +20,7 @@ Feature: Setup logging_format
     Given a new working directory
     And a file named "features/steps/use_behave4cmd_steps.py" with:
         """
-        import behave4cmd0.log.steps
+        import behave4cmd0.log_steps
         import behave4cmd0.failing_steps
         import behave4cmd0.passing_steps
         """

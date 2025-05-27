@@ -11,7 +11,7 @@ import behave4cmd0.command_steps
 import behave4cmd0.environment_steps
 import behave4cmd0.filesystem_steps
 import behave4cmd0.workdir_steps
-import behave4cmd0.log.steps
+import behave4cmd0.log_steps
 
 import behave4cmd0.failing_steps
 import behave4cmd0.passing_steps

@@ -22,7 +22,7 @@ Feature: Capture log output
     Given a new working directory
     And a file named "features/steps/use_behave4cmd_steps.py" with:
         """
-        import behave4cmd0.log.steps
+        import behave4cmd0.log_steps
         import behave4cmd0.failing_steps
         import behave4cmd0.passing_steps
         """
@@ -95,6 +95,12 @@ Feature: Capture log output
 
 
     Scenario: Captured log is shown up to first failure if scenario fails
+        Given I use "LOG.%(levelname)s:%(name)s: %(message)s" as log record format
+        And a file named "behave.ini" with:
+          """
+          [behave]
+          logging_format = LOG.%(levelname)s:%(name)s: %(message)s
+          """
         When I run "behave -f plain -T --logcapture features/example.log_and_fail.feature"
         Then it should fail with:
             """
@@ -115,10 +121,10 @@ Feature: Capture log output
                 When another step fails ... failed
             Assertion Failed: EXPECT: Failing step
             Captured logging:
-            CRITICAL:root:Hello Alice
-            ERROR:foo:Hello Bob
-            WARNING:foo.bar:Hello Charly
-            INFO:bar:Hello Dora
+            LOG.CRITICAL:root: Hello Alice
+            LOG.ERROR:foo: Hello Bob
+            LOG.WARNING:foo.bar: Hello Charly
+            LOG.INFO:bar: Hello Dora
             """
         And the command output should contain the following log records:
             | category | level   | message |
@@ -135,6 +141,12 @@ Feature: Capture log output
 
       Ensure that only log-records are shown that exceed the logging-level.
 
+        Given I use "LOG.%(levelname)s:%(name)s: %(message)s" as log record format
+        And a file named "behave.ini" with:
+          """
+          [behave]
+          logging_format = LOG.%(levelname)s:%(name)s: %(message)s
+          """
         When I run "behave -f plain --logcapture --logging-level=ERROR features/example.log_and_fail.feature"
         Then it should fail
         And the command output should contain the following log records:

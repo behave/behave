@@ -5,6 +5,7 @@ Provides some utility functions related to text processing.
 
 from __future__ import absolute_import, print_function
 import codecs
+import io
 import os
 import sys
 import six
@@ -53,6 +54,22 @@ def compute_words_maxsize(words):
         if len(word) > max_size:
             max_size = len(word)
     return max_size
+
+
+def text_encoding(encoding=None):
+    """
+    Compatibility adapter to :func:`io.text_encoding()`.
+
+    :param encoding:  Encoding to use.
+    :return: Selected encoding.
+
+    .. versionadded:: 1.2.7
+    """
+    # -- SINCE: Python 3.10 -- io.text_encoding()
+    text_encoding_func = getattr(io, "text_encoding", None)
+    if text_encoding_func is None:
+        text_encoding_func = lambda x: x or "utf-8"
+    return text_encoding_func(encoding)
 
 
 def is_ascii_encoding(encoding):
@@ -140,7 +157,7 @@ def text(value, encoding=None, errors=None):
 def to_texts(args, encoding=None, errors=None):
     """Process a list of string-like objects into list of unicode values.
     Optionally converts binary text into unicode for each item.
-    
+
     :return: List of text/unicode values.
     """
     if encoding is None:

@@ -19,7 +19,7 @@ Feature: Setup logging_level
     Given a new working directory
     And a file named "features/steps/use_behave4cmd_steps.py" with:
         """
-        import behave4cmd0.log.steps
+        import behave4cmd0.log_steps
         import behave4cmd0.failing_steps
         import behave4cmd0.passing_steps
         """
@@ -58,10 +58,12 @@ Feature: Setup logging_level
 
     Also ensure that command-line option can override configuration file info.
 
-    Given a file named "behave.ini" with:
+    Given I use "LOG.%(levelname)s %(name)s: %(message)s" as log record format
+    And a file named "behave.ini" with:
         """
         [behave]
         logging_level = INFO
+        logging_format = LOG_%(levelname)s %(name)s: %(message)s
         """
     When I run "behave -f plain -T --logging-level=WARN features/"
     Then it should fail with:
@@ -72,8 +74,8 @@ Feature: Setup logging_level
     And the command output should contain:
         """
         Captured logging:
-        ERROR:root:Hello1 log-error-record
-        WARNING:root:Hello1 log-warn-record
+        LOG_ERROR root: Hello1 log-error-record
+        LOG_WARNING root: Hello1 log-warn-record
         """
     But the command output should not contain the following log records:
         | category | level   | message                 | Comment |
@@ -87,10 +89,12 @@ Feature: Setup logging_level
 
   @capture
   Scenario: Logcapture mode: Use logging_level in configuration file
-    Given a file named "behave.ini" with:
+    Given I use "LOG.%(levelname)s:%(name)s: %(message)s" as log record format
+    And a file named "behave.ini" with:
         """
         [behave]
         logging_level = ERROR
+        logging_format = LOG_%(levelname)s:%(name)s: %(message)s
         """
     When I run "behave -f plain -T features/"
     Then it should fail with:
@@ -101,7 +105,7 @@ Feature: Setup logging_level
     And the command output should contain:
         """
         Captured logging:
-        ERROR:root:Hello1 log-error-record
+        LOG_ERROR:root: Hello1 log-error-record
         """
     But the command output should not contain the following log records:
         | category | level   | message                 | Comment |

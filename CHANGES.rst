@@ -68,6 +68,8 @@ CLEANUPS:
 
 ENHANCEMENTS:
 
+* logging: Simplify logging to a file in ``Configuration.setup_logging()``.
+* logging: Support additional log-format styles, not only percent-style (since: Python 3.2).
 * Add support for step-definitions (step-matchers) with `CucumberExpressions`_
 * Add formatter: steps.code -- Shows steps with code-section.
 * User-defined formatters: Improve diagnostics if bad formatter is used (ModuleNotFound, ...)
@@ -82,6 +84,7 @@ ENHANCEMENTS:
 * issue #1183: Support Background Steps with Placeholders for Scenario Outlines (submitted by: hemendra0851)
 * pull #1097: Support And-Step as initial Scenario step if Background Steps exist (provided-by: aneeshdurg)
 * pull  #988: setup.py: Add category to install additional formatters (html) (provided-by: bittner)
+* issue #979: Captured log to outfile (submitted by: janoskut)
 * pull  #895: UPDATE: i18n/gherkin-languages.json from cucumber repository #895 (related to: #827)
 * issue #889: Warn or error about incorrectly configured formatter aliases (provided by: jenisys, submitted by: bittner)
 * pull  #827: Fixed keyword translation in Estonian #827 (provided by: ookull)

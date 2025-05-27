@@ -15,6 +15,7 @@ This module provides the configuration for :mod:`behave`:
 from __future__ import absolute_import, print_function
 import argparse
 from collections import namedtuple
+from contextlib import contextmanager
 import json
 import logging
 from logging.config import fileConfig as logging_config_fileConfig
@@ -28,6 +29,8 @@ from six.moves import configparser
 
 from behave._types import Unknown
 from behave.exception import ConfigParamTypeError
+from behave.log_capture import LoggingCapture
+from behave.log_config import LoggingConfigurator
 from behave.model import ScenarioOutline
 from behave.model_core import FileLocation
 from behave.formatter.base import StreamOpener
@@ -751,7 +754,7 @@ class Configuration(object):
         stdout_capture=True,
         stderr_capture=True,
         log_capture=True,
-        logging_format="%(levelname)s:%(name)s:%(message)s",
+        logging_format="LOG_%(levelname)s:%(name)s: %(message)s",
         logging_level=logging.INFO,
         runner=DEFAULT_RUNNER_CLASS_NAME,
         steps_catalog=False,
@@ -1101,11 +1104,12 @@ class Configuration(object):
             return True
         return False
 
-    def setup_logging(self, level=None, configfile=None, **kwargs):
+    def setup_logging(self, level=None, filename=None, configfile=None, **kwargs):
         """
         Support simple setup of logging subsystem.
         Ensures that the logging level is set.
-        But note that the logging setup can only occur once.
+
+        .. note:: Logging setup should occur only once.
 
         SETUP MODES:
           * :func:`logging.config.fileConfig()`, if ``configfile`` is provided.
@@ -1118,28 +1122,25 @@ class Configuration(object):
 
         :param level:       Logging level of root logger.
                             If None, use :attr:`logging_level` value.
+        :param filename:    Log to file with this filename (otional).
         :param configfile:  Configuration filename for fileConfig() setup.
-        :param kwargs:      Passed to :func:`logging.basicConfig()`
-        """
-        if level is None:
-            level = self.logging_level      # pylint: disable=no-member
-        else:
-            # pylint: disable=import-outside-toplevel
-            level = logging_check_level(level)
+        :param kwargs:      Passed to :func:`logging.basicConfig()` or
+                                    :func:`logging.config.fileConfig()`
 
+        .. versionchanged:: 1.2.7
+
+            * Parameter "filename" was added to simplify logging to a file.
+        """
+        configurator = LoggingConfigurator(self)
         if configfile:
-            logging_config_fileConfig(configfile)
+            # -- BASED ON: logging.config.fileConfig()
+            configurator.configure_by_file(configfile, level=level, **kwargs)
+        elif filename:
+            # -- BASED ON: logging.basicConfig(filename, ...)
+            configurator.configure_file_sink(filename, level=level, **kwargs)
         else:
-            # pylint: disable=no-member
-            format_ = kwargs.pop("format", self.logging_format)
-            datefmt = kwargs.pop("datefmt", self.logging_datefmt)
-            logging.basicConfig(format=format_, datefmt=datefmt, **kwargs)
-        # -- ENSURE: Default log level is set
-        #    (even if logging subsystem is already configured).
-        # -- HINT: Ressign to self.logging_level
-        #    NEEDED FOR: behave.log_capture.LoggingCapture, capture
-        logging.getLogger().setLevel(level)
-        self.logging_level = level  # pylint: disable=W0201
+            # -- BASED ON: logging.basicConfig() without filename
+            configurator.configure_console_sink(level=level, **kwargs)
 
     def setup_model(self):
         if self.scenario_outline_annotation_schema:

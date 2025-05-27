@@ -9,8 +9,7 @@ Feature: Issue #194: Nested steps prevent that original stdout/stderr is restore
   .   * Original streams are restored in after_scenario() hook.
   .   * Nested steps should not replace existing capture objects.
 
-  @setup
-  Scenario: Feature Setup
+  Background:
     Given a new working directory
     And a file named "behave.ini" with:
         """

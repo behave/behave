@@ -10,12 +10,11 @@ Feature: Use --logging-clear-handlers configuration option
   So that I have the log-records output under control.
 
 
-  @setup
-  Scenario: Feature Setup
+  Background:
     Given a new working directory
     And a file named "features/steps/use_behave4cmd_steps.py" with:
         """
-        import behave4cmd0.log.steps
+        import behave4cmd0.log_steps
         import behave4cmd0.failing_steps
         import behave4cmd0.passing_steps
         """
@@ -27,7 +26,7 @@ Feature: Use --logging-clear-handlers configuration option
             logging.basicConfig(level=context.config.logging_level)
 
             # -- ADDITIONAL LOG-HANDLER: Which will be cleared.
-            format = "LOG-HANDLER2: %(name)s %(levelname)s: %(message)s;"
+            format = "INITIAL_LOG_HANDLER: %(name)s %(levelname)s: %(message)s;"
             handler = logging.StreamHandler()
             handler.setFormatter(logging.Formatter(format))
             root_logger = logging.getLogger()
@@ -51,7 +50,9 @@ Feature: Use --logging-clear-handlers configuration option
         [behave]
         log_capture = true
         logging_level = WARN
+        logging_format = LOG_%(levelname)s:%(name)s: %(message)s
         """
+    And I use "LOG_%(levelname)s:%(name)s: %(message)s" as log record format
     When I run "behave -f plain features/example.log_with_failure.feature"
     Then it should fail with:
         """
@@ -61,13 +62,13 @@ Feature: Use --logging-clear-handlers configuration option
     And the command output should contain:
         """
         Captured logging:
-        ERROR:root:Hello Alice
-        WARNING:root:Hello Bob
+        LOG_ERROR:root: Hello Alice
+        LOG_WARNING:root: Hello Bob
         """
     And the command output should contain:
         """
-        LOG-HANDLER2: root ERROR: Hello Alice;
-        LOG-HANDLER2: root WARNING: Hello Bob;
+        INITIAL_LOG_HANDLER: root ERROR: Hello Alice;
+        INITIAL_LOG_HANDLER: root WARNING: Hello Bob;
         """
 
 
@@ -77,18 +78,20 @@ Feature: Use --logging-clear-handlers configuration option
         [behave]
         log_capture = true
         logging_level = WARN
+        logging_format = LOG_%(levelname)s:%(name)s: %(message)s
         """
+    And I use "LOG_%(levelname)s:%(name)s: %(message)s" as log record format
     When I run "behave -f plain --logging-clear-handlers features/example.log_with_failure.feature"
     Then it should fail with:
         """
         Captured logging:
-        ERROR:root:Hello Alice
-        WARNING:root:Hello Bob
+        LOG_ERROR:root: Hello Alice
+        LOG_WARNING:root: Hello Bob
         """
     But the command output should not contain:
         """
-        LOG-HANDLER2: root ERROR: Hello Alice;
-        LOG-HANDLER2: root WARNING: Hello Bob;
+        INITIAL_LOG_HANDLER: root ERROR: Hello Alice;
+        INITIAL_LOG_HANDLER: root WARNING: Hello Bob;
         """
 
 
@@ -98,17 +101,18 @@ Feature: Use --logging-clear-handlers configuration option
         [behave]
         log_capture = true
         logging_level = WARN
+        logging_format = LOG_%(levelname)s:%(name)s: %(message)s
         logging_clear_handlers = true
         """
     When I run "behave -f plain features/example.log_with_failure.feature"
     Then it should fail with:
         """
         Captured logging:
-        ERROR:root:Hello Alice
-        WARNING:root:Hello Bob
+        LOG_ERROR:root: Hello Alice
+        LOG_WARNING:root: Hello Bob
         """
     But the command output should not contain:
         """
-        LOG-HANDLER2: root ERROR: Hello Alice;
-        LOG-HANDLER2: root WARNING: Hello Bob;
+        INITIAL_LOG_HANDLER: root ERROR: Hello Alice;
+        INITIAL_LOG_HANDLER: root WARNING: Hello Bob;
         """

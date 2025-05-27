@@ -15,6 +15,7 @@ Summary:
 * `Distinguish between Failures and Errors`_
 * `Support for Pending Steps`_
 * `Step definitions with Cucumber-Expressions`_
+* `Improved Logging Support`
 
 BREAKING CHANGES:
 
@@ -642,4 +643,34 @@ and regular-expression patterns from other ``parse-functions`` or data, like:
 
 
 .. _`cucumber-expressions`: https://github.com/cucumber/cucumber-expressions
+
+Improved Logging Support
+-------------------------------------------------------------------------------
+
+It is now simpler to set up the logging to a file in `behave`:
+
+.. code-block:: python
+    :caption: FILE: features/environment.py
+
+    def before_all(ctx):
+        log_format = "LOGFILE.{levelname} -- {name}: {message}"
+        ctx.config.setup_logging(filename="behave.log", format=log_format)
+
+    # -- NOTE: Setup with logging configuration file was needed before.
+
+.. tip::
+
+    `behave`_ supports now the newer, additional format styles for log record formats:
+
+    * f-string format style, like: ``{message}``
+    * shell placeholder format style, like: ``${message}``
+
+    Only the percent-string placeholder style was supported before (like: ``%(message)s``).
+
+.. seealso::
+
+    * :this_repo:`features/logging.to_file.feature`
+    * :this_repo:`features/logging.setup_with_configfile.feature`
+    * :python.docs:`howto/logging-cookbook.html#use-of-alternative-formatting-styles`
+
 .. include:: _common_extlinks.rst

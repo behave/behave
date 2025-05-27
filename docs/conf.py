@@ -54,12 +54,14 @@ for optional_module_name in optional_extensions:
 
 extlinks = {
     "this": ("https://github.com/behave/behave/blob/main/%s", "%s"),  # AKA: this_repo
+    "this_repo": ("https://github.com/behave/behave/blob/main/%s", "%s"),
     "behave": ("https://github.com/behave/behave", None),
     "behave.example": ("https://github.com/behave/behave.example", None),
     "issue":  ("https://github.com/behave/behave/issues/%s", "issue #%s"),
     "pull":  ("https://github.com/behave/behave/issues/%s", "PR #%s"),
     "github": ("https://github.com/%s", "github:/"),
     "pypi": ("https://pypi.org/project/%s", "%s"),
+    "python.docs": ('https://docs.python.org/3/%s', "python docs: %s"),
     "youtube": ("https://www.youtube.com/watch?v=%s", "youtube:video=%s"),
 
     # -- CUCUMBER RELATED:
