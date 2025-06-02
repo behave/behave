@@ -111,6 +111,7 @@ def step_directory_named_does_not_exist(context, directory):
 # FILE STEPS:
 # -----------------------------------------------------------------------------
 @step(u'a file named "{filename}" exists')
+@step(u'the file named "{filename}" exists')
 def step_file_named_filename_exists(context, filename):
     """
     Verifies that a file with this filename exists.
