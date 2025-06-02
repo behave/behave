@@ -2,6 +2,7 @@
 # justfile: A makefile like build script -- Command Runner
 # =============================================================================
 # REQUIRES: cargo install just
+# REQUIRES: uv tool install rust-just
 # PLATFORMS: macOS, Linux, Windows, ...
 # USAGE:
 #   just --list
@@ -11,13 +12,6 @@
 # SEE ALSO:
 #   * https://github.com/casey/just
 # =============================================================================
-# WORKS BEST FOR: macOS, Linux
-# PLATFORM HINTS:
-#  * Windows: Python 3.x has only "python.exe", but no "python3.exe"
-#             HINT: Requires "bash.exe", provided by WSL or git-bash.
-#  * Linux: Python 3.x has only "python3", but no "python" (for newer versions)
-#           HINT: "python" seems to be used for "python2".
-# =============================================================================
 
 # -- OPTION: Load environment-variables from "$HERE/.env" file (if exists)
 set dotenv-load
@@ -26,9 +20,11 @@ set export := true
 # -----------------------------------------------------------------------------
 # CONFIG:
 # -----------------------------------------------------------------------------
-HERE   := justfile_directory()
+HERE := justfile_directory()
+MARKER_DIR := HERE
 PYTHON_DEFAULT := if os() == "windows" { "python" } else { "python3" }
 PYTHON := env_var_or_default("PYTHON", PYTHON_DEFAULT)
+PIP := "uv pip"
 PIP_INSTALL_OPTIONS := env_var_or_default("PIP_INSTALL_OPTIONS", "--quiet")
 
 BEHAVE_FORMATTER := env_var_or_default("BEHAVE_FORMATTER", "progress")
@@ -41,23 +37,22 @@ PYTEST_OPTIONS   := env_var_or_default("PYTEST_OPTIONS", "")
 # DEFAULT-TARGET: Ensure that packages are installed and runs tests.
 default: (_ensure-install-packages "basic") (_ensure-install-packages "testing") test-all
 
+# Install all required Python packages.
+init: (_ensure-install-packages "all")
+
 # PART=all, testing, ...
 install-packages PART="all":
     @echo "INSTALL-PACKAGES: {{PART}} ..."
-    {{PYTHON}} -m pip install {{PIP_INSTALL_OPTIONS}} -r py.requirements/{{PART}}.txt
-    @touch "{{HERE}}/.done.install-packages.{{PART}}"
+    {{PIP}} install {{PIP_INSTALL_OPTIONS}} -r py.requirements/{{PART}}.txt
+    @touch "{{MARKER_DIR}}/.done.install-packages.{{PART}}"
 
 # ENSURE: Python packages are installed.
 _ensure-install-packages PART="all":
     #!/usr/bin/env python3
     from subprocess import run
     from os import path
-    if not path.exists("{{HERE}}/.done.install-packages.{{PART}}"):
+    if not path.exists("{{MARKER_DIR}}/.done.install-packages.{{PART}}"):
         run("just install-packages {{PART}}", shell=True)
-
-# -- SIMILAR: This solution requires a Bourne-like shell (may not work on: Windows).
-# _ensure-install-packages PART="testing":
-#   @test -e "{{HERE}}/.done.install-packages.{{PART}}" || just install-packages {{PART}}
 
 # Run tests.
 test *TESTS:
@@ -97,6 +92,10 @@ coverage:
 # coverage run -m behave --format={{BEHAVE_FORMATTER}} features
 # coverage run -m behave --format={{BEHAVE_FORMATTER}} issue.features
 # coverage run -m behave --format={{BEHAVE_FORMATTER}} tools/test-features
+
+# Run tox for one Python variant
+tox *ARGS: (_ensure-install-packages "use_py27")
+    tox {{ARGS}}
 
 # Cleanup most parts (but leave PRECIOUS parts).
 cleanup: (_ensure-install-packages "invoke")

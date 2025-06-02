@@ -2,14 +2,15 @@
 # PROJECT ENVIRONMENT SETUP: .envrc.use_venv
 # ===========================================================================
 # REQUIRES: direnv >= 2.21.0  -- NEEDED FOR: venv support
+# REQUIRES: uv -- pipx install uv
 # DESCRIPTION:
 #   Setup and use a Python virtual environment (venv).
 #   On entering the directory: Creates and activates a venv for a python version.
 #   On leaving  the directory: Deactivates the venv (virtual environment).
 #
 # ENABLE/DISABLE THIS OPTIONAL PART:
-#   * TO ENABLE:  Rename ".envrc.use_venv.disabled" to ".envrc.use_venv"
-#   * TO DISABLE: Rename ".envrc.use_venv" to ".envrc.use_venv.disabled"
+#   * TO ENABLE:  Rename ".envrc.use_venv.DISABLED" to ".envrc.use_venv"
+#   * TO DISABLE: Rename ".envrc.use_venv" to ".envrc.use_venv.DISABLED"
 #
 # SEE ALSO:
 #   * https://direnv.net/
@@ -17,6 +18,36 @@
 #   * https://direnv.net/man/direnv-stdlib.1.html#codelayout-python-ltpythonexegtcode
 # ===========================================================================
 
+# -- BASED ON:
+# * https://www.pythonbynight.com/blog/terminal
+# * https://github.com/tataraba/dotfiles/blob/main/.config/direnv/direnvrc
+function layout_uv() {
+    # MAYBE: UV_PROJECT_ENVIRONMENT
+    if [[ -d ".venv" ]]; then
+        VIRTUAL_ENV="$(pwd)/.venv"
+    fi
+
+    if [[ -z $VIRTUAL_ENV || ! -d $VIRTUAL_ENV ]]; then
+        log_status "CREATE_VENV: Using uv venv ..."
+        uv venv
+        uv pip install -r py.requirements/all.txt
+        VIRTUAL_ENV="$(pwd)/.venv"
+    fi
+
+    PATH_add "$VIRTUAL_ENV/bin"
+    export UV_ACTIVE=1  # or VENV_ACTIVE=1
+    export VIRTUAL_ENV
+}
+
+function use_venv() {
+    uv venv
+    source .venv/bin/activate
+    export UV_ACTIVE=1
+}
+
 # -- VIRTUAL ENVIRONMENT SUPPORT: layout python python3
 # VENV LOCATION: .direnv/python-$(PYTHON_VERSION)
-layout python python3
+# OLD: layout python python3
+
+# -- VIRTUAL ENVIRONMENT SUPPORT: With uv
+layout uv
