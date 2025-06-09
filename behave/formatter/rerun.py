@@ -27,7 +27,7 @@ from datetime import datetime
 from os.path import relpath
 import os
 from behave.formatter.base import Formatter
-from behave.model_core import Status
+from behave.model_type import Status
 
 
 # -----------------------------------------------------------------------------

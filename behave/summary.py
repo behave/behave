@@ -11,7 +11,7 @@ for collection a summary counts of a test run.
 from __future__ import absolute_import, print_function
 from collections import Counter, OrderedDict
 import six
-from behave.model_core import Status
+from behave.model_type import Status
 from behave.model_visitor import ModelVisitor
 
 

@@ -16,7 +16,7 @@ from behave.matchers import (
     register_step_matcher_class,
     use_step_matcher
 )
-from behave.model_core import Argument
+from behave.model_type import Argument
 
 # -- REQUIRES: Python >= 3.8
 from cucumber_expressions.expression import CucumberExpression

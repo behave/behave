@@ -12,7 +12,7 @@ executing a scope item.
 from __future__ import absolute_import
 import six
 from behave.formatter.base import Formatter
-from behave.model_core import Status
+from behave.model_type import Status
 from behave.textutil import text as _text
 
 

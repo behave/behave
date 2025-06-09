@@ -9,7 +9,7 @@ import sys
 from time import time as time_now
 
 from behave.model import Rule, ScenarioOutline
-from behave.model_core import Status
+from behave.model_type import Status
 from behave.reporter.base import Reporter
 from behave.formatter.base import StreamOpener
 from behave.summary import SummaryCounts, SummaryCollector, STATUS_ORDER

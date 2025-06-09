@@ -11,7 +11,7 @@ This module provides `JSON`_ formatters for :mod:`behave`:
 from __future__ import absolute_import
 import base64
 from behave.formatter.base import Formatter
-from behave.model_core import Status
+from behave.model_type import Status
 import six
 try:
     import json

@@ -5,7 +5,7 @@
 
 from __future__ import print_function
 import six
-from behave.model_core import Status, FileLocation
+from behave.model_type import Status, FileLocation
 import pytest
 
 

@@ -11,7 +11,8 @@ REQUIRES: Python >= 2.6 (json module is part of Python standard library)
 from __future__ import absolute_import
 import codecs
 from behave import model
-from behave.model_core import Status
+from behave.model_type import Status
+
 try:
     import json
 except ImportError:

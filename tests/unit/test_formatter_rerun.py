@@ -5,7 +5,7 @@ Test behave formatters:
 """
 
 from __future__ import absolute_import
-from behave.model_core import Status
+from behave.model_type import Status
 from .test_formatter import FormatterTests as FormatterTest, _tf
 from .test_formatter import MultipleFormattersTests as MultipleFormattersTest
 

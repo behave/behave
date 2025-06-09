@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# UNUSED: import sys
-# UNUSED: import codecs
 import os.path
-from behave.textutil import select_best_encoding, \
+from behave.textutil import (
+    select_best_encoding,
     ensure_stream_with_encoder as _ensure_stream_with_encoder
-
+)
 
 class StreamOpener(object):
     """Provides a transport vehicle to open the formatter output stream

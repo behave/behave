@@ -2,7 +2,7 @@
 
 from __future__ import absolute_import
 from behave.model import Feature, Scenario, reset_model
-from behave.model_core import Status
+from behave.model_type import Status
 from behave.runner import ModelRunner
 from behave.parser import parse_tags
 from behave.configuration import Configuration
@@ -85,9 +85,9 @@ def run_model_with_cmdline(model, cmdline):
     config = Configuration(command_args,
                            load_config=False,
                            default_format="null",
-                           stdout_capture=False,
-                           stderr_capture=False,
-                           log_capture=False)
+                           capture_stdout=False,
+                           capture_stderr=False,
+                           capture_log=False)
     model_runner = ModelRunner(config, model.features)
     return model_runner.run()
 

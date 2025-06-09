@@ -78,7 +78,7 @@ from xml.etree import ElementTree
 from datetime import datetime
 from behave.reporter.base import Reporter
 from behave.model import Rule, Scenario, ScenarioOutline, Step
-from behave.model_core import Status
+from behave.model_type import Status
 from behave.formatter import ansi_escapes
 from behave.model_describe import ModelDescriptor
 from behave.summary import SummaryCollector, SummaryCounts, StatusCounts
@@ -521,8 +521,11 @@ class JUnitReporter(Reporter):
             failure_type = "UnknownError"
             if scenario.exception:
                 failure_type = scenario.exception.__class__.__name__
+            scenario_error_message = scenario.error_message
+            if scenario_error_message:
+                scenario_error_message = scenario_error_message.strip()
             xml_element.set(u'type', failure_type)
-            xml_element.set(u'message', scenario.error_message.strip() or "")
+            xml_element.set(u'message', scenario_error_message or "")
             traceback_lines = traceback.format_tb(scenario.exc_traceback)
             traceback_lines.insert(0, u"Traceback:\n")
             text = _text(u"".join(traceback_lines))

@@ -4,7 +4,7 @@ from __future__ import absolute_import, division
 from mock import Mock, patch
 import sys
 from behave.model import ScenarioOutline
-from behave.model_core import Status
+from behave.model_type import Status
 from behave.reporter.summary import (
     SummaryReporter, OUTPUT_FORMAT_MAP,
     # NOT_USED: format_summary_v0, format_summary_v1,

@@ -10,8 +10,8 @@ from __future__ import absolute_import, print_function
 import inspect
 import sys
 
-from behave.model_core import Status
 from behave.model_describe import ModelPrinter
+from behave.model_type import Status
 from behave.textutil import indent, make_indentation
 from behave.step_registry import registry as the_step_registry
 from .plain import PlainFormatter

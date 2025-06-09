@@ -6,7 +6,7 @@ import six
 from six.moves import range, zip
 from behave.formatter.ansi_escapes import escapes, up
 from behave.formatter.base import Formatter
-from behave.model_core import Status
+from behave.model_type import Status
 from behave.model_describe import escape_cell, escape_triple_quotes
 from behave.textutil import indent, text as _text
 

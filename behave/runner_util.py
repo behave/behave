@@ -21,7 +21,7 @@ from behave.exception import (
     InvalidFileLocationError,
     InvalidFilenameError
 )
-from behave.model_core import FileLocation
+from behave.model_type import FileLocation
 from behave.model import Feature, Rule, ScenarioOutline, Scenario
 from behave.textutil import ensure_stream_with_encoder
 # LAZY: from behave.step_registry import setup_step_decorators

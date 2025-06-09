@@ -12,7 +12,7 @@ from behave.formatter._registry import make_formatters
 from behave.formatter import pretty
 from behave.formatter.base import StreamOpener
 from behave.model import Tag, Feature, Scenario, Step
-from behave.model_core import Status
+from behave.model_type import Status
 from behave.matchers import Match
 
 

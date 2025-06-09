@@ -10,7 +10,7 @@ This module provides helper class to simplify building many model elements.
 from __future__ import absolute_import, print_function
 import functools
 from behave.model import Scenario, Step, Feature, Rule
-from behave.model_core import Status
+from behave.model_type import Status
 from behave._types import Unknown
 
 
