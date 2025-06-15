@@ -115,6 +115,7 @@ FIXED:
 * pull  #967: Update __init__.py in behave import to fix pylint (provided by: dsayling)
 * issue #955: setup: Remove attribute 'use_2to3' (submitted by: krisgesling)
 * issue #948: Add support for value substitution in logging config file (submitted by: kowalcj0)
+* issue #783: Logging within the environment.py and Fixtures.py doesn't output (submitted by: MichaelAGill)
 * issue #772: ScenarioOutline.Examples without table (submitted by: The-QA-Geek)
 * issue #755: Failures with Python 3.8 (submitted by: hroncok)
 * issue #725: Scenario Outline description lines seem to be ignored (submitted by: nizwiz)
