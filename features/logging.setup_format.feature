@@ -1,11 +1,11 @@
 Feature: Setup logging_format
 
   As a tester
-  I want to configure the logging_format for log_capture mode
+  I want to configure the logging_format for capture_log mode
   So that log-records are shown in my preferred format.
 
   As a tester
-  I want to configure the logging_format for logging mode (no-log_capture)
+  I want to configure the logging_format for logging mode (capture_log=false)
   So that log-records are shown in my preferred format.
 
   . SPECIFICATION:
@@ -41,11 +41,11 @@ Feature: Setup logging_format
         """
 
   @capture
-  Scenario: Use logging_format on command-line (case: log_capture mode)
+  Scenario: Use logging_format on command-line (case: capture_log mode)
     Given a file named "behave.ini" with:
         """
         [behave]
-        log_capture = true
+        capture_log = true
         logging_level = WARN
         """
     When I run "behave -f plain -T --logging-format='LOG.%(levelname)-8s  %(name)-10s: %(message)s' features/"
@@ -54,10 +54,10 @@ Feature: Setup logging_format
         0 scenarios passed, 1 failed, 0 skipped
         1 step passed, 1 failed, 0 skipped
         """
-    And the command output should contain "Captured logging:"
+    And the command output should contain "CAPTURED LOG:"
     And the command output should contain:
         """
-        Captured logging:
+        CAPTURED LOG: scenario
         LOG.ERROR     root      : Hello Alice
         LOG.WARNING   root      : Hello Bob
         """
@@ -71,20 +71,20 @@ Feature: Setup logging_format
 
 
   @capture
-  Scenario: Use logging_format in config-file (case: log_capture mode)
+  Scenario: Use logging_format in config-file (case: capture_log mode)
     Given a file named "behave.ini" with:
         """
         [behave]
-        log_capture = true
+        capture_log = true
         logging_level = WARN
         logging_format = LOG.%(levelname)-8s  %(name)-10s: %(message)s
         """
     When I run "behave -f plain features/"
     Then it should fail
-    And the command output should contain "Captured logging:"
+    And the command output should contain "CAPTURED LOG:"
     And the command output should contain:
         """
-        Captured logging:
+        CAPTURED LOG: scenario
         LOG.ERROR     root      : Hello Alice
         LOG.WARNING   root      : Hello Bob
         """
@@ -94,7 +94,7 @@ Feature: Setup logging_format
     Given a file named "behave.ini" with:
         """
         [behave]
-        log_capture = false
+        capture_log = false
         logging_level = WARN
         """
     When I run "behave -f plain -T --logging-format='LOG.%(levelname)-8s  %(name)-10s: %(message)s' features/"
@@ -103,7 +103,7 @@ Feature: Setup logging_format
         0 scenarios passed, 1 failed, 0 skipped
         1 step passed, 1 failed, 0 skipped
         """
-    And the command output should not contain "Captured logging:"
+    And the command output should not contain "CAPTURED LOG:"
     And the command output should contain:
         """
         LOG.ERROR     root      : Hello Alice
@@ -123,13 +123,13 @@ Feature: Setup logging_format
     Given a file named "behave.ini" with:
         """
         [behave]
-        log_capture = false
+        capture_log = false
         logging_level = WARN
         logging_format = LOG.%(levelname)-8s  %(name)-10s: %(message)s
         """
     When I run "behave -f plain features/"
     Then it should fail
-    And the command output should not contain "Captured logging:"
+    And the command output should not contain "CAPTURED LOG:"
     And the command output should contain:
         """
         LOG.ERROR     root      : Hello Alice

@@ -74,12 +74,16 @@ class PrettyFormatter(Formatter):
         self.display_width = get_terminal_size()[0]
 
         # -- UNUSED: self.tag_statement = None
+        self.current_feature_scenario_counts = 0
+        self.current_feature = None
+        self.current_rule = None
+        self.current_scenario = None
+        self.indentations = []
+        self.statement = None
         self.steps = []
+        self.step_lines = 0
         self._uri = None
         self._match = None
-        self.statement = None
-        self.indentations = []
-        self.step_lines = 0
 
     @property
     def monochrome(self):
@@ -87,34 +91,48 @@ class PrettyFormatter(Formatter):
 
     def reset(self):
         # -- UNUSED: self.tag_statement = None
+        self.current_feature_scenario_counts = 0
+        self.current_feature = None
         self.current_rule = None
+        self.current_scenario = None
+        self.indentations = []
+        self.statement = None
         self.steps = []
+        self.step_lines = 0
         self._uri = None
         self._match = None
-        self.statement = None
-        self.indentations = []
-        self.step_lines = 0
 
+    # -- INTERFACE FOR: Formatter
     def uri(self, uri):
         self.reset()
         self._uri = uri
 
     def feature(self, feature):
-        #self.print_comments(feature.comments, '')
-        self.current_rule = None
+        self._finish_current_feature()
+
+        # -- FEATURE START:
+        self.current_feature_scenario_counts = 0
+        self.current_feature = feature
+        self.statement = feature
+
+        # -- PRINT FEATURE HEADER:
+        # MAYBE: self.print_comments(feature.comments, '')
         prefix = ""
         self.print_tags(feature.tags, prefix)
         self.stream.write(u"%s: %s" % (feature.keyword, feature.name))
         if self.show_source:
             # pylint: disable=redefined-builtin
-            format = self.format("comments")
-            self.stream.write(format.text(u" # %s" % feature.location))
+            this_format = self.format("comments")
+            self.stream.write(this_format.text(u" # %s" % feature.location))
         self.stream.write("\n")
         self.print_description(feature.description, "  ", False)
         self.stream.flush()
 
     def rule(self, rule):
-        self.replay()
+        self._finish_current_rule()
+        # AVOID: self.replay()
+
+        # -- START RULE:
         self.current_rule = rule
         self.statement = rule
 
@@ -123,13 +141,14 @@ class PrettyFormatter(Formatter):
         self.statement = background
 
     def scenario(self, scenario):
-        self.replay()
-        self.statement = scenario
+        self._finish_current_scenario()
+        # AVOID: self.replay()
 
-    def replay(self):
-        self.print_statement()
-        self.print_steps()
-        self.stream.flush()
+        # -- START SCENARIO:
+        self.current_feature_scenario_counts += 1
+        self.current_scenario = scenario
+        self.statement = scenario
+        # MAYBE: self.steps = []
 
     def step(self, step):
         self.steps.append(step)
@@ -156,9 +175,62 @@ class PrettyFormatter(Formatter):
                 arguments = self._match.arguments
                 location = self._match.location
             self.print_step(step.status, arguments, location, proceed=True)
+
+        # -- CASE: monochrome = not colored
+        # HINT: print_step() already called by match() function.
+        #       Step.status is not used in monochrome mode.
+
         if step.error_message:
             self.stream.write(indent(step.error_message.strip(), u"      "))
             self.stream.write("\n\n")
+        self.stream.flush()
+
+    def eof(self):
+        # AVOID: self.replay()
+        self._finish_current_feature()
+        if self.current_feature_scenario_counts > 0:
+            # -- ENSURE: EMPTY-LINE between two features.
+            self.stream.write("\n")
+
+        self.reset()
+        self.stream.flush()
+
+    # -- SPECIFIC PARTS:
+    def _print_current_scenario_captured_output(self):
+        if not self.current_scenario.captured.has_output():
+            return
+
+        output = self.current_scenario.captured.make_report()
+        self.stream.write(output)
+        self.stream.write(u" CAPTURED_SCENARIO_OUTPUT_END ----\n")
+
+    def _finish_current_scenario(self):
+        if self.current_scenario is None:
+            return
+
+        self.replay()  # -- REPLAY STEPS
+        # -- EXCLUDE: Status.hook_error for Scenario
+        # REASON: Printed in capture_output_to_sink() already.
+        if self.current_scenario.status in (Status.failed, Status.error):
+            self._print_current_scenario_captured_output()
+
+        self.steps = []
+        self.current_scenario = None
+
+    def _finish_current_rule(self):
+        self._finish_current_scenario()
+        self.current_rule = None
+
+    def _finish_current_feature(self):
+        if self.current_feature is None:
+            return
+
+        self._finish_current_rule()
+        self.current_feature = None
+
+    def replay(self):
+        self.print_statement()
+        self.print_steps()
         self.stream.flush()
 
     def arg_format(self, key):
@@ -174,16 +246,11 @@ class PrettyFormatter(Formatter):
         if self.formats is None:
             self.formats = {}
         # pylint: disable=redefined-builtin
-        format = self.formats.get(key, None)
-        if format is not None:
-            return format
-        format = self.formats[key] = ColorFormat(key)
-        return format
-
-    def eof(self):
-        self.replay()
-        self.stream.write("\n")
-        self.stream.flush()
+        this_format = self.formats.get(key, None)
+        if this_format is not None:
+            return this_format
+        this_format = self.formats[key] = ColorFormat(key)
+        return this_format
 
     def table(self, table):
         prefix = u"      "

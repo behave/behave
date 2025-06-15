@@ -90,7 +90,7 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
       from behave.api.pending_step import StepNotImplementedError
       @given(u'allé')
       def step_impl(context):
-          raise StepNotImplementedError(u'STEP: Given allé')
+          raise StepNotImplementedError(u'Given allé')
       """
     But note that "python2 uses encoding=ascii"
     And note that "encoding-hint in steps file solves the problem"
@@ -130,6 +130,6 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
       """
       @given(u'allé')
       def step_impl(context):
-          raise StepNotImplementedError(u'STEP: Given allé')
+          raise StepNotImplementedError(u'Given allé')
       """
     But note that "python3 discovers encoding (or uses encoding=UTF-8)"

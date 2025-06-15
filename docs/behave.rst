@@ -103,36 +103,46 @@ You may see the same information presented below at any time using ``behave
     the given name (regex pattern). If this option is given more than
     once, it will match against all the given names.
 
-.. option:: --no-capture
-
-    Don't capture stdout (any stdout output will be printed immediately.)
-
 .. option:: --capture
 
-    Capture stdout (any stdout output will be printed if there is a
-    failure.) This is the default behaviour. This switch is used to
-    override a configuration file setting.
+    Enable capture mode (stdout/stderr/log-output). Any capture output
+    will be printed on a failure/error.
 
-.. option:: --no-capture-stderr
+.. option:: --no-capture
 
-    Don't capture stderr (any stderr output will be printed immediately.)
+    Disable capture mode (stdout/stderr/log-output).
+
+.. option:: --capture-stdout
+
+    Enable capture of stdout.
+
+.. option:: --no-capture-stdout
+
+    Disable capture of stdout.
 
 .. option:: --capture-stderr
 
-    Capture stderr (any stderr output will be printed if there is a
-    failure.) This is the default behaviour. This switch is used to
-    override a configuration file setting.
+    Enable capture of stderr.
 
-.. option:: --no-logcapture
+.. option:: --no-capture-stderr
 
-    Don't capture logging. Logging configuration will be left intact.
+    Disable capture of stderr.
 
-.. option:: --logcapture
+.. option:: --capture-log, --logcapture
 
-    Capture logging. All logging during a step will be captured and
-    displayed in the event of a failure. This is the default
-    behaviour. This switch is used to override a configuration file
-    setting.
+    Enable capture of logging output.
+
+.. option:: --no-capture-log, --no-logcapture
+
+    Disable capture of logging output.
+
+.. option:: --capture-hooks
+
+    Enable capture of hooks (except: before_all).
+
+.. option:: --no-capture-hooks
+
+    Disable capture of hooks.
 
 .. option:: --logging-level
 
@@ -162,7 +172,11 @@ You may see the same information presented below at any time using ``behave
 
 .. option:: --logging-clear-handlers
 
-    Clear all other logging handlers.
+    Clear existing logging handlers (during capture-log).
+
+.. option:: --no-logging-clear-handlers
+
+    Keep existing logging handlers (during capture-log).
 
 .. option:: --no-summary
 
@@ -475,32 +489,40 @@ Configuration Parameters
     once, it will match against all the given names.
 
 .. index::
-    single: configuration param; stdout_capture
+    single: configuration param; capture
 
-.. describe:: stdout_capture : bool
+.. describe:: capture : bool
 
-    Capture stdout (any stdout output will be printed if there is a
-    failure.) This is the default behaviour. This switch is used to
-    override a configuration file setting.
-
-.. index::
-    single: configuration param; stderr_capture
-
-.. describe:: stderr_capture : bool
-
-    Capture stderr (any stderr output will be printed if there is a
-    failure.) This is the default behaviour. This switch is used to
-    override a configuration file setting.
+    Enable capture mode (stdout/stderr/log-output). Any capture output
+    will be printed on a failure/error.
 
 .. index::
-    single: configuration param; log_capture
+    single: configuration param; capture_stdout
 
-.. describe:: log_capture : bool
+.. describe:: capture_stdout : bool
 
-    Capture logging. All logging during a step will be captured and
-    displayed in the event of a failure. This is the default
-    behaviour. This switch is used to override a configuration file
-    setting.
+    Enable capture of stdout.
+
+.. index::
+    single: configuration param; capture_stderr
+
+.. describe:: capture_stderr : bool
+
+    Enable capture of stderr.
+
+.. index::
+    single: configuration param; capture_log
+
+.. describe:: capture_log : bool
+
+    Enable capture of logging output.
+
+.. index::
+    single: configuration param; capture_hooks
+
+.. describe:: capture_hooks : bool
+
+    Enable capture of hooks (except: before_all).
 
 .. index::
     single: configuration param; logging_level
@@ -546,7 +568,7 @@ Configuration Parameters
 
 .. describe:: logging_clear_handlers : bool
 
-    Clear all other logging handlers.
+    Clear existing logging handlers (during capture-log).
 
 .. index::
     single: configuration param; summary

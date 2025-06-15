@@ -285,7 +285,6 @@ class JUnitReporter(Reporter):
         self._summary_collector.visit_feature(feature)
         feature_filename = self.make_feature_filename(feature)
         classname = feature_filename
-        # XXX_JE_TODO
         report = FeatureReportData(feature, feature_filename)
         now = datetime.now()
 
@@ -457,7 +456,6 @@ class JUnitReporter(Reporter):
             step = self.select_step_with_any_status(error_statuses, scenario.all_steps)
             error = self._make_error_element_for(scenario, step)
             case.append(error)
-            # XXX_JE_TODO: Status.undefined, Status.pending
         elif scenario.status.is_failure():
             # -- NOTE: Scenario may fail due to ...
             report.counts_failed += 1
@@ -468,7 +466,6 @@ class JUnitReporter(Reporter):
             report.counts_skipped += 1
             problematic_statuses = [Status.pending, Status.undefined]
             step = self.select_step_with_any_status(problematic_statuses, scenario.all_steps)
-            # XXX_JE_WORKMARK
             if step:
                 # -- UNDEFINED-STEP:
                 report.counts_failed += 1

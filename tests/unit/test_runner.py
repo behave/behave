@@ -6,15 +6,13 @@ from collections import defaultdict
 import os.path
 import sys
 import unittest
-import six
 from six import StringIO
 import pytest
 from mock import Mock, patch
 from behave import runner_util
-from behave import runner
+from behave.runner import Context, Runner
 from behave.exception import ConfigError
 from behave.formatter.base import StreamOpener
-
 
 
 def create_mock_config():
@@ -34,125 +32,132 @@ class TestRunner(object):
                 base_dir = "fake/path"
                 hooks_path = os.path.join(base_dir, "environment.py")
 
-                r = runner.Runner(create_mock_config())
-                r.base_dir = base_dir
-                r.load_hooks()
+                runner = Runner(create_mock_config())
+                runner.base_dir = base_dir
+                runner.load_hooks()
 
                 exists.assert_called_with(hooks_path)
-                ef.assert_called_with(hooks_path, r.hooks)
+                ef.assert_called_with(hooks_path, runner.hooks)
 
     def test_run_hook_runs_a_hook_that_exists(self):
         config = Mock()
-        r = runner.Runner(config)
-        # XXX r.config = Mock()
-        r.config.stdout_capture = False
-        r.config.stderr_capture = False
-        r.config.dry_run = False
-        r.hooks["before_lunch"] = hook = Mock()
-        args = (runner.Context(Mock()), Mock(), Mock())
-        r.run_hook("before_lunch", *args)
+        runner = Runner(config)
+        context = Context(runner)
+        runner.config.capture = False
+        runner.config.capture_stdout = False
+        runner.config.capture_stderr = False
+        runner.config.capture_log = False
+        runner.config.dry_run = False
+        hook = Mock()
+        runner.hooks["before_lunch"] = hook
+        statement = Mock()
+        statement.error_message = ""
 
-        hook.assert_called_with(*args)
+        runner.context = context
+        runner.run_hook("before_lunch", statement)
+        call_args = (context, statement)
+        hook.assert_called_with(*call_args)
 
     def test_run_hook_does_not_runs_a_hook_that_exists_if_dry_run(self):
-        r = runner.Runner(None)
-        r.config = Mock()
-        r.config.dry_run = True
-        r.hooks["before_lunch"] = hook = Mock()
-        args = (runner.Context(Mock()), Mock(), Mock())
-        r.run_hook("before_lunch", *args)
+        config = Mock()
+        config.dry_run = True
+        hook = Mock()
+        runner = Runner(config=config)
+        runner.hooks["before_lunch"] = hook
 
+        statement = Mock()
+        runner.run_hook("before_lunch", statement)
         assert len(hook.call_args_list) == 0
 
     def test_setup_capture_creates_stringio_for_stdout(self):
-        r = runner.Runner(Mock())
-        r.config.stdout_capture = True
-        r.config.log_capture = False
-        r.context = Mock()
+        runner = Runner(Mock())
+        runner.config.capture_stdout = True
+        runner.config.capture_log = False
+        runner.context = Mock()
 
-        r.setup_capture()
+        runner.setup_capture()
 
-        assert r.capture_controller.stdout_capture is not None
-        assert isinstance(r.capture_controller.stdout_capture, StringIO)
+        assert runner.capture_controller.capture_stdout is not None
+        assert isinstance(runner.capture_controller.capture_stdout, StringIO)
 
     def test_setup_capture_does_not_create_stringio_if_not_wanted(self):
-        r = runner.Runner(Mock())
-        r.config.stdout_capture = False
-        r.config.stderr_capture = False
-        r.config.log_capture = False
+        runner = Runner(Mock())
+        runner.config.capture_stdout = False
+        runner.config.capture_stderr = False
+        runner.config.capture_log = False
 
-        r.setup_capture()
+        runner.setup_capture()
 
-        assert r.capture_controller.stdout_capture is None
+        assert runner.capture_controller.capture_stdout is None
 
     @patch("behave.capture.LoggingCapture")
     def test_setup_capture_creates_memory_handler_for_logging(self, handler):
-        r = runner.Runner(Mock())
-        r.config.stdout_capture = False
-        r.config.log_capture = True
-        r.context = Mock()
+        runner = Runner(Mock())
+        runner.config.capture_stdout = False
+        runner.config.capture_log = True
+        runner.context = Mock()
 
-        r.setup_capture()
+        runner.setup_capture()
 
-        assert r.capture_controller.log_capture is not None
-        handler.assert_called_with(r.config)
-        r.capture_controller.log_capture.inveigle.assert_called_with()
+        assert runner.capture_controller.capture_log is not None
+        handler.assert_called_with(runner.config)
+        runner.capture_controller.capture_log.inveigle.assert_called_with()
 
     def test_setup_capture_does_not_create_memory_handler_if_not_wanted(self):
-        r = runner.Runner(Mock())
-        r.config.stdout_capture = False
-        r.config.stderr_capture = False
-        r.config.log_capture = False
+        runner = Runner(Mock())
+        runner.config.capture_stdout = False
+        runner.config.capture_stderr = False
+        runner.config.capture_log = False
 
-        r.setup_capture()
+        runner.setup_capture()
 
-        assert r.capture_controller.log_capture is None
+        assert runner.capture_controller.capture_log is None
 
     def test_start_stop_capture_switcheroos_sys_stdout(self):
         old_stdout = sys.stdout
         sys.stdout = new_stdout = Mock()
 
-        r = runner.Runner(Mock())
-        r.config.stdout_capture = True
-        r.config.log_capture = False
-        r.context = Mock()
+        runner = Runner(Mock())
+        runner.config.capture_stdout = True
+        runner.config.capture_log = False
+        runner.context = Mock()
 
-        r.setup_capture()
-        r.start_capture()
+        runner.setup_capture()
+        runner.start_capture()
 
-        assert sys.stdout == r.capture_controller.stdout_capture
+        assert sys.stdout == runner.capture_controller.capture_stdout
 
-        r.stop_capture()
+        runner.stop_capture()
 
         assert sys.stdout == new_stdout
 
         sys.stdout = old_stdout
 
     def test_start_stop_capture_leaves_sys_stdout_alone_if_off(self):
-        r = runner.Runner(Mock())
-        r.config.stdout_capture = False
-        r.config.log_capture = False
+        runner = Runner(Mock())
+        runner.config.capture_stdout = False
+        runner.config.capture_log = False
 
         old_stdout = sys.stdout
 
-        r.start_capture()
+        runner.start_capture()
 
         assert sys.stdout == old_stdout
 
-        r.stop_capture()
+        runner.stop_capture()
 
         assert sys.stdout == old_stdout
 
     def test_teardown_capture_removes_log_tap(self):
-        r = runner.Runner(Mock())
-        r.config.stdout_capture = False
-        r.config.log_capture = True
+        runner = Runner(Mock())
+        runner.config.capture_stdout = False
+        runner.config.capture_log = True
 
-        r.capture_controller.log_capture = Mock()
+        runner.capture_controller.capture_log = Mock()
 
-        r.teardown_capture()
+        runner.teardown_capture()
 
-        r.capture_controller.log_capture.abandon.assert_called_with()
+        runner.capture_controller.capture_log.abandon.assert_called_with()
 
     def test_exec_file(self, tmp_path):
         filename = str(tmp_path/"example.py")
@@ -168,45 +173,60 @@ class TestRunner(object):
         assert my_locals["spam"] == filename
 
     def test_run_returns_true_if_everything_passed(self):
-        r = runner.Runner(Mock())
-        r.setup_capture = Mock()
-        r.setup_paths = Mock()
-        r.run_with_paths = Mock()
-        r.run_with_paths.return_value = True
-        assert r.run()
+        runner = Runner(Mock())
+        runner.setup_capture = Mock()
+        runner.setup_paths = Mock()
+        runner.run_with_paths = Mock()
+        runner.run_with_paths.return_value = True
+        assert runner.run()
 
     def test_run_returns_false_if_anything_failed(self):
-        r = runner.Runner(Mock())
-        r.setup_capture = Mock()
-        r.setup_paths = Mock()
-        r.run_with_paths = Mock()
-        r.run_with_paths.return_value = False
-        assert not r.run()
+        runner = Runner(Mock())
+        runner.setup_capture = Mock()
+        runner.setup_paths = Mock()
+        runner.run_with_paths = Mock()
+        runner.run_with_paths.return_value = False
+        assert not runner.run()
 
 
 class TestRunWithPaths(unittest.TestCase):
     # pylint: disable=invalid-name, no-self-use
 
     def setUp(self):
-        self.config = Mock()
-        self.config.reporters = []
-        self.config.logging_level = None
-        self.config.logging_filter = None
-        self.config.outputs = [Mock(), StreamOpener(stream=sys.stdout)]
-        self.config.format = ["plain", "progress"]
-        self.config.logging_format = None
-        self.config.logging_datefmt = None
-        self.runner = runner.Runner(self.config)
-        self.load_hooks = self.runner.load_hooks = Mock()
-        self.load_step_definitions = self.runner.load_step_definitions = Mock()
-        self.run_hook = self.runner.run_hook = Mock()
-        self.run_step = self.runner.run_step = Mock()
-        self.feature_locations = self.runner.feature_locations = Mock()
-        self.calculate_summaries = self.runner.calculate_summaries = Mock()
+        config = Mock()
+        config.reporters = []
+        config.should_capture_hooks = Mock()
+        config.should_capture_hooks.return_value = False
+        config.logging_level = None
+        config.logging_filter = None
+        config.outputs = [Mock(), StreamOpener(stream=sys.stdout)]
+        config.format = ["plain", "progress"]
+        config.logging_format = None
+        config.logging_datefmt = None
+        config.environment_file = "environment.py"
+        runner = Runner(config)
+        runner.base_dir = "."
 
+        def __run_hooks_with_capture(hook_name, *args, **kwargs):
+            return runner.run_hook(hook_name, *args)
+
+        runner.run_hook = Mock()
+        runner.run_hook_with_capture = __run_hooks_with_capture
+        runner.run_step = Mock()
+        runner.load_hooks = Mock()
+        runner.feature_locations = Mock()
+        runner.calculate_summaries = Mock()
+
+        self.config = config
+        self.runner = runner
+        self.load_hooks = runner.load_hooks
+        self.load_step_definitions = runner.load_step_definitions = Mock()
+        self.feature_locations = runner.feature_locations
+
+        self.formatter = Mock()
         self.formatter_class = patch("behave.formatter.pretty.PrettyFormatter")
         formatter_class = self.formatter_class.start()
-        formatter_class.return_value = self.formatter = Mock()
+        formatter_class.return_value = self.formatter
 
     def tearDown(self):
         self.formatter_class.stop()
@@ -221,15 +241,17 @@ class TestRunWithPaths(unittest.TestCase):
     def test_runs_before_all_and_after_all_hooks(self):
         # Make runner.feature_locations() and runner.run_hook() the same mock so
         # we can make sure things happen in the right order.
-        self.runner.feature_locations = self.run_hook
-        self.runner.feature_locations.return_value = []
-        self.runner.context = Mock()
-        self.runner.run_with_paths()
+        # self.runner.feature_locations = self.run_hook
+        runner = self.runner
+        runner.feature_locations = Mock()
+        runner.feature_locations.return_value = []
+        runner.config.environment_file = "environment.py"
+        runner.context = Context(self.runner)
+        runner.run_with_paths()
 
-        assert self.run_hook.call_args_list == [
-            ((), {}),
-            (("before_all", self.runner.context), {}),
-            (("after_all", self.runner.context), {}),
+        assert runner.run_hook.call_args_list == [
+            (("before_all",), {}),
+            (("after_all",), {}),
         ]
 
     @patch("behave.parser.parse_file")
@@ -355,15 +377,15 @@ class TestFeatureDirectory(object):
         config = create_mock_config()
         config.paths = []
         config.verbose = True
-        r = runner.Runner(config)
+        runner = Runner(config)
 
         fs = FsMock()
 
         # will look for a "features" directory and not find one
         with patch("os.path", fs):
             with pytest.raises(ConfigError):
-                r.setup_paths()
-            # OLD: assert_raises(ConfigError, r.setup_paths)
+                runner.setup_paths()
+            # OLD: assert_raises(ConfigError, runner.setup_paths)
 
         assert ("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls
         # ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
@@ -372,96 +394,96 @@ class TestFeatureDirectory(object):
         config = create_mock_config()
         config.paths = []
         config.verbose = True
-        r = runner.Runner(config)
+        runner = Runner(config)
 
         fs = FsMock("features/steps/")
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
                 with pytest.raises(ConfigError):
-                    r.setup_paths()
-                # OLD: assert_raises(ConfigError, r.setup_paths)
+                    runner.setup_paths()
+                # OLD: assert_raises(ConfigError, runner.setup_paths)
 
     def test_default_path(self):
         config = create_mock_config()
         config.paths = []
         config.verbose = True
-        r = runner.Runner(config)
+        runner = Runner(config)
 
         fs = FsMock("features/steps/", "features/foo.feature")
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
-                with r.path_manager:
-                    r.setup_paths()
+                with runner.path_manager:
+                    runner.setup_paths()
 
-        assert r.base_dir == os.path.abspath("features")
+        assert runner.base_dir == os.path.abspath("features")
 
     def test_supplied_feature_file(self):
         config = create_mock_config()
         config.paths = ["foo.feature"]
         config.verbose = True
-        r = runner.Runner(config)
-        r.context = Mock()
+        runner = Runner(config)
+        runner.context = Mock()
 
         fs = FsMock("steps/", "foo.feature")
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
-                with r.path_manager:
-                    r.setup_paths()
+                with runner.path_manager:
+                    runner.setup_paths()
         assert ("isdir", os.path.join(fs.base, "steps")) in fs.calls
         assert ("isfile", os.path.join(fs.base, "foo.feature")) in fs.calls
         # OLD: ok_(("isdir", os.path.join(fs.base, "steps")) in fs.calls)
         # OLD: ok_(("isfile", os.path.join(fs.base, "foo.feature")) in fs.calls)
 
-        assert r.base_dir == fs.base
+        assert runner.base_dir == fs.base
 
     def test_supplied_feature_file_no_steps(self):
         config = create_mock_config()
         config.paths = ["foo.feature"]
         config.verbose = True
-        r = runner.Runner(config)
+        runner = Runner(config)
 
         fs = FsMock("foo.feature")
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
-                with r.path_manager:
+                with runner.path_manager:
                     with pytest.raises(ConfigError):
-                        r.setup_paths()
-                    # OLD: assert_raises(ConfigError, r.setup_paths)
+                        runner.setup_paths()
+                    # OLD: assert_raises(ConfigError, runner.setup_paths)
 
     def test_supplied_feature_directory(self):
         config = create_mock_config()
         config.paths = ["spam"]
         config.verbose = True
-        r = runner.Runner(config)
+        runner = Runner(config)
 
         fs = FsMock("spam/", "spam/steps/", "spam/foo.feature")
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
-                with r.path_manager:
-                    r.setup_paths()
+                with runner.path_manager:
+                    runner.setup_paths()
 
         assert ("isdir", os.path.join(fs.base, "spam", "steps")) in fs.calls
         # OLD ok_(("isdir", os.path.join(fs.base, "spam", "steps")) in fs.calls)
 
-        assert r.base_dir == os.path.join(fs.base, "spam")
+        assert runner.base_dir == os.path.join(fs.base, "spam")
 
     def test_supplied_feature_directory_no_steps(self):
         config = create_mock_config()
         config.paths = ["spam"]
         config.verbose = True
-        r = runner.Runner(config)
+        runner = Runner(config)
 
         fs = FsMock("spam/", "spam/foo.feature")
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
                 with pytest.raises(ConfigError):
-                    r.setup_paths()
-                # OLD: assert_raises(ConfigError, r.setup_paths)
+                    runner.setup_paths()
+                # OLD: assert_raises(ConfigError, runner.setup_paths)
 
         assert ("isdir", os.path.join(fs.base, "spam", "steps")) in fs.calls
         # OLD: ok_(("isdir", os.path.join(fs.base, "spam", "steps")) in fs.calls)
@@ -470,15 +492,15 @@ class TestFeatureDirectory(object):
         config = create_mock_config()
         config.paths = ["spam"]
         config.verbose = True
-        r = runner.Runner(config)
+        runner = Runner(config)
 
         fs = FsMock()
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
                 with pytest.raises(ConfigError):
-                    r.setup_paths()
-                # OLD: assert_raises(ConfigError, r.setup_paths)
+                    runner.setup_paths()
+                # OLD: assert_raises(ConfigError, runner.setup_paths)
 
 
 class TestFeatureDirectoryLayout2(object):
@@ -488,7 +510,7 @@ class TestFeatureDirectoryLayout2(object):
         config = create_mock_config()
         config.paths = []
         config.verbose = True
-        r = runner.Runner(config)
+        runner = Runner(config)
 
         fs = FsMock(
             "features/",
@@ -499,16 +521,16 @@ class TestFeatureDirectoryLayout2(object):
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
-                with r.path_manager:
-                    r.setup_paths()
+                with runner.path_manager:
+                    runner.setup_paths()
 
-        assert r.base_dir == os.path.abspath("features")
+        assert runner.base_dir == os.path.abspath("features")
 
     def test_supplied_root_directory(self):
         config = create_mock_config()
         config.paths = ["features"]
         config.verbose = True
-        r = runner.Runner(config)
+        runner = Runner(config)
 
         fs = FsMock(
             "features/",
@@ -519,18 +541,18 @@ class TestFeatureDirectoryLayout2(object):
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
-                with r.path_manager:
-                    r.setup_paths()
+                with runner.path_manager:
+                    runner.setup_paths()
 
         # OLD: ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
         assert ("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls
-        assert r.base_dir == os.path.join(fs.base, "features")
+        assert runner.base_dir == os.path.join(fs.base, "features")
 
     def test_supplied_root_directory_no_steps(self):
         config = create_mock_config()
         config.paths = ["features"]
         config.verbose = True
-        r = runner.Runner(config)
+        runner = Runner(config)
 
         fs = FsMock(
             "features/",
@@ -540,22 +562,22 @@ class TestFeatureDirectoryLayout2(object):
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
-                with r.path_manager:
+                with runner.path_manager:
                     with pytest.raises(ConfigError):
-                        r.setup_paths()
-                    # OLD: assert_raises(ConfigError, r.setup_paths)
+                        runner.setup_paths()
+                    # OLD: assert_raises(ConfigError, runner.setup_paths)
 
         # OLD: ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
         assert ("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls
-        assert r.base_dir is None
+        assert runner.base_dir is None
 
 
     def test_supplied_feature_file(self):
         config = create_mock_config()
         config.paths = ["features/group1/foo.feature"]
         config.verbose = True
-        r = runner.Runner(config)
-        r.context = Mock()
+        runner = Runner(config)
+        runner.context = Mock()
 
         fs = FsMock(
             "features/",
@@ -566,20 +588,20 @@ class TestFeatureDirectoryLayout2(object):
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
-                with r.path_manager:
-                    r.setup_paths()
+                with runner.path_manager:
+                    runner.setup_paths()
 
         # OLD: ok_(("isdir", os.path.join(fs.base, "features", "steps"))  in fs.calls)
         # OLD: ok_(("isfile", os.path.join(fs.base, "features", "group1", "foo.feature")) in fs.calls)
         assert ("isdir", os.path.join(fs.base, "features", "steps"))  in fs.calls
         assert ("isfile", os.path.join(fs.base, "features", "group1", "foo.feature")) in fs.calls
-        assert r.base_dir == fs.join(fs.base, "features")
+        assert runner.base_dir == fs.join(fs.base, "features")
 
     def test_supplied_feature_file_no_steps(self):
         config = create_mock_config()
         config.paths = ["features/group1/foo.feature"]
         config.verbose = True
-        r = runner.Runner(config)
+        runner = Runner(config)
 
         fs = FsMock(
             "features/",
@@ -589,16 +611,16 @@ class TestFeatureDirectoryLayout2(object):
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
-                with r.path_manager:
+                with runner.path_manager:
                     with pytest.raises(ConfigError):
-                        r.setup_paths()
-                    # OLD assert_raises(ConfigError, r.setup_paths)
+                        runner.setup_paths()
+                    # OLD assert_raises(ConfigError, runner.setup_paths)
 
     def test_supplied_feature_directory(self):
         config = create_mock_config()
         config.paths = ["features/group1"]
         config.verbose = True
-        r = runner.Runner(config)
+        runner = Runner(config)
 
         fs = FsMock(
             "features/",
@@ -609,19 +631,19 @@ class TestFeatureDirectoryLayout2(object):
 
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
-                with r.path_manager:
-                    r.setup_paths()
+                with runner.path_manager:
+                    runner.setup_paths()
 
         # OLD: ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
         assert ("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls
-        assert r.base_dir == os.path.join(fs.base, "features")
+        assert runner.base_dir == os.path.join(fs.base, "features")
 
 
     def test_supplied_feature_directory_no_steps(self):
         config = create_mock_config()
         config.paths = ["features/group1"]
         config.verbose = True
-        r = runner.Runner(config)
+        runner = Runner(config)
 
         fs = FsMock(
             "features/",
@@ -632,8 +654,8 @@ class TestFeatureDirectoryLayout2(object):
         with patch("os.path", fs):
             with patch("os.walk", fs.walk):
                 with pytest.raises(ConfigError):
-                    r.setup_paths()
-                # OLD: assert_raises(ConfigError, r.setup_paths)
+                    runner.setup_paths()
+                # OLD: assert_raises(ConfigError, runner.setup_paths)
 
         # OLD: ok_(("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls)
         assert ("isdir", os.path.join(fs.base, "features", "steps")) in fs.calls

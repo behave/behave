@@ -93,8 +93,8 @@ Feature: Issue #148: Substeps do not fail
           Scenario: Failing test with substeps
             Given a step passes ... passed
             When I do something with stupid substeps ... failed
-            Assertion Failed: FAILED SUB-STEP: When a step fails
-            Substep info: Assertion Failed: XFAIL
+            ASSERT FAILED: FAILED SUB-STEP: When a step fails
+            Substep info: ASSERT FAILED: XFAIL
         """
     But the command output should not contain:
         """

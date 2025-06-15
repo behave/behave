@@ -12,7 +12,7 @@ Feature: Issue #948 -- Add support for value substitution in logging config file
         """
         # -- REQUIRES: Python >= 3.2 -- f-string log-format style.
         [behave]
-        log_capture = true
+        capture_log = true
         logging_level = INFO
         """
     And a file named "logging.ini" with:

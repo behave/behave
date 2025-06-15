@@ -17,44 +17,43 @@ Feature: Fixture
   .
   .     # -- FILE: features/environment.py
   .     @fixture
-  .     def fixture_foo(context, *args, **kwargs):  # -- CASE: generator-function
+  .     def fixture_foo(ctx, *args, **kwargs):  # -- CASE: generator-function
   .         the_fixture = setup_fixture_foo(*args, **kwargs)
-  .         context.foo = the_fixture
+  .         ctx.foo = the_fixture
   .         yield the_fixture
   .         cleanup_fixture_foo(the_fixture)   # -- SKIPPED: On fixture-setup-error
   .
   .     @fixture(name="fixture.bar")
-  .     def fixture_bar(context, *args, **kwargs):  # -- CASE: function
+  .     def fixture_bar(ctx, *args, **kwargs):  # -- CASE: function
   .         the_fixture = setup_fixture_bar(*args, **kwargs)
-  .         context.bar = the_fixture
-  .         context.add_cleanup(the_fixture.cleanup)
+  .         ctx.bar = the_fixture
+  .         ctx.add_cleanup(the_fixture.cleanup)
   .         return the_fixture
   .
   .     # -- ENVIRONMENT-HOOKS:
-  .     def before_tag(context, tag):
+  .     def before_tag(ctx, tag):
   .         if tag == "fixture.foo":
   .             # -- NOTE: Calls setup_fixture part (until yield statement) and
   .             #    registers cleanup_fixture which will be called when
   .             #    context scope is left (after scenario, feature or test-run).
-  .             the_fixture = use_fixture(fixture_foo, context)
+  .             the_fixture = use_fixture(fixture_foo, ctx)
 
-  @setup
-  Scenario: Feature Setup
+  Background:
     Given a new working directory
-    And a file named "features/steps/steps.py" with:
+    And a file named "features/steps/browser_steps.py" with:
       """
       from behave import step
 
       @step(u'the browser is "{browser_name}"')
-      def step_browser_is(context, browser_name):
-          assert context.browser == browser_name
+      def step_browser_is(ctx, browser_name):
+          assert ctx.browser == browser_name
 
       @step(u'no browser info exists')
-      def step_no_browser_info(context):
-          assert not hasattr(context, "browser")
+      def step_no_browser_info(ctx):
+          assert not hasattr(ctx, "browser")
 
       @step(u'{word:w} step passes')
-      def step_passes(context, word):
+      def step_passes(ctx, word):
           pass
       """
     And a file named "behave.ini" with:
@@ -64,375 +63,496 @@ Feature: Fixture
       """
     And an empty file named "features/environment.py"
 
+  Rule: Fixture Variants
+    Scenario: Use fixture with generator-function (setup/cleanup)
+      Given a file named "features/environment.py" with:
+        """
+        from __future__ import absolute_import, print_function
+        from behave.capture import any_hook
+        from behave.fixture import fixture, use_fixture
 
-  Scenario: Use fixture with generator-function (setup/cleanup)
-    Given a file named "features/environment.py" with:
-      """
-      from __future__ import print_function
-      from behave.fixture import fixture, use_fixture
+        any_hook.show_capture_on_success = True
+        any_hook.show_cleanup_on_success = True
 
-      @fixture(name="browser.firefox")
-      def browser_firefox(context):
-          print("FIXTURE-SETUP: browser.firefox")
-          context.browser = "firefox"
-          yield
-          print("FIXTURE-CLEANUP: browser.firefox")
-          # -- SCOPE-CLEANUP OR EXPLICIT: del context.browser
+        @fixture(name="browser.firefox")
+        def browser_firefox(ctx):
+            print("FIXTURE-SETUP: browser.firefox")
+            ctx.browser = "firefox"
+            yield
+            print("FIXTURE-CLEANUP: browser.firefox")
+            # -- SCOPE-CLEANUP OR EXPLICIT: del ctx.browser
 
-      def before_tag(context, tag):
-          if tag == "fixture.browser.firefox":
-              use_fixture(browser_firefox, context)
-      """
-    And a file named "features/alice.feature" with:
-      """
-      Feature: Fixture setup/teardown
-        @fixture.browser.firefox
-        Scenario: Fixture with browser=firefox
-          Given the browser is "firefox"
+        def before_tag(ctx, tag):
+            if tag == "fixture.browser.firefox":
+                use_fixture(browser_firefox, ctx)
+        """
+      And a file named "features/alice.feature" with:
+        """
+        Feature: Fixture setup/teardown
+          @fixture.browser.firefox
+          Scenario: Fixture with browser=firefox
+            Given the browser is "firefox"
 
-        Scenario: Fixture Cleanup check
-          Then no browser info exists
-      """
-    When I run "behave -f plain features/alice.feature"
-    Then it should pass with:
-      """
-      2 scenarios passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped
-      """
-    And the command output should contain:
-      """
-      FIXTURE-SETUP: browser.firefox
-        Scenario: Fixture with browser=firefox
-          Given the browser is "firefox" ... passed
-      FIXTURE-CLEANUP: browser.firefox
-      """
+          Scenario: Fixture Cleanup check
+            Then no browser info exists
+        """
+      When I run "behave -f plain features/alice.feature"
+      Then it should pass with:
+        """
+        2 scenarios passed, 0 failed, 0 skipped
+        2 steps passed, 0 failed, 0 skipped
+        """
+      And the command output should contain:
+        """
+          Scenario: Fixture with browser=firefox
+        ----
+        CAPTURED STDOUT: before_tag
+        FIXTURE-SETUP: browser.firefox
+        ----
+            Given the browser is "firefox" ... passed
+        ----
+        CAPTURED STDOUT: scenario.cleanup
+        FIXTURE-CLEANUP: browser.firefox
+        ----
+        """
 
-  Scenario: Use fixture with function (setup-only)
-    Given a file named "features/environment.py" with:
-      """
-      from __future__ import print_function
-      from behave.fixture import fixture, use_fixture
+    Scenario: Use fixture with function (setup-only)
+      Given a file named "features/environment.py" with:
+        """
+        from __future__ import print_function
+        from behave.capture import any_hook
+        from behave.fixture import fixture, use_fixture
 
-      @fixture(name="browser.chrome")
-      def browser_chrome(context):
-          # -- CASE: Setup-only
-          print("FIXTURE-SETUP: browser.chrome")
-          context.browser = "chrome"
+        any_hook.show_capture_on_success = True
 
-      def before_tag(context, tag):
-          if tag == "fixture.browser.chrome":
-              use_fixture(browser_chrome, context)
-      """
-    And a file named "features/bob.feature" with:
-      """
-      Feature: Fixture setup only
-        @fixture.browser.chrome
-        Scenario: Fixture with browser=chrome
-          Given the browser is "chrome"
+        @fixture(name="browser.chrome")
+        def browser_chrome(ctx):
+            # -- CASE: Setup-only
+            print("FIXTURE-SETUP: browser.chrome")
+            ctx.browser = "chrome"
 
-        Scenario: Fixture Cleanup check
-          Then no browser info exists
-      """
-    When I run "behave -f plain features/bob.feature"
-    Then it should pass with:
-      """
-      2 scenarios passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped
-      """
-    And the command output should contain:
-      """
-      FIXTURE-SETUP: browser.chrome
-        Scenario: Fixture with browser=chrome
-          Given the browser is "chrome" ... passed
+        def before_tag(ctx, tag):
+            if tag == "fixture.browser.chrome":
+                use_fixture(browser_chrome, ctx)
+        """
+      And a file named "features/bob.feature" with:
+        """
+        Feature: Fixture setup only
+          @fixture.browser.chrome
+          Scenario: Fixture with browser=chrome
+            Given the browser is "chrome"
 
-        Scenario: Fixture Cleanup check
-          Then no browser info exists ... passed
-      """
+          Scenario: Fixture Cleanup check
+            Then no browser info exists
+        """
+      When I run "behave -f plain features/bob.feature"
+      Then it should pass with:
+        """
+        2 scenarios passed, 0 failed, 0 skipped
+        2 steps passed, 0 failed, 0 skipped
+        """
+      And the command output should contain:
+        """
+          Scenario: Fixture with browser=chrome
+        ----
+        CAPTURED STDOUT: before_tag
+        FIXTURE-SETUP: browser.chrome
+        ----
+            Given the browser is "chrome" ... passed
 
-  Scenario: Use fixture (case: feature)
-    Given a file named "features/environment.py" with:
-      """
-      from __future__ import print_function
-      from behave.fixture import fixture, use_fixture
+          Scenario: Fixture Cleanup check
+            Then no browser info exists ... passed
+        """
 
-      @fixture
-      def foo(context):
-          print("FIXTURE-SETUP: foo")
-          yield
-          print("FIXTURE-CLEANUP: foo")
+  Rule: Use Fixture
+    Background:
+      Given an empty file named "example4me/__init__.py"
+      And a file named "example4me/fixtures.py" with:
+        """
+        from __future__ import print_function
+        from behave import fixture
 
-      def before_tag(context, tag):
-          if tag == "fixture.foo":
-              use_fixture(foo, context)
+        @fixture
+        def foo(ctx, suffix=""):
+            name = "foo{}".format(suffix).rstrip()
+            print("FIXTURE-SETUP: {name}".format(name=name))
+            yield 42
+            print("FIXTURE-CLEANUP: {name}".format(name=name))
+        """
+      And a file named "features/environment.py" with:
+        """
+        from __future__ import absolute_import, print_function
+        from behave.capture import any_hook
+        from behave.fixture import fixture, use_fixture
+        from example4me.fixtures import foo
 
-      def after_feature(context, feature):
-          print("HOOK-CALLED: after_feature: %s" % feature.name)
-      """
-    And a file named "features/use2.feature" with:
-      """
-      @fixture.foo
-      Feature: Use Fixture for Feature
+        any_hook.show_capture_on_success = True
+        any_hook.show_cleanup_on_success = True
 
-        Scenario:
-          Given a step passes
+        def before_tag(ctx, tag):
+            if tag == "fixture.foo":
+                use_fixture(foo, ctx)
+        """
+      And a file named "features/steps/fixture_steps.py" with:
+        """
+        from __future__ import absolute_import, print_function
+        from behave import step, use_fixture
+        from example4me.fixtures import foo
 
-        Scenario:
-          Then another step passes
-      """
-    When I run "behave -f plain features/use2.feature"
-    Then it should pass with:
-      """
-      1 feature passed, 0 failed, 0 skipped
-      2 scenarios passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped
-      """
-    And the command output should contain:
-      """
-      FIXTURE-SETUP: foo
-      Feature: Use Fixture for Feature
-        Scenario:
-          Given a step passes ... passed
+        @step(u'I use fixture "{fixture_name}"')
+        def step_use_fixture(ctx, fixture_name):
+            if fixture_name.startswith("foo"):
+                suffix = fixture_name.replace("foo", "")
+                the_fixture = use_fixture(foo, ctx, suffix)
+                setattr(ctx, fixture_name, the_fixture)
+            else:
+                raise LookupError("Unknown fixture: %s" % fixture_name)
+        """
 
-        Scenario:
-          Then another step passes ... passed
-
-      HOOK-CALLED: after_feature: Use Fixture for Feature
-      FIXTURE-CLEANUP: foo
-      """
-    But note that "the fixture-cleanup after the feature"
-
-
-  Scenario: Use fixture (case: step)
-    Given a file named "features/environment.py" with:
-      """
-      from __future__ import print_function
-
-      def after_scenario(context, scenario):
-          print("HOOK-CALLED: after_scenario: %s" % scenario.name)
-      """
-    And an empty file named "behave4me/__init__.py"
-    And a file named "behave4me/fixtures.py" with:
-      """
-      from __future__ import print_function
-      from behave import fixture
-
-      @fixture
-      def foo(context, name):
-          print("FIXTURE-SETUP: foo%s" % name)
-          yield 42
-          print("FIXTURE-CLEANUP: foo%s" % name)
-      """
-    And a file named "features/steps/fixture_steps2.py" with:
-      """
-      from __future__ import print_function
-      from behave import step, use_fixture
-      from behave4me.fixtures import foo
-
-      @step(u'I use fixture "{fixture_name}"')
-      def step_use_fixture(context, fixture_name):
-          if fixture_name.startswith("foo"):
-              name = fixture_name.replace("foo", "")
-              the_fixture = use_fixture(foo, context, name)
-              setattr(context, fixture_name, the_fixture)
-          else:
-              raise LookupError("Unknown fixture: %s" % fixture_name)
-      """
-    And a file named "features/use3.feature" with:
-      """
-      @fixture.foo
-      Feature:
-
-        Scenario: Use Fixture
-          Given I use fixture "foo_1"
-          Then a step passes
-
-        Scenario:
-          Then another step passes
-      """
-    When I run "behave -f plain features/use3.feature"
-    Then it should pass with:
-      """
-      2 scenarios passed, 0 failed, 0 skipped
-      3 steps passed, 0 failed, 0 skipped
-      """
-    And the command output should contain:
-      """
-      Feature:
-        Scenario: Use Fixture
-          Given I use fixture "foo_1" ... passed
-          Then a step passes ... passed
-        HOOK-CALLED: after_scenario: Use Fixture
-        FIXTURE-CLEANUP: foo_1
-      """
-    But note that "the fixture-cleanup occurs after the scenario"
-
-
-  Scenario: Use multiple fixtures (with setup/cleanup)
-    Given a file named "features/environment.py" with:
-      """
-      from __future__ import print_function
-      from behave.fixture import fixture, use_fixture
-
-      @fixture
-      def foo(context):
-          print("FIXTURE-SETUP: foo")
-          yield
-          print("FIXTURE-CLEANUP: foo")
-
-      @fixture
-      def bar(context):
-          def cleanup_bar():
-              print("FIXTURE-CLEANUP: bar")
-
-          print("FIXTURE-SETUP: bar")
-          context.add_cleanup(cleanup_bar)
-
-      def before_tag(context, tag):
-          if tag == "fixture.foo":
-              use_fixture(foo, context)
-          elif tag == "fixture.bar":
-              use_fixture(bar, context)
-      """
-    And a file named "features/two.feature" with:
-      """
-      Feature: Use multiple Fixtures
+    Scenario: Use fixture (case: feature)
+      Given a file named "features/use_by_feature.feature" with:
+        """
         @fixture.foo
-        @fixture.bar
-        Scenario: Two Fixtures
-          Given a step passes
+        Feature: Use Fixture for Feature
 
-        Scenario:
-          Then another step passes
-      """
-    When I run "behave -f plain features/two.feature"
-    Then it should pass with:
-      """
-      2 scenarios passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped
-      """
-    And the command output should contain:
-      """
-      FIXTURE-SETUP: foo
-      FIXTURE-SETUP: bar
-        Scenario: Two Fixtures
-          Given a step passes ... passed
-      FIXTURE-CLEANUP: bar
-      FIXTURE-CLEANUP: foo
-      """
-    But note that "the fixture-cleanup occurs in reverse order (LIFO)"
+          Scenario: S1
+            Given a step passes
+
+          Scenario: S2
+            Then another step passes
+        """
+      When I run "behave -f plain features/use_by_feature.feature"
+      Then it should pass with:
+        """
+        1 feature passed, 0 failed, 0 skipped
+        2 scenarios passed, 0 failed, 0 skipped
+        2 steps passed, 0 failed, 0 skipped
+        """
+      And the command output should contain:
+        """
+        Feature: Use Fixture for Feature
+        ----
+        CAPTURED STDOUT: before_tag
+        FIXTURE-SETUP: foo
+        ----
+          Scenario: S1
+            Given a step passes ... passed
+
+          Scenario: S2
+            Then another step passes ... passed
+        ----
+        CAPTURED STDOUT: feature.cleanup
+        FIXTURE-CLEANUP: foo
+        ----
+        """
+      But note that "the fixture-cleanup occurs after the feature"
+
+    Scenario: Use fixture (case: scenario)
+      Given a file named "features/use_by_scenario.feature" with:
+        """
+        Feature: Use Fixture in Scenario S1
+
+          @fixture.foo
+          Scenario: S1
+            Given a step passes
+
+          Scenario: S2
+            Then another step passes
+        """
+      When I run "behave -f plain features/use_by_scenario.feature"
+      Then it should pass
+      And the command output should contain:
+        """
+        Feature: Use Fixture in Scenario S1
+          Scenario: S1
+        ----
+        CAPTURED STDOUT: before_tag
+        FIXTURE-SETUP: foo
+        ----
+            Given a step passes ... passed
+        ----
+        CAPTURED STDOUT: scenario.cleanup
+        FIXTURE-CLEANUP: foo
+        ----
+
+          Scenario: S2
+            Then another step passes ... passed
+        """
+      But note that "the fixture-cleanup occurs after the scenario"
+
+    Scenario: Use fixture (case: step)
+      Given a file named "features/use_by_step.feature" with:
+        """
+        @fixture.foo
+        Feature: Use Fixture in S1 Step
+          Scenario: S1
+            Given I use fixture "foo_1"
+            Then a step passes
+
+          Scenario: S2
+            Then another step passes
+        """
+      When I run "behave -f plain features/use_by_step.feature"
+      Then it should pass
+      And the command output should contain:
+        """
+        Feature: Use Fixture in S1 Step
+        ----
+        CAPTURED STDOUT: before_tag
+        FIXTURE-SETUP: foo
+        ----
+          Scenario: S1
+            Given I use fixture "foo_1" ... passed
+            Then a step passes ... passed
+        ----
+        CAPTURED STDOUT: scenario.cleanup
+        FIXTURE-CLEANUP: foo_1
+        ----
+        """
+      But note that "the fixture-cleanup foo_1 occurs after the scenario"
 
 
-  Scenario: Use same fixture twice with different args
-    Given a file named "features/environment.py" with:
-      """
-      from __future__ import print_function
-      from behave.fixture import fixture, use_fixture
+    Scenario: Use fixture (case: feature, step)
+      Given a file named "features/use_by_step.feature" with:
+        """
+        @fixture.foo
+        Feature: Use Fixture in Feature and in S1 Step
+          Scenario: S1
+            Given I use fixture "foo_2"
+            Then a step passes
 
-      @fixture
-      def foo(context, name):
-          name2 = "foo%s" % name
-          print("FIXTURE-SETUP: %s" % name2)
-          setattr(context, name2, 1)
-          yield
-          print("FIXTURE-CLEANUP: %s" % name2)
+          Scenario: S2
+            Then another step passes
+        """
+      When I run "behave -f plain features/use_by_step.feature"
+      Then it should pass
+      And the command output should contain:
+        """
+        Feature: Use Fixture in Feature and in S1 Step
+        ----
+        CAPTURED STDOUT: before_tag
+        FIXTURE-SETUP: foo
+        ----
+          Scenario: S1
+            Given I use fixture "foo_2" ... passed
+            Then a step passes ... passed
+        ----
+        CAPTURED STDOUT: scenario.cleanup
+        FIXTURE-CLEANUP: foo_2
+        ----
 
-      def before_tag(context, tag):
-          if tag.startswith("fixture.foo"):
-              # -- FIXTURE-TAG SCHEMA: fixture.foo*
-              name = tag.replace("fixture.foo", "")
-              use_fixture(foo, context, name)
-      """
-    And a file named "features/two.feature" with:
-      """
-      Feature: Use same Fixture twice
-        @fixture.foo_1
-        @fixture.foo_2
-        Scenario: Use Fixtures
-          Given a step passes
-
-        Scenario:
-          Then another step passes
-      """
-    When I run "behave -f plain features/two.feature"
-    Then it should pass with:
-      """
-      2 scenarios passed, 0 failed, 0 skipped
-      2 steps passed, 0 failed, 0 skipped
-      """
-    And the command output should contain:
-      """
-      FIXTURE-SETUP: foo_1
-      FIXTURE-SETUP: foo_2
-        Scenario: Use Fixtures
-          Given a step passes ... passed
-      FIXTURE-CLEANUP: foo_2
-      FIXTURE-CLEANUP: foo_1
-      """
-    But note that "the fixture-cleanup occurs in reverse order (LIFO)"
+          Scenario: S2
+            Then another step passes ... passed
+        ----
+        CAPTURED STDOUT: feature.cleanup
+        FIXTURE-CLEANUP: foo
+        ----
+        """
+      But note that "the fixture-cleanup foo_2 occurs after the scenario"
+      But note that "the fixture-cleanup foo   occurs after the feature"
 
 
-  Scenario: Use invalid fixture (with two yields or more)
-    Given a file named "features/environment.py" with:
-      """
-      from __future__ import print_function
-      from behave.fixture import fixture, use_fixture
+  Rule: Multiple Fixtures
+    Scenario: Use multiple fixtures (with setup/cleanup)
+      Given a file named "features/environment.py" with:
+        """
+        from __future__ import absolute_import, print_function
+        from behave.capture import any_hook
+        from behave.fixture import fixture, use_fixture
 
-      @fixture
-      def invalid_fixture(context):
-          # -- CASE: Setup-only
-          print("FIXTURE-SETUP: invalid")
-          yield
-          print("FIXTURE-CLEANUP: invalid")
-          yield
-          print("OOPS: Too many yields used")
+        any_hook.show_capture_on_success = True
+        any_hook.show_cleanup_on_success = True
 
-      def before_tag(context, tag):
-          if tag == "fixture.invalid":
-              use_fixture(invalid_fixture, context)
-      """
-    And a file named "features/invalid_fixture.feature" with:
-      """
-      Feature: Fixture with more than one yield
-        @fixture.invalid
-        Scenario: Use invalid fixture
-          Given a step passes
+        @fixture
+        def foo(ctx):
+            print("FIXTURE-SETUP: foo")
+            yield
+            print("FIXTURE-CLEANUP: foo")
 
-        Scenario:
-          Then another step passes
-      """
-    When I run "behave -f plain features/invalid_fixture.feature"
-    Then it should fail with:
-      """
-      1 scenario passed, 0 failed, 1 error, 0 skipped
-      2 steps passed, 0 failed, 0 skipped
-      """
-    And the command output should contain:
-      """
-      FIXTURE-SETUP: invalid
-        Scenario: Use invalid fixture
-          Given a step passes ... passed
-      FIXTURE-CLEANUP: invalid
-      CLEANUP-ERROR in cleanup_fixture: InvalidFixtureError: Has more than one yield: <function invalid_fixture at
-      """
-    But note that "cleanup errors cause scenario to fail (by default)"
+        @fixture
+        def bar(ctx):
+            def cleanup_bar():
+                print("FIXTURE-CLEANUP: bar")
 
+            print("FIXTURE-SETUP: bar")
+            ctx.add_cleanup(cleanup_bar)
+
+        def before_tag(ctx, tag):
+            if tag == "fixture.foo":
+                use_fixture(foo, ctx)
+            elif tag == "fixture.bar":
+                use_fixture(bar, ctx)
+        """
+      And a file named "features/two.feature" with:
+        """
+        Feature: Use multiple Fixtures
+          @fixture.foo
+          @fixture.bar
+          Scenario: Two Fixtures
+            Given a step passes
+
+          Scenario:
+            Then another step passes
+        """
+      When I run "behave -f plain features/two.feature"
+      Then it should pass with:
+        """
+        2 scenarios passed, 0 failed, 0 skipped
+        2 steps passed, 0 failed, 0 skipped
+        """
+      And the command output should contain:
+        """
+          Scenario: Two Fixtures
+        ----
+        CAPTURED STDOUT: before_tag
+        FIXTURE-SETUP: foo
+        FIXTURE-SETUP: bar
+        ----
+            Given a step passes ... passed
+        ----
+        CAPTURED STDOUT: scenario.cleanup
+        FIXTURE-CLEANUP: bar
+        FIXTURE-CLEANUP: foo
+        ----
+        """
+      But note that "the fixture-cleanup occurs in reverse order (LIFO)"
+
+
+    Scenario: Use same fixture twice with different args
+      Given a file named "features/environment.py" with:
+        """
+        from __future__ import absolute_import, print_function
+        from behave.capture import any_hook
+        from behave.fixture import fixture, use_fixture
+
+        any_hook.show_capture_on_success = True
+        any_hook.show_cleanup_on_success = True
+
+        @fixture
+        def foo(ctx, name):
+            name2 = "foo%s" % name
+            print("FIXTURE-SETUP: %s" % name2)
+            setattr(ctx, name2, 1)
+            yield
+            print("FIXTURE-CLEANUP: %s" % name2)
+
+        def before_tag(ctx, tag):
+            if tag.startswith("fixture.foo"):
+                # -- FIXTURE-TAG SCHEMA: fixture.foo*
+                name = tag.replace("fixture.foo", "")
+                use_fixture(foo, ctx, name)
+        """
+      And a file named "features/two.feature" with:
+        """
+        Feature: Use same Fixture twice
+          @fixture.foo_1
+          @fixture.foo_2
+          Scenario: Use Fixtures
+            Given a step passes
+
+          Scenario:
+            Then another step passes
+        """
+      When I run "behave -f plain features/two.feature"
+      Then it should pass with:
+        """
+        2 scenarios passed, 0 failed, 0 skipped
+        2 steps passed, 0 failed, 0 skipped
+        """
+      And the command output should contain:
+        """
+          Scenario: Use Fixtures
+        ----
+        CAPTURED STDOUT: before_tag
+        FIXTURE-SETUP: foo_1
+        FIXTURE-SETUP: foo_2
+        ----
+            Given a step passes ... passed
+        ----
+        CAPTURED STDOUT: scenario.cleanup
+        FIXTURE-CLEANUP: foo_2
+        FIXTURE-CLEANUP: foo_1
+        ----
+        """
+      But note that "the fixture-cleanup occurs in reverse order (LIFO)"
+
+  Rule: Bad Fixture
+    Scenario: Use invalid fixture (with two yields or more)
+      Given a file named "features/environment.py" with:
+        """
+        from __future__ import absolute_import, print_function
+        from behave.capture import any_hook
+        from behave.fixture import fixture, use_fixture
+
+        any_hook.show_capture_on_success = True
+
+        @fixture
+        def invalid_fixture(ctx):
+            # -- CASE: Setup-only
+            print("FIXTURE-SETUP: invalid")
+            yield
+            print("FIXTURE-CLEANUP: invalid")
+            yield
+            print("OOPS: Too many yields used")
+
+        def before_tag(ctx, tag):
+            if tag == "fixture.invalid":
+                use_fixture(invalid_fixture, ctx)
+        """
+      And a file named "features/invalid_fixture.feature" with:
+        """
+        Feature: Fixture with more than one yield
+          @fixture.invalid
+          Scenario: Use invalid fixture
+            Given a step passes
+
+          Scenario:
+            Then another step passes
+        """
+      When I run "behave -f plain features/invalid_fixture.feature"
+      Then it should fail with:
+        """
+        1 scenario passed, 0 failed, 1 cleanup_error, 0 skipped
+        2 steps passed, 0 failed, 0 skipped
+        """
+      And the command output should contain:
+        """
+          Scenario: Use invalid fixture
+        ----
+        CAPTURED STDOUT: before_tag
+        FIXTURE-SETUP: invalid
+        ----
+            Given a step passes ... passed
+        ----
+        CAPTURED STDOUT: scenario.cleanup
+        FIXTURE-CLEANUP: invalid
+        CLEANUP-ERROR in cleanup_fixture: InvalidFixtureError: Has more than one yield: <function invalid_fixture at
+        """
+      But note that "cleanup errors cause scenario to fail (by default)"
+
+Rule: Fixtures with Cleanup Errors
 
   Scenario: Fixture with cleanup-error causes failed (case: scenario)
     Given a file named "features/environment.py" with:
       """
-      from __future__ import print_function
+      from __future__ import absolute_import, print_function
+      from behave.capture import any_hook
       from behave.fixture import fixture, use_fixture
 
+      any_hook.show_capture_on_success = True
+
+      class SomeError(RuntimeError): pass
+
       @fixture
-      def bad_with_cleanup_error(context):
+      def bad_with_cleanup_error(ctx):
           print("FIXTURE-SETUP: bad_with_cleanup_error")
           yield
           print("FIXTURE-CLEANUP: bad_with_cleanup_error")
-          raise RuntimeError("BAD_FIXTURE_CLEANUP_ERROR")
+          raise SomeError("BAD_FIXTURE_CLEANUP_ERROR")
 
-      def before_tag(context, tag):
+      def before_tag(ctx, tag):
           if tag == "fixture.bad_with_cleanup_error":
-              use_fixture(bad_with_cleanup_error, context)
+              use_fixture(bad_with_cleanup_error, ctx)
       """
     And a file named "features/bad_fixture.feature" with:
       """
@@ -447,22 +567,31 @@ Feature: Fixture
     When I run "behave -f plain features/bad_fixture.feature"
     Then it should fail with:
       """
-      1 scenario passed, 0 failed, 1 error, 0 skipped
+      1 scenario passed, 0 failed, 1 cleanup_error, 0 skipped
       2 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
       """
-      FIXTURE-SETUP: bad_with_cleanup_error
         Scenario: Use fixture
+      ----
+      CAPTURED STDOUT: before_tag
+      FIXTURE-SETUP: bad_with_cleanup_error
+      ----
           Given a step passes ... passed
+      ----
+      CAPTURED STDOUT: scenario.cleanup
       FIXTURE-CLEANUP: bad_with_cleanup_error
-      CLEANUP-ERROR in cleanup_fixture: RuntimeError: BAD_FIXTURE_CLEANUP_ERROR
+      CLEANUP-ERROR in cleanup_fixture: SomeError: BAD_FIXTURE_CLEANUP_ERROR
+      """
+    And the command output should contain "Traceback"
+    And the command output should contain:
+      """
+      File "features/environment.py", line 14, in bad_with_cleanup_error
+        raise SomeError("BAD_FIXTURE_CLEANUP_ERROR")
       """
     And the command output should contain:
       """
-      File "features/environment.py", line 9, in bad_with_cleanup_error
-        raise RuntimeError("BAD_FIXTURE_CLEANUP_ERROR")
-      RuntimeError: BAD_FIXTURE_CLEANUP_ERROR
+      SomeError: BAD_FIXTURE_CLEANUP_ERROR
       """
     But note that "traceback shows cleanup-fixture failure location"
     And note that "cleanup error causes scenario to fail (by default)"
@@ -471,28 +600,34 @@ Feature: Fixture
   Scenario: Multiple fixture cleanup-errors cause no abort after first error (case: scenario)
     Given a file named "features/environment.py" with:
       """
-      from __future__ import print_function
+      from __future__ import absolute_import, print_function
+      from behave.capture import any_hook
       from behave.fixture import fixture, use_fixture
 
+      any_hook.show_capture_on_success = True
+
+      class SomeError(RuntimeError): pass
+
       @fixture
-      def foo(context):
+      def foo(ctx):
           print("FIXTURE-SETUP: foo")
           yield
           print("FIXTURE-CLEANUP: foo")
 
       @fixture
-      def bad_with_cleanup_error(context, name):
-          print("FIXTURE-SETUP: bad_with_cleanup_error%s" % name)
+      def bad_with_cleanup_error(ctx, suffix=""):
+          name = "bad_with_cleanup_error{}".format(suffix).rstrip()
+          print("FIXTURE-SETUP: {name}".format(name=name))
           yield
-          print("FIXTURE-CLEANUP: bad_with_cleanup_error%s" % name)
-          raise RuntimeError("BAD_FIXTURE_CLEANUP_ERROR%s" % name)
+          print("FIXTURE-CLEANUP: {name}".format(name=name))
+          raise SomeError("BAD_FIXTURE_CLEANUP_ERROR%s" % suffix)
 
-      def before_tag(context, tag):
+      def before_tag(ctx, tag):
           if tag.startswith("fixture.bad_with_cleanup_error"):
-              name = tag.replace("fixture.bad_with_cleanup_error", "")
-              use_fixture(bad_with_cleanup_error, context, name)
+              suffix = tag.replace("fixture.bad_with_cleanup_error", "")
+              use_fixture(bad_with_cleanup_error, ctx, suffix)
           elif tag.startswith("fixture.foo"):
-              use_fixture(foo, context)
+              use_fixture(foo, ctx)
       """
     And a file named "features/bad_fixture2.feature" with:
       """
@@ -509,24 +644,29 @@ Feature: Fixture
     When I run "behave -f plain features/bad_fixture2.feature"
     Then it should fail with:
       """
-      1 scenario passed, 0 failed, 1 error, 0 skipped
+      1 scenario passed, 0 failed, 1 cleanup_error, 0 skipped
       2 steps passed, 0 failed, 0 skipped
       """
     And the command output should contain:
       """
+        Scenario: Use fixture
+      ----
+      CAPTURED STDOUT: before_tag
       FIXTURE-SETUP: bad_with_cleanup_error_1
       FIXTURE-SETUP: foo
       FIXTURE-SETUP: bad_with_cleanup_error_2
-        Scenario: Use fixture
+      ----
           Given a step passes ... passed
+      ----
+      CAPTURED STDOUT: scenario.cleanup
       FIXTURE-CLEANUP: bad_with_cleanup_error_2
-      CLEANUP-ERROR in cleanup_fixture: RuntimeError: BAD_FIXTURE_CLEANUP_ERROR_2
+      CLEANUP-ERROR in cleanup_fixture: SomeError: BAD_FIXTURE_CLEANUP_ERROR_2
       """
     And the command output should contain:
       """
       FIXTURE-CLEANUP: foo
       FIXTURE-CLEANUP: bad_with_cleanup_error_1
-      CLEANUP-ERROR in cleanup_fixture: RuntimeError: BAD_FIXTURE_CLEANUP_ERROR_1
+      CLEANUP-ERROR in cleanup_fixture: SomeError: BAD_FIXTURE_CLEANUP_ERROR_1
       """
     But note that "all fixture-cleanups are executed (even when errors occur)"
     And note that "fixture-cleanups are executed in reverse order (LIFO)"

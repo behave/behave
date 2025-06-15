@@ -68,9 +68,16 @@ Feature: Fixture that uses an Async-Resource
   Scenario: Use AsyncResource in a fixture
     Given a file named "features/environment.py" with:
       """
+      from __future__ import absolute_import, print_function
+      from behave.capture import any_hook
       from behave.fixture import fixture, use_fixture
       from example4me.async_fixture import service
 
+      # -- ENABLE CAPTURED-OUTPUT:
+      any_hook.show_capture_on_success = True
+      any_hook.show_cleanup_on_success = True
+
+      # -- HOOKS:
       def before_tag(ctx, tag):
           if tag == "fixture.service=one":
               use_fixture(service, ctx, name="one")
@@ -93,10 +100,16 @@ Feature: Fixture that uses an Async-Resource
       """
     And the command output should contain:
       """
+        Scenario: Fixture with service=one (as AsyncResource)
+      ----
+      CAPTURED STDOUT: before_tag
       FIXTURE-SETUP: service=one
       Starting AsyncResource=one ...
-        Scenario: Fixture with service=one (as AsyncResource)
+      ----
           Given a step passes ... passed
+      ----
+      CAPTURED STDOUT: scenario.cleanup
       Stopping AsyncResource=one ...
       FIXTURE-CLEANUP: service=one
+      ----
       """

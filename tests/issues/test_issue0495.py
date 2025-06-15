@@ -53,8 +53,8 @@ def test_issue(log_message):
     # ensure_logging_setup()
     context = SimpleContext()
     context.config = Configuration("", load_config=False,
-        log_capture=True,
-        logging_format="%(levelname)s: %(message)s",
+        capture_log=True,
+        logging_format="LOG_%(levelname)s: %(message)s",
         logging_level=logging.INFO
     )
     context.config.setup_logging()

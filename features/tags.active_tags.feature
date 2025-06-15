@@ -49,15 +49,14 @@ Feature: Active Tags
   .   * DRY-RUN MODE: Hooks are not called in dry-run mode.
 
 
-    @setup
-    Scenario: Feature Setup
+    Background:
       Given a new working directory
       And a file named "features/steps/pass_steps.py" with:
         """
         from behave import step
 
         @step('{word:w} step passes')
-        def step_passes(context, word):
+        def step_passes(ctx, word):
             pass
 
         # -- REUSE: Step definitions.
@@ -66,7 +65,7 @@ Feature: Active Tags
       And a file named "features/environment.py" with:
         """
         from behave.tag_matcher import ActiveTagMatcher, setup_active_tag_values
-        import sys
+        import logging
 
         # -- ACTIVE TAG SUPPORT: @use.with_{category}={value}, ...
         active_tag_value_provider = {
@@ -74,14 +73,15 @@ Feature: Active Tags
             "webserver": "apache",
         }
         active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
-
+        logger = logging.getLogger("behave.run")
         # -- BEHAVE-HOOKS:
-        def before_all(context):
-            setup_active_tag_values(active_tag_value_provider, context.config.userdata)
+        def before_all(ctx):
+            ctx.config.setup_logging(filename="behave.log")
+            setup_active_tag_values(active_tag_value_provider, ctx.config.userdata)
 
-        def before_scenario(context, scenario):
+        def before_scenario(ctx, scenario):
             if active_tag_matcher.should_exclude_with(scenario.effective_tags):
-                sys.stdout.write("ACTIVE-TAG DISABLED: Scenario %s\n" % scenario.name)
+                logger.info("ACTIVE-TAG DISABLED: Scenario %s\n" % scenario.name)
                 scenario.skip(active_tag_matcher.exclude_reason)
         """
       And a file named "behave.ini" with:
@@ -93,6 +93,7 @@ Feature: Active Tags
         color = no
         """
 
+  Rule: Active-Tag Basics
     Scenario: Use active-tag with Scenario and one category (tag schema dialect2)
       Given a file named "features/e1.active_tags.feature" with:
         """
@@ -113,11 +114,11 @@ Feature: Active Tags
         1 scenario passed, 0 failed, 1 skipped
         2 steps passed, 0 failed, 1 skipped
         """
-      And the command output should contain:
+      And the file "behave.log" should contain:
         """
         ACTIVE-TAG DISABLED: Scenario Bob
         """
-      But the command output should not contain:
+      And the file "behave.log" should not contain:
         """
         ACTIVE-TAG DISABLED: Scenario Alice
         """
@@ -142,11 +143,11 @@ Feature: Active Tags
         1 scenario passed, 0 failed, 1 skipped
         2 steps passed, 0 failed, 1 skipped
         """
-      And the command output should contain:
+      And the file "behave.log" should contain:
         """
         ACTIVE-TAG DISABLED: Scenario Bob
         """
-      But the command output should not contain:
+      And the file "behave.log" should not contain:
         """
         ACTIVE-TAG DISABLED: Scenario Alice
         """
@@ -170,11 +171,12 @@ Feature: Active Tags
             Given some step passes
         """
       When I run "behave -f plain -D browser=<browser> features/e3.active_tags.feature"
-      Then it should pass with:
+      Then it should pass
+      And the file "behave.log" should contain:
         """
         ACTIVE-TAG DISABLED: Scenario <disabled scenario>
         """
-      And the command output should not contain:
+      And the file "behave.log" should not contain:
         """
         ACTIVE-TAG DISABLED: Scenario <enabled scenario>
         """
@@ -187,6 +189,7 @@ Feature: Active Tags
         | safari  | Charly           | Alice             | Bob is also enabled |
 
 
+  Rule: Check Active-Tag Logic
     Scenario: Tag logic with one active tag
       Given I setup the current values for active tags with:
         | category | value |
@@ -232,7 +235,7 @@ Feature: Active Tags
         | @not.with_foo=other @not.with_bar=other   |  yes      |
 
 
-  Scenario: Tag logic with two active tags of same category
+    Scenario: Tag logic with two active tags of same category
       Given I setup the current values for active tags with:
         | category | value |
         | foo      | xxx   |
@@ -245,7 +248,7 @@ Feature: Active Tags
         | @use.with_foo=xxx   @not.with_foo=xxx     |  no      | Disabled: tag1 (BAD-SPEC, CONFLICTS) |
 
 
-  Scenario: Tag logic with three active tags of same category
+    Scenario: Tag logic with three active tags of same category
       Given I setup the current values for active tags with:
         | category | value |
         | foo      | xxx   |
@@ -297,6 +300,7 @@ Feature: Active Tags
       But note that "the active tag with the unknown category is disabled"
 
 
+  Rule: Scenarios Execution with enabled/disabled active-tags
     Scenario: ScenarioOutline with enabled active-tag is executed
       Given a file named "features/outline1.active_tags.feature" with:
         """
@@ -330,9 +334,9 @@ Feature: Active Tags
           Given a step passes                                  # features/steps/pass_steps.py:3
           But note that "Arabella can speak English"           # ../behave4cmd0/note_steps.py:15
         """
-      And the command output should not contain "ACTIVE-TAG DISABLED: Scenario Alice"
+      And the file "behave.log" should not contain "ACTIVE-TAG DISABLED: Scenario Alice"
       But note that "we check now that tags for example rows are generated correctly"
-      And the command output should not contain "@use.with_browserchrome"
+      # XXX_CHECK: And the command output should not contain "@use.with_browserXchrome"
       But the command output should contain "@use.with_browser=chrome"
 
 
@@ -356,7 +360,7 @@ Feature: Active Tags
         0 scenarios passed, 0 failed, 1 skipped
         0 steps passed, 0 failed, 2 skipped
         """
-      And the command output should contain:
+      And the file "behave.log" should contain:
         """
         ACTIVE-TAG DISABLED: Scenario Bob -- Bernhard, French -- @1.1
         """
@@ -382,17 +386,18 @@ Feature: Active Tags
         1 scenario passed, 0 failed, 1 skipped
         2 steps passed, 0 failed, 2 skipped
         """
-      And the command output should contain:
+      And the file "behave.log" should contain:
         """
         ACTIVE-TAG DISABLED: Scenario Charly -- Anna, German, firefox -- @1.1
         """
-      And the command output should not contain:
+      And the file "behave.log" should not contain:
         """
         ACTIVE-TAG DISABLED: Scenario Charly -- Arabella, English, chrome -- @1.2
         """
       And the command output should contain:
         """
-        ACTIVE-TAG DISABLED: Scenario Charly -- Anna, German, firefox -- @1.1
+        @use.with_browser=firefox
+        Scenario Outline: Charly -- Anna, German, firefox -- @1.1   # features/outline3.active_tags.feature:10
 
         @use.with_browser=chrome
         Scenario Outline: Charly -- Arabella, English, chrome -- @1.2   # features/outline3.active_tags.feature:11

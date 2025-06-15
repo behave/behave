@@ -24,7 +24,7 @@ Feature: Issue #506 -- Behave stops on error
       And a file named "features/steps/steps.py" with:
         """
         from behave import when, then
-        from behave._types import ChainedExceptionUtil
+        from behave.exception_util import ChainedExceptionUtil
         import copy
 
         @when('I bad chained-exception causes my step to fail')

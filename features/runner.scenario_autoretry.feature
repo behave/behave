@@ -89,7 +89,7 @@ Feature: Auto-retry failed scenarios (a number of times)
 
         Scenario: A2
           Given an unreliable step fails sometimes ... failed
-        Assertion Failed: UNRELIABLE-STEP FAILURE
+        ASSERT FAILED: UNRELIABLE-STEP FAILURE
         AUTO-RETRY SCENARIO (attempt 1)
 
         Scenario: A2
@@ -115,14 +115,14 @@ Feature: Auto-retry failed scenarios (a number of times)
           Given a step passes ... passed
           When an unreliable step fails sometimes ... passed
           Then another unreliable step fails sometimes ... failed
-        Assertion Failed: UNRELIABLE-STEP FAILURE
+        ASSERT FAILED: UNRELIABLE-STEP FAILURE
         AUTO-RETRY SCENARIO (attempt 1)
 
         Scenario: A1
           Given a step passes ... passed
            When an unreliable step fails sometimes ... passed
           Then another unreliable step fails sometimes ... failed
-        Assertion Failed: UNRELIABLE-STEP FAILURE
+        ASSERT FAILED: UNRELIABLE-STEP FAILURE
         AUTO-RETRY SCENARIO FAILED (after 2 attempts)
 
         Scenario: A2

@@ -15,14 +15,17 @@ import copy
 import difflib
 import logging
 import itertools
+import os
+import sys
 import time
 import six
 from six.moves import zip       # pylint: disable=redefined-builtin
 from behave.api.pending_step import StepNotImplementedError
+from behave.capture import Captured, ManyCaptured
 from behave.model_core import (
-    Status, ScenarioStatus, OuterStatus,
     BasicStatement, TagAndStatusStatement, TagStatement, Replayable
 )
+from behave.model_type import Status, ScenarioStatus, OuterStatus
 from behave.matchers import NoMatch
 from behave.textutil import text as _text
 if six.PY2:
@@ -381,11 +384,23 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
         should_run_entity = self.should_run(runner.config)
         failed_count = 0
         hooks_called = False
+
+        # run this entity if the tags say so or any one of its scenarios
+        if should_run_entity or runner.config.show_skipped:
+            for formatter in runner.formatters:
+                formatter_func = getattr(formatter, entity_name, None)
+                if formatter_func:
+                    formatter_func(self)
+            if self.background:
+                for formatter in runner.formatters:
+                    formatter.background(self.background)
+
         if not runner.config.dry_run and should_run_entity:
             hooks_called = True
-            for tag in self.tags:
-                runner.run_hook("before_tag", runner.context, tag)
-            runner.run_hook(hook_before_entity, runner.context, self)
+            runner.run_hook_tags_with_capture("before_tag", self.tags,
+                                              capture_sink=self.capture_sink)
+            runner.run_hook_with_capture(hook_before_entity, self,
+                                         capture_sink=self.capture_sink)
             if self.hook_failed:
                 failed_count += 1
 
@@ -393,16 +408,6 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
             # Hook may call entity.mark_skipped() to exclude it.
             skip_entity_untested = self.hook_failed or runner.aborted
             should_run_entity = self.should_run()
-
-        # run this entity if the tags say so or any one of its scenarios
-        if should_run_entity or runner.config.show_skipped:
-            for formatter in runner.formatters:
-                formatter_callback = getattr(formatter, entity_name, None)
-                if formatter_callback:
-                    formatter_callback(self)
-            if self.background:
-                for formatter in runner.formatters:
-                    formatter.background(self.background)
 
         if not skip_entity_untested:
             # -- RUN: Rules, Scenarios or ScenarioOutlines
@@ -428,9 +433,10 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
             self.set_status(Status.skipped)
 
         if hooks_called:
-            runner.run_hook(hook_after_entity, runner.context, self)
-            for tag in self.tags:
-                runner.run_hook("after_tag", runner.context, tag)
+            runner.run_hook_with_capture(hook_after_entity, self,
+                                         capture_sink=self.capture_sink)
+            runner.run_hook_tags_with_capture("after_tag", self.tags,
+                                             capture_sink=self.capture_sink)
             if self.hook_failed:
                 # MAYBE BETTER: self.set_status(Status.error)
                 self.set_status(Status.hook_error)
@@ -438,11 +444,11 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
 
         # -- PERFORM CONTEXT CLEANUP: May raise cleanup errors.
         try:
-            runner.context._pop()       # pylint: disable=protected-access
+            # pylint: disable=protected-access
+            runner.context._pop(capture_sink=self.capture_sink)
         except Exception:               # pylint: disable=broad-except
             # -- CLEANUP-ERROR:
-            # WAS: self.set_status(Status.failed)
-            self.set_status(Status.error)
+            self.set_status(Status.cleanup_error)
             failed_count += 1
 
         if should_run_entity or runner.config.show_skipped:
@@ -1145,13 +1151,22 @@ class Scenario(TagAndStatusStatement, Replayable):
         runner.context._push(layer="scenario")      # pylint: disable=protected-access
         runner.context.scenario = self
         runner.context.tags = set(self.effective_tags)
+        runner.capture_controller.name = "scenario"
+
+        # XXX_NEW_LOCATION
+        runner.setup_capture(name="scenario")
+
+        if run_scenario or runner.config.show_skipped:
+            for formatter in runner.formatters:
+                formatter.scenario(self)
 
         hooks_called = False
         if not runner.config.dry_run and run_scenario:
             hooks_called = True
-            for tag in self.tags:
-                runner.run_hook("before_tag", runner.context, tag)
-            runner.run_hook("before_scenario", runner.context, self)
+            runner.run_hook_tags_with_capture("before_tag", self.tags,
+                                             capture_sink=self.capture_sink)
+            runner.run_hook_with_capture("before_scenario", self,
+                                         capture_sink=self.capture_sink)
             if self.hook_failed:
                 # -- SKIP: Scenario steps and behave like dry_run_scenario
                 failed = True
@@ -1162,12 +1177,8 @@ class Scenario(TagAndStatusStatement, Replayable):
             run_scenario = self.should_run()
             run_steps = run_scenario and not runner.config.dry_run
 
-        if run_scenario or runner.config.show_skipped:
-            for formatter in runner.formatters:
-                formatter.scenario(self)
-
         # TODO: Reevaluate location => Move in front of hook-calls
-        runner.setup_capture()
+        # runner.setup_capture()
 
         if run_scenario or runner.config.show_skipped:
             for step in self:
@@ -1226,26 +1237,41 @@ class Scenario(TagAndStatusStatement, Replayable):
             # -- SPECIAL CASE: Scenario without steps.
             self.set_status(Status.skipped)
 
-
         if hooks_called:
-            runner.run_hook("after_scenario", runner.context, self)
-            for tag in self.tags:
-                runner.run_hook("after_tag", runner.context, tag)
+            runner.run_hook_with_capture("after_scenario", self,
+                                         capture_sink=self.capture_sink)
+            runner.run_hook_tags_with_capture("after_tag", self.tags,
+                                              capture_sink=self.capture_sink)
             if self.hook_failed:
                 self.set_status(Status.hook_error)
                 failed = True
 
         # -- PERFORM CONTEXT-CLEANUP: May raise cleanup errors.
         try:
-            runner.context._pop()       # pylint: disable=protected-access
-        except Exception:               # pylint: disable=broad-except
-            self.set_status(Status.error)
+            # pylint: disable=protected-access
+            runner.context._pop(capture_sink=self.capture_sink)
+        except Exception as e:                   # pylint: disable=broad-except
+            # print("CLEANUP-ERROR: {}:{}".format(e.__class__.__name__, e))
+            self.set_status(Status.cleanup_error)
             failed = True
 
-        # -- CAPTURED-OUTPUT:
-        store_captured = (runner.config.junit or self.status.has_failed())
-        if store_captured:
-            self.captured = runner.capture_controller.captured
+        # -- CAPTURED-OUTPUT POST-PROCESSING:
+        # store_captured_always = STORE_CAPTURED_ALWAYS
+        store_captured_always = self.capture_sink.store_on_success
+        store_captured = (
+            self.status.has_failed()
+            or runner.config.junit
+            or store_captured_always
+        )
+        if runner.config.should_capture() and store_captured:
+            captured = runner.capture_controller.make_captured(
+                failed=failed, name="scenario"
+            )
+            self.captured.add_captured(captured)
+
+        # -- DISABLED: Use scenario.captured.output in Formatter instead.
+        # if self.status.has_failed():
+        #    print(self.captured.make_report())
 
         runner.teardown_capture()
         return failed
@@ -1854,6 +1880,58 @@ class Step(BasicStatement, Replayable):
         outline_step = self
         return ScenarioOutlineBuilder.make_step_for_row(outline_step, table_row)
 
+    def _process_error(self, exception, use_traceback=False, name=None):
+        schema = u"ERROR: {e_classname}: {e}"
+        if isinstance(exception, AssertionError):
+            schema = u"ASSERT FAILED: {e}"
+        elif not exception.args:
+            schema = u"ERROR: {e_classname}"
+
+        traceback_text = None
+        if use_traceback:
+            schema += u"\n{traceback}"
+            traceback_text = _text(traceback.format_exc())
+
+        # -- HINT: Some exceptions have EMPTY-ARGS
+        # This is an indicator that string-conversion does not work.
+        # EXAMPLE: KeyboardInterrupt
+        exc_text = ""
+        if exception.args:
+            exc_text = _text(exception)
+
+        error_message = schema.format(
+            e_classname=exception.__class__.__name__,
+            e=exc_text, traceback=traceback_text
+        )
+
+        self.store_exception_context(exception)
+        self.error_message = error_message
+
+        # -- EXPECT CAPTURE MODE:
+        # XXX print(error_message, file=sys.stderr)
+
+        # -- MAYBE:
+        name = name or "step"
+        this_captured = Captured(stderr=error_message, name=name, failed=True)
+        self.captured.add_captured(this_captured)
+
+        return error_message
+
+        # -- OLD:
+        # if exception.args:
+        #     exc_message = _text(exception)
+        #     error = u"ASSERT FAILED: " + exc_message
+        # else:
+        #     # no assertion text; format the exception
+        #     error = _text(traceback.format_exc())
+        # if e.args:
+        #     message = _text(e)
+        #     error = u"%s: %s" % (e.__class__.__name__, message)
+        # else:
+        #     # no assertion text; format the exception
+        #     error = _text(traceback.format_exc())
+
+
     def run(self, runner, quiet=False, capture=True):
         # pylint: disable=too-many-branches, too-many-statements
         # -- RESET: Run-time information.
@@ -1890,11 +1968,12 @@ class Step(BasicStatement, Replayable):
             for formatter in runner.formatters:
                 formatter.match(match)
 
-        if capture:
+        should_capture = capture
+        if should_capture:
             runner.start_capture()
 
         skip_step_untested = False
-        runner.run_hook("before_step", runner.context, self)
+        runner.run_hook("before_step", self)
         if self.hook_failed:
             skip_step_untested = True
 
@@ -1912,13 +1991,8 @@ class Step(BasicStatement, Replayable):
                     self.status = Status.passed
             except AssertionError as e:
                 self.status = Status.failed
-                self.store_exception_context(e)
-                if e.args:
-                    message = _text(e)
-                    error = u"Assertion Failed: " + message
-                else:
-                    # no assertion text; format the exception
-                    error = _text(traceback.format_exc())
+                use_traceback = runner.config.verbose
+                error = self._process_error(e, use_traceback=use_traceback)
             except StepNotImplementedError as e:
                 # -- CASE: StepNotImplementedError/PendingStepError
                 self.status = Status.pending
@@ -1926,48 +2000,49 @@ class Step(BasicStatement, Replayable):
                     self.status = Status.untested_pending
                 elif wip_mode:
                     self.status = Status.pending_warn
-                self.store_exception_context(e)
-                if e.args:
-                    message = _text(e)
-                    error = u"%s: %s" % (e.__class__.__name__, message)
-                else:
-                    # no assertion text; format the exception
-                    error = _text(traceback.format_exc())
+                if self.status.has_failed():
+                    error = self._process_error(e)
             except KeyboardInterrupt as e:
                 runner.abort(reason="KeyboardInterrupt")
                 error = u"ABORTED: By user (KeyboardInterrupt)."
                 self.status = Status.error
-                self.store_exception_context(e)
+                self._process_error(e)
             except Exception as e:      # pylint: disable=broad-except
                 self.status = Status.error
                 error = _text(traceback.format_exc())
-                self.store_exception_context(e)
+                self._process_error(e)
 
         now = time.time
         self.duration = now() - start_time
-        runner.run_hook("after_step", runner.context, self)
+
+        runner.run_hook("after_step", self)
         if self.hook_failed:
             # -- MAYBE BETTER: self.status = Status.error
             self.status = Status.hook_error
 
-        if capture:
+        if should_capture:
             runner.stop_capture()
 
-        # flesh out the failure with details
-        store_captured_always = False   # PREPARED
+        # -- CAPTURE POST-PROCESSING:
+        # store_captured_always = STORE_CAPTURED_ALWAYS
+        store_captured_always = self.capture_sink.store_on_success
         store_captured = self.status.has_failed() or store_captured_always
+        if should_capture and store_captured:
+            # -- STORE-CAPTURE: Non-nested step failures.
+            failed = self.status.has_failed()
+            controller = runner.capture_controller
+            captured = controller.make_captured_delta(failed=failed,
+                                                      name="step")
+            self.captured.add_captured(captured)
+        else:
+            # -- FOR EACH STEP: If captured_delta is not used.
+            runner.capture_controller.update_delta_bookmark()
+
+        # -- CHECK FAILURE DETAILS:
         if self.status.has_failed():
             assert isinstance(error, six.text_type)
-            if capture:
-                # -- CAPTURE-ONLY: Non-nested step failures.
-                self.captured = runner.capture_controller.captured
-                error2 = self.captured.make_report()
-                if error2:
-                    error += "\n" + error2
             self.error_message = error
             keep_going = False
-        elif store_captured and capture:
-            self.captured = runner.capture_controller.captured
 
         if not quiet:
             for formatter in runner.formatters:

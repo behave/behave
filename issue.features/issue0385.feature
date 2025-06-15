@@ -1,5 +1,7 @@
 @issue
 @change_request
+@xfail
+@todo.decision_pending
 Feature: Issue #385 -- before_scenario called too late
 
     . RATIONALE:
@@ -10,6 +12,10 @@ Feature: Issue #385 -- before_scenario called too late
     .
     . formatters are now called to early (for before feature/scenario functionality).
     . Formatters should be called after the before-hooks are processed.
+    .
+    . DECISION PENDING TO REVERT OR NOT: In behave v1.2.7
+    .  * Capturing hooks requires that the Formatter is called
+    .    before the "before_feature/before_scenario" hook is called.
     .
     . NOTES:
     .  * Test uses show_skipped=false to ensure that at least the
@@ -44,6 +50,7 @@ Feature: Issue #385 -- before_scenario called too late
         """
         [behave]
         show_skipped = false
+        capture_hooks = false
         """
 
     Scenario: Formatter is not called with skip in before_scenario hook

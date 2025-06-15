@@ -391,7 +391,7 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
         """
       And the command output should contain:
         """
-        Assertion Failed: XFAIL:¾;
+        ASSERT FAILED: XFAIL:¾;
         """
 
       Examples:

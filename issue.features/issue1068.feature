@@ -24,6 +24,7 @@ Feature: Issue #1068 -- Feature.status is Status.failed in before_scenario() Hoo
       """
       [behave]
       show_timings = false
+      capture_hooks = false
       """
 
   Scenario: Verify observed behaviour
@@ -41,8 +42,6 @@ Feature: Issue #1068 -- Feature.status is Status.failed in before_scenario() Hoo
       """
     And a file named "features/environment.py" with:
       """
-      from __future__ import print_function
-
       def before_scenario(context, scenario):
           print("BEFORE_SCENARIO: Feature status is: {0} (scenario: {1})".format(
               context.feature.status, scenario.name))

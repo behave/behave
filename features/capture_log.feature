@@ -8,17 +8,16 @@ Feature: Capture log output
   So that failure diagnostics are simplified
 
   . SPECIFICATION:
-  .  * log_capture mode is enabled per default
-  .  * log_capture mode can be defined on command-line
-  .  * log_capture mode can be defined in behave configuration file
-  .  * In log_capture mode: Captured log-records are only shown if a scenario fails
+  .  * capture_log mode is enabled per default
+  .  * capture_log mode can be defined on command-line
+  .  * capture_log mode can be defined in behave configuration file
+  .  * In capture_log mode: Captured log-records are only shown if a scenario fails
   .
   . RELATED:
-  .  * logcapture.*.feature
+  .  * capture_log.*.feature
   .  * logging.*.feature
 
-  @setup
-  Scenario: Feature Setup
+  Background:
     Given a new working directory
     And a file named "features/steps/use_behave4cmd_steps.py" with:
         """
@@ -28,6 +27,9 @@ Feature: Capture log output
         """
     And a file named "features/environment.py" with:
         """
+        from behave.capture import capture_output
+
+        @capture_output(show_on_success=True)
         def before_all(context):
             context.config.setup_logging()
             # -- SAME-AS:
@@ -61,9 +63,10 @@ Feature: Capture log output
             When another step fails
         """
 
+  Rule: Use Capture log
 
     Scenario: Captured log is suppressed if scenario passes
-        When I run "behave -f plain -T --logcapture features/example.log_and_pass.feature"
+        When I run "behave -f plain -T --capture-log features/example.log_and_pass.feature"
         Then it should pass with:
             """
             1 scenario passed, 0 failed, 0 skipped
@@ -81,10 +84,7 @@ Feature: Capture log output
                 | baz      | DEBUG | Hello Emily  |
               When another step passes ... passed
             """
-        And the command output should not contain:
-            """
-            Captured logging:
-            """
+        And the command output should not contain "CAPTURED LOG:"
         But the command output should not contain the following log records:
             | category | level   | message |
             | root     |  FATAL  | Hello Alice  |
@@ -101,9 +101,13 @@ Feature: Capture log output
           [behave]
           logging_format = LOG.%(levelname)s:%(name)s: %(message)s
           """
-        When I run "behave -f plain -T --logcapture features/example.log_and_fail.feature"
+        When I run "behave -f plain -T --capture-log features/example.log_and_fail.feature"
         Then it should fail with:
             """
+            Failing scenarios:
+              features/example.log_and_fail.feature:2  Failing
+
+            0 features passed, 1 failed, 0 skipped
             0 scenarios passed, 1 failed, 0 skipped
             1 step passed, 1 failed, 0 skipped
             """
@@ -119,8 +123,10 @@ Feature: Capture log output
                   | bar      | INFO  | Hello Dora   |
                   | baz      | DEBUG | Hello Emily  |
                 When another step fails ... failed
-            Assertion Failed: EXPECT: Failing step
-            Captured logging:
+            ASSERT FAILED: EXPECT: Failing step
+            """
+        And the command output should contain:
+            """
             LOG.CRITICAL:root: Hello Alice
             LOG.ERROR:foo: Hello Bob
             LOG.WARNING:foo.bar: Hello Charly
@@ -147,7 +153,7 @@ Feature: Capture log output
           [behave]
           logging_format = LOG.%(levelname)s:%(name)s: %(message)s
           """
-        When I run "behave -f plain --logcapture --logging-level=ERROR features/example.log_and_fail.feature"
+        When I run "behave -f plain --capture-log --logging-level=ERROR features/example.log_and_fail.feature"
         Then it should fail
         And the command output should contain the following log records:
             | category | level   | message |
@@ -160,41 +166,42 @@ Feature: Capture log output
             | baz      |  DEBUG  | Hello Emily  |
 
 
-    Scenario: Logcapture mode is enabled per default
+  Rule: Enable/Disable Capture-log Mode
+    Scenario: Capture-log mode is enabled per default
       When I run "behave -f plain features/example.log_and_fail.feature"
       Then it should fail
-      And the command output should contain "Captured logging:"
+      And the command output should contain "CAPTURED LOG:"
 
 
-    Scenario: Logcapture mode can be enabled on command-line
-      When I run "behave -f plain --logcapture features/example.log_and_fail.feature"
+    Scenario: Capture-log mode can be enabled on command-line
+      When I run "behave -f plain --capture-log features/example.log_and_fail.feature"
       Then it should fail
-      And the command output should contain "Captured logging:"
+      And the command output should contain "CAPTURED LOG:"
 
 
-    Scenario: Logcapture mode can be disabled on command-line
+    Scenario: Capture-log mode can be disabled on command-line
       When I run "behave -f plain --no-logcapture features/example.log_and_fail.feature"
       Then it should fail
-      And the command output should not contain "Captured logging:"
+      And the command output should not contain "CAPTURED LOG:"
 
 
-    Scenario: Logcapture mode can be enabled in configfile
+    Scenario: Capture-log mode can be enabled in configfile
       Given a file named "behave.ini" with:
           """
           [behave]
-          log_capture = true
+          capture_log = true
           """
       When I run "behave -f plain features/example.log_and_fail.feature"
       Then it should fail
-      And the command output should contain "Captured logging:"
+      And the command output should contain "CAPTURED LOG:"
 
 
-    Scenario: Logcapture mode can be disabled in configfile
+    Scenario: Capture-log mode can be disabled in configfile
       Given a file named "behave.ini" with:
           """
           [behave]
-          log_capture = false
+          capture_log = false
           """
       When I run "behave -f plain features/example.log_and_fail.feature"
       Then it should fail
-      And the command output should not contain "Captured logging:"
+      And the command output should not contain "CAPTURED LOG:"

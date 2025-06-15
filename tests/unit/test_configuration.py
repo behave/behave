@@ -27,7 +27,7 @@ paths = /absolute/path3
 default_tags = (@foo and not @bar) or @zap
 format=pretty
        tag-counter
-stdout_capture=no
+capture_stdout=no
 bogus=spam
 
 [behave.userdata]
@@ -41,7 +41,7 @@ outfiles = ["/absolute/path1", "relative/path2"]
 paths = ["/absolute/path3", "relative/path4"]
 default_tags = ["(@foo and not @bar) or @zap"]
 format = ["pretty", "tag-counter"]
-stdout_capture = false
+capture_stdout = false
 bogus = "spam"
 
 [tool.behave.userdata]
@@ -113,7 +113,7 @@ class TestConfiguration(object):
             ]
         assert d["format"] == ["pretty", "tag-counter"]
         assert d["default_tags"] == ["(@foo and not @bar) or @zap"]
-        assert d["stdout_capture"] is False
+        assert d["capture_stdout"] is False
         assert "bogus" not in d
         assert d["userdata"] == {"foo": "bar", "answer": "42"}
 
@@ -242,6 +242,11 @@ class TestConfigFileParser(object):
         config_options = configfile_options_iter(None)
         config_options_names = [opt[0] for opt in config_options]
         expected_names = [
+            "capture",
+            "capture_hooks",
+            "capture_log",
+            "capture_stderr",
+            "capture_stdout",
             "color",
             "default_format",
             "default_tags",
@@ -253,7 +258,6 @@ class TestConfigFileParser(object):
             "junit",
             "junit_directory",
             "lang",
-            "log_capture",
             "logging_clear_handlers",
             "logging_datefmt",
             "logging_filter",
@@ -271,8 +275,6 @@ class TestConfigFileParser(object):
             "show_source",
             "show_timings",
             "stage",
-            "stderr_capture",
-            "stdout_capture",
             "steps_catalog",
             "stop",
             "summary",

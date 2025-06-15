@@ -1,11 +1,17 @@
-# -*- coding: utf-8 -*-
+# -*- coding: UTF-8 -*-
+from __future__ import absolute_import, print_function
 
 import os.path
+from behave.formatter.api import IFormatter
 from behave.textutil import (
     select_best_encoding,
     ensure_stream_with_encoder as _ensure_stream_with_encoder
 )
 
+
+# -----------------------------------------------------------------------------
+# FORMATTER HELPER CLASSES
+# -----------------------------------------------------------------------------
 class StreamOpener(object):
     """Provides a transport vehicle to open the formatter output stream
     when the formatter needs it.
@@ -65,41 +71,28 @@ class StreamOpener(object):
         return closed
 
 
-class Formatter(object):
+# -----------------------------------------------------------------------------
+# FORMATTER BASE CLASSES
+# -----------------------------------------------------------------------------
+class Formatter(IFormatter):
     """
-    Base class for all formatter classes.
+    Base class for formatters  that use the :class:`IFormatter` interface.
+
     A formatter is an extension point (variation point) for the runner logic.
     A formatter is called while processing model elements.
 
-    Processing Logic (simplified, without ScenarioOutline and skip logic)::
-
-        # -- HINT: Rule processing is missing.
-        for feature in runner.features:
-            formatter = make_formatters(...)
-            formatter.uri(feature.filename)
-            formatter.feature(feature)
-            for scenario in feature.walk_scenarios():
-                formatter.scenario(scenario)
-                for step in scenario.all_steps:
-                    formatter.step(step)
-                    step_match = step_registry.find_match(step)
-                    formatter.match(step_match)
-                    if step_match:
-                        step_match.run()
-                    else:
-                        step.status = Status.undefined
-                    formatter.result(step.status)
-            formatter.eof() # -- FEATURE-END
-        formatter.close()
+    .. seealso:: :class:`IFormatter`
     """
     name = None
     description = None
 
     def __init__(self, stream_opener, config):
+        super(Formatter, self).__init__()
         self.stream_opener = stream_opener
         self.stream = stream_opener.stream
         self.config = config
 
+    # -- SPECIFIC PARTS:
     @property
     def stdout_mode(self):
         return not self.stream_opener.name
@@ -115,83 +108,6 @@ class Formatter(object):
             self.stream = self.stream_opener.open()
         return self.stream
 
-    def uri(self, uri):
-        """Called before processing a file (normally a feature file).
-
-        :param uri:  URI or filename (as string).
-        """
-        pass
-
-    def feature(self, feature):
-        """Called before a feature is executed.
-
-        :param feature:  Feature object (as :class:`behave.model.Feature`)
-        """
-        pass
-
-    def rule(self, rule):
-        """Called before a rule is executed.
-
-        :param rule:  Rule object (as :class:`behave.model.Rule`)
-        """
-        pass
-
-    # -- PREPARED:
-    # def rule_finished(self, rule):
-    #     """Called after a rule was executed.
-    #
-    #     :param rule:  Rule object (as :class:`behave.model.Rule`)
-    #     """
-    #     pass
-
-    def background(self, background):
-        """Called when a (Feature) Background is provided.
-        Called after :method:`feature()` is called.
-        Called before processing any scenarios or scenario outlines.
-
-        :param background:  Background object (as :class:`behave.model.Background`)
-        """
-        pass
-
-    def scenario(self, scenario):
-        """Called before a scenario is executed (or ScenarioOutline scenarios).
-
-        :param scenario:  Scenario object (as :class:`behave.model.Scenario`)
-        """
-        pass
-
-    def step(self, step):
-        """Called before a step is executed (and matched).
-        NOTE: Normally called before scenario is executed for all its steps.
-
-        :param step: Step object (as :class:`behave.model.Step`)
-        """
-        pass
-
-    def match(self, match):
-        """Called when a step was matched against its step implementation.
-
-        :param match:  Registered step (as Match), undefined step (as NoMatch).
-        """
-        pass
-
-    def result(self, step):
-        """Called after processing a step (when the step result is known).
-
-        :param step:  Step object with result (after being executed/skipped).
-        """
-        pass
-
-    def eof(self):
-        """Called after processing a feature (or a feature file)."""
-        pass
-
-    def close(self):
-        """Called before the formatter is no longer used
-        (stream/io compatibility).
-        """
-        self.close_stream()
-
     def close_stream(self):
         """Close the stream, but only if this is needed.
         This step is skipped if the stream is sys.stdout.
@@ -201,3 +117,12 @@ class Formatter(object):
             assert self.stream is self.stream_opener.stream
             self.stream_opener.close()
         self.stream = None      # -- MARK CLOSED.
+
+    # -- INTERFACE FOR: behave.formatter.api.IFormatter
+    def close(self):
+        """
+        Called before the formatter is no longer used
+        (as stream/io compatibility).
+        """
+        self.close_stream()
+

@@ -78,7 +78,7 @@ Feature: Runner should stop after first failure if --stop option is used
                 Scenario: A2 fails
                     Given a step passes ... passed
                     When a step fails ... failed
-                    Assertion Failed: XFAIL
+                    ASSERT FAILED: XFAIL
             """
         But the command output should not contain:
             """

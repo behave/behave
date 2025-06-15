@@ -7,8 +7,8 @@ for the model elements in behave.
 import os.path
 import sys
 import six
-# PREPARED: from behave.capture import ManyCaptured, CaptureSinkAsCollector
-from behave.capture import Captured
+from behave.capture import ManyCaptured, CaptureSinkAsCollector
+from behave.constant import CAPTURE_SINK_STORE_CAPTURED_ON_SUCCESS
 from behave.model_type import (
     FileLocation, Status,
     make_relpath_if_possible,
@@ -19,6 +19,8 @@ from behave.model_type import (
 # ABSTRACT MODEL CLASSES (and concepts):
 # -----------------------------------------------------------------------------
 class BasicStatement(object):
+    STORE_CAPTURED_ON_SUCCESS = CAPTURE_SINK_STORE_CAPTURED_ON_SUCCESS
+
     def __init__(self, filename, line, keyword, name):
         filename = filename or '<string>'
         filename = make_relpath_if_possible(filename, os.getcwd())   # -- NEEDS: abspath?
@@ -30,10 +32,9 @@ class BasicStatement(object):
         # -- SINCE: 1.2.6 as Captured
         # CHANGED IN: 1.2.7 from Captured to ManyCaptured
         # NOTE: Protect against assignment.
-        # PREPARED: self._captured = ManyCaptured()
-        # PREPARED: self._capture_sink = CaptureSinkAsCollector(self._captured)
-        self._captured = Captured()
-        self._capture_sink = None
+        self._captured = ManyCaptured()
+        self._capture_sink = CaptureSinkAsCollector(self._captured)
+        self._capture_sink.store_on_success = self.STORE_CAPTURED_ON_SUCCESS
         # -- ERROR CONTEXT INFO:
         self.exception = None
         self.exc_traceback = None
@@ -172,6 +173,10 @@ class TagAndStatusStatement(BasicStatement):
     def set_status(self, value):
         if isinstance(value, six.string_types):
             value = Status.from_name(value)
+        if value is Status.cleanup_error:
+            if self._cached_status is Status.hook_error:
+                # -- IGNORE: Status.cleanup_error
+                return
         self._cached_status = value
 
     def clear_status(self):

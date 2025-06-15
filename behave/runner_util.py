@@ -615,7 +615,7 @@ def make_undefined_step_snippet(step, language=None):
     snippet_template = u"""\
 @{step_type}({prefix}'{step_pattern}')
 def step_impl(context):
-    raise StepNotImplementedError({prefix}'STEP: {step_type_titled} {step_pattern}')
+    raise StepNotImplementedError({prefix}'{step_type_titled} {step_pattern}')
 
 """
     snippet = snippet_template.format(step_type=step.step_type,

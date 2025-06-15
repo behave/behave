@@ -1,0 +1,4 @@
+# -- HINT: tox >= 4.0 has breaking changes.
+# SUPPORT FOR: Python 2.7, Python <= 3.6
+# NOT_NEEDED: tox >=3.28.0,<4.0
+virtualenv <  20.22.0

@@ -36,7 +36,7 @@ Feature: Issue #657 -- Allow async steps with timeouts to fail when they raise e
         """
       And the command output should contain:
         """
-        Assertion Failed: XFAIL in async-step
+        ASSERT FAILED: XFAIL in async-step
         """
       And the command output should contain:
         """

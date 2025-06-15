@@ -44,15 +44,15 @@ Feature: Pending Step (Step exists with StepNotImplementedError Marker)
 
         @given(u'a pending step is used')
         def step_pending_given(context):
-            raise StepNotImplementedError('STEP: Given a pending step is used')
+            raise StepNotImplementedError('Given a pending step is used')
 
         @when(u'a pending step is used')
         def step_pending_when(context):
-            raise StepNotImplementedError('STEP: When a pending step is used')
+            raise StepNotImplementedError('When a pending step is used')
 
         @then(u'a pending step is used')
         def step_pending_then(context):
-            raise StepNotImplementedError('STEP: Then a pending step is used')
+            raise StepNotImplementedError('Then a pending step is used')
         """
 
     Rule: Pending Step passes in wip-mode
@@ -168,12 +168,12 @@ Feature: Pending Step (Step exists with StepNotImplementedError Marker)
           """
         But the command output should contain:
           """
-          StepNotImplementedError: STEP: Given a pending step is used
+          StepNotImplementedError: Given a pending step is used
           """
         # And the command output should contain:
         #  """
         #  File "features/steps/pending_steps.py", line 5, in step_pending_given
-        #    raise StepNotImplementedError('STEP: Given a pending step is used')
+        #    raise StepNotImplementedError('Given a pending step is used')
         #  """
 
       Scenario: Pending when step causes scenario to fail with error
@@ -192,12 +192,12 @@ Feature: Pending Step (Step exists with StepNotImplementedError Marker)
           """
         But the command output should contain:
           """
-          StepNotImplementedError: STEP: When a pending step is used
+          StepNotImplementedError: When a pending step is used
           """
         # And the command output should contain:
         #  """
         #  File "features/steps/pending_steps.py", line 9, in step_pending_when
-        #    raise StepNotImplementedError('STEP: When a pending step is used')
+        #    raise StepNotImplementedError('When a pending step is used')
         #  """
 
       Scenario: Pending then step causes scenario to fail with error
@@ -213,10 +213,10 @@ Feature: Pending Step (Step exists with StepNotImplementedError Marker)
           """
         But the command output should contain:
           """
-          StepNotImplementedError: STEP: Then a pending step is used
+          StepNotImplementedError: Then a pending step is used
           """
         # And the command output should contain:
         #  """
         #  File "features/steps/pending_steps.py", line 13, in step_pending_then
-        #    raise StepNotImplementedError('STEP: Then a pending step is used')
+        #    raise StepNotImplementedError('Then a pending step is used')
         #  """

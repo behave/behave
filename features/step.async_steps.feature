@@ -120,7 +120,7 @@ Feature: Async-Test Support (async-step, ...)
         """
       And the command output should contain:
         """
-        Assertion Failed: TIMEOUT-OCCURED: timeout=0.1
+        ASSERT FAILED: TIMEOUT-OCCURED: timeout=0.1
         """
 
     @use.with_python.feature.async_keyword=true
@@ -161,7 +161,7 @@ Feature: Async-Test Support (async-step, ...)
         """
       And the command output should contain:
         """
-        Assertion Failed: XFAIL in async-step
+        ASSERT FAILED: XFAIL in async-step
         """
 
     @use.with_python.feature.async_keyword=true
@@ -237,7 +237,7 @@ Feature: Async-Test Support (async-step, ...)
         """
       And the command output should contain:
         """
-        Assertion Failed: TIMEOUT-OCCURED: timeout=0.2
+        ASSERT FAILED: TIMEOUT-OCCURED: timeout=0.2
         """
 
     @use.with_python.feature.asyncio.coroutine_decorator=true

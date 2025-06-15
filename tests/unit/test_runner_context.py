@@ -11,9 +11,13 @@ from mock import Mock, patch
 import pytest
 import six
 
-from behave import runner, parser
+from behave.configuration import Configuration
 from behave.model import Table
-from behave.runner import Context, ContextMode, scoped_context_layer
+from behave.parser import Parser as GherkinParser
+from behave.runner import (
+    Context, ContextMode, ContextMaskWarning,
+    ModelRunner, scoped_context_layer
+)
 from behave.step_registry import StepRegistry
 
 
@@ -25,8 +29,8 @@ class TestContext(object):
     @staticmethod
     def make_runner(config=None):
         if config is None:
-            config = Mock()
-        # MAYBE: the_runner = runner.Runner(config)
+            config = Configuration(load_config=False)
+        # MAYBE: the_runner = Runner(config)
         the_runner = Mock()
         the_runner.config = config
         return the_runner
@@ -95,10 +99,11 @@ class TestContext2(unittest.TestCase):
     # pylint: disable=invalid-name, protected-access, no-self-use
 
     def setUp(self):
-        r = Mock()
-        self.config = r.config = Mock()
-        r.config.verbose = False
-        self.context = runner.Context(r)
+        config = Configuration(load_config=False, verbose=False)
+        runner = Mock()
+        runner.config = config
+        self.config = config
+        self.context = Context(runner)
 
     # -- TESTSUITE FOR: behave.runner.Context (PART 2)
     def test_user_mode_shall_restore_behave_mode(self):
@@ -242,7 +247,7 @@ class TestContext2(unittest.TestCase):
         print(repr(warns))
         assert warns, "warns is empty!"
         warning = warns[0]
-        assert isinstance(warning, runner.ContextMaskWarning), "warning is not a ContextMaskWarning"
+        assert isinstance(warning, ContextMaskWarning), "warning is not a ContextMaskWarning"
         info = warning.args[0]
         assert info.startswith("user code"), "%r doesn't start with 'user code'" % info
         assert "'thing'" in info, "%r not in %r" % ("'thing'", info)
@@ -289,7 +294,7 @@ class TestContext2(unittest.TestCase):
         print(repr(warns))
         assert warns, "OOPS: warns is empty, but expected non-empty"
         warning = warns[0]
-        assert isinstance(warning, runner.ContextMaskWarning), "warning is not a ContextMaskWarning"
+        assert isinstance(warning, ContextMaskWarning), "warning is not a ContextMaskWarning"
         info = warning.args[0]
         assert info.startswith("behave runner"), "%r doesn't start with 'behave runner'" % info
         assert "'thing'" in info, "%r not in %r" % ("'thing'", info)
@@ -318,7 +323,7 @@ class TestContext2(unittest.TestCase):
         print(repr(warns))
         assert warns
         warning = warns[0]
-        assert isinstance(warning, runner.ContextMaskWarning)
+        assert isinstance(warning, ContextMaskWarning)
         info = warning.args[0]
         assert info.startswith("behave runner"), "%r doesn't start with 'behave runner'" % info
         assert "'thing'" in info, "%r not in %r" % ("'thing'", info)
@@ -395,25 +400,33 @@ class TestContext_ExecuteSteps(unittest.TestCase):
             ExampleSteps.register_steps_with(self.step_registry)
         ExampleSteps.text = None
         ExampleSteps.table = None
+        config = Configuration(load_config=False,
+                               verbose=False,
+                               dry_run=False,
+                               capture_output=False,
+                               capture_errors=False,
+                               capture_log=False,
+                               logging_format=None,
+                               logging_datefmt=None,
+        )
+        # -- SAME AS:
+        # config.verbose = False
+        # config.dry_run = False
+        # config.capture_stdout = False
+        # config.capture_stderr = False
+        # config.capture_log = False
+        # config.logging_format = None
+        # config.logging_datefmt = None
+        runner = ModelRunner(config)
+        runner.step_registry = self.step_registry
 
-        runner_ = Mock()
-        self.config = runner_.config = Mock()
-        runner_.config.verbose = False
-        runner_.config.dry_run = False
-        runner_.config.stdout_capture = False
-        runner_.config.stderr_capture = False
-        runner_.config.log_capture = False
-        runner_.config.logging_format = None
-        runner_.config.logging_datefmt = None
-        runner_.step_registry = self.step_registry
-
-        self.context = runner.Context(runner_)
-        runner_.context = self.context
-        self.context.feature = Mock()
-        self.context.feature.parser = parser.Parser()
-        self.context.runner = runner_
-        # self.context.text = None
-        # self.context.table = None
+        context = Context(runner)
+        context.feature = Mock()
+        context.feature.parser = GherkinParser()
+        runner.context = context
+        self.config = config
+        self.context = context
+        self.context.runner = runner
 
     def test_execute_steps_with_simple_steps(self):
         doc = u"""

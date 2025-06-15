@@ -338,7 +338,9 @@ class Parser(object):
         self.rule = rule
         self.scenario_container = rule
         self.statement = rule
-        self.feature.add_rule(self.statement)
+        if self.feature is not None:
+            self.feature.add_rule(self.statement)
+
         # -- RESET STATE:
         self.tags = []
 
@@ -800,26 +802,11 @@ class Parser(object):
         """
         Parse rule with optional background and scenario(s).
 
-        :param text:  XXX Text that contains 0..* steps
-        :return: List of parsed rule (as :class:`~behave.model:Rule` object).
+        :param text:  Text that contains 1 rule w/ multiple scenarios.
+        :return: Parsed rule (as :class:`~behave.model:Rule` object).
         """
         self._parse_loop(text, initial_state=State.RULE, filename=filename)
-        rule = self.statement
-        return rule
-
-
-        for line in text.splitlines():
-            self.line += 1
-            if not line.strip() and self.state != State.MULTILINE_TEXT:
-                # -- SKIP EMPTY LINES, except in multiline string args.
-                continue
-            self.action(line)
-
-        # -- FINALLY:
-        if self.table is not None:
-            self.action_table("")
-        steps = self.statement.steps
-        return steps
+        return self.rule
 
     def parse_scenario(self, text, filename=None):
         self._parse_loop(text, initial_state=State.SCENARIO ,filename=filename)

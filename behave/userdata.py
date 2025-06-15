@@ -3,32 +3,13 @@
 Functionality to support user-specific configuration data (userdata).
 """
 
-from __future__ import absolute_import
-from behave._types import Unknown
+from __future__ import absolute_import, print_function
+from behave._types import Unknown, parse_bool
 
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS:
 # -----------------------------------------------------------------------------
-def parse_bool(text):
-    """Parses a boolean text and converts it into boolean value (if possible).
-    Supported truth string values:
-
-      * true:   "true", "yes", "on", "1"
-      * false:  "false", "no", "off", "0"
-
-    :raises: ValueError, if text is invalid
-    """
-    # -- BASED ON: distutils.util.strtobool (deprecated; removed in Python 3.12)
-    text = text.lower().strip()
-    if text in ("yes", "true", "on", "1"):
-        return True
-    elif text in ("no", "false", "off", "0"):
-        return False
-    else:
-        raise ValueError("invalid truth value: %r" % (text,))
-
-
 def parse_user_define(text):
     """Parse "{name}={value}" text and return parts as tuple.
     Used for command-line definitions, like "... -D name=value".

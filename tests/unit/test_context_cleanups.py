@@ -11,9 +11,9 @@ OPEN ISSUES:
 """
 
 from __future__ import print_function
-from behave.runner import Context, scoped_context_layer
-from contextlib import contextmanager
-from mock import Mock, NonCallableMock
+from behave.configuration import Configuration
+from behave.runner import Context, Runner, scoped_context_layer
+from mock import Mock
 import pytest
 
 
@@ -45,6 +45,10 @@ class CallListener(object):
         self.collected.append(message)
 
 
+def make_context():
+    config = Configuration(load_config=False)
+    return Context(runner=Runner(config))
+
 # ------------------------------------------------------------------------------
 # TESTS:
 # ------------------------------------------------------------------------------
@@ -52,7 +56,7 @@ class TestContextCleanup(object):
 
     def test_cleanup_func_is_called_when_context_frame_is_popped(self):
         my_cleanup = Mock(spec=cleanup_func)
-        context = Context(runner=Mock())
+        context = make_context()
         with scoped_context_layer(context):   # CALLS-HERE: context._push()
             context.add_cleanup(my_cleanup)
             # -- ENSURE: Not called before context._pop()
@@ -66,7 +70,7 @@ class TestContextCleanup(object):
         my_cleanup2 = Mock(spec=cleanup_func)
 
         # -- SETUP:
-        context = Context(runner=Mock())
+        context = make_context()
         with scoped_context_layer(context):
             context.add_cleanup(my_cleanup1)
             context.add_cleanup(my_cleanup2)
@@ -86,7 +90,7 @@ class TestContextCleanup(object):
         my_cleanup2 = Mock(side_effect=my_cleanup2A)
 
         # -- SETUP:
-        context = Context(runner=Mock())
+        context = make_context()
         with scoped_context_layer(context):
             context.add_cleanup(my_cleanup1)
             context.add_cleanup(my_cleanup2)
@@ -113,7 +117,7 @@ class TestContextCleanup(object):
         my_cleanup_B3M = Mock(side_effect=my_cleanup_B3)
 
         # -- SETUP:
-        context = Context(runner=Mock())
+        context = make_context()
         with scoped_context_layer(context):       # -- LAYER A:
             context.add_cleanup(my_cleanup_A1M)
             context.add_cleanup(my_cleanup_A2M)
@@ -149,7 +153,7 @@ class TestContextCleanup(object):
 
     def test_add_cleanup_with_args(self):
         my_cleanup = Mock(spec=cleanup_func_with_args)
-        context = Context(runner=Mock())
+        context = make_context()
         with scoped_context_layer(context):
             context.add_cleanup(my_cleanup, 1, 2, 3)
             my_cleanup.assert_not_called()
@@ -158,7 +162,7 @@ class TestContextCleanup(object):
 
     def test_add_cleanup_with_args_and_kwargs(self):
         my_cleanup = Mock(spec=cleanup_func_with_args)
-        context = Context(runner=Mock())
+        context = make_context()
         with scoped_context_layer(context):
             context.add_cleanup(my_cleanup, 1, 2, 3, name="alice")
             my_cleanup.assert_not_called()
@@ -168,7 +172,7 @@ class TestContextCleanup(object):
     def test_add_cleanup__rejects_noncallable_cleanup_func(self):
         class NonCallable(object): pass
         non_callable = NonCallable()
-        context = Context(runner=Mock())
+        context = make_context()
 
         with pytest.raises(AssertionError) as e:
             with scoped_context_layer(context):
@@ -180,7 +184,7 @@ class TestContextCleanup(object):
             raise RuntimeError("in CLEANUP call")
         bad_cleanup = Mock(side_effect=bad_cleanup_func)
 
-        context = Context(runner=Mock())
+        context = make_context()
         with pytest.raises(RuntimeError):
             with scoped_context_layer(context):
                 context.add_cleanup(bad_cleanup)
@@ -198,7 +202,7 @@ class TestContextCleanup(object):
         def handle_cleanup_error(context, cleanup_func, exception):
             print("CALLED: handle_cleanup_error")
 
-        context = Context(runner=Mock())
+        context = make_context()
         handle_cleanup_error_func = Mock(spec=handle_cleanup_error)
         with pytest.raises(RuntimeError):
             with scoped_context_layer(context):
@@ -222,7 +226,7 @@ class TestContextCleanup(object):
             def __call__(self, context, cleanup_func, exception):
                 self.collected.append((context, cleanup_func, exception))
 
-        context = Context(runner=Mock())
+        context = make_context()
         collect_cleanup_error = CleanupErrorCollector()
         with pytest.raises(RuntimeError):
             with scoped_context_layer(context):
@@ -248,7 +252,7 @@ class TestContextCleanupWithLayer(object):
 
     def test_add_cleanup_with_known_layer(self):
         my_cleanup = Mock(spec=cleanup_func)
-        context = Context(runner=Mock())
+        context = make_context()
         with scoped_context_layer(context, layer="scenario"):
             context.add_cleanup(my_cleanup, layer="scenario")
             my_cleanup.assert_not_called()
@@ -257,7 +261,7 @@ class TestContextCleanupWithLayer(object):
 
     def test_add_cleanup_with_known_layer_and_args(self):
         my_cleanup = Mock(spec=cleanup_func_with_args)
-        context = Context(runner=Mock())
+        context = make_context()
         with scoped_context_layer(context, layer="scenario"):
             context.add_cleanup(my_cleanup, 1, 2, 3, layer="scenario")
             my_cleanup.assert_not_called()
@@ -266,7 +270,7 @@ class TestContextCleanupWithLayer(object):
 
     def test_add_cleanup_with_known_layer_and_kwargs(self):
         my_cleanup = Mock(spec=cleanup_func_with_args)
-        context = Context(runner=Mock())
+        context = make_context()
         with scoped_context_layer(context, layer="scenario"):
             context.add_cleanup(my_cleanup, layer="scenario", name="alice")
             my_cleanup.assert_not_called()
@@ -275,7 +279,7 @@ class TestContextCleanupWithLayer(object):
 
     def test_add_cleanup_with_known_deeper_layer2(self):
         my_cleanup = Mock(spec=cleanup_func)
-        context = Context(runner=Mock())
+        context = make_context()
         with scoped_context_layer(context, layer="feature"):
             with scoped_context_layer(context, layer="scenario"):
                 context.add_cleanup(my_cleanup, layer="feature")
@@ -285,7 +289,7 @@ class TestContextCleanupWithLayer(object):
 
     def test_add_cleanup_with_known_deeper_layer3(self):
         my_cleanup = Mock(spec=cleanup_func)
-        context = Context(runner=Mock())
+        context = make_context()
         with scoped_context_layer(context, layer="testrun"):
             with scoped_context_layer(context, layer="feature"):
                 with scoped_context_layer(context, layer="scenario"):
@@ -297,7 +301,7 @@ class TestContextCleanupWithLayer(object):
     def test_add_cleanup_with_unknown_layer_raises_lookup_error(self):
         """Cleanup function is not registered"""
         my_cleanup = Mock(spec=cleanup_func)
-        context = Context(runner=Mock())
+        context = make_context()
         with scoped_context_layer(context):   # CALLS-HERE: context._push()
             with pytest.raises(LookupError) as error:
                 context.add_cleanup(my_cleanup, layer="other")

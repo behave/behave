@@ -125,6 +125,11 @@ Feature: Background
     When I run "behave -f plain -T features/background_fail_example.feature"
     Then it should fail with:
         """
+        Failing scenarios:
+          features/background_fail_example.feature:8  S1
+          features/background_fail_example.feature:11  S2
+
+        0 features passed, 1 failed, 0 skipped
         0 scenarios passed, 2 failed, 0 skipped
         2 steps passed, 2 failed, 5 skipped
         """
@@ -136,12 +141,14 @@ Feature: Background
           Scenario: S1
             Given a background step passes ... passed
             And a background step fails ... failed
-        Assertion Failed: XFAIL: background step
-
+        ASSERT FAILED: XFAIL: background step
+        """
+    And the command output should contain:
+        """
           Scenario: S2
             Given a background step passes ... passed
             And a background step fails ... failed
-        Assertion Failed: XFAIL: background step
+        ASSERT FAILED: XFAIL: background step
         """
     And note that "the failing Background step causes all Scenarios to fail"
 
@@ -179,6 +186,11 @@ Feature: Background
     When I run "behave -f plain -T features/background_fails_sometimes_example.feature"
     Then it should fail with:
         """
+        Failing scenarios:
+          features/background_fails_sometimes_example.feature:6  S1
+          features/background_fails_sometimes_example.feature:12  S3
+
+        0 features passed, 1 failed, 0 skipped
         1 scenario passed, 2 failed, 0 skipped
         2 steps passed, 2 failed, 2 skipped
         """
@@ -189,15 +201,19 @@ Feature: Background
 
             Scenario: S1
               Given a background step fails sometimes ... failed
-          Assertion Failed: XFAIL: background step
-
-            Scenario: S2
-              Given a background step fails sometimes ... passed
-              When another step passes ... passed
-
-            Scenario: S3
-              Given a background step fails sometimes ... failed
-          Assertion Failed: XFAIL: background step
+          ASSERT FAILED: XFAIL: background step
+        """
+    And the command output should contain:
+        """
+        Scenario: S2
+          Given a background step fails sometimes ... passed
+          When another step passes ... passed
+        """
+    And the command output should contain:
+        """
+          Scenario: S3
+            Given a background step fails sometimes ... failed
+        ASSERT FAILED: XFAIL: background step
         """
 
 
@@ -304,6 +320,15 @@ Feature: Background
     When I run "behave -f plain -T features/background_fail_outline_example.feature"
     Then it should fail with:
         """
+        Failing scenarios:
+          features/background_fail_outline_example.feature:13  SO1 -- @1.1 Alpha
+          features/background_fail_outline_example.feature:14  SO1 -- @1.2 Alpha
+          features/background_fail_outline_example.feature:15  SO1 -- @1.3 Alpha
+          features/background_fail_outline_example.feature:16  SO1 -- @1.4 Alpha
+          features/background_fail_outline_example.feature:23  SO2 -- @1.1 Beta
+          features/background_fail_outline_example.feature:24  SO2 -- @1.2 Beta
+
+        0 features passed, 1 failed, 0 skipped
         0 scenarios passed, 6 failed, 0 skipped
         6 steps passed, 6 failed, 16 skipped
         """
@@ -315,32 +340,42 @@ Feature: Background
           Scenario Outline: SO1 -- @1.1 Alpha
             Given a background step passes ... passed
             And a background step fails ... failed
-        Assertion Failed: XFAIL: background step
-
+        ASSERT FAILED: XFAIL: background step
+        """
+    And the command output should contain:
+        """
           Scenario Outline: SO1 -- @1.2 Alpha
             Given a background step passes ... passed
             And a background step fails ... failed
-        Assertion Failed: XFAIL: background step
-
+        ASSERT FAILED: XFAIL: background step
+        """
+    And the command output should contain:
+        """
           Scenario Outline: SO1 -- @1.3 Alpha
             Given a background step passes ... passed
             And a background step fails ... failed
-        Assertion Failed: XFAIL: background step
-
+        ASSERT FAILED: XFAIL: background step
+        """
+    And the command output should contain:
+        """
           Scenario Outline: SO1 -- @1.4 Alpha
             Given a background step passes ... passed
             And a background step fails ... failed
-        Assertion Failed: XFAIL: background step
-
+        ASSERT FAILED: XFAIL: background step
+        """
+    And the command output should contain:
+        """
           Scenario Outline: SO2 -- @1.1 Beta
             Given a background step passes ... passed
             And a background step fails ... failed
-        Assertion Failed: XFAIL: background step
-
+        ASSERT FAILED: XFAIL: background step
+        """
+    And the command output should contain:
+        """
           Scenario Outline: SO2 -- @1.2 Beta
             Given a background step passes ... passed
             And a background step fails ... failed
-        Assertion Failed: XFAIL: background step
+        ASSERT FAILED: XFAIL: background step
         """
     But note that "the failing Background step causes each ScenarioOutline to be marked as skipped"
 

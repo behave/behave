@@ -11,8 +11,9 @@ from unittest.mock import Mock
 from hamcrest import assert_that, close_to
 import pytest
 
-from behave.api.async_step import AsyncContext, use_or_create_async_context
 from behave._stepimport import use_step_import_modules, SimpleStepContainer
+from behave.api.async_step import AsyncContext, use_or_create_async_context
+from behave.configuration import Configuration
 from behave.runner import Context, Runner
 
 from .testing_support import StopWatch
@@ -55,6 +56,14 @@ if sys.platform.startswith("win"):
 
 
 # -----------------------------------------------------------------------------
+# TEST SUPPORT:
+# -----------------------------------------------------------------------------
+def make_context():
+    config = Configuration(load_config=False)
+    return Context(runner=Runner(config=config))
+
+
+# -----------------------------------------------------------------------------
 # TESTSUITE:
 # -----------------------------------------------------------------------------
 @requires_py34_to_py37
@@ -82,7 +91,7 @@ class TestAsyncStepDecoratorPy34:
 
         # -- RUN ASYNC-STEP: Verify that it is behaving correctly.
         # ENSURE: Execution of async-step matches expected duration.
-        context = Context(runner=Runner(config={}))
+        context = make_context()
         with StopWatch() as stop_watch:
             step_async_step_waits_seconds2(context, duration=0.2)
 
@@ -91,14 +100,10 @@ class TestAsyncStepDecoratorPy34:
 
 
 class TestAsyncContext:
-    @staticmethod
-    def make_context():
-        return Context(runner=Runner(config={}))
-
     def test_use_or_create_async_context__when_missing(self):
         # -- CASE: AsynContext attribute is created with default_name
         # pylint: disable=protected-access
-        context = self.make_context()
+        context = make_context()
         context._push()
 
         async_context = use_or_create_async_context(context)
@@ -111,7 +116,7 @@ class TestAsyncContext:
 
     def test_use_or_create_async_context__when_exists(self):
         # -- CASE: AsynContext attribute exists with default_name
-        context = self.make_context()
+        context = make_context()
         async_context0 = context.async_context = AsyncContext()
         assert context.async_context.name == "async_context"
         assert hasattr(context, AsyncContext.default_name)
@@ -125,7 +130,7 @@ class TestAsyncContext:
     def test_use_or_create_async_context__when_missing_with_name(self):
         # -- CASE: AsynContext attribute is created with own name
         loop0 = Mock()
-        context = self.make_context()
+        context = make_context()
         async_context = use_or_create_async_context(context, "acontext", loop=loop0)
         assert isinstance(async_context, AsyncContext)
         assert async_context.name == "acontext"
@@ -135,7 +140,7 @@ class TestAsyncContext:
     def test_use_or_create_async_context__when_exists_with_name(self):
         # -- CASE: AsynContext attribute exists with own name
         loop0 = Mock()
-        context = self.make_context()
+        context = make_context()
         async_context0 = context.acontext = AsyncContext(name="acontext", loop=loop0)
         assert context.acontext.name == "acontext"
 
@@ -177,7 +182,7 @@ class TestAsyncStepRunPy34:
         # pylint: enable=import-outside-toplevel, unused-argument
         # -- RUN ASYNC-STEP:
         # Verify that async-steps can be execution without problems.
-        context = Context(runner=Runner(config={}))
+        context = make_context()
         context.traced_steps = []
         given_async_step_passes(context)
         when_async_step_passes(context)
@@ -203,7 +208,7 @@ class TestAsyncStepRunPy34:
 
         # pylint: enable=import-outside-toplevel, unused-argument
         # -- RUN ASYNC-STEP: Verify that AssertionError is detected.
-        context = Context(runner=Runner(config={}))
+        context = make_context()
         with pytest.raises(AssertionError):
             when_async_step_fails(context)
 
@@ -227,6 +232,6 @@ class TestAsyncStepRunPy34:
 
         # pylint: enable=import-outside-toplevel, unused-argument
         # -- RUN ASYNC-STEP: Verify that raised exception is detected.
-        context = Context(runner=Runner(config={}))
+        context = make_context()
         with pytest.raises(ZeroDivisionError):
             when_async_step_raises_exception(context)

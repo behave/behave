@@ -57,10 +57,10 @@ Feature: Issue #92: Output from --format=plain shows skipped steps in next scena
            Scenario: First example
                Given this step works ... passed
                 When this step fails ... failed
-           Assertion Failed: step failed
+           ASSERT FAILED: step failed
 
            Scenario: Second example
                Given this step works ... passed
                 When this step fails ... failed
-           Assertion Failed: step failed
+           ASSERT FAILED: step failed
         """

@@ -28,9 +28,12 @@ Feature: Issue #1120 -- Logging ignoring level set in setup_logging
       import logging
       from behave.log_capture import capture
 
+      capture.show_on_success = True
+
       def before_all(context):
           context.config.setup_logging(logging.WARNING)
 
+      # XXX @capture(show_on_success=True)
       @capture
       def after_scenario(context, scenario):
           logging.debug("THIS_LOG_MESSAGE::debug")
@@ -62,7 +65,7 @@ Feature: Issue #1120 -- Logging ignoring level set in setup_logging
           # -- HINT: Use behave.config.logging_level from config-file
           context.config.setup_logging()
 
-      @capture
+      @capture(show_on_success=True)
       def after_scenario(context, scenario):
           logging.debug("THIS_LOG_MESSAGE::debug")
           logging.info("THIS_LOG_MESSAGE::info")

@@ -37,8 +37,10 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         """
       And a file named "features/environment.py" with:
         """
+        class SomeError(RuntimeError): pass
+
         def cause_hook_failure():
-            raise RuntimeError("OOPS")
+            raise SomeError("OOPS")
 
         def before_scenario(context, scenario):
             if "hook_failure.before_scenario" in scenario.tags:
@@ -52,6 +54,7 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         """
         [behave]
         show_timings = false
+        capture_hooks = True
 
         [behave.userdata]
         behave.reporter.junit.show_timestamp = False
@@ -67,7 +70,7 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         """
       And the command output should contain:
         """
-        HOOK-ERROR in before_scenario: RuntimeError: OOPS
+        HOOK-ERROR in before_scenario: SomeError: OOPS
         """
       And the file "reports/TESTS-before_scenario_failure.xml" should contain:
         """
@@ -75,14 +78,14 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         """
       And the file "reports/TESTS-before_scenario_failure.xml" should contain:
         """
-        <error message="HOOK-ERROR in before_scenario: RuntimeError: OOPS" type="RuntimeError">
+        <error message="HOOK-ERROR in before_scenario: SomeError: OOPS" type="SomeError">
         """
       And the file "reports/TESTS-before_scenario_failure.xml" should contain:
         """
-        File "features/environment.py", line 6, in before_scenario
+        File "features/environment.py", line 8, in before_scenario
           cause_hook_failure()
-        File "features/environment.py", line 2, in cause_hook_failure
-          raise RuntimeError("OOPS")
+        File "features/environment.py", line 4, in cause_hook_failure
+          raise SomeError("OOPS")
         """
       And note that "the traceback is contained in the XML element <error/>"
 
@@ -96,7 +99,7 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         """
       And the command output should contain:
         """
-        HOOK-ERROR in before_scenario: RuntimeError: OOPS
+        HOOK-ERROR in before_scenario: SomeError: OOPS
         """
       And the file "reports/TESTS-before_scenario_failure.xml" should contain:
         """
@@ -106,19 +109,19 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         # <testsuite errors="1" failures="0" name="before_scenario_failure.Alice" skipped="0" tests="1"
       And the file "reports/TESTS-before_scenario_failure.xml" should contain:
         """
-        <error type="RuntimeError" message="HOOK-ERROR in before_scenario: RuntimeError: OOPS">
+        <error type="SomeError" message="HOOK-ERROR in before_scenario: SomeError: OOPS">
         """
         # -- HINT FOR: Python < 3.8
-        # <error message="HOOK-ERROR in before_scenario: RuntimeError: OOPS" type="RuntimeError">
+        # <error message="HOOK-ERROR in before_scenario: SomeError: OOPS" type="SomeError">
       And the file "reports/TESTS-before_scenario_failure.xml" should contain:
         """
-        File "features/environment.py", line 6, in before_scenario
+        File "features/environment.py", line 8, in before_scenario
           cause_hook_failure()
         """
       And the file "reports/TESTS-before_scenario_failure.xml" should contain:
         """
-        File "features/environment.py", line 2, in cause_hook_failure
-          raise RuntimeError("OOPS")
+        File "features/environment.py", line 4, in cause_hook_failure
+          raise SomeError("OOPS")
         """
       And note that "the traceback is contained in the XML element <error/>"
 
@@ -134,7 +137,10 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         """
           Scenario: B1
             Given another step passes ... passed
-        HOOK-ERROR in after_scenario: RuntimeError: OOPS
+        ----
+        CAPTURED STDOUT: after_scenario
+        HOOK-ERROR in after_scenario: SomeError: OOPS
+        ----
         """
       And the file "reports/TESTS-after_scenario_failure.xml" should contain:
         """
@@ -142,14 +148,14 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         """
       And the file "reports/TESTS-after_scenario_failure.xml" should contain:
         """
-        <error message="HOOK-ERROR in after_scenario: RuntimeError: OOPS" type="RuntimeError">
+        <error message="HOOK-ERROR in after_scenario: SomeError: OOPS" type="SomeError">
         """
       And the file "reports/TESTS-after_scenario_failure.xml" should contain:
         """
-        File "features/environment.py", line 10, in after_scenario
+        File "features/environment.py", line 12, in after_scenario
           cause_hook_failure()
-        File "features/environment.py", line 2, in cause_hook_failure
-          raise RuntimeError("OOPS")
+        File "features/environment.py", line 4, in cause_hook_failure
+          raise SomeError("OOPS")
         """
       And note that "the traceback is contained in the XML element <error/>"
 
@@ -165,7 +171,10 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         """
           Scenario: B1
             Given another step passes ... passed
-        HOOK-ERROR in after_scenario: RuntimeError: OOPS
+        ----
+        CAPTURED STDOUT: after_scenario
+        HOOK-ERROR in after_scenario: SomeError: OOPS
+        ----
         """
       And the file "reports/TESTS-after_scenario_failure.xml" should contain:
         """
@@ -175,18 +184,18 @@ Feature: Issue #446 -- Support scenario hook-errors with JUnitReporter
         # <testsuite errors="1" failures="0" name="after_scenario_failure.Bob" skipped="0" tests="1"
       And the file "reports/TESTS-after_scenario_failure.xml" should contain:
         """
-        <error type="RuntimeError" message="HOOK-ERROR in after_scenario: RuntimeError: OOPS">
+        <error type="SomeError" message="HOOK-ERROR in after_scenario: SomeError: OOPS">
         """
         # -- HINT FOR: Python < 3.8
-        # <error message="HOOK-ERROR in after_scenario: RuntimeError: OOPS" type="RuntimeError">
+        # <error message="HOOK-ERROR in after_scenario: SomeError: OOPS" type="SomeError">
       And the file "reports/TESTS-after_scenario_failure.xml" should contain:
         """
-        File "features/environment.py", line 10, in after_scenario
+        File "features/environment.py", line 12, in after_scenario
           cause_hook_failure()
         """
       And the file "reports/TESTS-after_scenario_failure.xml" should contain:
         """
-        File "features/environment.py", line 2, in cause_hook_failure
-          raise RuntimeError("OOPS")
+        File "features/environment.py", line 4, in cause_hook_failure
+          raise SomeError("OOPS")
         """
       And note that "the traceback is contained in the XML element <error/>"

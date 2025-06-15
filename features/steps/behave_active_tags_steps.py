@@ -16,7 +16,7 @@
 from behave import given, when, then, step
 from behave.tag_matcher import ActiveTagMatcher
 from behave.tag_expression import TagExpression
-from behave.userdata import parse_bool
+from behave._types import parse_bool
 from hamcrest import assert_that, equal_to
 
 

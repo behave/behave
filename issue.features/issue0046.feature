@@ -73,5 +73,5 @@ Feature: Issue #46 Behave returns 0 (SUCCESS) even in case of test failures
           Given passing
         Scenario: Failing Scenario Example
           Given failing
-            Assertion Failed: failing
+            ASSERT FAILED: failing
       """

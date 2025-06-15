@@ -6,8 +6,7 @@ Feature: Issue #145: before_feature/after_feature should not be skipped
 
   SEE ALSO: https://github.com/cucumber/cucumber/wiki/Tags
 
-  @setup
-  Scenario: Setup
+  Background:
     Given a new working directory
     And a file named "features/steps/steps.py" with:
         """
@@ -30,13 +29,21 @@ Feature: Issue #145: before_feature/after_feature should not be skipped
         """
     And a file named "features/environment.py" with:
         """
-        from __future__ import print_function
+        from __future__ import absolute_import, print_function
+        from behave.capture import any_hook
+
+        any_hook.show_capture_on_success = True
 
         def before_feature(context, feature):
             print("hooks.before_feature: %s called." % feature.name)
 
         def after_feature(context, feature):
             print("hooks.after_feature: %s called." % feature.name)
+        """
+    And a file named "behave.ini" with:
+        """
+        [behave]
+        capture_hooks = true
         """
 
   Scenario: Select only @scenario tag

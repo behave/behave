@@ -9,8 +9,7 @@ Feature: Test run can be aborted by the user
   .  * At least some cleanup hooks should be called (in general)
 
 
-  @setup
-  Scenario: Feature Setup
+  Background:
     Given a new working directory
     And a file named "features/steps/aborting_steps.py" with:
         """
@@ -61,6 +60,15 @@ Feature: Test run can be aborted by the user
     When I run "behave -f plain -T features/aborting_in_step.feature"
     Then it should fail with:
         """
+        ABORTED: KeyboardInterrupt
+        """
+    And the command output should contain:
+        """
+        ABORTED: By user.
+
+        Errored scenarios:
+          features/aborting_in_step.feature:6  User aborts here
+
         0 features passed, 0 failed, 1 error, 0 skipped
         1 scenario passed, 0 failed, 1 error, 0 skipped, 1 untested
         3 steps passed, 0 failed, 1 error, 1 skipped, 1 untested
@@ -77,14 +85,6 @@ Feature: Test run can be aborted by the user
             Given first step passes ... passed
             When the user aborts the test run ... error
         ABORTED: By user (KeyboardInterrupt).
-
-
-        ABORTED: By user.
-        """
-    And the command output should not contain:
-        """
-        Failing scenarios:
-          features/aborting_in_step.feature:6  User aborts here
         """
     But note that "the last scenario is untested (not-run) due to the user abort"
 
@@ -118,9 +118,17 @@ Feature: Test run can be aborted by the user
     When I run "behave -f plain -T features/aborting_in_before_scenario_hook.feature"
     Then it should fail with:
         """
+        ABORTED: HOOK-ERROR in before_scenario: KeyboardInterrupt
+        """
+    And the command output should contain:
+        """
         ABORTED: By user.
-        0 features passed, 1 failed, 0 skipped
-        1 scenario passed, 0 failed, 0 skipped, 2 untested
+
+        Errored scenarios:
+          features/aborting_in_before_scenario_hook.feature:7  S2 -- User aborts here
+
+        0 features passed, 0 failed, 1 error, 0 skipped
+        1 scenario passed, 0 failed, 1 hook_error, 0 skipped, 1 untested
         2 steps passed, 0 failed, 0 skipped, 4 untested
         """
     And the command output should contain:
@@ -131,26 +139,27 @@ Feature: Test run can be aborted by the user
             Given a step passes ... passed
             When another step passes ... passed
         """
-    But the command output should not contain "Scenario: S2 -- User aborts here"
+    But the command output should contain "Scenario: S2 -- User aborts here"
     But the command output should not contain "Scenario: S3"
-    And note that "the second and third scenario is not run"
+    And note that "second scenario: only before_scenario hook is run"
+    And note that "the third scenario is not run"
 
 
   Scenario: Abort test run in after_scenario hook
     Given a file named "features/aborting_in_after_scenario_hook.feature" with:
         """
         Feature: User aborts test run in after_scenario hook
-          Scenario:
+          Scenario: S1
             Given a step passes
             When another step passes
 
           @user.aborts.after_scenario
-          Scenario: User aborts here
+          Scenario: S2 -- User aborts here
             Given first step passes
             When second step passes
             Then third step passes
 
-          Scenario:
+          Scenario: S3
             Then last step passes
         """
     And a file named "features/environment.py" with:
@@ -162,27 +171,36 @@ Feature: Test run can be aborted by the user
     When I run "behave -f plain -T features/aborting_in_after_scenario_hook.feature"
     Then it should fail with:
         """
+        ABORTED: HOOK-ERROR in after_scenario: KeyboardInterrupt
+        """
+    And the command output should contain:
+        """
         ABORTED: By user.
-        0 features passed, 1 failed, 0 skipped
-        2 scenarios passed, 0 failed, 0 skipped, 1 untested
+
+        Errored scenarios:
+          features/aborting_in_after_scenario_hook.feature:7  S2 -- User aborts here
+
+        0 features passed, 0 failed, 1 error, 0 skipped
+        1 scenario passed, 0 failed, 1 hook_error, 0 skipped, 1 untested
         5 steps passed, 0 failed, 0 skipped, 1 untested
         """
+    But note that "the failing scenario is marked with hook_error"
     And the command output should contain:
         """
         Feature: User aborts test run in after_scenario hook
 
-          Scenario:
+          Scenario: S1
             Given a step passes ... passed
             When another step passes ... passed
 
-          Scenario: User aborts here
+          Scenario: S2 -- User aborts here
             Given first step passes ... passed
             When second step passes ... passed
             Then third step passes ... passed
         """
     But the command output should not contain:
         """
-          Scenario:
+          Scenario: S3
             Then last step passes ... passed
         """
     And note that "the last scenario is not run"
@@ -217,15 +235,20 @@ Feature: Test run can be aborted by the user
     When I run "behave -f plain -T features/aborting_in_before_feature_hook.feature"
     Then it should fail with:
         """
+        ABORTED: HOOK-ERROR in before_feature: KeyboardInterrupt
+        """
+    And the command output should contain:
+        """
         ABORTED in before_feature: features/aborting_in_before_feature_hook.feature:2
-
+        """
+    And the command output should contain:
+        """
         ABORTED: By user.
-        0 features passed, 0 failed, 0 skipped, 1 untested
+        0 features passed, 0 failed, 1 hook_error, 0 skipped
         0 scenarios passed, 0 failed, 0 skipped, 3 untested
         0 steps passed, 0 failed, 0 skipped, 6 untested
         """
-    But note that "the feature is not run"
-    And note that "the formatters are not informed of this feature"
+    But note that "the feature fails with hook_error and is not run"
 
 
   Scenario: Abort test run in after_feature hook
@@ -254,55 +277,57 @@ Feature: Test run can be aborted by the user
     When I run "behave -f plain -T features/aborting_in_after_feature_hook.feature"
     Then it should fail with:
         """
+        ABORTED: HOOK-ERROR in after_feature: KeyboardInterrupt
+        """
+    And the command output should contain:
+        """
         ABORTED: By user.
-        1 feature passed, 0 failed, 0 skipped
+        0 features passed, 0 failed, 1 hook_error, 0 skipped
         3 scenarios passed, 0 failed, 0 skipped
         6 steps passed, 0 failed, 0 skipped
         """
-    But note that "the behave command fails, but all features/scenarios passed"
+    But note that "the feature fails with hook_error"
 
 
   Scenario: Abort test run in before_all hook
-
-    Note that this situation is not handled very gracefully (yet).
-
-      Given a file named "features/scenarios_pass3.feature" exists
-      And a file named "features/environment.py" with:
-        """
-        def before_all(context):
-            raise KeyboardInterrupt()   #< ABORT-HERE
-        """
-      When I run "behave -f plain -T features/scenarios_pass3.feature"
-      Then it should fail with:
-        """
-        Traceback (most recent call last):
-        """
-      And the command output should contain:
-        """
-        File "features/environment.py", line 2, in before_all
+    Given a file named "features/scenarios_pass3.feature" exists
+    And a file named "features/environment.py" with:
+      """
+      def before_all(context):
           raise KeyboardInterrupt()   #< ABORT-HERE
-        """
-      And note that "no feature is not run"
+      """
+    When I run "behave -f plain -T features/scenarios_pass3.feature"
+    Then it should fail with:
+      """
+      HOOK-ERROR in before_all: KeyboardInterrupt
+      """
+    And the command output should contain:
+      """
+      ABORTED: By user.
+      0 features passed, 0 failed, 0 skipped, 1 untested
+      0 scenarios passed, 0 failed, 0 skipped, 3 untested
+      0 steps passed, 0 failed, 0 skipped, 6 untested
+      """
+    And note that "no features/scenarios/steps are run"
 
 
   Scenario: Abort test run in after_all hook
-
-    Note that this situation is not handled very gracefully (yet).
-
-      Given a file named "features/scenarios_pass3.feature" exists
-      And a file named "features/environment.py" with:
-        """
-        def after_all(context):
-            raise KeyboardInterrupt()   #< ABORT-HERE
-        """
-      When I run "behave -f plain -T features/scenarios_pass3.feature"
-      Then it should fail with:
-        """
-        Traceback (most recent call last):
-        """
-      And the command output should contain:
-        """
-        File "features/environment.py", line 2, in after_all
+    Given a file named "features/scenarios_pass3.feature" exists
+    And a file named "features/environment.py" with:
+      """
+      def after_all(context):
           raise KeyboardInterrupt()   #< ABORT-HERE
-        """
-      And note that "all features are run"
+      """
+    When I run "behave -f plain -T features/scenarios_pass3.feature"
+    Then it should fail with:
+      """
+      HOOK-ERROR in after_all: KeyboardInterrupt
+      """
+    And the command output should contain:
+      """
+      ABORTED: By user.
+      1 feature passed, 0 failed, 0 skipped
+      3 scenarios passed, 0 failed, 0 skipped
+      6 steps passed, 0 failed, 0 skipped
+      """
+    And note that "all features/scenarios/steps were run"

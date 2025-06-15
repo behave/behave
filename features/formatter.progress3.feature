@@ -105,7 +105,7 @@ Feature: Progress3 Formatter
                 Simple scenario with last failing step  ....F
             --------------------------------------------------------------------------------
             FAILURE in step 'last step fails' (features/scenario_with_steps.feature:7):
-            Assertion Failed: XFAIL-STEP
+            ASSERT FAILED: XFAIL-STEP
             --------------------------------------------------------------------------------
             """
 
@@ -219,13 +219,13 @@ Feature: Progress3 Formatter
                 Second scenario with second failing step  .F
             --------------------------------------------------------------------------------
             FAILURE in step 'second step fails' (features/scenario_with_steps.feature:11):
-            Assertion Failed: XFAIL-STEP
+            ASSERT FAILED: XFAIL-STEP
             --------------------------------------------------------------------------------
 
                 Third scenario with fourth failing step  ...F
             --------------------------------------------------------------------------------
             FAILURE in step 'fourth step fails' (features/scenario_with_steps.feature:20):
-            Assertion Failed: XFAIL-STEP
+            ASSERT FAILED: XFAIL-STEP
             --------------------------------------------------------------------------------
 
 

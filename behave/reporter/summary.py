@@ -354,6 +354,7 @@ class SummaryReporterV1(AbstractSummaryReporter):
             Status.failed.name: 0,
             Status.error.name: 0,
             Status.hook_error.name: 0,
+            Status.cleanup_error.name: 0,
             Status.skipped.name: 0,
             Status.untested.name: 0
         }

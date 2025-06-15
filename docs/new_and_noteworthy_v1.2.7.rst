@@ -15,11 +15,13 @@ Summary:
 * `Distinguish between Failures and Errors`_
 * `Support for Pending Steps`_
 * `Step definitions with Cucumber-Expressions`_
-* `Improved Logging Support`
+* `Improved Logging Support`_
+* `Improved Capture Support`_
 
 BREAKING CHANGES:
 
 * `Gherkin Parser strips no longer trailing colon from step`_
+* Capture related command line options changed (some in incompatible ways).
 
 .. _`Example Mapping`: https://cucumber.io/blog/example-mapping-introduction/
 .. _`Example Mapping Webinar`: https://cucumber.io/blog/example-mapping-webinar/
@@ -672,5 +674,83 @@ It is now simpler to set up the logging to a file in `behave`:
     * :this_repo:`features/logging.to_file.feature`
     * :this_repo:`features/logging.setup_with_configfile.feature`
     * :python.docs:`howto/logging-cookbook.html#use-of-alternative-formatting-styles`
+
+
+Improved Capture Support
+-------------------------------------------------------------------------------
+
+The capture of hooks is now supported (special case: ``before_all()`` hook).
+To better support this, the formatter(s) are now called before the
+``before_feature/before_scenario/before_tag`` hooks are called.
+This ensures that the Feature/Scenario name is shown (as context)
+before the any captured output of ``before_feature/before_scenario/before_tag`` hooks
+is printed.
+
+AFFECTED FORMATTERS:
+
+* pretty
+* plain
+
+.. seealso::
+
+    * :this_repo:`features/capture.on_hooks.feature`
+    * :this_repo:`features/runner.hook_errors.feature`
+    * :this_repo:`features/runner.context_cleanup.feature`
+
+
+**CHANGES** (partly incompatible):
+
+The name of capture related command line options have been changed slightly:
+
+====================== ===================== =======================================================
+Option Name             Old Option Name      Description
+====================== ===================== =======================================================
+``--capture``           ---                  NEW: Enable/disable capture mode for stdout/stderr/log.
+``--capture-hooks``     ---                  NEW: Enable/disable capture of hooks.
+``--capture-stdout``    ``--capture``        Enable/disable capture of stdout.
+``--capture-stderr``    ``--capture-stderr`` Enable/disable capture of stderr.
+``--capture-log``       ``--logcapture``     Enable/disable capture of log-output.
+====================== ===================== =======================================================
+
+The :class:`~behave.configuration.Configuration` class attribute names were adapted
+accordingly to better correspond to the command line options:
+
+====================== ===================== =======================================================
+Attribute Name         Old Attribute Name    Description
+====================== ===================== =======================================================
+``capture``            ---                   NEW: Enable/disable capture mode for stdout/stderr/log.
+``capture_hooks``      ---                   NEW: Enable/disable capture of hooks.
+``capture_stdout``     ``stdout_capture``    Enable/disable capture mode for stdout.
+``capture_stderr``     ``stderr_capture``    Enable/disable capture mode for stderr.
+``capture_log``        ``log_capture``       Enable/disable capture mode for log output.
+====================== ===================== =======================================================
+
+The :class:`~behave.capture.CaptureController` class attribute names were renamed
+accordingly to better correspond to the naming scheme:
+
+====================== ===================== =======================================================
+Attribute Name         Old Attribute Name    Description
+====================== ===================== =======================================================
+``capture_stdout``     ``stdout_capture``    Used to capture stdout output.
+``capture_stderr``     ``stderr_capture``    Used to capture stderr output.
+``capture_log``        ``log_capture``       Used to capture log output.
+====================== ===================== =======================================================
+
+.. note::
+
+    A deprecating warning will be emitted if you use the old names.
+
+
+Changes
+-------------------------------------------------------------------------------
+
+:class:`~behave.runner.ModelRunner`:
+
+* Simplify signature on method ``run_hook(context, *args)`` to ``run_hook(*args)``
+
+NEW :mod:`behave.model_type` module:
+
+* Moved generic model classes here from :mod:`behave.model_core` module, like:
+  :class:`behave.model_core.Status`, :class:`behave.model_core.FileLocation`.
 
 .. include:: _common_extlinks.rst

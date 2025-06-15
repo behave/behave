@@ -30,9 +30,6 @@ tags            feature,  list<:class:`~behave.model.Tag`>              Effectiv
 active_outline  scenario  :class:`~behave.model.Row`                    Current row in a scenario outline (in examples table).
                 outline
 scenario        scenario  :class:`~behave.model.Scenario`               Current scenario.
-log_capture     scenario  :class:`~behave.log_capture.LoggingCapture`   If logging capture is enabled.
-stdout_capture  scenario  :class:`~StringIO.StringIO`                   If stdout  capture is enabled.
-stderr_capture  scenario  :class:`~StringIO.StringIO`                   If stderr  capture is enabled.
 table           step      :class:`~behave.model.Table`                  Contains step's table, otherwise None.
 text            step      String                                        Contains step's multi-line text (unicode), otherwise None.
 =============== ========= ============================================= ====================================================================
@@ -41,6 +38,16 @@ text            step      String                                        Contains
 
     `Behave attributes`_ in the context object should not be modified by a user.
     See :class:`~behave.runner.Context` class description for more details.
+
+.. deprecated:: v1.2.7
+
+    =============== ========= ============================================= ====================================================================
+    Attribute Name  Layer     Type                                          Description
+    =============== ========= ============================================= ====================================================================
+    log_capture     scenario  :class:`~behave.log_capture.LoggingCapture`   If logging capture is enabled.
+    stdout_capture  scenario  :class:`~StringIO.StringIO`                   If stdout  capture is enabled.
+    stderr_capture  scenario  :class:`~StringIO.StringIO`                   If stderr  capture is enabled.
+    =============== ========= ============================================= ====================================================================
 
 .. hidden:
 

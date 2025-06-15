@@ -130,24 +130,24 @@ Feature: Rerun Formatter
               Scenario: When-step fails
                 Given a step passes ... passed
                 When a step fails ... failed
-            Assertion Failed: XFAIL-STEP
+            ASSERT FAILED: XFAIL-STEP
 
               Scenario: Then-step fails
                 Given a step passes ... passed
                 When a step passes ... passed
                 Then a step fails ... failed
-            Assertion Failed: XFAIL-STEP
+            ASSERT FAILED: XFAIL-STEP
 
             Feature: Bob
 
               Scenario: Failing early
                 Given a step fails ... failed
-            Assertion Failed: XFAIL-STEP
+            ASSERT FAILED: XFAIL-STEP
 
               Scenario: Failing
                 When a step passes ... passed
                 Then a step fails ... failed
-            Assertion Failed: XFAIL-STEP
+            ASSERT FAILED: XFAIL-STEP
             """
         And the command output should contain:
             """
@@ -228,24 +228,24 @@ Feature: Rerun Formatter
               Scenario: When-step fails
                 Given a step passes ... passed
                 When a step fails ... failed
-            Assertion Failed: XFAIL-STEP
+            ASSERT FAILED: XFAIL-STEP
 
               Scenario: Then-step fails
                 Given a step passes ... passed
                 When a step passes ... passed
                 Then a step fails ... failed
-            Assertion Failed: XFAIL-STEP
+            ASSERT FAILED: XFAIL-STEP
 
             Feature: Bob
 
               Scenario: Failing early
                 Given a step fails ... failed
-            Assertion Failed: XFAIL-STEP
+            ASSERT FAILED: XFAIL-STEP
 
               Scenario: Failing
                 When a step passes ... passed
                 Then a step fails ... failed
-            Assertion Failed: XFAIL-STEP
+            ASSERT FAILED: XFAIL-STEP
             """
         And the file "rerun.txt" should contain:
             """

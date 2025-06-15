@@ -90,13 +90,13 @@ Feature: Issue #63: 'ScenarioOutline' object has no attribute 'stdout'
       """
     And the command output should contain:
       """
-      Captured stdout:
+      CAPTURED STDOUT: scenario
       Given1 passing: Alice;
       When1 failing: Alice;
       """
     And the command output should contain:
       """
-      Captured stderr:
+      CAPTURED STDERR: scenario
       Given2 passing: Alice;
       When2 failing: Alice;
       """

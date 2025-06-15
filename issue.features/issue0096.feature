@@ -71,8 +71,8 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
     When I run "behave --no-color features/issue96_case1.feature"
     Then it should fail with:
         """
-        Assertion Failed: FAILED SUB-STEP: When a step fails
-        Substep info: Assertion Failed: EXPECT: Step fails.
+        ASSERT FAILED: FAILED SUB-STEP: When a step fails
+        Substep info: ASSERT FAILED: EXPECT: Step fails.
         """
 
   Scenario: Execute steps and error occurs (UNEXPECTED: exception is raised)
@@ -94,7 +94,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
         """
     And the command output should contain:
         """
-        Assertion Failed: ERROR SUB-STEP: When a step raises an error "Alice is alive"
+        ASSERT FAILED: ERROR SUB-STEP: When a step raises an error "Alice is alive"
         Substep info: Traceback (most recent call last):
         """
 
@@ -113,12 +113,12 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
     When I run "behave --no-color features/issue96_case3.feature"
     Then it should fail with:
         """
-        Assertion Failed: FAILED SUB-STEP: When a step fails with stdout "STDOUT: Alice is alive"
-        Substep info: Assertion Failed: EXPECT: Step fails with stdout.
+        ASSERT FAILED: FAILED SUB-STEP: When a step fails with stdout "STDOUT: Alice is alive"
+        Substep info: ASSERT FAILED: EXPECT: Step fails with stdout.
         """
     And the command output should contain:
         """
-        Captured stdout:
+        CAPTURED STDOUT: scenario
         STDOUT: Alice is alive
         """
 
@@ -127,23 +127,23 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
     Given a file named "features/issue96_case4.feature" with:
         '''
         Feature:
-            Scenario:
-                When the following steps should pass:
-                   """
-                   Given a step passes
-                   When a step fails with stderr "STDERR: Alice is alive"
-                   Then a step passes
-                   """
+          Scenario:
+            When the following steps should pass:
+              """
+              Given a step passes
+              When a step fails with stderr "STDERR: Alice is alive"
+              Then a step passes
+              """
         '''
     When I run "behave --no-color features/issue96_case4.feature"
     Then it should fail with:
         """
-        Assertion Failed: FAILED SUB-STEP: When a step fails with stderr "STDERR: Alice is alive"
-        Substep info: Assertion Failed: EXPECT: Step fails with stderr.
+        ASSERT FAILED: FAILED SUB-STEP: When a step fails with stderr "STDERR: Alice is alive"
+        Substep info: ASSERT FAILED: EXPECT: Step fails with stderr.
         """
     And the command output should contain:
         """
-        Captured stderr:
+        CAPTURED STDERR: scenario
         STDERR: Alice is alive
         """
 
@@ -169,6 +169,6 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
     Then it should fail with:
         """
         HOOK-ERROR in before_scenario: AssertionError: FAILED SUB-STEP: Then a step fails
-        Substep info: Assertion Failed: EXPECT: Step fails.
+        Substep info: ASSERT FAILED: EXPECT: Step fails.
         """
 

@@ -28,7 +28,7 @@ Feature: Issue #143: Logging starts with a StreamHandler way too early
 
   Scenario: Ensure that no log-ouput occurs with enabled log-capture
     Given an empty file named "features/environment.py"
-    When I run "behave -f plain --logcapture features/issue0143_example.feature"
+    When I run "behave -f plain --capture-log features/issue0143_example.feature"
     Then it should pass
     And the command output should not contain:
         """

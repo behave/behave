@@ -14,7 +14,8 @@ Feature: Issue #194: Nested steps prevent that original stdout/stderr is restore
     And a file named "behave.ini" with:
         """
         [behave]
-        log_capture = false
+        capture_log = false
+        capture_hooks = false
         logging_level  = INFO
         logging_format = LOG.%(levelname)-8s  %(name)s: %(message)s
         """
@@ -142,7 +143,7 @@ Feature: Issue #194: Nested steps prevent that original stdout/stderr is restore
     And note that "the summary is only shown if hooks have no errors"
     And the command output should contain:
         """
-        Captured stdout:
+        CAPTURED STDOUT: scenario
         STDOUT:Hello Alice
         STDOUT:Hello Bob
         STDOUT:Hello nested.Alice
@@ -152,7 +153,7 @@ Feature: Issue #194: Nested steps prevent that original stdout/stderr is restore
         """
     And the command output should contain:
         """
-        Captured stdout:
+        CAPTURED STDOUT: scenario
         STDOUT:Hello Dora
         """
     And the command output should contain:
@@ -192,7 +193,7 @@ Feature: Issue #194: Nested steps prevent that original stdout/stderr is restore
     And note that "the summary is only shown if hooks have no errors"
     And the command output should contain:
         """
-        Captured stderr:
+        CAPTURED STDERR: scenario
         STDERR:Hello Alice
         STDERR:Hello Bob
         STDERR:Hello nested.Alice
@@ -202,7 +203,7 @@ Feature: Issue #194: Nested steps prevent that original stdout/stderr is restore
         """
     And the command output should contain:
         """
-        Captured stderr:
+        CAPTURED STDERR: scenario
         STDERR:Hello Dora
         """
     And the command output should contain:

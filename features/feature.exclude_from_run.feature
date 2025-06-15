@@ -37,60 +37,61 @@ Feature: Exclude Feature from Test Run
     .   * features/scenario.exclude_from_run.feature
 
 
-    @setup
-    Scenario:
-        Given a new working directory
-        And a file named "features/alice.feature" with:
-            """
-            Feature: Alice
-              Scenario: Alice in Wonderland
-                 Given a step passes
-                  When another step passes
-                  Then some step passes
+    Background:
+      Given a new working directory
+      And a file named "features/alice.feature" with:
+          """
+          Feature: Alice
+            Scenario: Alice in Wonderland
+               Given a step passes
+                When another step passes
+                Then some step passes
 
-              Scenario: Alice and Bob
-                 Given another step passes
-            """
-        And a file named "features/bob.feature" with:
-            """
-            Feature: Bob
-              Scenario: Bob in Berlin
-                 Given some step passes
-                 When another step passes
-            """
-        And a file named "features/steps/steps.py" with:
-            """
-            from behave import step
+            Scenario: Alice and Bob
+               Given another step passes
+          """
+      And a file named "features/bob.feature" with:
+          """
+          Feature: Bob
+            Scenario: Bob in Berlin
+               Given some step passes
+               When another step passes
+          """
+      And a file named "features/steps/steps.py" with:
+          """
+          from behave import step
 
-            @step('{word:w} step passes')
-            def step_passes(context, word):
-                pass
-            """
+          @step('{word:w} step passes')
+          def step_passes(context, word):
+              pass
+          """
 
 
     Scenario: Exclude a feature from the test run (using: before_feature() hook)
-        Given a file named "features/environment.py" with:
-            """
-            import sys
+      Given a file named "features/environment.py" with:
+          """
+          from __future__ import absolute_import, print_function
+          from behave.capture import any_hook
+          any_hook.show_capture_on_success = True
 
-            def should_exclude_feature(feature):
-                if "Alice" in feature.name:
-                    return True
-                return False
+          def should_exclude_feature(feature):
+              if "Alice" in feature.name:
+                  return True
+              return False
 
-            def before_feature(context, feature):
-                if should_exclude_feature(feature):
-                    sys.stdout.write("EXCLUDED-BY-USER: Feature %s\n" % feature.name)
-                    feature.skip()
-            """
-        When I run "behave -f plain -T features/"
-        Then it should pass with:
-            """
-            1 feature passed, 0 failed, 1 skipped
-            1 scenario passed, 0 failed, 2 skipped
-            2 steps passed, 0 failed, 4 skipped
-            """
-        And the command output should contain:
-            """
-            EXCLUDED-BY-USER: Feature Alice
-            """
+          def before_feature(context, feature):
+              if should_exclude_feature(feature):
+                  print("EXCLUDED-BY-USER: Feature {}".format(feature.name))
+                  feature.skip()
+          """
+      When I run "behave -f plain -T features/"
+      Then it should pass with:
+          """
+          1 feature passed, 0 failed, 1 skipped
+          1 scenario passed, 0 failed, 2 skipped
+          2 steps passed, 0 failed, 4 skipped
+          """
+      And the command output should contain:
+          """
+          EXCLUDED-BY-USER: Feature Alice
+          """

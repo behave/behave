@@ -66,7 +66,7 @@ Feature: Undefined Step
         from behave.api.pending_step import StepNotImplementedError
         @when(u'an undefined step is used')
         def step_impl(context):
-            raise StepNotImplementedError(u'STEP: When an undefined step is used')
+            raise StepNotImplementedError(u'When an undefined step is used')
         """
       And an undefined-step snippet should exist for "When an undefined step is used"
 
@@ -214,11 +214,11 @@ Feature: Undefined Step
 
            Scenario Outline:  -- @1.3
              Given a step fails ... failed
-             Assertion Failed: XFAIL
+             ASSERT FAILED: XFAIL
 
            Scenario Outline:  -- @1.4
              Given a step fails ... failed
-             Assertion Failed: XFAIL
+             ASSERT FAILED: XFAIL
         """
 
 

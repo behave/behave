@@ -23,13 +23,13 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
   .   | scenario    | In step hooks               | After after_scenario() hook is executed. |
 
 
-  Background: Test Setup
+  Background:
     Given a new working directory
     And a file named "behave.ini" with:
       """
       [behave]
       show_timings = false
-      stdout_capture = true
+      capture = true
       """
     And a file named "features/steps/use_steps.py" with:
       """
@@ -40,7 +40,13 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
     Background: Rule Setup
       Given a file named "features/environment.py" with:
         """
-        from __future__ import print_function
+        from __future__ import absolute_import, print_function
+        from behave.capture import capture_output, any_hook
+
+        any_hook.show_capture_on_success = True
+        any_hook.show_cleanup_on_success = True
+
+        class SomeError(RuntimeError): pass
 
         # -- CLEANUP FUNCTIONS:
         class CleanupFuntion(object):
@@ -60,6 +66,7 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
             print("CALLED: cleanup_bar")
 
         # -- HOOKS:
+        @capture_output(show_on_success=True)
         def before_all(context):
             print("CALLED-HOOK: before_all")
             userdata = context.config.userdata
@@ -99,24 +106,52 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
         """
         CALLED-HOOK: before_all
         REGISTER-CLEANUP: cleanup_after_testrun
-        CALLED-HOOK: before_feature:Alice
-        Feature: Alice
         """
-      And the command output should contain:
+      And the command output should contain 1 times:
         """
-        Scenario: A2
-          When another step passes ... passed
-
-        CALLED-HOOK: after_feature: Alice
-        CALLED-HOOK: after_all
         CALLED: cleanup_after_testrun
         """
+      But note that "the complete details are shown below"
+      And the command output should contain:
+        """
+        ----
+        CAPTURED STDOUT:
+        CALLED-HOOK: before_all
+        REGISTER-CLEANUP: cleanup_after_testrun
+        ----
+        Feature: Alice
+        ----
+        CAPTURED STDOUT: before_feature
+        CALLED-HOOK: before_feature:Alice
+        ----
+
+          Scenario: A1
+            Given a step passes ... passed
+
+          Scenario: A2
+            When another step passes ... passed
+        ----
+        CAPTURED STDOUT: after_feature
+        CALLED-HOOK: after_feature: Alice
+        ----
+
+        ----
+        CAPTURED STDOUT: after_all
+        CALLED-HOOK: after_all
+        ----
+        CALLED: cleanup_after_testrun
+        """
+
 
     @cleanup.after_feature
     Scenario: Cleanup registered in before_feature hook
       Given a file named "features/environment.py" with:
         """
-        from __future__ import print_function
+        from __future__ import absolute_import, print_function
+        from behave.capture import any_hook
+
+        any_hook.show_capture_on_success = True
+        any_hook.show_cleanup_on_success = True
 
         # -- CLEANUP FUNCTIONS:
         def cleanup_foo():
@@ -147,24 +182,41 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
         """
         CALLED-HOOK: before_feature:Bob
         REGISTER-CLEANUP: cleanup_foo
-        Feature: Bob
         """
+      And the command output should contain 1 times:
+        """
+        CALLED: cleanup_foo
+        """
+      But note that "the complete details are shown below"
       And the command output should contain:
         """
-        Scenario: B1
-          Given a step passes ... passed
-
+        Feature: Bob
+        ----
+        CAPTURED STDOUT: before_feature
+          CALLED-HOOK: before_feature:Bob
+          REGISTER-CLEANUP: cleanup_foo
+        ----
+          Scenario: B1
+            Given a step passes ... passed
+        ----
+        CAPTURED STDOUT: after_feature
         CALLED-HOOK: after_feature:Bob
+        ----
+        ----
+        CAPTURED STDOUT: feature.cleanup
         CALLED: cleanup_foo
-        CALLED-HOOK: after_all
+        ----
         """
-
 
     @cleanup.after_scenario
     Scenario: Cleanup registered in before_scenario hook
       Given a file named "features/environment.py" with:
         """
-        from __future__ import print_function
+        from __future__ import absolute_import, print_function
+        from behave.capture import any_hook
+
+        any_hook.show_capture_on_success = True
+        any_hook.show_cleanup_on_success = True
 
         # -- CLEANUP FUNCTIONS:
         def cleanup_foo():
@@ -176,9 +228,6 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
             if "cleanup_foo" in scenario.tags:
                 print("REGISTER-CLEANUP: cleanup_foo")
                 context.add_cleanup(cleanup_foo)
-
-        def after_scenario(context, scenario):
-            print("CALLED-HOOK: after_scenario:%s" % scenario.name)
         """
       And a file named "features/charly.feature" with:
         """
@@ -195,24 +244,37 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
         """
         CALLED-HOOK: before_scenario:C1
         REGISTER-CLEANUP: cleanup_foo
-        Scenario: C1
         """
+      And the command output should contain 1 times:
+        """
+        CALLED: cleanup_foo
+        """
+      But note that "the complete details are shown below"
       And the command output should contain:
         """
-        Scenario: C1
-          Given a step passes ... passed
-
-        CALLED-HOOK: after_scenario:C1
+          Scenario: C1
+        ----
+        CAPTURED STDOUT: before_scenario
+        CALLED-HOOK: before_scenario:C1
+        REGISTER-CLEANUP: cleanup_foo
+        ----
+            Given a step passes ... passed
+        ----
+        CAPTURED STDOUT: scenario.cleanup
         CALLED: cleanup_foo
-        CALLED-HOOK: before_scenario:C2
+        ----
         """
+
 
     @cleanup.after_scenario
     Scenario: Cleanups are executed in reverse registration order
-
       Given a file named "features/environment.py" with:
         """
-        from __future__ import print_function
+        from __future__ import absolute_import, print_function
+        from behave.capture import any_hook
+
+        any_hook.show_capture_on_success = True
+        any_hook.show_cleanup_on_success = True
 
         # -- CLEANUP FUNCTIONS:
         def cleanup_foo():
@@ -230,9 +292,6 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
             if "cleanup_bar" in scenario.tags:
                 print("REGISTER-CLEANUP: cleanup_bar")
                 context.add_cleanup(cleanup_bar)
-
-        def after_scenario(context, scenario):
-            print("CALLED-HOOK: after_scenario:%s" % scenario.name)
         """
       And a file named "features/dodo.feature" with:
         """
@@ -251,29 +310,40 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
         CALLED-HOOK: before_scenario:D1
         REGISTER-CLEANUP: cleanup_foo
         REGISTER-CLEANUP: cleanup_bar
-        Scenario: D1
-        """
-      And the command output should contain:
-        """
-        Scenario: D1
-          Given a step passes ... passed
-
-        CALLED-HOOK: after_scenario:D1
-        CALLED: cleanup_bar
-        CALLED: cleanup_foo
-        CALLED-HOOK: before_scenario:D2
         """
       And the command output should contain 1 times:
         """
         CALLED: cleanup_bar
         CALLED: cleanup_foo
         """
+      But note that "the cleanup-functions are called in reversed order"
+      And note that "the complete details are shown below"
+      And the command output should contain:
+        """
+          Scenario: D1
+        ----
+        CAPTURED STDOUT: before_scenario
+        CALLED-HOOK: before_scenario:D1
+        REGISTER-CLEANUP: cleanup_foo
+        REGISTER-CLEANUP: cleanup_bar
+        ----
+            Given a step passes ... passed
+        ----
+        CAPTURED STDOUT: scenario.cleanup
+        CALLED: cleanup_bar
+        CALLED: cleanup_foo
+        ----
+        """
 
     @cleanup.after_scenario
     Scenario: Cleanup registered in step implementation
       Given a file named "features/environment.py" with:
         """
-        from __future__ import print_function
+        from __future__ import absolute_import, print_function
+        from behave.capture import any_hook
+
+        any_hook.show_capture_on_success = True
+        any_hook.show_cleanup_on_success = True
 
         # -- HOOKS:
         def before_scenario(context, scenario):
@@ -310,12 +380,21 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
       When I run "behave -f plain features/emily.feature"
       Then it should pass with:
         """
-        Scenario: E1
-            Given I register a cleanup "cleanup_foo" ... passed
+          Scenario: E1
 
+        ----
+        CAPTURED STDOUT: before_scenario
+        CALLED-HOOK: before_scenario:E1
+        ----
+              Given I register a cleanup "cleanup_foo" ... passed
+        ----
+        CAPTURED STDOUT: after_scenario
         CALLED-HOOK: after_scenario:E1
+        ----
+        ----
+        CAPTURED STDOUT: scenario.cleanup
         CALLED: cleanup_foo
-        CALLED-HOOK: before_scenario:E2
+        ----
         """
       And the command output should contain 1 times:
         """
@@ -326,7 +405,11 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
     Scenario: Registered cleanup function args are passed to cleanup
       Given a file named "features/environment.py" with:
         """
-        from __future__ import print_function
+        from __future__ import absolute_import, print_function
+        from behave.capture import any_hook
+
+        any_hook.show_capture_on_success = True
+        any_hook.show_cleanup_on_success = True
 
         # -- CLEANUP FUNCTIONS:
         def cleanup_foo(text):
@@ -357,21 +440,26 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
       When I run "behave -f plain features/frank.feature"
       Then it should pass with:
         """
+          Scenario: F1
+        ----
+        CAPTURED STDOUT: before_scenario
         CALLED-HOOK: before_scenario:F1
         REGISTER-CLEANUP: cleanup_foo("Alice")
         REGISTER-CLEANUP: cleanup_foo("Bob")
-        Scenario: F1
-        """
-      And the command output should contain:
-        """
-        Scenario: F1
-          Given a step passes ... passed
-
+        ----
+            Given a step passes ... passed
+        ----
+        CAPTURED STDOUT: after_scenario
         CALLED-HOOK: after_scenario:F1
+        ----
+        ----
+        CAPTURED STDOUT: scenario.cleanup
         CALLED: cleanup_foo("Bob")
         CALLED: cleanup_foo("Alice")
-        CALLED-HOOK: before_scenario:F2
+        ----
         """
+      But note that "cleanup args are used by registered cleanup-functions"
+
 
   Rule: Bad Cases
 
@@ -382,7 +470,13 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
 
       Given a file named "features/environment.py" with:
         """
-        from __future__ import print_function
+        from __future__ import absolute_import, print_function
+        from behave.capture import any_hook
+
+        any_hook.show_capture_on_success = True
+        any_hook.show_cleanup_on_success = True
+
+        class SomeError(RuntimeError): pass
 
         # -- CLEANUP FUNCTIONS:
         def cleanup_foo():
@@ -390,7 +484,7 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
 
         def bad_cleanup_bar():
             print("CALLED: bad_cleanup_bar -- PART_1")
-            raise ValueError("CLEANUP-OOPS")
+            raise SomeError("CLEANUP-OOPS")
             print("CALLED: bad_cleanup_bar -- PART_2 -- NOT_REACHED")
 
         # -- HOOKS:
@@ -402,9 +496,6 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
             if "cleanup_bar" in scenario.tags:
                 print("REGISTER-CLEANUP: bad_cleanup_bar")
                 context.add_cleanup(bad_cleanup_bar)
-
-        def after_scenario(context, scenario):
-            print("CALLED-HOOK: after_scenario:%s" % scenario.name)
         """
       And a file named "features/bad_cleanup.feature" with:
         """
@@ -420,31 +511,37 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
       When I run "behave -f plain features/bad_cleanup.feature"
       Then it should fail with:
         """
+        Errored scenarios:
+          features/bad_cleanup.feature:4  E1
+
+        0 features passed, 0 failed, 1 error, 0 skipped
+        1 scenario passed, 0 failed, 1 cleanup_error, 0 skipped
+        2 steps passed, 0 failed, 0 skipped
+        """
+      And the command output should contain:
+        """
+          Scenario: E1
+        ----
+        CAPTURED STDOUT: before_scenario
         CALLED-HOOK: before_scenario:E1
         REGISTER-CLEANUP: cleanup_foo
         REGISTER-CLEANUP: bad_cleanup_bar
-
-        Scenario: E1
-        """
-      And the command output should contain:
-        """
-        CALLED-HOOK: after_scenario:E1
+        ----
+            Given a step passes ... passed
+        ----
+        CAPTURED STDOUT: scenario.cleanup
         CALLED: bad_cleanup_bar -- PART_1
-        CLEANUP-ERROR in bad_cleanup_bar: ValueError: CLEANUP-OOPS
-        Traceback (most recent call last):
-          File "{__CWD__}/behave/runner.py", line 276, in _do_cleanups
-            cleanup_func()
+        CLEANUP-ERROR in bad_cleanup_bar: SomeError: CLEANUP-OOPS
         """
       And the command output should contain:
         """
-        File "features/environment.py", line 9, in bad_cleanup_bar
-          raise ValueError("CLEANUP-OOPS")
+          File "features/environment.py", line 15, in bad_cleanup_bar
+            raise SomeError("CLEANUP-OOPS")
         """
       And the command output should contain:
         """
-        ValueError: CLEANUP-OOPS
+        SomeError: CLEANUP-OOPS
         CALLED: cleanup_foo
-        CALLED-HOOK: before_scenario:E2
         """
       And the command output should contain 1 times:
         """
@@ -464,7 +561,10 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
 
       Given a file named "features/environment.py" with:
         """
-        from __future__ import print_function
+        from __future__ import absolute_import, print_function
+        from behave.capture import any_hook
+
+        class SomeError(RuntimeError): pass
 
         # -- CLEANUP FUNCTIONS:
         def cleanup_foo():
@@ -485,10 +585,14 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
 
             # -- PROBLEM-POINT:
             if "problem_point" in scenario.tags:
-                raise ValueError("OOPS")
+                raise SomeError("OOPS")
 
         def after_scenario(context, scenario):
             print("CALLED-HOOK: after_scenario:%s" % scenario.name)
+
+        # -- ENABLE CAPTURED-OUTPUT:
+        any_hook.show_cleanup_on_success = True
+        after_scenario.show_capture_on_success = True
         """
       And a file named "features/bad_antony.feature" with:
         """
@@ -505,29 +609,36 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
       When I run "behave -f plain features/bad_antony.feature"
       Then it should fail with:
         """
-        CALLED-HOOK: before_scenario:E1
-        REGISTER-CLEANUP: cleanup_foo
-        REGISTER-CLEANUP: cleanup_bar
-        HOOK-ERROR in before_scenario: ValueError: OOPS
-
-        Scenario: E1
+        0 features passed, 0 failed, 1 error, 0 skipped
+        1 scenario passed, 0 failed, 1 hook_error, 0 skipped
+        1 step passed, 0 failed, 0 skipped, 1 untested
         """
       And the command output should contain:
         """
-        Scenario: E1
-
+          Scenario: E1
+        ----
+        CAPTURED STDOUT: before_scenario
+        CALLED-HOOK: before_scenario:E1
+        REGISTER-CLEANUP: cleanup_foo
+        REGISTER-CLEANUP: cleanup_bar
+        HOOK-ERROR in before_scenario: SomeError: OOPS
+        ----
+        ----
+        CAPTURED STDOUT: after_scenario
         CALLED-HOOK: after_scenario:E1
+        ----
+        ----
+        CAPTURED STDOUT: scenario.cleanup
         CALLED: cleanup_bar
         CALLED: cleanup_foo
-
-        CALLED-HOOK: before_scenario:E2
+        ----
         """
       And the command output should contain 1 times:
         """
         CALLED: cleanup_bar
         CALLED: cleanup_foo
         """
-      But note that "cleanup functions are called even if ValueError is raised in before_scenario() hook"
+      But note that "cleanup functions are called even if an HOOK-ERROR occurs"
 
     @error.in.after_scenario
     @cleanup.after_scenario
@@ -536,7 +647,10 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
 
       Given a file named "features/environment.py" with:
         """
-        from __future__ import print_function
+        from __future__ import absolute_import, print_function
+        from behave.capture import any_hook
+
+        class SomeError(RuntimeError): pass
 
         # -- CLEANUP FUNCTIONS:
         def cleanup_foo():
@@ -560,7 +674,12 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
 
             # -- PROBLEM-POINT:
             if "problem_point" in scenario.tags:
-                raise ValueError("OOPS")
+                raise SomeError("OOPS")
+
+        # -- ENABLE CAPTURED-OUTPUT: On captured output parts.
+        any_hook.show_cleanup_on_success = True
+        before_scenario.show_capture_on_success = True
+        after_scenario.show_capture_on_success = True
         """
       And a file named "features/bad_bob.feature" with:
         """
@@ -574,26 +693,49 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
           Scenario: E2
             When a step passes
         """
-      When I run "behave -f plain features/bad_bob.feature"
+      When I run "behave -f plain --capture features/bad_bob.feature"
       Then it should fail with:
         """
+        Errored scenarios:
+          features/bad_bob.feature:5  E1
+
+        0 features passed, 0 failed, 1 error, 0 skipped
+        1 scenario passed, 0 failed, 1 hook_error, 0 skipped
+        2 steps passed, 0 failed, 0 skipped
+        """
+      And the command output should contain:
+        """
+          Scenario: E1
+        ----
+        CAPTURED STDOUT: before_scenario
         CALLED-HOOK: before_scenario:E1
         REGISTER-CLEANUP: cleanup_foo
         REGISTER-CLEANUP: cleanup_bar
-
-          Scenario: E1
+        ----
             Given a step passes ... passed
+        ----
+        CAPTURED STDOUT: after_scenario
         CALLED-HOOK: after_scenario:E1
-        HOOK-ERROR in after_scenario: ValueError: OOPS
+        HOOK-ERROR in after_scenario: SomeError: OOPS
+        ----
+        ----
+        CAPTURED STDOUT: scenario.cleanup
         CALLED: cleanup_bar
         CALLED: cleanup_foo
-
-        CALLED-HOOK: before_scenario:E2
+        ----
         """
-      And the command output should contain 1 times:
+      And the command output should contain:
         """
-        CALLED: cleanup_bar
-        CALLED: cleanup_foo
+        Scenario: E2
+          ----
+          CAPTURED STDOUT: before_scenario
+          CALLED-HOOK: before_scenario:E2
+          ----
+              When a step passes ... passed
+          ----
+          CAPTURED STDOUT: after_scenario
+          CALLED-HOOK: after_scenario:E2
+          ----
         """
-      But note that "cleanup functions are called even if ValueError is raised in after_scenario() hook"
+      But note that "cleanup functions are called even if an HOOK-ERROR occurs"
 

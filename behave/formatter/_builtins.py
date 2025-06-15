@@ -32,6 +32,7 @@ _BUILTIN_FORMATS = [
     ("steps.missing", "behave.contrib.formatter_missing_steps:MissingStepsFormatter"),
     ("steps.usage",   "behave.formatter.steps:StepsUsageFormatter"),
     ("sphinx.steps",  "behave.formatter.sphinx_steps:SphinxStepsFormatter"),
+    ("captured", "behave.formatter.captured:CapturedFormatter"),
 ]
 
 

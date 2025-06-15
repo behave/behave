@@ -37,7 +37,7 @@ Feature: Assert with non-ASCII char causes UnicodeDecodeError
     And the command output should not contain "UnicodeDecodeError"
     But the command output should contain:
       """
-      Assertion Failed: FAIL:
+      ASSERT FAILED: FAIL:
       """
 
     Examples:

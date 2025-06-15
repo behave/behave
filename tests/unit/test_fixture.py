@@ -4,15 +4,15 @@ Unit tests for :mod:`behave.fixture` module.
 """
 
 from __future__ import absolute_import, print_function
-import sys
 import inspect
-from behave.fixture import \
-    fixture, use_fixture, is_context_manager, InvalidFixtureError, \
+from behave.fixture import (
+    fixture, use_fixture, is_context_manager, InvalidFixtureError,
     use_fixture_by_tag, use_composite_fixture_with, fixture_call_params
-from behave.runner import Context, CleanupError, scoped_context_layer
+)
 from behave._types import Unknown
+from behave.configuration import Configuration
+from behave.runner import Runner, Context, scoped_context_layer
 import pytest
-from mock import Mock
 import six
 
 
@@ -21,12 +21,11 @@ import six
 # -----------------------------------------------------------------------------
 def make_runtime_context(runner=None):
     """Build a runtime/runner context for the tests here (partly faked).
-    
+
     :return: Runtime context object (normally used by the runner).
     """
     if runner is None:
-        runner = Mock()
-        runner.config = Mock()
+        runner = Runner(config=Configuration(load_config=False))
     return Context(runner)
 
 
@@ -278,7 +277,7 @@ class TestUseFixture(object):
         # -- NOT: Normal functions have no fixture-cleanup part.
 
     def test_can_use_fixture_two_times(self):
-        """Ensures that a fixture can be used multiple times 
+        """Ensures that a fixture can be used multiple times
         (with different names) within a context layer.
         """
         @fixture

@@ -22,8 +22,8 @@ Feature: Issue #125: Duplicate "Captured stdout" if substep has failed
     Given a file named "features/issue125_example.feature" with:
       """
       Feature:
-          Scenario:
-              When substep fails with stdout "Hello"
+        Scenario:
+          When substep fails with stdout "Hello"
       """
     When I run "behave -f plain --no-timings features/issue125_example.feature"
     Then it should fail with:
@@ -34,15 +34,15 @@ Feature: Issue #125: Duplicate "Captured stdout" if substep has failed
     And the command output should contain:
       """
       Feature:
-          Scenario:
-              When substep fails with stdout "Hello" ... failed
+        Scenario:
+          When substep fails with stdout "Hello" ... failed
 
-      Assertion Failed: FAILED SUB-STEP: When a step fails with stdout "Hello"
-      Substep info: Assertion Failed: EXPECT: Step fails with stdout.
+      ASSERT FAILED: FAILED SUB-STEP: When a step fails with stdout "Hello"
+      Substep info: ASSERT FAILED: EXPECT: Step fails with stdout.
       """
     And the command output should contain 1 times:
       """
-      Captured stdout:
+      CAPTURED STDOUT: scenario
       Hello
       """
     But note that "the captured output should not be contained multiple times"

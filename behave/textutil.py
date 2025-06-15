@@ -10,6 +10,7 @@ import os
 import sys
 import six
 
+
 # -----------------------------------------------------------------------------
 # CONSTANTS:
 # -----------------------------------------------------------------------------
@@ -25,8 +26,10 @@ def make_indentation(indent_size, part=u" "):
     return indent_size * part
 
 
-def indent(text, prefix):   # pylint: disable=redefined-outer-name
-    """Indent text or a number of text lines (with newline).
+# -- SIMILAR: textwrap.indent() -- SINCE: Python 3.3
+def indent(text, prefix):  # pylint: disable=redefined-outer-name
+    """
+    Indent text or a number of text lines (with newline).
 
     :param lines:  Text lines to indent (as string or list of strings).
     :param prefix: Line prefix to use (as string).
@@ -40,7 +43,7 @@ def indent(text, prefix):   # pylint: disable=redefined-outer-name
         # -- TEXT LINES: Without trailing new-line.
         newline = u"\n"
     # MAYBE: return newline.join([prefix + six.text_type(line, errors="replace")
-    return newline.join([prefix + six.text_type(line)  for line in lines])
+    return newline.join([prefix + six.text_type(line) for line in lines])
 
 
 def compute_words_maxsize(words):

@@ -177,6 +177,7 @@ class TestSummaryReporter(object):
             Status.failed.name: 1,
             Status.error.name: 0,
             Status.hook_error.name: 0,
+            Status.cleanup_error.name: 0,
             Status.skipped.name: 1,
             Status.untested.name: 1,
         }
@@ -212,11 +213,12 @@ class TestSummaryReporter(object):
         expected = {
             "all": 5,
             Status.passed.name: 1,
-            Status.error.name: 0,
-            Status.hook_error.name: 0,
             Status.failed.name: 2,
             Status.skipped.name: 1,
             Status.untested.name: 1,
+            Status.error.name: 0,
+            Status.hook_error.name: 0,
+            Status.cleanup_error.name: 0,
         }
 
         call_index4scenario = 1  # -- HINT: Index for scenarios if no Rules are used.
@@ -255,9 +257,10 @@ class TestSummaryReporter(object):
             "all": 7,
             Status.passed.name: 2,
             Status.failed.name: 3,
+            Status.skipped.name: 2,
             Status.error.name: 0,
             Status.hook_error.name: 0,
-            Status.skipped.name: 2,
+            Status.cleanup_error.name: 0,
             Status.untested.name: 0,
         }
         call_index4scenario = 1  # -- HINT: Index for scenarios if no Rules are used.
@@ -297,11 +300,12 @@ class TestSummaryReporter(object):
         expected = {
             "all": 5,
             Status.passed.name: 2,
-            Status.error.name: 0,
-            Status.hook_error.name: 0,
             Status.failed.name: 1,
             Status.skipped.name: 1,
             Status.undefined.name: 1,
+            Status.error.name: 0,
+            Status.hook_error.name: 0,
+            Status.cleanup_error.name: 0,
             Status.untested.name: 0,
             Status.untested_undefined.name: 0,
             Status.untested_pending.name: 0,

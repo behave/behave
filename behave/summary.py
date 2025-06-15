@@ -36,7 +36,8 @@ if not hasattr(Counter, "total"):
 # -----------------------------------------------------------------------------
 STATUS_ORDER = (Status.passed,
                 Status.failed, Status.error,
-                Status.hook_error, Status.skipped,
+                Status.hook_error, Status.cleanup_error,
+                Status.skipped,
                 # -- STEPS-SPECIFIC (Part 1):
                 Status.pending, Status.pending_warn,
                 Status.undefined,

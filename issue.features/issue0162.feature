@@ -4,8 +4,8 @@ Feature: Issue #162 Unnecessary ContextMaskWarnings when assert fails or excepti
   . Behave shows unnecessary ContextMaskWarnings related to:
   .
   .   * tags
-  .   * capture_stdout
-  .   * capture_stderr
+  .   * stdout_capture
+  .   * stderr_capture
   .   * log_capture
   .
   . if:

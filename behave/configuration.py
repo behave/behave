@@ -15,31 +15,32 @@ This module provides the configuration for :mod:`behave`:
 from __future__ import absolute_import, print_function
 import argparse
 from collections import namedtuple
-from contextlib import contextmanager
 import json
 import logging
-from logging.config import fileConfig as logging_config_fileConfig
 from logging import _checkLevel as logging_check_level
 import os
 import re
 import sys
 import shlex
 import six
+import warnings
 from six.moves import configparser
 
 from behave._types import Unknown
 from behave.exception import ConfigParamTypeError
-from behave.log_capture import LoggingCapture
-from behave.log_config import LoggingConfigurator
-from behave.model import ScenarioOutline
-from behave.model_core import FileLocation
+from behave.model_type import FileLocation
 from behave.formatter.base import StreamOpener
-from behave.formatter import _registry as _format_registry
-from behave.reporter.junit import JUnitReporter
-from behave.reporter.summary import SummaryReporter
-from behave.tag_expression import TagExpressionProtocol, make_tag_expression
+from behave.tag_expression import TagExpressionProtocol
 from behave.textutil import select_best_encoding, to_texts
 from behave.userdata import UserData, parse_user_define
+
+# -- APPLY CONFIG SETTINGS: Use LATE-IMPORT to avoid dependency coupling.
+# from behave.formatter import _registry as _format_registry
+# from behave.log_config import LoggingConfigurator
+# from behave.model import ScenarioOutline
+# from behave.reporter.junit import JUnitReporter
+# from behave.reporter.summary import SummaryReporter
+# from behave.tag_expression import  make_tag_expression
 
 # -- PYTHON 2/3 COMPATIBILITY:
 # SINCE Python 3.2: ConfigParser = SafeConfigParser
@@ -228,41 +229,50 @@ OPTIONS = [
                   If this option is given more than once,
                   it will match against all the given names.""")),
 
-    (("--no-capture",),
-     dict(dest="stdout_capture", action="store_false",
-          help="""Don't capture stdout (any stdout output will be
-                  printed immediately.)""")),
-
     (("--capture",),
-     dict(dest="stdout_capture", action="store_true",
-          help="""Capture stdout (any stdout output will be
-                  printed if there is a failure.)
-                  This is the default behaviour. This switch is used to
-                  override a configuration file setting.""")),
+     dict(dest="capture", action="store_true",
+          help="""Enable capture mode (stdout/stderr/log-output).
+                  Any capture output will be printed on a failure/error.""")),
 
-    (("--no-capture-stderr",),
-     dict(dest="stderr_capture", action="store_false",
-          help="""Don't capture stderr (any stderr output will be
-                  printed immediately.)""")),
+    (("--no-capture",),
+     dict(dest="capture", action="store_false",
+          help="""Disable capture mode (stdout/stderr/log-output).""")),
+
+    (("--capture-stdout",),
+     dict(dest="capture_stdout", action="store_true",
+          help="""Enable capture of stdout.""")),
+
+    (("--no-capture-stdout",),
+     dict(dest="capture_stdout", action="store_false",
+          help="""Disable capture of stdout.""")),
 
     (("--capture-stderr",),
-     dict(dest="stderr_capture", action="store_true",
-          help="""Capture stderr (any stderr output will be
-                  printed if there is a failure.)
-                  This is the default behaviour. This switch is used to
-                  override a configuration file setting.""")),
+     dict(dest="capture_stderr", action="store_true",
+          help="""Enable capture of stderr.""")),
 
-    (("--no-logcapture",),
-     dict(dest="log_capture", action="store_false",
-          help="""Don't capture logging. Logging configuration will
-                  be left intact.""")),
+    (("--no-capture-stderr",),
+     dict(dest="capture_stderr", action="store_false",
+          help="""Disable capture of stderr.""")),
 
-    (("--logcapture",),
-     dict(dest="log_capture", action="store_true",
-          help="""Capture logging. All logging during a step will be captured
-                  and displayed in the event of a failure.
-                  This is the default behaviour. This switch is used to
-                  override a configuration file setting.""")),
+    (("--capture-log",
+      # -- OLD-NAME:
+      "--logcapture",),
+     dict(dest="capture_log", action="store_true",
+          help="""Enable capture of logging output.""")),
+
+    (("--no-capture-log",
+      # -- OLD-NAME:
+      "--no-logcapture",),
+     dict(dest="capture_log", action="store_false",
+          help="""Disable capture of logging output.""")),
+
+    (("--capture-hooks",),
+     dict(dest="capture_hooks", action="store_true",
+          help="""Enable capture of hooks (except: before_all).""")),
+
+    (("--no-capture-hooks",),
+     dict(dest="capture_hooks", action="store_false",
+          help="""Disable capture of hooks.""")),
 
     (("--logging-level",),
      dict(type=LogLevel.parse_type, default=logging.INFO,
@@ -303,7 +313,10 @@ OPTIONS = [
 
     (("--logging-clear-handlers",),
      dict(action="store_true",
-          help="Clear all other logging handlers.")),
+          help="Clear existing logging handlers (during capture-log).")),
+    (("--no-logging-clear-handlers",),
+     dict(action="store_false",
+          help="Keep existing logging handlers (during capture-log).")),
 
     (("--no-summary",),
      dict(action="store_false", dest="summary",
@@ -751,9 +764,11 @@ class Configuration(object):
         dry_run=False,
         show_source=True,
         show_timings=True,
-        stdout_capture=True,
-        stderr_capture=True,
-        log_capture=True,
+        capture=None,
+        capture_stdout=True,
+        capture_stderr=True,
+        capture_log=True,
+        capture_hooks=True,
         logging_format="LOG_%(levelname)s:%(name)s: %(message)s",
         logging_level=logging.INFO,
         runner=DEFAULT_RUNNER_CLASS_NAME,
@@ -811,6 +826,7 @@ class Configuration(object):
             self.show_source = False
             self.show_snippets = False
 
+        self.setup_capture()
         self.setup_tag_expression()
         self.setup_select_by_filters()
         self.setup_stage(self.stage)
@@ -830,6 +846,11 @@ class Configuration(object):
         """
         self.defaults = self.make_defaults(**kwargs)
         self.version = None
+        self.capture = None
+        self.capture_stdout = None
+        self.capture_stderr = None
+        self.capture_log = None
+        self.capture_hooks = None
         self.tags_help = None
         self.lang_list = None
         self.lang_help = None
@@ -921,13 +942,16 @@ class Configuration(object):
         # Only run scenarios tagged with "wip".
         # Additionally:
         #  * use the "plain" formatter (per default)
-        #  * do not capture stdout or logging output and
+        #  * do not capture stdout/stderr/logging output and
         #  * stop at the first failure.
         self.default_format = "plain"
         self.color = "off"
         self.stop = True
-        self.log_capture = False
-        self.stdout_capture = False
+        self.capture = False
+        self.capture_stdout = False
+        self.capture_stderr = False
+        self.capture_log = False
+        self.capture_hooks = False
 
         # -- EXTEND TAG-EXPRESSION: Add @wip tag
         self.tags = self.tags or []
@@ -959,12 +983,16 @@ class Configuration(object):
 
     def setup_reporters(self):
         if self.junit:
+            # -- APPLY-CONFIG:
             # Buffer the output (it will be put into Junit report)
-            self.stdout_capture = True
-            self.stderr_capture = True
-            self.log_capture = True
+            from .reporter.junit import JUnitReporter
+            self.capture_stdout = True
+            self.capture_stderr = True
+            self.capture_log = True
             self.reporters.append(JUnitReporter(self))
         if self.summary:
+            # -- APPLY-CONFIG:
+            from .reporter.summary import SummaryReporter
             self.reporters.append(SummaryReporter(self))
 
     def show_bad_formats_and_fail(self, parser):
@@ -991,6 +1019,8 @@ class Configuration(object):
         * command-line tags (as tag-expression text)
         * config-file tags (as tag-expression text)
         """
+        # -- APPLY-CONFIG:
+        from .tag_expression import make_tag_expression
         config_tags = self.config_tags or self.default_tags or ""
         tags = tags or self.tags or config_tags
         # DISABLED: tags = self._normalize_tags(tags)
@@ -1050,6 +1080,8 @@ class Configuration(object):
     def setup_formats(self):
         """Register more, user-defined formatters by name."""
         if self.more_formatters:
+            # -- APPLY-CONFIG:
+            from .formatter import _registry as _format_registry
             for name, scoped_class_name in self.more_formatters.items():
                 _format_registry.register_as(name, scoped_class_name)
 
@@ -1061,6 +1093,8 @@ class Configuration(object):
     def select_bad_formats_with_errors(self):
         bad_formats = []
         if self.format:
+            # -- USE-APPLY-CONFIG:
+            from .formatter import _registry as _format_registry
             for format_name in self.format:
                 formatter_valid = _format_registry.is_formatter_valid(format_name)
                 if format_name == "help" or formatter_valid:
@@ -1131,6 +1165,8 @@ class Configuration(object):
 
             * Parameter "filename" was added to simplify logging to a file.
         """
+        # -- APPLY-CONFIG:
+        from .log_config import LoggingConfigurator
         configurator = LoggingConfigurator(self)
         if configfile:
             # -- BASED ON: logging.config.fileConfig()
@@ -1144,6 +1180,8 @@ class Configuration(object):
 
     def setup_model(self):
         if self.scenario_outline_annotation_schema:
+            # -- APPLY-CONFIG:
+            from .model import ScenarioOutline
             name_schema = six.text_type(self.scenario_outline_annotation_schema)
             ScenarioOutline.annotation_schema = name_schema.strip()
 
@@ -1199,3 +1237,50 @@ class Configuration(object):
         if self.userdata_defines:
             # -- REAPPLY: Cmd-line defines (override configuration file data).
             self.userdata.update(self.userdata_defines)
+
+    # -- SINCE: behave v1.2.7
+    def should_capture(self):
+        return self.capture_stdout or self.capture_stderr or self.capture_log
+
+    def should_capture_hooks(self):
+        return self.capture_hooks and self.should_capture()
+
+    def setup_capture(self):
+        if isinstance(self.capture, bool):
+            # -- IF SPECIFIED: Apply capture mode to stdout/stderr/log.
+            self.capture_stdout = self.capture
+            self.capture_stderr = self.capture
+            self.capture_log = self.capture
+
+    # -- DEPRECATED CONFIG PARAMETER NAMES:
+    # DEPRECATED SINCE: behave v1.2.7
+    # REMOVED IN: behave v1.4.0
+    @property
+    def stdout_capture(self):
+        warnings.warn("Use 'capture_stdout' instead", DeprecationWarning)
+        return self.capture_stdout
+
+    @stdout_capture.setter
+    def stdout_capture(self, value):
+        warnings.warn("Use 'capture_stdout = ...' instead", DeprecationWarning)
+        self.capture_stdout = value
+
+    @property
+    def stderr_capture(self):
+        warnings.warn("Use 'capture_stderr' instead", DeprecationWarning)
+        return self.capture_stderr
+
+    @stderr_capture.setter
+    def stderr_capture(self, value):
+        warnings.warn("Use 'capture_stderr = ...' instead", DeprecationWarning)
+        self.capture_stderr = value
+
+    @property
+    def log_capture(self):
+        warnings.warn("Use 'capture_log' instead", DeprecationWarning)
+        return self.capture_log
+
+    @log_capture.setter
+    def log_capture(self, value):
+        warnings.warn("Use 'capture_log = ...' instead", DeprecationWarning)
+        self.capture_log = value

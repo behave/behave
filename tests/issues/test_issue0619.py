@@ -18,12 +18,14 @@ so the default behaviour of getattr is not executed (see docs).
 """
 
 from __future__ import absolute_import
+from behave.configuration import Configuration
 from behave.runner import Context, scoped_context_layer
 from mock import Mock
 
 
 def test_issue__getattr_with_protected_unknown_context_attribute_raises_no_error():
-    context = Context(runner=Mock())
+    config = Configuration(load_config=False)
+    context = Context(runner=Mock(config=config))
     with scoped_context_layer(context):  # CALLS-HERE: context._push()
         value = getattr(context, "_UNKNOWN_ATTRIB", "__UNKNOWN__")
 

@@ -137,7 +137,7 @@ name" to :class:`~behave.matchers.Matcher` class.
 .. autoclass:: behave.matchers.Matcher
    :members:
 
-.. autoclass:: behave.model_core.Argument
+.. autoclass:: behave.model_type.Argument
 
 .. autoclass:: behave.matchers.Match
 

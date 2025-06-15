@@ -26,7 +26,7 @@ Feature: Logging to a file
         """
         # -- REQUIRES: Python >= 3.2 -- f-string log-format style.
         [behave]
-        log_capture = true
+        capture_log = true
         logging_level = INFO
         logging_format = LOG.{levelname} -- {name}: {message}
         """
@@ -51,7 +51,7 @@ Feature: Logging to a file
               | bar      | ERROR   | LOG_MESSAGE_4 |
             When another step passes
         """
-    When I run "behave features/log_records_and_passes.feature"
+    When I run "behave -f plain features/log_records_and_passes.feature"
     Then it should pass
     And the command output should not contain the following log records:
         | category | level   | message       |

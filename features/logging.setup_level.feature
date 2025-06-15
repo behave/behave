@@ -1,7 +1,7 @@
 Feature: Setup logging_level
 
   As a tester
-  I want to configure the logging_level for --logcapture mode
+  I want to configure the logging_level for --capture-log mode
   So that I see only the important log-records when a scenario fails.
 
   As a tester
@@ -54,7 +54,7 @@ Feature: Setup logging_level
         """
 
   @capture
-  Scenario: Logcapture mode: Use logging_level on command-line
+  Scenario: Capture-log mode: Use logging_level on command-line
 
     Also ensure that command-line option can override configuration file info.
 
@@ -73,7 +73,7 @@ Feature: Setup logging_level
         """
     And the command output should contain:
         """
-        Captured logging:
+        CAPTURED LOG: scenario
         LOG_ERROR root: Hello1 log-error-record
         LOG_WARNING root: Hello1 log-warn-record
         """
@@ -88,23 +88,28 @@ Feature: Setup logging_level
 
 
   @capture
-  Scenario: Logcapture mode: Use logging_level in configuration file
+  Scenario: Capture-log mode: Use logging_level in configuration file
     Given I use "LOG.%(levelname)s:%(name)s: %(message)s" as log record format
     And a file named "behave.ini" with:
         """
         [behave]
         logging_level = ERROR
         logging_format = LOG_%(levelname)s:%(name)s: %(message)s
+        logging_clear_handlers = true
         """
     When I run "behave -f plain -T features/"
     Then it should fail with:
         """
+        Failing scenarios:
+          features/example.log_with_failure.feature:2  S1
+
+        1 feature passed, 1 failed, 0 skipped
         1 scenario passed, 1 failed, 0 skipped
         3 steps passed, 1 failed, 0 skipped
         """
     And the command output should contain:
         """
-        Captured logging:
+        CAPTURED LOG: scenario
         LOG_ERROR:root: Hello1 log-error-record
         """
     But the command output should not contain the following log records:
@@ -149,7 +154,7 @@ Feature: Setup logging_level
     Given a file named "behave.ini" with:
         """
         [behave]
-        log_capture = false
+        capture_log = false
         logging_level = ERROR
         """
       When I run "behave -f plain -T features/"

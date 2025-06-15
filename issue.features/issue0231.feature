@@ -59,7 +59,7 @@ Feature: Issue #231: Display the output of the last print command
       """
     And the command output should contain:
       """
-      Captured stdout:
+      CAPTURED STDOUT: scenario
       ALICE was HERE
       """
 
@@ -72,6 +72,6 @@ Feature: Issue #231: Display the output of the last print command
       """
     And the command output should contain:
       """
-      Captured stdout:
+      CAPTURED STDOUT: scenario
       BOB was HERE
       """

@@ -1,6 +1,6 @@
 Feature: Use logging_filter with logcapture
 
-  PRECONDITION: log_capture mode is enabled (config.log_capture = true).
+  PRECONDITION: capture_log mode is enabled (config.capture_log = true).
 
   As a tester
   In log-capture mode
@@ -21,7 +21,7 @@ Feature: Use logging_filter with logcapture
           import behave4cmd0.failing_steps
           import behave4cmd0.passing_steps
           """
-      And a file named "features/logging.failing_example.feature" with:
+      And a file named "features/logging.failing.feature" with:
           """
           Feature:
             Scenario: Failing
@@ -36,13 +36,15 @@ Feature: Use logging_filter with logcapture
       And a file named "behave.ini" with:
           """
           [behave]
-          log_capture = true
+          default_format = pretty
+          capture_log = true
           logging_level = WARN
+          logging_clear_handlers = true
           """
 
 
     Scenario: Include only a logging category
-      When I run "behave --logcapture --logging-filter=foo features/logging.failing_example.feature"
+      When I run "behave --capture-log --logging-filter=foo features/logging.failing.feature"
       Then it should fail with:
           """
           0 scenarios passed, 1 failed, 0 skipped
@@ -59,7 +61,7 @@ Feature: Use logging_filter with logcapture
 
 
     Scenario: Include only a logging sub-category
-      When I run "behave --logcapture --logging-filter=foo.bar features/logging.failing_example.feature"
+      When I run "behave --logging-filter=foo.bar features/logging.failing.feature"
       Then it should fail
       And the command output should contain log records from categories:
           | category | Comment  |
@@ -72,7 +74,7 @@ Feature: Use logging_filter with logcapture
 
 
     Scenario: Exclude a logging category
-      When I run "behave --logcapture --logging-filter=-foo features/logging.failing_example.feature"
+      When I run "behave --logging-filter=-foo features/logging.failing.feature"
       Then it should fail
       And the command output should contain log records from categories:
           | category | Comment |
@@ -85,7 +87,7 @@ Feature: Use logging_filter with logcapture
 
 
     Scenario: Include several logging categories
-      When I run "behave --logcapture --logging-filter=foo,bar features/logging.failing_example.feature"
+      When I run "behave --logging-filter=foo,bar features/logging.failing.feature"
       Then it should fail
       And the command output should contain log records from categories:
           | category | Comment |
@@ -98,7 +100,7 @@ Feature: Use logging_filter with logcapture
 
 
     Scenario: Include/exclude several logging categories
-      When I run "behave --logcapture --logging-filter=foo.bar,-bar features/logging.failing_example.feature"
+      When I run "behave --logging-filter=foo.bar,-bar features/logging.failing.feature"
       Then it should fail
       And the command output should contain log records from categories:
           | category | Comment |
@@ -114,11 +116,12 @@ Feature: Use logging_filter with logcapture
       Given a file named "behave.ini" with:
           """
           [behave]
-          log_capture = true
+          capture_log = true
           logging_level = WARN
           logging_filter = foo.bar,-bar
+          logging_clear_handlers = true
           """
-      When I run "behave --logcapture features/logging.failing_example.feature"
+      When I run "behave features/logging.failing.feature"
       Then it should fail
       And the command output should contain log records from categories:
           | category | Comment |

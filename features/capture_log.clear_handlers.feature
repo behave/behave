@@ -2,7 +2,7 @@
 @capture
 Feature: Use --logging-clear-handlers configuration option
 
-  PRECONDITION: log_capture mode is enabled (config.log_capture = true).
+  PRECONDITION: capture_log mode is enabled (config.capture_log = true).
 
   As a tester
   In log-capture mode
@@ -20,17 +20,17 @@ Feature: Use --logging-clear-handlers configuration option
         """
     And a file named "features/environment.py" with:
         """
-        def before_all(context):
-            # -- SAME-AS: context.config.setup_logging()
-            import logging
-            logging.basicConfig(level=context.config.logging_level)
+        import logging
 
-            # -- ADDITIONAL LOG-HANDLER: Which will be cleared.
+        def before_all(context):
+            # -- SIMILAR TO: context.config.setup_logging()
+            # -- INITIAL LOG-HANDLER: Which will be cleared.
             format = "INITIAL_LOG_HANDLER: %(name)s %(levelname)s: %(message)s;"
             handler = logging.StreamHandler()
             handler.setFormatter(logging.Formatter(format))
             root_logger = logging.getLogger()
             root_logger.addHandler(handler)
+            root_logger.setLevel(context.config.logging_level)
         """
     And  a file named "features/example.log_with_failure.feature" with:
         """
@@ -48,7 +48,7 @@ Feature: Use --logging-clear-handlers configuration option
     Given a file named "behave.ini" with:
         """
         [behave]
-        log_capture = true
+        capture_log = true
         logging_level = WARN
         logging_format = LOG_%(levelname)s:%(name)s: %(message)s
         """
@@ -61,7 +61,7 @@ Feature: Use --logging-clear-handlers configuration option
         """
     And the command output should contain:
         """
-        Captured logging:
+        CAPTURED LOG: scenario
         LOG_ERROR:root: Hello Alice
         LOG_WARNING:root: Hello Bob
         """
@@ -76,7 +76,7 @@ Feature: Use --logging-clear-handlers configuration option
     Given a file named "behave.ini" with:
         """
         [behave]
-        log_capture = true
+        capture_log = true
         logging_level = WARN
         logging_format = LOG_%(levelname)s:%(name)s: %(message)s
         """
@@ -84,7 +84,7 @@ Feature: Use --logging-clear-handlers configuration option
     When I run "behave -f plain --logging-clear-handlers features/example.log_with_failure.feature"
     Then it should fail with:
         """
-        Captured logging:
+        CAPTURED LOG: scenario
         LOG_ERROR:root: Hello Alice
         LOG_WARNING:root: Hello Bob
         """
@@ -99,7 +99,7 @@ Feature: Use --logging-clear-handlers configuration option
     Given a file named "behave.ini" with:
         """
         [behave]
-        log_capture = true
+        capture_log = true
         logging_level = WARN
         logging_format = LOG_%(levelname)s:%(name)s: %(message)s
         logging_clear_handlers = true
@@ -107,7 +107,7 @@ Feature: Use --logging-clear-handlers configuration option
     When I run "behave -f plain features/example.log_with_failure.feature"
     Then it should fail with:
         """
-        Captured logging:
+        CAPTURED LOG: scenario
         LOG_ERROR:root: Hello Alice
         LOG_WARNING:root: Hello Bob
         """

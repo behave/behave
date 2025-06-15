@@ -82,10 +82,10 @@ Feature: Issue #175: Scenario isn't marked as 'failed' when Background step fail
           Scenario: S1
             Given a background step passes ... passed
             And a background step fails ... failed
-        Assertion Failed: XFAIL: background step
+        ASSERT FAILED: XFAIL: background step
 
           Scenario: S2
             Given a background step passes ... passed
             And a background step fails ... failed
-        Assertion Failed: XFAIL: background step
+        ASSERT FAILED: XFAIL: background step
         """

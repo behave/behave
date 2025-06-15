@@ -137,7 +137,7 @@ class Status(Enum):
         return hash(self.value)
 
     def has_failed(self):
-        return self.is_error() or self.is_failure()
+        return self.is_failure() or self.is_error() or self.is_hook_error()
 
     def is_passed(self):
         return self in (Status.passed, Status.xfailed, Status.xpassed,
@@ -147,8 +147,12 @@ class Status(Enum):
         return self is Status.failed
 
     def is_error(self):
+        # -- MAYBE: Exclude any hook-errors
         return self in (Status.error, Status.hook_error, Status.cleanup_error,
                         Status.undefined, Status.pending)
+
+    def is_hook_error(self):
+        return self in (Status.hook_error, Status.cleanup_error)
 
     def is_untested(self):
         return self in (Status.untested,
@@ -168,7 +172,7 @@ class Status(Enum):
         return self in (Status.skipped, Status.passed,
                         Status.xfailed, Status.xpassed,
                         Status.failed, Status.error,
-                        Status.hook_error,
+                        Status.hook_error, Status.cleanup_error,
                         # -- USED FOR: STEP is not found/registered
                         Status.undefined, Status.untested_undefined,
                         # -- USED FOR: Registered step -- NotImplementedStep/PendingStep

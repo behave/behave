@@ -10,6 +10,10 @@ from behave.log_config import (
     LoggingConfigurator as _LoggingConfigurator
 )
 
+
+# -----------------------------------------------------------------------------
+# CLASSES
+# -----------------------------------------------------------------------------
 class RecordFilter(object):
     """Implement logging record filtering as per the configuration
     --logging-filter option.
@@ -90,6 +94,10 @@ class LoggingCapture(BufferingHandler):
         # construct my filter
         if config.logging_filter:
             self.addFilter(RecordFilter(config.logging_filter))
+
+    def clear_buffer(self):
+        # -- SINCE: behave v1.2.7
+        self.buffer = []
 
     def __bool__(self):
         return bool(self.buffer)
@@ -178,12 +186,10 @@ class LoggingCapture(BufferingHandler):
             root_logger.setLevel(self.old_level)
             self.old_level = None
 
-# pre-1.2 backwards compatibility
-MemoryHandler = LoggingCapture
-
 
 def capture(*args, **kw):
-    """Decorator to wrap an *environment file function* in log file capture.
+    """
+    Decorator to wrap an *environment file function* in log file capture.
 
     It configures the logging capture using the *behave* context,
     the first argument to the function being decorated
@@ -195,12 +201,16 @@ def capture(*args, **kw):
     .. code-block: python
 
         @capture
+        def before_scenario(context, scenario):
+            ...
+
+        @capture(show_on_success=True)
         def after_scenario(context, scenario):
             ...
 
-    The function prints any captured logging
-    (at the level determined by the ``log_level`` configuration setting)
-    directly to stdout, regardless of error conditions.
+    .. tip:: Use :func:`behave.capture.capture_output` decorator instead.
+
+        Supports capturing of any-output.
 
     It is mostly useful for debugging in situations where you are seeing a
     message like::
@@ -218,22 +228,44 @@ def capture(*args, **kw):
 
     This would limit the logging captured to just ERROR and above,
     and thus only display logged events if they are interesting.
+
+    :param level:   Logging level threshold to use.
+    :param show_on_success:  Use true, to always show captured log records.
+
+    .. versionchanged:: 1.2.7
+
+        Log records are now only shown if an error occurs or ``show_on_success`` is true.
+
+        * Use ``capture.show_on_success = True`` to enable the old behavior.
+        * Parameter ``show_on_success : bool = CAPTURE_SHOW_ON_SUCCESS`` was added.`
     """
+    show_on_success = kw.pop("show_on_success", capture.show_on_success)
     def create_decorator(func, level=None):
         def f(context, *args):
             h = LoggingCapture(context.config, level=level)
             h.inveigle()
+            failed = False
             try:
                 func(context, *args)
+            except Exception as e:
+                failed = True
+                logger = logging.getLogger("behave.run")
+                logger.exception(e)
+                raise
             finally:
                 h.abandon()
-            v = h.getvalue()
-            if v:
-                print("Captured Logging:")
-                print(v)
+                captured_output = h.getvalue()
+                should_show = failed or show_on_success
+                if should_show and captured_output:
+                    print("CAPTURED LOG:")
+                    print(captured_output)
         return f
 
     if not args:
+        # -- CASE: @capture(level=...)
         return functools.partial(create_decorator, level=kw.get("level"))
     else:
+        # -- CASE: @capture
         return create_decorator(args[0])
+
+capture.show_on_success = False

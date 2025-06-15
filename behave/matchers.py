@@ -18,7 +18,7 @@ import six
 import parse
 from parse_type import cfparse
 
-from behave._types import ChainedExceptionUtil, ExceptionUtil
+from behave.exception_util import ExceptionUtil, ChainedExceptionUtil
 from behave.exception import NotSupportedWarning, ResourceExistsError
 from behave.model_core import Replayable
 from behave.model_type import FileLocation, Argument
