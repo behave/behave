@@ -2,7 +2,7 @@ Feature: Advanced, more complex directory layout (Variant 2)
 
   As a story/test writer
   I want a deeper, more structured directory structure when many feature files exist
-  So that I have the parts better under control (more managable)
+  So that I have the parts better under control (more manageable)
 
   . ADVANCED, MORE COMPLEX DIRECTORY LAYOUT STRUCTURE:
   .     features/

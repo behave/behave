@@ -31,7 +31,7 @@ class ProgressFormatterBase(Formatter):
         Status.passed:    ".",
         Status.failed:    "F",  # AssertionError was raised: assert-failed
         Status.error:     "E",  # Exception was raised: unexpected (not assert-failed)
-        Status.hook_error: "H", # Exception/AssertionError was rasied by a hook.
+        Status.hook_error: "H", # Exception/AssertionError was raised by a hook.
         Status.skipped:   "S",
         Status.untested:  "_",
         # -- STEP SPECIFIC:

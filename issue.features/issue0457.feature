@@ -28,7 +28,7 @@ Feature: Issue #457 -- Double-quotes in error messages of JUnit XML reports
 
     # -- SIMILAR TO: @use.with_python.max_version=3.7
     @not.with_python.min_version=3.8
-    Scenario: Use failing assertation in a JUnit XML report (py.version < 3.8)
+    Scenario: Use failing assertion in a JUnit XML report (py.version < 3.8)
       Given a file named "features/fails1.feature" with:
         """
         Feature:
@@ -49,7 +49,7 @@ Feature: Issue #457 -- Double-quotes in error messages of JUnit XML reports
         """
 
     @use.with_python.min_version=3.8
-    Scenario: Use failing assertation in a JUnit XML report (py.version >= 3.8)
+    Scenario: Use failing assertion in a JUnit XML report (py.version >= 3.8)
       Given a file named "features/fails1.feature" with:
         """
         Feature:

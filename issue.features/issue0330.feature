@@ -120,7 +120,7 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
       """
       <testcase classname="charly.Charly" name="Charly2"
       """
-    And note that "Charly2 is the skipped scenarion in charly.feature"
+    And note that "Charly2 is the skipped scenario in charly.feature"
 
   @use.with_python.min_version=3.8
   Scenario: Junit report for skipped scenario is neither shown nor counted with --no-skipped (py.version >= 3.8)
@@ -142,7 +142,7 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
       """
       <testcase classname="charly.Charly" name="Charly2"
       """
-    And note that "Charly2 is the skipped scenarion in charly.feature"
+    And note that "Charly2 is the skipped scenario in charly.feature"
 
 
   # -- SIMILAR TO: @use.with_python.max_version=3.7
@@ -164,7 +164,7 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
       """
       <testcase classname="charly.Charly" name="Charly2" status="skipped"
       """
-    And note that "Charly2 is the skipped scenarion in charly.feature"
+    And note that "Charly2 is the skipped scenario in charly.feature"
 
 
   @use.with_python.min_version=3.8
@@ -187,5 +187,5 @@ Feature: Issue #330: Skipped scenarios are included in junit reports when --no-s
       """
       <testcase classname="charly.Charly" name="Charly2" status="skipped"
       """
-    And note that "Charly2 is the skipped scenarion in charly.feature"
+    And note that "Charly2 is the skipped scenario in charly.feature"
 

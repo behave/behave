@@ -40,6 +40,6 @@ namespace.configure({
     "behave_test": {
         "args":   "",
         "format": "progress2",
-        "options": "",  # -- NOTE:  Overide in configfile "invoke.yaml"
+        "options": "",  # -- NOTE:  Override in configfile "invoke.yaml"
     },
 })

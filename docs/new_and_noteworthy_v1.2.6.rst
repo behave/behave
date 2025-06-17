@@ -195,7 +195,7 @@ and the configuration ``lang`` option on command-line and in the configuration f
 changed slightly.
 
 If a ``language-tag`` is used in a feature file,
-it is now prefered over the command-line/configuration file settings.
+it is now preferred over the command-line/configuration file settings.
 This is especially useful when your feature files use multiple spoken languages
 (in different files).
 
@@ -254,7 +254,7 @@ to be skipped.
 
 .. seealso::
 
-    * `features/runner.hook_errors.feature`_ for the detailled specification
+    * `features/runner.hook_errors.feature`_ for the detailed specification
 
 .. _`features/runner.hook_errors.feature`: https://github.com/behave/behave/blob/master/features/runner.hook_errors.feature
 
@@ -289,7 +289,7 @@ EXAMPLE:
 
 .. seealso::
 
-    * `features/runner.continue_after_failed_step.feature`_ for the detailled specification
+    * `features/runner.continue_after_failed_step.feature`_ for the detailed specification
 
 .. _`features/runner.continue_after_failed_step.feature`: https://github.com/behave/behave/blob/master/features/runner.continue_after_failed_step.feature
 
@@ -353,7 +353,7 @@ When you use the async-step from above in a feature file and run it with behave:
 .. note::
 
     The async-step is wrapped with an ``event_loop.run_until_complete()`` call.
-    As the timings show, it actually needs approximatly 0.3 seconds to run.
+    As the timings show, it actually needs approximately 0.3 seconds to run.
 
 
 

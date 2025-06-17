@@ -12,7 +12,7 @@ Feature: Issue #487 -- UnicodeEncodeError with ZBSP in multi-line text
     . UnicodeEncodeError: 'ascii' codec can't encode characters in position 92-103: ordinal not in range(128)
     .
     . ANALYSIS:
-    .   ParseError indicates that the problem occured while parsing the
+    .   ParseError indicates that the problem occurred while parsing the
     .   feature file. Feature file encoding is assumed
 
     @not.with_ci=appveyor

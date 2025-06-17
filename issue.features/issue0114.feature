@@ -2,7 +2,7 @@
 @change_request
 Feature: Issue #114: Avoid unnecessary blank lines w/ --no-skipped option
 
-    . Unnessary blank lines appear when you use (for each skipped feature):
+    . Unnecessary blank lines appear when you use (for each skipped feature):
     .
     .    behave -f progress --tags=@one --no-skipped ...
 

@@ -3,7 +3,7 @@ Feature: Issue #383 -- Handle (custom) Type parsing errors better
 
   . Custom type parsing errors that occur during step matching
   . lead currently to abortion of the test run.
-  . In addition, the actual reason what occured is very low-level.
+  . In addition, the actual reason what occurred is very low-level.
   .
   . DESIRED:
   .   * Protect test runner/execution logic

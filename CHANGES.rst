@@ -20,7 +20,7 @@ Version: 1.3.0 (planning)
 GOALS:
 
 * Will be released on https://pypi.org
-* Inlude all changes from behave v1.2.7 development
+* Include all changes from behave v1.2.7 development
 * Last version minor version with Python 2.7 support
 * ``tag-expressions v2``: Enabled by default ("strict" mode: only v2 supported).
 * ``tag-expressions v1``: Disabled by default (in "strict" mode).
@@ -76,7 +76,7 @@ ENHANCEMENTS:
 * active-tags: Added ``ValueObject`` class for enhanced control of comparison mechanism
   (supports: equals, less-than, less-or-equal, greater-than, greater-or-equal, contains, ...)
 * Add support for Gherkin v6 grammar and syntax in ``*.feature`` files
-* Use `cucumber-tag-expressions`_ with tag-matching extension (superceeds: old-style tag-expressions)
+* Use `cucumber-tag-expressions`_ with tag-matching extension (supersedes: old-style tag-expressions)
 * Use cucumber "gherkin-languages.json" now (simplify: Gherkin v6 aliases, language usage)
 * Support emojis in ``*.feature`` files and steps
 * Select-by-location: Add support for "Scenario container" (Feature, Rule, ScenarioOutline) (related to: #391)
@@ -267,7 +267,7 @@ FIXED:
 * pull  #382: fix typo in tag name (provided by: zsoldosp)
 * issue #361: utf8 file with BOM (provided by: karulis)
 * issue #349: ScenarioOutline skipped with --format=json
-* issue #336: Stacktrace contents getting illegal characters inserted with text function (submited by: fj40bryan)
+* issue #336: Stacktrace contents getting illegal characters inserted with text function (submitted by: fj40bryan)
 * issue #330: Skipped scenarios are included in junit reports when --no-skipped is specified (provided by: vrutkovs, pull #331)
 * issue #320: Userdata is case-insensitive when read from config file (provided by: mixxorz)
 * issue #319: python-version requirements in behave.whl for Python2.6 (submitted by: darkfoxprime)
@@ -319,7 +319,7 @@ ENHANCEMENTS:
   * issue #242: JUnitReporter can show scenario tags (provided by: rigomes)
   * issue #240: Test Stages with different step implementations (provided by: attilammagyar, jenisys)
   * issue #238: Allow to skip scenario in step function (provided by: hotgloupi, jenisys)
-  * issue #228: Exclude scenario fron run (provided by: jdeppe, jenisys)
+  * issue #228: Exclude scenario from run (provided by: jdeppe, jenisys)
   * issue #227: Add a way to add command line options to behave (provided by: attilammagyar, jenisys)
 
 FIXED:
@@ -592,7 +592,7 @@ RESOLVED:
 
 REJECTED:
 
-  * issue #109: Insists that implemented tests are not implemented (not reproducable)
+  * issue #109: Insists that implemented tests are not implemented (not reproducible)
   * issue #100: Forked package installs but won't run on RHEL.
   * issue #88: Python 3 compatibility changes (=> use 2to3 tool instead).
 

@@ -225,3 +225,24 @@ disable = "C0330, C0326"
 
 [tool.pylint.format]
 max-line-length = "100"
+
+# -----------------------------------------------------------------------------
+# CODESPELL
+# -----------------------------------------------------------------------------
+# SEE: https://github.com/codespell-project/codespell
+[tool.codespell]
+skip = [
+    "./build/behave.reports",
+    "./build/testing",
+    "./bin/github-workflow.json_schema",
+    "./etc/gherkin/gherkin-languages.json",
+    "./features/i18n.unicode_problems.feature",
+    "./features/cmdline.lang_list.feature",
+    "./issue.features/issue0152.feature",
+    "./issue.features/issue0300.feature",
+    "./issue.features/issue0361.feature",
+    "./issue.features/issue0606.feature",
+]
+ignore-words = ".codespell.ignore_words"
+# count = true
+# quiet-level = 3

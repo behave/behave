@@ -114,7 +114,7 @@ You may add new types to the default parser by invoking
 
 .. hidden:
 
-    # -- SUPERCEEDED BY: behave.register_type documentation
+    # -- SUPERSEDED BY: behave.register_type documentation
     An example of this in action could be, in steps.py:
 
     .. code-block:: python
@@ -204,7 +204,7 @@ events during your testing:
   The feature object, that is passed in, is an instance of :class:`~behave.model.Feature`.
 
 **before_rule(context, rule), after_rule(context, rule)**
-  These run before and after each rule is execured.
+  These run before and after each rule is executed.
   The rule object, that is passed in, is an instance of :class:`~behave.model.Rule`.
 
 **before_scenario(context, scenario), after_scenario(context, scenario)**
@@ -321,7 +321,7 @@ Runner Operation
 
 The execution of code is based on the Gherkin description in `*.feature` files.
 The following section provides a short overview of the hierarchical containment
-that is possible in the Gherkin grammer:
+that is possible in the Gherkin grammar:
 
 .. parsed-literal::
 

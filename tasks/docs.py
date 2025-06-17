@@ -24,7 +24,7 @@ SPHINX_LANGUAGE_DEFAULT = os.environ.get("SPHINX_LANGUAGE", "en")
 
 
 # -----------------------------------------------------------------------------
-# UTILTITIES:
+# UTILITIES:
 # -----------------------------------------------------------------------------
 def _sphinxdoc_get_language(ctx, language=None):
     language = language or ctx.config.sphinx.language or SPHINX_LANGUAGE_DEFAULT
@@ -110,7 +110,7 @@ def autobuild(ctx, builder="html", language=None, options=""):
 
 @task
 def linkcheck(ctx):
-    """Check if all links are corect."""
+    """Check if all links are correct."""
     build(ctx, builder="linkcheck")
 
 

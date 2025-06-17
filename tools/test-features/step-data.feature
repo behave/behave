@@ -15,7 +15,7 @@ Feature: steps may have associated data
         | name      | department  |
         | Barry     | Beer Cans   |
         | Pudey     | Silly Walks |
-        | Two-Lumps | Silly Walks | 
+        | Two-Lumps | Silly Walks |
      Then we will have the expected data
 
   @xfail
@@ -29,7 +29,7 @@ Feature: steps may have associated data
         """
      Then the text is as expected
 
-  Scenario Outline: step with text and subtitution
+  Scenario Outline: step with text and substitution
     Given some body of text
         """
            Lorem <ipsum> dolor sit amet, consectetur adipisicing elit, sed
@@ -50,7 +50,7 @@ Feature: steps may have associated data
         | name      | department  |
         | Barry     | <spam> Cans |
         | Pudey     | Silly Walks |
-        | Two-Lumps | Silly Walks | 
+        | Two-Lumps | Silly Walks |
      Then we will have the substituted data
 
     Examples:

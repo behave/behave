@@ -22,7 +22,7 @@ Feature: Select Scenarios by File Location
     .   * Any line number in the following range is acceptable:
     .        scenario.line <= file_location.line < next_entity.line (maybe: scenario)
     .   * If the file location line number is less than first scenario.line,
-    .     the preceeding scenario container (Feature or Rule) is selected.
+    .     the preceding scenario container (Feature or Rule) is selected.
     .   * The last scenario is selected,
     .     if the file location line number is greater than the lines in the file.
     .   * For ScenarioOutline.scenarios:

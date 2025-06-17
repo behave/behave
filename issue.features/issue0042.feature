@@ -1,5 +1,5 @@
 @issue
-Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into account of the tags fltering
+Feature: Issue #42 Nice to have snippets for all unimplemented steps taking into account of the tags filtering
 
   As a user
   I want that all undefined steps are reported,

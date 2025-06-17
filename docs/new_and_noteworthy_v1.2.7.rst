@@ -4,7 +4,7 @@ Noteworthy in Version 1.2.7
 Summary:
 
 * Support `Gherkin v6 grammar`_ (to simplify usage of `Example Mapping`_)
-* Use/Support :pypi:`cucumber-tag-expressions` (supercedes: old-style tag-expressions)
+* Use/Support :pypi:`cucumber-tag-expressions` (supersedes: old-style tag-expressions)
 * :pypi:`cucumber-tag-expressions` are extended by "tag-matching"
   to match partial tag names, like: ``@foo.*``
 * `Select-by-location for Scenario Containers`_ (Feature, Rule, ScenarioOutline)
@@ -257,7 +257,7 @@ the user to provide an own comparison method (and type conversion support).
     Feature: Active-Tag Example 1 with ValueObject
 
       @use.with_temperature.min_value=15
-      Scenario: Only run if temperature >= 15 degrees Celcius
+      Scenario: Only run if temperature >= 15 degrees Celsius
         ...
 
 .. code-block:: python
@@ -300,7 +300,7 @@ execution of an scenario to a temperature range, like:
 
       @use.with_temperature.min_value=10
       @use.with_temperature.max_value=70
-      Scenario: Only run if temperature is between 10 and 70 degrees Celcius
+      Scenario: Only run if temperature is between 10 and 70 degrees Celsius
         ...
 
 .. code-block:: python

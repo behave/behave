@@ -29,7 +29,7 @@ Feature: Issue #506 -- Behave stops on error
 
         @when('I bad chained-exception causes my step to fail')
         def step_bad_usage_of_chained_exception(context):
-            # -- BAD IMPLEMENATION:
+            # -- BAD IMPLEMENTATION:
             exception = ZeroDivisionError('integer division or modulo by zero')
             exception.__cause__ = copy.copy(exception)
             raise exception

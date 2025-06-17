@@ -80,7 +80,7 @@ Feature: Duplicated Step Definitions
   Scenario: Duplicated Same Step Definition via import from another File
 
     VERIFY THAT: Duplicated step-detection works.
-    Duplicated step-registration occured through a twice imported step-module:
+    Duplicated step-registration occurred through a twice imported step-module:
     First registration may occurs by step-loading the step-module,
     second registration due to import of first step-module.
 

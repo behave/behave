@@ -337,11 +337,11 @@ Feature: Scenario Outline -- Parametrized Scenarios
           Given a param name=<name>
 
           Examples:
-            | name      | Expected | ID  | Case: |
-            | <ID>      | 001      | 001 | Value refers to other, known placeholder.|
-            | <ID>      | 002      | 002 | Check if row specific value is used.     |
-            | <unknown> | <unkown> | 003 | Value refers to unknown placeholder.     |
-            | <name>    | <name>   | 004 | Value refers to itself (recursion?).     |
+            | name      | Expected  | ID  | Case: |
+            | <ID>      | 001       | 001 | Value refers to other, known placeholder.|
+            | <ID>      | 002       | 002 | Check if row specific value is used.     |
+            | <unknown> | <unknown> | 003 | Value refers to unknown placeholder.     |
+            | <name>    | <name>    | 004 | Value refers to itself (recursion?).     |
       """
     When I run "behave -f plain features/use_value_with_placeholder_syntax.feature"
     Then it should pass with:

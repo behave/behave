@@ -78,7 +78,7 @@ Therefore, each generated scenario from a scenario outline can be selected
 via its file location (and run on its own). In addition, if one fails,
 it is now possible to rerun only the failing example/row combination(s).
 
-The name annoations schema for the generated scenarios from above provides
+The name annotations schema for the generated scenarios from above provides
 the new default name annotation schema.
 It can be adapted/overwritten in "behave.ini":
 

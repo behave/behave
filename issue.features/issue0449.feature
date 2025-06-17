@@ -1,6 +1,6 @@
 @issue
 @unicode
-Feature: Issue #449 -- Unicode output problem when fails with Russion text
+Feature: Issue #449 -- Unicode output problem when fails with Russian text
 
   . Either Exception text (as summary) or traceback python line shows
   . special characters correctly.

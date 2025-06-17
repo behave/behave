@@ -182,14 +182,14 @@ namespace.configure({
     "pytest": {
         "scopes":   ["tests"],
         "args":   "",
-        "options": "",  # -- NOTE:  Overide in configfile "invoke.yaml"
+        "options": "",  # -- NOTE:  Override in configfile "invoke.yaml"
     },
     # "behave_test": behave.namespace._configuration["behave_test"],
     "behave_test": {
         "scopes":   ["features", "issue.features"],
         "args":     ["features", "issue.features"],
         "format":   "progress",
-        "options":  "",  # -- NOTE:  Overide in configfile "invoke.yaml"
+        "options":  "",  # -- NOTE:  Override in configfile "invoke.yaml"
         "coverage_options": "",
     },
     "coverage": {

@@ -2251,7 +2251,7 @@ class Table(Replayable):
         Create Table from list-of-dicts (as row-data).
 
         :param headings:  List of headings (column-names; as strings).
-        :param table_data:  List of dict-objects (as row datas).
+        :param table_data:  List of dict-objects (as row data).
         :param line:  Line number of this table (as int; optional).
         :return: Table object.
         """

@@ -77,7 +77,7 @@ class Status(Enum):
     * passed: Model element is executed and passed (without failures).
     * failed: Model element is executed and assert-condition failed.
     * error:  Model element is executed and raised an exception (unexpected).
-    * hook_error:    Failure occured while executing a hook.
+    * hook_error:    Failure occurred while executing a hook.
     * pending:       Pending step that leads to an error.
     * pending_warn:  Pending step that leads is accepted/passed.
     * undefined:     If a step does not exist (no step implementation was found).

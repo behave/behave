@@ -1156,7 +1156,7 @@ class Configuration(object):
 
         :param level:       Logging level of root logger.
                             If None, use :attr:`logging_level` value.
-        :param filename:    Log to file with this filename (otional).
+        :param filename:    Log to file with this filename (optional).
         :param configfile:  Configuration filename for fileConfig() setup.
         :param kwargs:      Passed to :func:`logging.basicConfig()` or
                                     :func:`logging.config.fileConfig()`

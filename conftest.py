@@ -22,7 +22,7 @@ def _annotate_environment(request):
 
     NOTE: autouse: Fixture is automatically used when test-module is imported.
     """
-    # -- USEFULL FOR: pytest --html=report.html ...
+    # -- USEFUL FOR: pytest --html=report.html ...
     environment = getattr(request.config, "_environment", None)
     if environment:
         # -- PROVIDED-BY: pytest-html

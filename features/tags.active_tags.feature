@@ -18,7 +18,7 @@ Feature: Active Tags
   .           where all active-tags have a different category.
   .
   .     REAL ALGORITHM:
-  .       If multiple active-tags for the same catgory exist,
+  .       If multiple active-tags for the same category exist,
   .       then these active-tags need to be merged together into a tag_group.
   .
   .     enabled           := enabled(tag_group1) and enabled(tag_group2) and ...

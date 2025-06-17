@@ -25,6 +25,10 @@ typer >= 0.12.5;   python_version >= '3.7'
 # -- STATIC CODE ANALYSIS:
 -r pylinters.txt
 
+# -- SPELLING:
+# SEE: https://github.com/codespell-project/codespell
+codespell >= 2.4.1; python_version >= '3.8'
+
 # -- CODE EXPLORATIONS:
 # SEE: https://github.com/gabotechs/dep-tree
 python-dep-tree; python_version >= '3.7'
