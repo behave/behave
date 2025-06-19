@@ -10,8 +10,8 @@ behave
     :target: https://pypi.python.org/pypi/behave/
     :alt: License
 
-.. |badge.CI_status| image:: https://github.com/behave/behave/actions/workflows/tests.yml/badge.svg
-    :target: https://github.com/behave/behave/actions/workflows/tests.yml
+.. |badge.CI_status| image:: https://github.com/behave/behave/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/behave/behave/actions/workflows/test.yml
     :alt: CI Build Status
 
 .. |badge.docs_status| image:: https://readthedocs.org/projects/behave/badge/?version=latest
