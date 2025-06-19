@@ -140,15 +140,17 @@ MINOR:
 
 DOCUMENTATION:
 
-* pull  #989: Add more tutorial links: Nicole Harris, Nick Coghlan (provided by: ncoghlan, bittner; related: #848)
-* pull  #877: docs: API reference - Capitalizing Step Keywords in example (provided by: Ibrian93)
-* pull  #731: Update links to Django docs (provided by: bittner)
-* pull  #722: DOC remove remaining pythonhosted links (provided by: leszekhanusz)
-* pull  #701: behave/runner.py docstrings (provided by: spitGlued)
-* pull  #700: Fix wording of "gherkin.rst" (provided by: spitGlued)
-* pull  #699: Fix wording of "philosophy.rst" (provided by: spitGlued)
-* pull  #684: Fix typo in "install.rst" (provided by: mstred)
-* pull  #628: Changed pythonhosted.org links to readthedocs.io (provided by: chrisbrake)
+* pull #1215: Adding html-pretty formatter documentation entry (provided by: modehnal)
+* pull #1166: Document behave exosystem VSCode IDE support (provided by: kieran-ryan)
+* pull #989: Add more tutorial links: Nicole Harris, Nick Coghlan (provided by: ncoghlan, bittner; related: #848)
+* pull #877: docs: API reference - Capitalizing Step Keywords in example (provided by: Ibrian93)
+* pull #731: Update links to Django docs (provided by: bittner)
+* pull #722: DOC remove remaining pythonhosted links (provided by: leszekhanusz)
+* pull #701: behave/runner.py docstrings (provided by: spitGlued)
+* pull #700: Fix wording of "gherkin.rst" (provided by: spitGlued)
+* pull #699: Fix wording of "philosophy.rst" (provided by: spitGlued)
+* pull #684: Fix typo in "install.rst" (provided by: mstred)
+* pull #628: Changed pythonhosted.org links to readthedocs.io (provided by: chrisbrake)
 
 BREAKING CHANGES (naming):
 
