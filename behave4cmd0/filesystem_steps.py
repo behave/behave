@@ -11,7 +11,7 @@ from behave4cmd0.step_util import (
 from behave4cmd0.command_shell_proc import \
     TextProcessor, BehaveWinCommandOutputProcessor
 from behave4cmd0.pathutil import posixpath_normpath
-from hamcrest import assert_that
+from hamcrest import assert_that, has_items
 
 
 file_contents_normalizer = None
@@ -152,6 +152,81 @@ def step_file_named_filename_should_not_exist(context, filename):
     command_util.ensure_workdir_exists(context)
     filename_ = pathutil.realpath_with_context(filename, context)
     assert_that(not os.path.exists(filename_))
+
+
+@then(u'the following files should exist')
+def step_the_following_files_should_exist_with_table(context):
+    """
+    Verifies that a list of files exist.
+
+    .. code-block:: gherkin
+
+        Then the following files should exist:
+            | filename: |
+            | lorem/ipsum/dolor |
+            | lorem/ipsum/amet  |
+    """
+    # assert context.table, "ENSURE: table with 1 column is provided."
+    require_table(context, columns_minsize=1)
+    filenames = [row[0] for row in context.table.rows]
+    existing_files = []
+    for filename in filenames:
+        filename_ = pathutil.realpath_with_context(filename, context)
+        if os.path.exists(filename_) and os.path.isfile(filename_):
+            existing_files.append(filename)
+    # assert_that(existing_files, contains(*filenames))
+    assert_that(existing_files, has_items(*filenames))
+
+
+@then(u'the following files should not exist')
+def step_the_following_files_should_not_exist_with_table(context):
+    """
+    Verifies that a list of files do not exist.
+
+    .. code-block:: gherkin
+
+        Then the following files should not exist:
+            | filename: |
+            | lorem/ipsum/amet  |
+    """
+    # assert context.table, "ENSURE: table with 1 column is provided."
+    require_table(context, columns_minsize=1)
+    filenames = [row[0] for row in context.table.rows]
+    non_existing_files = []
+    for filename in filenames:
+        filename_ = pathutil.realpath_with_context(filename, context)
+        if not os.path.exists(filename_) or os.path.isdir(filename_):
+            non_existing_files.append(filename)
+    # assert_that(non_existing_files, contains(*filenames))
+    assert_that(non_existing_files, has_items(*filenames))
+
+@step(u'the following files exist')
+def step_the_following_files_exist_with_table(context):
+    """
+    Verifies that a list of files exist.
+
+    .. code-block:: gherkin
+
+        Given the following files exist:
+            | filename: |
+            | lorem/ipsum/dolor |
+            | lorem/ipsum/amet  |
+    """
+    step_the_following_files_should_exist_with_table(context)
+
+@step(u'the following files do not exist')
+def step_the_following_files_do_not_exist_with_table(context):
+    """
+    Verifies that a list of files exist.
+
+    .. code-block:: gherkin
+
+        Given the following files do not exist:
+            | filename: |
+            | lorem/ipsum/dolor |
+            | lorem/ipsum/amet  |
+    """
+    step_the_following_files_should_not_exist_with_table(context)
 
 
 # -----------------------------------------------------------------------------

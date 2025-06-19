@@ -69,3 +69,32 @@ def normalize_text_with_placeholders(ctx, text):
             __CWD__=posixpath_normpath(os.getcwd())
         )
     return expected_text
+
+
+def require_table(context, with_columns=None, columns_minsize=None):
+    """
+    Verifies that a table is provided (and has the expected table schema).
+    Optional ensures that:
+
+      * columns_minsize: Minimal number of table columns are provide
+      * columns: Columns with required column names (headings) are provided
+
+    :param context:
+    :param with_columns:     List of required column names (optional).
+    :param columns_minsize:  Minimal number of required columns (optional).
+    :raise: AssertionError, on failure.
+    """
+    assert context.table is not None, "ENSURE: table is provided."
+    if with_columns:
+        table = context.table
+        missing_columns = []
+        for column_name in with_columns:
+            if column_name not in table.headings:
+                missing_columns.append(column_name)
+        assert not missing_columns, \
+            "REQUIRE-TABLE: Missing columns: %s" % ", ".join(missing_columns)
+    if columns_minsize is not None:
+        columns_size = len(context.table.headings)
+        assert columns_minsize <= columns_size, \
+            "REQUIRE-TABLE: Expect columns.size>=%s (but: columns.size=%s)" % \
+            (columns_minsize, columns_size)

@@ -259,6 +259,25 @@ def step_command_output_should_contain_not_exactly_with_multiline_text(context):
     step_command_output_should_not_contain_exactly_text(context, text)
 
 
+@then(u'the command output should be')
+@then(u'the command output should be:')
+def step_command_output_should_be(context):
+    '''
+    EXAMPLE:
+        ...
+        when I run "behave ..."
+        then it should pass
+        and  the command output should be:
+            """
+            TEXT
+            """
+    '''
+    assert context.text is not None, "REQUIRE: multi-line text"
+    expected_text = normalize_text_with_placeholders(context, context.text.strip())
+    actual_output  = context.command_result.output.text.strip()
+    textutil.assert_text_should_equal(actual_output, expected_text)
+
+
 # -----------------------------------------------------------------------------
 # STEP DEFINITIONS: command output should/should_not match
 # -----------------------------------------------------------------------------
