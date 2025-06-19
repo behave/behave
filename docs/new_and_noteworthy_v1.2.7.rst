@@ -37,10 +37,21 @@ Grammar changes:
 * ``Rule`` concept added to better correspond to `Example Mapping`_ concepts
 * Add aliases for ``Scenario`` and ``Scenario Outline`` (for similar reasons)
 
-A Rule (or: business rule) allows to group multiple Scenario(s)/Example(s)::
+.. code-block::
+    :caption: FEATURE GRAMMAR (PSEUDO-CODE)
+
+    @tag1 @tag2
+    Feature: Optional Feature Title...
+
+        Description?        #< CARDINALITY: 0..1 (optional)
+        Background?         #< CARDINALITY: 0..1 (optional)
+        Scenario*           #< CARDINALITY: 0..N (many)
+        ScenarioOutline*    #< CARDINALITY: 0..N (many)
+        Rule*               #< CARDINALITY: 0..N (many)
+
+A Rule (or: business rule) allows to group multiple Scenario(s)/Example(s):
 
 .. code-block::
-
     :caption: RULE GRAMMAR (PSEUDO-CODE)
 
     @tag1 @tag2
@@ -188,20 +199,18 @@ The active-tag computation logic was slightly changed (and fixed):
   are now supported
 
 All active-tags with same category are combined into one category tag-group.
-The following logical expression is used for active-tags with the same category::
+The following logical expression is used for active-tags with the same category:
 
-.. code-block:: gherkin
-
+.. code-block::
     :caption: ALGORITHM: Active-Tag Expressions
 
-    category_tag_group.enabled := positive-tag-expression and not negative-tag-expression
+    category_tag_group.enabled := positive-tag-group-expression and not negative-tag-group-expression
+    positive-tag-group-expression := enabled(tag1) or enabled(tag2) or ...
+    negative-tag-group-expression := enabled(tag3) or enabled(tag4) or ...
 
-      positive-tag-expression  := enabled(tag1) or enabled(tag2) or ...
-      negative-tag-expression  := enabled(tag3) or enabled(tag4) or ...
-
-        enabled(tag) := TRUE, if positibe/negative active-tag is TRUE.
-        tag1, tag2 are positive-tags, like @use.with_category=value
-        tag3, tag4 are negative-tags, like @not.with_category=value
+    enabled(tag) := TRUE, if positive/negative active-tag condition is TRUE.
+    POSITIVE TAGS: tag1, tag2  --  @use.with_{category}={value}
+    NEGATIVE TAGS: tag3, tag4  --  @not.with_{category}={value}
 
 
 EXAMPLE:
@@ -233,18 +242,20 @@ Active-Tags: Use ValueObject for better Comparisons
 -------------------------------------------------------------------------------
 
 The current mechanism of active-tags only supports the ``equals / equal-to`` comparison
-mechanism to determine if the ``tag.value`` matches the ``current.value``, like::
+mechanism to determine if the ``tag.value`` matches the ``current.value``, like:
 
 .. code-block:: gherkin
-
-    :caption: NAME SCHEMA: Active-tags
+    :caption: NAME SCHEMA FOR: Active-tags
 
     # -- SCHEMA: "@use.with_{category}={value}" or "@not.with_{category}={value}"
     @use.with_browser=Safari    # HINT: tag.value = "Safari"
+    @not.with_browser=Safari    # HINT: tag.value = "Safari"
 
-    ACTIVE TAG MATCHES, if: current.value == tag.value  (for string values)
+    ACTIVE TAG MATCHES, if:
+        current.value == tag.value  (using "@use..." for string values)
+        current.value != tag.value  (using "@not..." for string values)
 
-The ``equals`` comparison method is sufficient for many situations.
+The ``equals-to`` comparison method is sufficient for many situations.
 But in some situations, you want to use other comparison methods.
 The ``behave.tag_matcher.ValueObject`` class was added to allow
 the user to provide an own comparison method (and type conversion support).
@@ -453,6 +464,7 @@ Distinguish between Failures and Errors
 In addition, an **error** occurs if:
 
 * a hook error occurs
+* a cleanup error occurs (and is not ignored)
 * a pending step is detected (:class:`behave.api.pending_step.StepNotImplementedError`)
 * a undefined step is detected
 

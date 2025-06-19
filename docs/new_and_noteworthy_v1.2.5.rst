@@ -51,8 +51,8 @@ Up to now, the following scenarios were generated from the scenario outline:
 
 Note that  all generated scenarios had the:
 
-  * same name (scenario_outline.name)
-  * same file location (scenario_outline.file_location)
+* same name (scenario_outline.name)
+* same file location (scenario_outline.file_location)
 
 From now on, the generated scenarios better
 represent the example/row combination within a scenario outline:
@@ -301,9 +301,9 @@ A test writer can now provide a runtime decision logic to exclude
 a feature, scenario or scenario outline from a test run
 within the following hooks:
 
-  * ``before_feature()`` for a feature
-  * ``before_scenario()`` for a scenario
-  * step implementation (normally only: given step)
+* ``before_feature()`` for a feature
+* ``before_scenario()`` for a scenario
+* step implementation (normally only: given step)
 
 by using the ``skip()`` method before a feature or scenario is run.
 
@@ -358,10 +358,10 @@ Test Stages
 A test stage allows the user to provide different step and environment
 implementation for each stage. Examples for test stages are:
 
-   * develop (example: development environment with simple database)
-   * product (example: use the real product and its database)
-   * systemint (system integration)
-   * ...
+* develop (example: development environment with simple database)
+* product (example: use the real product and its database)
+* sysint (system integration)
+* ...
 
 Each test stage may have a different test environment and needs to
 fulfill different testing constraints.
@@ -445,10 +445,10 @@ by using the ``context.config.userdata`` dictionary.
 
 Other examples for user-specific data are:
 
-   * Passing a URL to an external resource that should be used in the tests
+* Passing a URL to an external resource that should be used in the tests
 
-   * Turning off cleanup mechanisms implemented in environment hooks,
-     for debugging purposes.
+* Turning off cleanup mechanisms implemented in environment hooks,
+  for debugging purposes.
 
 
 Type Converters
@@ -458,10 +458,10 @@ The userdata object provides basic support for "type conversion on demand",
 similar to the :mod:`configparser` module. The following type conversion
 methods are provided:
 
-  * ``Userdata.getint(name, default=0)``
-  * ``Userdata.getfloat(name, default=0.0)``
-  * ``Userdata.getbool(name, default=False)``
-  * ``Userdata.getas(convert_func, name, default=None, ...)``
+* ``Userdata.getint(name, default=0)``
+* ``Userdata.getfloat(name, default=0.0)``
+* ``Userdata.getbool(name, default=False)``
+* ``Userdata.getas(convert_func, name, default=None, ...)``
 
 Type conversion may raise a ``ValueError`` exception if the conversion fails.
 
@@ -526,9 +526,9 @@ Provide the file "userconfig.json" with:
 
 Other advanced use cases:
 
-  * support configuration profiles via cmdline "... -D PROFILE=xxx ..."
-    (uses profile-specific configuration file or profile-specific config section)
-  * provide test stage specific configuration data
+* support configuration profiles via cmdline "... -D PROFILE=xxx ..."
+  (uses profile-specific configuration file or profile-specific config section)
+* provide test stage specific configuration data
 
 
 .. index::
@@ -543,9 +543,9 @@ Active Tags
 which features or scenarios should run (and which should be skipped).
 The runtime decision is based on which:
 
-  * platform the tests run (like: Windows, Linux, MACOSX, ...)
-  * runtime environment resources are available (by querying the "testbed")
-  * runtime environment resources should be used (via `userdata`_ or ...)
+* platform the tests run (like: Windows, Linux, MACOSX, ...)
+* runtime environment resources are available (by querying the "testbed")
+* runtime environment resources should be used (via `userdata`_ or ...)
 
 Therefore, for *active tags* it is decided at runtime if a tag is enabled or
 disabled. The runtime decision logic excludes features/scenarios with disabled
@@ -566,14 +566,14 @@ active tags before they are run.
 Active Tag Logic
 ~~~~~~~~~~~~~~~~~
 
-  * A (positive) active tag is enabled,
-    if its value matches the current value of its category.
+* A (positive) active tag is enabled,
+  if its value matches the current value of its category.
 
-  * A negated active tag (starting with "not") is enabled,
-    if its value does not match the current value of its category.
+* A negated active tag (starting with "not") is enabled,
+  if its value does not match the current value of its category.
 
-  * A sequence of active tags is enabled,
-    if all its active tags are enabled (logical-and operation).
+* A sequence of active tags is enabled,
+  if all its active tags are enabled (logical-and operation).
 
 
 .. index::
@@ -589,16 +589,16 @@ Active Tag Schema
 
 The following two tag schemas are supported for active tags (by default).
 
-**Dialect 1** (preferred):
+**Dialect 1** (preferred)::
 
-  * @use.with_{category}={value}
-  * @not.with_{category}={value}
-  * @only.with_{category}={value}
+    @use.with_{category}={value}
+    @not.with_{category}={value}
+    @only.with_{category}={value}   # -- HINT: Avoid to use.
 
-**Dialect 2:**
+**Dialect 2**::
 
-  * @active.with_{category}={value}
-  * @not_active.with_{category}={value}
+    @active.with_{category}={value}
+    @not_active.with_{category}={value}
 
 
 Example 1
@@ -606,8 +606,8 @@ Example 1
 
 Assuming you have the feature file where:
 
-  * scenario "Alice" should only run when browser "Chrome" is used
-  * scenario "Bob" should only run when browser "Safari" is used
+* scenario ``Alice`` should only run if ``Chrome`` browser is used
+* scenario ``Bob`` should only run if ``Safari`` browser is used
 
 .. code-block:: gherkin
 
@@ -664,8 +664,8 @@ Example 2
 
 Assuming you have scenarios with the following runtime conditions:
 
-  * Run scenario Alice only on Windows OS
-  * Run scenario Bob only with browser Chrome
+* Run scenario Alice only on Windows OS
+* Run scenario Bob only with browser Chrome
 
 .. code-block:: gherkin
 
@@ -748,15 +748,15 @@ test-run.
 Therefore, behave supports now formatters as extension point (or plugin).
 It is now possible to use own, user-defined formatters in two ways:
 
-  * Use formatter class (as "scoped class name") as ``--format`` option value
-  * Register own formatters by name in behave's configuration file
+* Use formatter class (as "scoped class name") as ``--format`` option value
+* Register own formatters by name in behave's configuration file
 
 .. note::
 
     Scoped class name (schema):
 
-      * ``my.module:MyClass``   (preferred)
-      * ``my.module::MyClass``  (alternative; with double colon as separator)
+    * ``my.module:MyClass``   (preferred)
+    * ``my.module::MyClass``  (alternative; with double colon as separator)
 
 
 User-defined Formatter on Command-line
