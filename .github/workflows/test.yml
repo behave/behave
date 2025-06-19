@@ -2,7 +2,7 @@
 # SEE: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 # SUPPORTED PYTHON VERSIONS: https://github.com/actions/python-versions
 
-name: tests
+name: test
 on:
   workflow_dispatch:
   push:
@@ -42,7 +42,7 @@ jobs:
         # -- PREPARED FOR: Experimental Python versions with "continue-on-error".
         experimental: [false]
         include:
-          - python-version: "3.14.0-beta.2"
+          - python-version: "3.14.0-beta.3"
             experimental: true
     steps:
       - uses: actions/checkout@v4

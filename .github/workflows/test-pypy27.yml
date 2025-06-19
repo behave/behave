@@ -4,7 +4,7 @@
 #   - CAN NOT USE: pip install -e .
 #   - MUST USE: python -mbehave ... -- Script seems not to be created.
 
-name: tests-pypy27
+name: test-pypy27
 on:
   workflow_dispatch:
   push:

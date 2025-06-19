@@ -2,7 +2,7 @@
 # BASED ON: tests.yml
 # SUPPORTED PYTHON VERSIONS: https://github.com/actions/python-versions
 
-name: tests-windows
+name: test-windows
 on:
   workflow_dispatch:
   push:
