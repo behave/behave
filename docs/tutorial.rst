@@ -251,15 +251,15 @@ Given a Scenario:
 .. code-block:: gherkin
 
   Scenario: Search for an account
-     Given I search for a valid account
-      Then I will see the account details
+     When I search for a valid account
+     Then I will see the account details
 
 Step code implementing the two steps here might look like
 (using selenium webdriver and some other helpers):
 
 .. code-block:: python
 
-    @given('I search for a valid account')
+    @when('I search for a valid account')
     def step_impl(context):
         context.browser.get('http://localhost:8000/index')
         form = get_element(context.browser, tag='form')
@@ -320,16 +320,16 @@ For example:
 
     # -- FILE: features/example_step_parameters.feature
     Scenario: look up a book
-      Given I search for a valid book
-       Then the result page will include "success"
+      When I search for a valid book
+      Then the result page will include "success"
 
     Scenario: look up an invalid book
-      Given I search for a invalid book
-       Then the result page will include "failure"
+      When I search for a invalid book
+      Then the result page will include "failure"
 
 You can define one Python step-definition that handles both cases by using `step parameters`_ .
 In this case, the *Then* step verifies the ``context.response`` parameter
-that was stored in the ``context`` by the *Given* step:
+that was stored in the ``context`` by the *When* step:
 
 .. code-block:: python
 
@@ -477,7 +477,7 @@ steps you define you might have:
 
 .. code-block:: python
 
-    @given('I request a new widget for an account via SOAP')
+    @when('I request a new widget for an account via SOAP')
     def step_impl(context):
         client = Client("http://127.0.0.1:8000/soap/")
         context.response = client.Allocate(customer_first='Firstname',
