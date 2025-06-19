@@ -73,29 +73,43 @@ def ensure_workdir_exists(context):
 def ensure_workdir_not_exists(context):
     """Ensures that the work directory does not exist."""
     ensure_context_attribute_exists(context, "workdir", None)
-    if context.workdir:
-        orig_dirname = real_dirname = context.workdir
-        context.workdir = None
-        if os.path.exists(real_dirname):
-            renamed_dirname = tempfile.mktemp(prefix=os.path.basename(real_dirname),
-                                              suffix="_DEAD",
-                                          dir=os.path.dirname(real_dirname) or ".")
-            os.rename(real_dirname, renamed_dirname)
-            real_dirname = renamed_dirname
-        max_iterations = 2
-        if sys.platform.startswith("win"):
-            max_iterations = 15
+    if not context.workdir or not os.path.exists(context.workdir):
+        return
 
-        for iteration in range(max_iterations):
-            if not os.path.exists(real_dirname):
-                if iteration > 1:
-                    print("REMOVE-WORKDIR after %s iterations" % (iteration+1))
-                break
-            shutil.rmtree(real_dirname, ignore_errors=True)
-            time.sleep(0.5)
-        assert not os.path.isdir(real_dirname), "ENSURE not-isa dir: %s" % real_dirname
-        assert not os.path.exists(real_dirname), "ENSURE dir not-exists: %s" % real_dirname
-        assert not os.path.isdir(orig_dirname), "ENSURE not-isa dir: %s" % orig_dirname
+    # -- WORKDIR EXISTS: Remove this directory
+    orig_directory = real_directory = context.workdir
+    context.workdir = None
+    # -- WAS:
+    # renamed_directory = tempfile.mktemp(prefix=os.path.basename(real_directory),
+    #                                     suffix="_DEAD",
+    #                                     dir=os.path.dirname(real_directory) or ".")
+    real_directory_basename = os.path.basename(real_directory)
+    temporary_directory = tempfile.mkdtemp(prefix=real_directory_basename,
+                                           suffix="_DEAD")
+    renamed_directory = os.path.join(temporary_directory, real_directory_basename)
+    try:
+        # -- MOVE-DIRECTORY: May fail if on different filesystems
+        os.rename(real_directory, renamed_directory)
+        real_directory = renamed_directory
+    except OSError:
+        pass
+
+    max_iterations = 2
+    if sys.platform.startswith("win"):
+        max_iterations = 15
+
+    # -- REMOVE DIRECTORY:
+    for iteration in range(max_iterations):
+        if not os.path.exists(real_directory):
+            if iteration > 1:
+                print("REMOVE-WORKDIR after %s iterations" % (iteration+1))
+            break
+        shutil.rmtree(real_directory, ignore_errors=True)
+        time.sleep(0.5)
+    shutil.rmtree(temporary_directory, ignore_errors=True)
+    assert not os.path.isdir(real_directory), "ENSURE not-isa dir: %s" % real_directory
+    assert not os.path.exists(real_directory), "ENSURE dir not-exists: %s" % real_directory
+    assert not os.path.isdir(orig_directory), "ENSURE not-isa dir: %s" % orig_directory
 
 
 # def create_textfile_with_contents(filename, contents):
