@@ -908,7 +908,11 @@ class Configuration(object):
     def make_command_args(self, command_args=None, verbose=None):
         # pylint: disable=too-many-branches, too-many-statements
         if command_args is None:
-            command_args = sys.argv[1:]
+            command_args = []
+            command_name = os.path.basename(sys.argv[0])
+            if "behave" in command_name or "behave" in sys.argv:
+                # -- ONLY USED IF: Using "behave"
+                command_args = sys.argv[1:]
         elif isinstance(command_args, six.string_types):
             encoding = select_best_encoding() or "utf-8"
             if six.PY2 and isinstance(command_args, six.text_type):

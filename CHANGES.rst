@@ -128,6 +128,7 @@ FIXED:
 
 MINOR:
 
+* pull  #1214: FIX test_configuration.py: Explicitly provide args ... pytest (provided by: shivaraj-bh)
 * issue #1047: Step type is inherited for generic step if possible (submitted by: zettseb)
 * issue #958: Replace dashes with underscores to comply with setuptools v54.1.0 #958 (submitted by: arrooney)
 * issue #800: Cleanups related to Gherkin parser/ParseError question (submitted by: otstanteplz)
