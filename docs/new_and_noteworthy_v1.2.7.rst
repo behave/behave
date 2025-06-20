@@ -504,7 +504,7 @@ to let any of its pending steps pass:
         Then another step passes
 
 .. code-block:: bash
-    :caption: SHELL: Run behave tests
+    :caption: shell: Run behave tests
 
     $ behave -f plain features/pending_step.feature
     Feature: Example
@@ -521,7 +521,7 @@ to let any of its pending steps pass:
 Without the `@wip` marker, a scenario with pending steps causes an error:
 
 .. code-block:: bash
-    :caption: SHELL: Run behave tests
+    :caption: shell: Run behave tests
 
     $ behave -f plain features/other_pending_step.feature
     Feature: Example 2

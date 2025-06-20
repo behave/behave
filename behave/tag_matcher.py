@@ -8,9 +8,11 @@ from __future__ import absolute_import, print_function
 import logging
 import operator
 import re
+import warnings
 import six
 from ._types import Unknown
 from .compat.collections import UserDict
+from .model_core import TagAndStatusStatement
 
 
 # -----------------------------------------------------------------------------
@@ -59,6 +61,12 @@ class ValueObject(object):
             return self._value()
         # -- OTHERWISE:
         return self._value
+
+    @value.setter
+    def value(self, new_value):
+        if callable(self._value):
+            raise ValueError("CALLABLE: Cannot assign value to active tag")
+        self._value = new_value
 
     def matches(self, tag_value):
         """Comparison between current value and :param:`tag_value`.
@@ -134,24 +142,89 @@ class BoolValueObject(ValueObject):
 class TagMatcher(object):
     """Abstract base class that defines the TagMatcher protocol."""
 
-    def should_run_with(self, tags):
-        """Determines if a feature/scenario with these tags should run or not.
+    def should_skip(self, model_element, use_inherited=False):
+        """
+        Checks if a model element should be skipped by using its active tags.
+
+        This provides the algorithm how active-tags and inherited active-tags
+        should be evaluated:
+
+        * First use only the tags of the model element.
+        * Then use also the inherited tags from the parent(s).
+
+        EXAMPLE:
+
+        * An active-tag is assigned to a feature.
+        * Then, this active-tag is overridden in a scenario.
+        * Scenario active-tags are only evaluated if the feature is not skipped.
+
+        :param model_element:  Feature, Rule or Scenario element.
+        :param use_inherited: If true, inherited tags should be evaluated.
+        :return: True, if this model element should be skipped.
+
+        .. versionadded:: 1.2.7
+        """
+        if not isinstance(model_element, TagAndStatusStatement):
+            msg = "{!r} (expected: Feature/Rule/Scenario)".format(model_element)
+            raise TypeError(msg)
+
+        return (self.should_skip_with_tags(model_element.tags) or
+                (use_inherited and
+                 self.should_skip_with_tags(model_element.inherited_tags)))
+
+    def should_skip_with_tags(self, tags):
+        """
+        Determines if a feature/scenario with these tags should be skipped.
+        Needs to be implemented by a subclass.
 
         :param tags:    List of scenario/feature tags to check.
-        :return: True,  if scenario/feature should run.
-        :return: False, if scenario/feature should be excluded from the run-set.
+        :return: True, if scenario/feature should be excluded from the run-set.
+        :return: False, if scenario/feature should run.
+
+        .. versionadded:: 1.2.7
         """
-        return not self.should_exclude_with(tags)
+        raise NotImplementedError()
+
+    def should_run_with_tags(self, tags):
+        """
+        Determines if a Feature/Rule/Scenario with these tags should run or not.
+
+        :param tags:    List of tags to check.
+        :return: True,  if model element should run.
+        :return: False, if model element should be skipped.
+
+        .. versionadded:: 1.2.7
+        """
+        return not self.should_skip_with_tags(tags)
+
+    def should_run_with(self, tags):
+        """
+        Determines if a Feature/Rule/Scenario with these tags should run or not.
+
+        :param tags:    List of tags to check.
+        :return: True,  if model element should run.
+        :return: False, if model element should be skipped.
+
+        .. deprecated:: 1.2.7
+        """
+        # -- BACKWARD-COMPATIBLE: behave < 1.2.7
+        warnings.warn("Use 'should_run_with_tags()' instead.", DeprecationWarning)
+        return self.should_run_with_tags(tags)
 
     def should_exclude_with(self, tags):
-        """Determines if a feature/scenario with these tags should be excluded
+        """
+        Determines if a feature/scenario with these tags should be excluded
         from the run-set.
 
         :param tags:    List of scenario/feature tags to check.
         :return: True, if scenario/feature should be excluded from the run-set.
         :return: False, if scenario/feature should run.
+
+        .. deprecated:: 1.2.7
         """
-        raise NotImplementedError()
+        # -- BACKWARD-COMPATIBLE: behave < 1.2.7
+        warnings.warn("Use 'should_skip_with_tags()' instead.", DeprecationWarning)
+        return self.should_skip_with_tags(tags)
 
 
 class ActiveTagMatcher(TagMatcher):
@@ -229,19 +302,19 @@ class ActiveTagMatcher(TagMatcher):
         active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
         def before_feature(context, feature):
-            if active_tag_matcher.should_exclude_with(feature.tags):
+            if active_tag_matcher.should_skip_with_tags(feature.tags):
                 feature.skip()   #< LATE-EXCLUDE from run-set.
 
         def before_scenario(context, scenario):
-            if active_tag_matcher.should_exclude_with(scenario.effective_tags):
-                exclude_reason = active_tag_matcher.exclude_reason
-                scenario.skip(exclude_reason)   #< LATE-EXCLUDE from run-set.
+            if active_tag_matcher.should_skip_with_tags(scenario.tags):
+                skip_reason = active_tag_matcher.skip_reason
+                scenario.skip(skip_reason)   #< LATE-EXCLUDE from run-set.
     """
     value_separator = "="
     tag_prefixes = ["use", "not", "active", "not_active", "only"]
     tag_schema = r"^(?P<prefix>%s)\.with_(?P<category>\w+(\.\w+)*)%s(?P<value>.*)$"
     ignore_unknown_categories = True
-    use_exclude_reason = False
+    use_skip_reason = False
 
     def __init__(self, value_provider, tag_prefixes=None,
                  value_separator=None, ignore_unknown_categories=None):
@@ -257,7 +330,39 @@ class ActiveTagMatcher(TagMatcher):
         self.tag_pattern = self.make_tag_pattern(tag_prefixes, value_separator)
         self.tag_prefixes = tag_prefixes
         self.ignore_unknown_categories = ignore_unknown_categories
-        self.exclude_reason = None
+        self.skip_reason = None
+
+    # -- IMPLEMENT INTERFACE FOR: TagMatcher
+    def should_skip_with_tags(self, tags):
+        """
+        Checks if a model element should be skipped by using its active tags.
+
+        :param tags: List of tags to use.
+        :return: True, if model element with these tags should be skipped.
+
+        .. versionadded:: 1.2.7
+        """
+        # print(f"ACTIVE_TAG.should_skip_with_tags: tags={tags};")
+        group_categories = list(self.group_active_tags_by_category(tags))
+        for group_category, category_tag_pairs in group_categories:
+            if not self.is_tag_group_enabled(group_category, category_tag_pairs):
+                # -- LOGICAL-AND SHORTCUT: Any false => Makes everything false
+                if self.use_skip_reason:
+                    current_value = self.value_provider.get(group_category, None)
+                    reason = "%s (but: %s)" % (group_category, current_value)
+                    self.skip_reason = reason
+                # print(f"ACTIVE_TAG.should_skip_with_tags: verdict=true, reason={self.skip_reason} (categories: {group_categories})")
+                return True     # SHOULD-EXCLUDE: not enabled = not False
+        # -- LOGICAL-AND: All parts are True
+        # print(f"ACTIVE_TAG.should_skip_with_tags: verdict=false (categories: {group_categories})")
+        return False    # SHOULD-EXCLUDE: not enabled = not True
+
+    # -- SPECIFIC:
+    @property
+    def exclude_reason(self):
+        # -- BACKWARD-COMPATIBLE: behave < 1.2.7
+        warnings.warn("Use 'skip_reason' instead'", DeprecationWarning)
+        return self.skip_reason
 
     @classmethod
     def make_tag_pattern(cls, tag_prefixes, value_separator=None):
@@ -370,22 +475,6 @@ class ActiveTagMatcher(TagMatcher):
         # print(f"ACTIVE_TAG.is_tag_group_enabled: {group_category}.enabled={tag_group_enabled}")
         return tag_group_enabled
 
-    def should_exclude_with(self, tags):
-        # print(f"ACTIVE_TAG.should_exclude_with: tags={tags};")
-        group_categories = list(self.group_active_tags_by_category(tags))
-        for group_category, category_tag_pairs in group_categories:
-            if not self.is_tag_group_enabled(group_category, category_tag_pairs):
-                # -- LOGICAL-AND SHORTCUT: Any false => Makes everything false
-                if self.use_exclude_reason:
-                    current_value = self.value_provider.get(group_category, None)
-                    reason = "%s (but: %s)" % (group_category, current_value)
-                    self.exclude_reason = reason
-                # print(f"ACTIVE_TAG.should_exclude_with: verdict=true, reason={self.exclude_reason} (categories: {group_categories})")
-                return True     # SHOULD-EXCLUDE: not enabled = not False
-        # -- LOGICAL-AND: All parts are True
-        # print(f"ACTIVE_TAG.should_exclude_with: verdict=false (categories: {group_categories})")
-        return False    # SHOULD-EXCLUDE: not enabled = not True
-
     def select_active_tags(self, tags):
         """Select all active tags that match the tag schema pattern.
 
@@ -426,7 +515,7 @@ class PredicateTagMatcher(TagMatcher):
         super(PredicateTagMatcher, self).__init__()
         self.predicate = exclude_function
 
-    def should_exclude_with(self, tags):
+    def should_skip_with_tags(self, tags):
         return self.predicate(tags)
 
 
@@ -437,9 +526,9 @@ class CompositeTagMatcher(TagMatcher):
         super(CompositeTagMatcher, self).__init__()
         self.tag_matchers = tag_matchers or []
 
-    def should_exclude_with(self, tags):
+    def should_skip_with_tags(self, tags):
         for tag_matcher in self.tag_matchers:
-            if tag_matcher.should_exclude_with(tags):
+            if tag_matcher.should_skip_with_tags(tags):
                 return True
         # -- OTHERWISE:
         return False

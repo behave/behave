@@ -38,10 +38,15 @@ Feature: Issue #384 -- Active Tags fail with ScenarioOutline
       def before_all(context):
           setup_active_tag_values(active_tag_value_provider, context.config.userdata)
 
+      def before_features(context, feature):
+          if active_tag_matcher.should_skip_with_tags(feature.tags):
+              print("ACTIVE-TAG DISABLED: Feature {}".format(feature.name))
+              scenario.skip(active_tag_matcher.skip_reason)
+
       def before_scenario(context, scenario):
-          if active_tag_matcher.should_exclude_with(scenario.effective_tags):
+          if active_tag_matcher.should_skip_with_tags(scenario.tags):
               print("ACTIVE-TAG DISABLED: Scenario {}".format(scenario.name))
-              scenario.skip(active_tag_matcher.exclude_reason)
+              scenario.skip(active_tag_matcher.skip_reason)
       """
     And a file named "behave.ini" with:
       """

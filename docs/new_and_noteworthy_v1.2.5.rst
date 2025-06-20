@@ -83,8 +83,8 @@ the new default name annotation schema.
 It can be adapted/overwritten in "behave.ini":
 
 .. code-block:: ini
+    :caption: FILE: behave.ini
 
-    # -- file:behave.ini
     [behave]
     scenario_outline_annotation_schema = {name} -- @{row.id} {examples.name}
 
@@ -123,8 +123,8 @@ Up to now this behavior did only apply to steps of a scenario outline.
 EXAMPLE:
 
 .. code-block:: gherkin
+    :caption: FILE: features/some.feature
 
-    # -- file:features/xxx.feature
     Feature:
       Scenario Outline: Wow <name>-<birthyear>  # line 2
         Given an employee "<name>"
@@ -143,14 +143,15 @@ This leads to the following generated scenarios,
 one for each examples/row combination:
 
 .. code-block:: gherkin
+    :caption: shell: behave -f pretty features/some.feature
 
-    Scenario Outline: Wow Alice-1985 -- @1.1         # features/xxx.feature:7
+    Scenario Outline: Wow Alice-1985 -- @1.1         # features/some.feature:7
       Given an employee "Alice"
 
-    Scenario Outline: Wow Bob-1975 -- @1.2           # features/xxx.feature:8
+    Scenario Outline: Wow Bob-1975 -- @1.2           # features/some.feature:8
       Given an employee "Bob"
 
-    Scenario Outline: Wow Charly-1885 -- @2.1 Benares-42 # features/xxx.feature:12
+    Scenario Outline: Wow Charly-1885 -- @2.1 Benares-42 # features/some.feature:12
       Given an employee "Charly"
 
 .. index::
@@ -174,8 +175,8 @@ Therefore, you may also use placeholders in the tags of a Scenario Outline.
 EXAMPLE:
 
 .. code-block:: gherkin
+    :caption: FILE: features/some.feature
 
-    # -- file:features/xxx.feature
     Feature:
 
       @foo.group<examples.index>
@@ -198,17 +199,18 @@ This leads to the following generated scenarios,
 one for each examples/row combination:
 
 .. code-block:: gherkin
+    :caption: shell: behave -f pretty features/some.feature
 
     @foo.group1 @foo.row1.1 @foo.name.Alice
-    Scenario Outline: Wow -- @1.1 Araxas   # features/xxx.feature:11
+    Scenario Outline: Wow -- @1.1 Araxas   # features/some.feature:11
       Given an employee "Alice"
 
     @foo.group1 @foo.row1.2 @foo.name.Bob
-    Scenario Outline: Wow -- @1.2 Araxas   # features/xxx.feature:12
+    Scenario Outline: Wow -- @1.2 Araxas   # features/some.feature:12
       Given an employee "Bob"
 
     @foo.group2 @foo.row2.1 @foo.name.Charly
-    Scenario Outline: Wow -- @2.1 Benares  # features/xxx.feature:16
+    Scenario Outline: Wow -- @2.1 Benares  # features/some.feature:16
       Given an employee "Charly"
 
 .. index::
@@ -218,9 +220,10 @@ It is now possible to run only the examples group "Araxas" (examples group 1)
 by using the select-by-tag mechanism:
 
 .. code-block:: sh
+    :caption: shell
 
-    $ behave --tags=@foo.group1 -f progress3 features/xxx.feature
-    ...  # features/xxx.feature
+    $ behave --tags=@foo.group1 -f progress3 features/some.feature
+    ...  # features/some.feature
       Wow -- @1.1 Araxas  .
       Wow -- @1.2 Araxas  .
 
@@ -239,8 +242,8 @@ The improvements on unique generated scenario names for a scenario outline
 EXAMPLE:
 
 .. code-block:: gherkin
+    :caption: FILE: features/some.feature
 
-    # -- file:features/xxx.feature
     Feature:
       Scenario Outline: Wow            # line 2
         Given an employee "<name>"
@@ -258,14 +261,15 @@ EXAMPLE:
 This leads to the following generated scenarios (when the feature is executed):
 
 .. code-block:: gherkin
+    :caption: shell: behave -f pretty features/some.feature
 
-    Scenario Outline: Wow -- @1.1 Araxas  # features/xxx.feature:7
+    Scenario Outline: Wow -- @1.1 Araxas  # features/some.feature:7
       Given an employee "Alice"
 
-    Scenario Outline: Wow -- @1.2 Araxas   # features/xxx.feature:8
+    Scenario Outline: Wow -- @1.2 Araxas   # features/some.feature:8
       Given an employee "Bob"
 
-    Scenario Outline: Wow -- @2.1 Benares  # features/xxx.feature:12
+    Scenario Outline: Wow -- @2.1 Benares  # features/some.feature:12
       Given an employee "Charly"
 
 
@@ -273,14 +277,15 @@ You can now run all rows of the "Araxas" examples (group)
 by selecting it by name (name part or regular expression):
 
 .. code-block:: sh
+    :caption: shell
 
-    $ behave --name=Araxas -f progress3 features/xxx.feature
-    ...  # features/xxx.feature
+    $ behave --name=Araxas -f progress3 features/some.feature
+    ...  # features/some.feature
       Wow -- @1.1 Araxas  .
       Wow -- @1.2 Araxas  .
 
-    $ behave --name='-- @.* Araxas' -f progress3 features/xxx.feature
-    ...  # features/xxx.feature
+    $ behave --name='-- @.* Araxas' -f progress3 features/some.feature
+    ...  # features/some.feature
       Wow -- @1.1 Araxas  .
       Wow -- @1.2 Araxas  .
 
@@ -308,9 +313,9 @@ within the following hooks:
 by using the ``skip()`` method before a feature or scenario is run.
 
 .. code-block:: python
+    :caption: FILE: features/environment.py
 
-    # -- FILE: features/environment.py
-    # EXAMPLE 1: Exclude scenario from run-set at runtime.
+    # -- EXAMPLE 1: Exclude scenario from run-set at runtime.
     import sys
 
     def should_exclude_scenario(scenario):
@@ -328,9 +333,9 @@ by using the ``skip()`` method before a feature or scenario is run.
             # scenario.skip(reason)
 
 .. code-block:: python
+    :caption: FILE: features/steps/my_steps.py
 
-    # -- FILE: features/steps/my_steps.py
-    # EXAMPLE 2: Skip remaining steps in step implementation.
+    # -- EXAMPLE 2: Skip remaining steps in step implementation.
     from behave import given
 
     @given('the assumption "{assumption}" is met')
@@ -377,8 +382,10 @@ EXAMPLE DIRECTORY LAYOUT (with ``stage=testlab`` and default stage)::
     +-- testlab_environment.py  # -- Environment for stage=testlab.
     +-- *.feature
 
-To use the ``stage=testlab``, you run behave with::
+To use the ``stage=testlab``, you run behave with:
 
+.. code-block: sh
+    :caption: shell
 
     behave --stage=testlab ...
 
@@ -403,8 +410,8 @@ The userdata functionality allows a user to provide its own configuration data:
   * load more configuration data in ``before_all()`` hook
 
 .. code-block:: ini
+    :caption: FILE: behave.ini
 
-    # -- FILE: behave.ini
     [behave.userdata]
     browser = firefox
     server  = asterix
@@ -422,24 +429,24 @@ The userdata settings can be accessed as dictionary in hooks and steps
 by using the ``context.config.userdata`` dictionary.
 
 .. code-block:: python
+    :caption: FILE: features/environment.py
 
-    # -- FILE: features/environment.py
     def before_all(context):
         browser = context.config.userdata.get("browser", "chrome")
         setup_browser(browser)
 
 .. code-block:: python
+    :caption: FILE: features/steps/userdata_example_steps.py
 
-    # -- FILE: features/steps/userdata_example_steps.py
     @given('I setup the system with the user-specified server"')
     def step_setup_system_with_userdata_server(context):
         server_host = context.config.userdata.get("server", "beatrix")
         context.xxx_client = xxx_protocol.connect(server_host)
 
 .. code-block:: sh
+    :caption: shell
 
     # -- ADAPT TEST-RUN: With user-specific data settings.
-    # SHELL:
     behave -D server=obelix features/
     behave --define server=obelix features/
 
@@ -468,8 +475,8 @@ Type conversion may raise a ``ValueError`` exception if the conversion fails.
 The following example shows how the type converter functions for integers are used:
 
 .. code-block:: python
+    :caption: FILE: features/environment.py
 
-    # -- FILE: features/environment.py
     def before_all(context):
         userdata = context.config.userdata
         server_name  = userdata.get("server", "beatrix")
@@ -497,8 +504,8 @@ This section describes how to load a JSON configuration file and store its
 data in the ``userdata`` dictionary.
 
 .. code-block:: py
+    :caption: FILE: features/environment.py
 
-    # -- FILE: features/environment.py
     import json
     import os.path
 
@@ -516,6 +523,7 @@ data in the ``userdata`` dictionary.
 Provide the file "userconfig.json" with:
 
 .. code-block:: json
+    :caption: FILE: userconfig.json
 
     {
         "browser": "firefox",
@@ -575,6 +583,10 @@ Active Tag Logic
 * A sequence of active tags is enabled,
   if all its active tags are enabled (logical-and operation).
 
+* Active tags are evaluated isolated on each feature/rule/scenario.
+* An active tag can be overridden and made more specific,
+  if this active tag is enabled on an outer model element
+  (like on a feature/rule for a scenario).
 
 .. index::
     single: Active Tag Schema
@@ -610,8 +622,8 @@ Assuming you have the feature file where:
 * scenario ``Bob`` should only run if ``Safari`` browser is used
 
 .. code-block:: gherkin
+    :caption: FILE: features/alice.feature
 
-    # -- FILE: features/alice.feature
     Feature:
 
         @use.with_browser=chrome
@@ -626,9 +638,9 @@ Assuming you have the feature file where:
 
 
 .. code-block:: python
+    :caption: FILE: features/environment.py
 
-    # -- FILE: features/environment.py
-    # EXAMPLE: ACTIVE TAGS, exclude scenario from run-set at runtime.
+    # -- EXAMPLE: ACTIVE TAGS, exclude scenario from run-set at runtime.
     # NOTE: ActiveTagMatcher implements the runtime decision logic.
     from behave.tag_matcher import ActiveTagMatcher
     import os
@@ -644,8 +656,7 @@ Assuming you have the feature file where:
         active_tag_value_provider["browser"] = os.environ.get("BROWSER", "chrome")
 
     def before_scenario(context, scenario):
-        # -- NOTE: scenario.effective_tags := scenario.tags + feature.tags
-        if active_tag_matcher.should_exclude_with(scenario.effective_tags):
+        if active_tag_matcher.should_exclude_with(scenario.tags):
             # -- NOTE: Exclude any with @use.with_browser=<other_browser>
             scenario.skip(reason="DISABLED ACTIVE-TAG")
 
@@ -656,7 +667,16 @@ Assuming you have the feature file where:
     **active tags**. The runtime decision logic decides when these tags
     are enabled or disabled (and uses them to exclude their scenario/feature).
 
+.. tip::
 
+    Since ``behave v1.2.7``, better use:
+
+    .. code-block:: python
+
+        def before_scenario(context, scenario):
+            # -- ALTERNATIVE: if active_tag_matcher.should_skip(scenario):
+            if active_tag_matcher.should_skip_with_tags(scenario.tags):
+                scenario.skip(active_tag_matcher.skip_reason)
 
 
 Example 2
@@ -668,9 +688,9 @@ Assuming you have scenarios with the following runtime conditions:
 * Run scenario Bob only with browser Chrome
 
 .. code-block:: gherkin
+    :caption: FILE: features/alice.feature
 
-    # -- FILE: features/alice.feature
-    # TAG SCHEMA: @use.with_{category}={value}, ...
+    # -- TAG SCHEMA: @use.with_{category}={value}, ...
     Feature:
 
       @use.with_os=win32
@@ -685,8 +705,8 @@ Assuming you have scenarios with the following runtime conditions:
 
 
 .. code-block:: python
+    :caption: FILE: features/environment.py
 
-    # -- FILE: features/environment.py
     from behave.tag_matcher import ActiveTagMatcher
     import sys
 
@@ -714,7 +734,7 @@ Assuming you have scenarios with the following runtime conditions:
             feature.skip(reason="DISABLED ACTIVE-TAG")
 
     def before_scenario(context, scenario):
-        if active_tag_matcher.should_exclude_with(scenario.effective_tags):
+        if active_tag_matcher.should_exclude_with(scenario.tags):
             scenario.skip("DISABLED ACTIVE-TAG")
 
 
@@ -722,6 +742,7 @@ By using the `userdata`_ mechanism, you can now define on command-line
 which browser should be used when you run behave.
 
 .. code-block:: sh
+    :caption: shell
 
     # -- SHELL: Run behave with browser=safari, ... by using userdata.
     # TEST VARIANT 1: Run tests with browser=safari
@@ -771,9 +792,9 @@ as value for the ``-format`` option (short option: ``-f``):
     behave -f behave.formatter.plain:PlainFormatter ...
 
 .. code-block:: python
+    :caption: FILE: my/own_module.py
 
-    # -- FILE: my/own_module.py
-    # (or installed as Python module: my.own_module)
+    # -- NOTE: or installed as Python module: my.own_module
     from behave.formatter.base import Formatter
 
     class SimpleFormatter(Formatter):
@@ -788,15 +809,15 @@ by registering one or more user-defined formatters by name in the
 configuration file:
 
 .. code-block:: ini
+    :caption: FILE: behave.ini
 
-    # -- FILE: behave.ini
     [behave.formatters]
     foo = behave_contrib.formatter.foo:FooFormatter
     bar = behave_contrib.formatter.bar:BarFormatter
 
 .. code-block:: python
+    :caption: FILE: behave_contrib/formatter/foo.py
 
-    # -- FILE: behave_contrib/formatter/foo.py
     from behave.formatter.base import Formatter
 
     class FooFormatter(Formatter):
@@ -806,7 +827,7 @@ configuration file:
 Now you can use the name for any registered, user-defined formatter:
 
 .. code-block:: sh
+    :caption: shell
 
     # -- NOTE: Use FooFormatter that was registered by name "foo".
     behave -f foo ...
-

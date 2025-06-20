@@ -55,8 +55,8 @@ one section per test team.
 The following feature file provides a simple example of this functionality:
 
 .. code-block:: gherkin
+    :caption: FILE: features/tagged_examples.feature
 
-    # -- FILE: features/tagged_examples.feature
     Feature:
       Scenario Outline: Wow
         Given an employee "<name>"
@@ -83,10 +83,12 @@ The following feature file provides a simple example of this functionality:
 To run only the first ``Examples`` section, you use:
 
 .. code-block:: shell
+    :caption: shell
 
     behave --tags=@develop features/tagged_examples.feature
 
 .. code-block:: gherkin
+    :caption: Command output
 
     Scenario Outline: Wow -- @1.1 Araxas  # features/tagged_examples.feature:7
       Given an employee "Alice"
@@ -102,9 +104,9 @@ An even more natural fit is to use ``tagged examples`` together with
 ``active tags`` and ``userdata``:
 
 .. code-block:: gherkin
+    :caption: FILE: features/tagged_examples2.feature
 
-    # -- FILE: features/tagged_examples2.feature
-    # VARIANT 2: With active tags and userdata.
+    # -- VARIANT 2: With active tags and userdata.
     Feature:
       Scenario Outline: Wow
         Given an employee "<name>"
@@ -123,6 +125,7 @@ An even more natural fit is to use ``tagged examples`` together with
 Select the ``Examples`` section now by using:
 
 .. code-block:: shell
+    :caption: shell
 
     # -- VARIANT 1: Use userdata
     behave -D stage=integration features/tagged_examples2.feature
@@ -132,8 +135,8 @@ Select the ``Examples`` section now by using:
 
 
 .. code-block:: python
+    :caption: FILE: features/environment.py
 
-    # -- FILE: features/environment.py
     from behave.tag_matcher import ActiveTagMatcher, setup_active_tag_values
     import sys
 
@@ -151,11 +154,21 @@ Select the ``Examples`` section now by using:
         setup_active_tag_values(active_tag_value_provider, userdata)
 
     def before_scenario(context, scenario):
-        if active_tag_matcher.should_exclude_with(scenario.effective_tags):
+        if active_tag_matcher.should_exclude_with(scenario.tags):
             sys.stdout.write("ACTIVE-TAG DISABLED: Scenario %s\n" % scenario.name)
             scenario.skip(active_tag_matcher.exclude_reason)
 
 
+.. tip::
+
+    Since ``behave v1.2.7``, better use:
+
+    .. code-block:: python
+
+        def before_scenario(context, scenario):
+            # -- ALTERNATIVE: if active_tag_matcher.should_skip(scenario):
+            if active_tag_matcher.should_skip_with_tags(scenario.tags):
+                scenario.skip(active_tag_matcher.skip_reason)
 
 
 Gherkin Parser Improvements
@@ -169,7 +182,8 @@ The pipe symbol is normally used as column separator in tables.
 
 EXAMPLE:
 
-.. code-block:: Gherkin
+.. code-block:: gherkin
+    :caption: FILE: features/escaped_pipe.feature
 
     Scenario: Use escaped-pipe symbol
       Given I use table data with:
@@ -199,16 +213,16 @@ This is especially useful when your feature files use multiple spoken languages
 
 EXAMPLE:
 
-.. code-block:: Gherkin
+.. code-block:: gherkin
+    :caption: FILE: features/french_1.feature
 
-    # -- FILE: features/french_1.feature
     # language: fr
     Fonctionnalité: Alice
         ...
 
 .. code-block:: ini
+    :caption: FILE: behave.ini
 
-    # -- FILE: behave.ini
     [behave]
     lang = de       # Default (spoken) language to use: German
     ...
@@ -228,9 +242,9 @@ It is now possible to define ``default tags`` in the configuration file.
 EXAMPLE:
 
 .. code-block:: ini
+    :caption: FILE: behave.ini
 
-    # -- FILE: behave.ini
-    # Exclude/skip any feature/scenario with @xfail or @not_implemented tags
+    # -- Exclude/skip any feature/scenario with @xfail or @not_implemented tags
     [behave]
     default_tags = not (@xfail or @not_implemented)
     ...
@@ -264,8 +278,8 @@ remaining steps of a scenario.
 EXAMPLE:
 
 .. code-block:: python
+    :caption: FILE: features/environment.py
 
-    # -- FILE: features/environment.py
     from behave.model import Scenario
 
     def before_all(context):
@@ -328,6 +342,7 @@ When you use the async-step from above in a feature file and run it with behave:
 
 .. literalinclude:: ../examples/async_step/testrun_example.async_run.txt
     :language: gherkin
+    :caption: shell
     :prepend:
         # -- TEST-RUN OUTPUT:
         $ behave -f plain features/async_run.feature
@@ -364,6 +379,7 @@ When you run this feature file:
 
 .. literalinclude:: ../examples/async_step/testrun_example.async_dispatch.txt
     :language: gherkin
+    :caption: shell
     :prepend:
         # -- TEST-RUN OUTPUT:
         $ behave -f plain features/async_dispatch.feature
@@ -381,9 +397,7 @@ The implementation of the steps from above:
 
 .. literalinclude:: ../examples/async_step/features/steps/async_dispatch_steps.py
     :language: gherkin
-    :prepend:
-        # -- FILE: features/steps/async_dispatch_steps.py
-        # REQUIRES: Python 3.4 or newer
+    :caption: FILE: features/steps/async_dispatch_steps.py
 
 
 Context-based Cleanups
@@ -397,10 +411,9 @@ This functionality is normally used in:
 * ...
 
 .. code-block:: python
+    :caption: SIGNATURE: ``Context.add_cleanup(cleanup_func, *args, **kwargs)``
 
-    :caption: SIGNATURE: Context.add_cleanup(cleanup_func, *args, **kwargs)
-
-    # CLEANUP CALL EXAMPLES:
+    # -- CLEANUP CALL EXAMPLES:
     context.add_cleanup(cleanup0)                       # CALLS LATER: cleanup0()
     context.add_cleanup(cleanup1, 1, 2)                 # CALLS LATER: cleanup1(1, 2)
     context.add_cleanup(cleanup2, name="Alice")         # CALLS LATER: cleanup2(name="Alice")

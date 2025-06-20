@@ -329,11 +329,12 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
         # -- OTHERWISE: Should NOT run
         return False
 
-    def mark_skipped(self):
-        """Marks this feature (and all its scenarios and steps) as skipped.
-        Note this function may be called before the feature is executed.
+    def mark_skipped(self, reason=None):
         """
-        self.skip(require_not_executed=True)
+        Mark this scenario-container (and all its Rules/Scenarios) as skipped.
+        Note this function may be called before this Feature/Rule is executed.
+        """
+        self.skip(reason=reason, require_not_executed=True)
         assert self.status == Status.skipped or self.hook_failed
 
     def skip(self, reason=None, require_not_executed=False):
@@ -1100,11 +1101,12 @@ class Scenario(TagAndStatusStatement, Replayable):
         # -- SELECT-ANY: If select by name is not specified (not config.name).
         return not config.name or config.name_re.search(self.name)
 
-    def mark_skipped(self):
-        """Marks this scenario (and all its steps) as skipped.
+    def mark_skipped(self, reason=None):
+        """
+        Mark this scenario (and all its steps) as skipped.
         Note that this method can be called before the scenario is executed.
         """
-        self.skip(require_not_executed=True)
+        self.skip(reason=reason, require_not_executed=True)
         assert self.status == Status.skipped or self.hook_failed, \
                "OOPS: scenario.status=%s" % self.status.name
 
@@ -1656,12 +1658,13 @@ class ScenarioOutline(Scenario):
         # -- NOTHING SELECTED:
         return False
 
-    def mark_skipped(self):
-        """Marks this scenario outline (and all its scenarios/steps) as skipped.
+    def mark_skipped(self, reason=None):
+        """
+        Mark this scenario outline (and all its scenarios) as skipped.
         Note that this method may be called before the scenario outline
         is executed.
         """
-        self.skip(require_not_executed=True)
+        self.skip(reason=reason, require_not_executed=True)
         assert self.status == Status.skipped
 
     def skip(self, reason=None, require_not_executed=False):

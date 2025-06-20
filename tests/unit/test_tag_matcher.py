@@ -110,9 +110,9 @@ class TestActiveTagMatcher2(object):
         ("case U1x: enabled and unknown tag", False,  # -- SHOULD-RUN
          [ traits.category1_enabled_tag, traits.unknown_category_tag]),
     ])
-    def test_should_exclude_with__combinations_of_2_categories(self, case, expected, tags):
+    def test_should_skip_with_tags__combinations_of_2_categories(self, case, expected, tags):
         tag_matcher = self.make_tag_matcher()
-        actual_result = tag_matcher.should_exclude_with(tags)
+        actual_result = tag_matcher.should_skip_with_tags(tags)
         assert expected == actual_result, case
 
     @pytest.mark.parametrize("case, expected, tags", [
@@ -135,12 +135,12 @@ class TestActiveTagMatcher2(object):
         ("case N11: not-disabled and enabled tag", False, # -- SHOULD-RUN
          [ traits.category1_not_disabled_tag, traits.category1_enabled_tag]),
     ])
-    def test_should_exclude_with__combinations_with_same_category(self,
+    def test_should_skip_with_tags__combinations_with_same_category(self,
                                                         case, expected, tags):
         tag_matcher = self.make_tag_matcher()
         print("tags: {}".format(tags) )
         print("tag_matcher.value: {}".format(tag_matcher.value_provider) )
-        actual_result = tag_matcher.should_exclude_with(tags)
+        actual_result = tag_matcher.should_skip_with_tags(tags)
         assert expected == actual_result, case
 
 
@@ -217,14 +217,14 @@ class TestActiveTagMatcher1(TestCase):
             self.assertTrue(len(selected) >= 1, case)
 
 
-    def test_should_exclude_with__returns_false_with_enabled_tag(self):
+    def test_should_skip_with_tags__returns_false_with_enabled_tag(self):
         traits = self.traits
         tags1 = [ traits.category1_enabled_tag ]
         tags2 = [ traits.category2_enabled_tag ]
-        self.assertEqual(False, self.tag_matcher.should_exclude_with(tags1))
-        self.assertEqual(False, self.tag_matcher.should_exclude_with(tags2))
+        self.assertEqual(False, self.tag_matcher.should_skip_with_tags(tags1))
+        self.assertEqual(False, self.tag_matcher.should_skip_with_tags(tags2))
 
-    def test_should_exclude_with__returns_false_with_disabled_tag_and_more(self):
+    def test_should_skip_with_tags__returns_false_with_disabled_tag_and_more(self):
         # -- NOTE: Need 1+ enabled active-tags of same category => ENABLED
         # pylint: disable=line-too-long
         traits = self.traits
@@ -235,15 +235,15 @@ class TestActiveTagMatcher1(TestCase):
         ]
         enabled = True  # EXPECTED
         for tags, case in test_patterns:
-            self.assertEqual(not enabled, self.tag_matcher.should_exclude_with(tags),
+            self.assertEqual(not enabled, self.tag_matcher.should_skip_with_tags(tags),
                              "%s: tags=%s" % (case, tags))
 
-    def test_should_exclude_with__returns_true_with_other_tag(self):
+    def test_should_skip_with_tags__returns_true_with_other_tag(self):
         traits = self.traits
         tags = [ traits.category1_disabled_tag ]
-        self.assertEqual(True, self.tag_matcher.should_exclude_with(tags))
+        self.assertEqual(True, self.tag_matcher.should_skip_with_tags(tags))
 
-    def test_should_exclude_with__returns_true_with_other_tag_and_more(self):
+    def test_should_skip_with_tags__returns_true_with_other_tag_and_more(self):
         traits = self.traits
         test_patterns = [
             ([ traits.category1_disabled_tag, "foo" ], "case: first"),
@@ -251,15 +251,15 @@ class TestActiveTagMatcher1(TestCase):
             ([ "foo", traits.category1_disabled_tag, "bar" ], "case: middle"),
         ]
         for tags, case in test_patterns:
-            self.assertEqual(True, self.tag_matcher.should_exclude_with(tags),
+            self.assertEqual(True, self.tag_matcher.should_skip_with_tags(tags),
                              "%s: tags=%s" % (case, tags))
 
-    def test_should_exclude_with__returns_true_with_similar_tag(self):
+    def test_should_skip_with_tags__returns_true_with_similar_tag(self):
         traits = self.traits
         tags = [ traits.category1_similar_tag ]
-        self.assertEqual(True, self.tag_matcher.should_exclude_with(tags))
+        self.assertEqual(True, self.tag_matcher.should_skip_with_tags(tags))
 
-    def test_should_exclude_with__returns_true_with_similar_and_more(self):
+    def test_should_skip_with_tags__returns_true_with_similar_and_more(self):
         traits = self.traits
         test_patterns = [
             ([ traits.category1_similar_tag, "foo" ], "case: first"),
@@ -267,20 +267,20 @@ class TestActiveTagMatcher1(TestCase):
             ([ "foo", traits.category1_similar_tag, "bar" ], "case: middle"),
         ]
         for tags, case in test_patterns:
-            self.assertEqual(True, self.tag_matcher.should_exclude_with(tags),
+            self.assertEqual(True, self.tag_matcher.should_skip_with_tags(tags),
                              "%s: tags=%s" % (case, tags))
 
-    def test_should_exclude_with__returns_false_without_category_tag(self):
+    def test_should_skip_with_tags__returns_false_without_category_tag(self):
         test_patterns = [
             ([ ],           "case: No tags"),
             ([ "foo" ],     "case: One tag"),
             ([ "foo", "bar" ], "case: Two tags"),
         ]
         for tags, case in test_patterns:
-            self.assertEqual(False, self.tag_matcher.should_exclude_with(tags),
+            self.assertEqual(False, self.tag_matcher.should_skip_with_tags(tags),
                              "%s: tags=%s" % (case, tags))
 
-    def test_should_exclude_with__returns_false_with_unknown_category_tag(self):
+    def test_should_skip_with_tags__returns_false_with_unknown_category_tag(self):
         """Tags from unknown categories, not supported by value_provider,
         should not be excluded.
         """
@@ -288,9 +288,9 @@ class TestActiveTagMatcher1(TestCase):
         tags = [ traits.unknown_category_tag ]
         self.assertEqual("use.with_UNKNOWN=one", traits.unknown_category_tag)
         self.assertEqual(None, self.tag_matcher.value_provider.get("UNKNOWN"))
-        self.assertEqual(False, self.tag_matcher.should_exclude_with(tags))
+        self.assertEqual(False, self.tag_matcher.should_skip_with_tags(tags))
 
-    def test_should_exclude_with__combinations_of_2_categories(self):
+    def test_should_skip_with_tags__combinations_of_2_categories(self):
         # XXX-JE-DUPLICATED:
         traits = self.traits
         test_patterns = [
@@ -318,11 +318,11 @@ class TestActiveTagMatcher1(TestCase):
              [ traits.category1_enabled_tag, traits.unknown_category_tag]),
         ]
         for case, expected, tags in test_patterns:
-            actual_result = self.tag_matcher.should_exclude_with(tags)
+            actual_result = self.tag_matcher.should_skip_with_tags(tags)
             self.assertEqual(expected, actual_result,
                              "%s: tags=%s" % (case, tags))
 
-    def test_should_run_with__negates_result_of_should_exclude_with(self):
+    def test_should_run_with_tags__negates_result_of_should_skip_with_tags(self):
         traits = self.traits
         test_patterns = [
             ([ ],                   "case: No tags"),
@@ -337,8 +337,8 @@ class TestActiveTagMatcher1(TestCase):
             ([ "foo", traits.category1_similar_tag ],   "case: foo and similar tag"),
         ]
         for tags, case in test_patterns:
-            result1 = self.tag_matcher.should_run_with(tags)
-            result2 = self.tag_matcher.should_exclude_with(tags)
+            result1 = self.tag_matcher.should_run_with_tags(tags)
+            result2 = self.tag_matcher.should_skip_with_tags(tags)
             self.assertEqual(result1, not result2, "%s: tags=%s" % (case, tags))
             self.assertEqual(not result1, result2, "%s: tags=%s" % (case, tags))
 
@@ -351,31 +351,31 @@ class TestPredicateTagMatcher(TestCase):
         predicate_function.return_value = True
         tag_matcher = PredicateTagMatcher(predicate_function)
         tags = [ "foo", "bar" ]
-        self.assertEqual(True, tag_matcher.should_exclude_with(tags))
+        self.assertEqual(True, tag_matcher.should_skip_with_tags(tags))
         predicate_function.assert_called_once_with(tags)
         self.assertEqual(True, predicate_function(tags))
 
-    def test_should_exclude_with__returns_true_when_predicate_is_true(self):
+    def test_should_skip_with_tags__returns_true_when_predicate_is_true(self):
         predicate_always_true = lambda tags: True
         tag_matcher1 = PredicateTagMatcher(predicate_always_true)
         tags = [ "foo", "bar" ]
-        self.assertEqual(True, tag_matcher1.should_exclude_with(tags))
+        self.assertEqual(True, tag_matcher1.should_skip_with_tags(tags))
         self.assertEqual(True, predicate_always_true(tags))
 
-    def test_should_exclude_with__returns_true_when_predicate_is_true2(self):
+    def test_should_skip_with_tags__returns_true_when_predicate_is_true2(self):
         # -- CASE: Use predicate function instead of lambda.
         def predicate_contains_foo(tags):
             return any(x == "foo" for x in tags)
         tag_matcher2 = PredicateTagMatcher(predicate_contains_foo)
         tags = [ "foo", "bar" ]
-        self.assertEqual(True, tag_matcher2.should_exclude_with(tags))
+        self.assertEqual(True, tag_matcher2.should_skip_with_tags(tags))
         self.assertEqual(True, predicate_contains_foo(tags))
 
-    def test_should_exclude_with__returns_false_when_predicate_is_false(self):
+    def test_should_skip_with_tags__returns_false_when_predicate_is_false(self):
         predicate_always_false = lambda tags: False
         tag_matcher1 = PredicateTagMatcher(predicate_always_false)
         tags = [ "foo", "bar" ]
-        self.assertEqual(False, tag_matcher1.should_exclude_with(tags))
+        self.assertEqual(False, tag_matcher1.should_skip_with_tags(tags))
         self.assertEqual(False, predicate_always_false(tags))
 
 
@@ -385,7 +385,7 @@ class TestCompositeTagMatcher(TestCase):
     def count_tag_matcher_with_result(tag_matchers, tags, result_value):
         count = 0
         for tag_matcher in tag_matchers:
-            current_result = tag_matcher.should_exclude_with(tags)
+            current_result = tag_matcher.should_skip_with_tags(tags)
             if current_result == result_value:
                 count += 1
         return count
@@ -401,13 +401,13 @@ class TestCompositeTagMatcher(TestCase):
         ]
         self.ctag_matcher = CompositeTagMatcher(tag_matchers)
 
-    def test_should_exclude_with__returns_true_when_any_tag_matcher_returns_true(self):
+    def test_should_skip_with_tags__returns_true_when_any_tag_matcher_returns_true(self):
         test_patterns = [
             ("case: with foo",  ["foo", "bar"]),
             ("case: with foo2", ["foozy", "foo", "bar"]),
         ]
         for case, tags in test_patterns:
-            actual_result = self.ctag_matcher.should_exclude_with(tags)
+            actual_result = self.ctag_matcher.should_skip_with_tags(tags)
             self.assertEqual(True, actual_result,
                              "%s: tags=%s" % (case, tags))
 
@@ -415,13 +415,13 @@ class TestCompositeTagMatcher(TestCase):
                                 self.ctag_matcher.tag_matchers, tags, True)
             self.assertEqual(1, actual_true_count)
 
-    def test_should_exclude_with__returns_false_when_no_tag_matcher_return_true(self):
+    def test_should_skip_with_tags__returns_false_when_no_tag_matcher_return_true(self):
         test_patterns = [
             ("case: without foo",   ["fool", "bar"]),
             ("case: without foo2",  ["foozy", "bar"]),
         ]
         for case, tags in test_patterns:
-            actual_result = self.ctag_matcher.should_exclude_with(tags)
+            actual_result = self.ctag_matcher.should_skip_with_tags(tags)
             self.assertEqual(False, actual_result,
                              "%s: tags=%s" % (case, tags))
 
@@ -457,7 +457,7 @@ class TestActiveTagMatcherWithValueObject(object):
     @staticmethod
     def assert_active_tags_should_run(tags, value_provider, expected_verdict):
         active_tag_matcher = ActiveTagMatcher(value_provider)
-        actual_verdict = active_tag_matcher.should_run_with(tags)
+        actual_verdict = active_tag_matcher.should_run_with_tags(tags)
         assert actual_verdict == expected_verdict
 
     @classmethod

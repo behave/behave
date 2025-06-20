@@ -140,19 +140,32 @@ class TagAndStatusStatement(BasicStatement):
         self._cached_status = Status.untested
 
     @property
+    def inherited_tags(self):
+        """
+        Compute the inherited tags of this entity (if any exist).
+
+        :return: Set of inherited tags
+
+        .. versionadded:: 1.2.7
+        """
+        if not self.parent:
+            return set()
+
+        # -- RECURSION CHAIN: self.parent ...
+        return self.parent.effective_tags
+
+    @property
     def effective_tags(self):
-        """Compute effective tags of this entity.
-        This is includes the own tags and the inherited tags from the parents.
+        """
+        Compute effective tags of this entity.
+        This includes the own tags and the inherited tags from the parents.
 
         :return: Set of effective tags
 
         .. versionadded:: 1.2.7
         """
         tags = set(self.tags)
-        if self.parent:
-            # -- INHERIT TAGS: From parent(s), recursively
-            inherited_tags = self.parent.effective_tags
-            tags.update(inherited_tags)
+        tags.update(self.inherited_tags)
         return tags
 
     def should_run_with_tags(self, tag_expression):

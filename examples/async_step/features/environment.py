@@ -15,7 +15,8 @@ require_min_python_version("3.5")
 # -----------------------------------------------------------------------------
 # -- MATCHES ANY TAGS: @use.with_{category}={value}
 # NOTE: active_tag_value_provider provides category values for active tags.
-active_tag_value_provider = python_feature.ACTIVE_TAG_VALUE_PROVIDER.copy()
+active_tag_value_provider = {}
+active_tag_value_provider.update(python_feature.ACTIVE_TAG_VALUE_PROVIDER)
 active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
 
@@ -28,11 +29,14 @@ def before_all(ctx):
 
 
 def before_feature(ctx, feature):
-    if active_tag_matcher.should_exclude_with(feature.tags):
-        feature.skip(reason=active_tag_matcher.exclude_reason)
+    if active_tag_matcher.should_skip(feature):
+        feature.skip(reason=active_tag_matcher.skip_reason)
 
+def before_rule(ctx, rule):
+    if active_tag_matcher.should_skip(rule):
+        rule.skip(reason=active_tag_matcher.skip_reason)
 
 def before_scenario(ctx, scenario):
-    if active_tag_matcher.should_exclude_with(scenario.effective_tags):
-        scenario.skip(reason=active_tag_matcher.exclude_reason)
+    if active_tag_matcher.should_skip(scenario):
+        scenario.skip(reason=active_tag_matcher.skip_reason)
 
