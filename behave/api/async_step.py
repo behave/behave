@@ -57,6 +57,10 @@ except ImportError:
 
 _PYTHON_VERSION = sys.version_info[:2]
 
+# A global asyncio.Runner instance to use to get the single
+# event loop in the async_run_until_complete decorator.
+# Since 3.10, this is the preferred way to get the equivalent of the global event loop.
+ASYNC_IO_RUNNER = ASYNC_IO_RUNNER = asyncio.Runner() if has_asyncio and _PYTHON_VERSION >= (3, 10) else None
 
 # -----------------------------------------------------------------------------
 # ASYNC STEP DECORATORS:
@@ -123,6 +127,10 @@ def async_run_until_complete(astep_func=None, loop=None, timeout=None,
             if _PYTHON_VERSION < (3, 10):
                 # -- DEPRECATED SINCE: Python 3.10
                 loop = asyncio.get_event_loop()
+            else:
+                # Python >= 3.10
+                loop = ASYNC_IO_RUNNER.get_loop()
+
             if loop is None:
                 loop = asyncio.new_event_loop()
                 should_close = True

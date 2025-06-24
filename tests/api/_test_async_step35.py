@@ -113,6 +113,40 @@ class TestAsyncStepRunPy35:
         when_async_step_passes(context)
         assert context.traced_steps == ["async-step1", "async-step2"]
 
+    def test_async_step_task_crossing(self):
+        """ENSURE: Task started in an async-step can be seen running from another step"""
+        step_container = SimpleStepContainer()
+        with use_step_import_modules(step_container):
+            # -- STEP-DEFINITIONS EXAMPLE (as MODULE SNIPPET):
+            # VARIANT 1: Use async def step_impl()
+            # pylint: disable=import-outside-toplevel, unused-argument
+            from behave import given, when
+            from behave.api.async_step import async_run_until_complete
+            import asyncio
+
+            @given('we build an async task')
+            @async_run_until_complete
+            async def given_async_step_passes(context):
+                async def the_task():
+                    await asyncio.sleep(0.1)
+                    return "task-done"
+                context.the_task = asyncio.create_task(the_task())
+
+            @when('we can wait for the task in another async step')
+            @async_run_until_complete
+            async def when_async_step_passes(context):
+                await context.the_task
+
+        # pylint: enable=import-outside-toplevel, unused-argument
+        # -- RUN ASYNC-STEP: Verify that async-steps can be executed.
+        context = Context(runner=Runner(config={}))
+        
+        context.the_task = None
+        given_async_step_passes(context)
+        when_async_step_passes(context)
+        assert context.the_task.done()
+        assert context.the_task.result() == "task-done"
+
 
     def test_async_step_fails(self):
         """ENSURE: Failures in async-steps are detected correctly."""
