@@ -60,7 +60,7 @@ _PYTHON_VERSION = sys.version_info[:2]
 # A global asyncio.Runner instance to use to get the single
 # event loop in the async_run_until_complete decorator.
 # Since 3.10, this is the preferred way to get the equivalent of the global event loop.
-ASYNC_IO_RUNNER = ASYNC_IO_RUNNER = asyncio.Runner() if has_asyncio and _PYTHON_VERSION >= (3, 10) else None
+ASYNC_IO_RUNNER = asyncio.Runner() if has_asyncio and _PYTHON_VERSION >= (3, 10) else None
 
 # -----------------------------------------------------------------------------
 # ASYNC STEP DECORATORS:
