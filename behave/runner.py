@@ -12,6 +12,12 @@ import weakref
 
 import six
 
+from behave._types import (
+    require_type,
+    require_not_type,
+    require_callable,
+    require_not_none,
+)
 from behave.api.runner import ITestRunner
 from behave.exception_util import ExceptionUtil
 from behave.capture import (
@@ -267,7 +273,6 @@ class Context(object):
         """
         # -- BEST-EFFORT ALGORITHM: Tries to perform all cleanups.
         if not self._stack:
-            # WAS: assert self._stack, "REQUIRE: Non-empty stack"
             return
 
         current_layer = self._stack[0]
@@ -480,7 +485,7 @@ class Context(object):
         :raises: AssertionError, if a step failure occurs.
         :raises: ValueError, if invoked without a feature context.
         """
-        assert isinstance(steps_text, six.text_type), "Steps must be unicode."
+        require_type(steps_text, six.text_type, message="Steps must be unicode")
         if not self.feature:
             raise ValueError("execute_steps() called outside of feature")
 
@@ -543,9 +548,11 @@ class Context(object):
 
         .. seealso:: :attr:`.Context.LAYER_NAMES`
         """
-        # MAYBE:
-        assert callable(cleanup_func), "REQUIRES: callable(cleanup_func)"
-        assert self._stack
+        # -- PRECONDITIONS:
+        require_callable(cleanup_func, message="REQUIRES: callable(cleanup_func)")
+        if not self._stack:
+            raise RuntimeError("Context._stack is empty")
+
         layer_name = kwargs.pop("layer", None)
         if args or kwargs:
             def internal_cleanup_func():
@@ -625,11 +632,17 @@ def path_getrootdir(path):
     Extract rootdir from path in a platform independent way.
 
     POSIX-PATH EXAMPLE:
+
+    .. code-block:: python
+
         rootdir = path_getrootdir("/foo/bar/one.feature")
         assert rootdir == "/"
 
     WINDOWS-PATH EXAMPLE:
-        rootdir = path_getrootdir("D:\\foo\\bar\\one.feature")
+
+    .. code-block:: python
+
+        rootdir = path_getrootdir(r"D:\foo\bar\one.feature")
         assert rootdir == r"D:\"
     """
     drive, _ = os.path.splitdrive(path)
@@ -693,7 +706,7 @@ class ModelRunner(object):
     def aborted(self, value):
         """Mark the test run as aborted."""
         # pylint: disable=protected-access
-        assert self.context, "REQUIRE: context, but context=%r" % self.context
+        require_not_none(self.context, name="ModelRunner.context")
         if self.context:
             self.context._set_root_attribute("aborted", bool(value))
 
@@ -841,7 +854,10 @@ class ModelRunner(object):
         return hook_passed
 
     def run_hook_tags(self, hook_name, tags):
-        assert hook_name in ("before_tag", "after_tag")
+        if hook_name not in ("before_tag", "after_tag"):
+            msg = "hook_name={} (expected: before_tag, after_tag".format(hook_name)
+            raise ValueError(msg)
+
         failed_count = 0
         for tag in tags:
             hook_passed = self.run_hook(hook_name, tag)
@@ -871,7 +887,7 @@ class ModelRunner(object):
         return hook_passed
 
     def setup_capture(self, name=None):
-        assert not isinstance(name, Context)
+        require_not_type(name, Context)
         self.capture_controller.setup_capture(name=name)
 
     def start_capture(self):

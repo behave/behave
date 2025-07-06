@@ -57,7 +57,8 @@ class FakeModule(ModuleType):
 
     # -- SUPPORT FOR: behave.step_registry.setup_step_decorators()
     def __setitem__(self, name, value):
-        assert "." not in name
+        if "." in name:
+            raise ValueError("REQUIRE NOT-DOTTED: name={}".format(name))
         setattr(self, name, value)
 
 

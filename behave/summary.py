@@ -11,6 +11,8 @@ for collection a summary counts of a test run.
 from __future__ import absolute_import, print_function
 from collections import Counter, OrderedDict
 import six
+
+from behave._types import require_type
 from behave.model_type import Status
 from behave.model_visitor import ModelVisitor
 
@@ -109,7 +111,7 @@ class StatusCounts(Counter):  # pylint: disable=abstract-method
 
     @classmethod
     def from_dict(cls, data):
-        assert isinstance(data, dict)
+        require_type(data, dict)
         return cls.from_counts(**data)
 
     # -- CLASS-METHODS and STATIC-METHODS:
@@ -279,7 +281,7 @@ class HookErrorCounts(Counter):
 
     @classmethod
     def from_dict(cls, data):
-        assert isinstance(data, dict)
+        require_type(data, dict)
         return cls.from_counts(**data)
 
     # -- CLASS-METHODS:
@@ -363,13 +365,13 @@ class HookErrorCounts(Counter):
 
     # -- ALREADY, SEE: Counter
     # def __iadd__(self, other):
-    #     assert isinstance(other, (HookErrorCounts, Counter, dict))
+    #     require_type(other, (HookErrorCounts, Counter, dict))
     #     for name in self.ORDER:
     #         self[name] += other.get(name, 0)
     #     return self
     #
     # def __add__(self, other):
-    #     assert isinstance(other, (HookErrorCounts, Counter, dict))
+    #     require_type(other, (HookErrorCounts, Counter, dict))
     #     the_sum = self.__class__(self.items())
     #     the_sum += other
     #     return the_sum
@@ -419,7 +421,7 @@ class SummaryCounts(object):
 
     @classmethod
     def from_dict(cls, data, strict=False):
-        assert isinstance(data, dict)
+        require_type(data, dict)
         return cls.from_counts(strict=strict, **data)
 
     # -- INSTANCE-METHOS:

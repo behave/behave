@@ -274,7 +274,9 @@ def use_fixture_by_tag(tag, context, fixture_registry):
         fixture_func = fixture_data
         return use_fixture(fixture_func, context)
     elif isinstance(fixture_data, (tuple, list)):
-        assert len(fixture_data) == 3
+        if len(fixture_data) != 3:
+            raise ValueError("{} (expected: length=3)".format(len(fixture_data)))
+
         fixture_func, fixture_args, fixture_kwargs = fixture_data
         return use_fixture(fixture_func, context, *fixture_args, **fixture_kwargs)
     else:

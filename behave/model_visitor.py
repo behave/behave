@@ -7,6 +7,7 @@ to visit a model element and its items (by traversing the model tree).
 """
 
 from __future__ import division, absolute_import, print_function
+from behave._types import require_type
 from behave.model import Feature, Rule, ScenarioOutline, Scenario, Step
 
 
@@ -23,19 +24,19 @@ class IModelVisitor(object):
 
     # -- VISITOR ITEM API: Concrete methods per model element type.
     def on_feature(self, feature):
-        assert isinstance(feature, Feature)
+        require_type(feature, Feature)
 
     def on_rule(self, rule):
-        assert isinstance(rule, Rule)
+        require_type(rule, Rule)
 
     def on_scenario_outline(self, scenario_outline):
-        assert isinstance(scenario_outline, ScenarioOutline)
+        require_type(scenario_outline, ScenarioOutline)
 
     def on_scenario(self, scenario):
-        assert isinstance(scenario, Scenario)
+        require_type(scenario, Scenario)
 
     def on_step(self, step):
-        assert isinstance(step, Step)
+        require_type(step, Step)
 
 
 class ModelVisitor(IModelVisitor):
@@ -63,8 +64,7 @@ class ModelVisitor(IModelVisitor):
     def __init__(self, visitor=None):
         super(ModelVisitor, self).__init__()
         self.visitor = visitor or self
-        assert isinstance(self.visitor, IModelVisitor), \
-            "POSTCONDITION-FAILED: %r (expected: IModelVisitor)" % self.visitor
+        require_type(self.visitor, IModelVisitor)
 
     @staticmethod
     def should_continue_visit(return_value):
@@ -121,7 +121,7 @@ class ModelVisitor(IModelVisitor):
 
     # -- VISITOR TREE WALK API:
     def visit_feature(self, feature):
-        assert isinstance(feature, Feature)
+        require_type(feature, Feature)
         visit_result = self.visitor.on_feature(feature)
         if self.should_continue_visit(visit_result):
             return self.visit_items_of(feature)
@@ -129,14 +129,14 @@ class ModelVisitor(IModelVisitor):
         return visit_result
 
     def visit_rule(self, rule):
-        assert isinstance(rule, Rule)
+        require_type(rule, Rule)
         visit_result = self.visitor.on_rule(rule)
         if self.should_continue_visit(visit_result):
             return self.visit_items_of(rule)
         return visit_result
 
     def visit_scenario_outline(self, scenario_outline):
-        assert isinstance(scenario_outline, ScenarioOutline)
+        require_type(scenario_outline, ScenarioOutline)
         visit_result = self.visitor.on_scenario_outline(scenario_outline)
         if self.should_continue_visit(visit_result):
             return self.visit_many(scenario_outline.scenarios,
@@ -144,12 +144,12 @@ class ModelVisitor(IModelVisitor):
         return visit_result
 
     def visit_scenario(self, scenario):
-        assert isinstance(scenario, Scenario)
+        require_type(scenario, Scenario)
         visit_result = self.visitor.on_scenario(scenario)
         if self.should_continue_visit(visit_result):
             return self.visit_items_of(scenario, visit_func=self.visit_step)
         return visit_result
 
     def visit_step(self, step):
-        assert isinstance(step, Step)
+        require_type(step, Step)
         return self.visitor.on_step(step)

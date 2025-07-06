@@ -15,6 +15,7 @@ import warnings
 
 from six import StringIO, PY2
 
+from behave._types import require_type
 from behave.constant import (
     STORE_CAPTURED_ALWAYS,
     CAPTURE_SINK_STORE_CAPTURED_ON_SUCCESS,
@@ -847,7 +848,7 @@ def capture_output_to_sink(config,
             ... # Do something
     """
     from .configuration import Configuration
-    assert isinstance(config, Configuration)
+    require_type(config, Configuration)
     if capture_sink is None:
         capture_sink = CaptureSink2Print(show_on_success=show_on_success)
 

@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from enum import Enum
 import six
 
+from behave._types import require_type
 # -- NEW TAG-EXPRESSIONSx v2 (cucumber-tag-expressions with extensions):
 from .parser import TagExpressionParser, TagExpressionError
 from .model import Matcher as _MatcherV2
@@ -116,7 +117,7 @@ class TagExpressionProtocol(Enum):
         if isinstance(member, six.string_types):
             name = member
             member = cls.from_name(name)
-        assert isinstance(member, TagExpressionProtocol), "%s:%s" % (type(member), member)
+        require_type(member, TagExpressionProtocol)
         setattr(cls, "_current", member)
 
 

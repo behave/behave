@@ -342,15 +342,15 @@ class TestSimplifiedRegexMatcher(TestRegexMatcher):
         assert isinstance(matched2, Match)
 
     def test_step_should_not_use_regex_begin_marker(self):
-        with pytest.raises(AssertionError):
+        with pytest.raises(ValueError):
             SimplifiedRegexMatcher(None, "^I do something")
 
     def test_step_should_not_use_regex_end_marker(self):
-        with pytest.raises(AssertionError):
+        with pytest.raises(ValueError):
             SimplifiedRegexMatcher(None, "I do something$")
 
     def test_step_should_not_use_regex_begin_and_end_marker(self):
-        with pytest.raises(AssertionError):
+        with pytest.raises(ValueError):
             SimplifiedRegexMatcher(None, "^I do something$")
 
 

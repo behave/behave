@@ -174,7 +174,7 @@ class TestContextCleanup(object):
         non_callable = NonCallable()
         context = make_context()
 
-        with pytest.raises(AssertionError) as e:
+        with pytest.raises(TypeError) as e:
             with scoped_context_layer(context):
                 context.add_cleanup(non_callable)
         assert "REQUIRES: callable(cleanup_func)" in str(e.value)

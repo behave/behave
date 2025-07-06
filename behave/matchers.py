@@ -558,8 +558,10 @@ class SimplifiedRegexMatcher(RegexMatcher):
     NAME = "re"
 
     def __init__(self, func, pattern, step_type=None):
-        assert not (pattern.startswith("^") or pattern.endswith("$")), \
-            "Regular expression should not use begin/end-markers: "+ pattern
+        if pattern.startswith("^") or pattern.endswith("$"):
+            msg = "Regular expression should not use begin/end-markers: " + pattern
+            raise ValueError(msg)
+
         expression = r"^%s$" % pattern
         super(SimplifiedRegexMatcher, self).__init__(func, expression, step_type)
 
@@ -709,8 +711,11 @@ class StepMatcherFactory(object):
         :param step_matcher_class:  Step-matcher class.
         :param override:  Use ``True`` to override any existing step-matcher class.
         """
-        assert inspect.isclass(step_matcher_class)
-        assert issubclass(step_matcher_class, Matcher), "OOPS: %r" % step_matcher_class
+        if not inspect.isclass(step_matcher_class):
+            raise TypeError("%r is not a class" % step_matcher_class)
+        if not issubclass(step_matcher_class, Matcher):
+            raise TypeError("%r is not subclass-of:Matcher" % step_matcher_class)
+
         known_class = self.step_matcher_class_mapping.get(name, None)
         if (not override and
             known_class is not None and known_class is not step_matcher_class):

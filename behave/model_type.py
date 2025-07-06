@@ -9,6 +9,7 @@ import os.path
 import sys
 import six
 
+from behave._types import require_type
 from behave.textutil import text as _text
 
 
@@ -220,7 +221,7 @@ class ScenarioStatus(object):
     """
     @staticmethod
     def from_step_status(step_status, dry_run=False):
-        assert isinstance(step_status, Status)
+        require_type(step_status, Status)
         other_status_values = (Status.skipped,)
         if step_status.is_error():
             # -- CASE 1: hook_error, pending-step, undefined-step as error
@@ -252,7 +253,7 @@ class OuterStatus(object):
 
     @staticmethod
     def from_inner_status(status):
-        assert isinstance(status, Status)
+        require_type(status, Status)
         if status.is_error():
             return Status.error
         elif status.is_failure():
@@ -341,7 +342,7 @@ class FileLocation(object):
             elif self.filename > other.filename:
                 return False
             else:
-                assert self.filename == other.filename
+                # -- ASSUMPTION: assert self.filename == other.filename
                 return self._line_lessthan(other.line)
 
         elif isinstance(other, six.string_types):

@@ -16,6 +16,7 @@ import sys
 from six import string_types
 
 from behave import parser as gherkin
+from behave._types import require_type, require_callable, require_not_none
 from behave.exception import (
     FileNotFoundError,  # pylint: disable=W0622
     InvalidFileLocationError,
@@ -188,9 +189,12 @@ class FeatureScenarioLocationCollector(object):
             self.filename = location.filename
             # if self.feature and False:
             #     self.filename = self.feature.filename
+
         # -- NORMAL CASE:
-        assert self.filename == location.filename, \
-            "%s <=> %s" % (self.filename, location.filename)
+        if not (self.filename == location.filename):
+            raise ValueError("filename:%s <=> location.filename:%s" %
+                             (self.filename, location.filename))
+
         if location.line:
             self.scenario_lines.add(location.line)
         else:
@@ -227,7 +231,7 @@ class FeatureScenarioLocationCollector(object):
         :raises InvalidFileLocationError:
             If file location is no exactly correct and strict is true.
         """
-        assert self.feature
+        require_not_none(self.feature, "self.feature")
         if not self.all_scenarios:
             self.all_scenarios = self.feature.walk_scenarios()
 
@@ -316,7 +320,7 @@ class FeatureScenarioLocationCollector1(FeatureScenarioLocationCollector):
         :raises InvalidFileLocationError:
             If file location is no exactly correct and strict is true.
         """
-        assert self.feature
+        require_not_none(self.feature, "self.feature")
         if not self.all_scenarios:
             self.all_scenarios = self.feature.walk_scenarios()
 
@@ -359,7 +363,7 @@ class FeatureScenarioLocationCollector2(FeatureScenarioLocationCollector):
         :raises InvalidFileLocationError:
             If file location is no exactly correct and strict is true.
         """
-        assert self.feature
+        require_not_none(self.feature, "self.feature")
         if not self.all_scenarios:
             self.all_scenarios = self.feature.walk_scenarios()
 
@@ -480,7 +484,7 @@ def parse_features(feature_files, language=None):
     features = []
     for location in feature_files:
         if not isinstance(location, FileLocation):
-            assert isinstance(location, string_types)
+            require_type(location, string_types)
             location = FileLocation(os.path.normpath(location))
 
         if location.filename == scenario_collector.filename:
@@ -493,7 +497,7 @@ def parse_features(feature_files, language=None):
             scenario_collector.clear()
 
         # -- NEW FEATURE:
-        assert isinstance(location, FileLocation)
+        require_type(location, FileLocation)
         filename = os.path.abspath(location.filename)
         feature = gherkin.parse_file(filename, language=language)
         if feature:
@@ -604,7 +608,7 @@ def make_undefined_step_snippet(step, language=None):
         step_text = step
         steps = gherkin.parse_steps(step_text, language=language)
         step = steps[0]
-        assert step, "ParseError: %s" % step_text
+        require_not_none(step, message=("ParseError: %s" % step_text))
 
     prefix = u"u"
     single_quote = "'"

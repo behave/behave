@@ -85,7 +85,7 @@ class UserData(dict):
         else:
             # -- CASE: Textual value (expected)
             # Raise ValueError if parse/conversion fails.
-            assert callable(convert)
+            # -- ASSUMPTION: require_callable(convert)
             return convert(value)
 
     def getint(self, name, default=0):

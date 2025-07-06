@@ -137,7 +137,9 @@ def parse_environment_var(text, default=None):
         ...
         Given I use "$TOP_DIR" as current directory
     """
-    assert text.startswith("$")
+    if not text.startswith("$"):
+        raise ValueError("REQUIRE START-WITH $: '{}'".format(text))
+
     env_name = text[1:]
     env_value = os.environ.get(env_name, default)
     return EnvironmentVar(env_name, env_value)

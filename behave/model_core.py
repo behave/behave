@@ -22,11 +22,20 @@ class BasicStatement(object):
     STORE_CAPTURED_ON_SUCCESS = CAPTURE_SINK_STORE_CAPTURED_ON_SUCCESS
 
     def __init__(self, filename, line, keyword, name):
+        if not isinstance(keyword, six.text_type):
+            raise TypeError("keyword: {type_}:{value} (expected: {text_type})".format(
+                type_=type(keyword).__name__, value=keyword,
+                text_type=six.text_type.__name__
+            ))
+        if not isinstance(name, six.text_type):
+            raise TypeError("name: {type_}:{value} (expected: {text_type})".format(
+                type_=type(name).__name__, value=name,
+                text_type=six.text_type.__name__
+            ))
+
         filename = filename or '<string>'
         filename = make_relpath_if_possible(filename, os.getcwd())   # -- NEEDS: abspath?
         self.location = FileLocation(filename, line)
-        assert isinstance(keyword, six.text_type), "ACTUAL: %s:%r" % (type(keyword), keyword)
-        assert isinstance(name, six.text_type), "ACTUAL: %s:%r" % (type(keyword), keyword)
         self.keyword = keyword
         self.name = name
         # -- SINCE: 1.2.6 as Captured
@@ -94,7 +103,8 @@ class BasicStatement(object):
 
     def __gt__(self, other):
         # -- SEE ALSO: python2.7, functools.total_ordering
-        assert isinstance(other, BasicStatement)
+        if not isinstance(other, BasicStatement):
+            raise TypeError("other: {!r} (expected: BasicStatement)".format(other))
         return other < self
 
     def __ge__(self, other):

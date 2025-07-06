@@ -1,6 +1,6 @@
 import sys
 import six
-from behave._types import Unknown
+from behave._types import Unknown, require_type
 
 if six.PY2:
     # -- USE PYTHON2 BACKPORT: With unicode support
@@ -19,12 +19,12 @@ class ExceptionUtil(object):
 
     @staticmethod
     def get_traceback(exception):
-        # -- ASSUMPTION: assert isinstance(exception, Exception)
+        # -- ASSUMPTION: require_type(exception, Exception)
         return getattr(exception, "__traceback__", None)
 
     @staticmethod
     def set_traceback(exception, exc_traceback=Unknown):
-        assert isinstance(exception, Exception)
+        require_type(exception, Exception)
         if exc_traceback is Unknown:
             exc_traceback = sys.exc_info()[2]
         exception.__traceback__ = exc_traceback
@@ -63,13 +63,15 @@ class ChainedExceptionUtil(ExceptionUtil):
 
     @staticmethod
     def get_cause(exception):
-        # -- ASSUMPTION: assert isinstance(exception, Exception)
+        # -- ASSUMPTION: require_type(exception, Exception)
         return getattr(exception, "__cause__", None)
 
     @staticmethod
     def set_cause(exception, exc_cause):
-        assert isinstance(exception, Exception)
-        assert isinstance(exc_cause, Exception) or exc_cause is None
+        require_type(exception, Exception)
+        if exc_cause is not None:
+            require_type(exc_cause, Exception)
+
         exception.__cause__ = exc_cause
         if exc_cause and not hasattr(exc_cause, "__traceback__"):
             # -- NEEDED-FOR: Python2

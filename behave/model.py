@@ -20,6 +20,8 @@ import sys
 import time
 import six
 from six.moves import zip       # pylint: disable=redefined-builtin
+
+from behave._types import require_type
 from behave.api.pending_step import StepNotImplementedError
 from behave.capture import Captured, ManyCaptured
 from behave.model_core import (
@@ -278,7 +280,7 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
                     all_scenarios.append(scenario_outline)
                 all_scenarios.extend(scenario_outline.scenarios)
             else:
-                assert isinstance(run_item, Scenario), "OOPS: %r" % run_item
+                require_type(run_item, Scenario)
                 all_scenarios.append(run_item)
         return all_scenarios
 
@@ -1057,7 +1059,6 @@ class Scenario(TagAndStatusStatement, Replayable):
             elif step.status.is_untested():
                 # -- SPECIAL CASE: In dry-run with undefined-step discovery
                 #    Undefined steps should not cause failed scenario.
-                # DISABLED: assert self.was_dry_run, "was_dry_run=%s (expected: true)" % self.was_dry_run
                 return Status.untested
             elif step.status != Status.passed:
                 # pylint: disable=line-too-long
@@ -2043,7 +2044,7 @@ class Step(BasicStatement, Replayable):
 
         # -- CHECK FAILURE DETAILS:
         if self.status.has_failed():
-            assert isinstance(error, six.text_type)
+            require_type(error, six.text_type)
             self.error_message = error
             keep_going = False
 
@@ -2131,7 +2132,7 @@ class Table(Replayable):
         :param default_value: Default value for cell (if values not provided).
         :returns: Index of new column (as number).
         """
-        # assert isinstance(column_name, unicode)
+        # require_type(column_name, six.text_type)
         assert not self.has_column(column_name)
         if values is None:
             values = [default_value] * len(self.rows)
@@ -2150,14 +2151,16 @@ class Table(Replayable):
         self.modified = True
         return new_column_index
 
-    def remove_column(self, column_name):
-        if not isinstance(column_name, int):
+    def remove_column(self, column_name_or_index):
+        column_index = column_name_or_index
+        if not isinstance(column_name_or_index, int):
+            column_name = column_name_or_index
             try:
                 column_index = self.get_column_index(column_name)
             except ValueError:
                 raise KeyError("column=%s is unknown" % column_name)
 
-        assert isinstance(column_index, int)
+        require_type(column_index, int)
         assert column_index < len(self.headings)
         del self.headings[column_index]
         self.modified = True
@@ -2310,8 +2313,10 @@ class Row(object):
     """
     def __init__(self, headings, cells, line=None, comments=None):
         for cell in cells:
-            assert isinstance(cell, six.text_type), \
-                "%s:%s (excepted: unicode-string)" % (type(cell), cell)
+            require_type(cell, six.text_type,
+                         message="%s:%s (excepted: text_type)" %
+                                 (type(cell).__name__, cell))
+
         self.headings = headings
         self.cells = cells
         self.line = line
@@ -2412,7 +2417,7 @@ class Tag(six.text_type):
         :param allowed_chars: Optional string with additional preserved chars.
         :return: Unicode name that can be used as tag.
         """
-        assert isinstance(text, six.text_type)
+        require_type(text, six.text_type)
         if allowed_chars is None:
             allowed_chars = cls.allowed_chars
 
@@ -2448,8 +2453,8 @@ class Text(six.text_type):
        Currently only "text/plain".
     """
     def __new__(cls, value, content_type=u"text/plain", line=0):
-        assert isinstance(value, six.text_type)
-        assert isinstance(content_type, six.text_type)
+        require_type(value, six.text_type)
+        require_type(content_type, six.text_type)
         o = six.text_type.__new__(cls, value)
         o.content_type = content_type
         o.line = line

@@ -49,6 +49,8 @@ import os
 import re
 import sys
 import six
+
+from behave._types import require_type, require_not_none
 from behave import model, i18n
 from behave.textutil import text as _text
 from behave._types import NoneType
@@ -74,7 +76,7 @@ def parse_file(filename, language=None):
 
 def parse_feature(text, language=None, filename=None):
     # ALL data operated on by the parser MUST be unicode
-    assert isinstance(text, six.text_type)
+    require_type(text, six.text_type)
 
     try:
         result = Parser(language).parse(text, filename)
@@ -94,7 +96,7 @@ def parse_rule(text, language=None, filename=None):
     :param filename:  Filename (optional).
     :return: Rule object (if successful).
     """
-    assert isinstance(text, six.text_type)
+    require_type(text, six.text_type)
     try:
         parser = Parser(language, variant="rule")
         result = parser.parse_rule(text, filename)
@@ -113,7 +115,7 @@ def parse_scenario(text, language=None, filename=None):
     :param filename:  Filename (optional).
     :return: Scenario object (if successful).
     """
-    assert isinstance(text, six.text_type)
+    require_type(text, six.text_type)
     try:
         parser = Parser(language, variant="scenario")
         result = parser.parse_scenario(text, filename)
@@ -133,7 +135,7 @@ def parse_steps(text, language=None, filename=None):
     :param filename:  Filename (optional).
     :return: List of Step objects (if successful).
     """
-    assert isinstance(text, six.text_type)
+    require_type(text, six.text_type)
     try:
         parser = Parser(language, variant="steps")
         result = parser.parse_steps(text, filename)
@@ -153,7 +155,8 @@ def parse_step(text, language=None, filename=None):
     :return: Step object (if successful).
     """
     steps = parse_steps(text, language=language, filename=filename)
-    assert len(steps) == 1
+    if not (len(steps) == 1):
+        raise ParserError("MULTIPLE STEPS: Expected one")
     return steps[0]
 
 
@@ -164,7 +167,7 @@ def parse_tags(text):
     :param text: Multi-line text with tags to parse (as unicode).
     :return: List of tags (if successful).
     """
-    # assert isinstance(text, unicode)
+    # require_type(text, unicode)
     if not text:
         return []
     return Parser(variant="tags").parse_tags(text)
@@ -293,8 +296,8 @@ class Parser(object):
         * Parse many steps
         * Parse one step
         """
-        assert isinstance(text, six.string_types)
-        assert isinstance(initial_state, (State, NoneType))
+        require_type(text, six.string_types)
+        require_type(initial_state, (State, NoneType))
         self.reset(filename=filename)
         if initial_state is not None:
             self.state = initial_state
@@ -697,7 +700,6 @@ class Parser(object):
 
         if line.startswith("|"):
             # -- CASE: TABLE-START detected for data-table of a step
-            # OLD: assert self.statement.steps, "TABLE-START without step detected"
             if not self.statement.steps:
                 raise ParserError("TABLE-START without step detected",
                                   self.line, self.filename)
@@ -825,7 +827,10 @@ class Parser(object):
         :param line:   Line with one/more tags to process.
         :raise ParserError: If syntax error is detected.
         """
-        assert line.startswith("@")
+        if not line.startswith("@"):
+            message = "BAD_TAG-LINE: %s (location: %s:%s)"
+            raise ParserError(message % (line, self.filename, self.line))
+
         tags = []
         for word in line.split():
             if word.startswith("@"):
@@ -865,9 +870,9 @@ class Parser(object):
                             raise ParserError(msg.format(step_type=step_type.upper()),
                                               self.line, self.filename)
 
-                    assert self.last_step_type is not None
+                    require_not_none(self.last_step_type, name="last_step_type")
                     step_type = self.last_step_type
-                    assert step_type is not None
+                    require_not_none(step_type, name="step_type")
                 else:
                     self.last_step_type = step_type
 
@@ -911,7 +916,7 @@ class Parser(object):
         :param text:  Text that contains 0..* steps
         :return: List of parsed steps (as model.Step objects).
         """
-        assert isinstance(text, six.text_type)
+        require_type(text, six.text_type)
         if not self.language:
             self.language = DEFAULT_LANGUAGE
         self.reset()

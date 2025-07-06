@@ -10,7 +10,7 @@ import operator
 import re
 import warnings
 import six
-from ._types import Unknown
+from ._types import Unknown, require_callable
 from .compat.collections import UserDict
 from .model_core import TagAndStatusStatement
 
@@ -50,7 +50,7 @@ class ValueObject(object):
         tag_matches = current_value.matches(tag_value)
     """
     def __init__(self, value, compare=operator.eq):
-        assert callable(compare)
+        require_callable(compare)
         self._value = value
         self.compare = compare
 
@@ -511,7 +511,7 @@ class ActiveTagMatcher(TagMatcher):
 
 class PredicateTagMatcher(TagMatcher):
     def __init__(self, exclude_function):
-        assert callable(exclude_function)
+        require_callable(exclude_function)
         super(PredicateTagMatcher, self).__init__()
         self.predicate = exclude_function
 

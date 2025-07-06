@@ -1068,7 +1068,8 @@ class Configuration(object):
 
     def setup_outputs(self, args_outfiles=None):
         if self.outputs:
-            assert not args_outfiles, "ONLY-ONCE"
+            if args_outfiles:
+                raise RuntimeError("ONLY-ONCE with param: args_outfiles")
             return
 
         # -- NORMAL CASE: Setup only initially (once).
