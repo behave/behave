@@ -56,8 +56,8 @@ def make_model_element(**kwargs):
     this_args = dict(
         filename="some.feature",
         line=42,
-        keyword="Scenario",
-        name="",
+        keyword=u"Scenario",
+        name=u"",
         tags=None,
     )
     this_args.update(kwargs)
@@ -127,7 +127,7 @@ def step_then_following_active_tags_combinations_are_enabled(ctx):
 
     # -- FINALLY: Ensure that there are no mismatched rows.
     assert_that(mismatched_rows, equal_to([]),
-                reason="No mismatched rows: {}".format(mismatched_rows))
+                "No mismatched rows: {}".format(mismatched_rows))
 
 @then(u'the following active tag combinations are enabled with inherited tags:')
 def step_then_following_active_tags_combinations_are_enabled(ctx):
@@ -147,8 +147,8 @@ def step_then_following_active_tags_combinations_are_enabled(ctx):
         inherited_tags = normalize_tags(row["inherited_tags"].split())
         expected_enabled = parse_bool(row["enabled?"])
 
-        model_parent  = make_model_element(keyword="Feature", tags=inherited_tags)
-        model_element = make_model_element(keyword="Scenario", tags=tags,
+        model_parent  = make_model_element(keyword=u"Feature", tags=inherited_tags)
+        model_element = make_model_element(keyword=u"Scenario", tags=tags,
                                           parent=model_parent)
         actual_enabled = not active_tag_matcher.should_skip(model_element,
                                                             use_inherited=True)
@@ -166,7 +166,7 @@ def step_then_following_active_tags_combinations_are_enabled(ctx):
 
     # -- FINALLY: Ensure that there are no mismatched rows.
     assert_that(mismatched_rows, equal_to([]),
-                reason="No mismatched rows: {}".format(mismatched_rows))
+                "No mismatched rows: {}".format(mismatched_rows))
 
 @step(u'unknown categories are ignored in active tags')
 def step_unknown_categories_are_ignored_in_active_tags(ctx):
