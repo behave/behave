@@ -18,7 +18,3 @@ if _python_version >= (3, 5):
     # -- PROTECTED-IMPORT:
     # Older Python version have problems with grammar extensions (async/await).
     from ._test_async_step35 import *  # noqa: F403
-if _python_version >= (3, 4):
-    # -- PROTECTED-IMPORT:
-    # Older Python version have problems with grammar extensions (yield-from).
-    from ._test_async_step34 import *  # noqa: F403

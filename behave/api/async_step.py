@@ -13,16 +13,14 @@ EXAMPLE:
     # -- FILE: features/steps/my_async_steps.py
     # EXAMPLE REQUIRES: Python >= 3.5
     from behave import step
-    from behave.api.async_step import async_run_until_complete
 
     @step('an async coroutine step waits {duration:f} seconds')
-    @async_run_until_complete
     async def step_async_step_waits_seconds(context, duration):
         await asyncio.sleep(duration)
 
-.. requires:: Python 3.5 (or 3.4) or :mod:`asyncio` backport (like :pypi:`trollius`)
-.. seealso::
-    https://docs.python.org/3/library/asyncio.html
+.. requires:: Python 3.5
+
+    * https://docs.python.org/3/library/asyncio.html
 
 .. _asyncio.coroutines: https://docs.python.org/3/library/asyncio-task.html#coroutines
 """
@@ -31,6 +29,17 @@ EXAMPLE:
 # -- REQUIRES: Python >= 3.5
 from __future__ import absolute_import, print_function
 import warnings as _warnings
+
+from behave._types import require_callable as _require_callable
+from behave.async_step import (
+    # -- PART OF API:
+    AsyncContext,
+    use_or_assign_event_loop,
+    use_or_create_async_context,
+
+    # -- NOT PART OF API:
+    AsyncStepFunction as _AsyncStepFunction,
+)
 
 
 # -----------------------------------------------------------------------------
@@ -85,23 +94,23 @@ def async_run_until_complete(astep_func=None, timeout=None,
     """
     message = "@async_run_until_complete (no longer needed)."
     _warnings.warn(message, PendingDeprecationWarning, stacklevel=2)
-    from behave.async_step import AsyncStepFunction
+
     if astep_func is None:
         # -- CASE: @decorator(timeout=1.2, ...)
         def wrapped_decorator(astep_func):
-            async_step_func = AsyncStepFunction(astep_func,
-                                                timeout=timeout,
-                                                loop=loop,
-                                                async_context=async_context)
+            async_step_func = _AsyncStepFunction(astep_func,
+                                                 timeout=timeout,
+                                                 loop=loop,
+                                                 async_context=async_context)
             return async_step_func
         return wrapped_decorator
     else:
         # -- CASE: @decorator ... or astep = decorator(astep)
-        assert callable(astep_func)
-        async_step_func = AsyncStepFunction(astep_func,
-                                            timeout=timeout,
-                                            loop=loop,
-                                            async_context=async_context)
+        _require_callable(astep_func)
+        async_step_func = _AsyncStepFunction(astep_func,
+                                             timeout=timeout,
+                                             loop=loop,
+                                             async_context=async_context)
         return async_step_func
 
 # -- ALIAS:
@@ -109,134 +118,9 @@ run_until_complete = async_run_until_complete
 
 
 # -----------------------------------------------------------------------------
-# ASYNC STEP UTILITY CLASSES:
-# -----------------------------------------------------------------------------
-class AsyncContext(object):
-    # pylint: disable=line-too-long
-    """Provides a context object for "async steps" to keep track:
-
-    * which event loop is used
-    * which (asyncio) tasks are used or of interest
-
-    .. attribute:: loop
-        Event loop object to use.
-        If none is provided, the current event-loop is used
-        (or a new one is created).
-
-    .. attribute:: tasks
-        List of started :mod:`asyncio` tasks (of interest).
-
-    .. attribute:: name
-
-        Optional name of this object (in the behave context).
-        If none is provided, :attr:`AsyncContext.default_name` is used.
-
-    .. attribute:: should_close
-        Indicates if the :attr:`loop` (event-loop) should be closed or not.
-
-    EXAMPLE:
-
-    .. code-block:: python
-
-        # -- FILE: features/steps/my_async_steps.py
-        # REQUIRES: Python 3.5
-        from behave import given, when, then, step
-        from behave.api.async_step import AsyncContext
-
-        @when('I dispatch an async-call with param "{param}"')
-        def step_impl(context, param):
-            async_context = getattr(context, "async_context", None)
-            if async_context is None:
-                async_context = context.async_context = AsyncContext()
-            task = async_context.loop.create_task(my_async_func(param))
-            async_context.tasks.append(task)
-
-        @then('I wait at most {duration:f} seconds until all async-calls are completed')
-        def step_impl(context, duration):
-            async_context = context.async_context
-            assert async_context.tasks
-            done, pending = async_context.loop.run_until_complete(asyncio.wait(
-                async_context.tasks, loop=async_context.loop, timeout=duration))
-            assert len(pending) == 0
-
-        # -- COROUTINE:
-        async def my_async_func(param):
-            await asyncio.sleep(0.5)
-            return param.upper()
-    """
-    # pylint: enable=line-too-long
-    default_name = "async_context"
-
-    def __init__(self, loop=None, name=None, should_close=False, tasks=None):
-        from behave.async_step import use_or_assign_event_loop
-        self.loop = use_or_assign_event_loop(loop)
-        self.tasks = tasks or []
-        self.name = name or self.default_name
-        self.should_close = should_close
-
-    def __del__(self):
-        # print("DIAG: AsyncContext.dtor: {}".format(self.name))
-        if self.loop and self.should_close:
-            self.close()
-
-    def close(self):
-        if self.loop and not self.loop.is_closed():
-            # print("DIAG: AsyncContext.close: {}".format(self.name))
-            self.loop.close()
-        self.loop = None
-
-
-# -----------------------------------------------------------------------------
 # ASYNC STEP UTILITY FUNCTIONS:
 # -----------------------------------------------------------------------------
 def use_or_create_event_loop(loop=None):
-    from behave.async_step import use_or_assign_event_loop
     message = "use_or_create_event_loop: Use use_or_assign_event_loop() instead"
     _warnings.warn(message, PendingDeprecationWarning)
     return use_or_assign_event_loop(loop)
-
-
-def use_or_create_async_context(context, name=None, loop=None, **kwargs):
-    """
-    Utility function to be used in step implementations to ensure that an
-    :class:`AsyncContext` object is stored in the :param:`context` object.
-
-    If no such attribute exists (under the given name),
-    a new :class:`AsyncContext` object is created with the provided args.
-    Otherwise, the existing context attribute is used.
-
-    EXAMPLE:
-
-    .. code-block:: python
-
-        # -- FILE: features/steps/my_async_steps.py
-        # EXAMPLE REQUIRES: Python 3.5
-        from behave import when
-        from behave.api.async_step import use_or_create_async_context
-
-        @when('I dispatch an async-call with param "{param}"')
-        def step_impl(context, param):
-            async_context = use_or_create_async_context(context, "async_context")
-            task = async_context.loop.create_task(my_async_func(param))
-            async_context.tasks.append(task)
-
-        # -- COROUTINE:
-        async def my_async_func(param):
-            await asyncio.sleep(0.5)
-            return param.upper()
-
-    :param context:     Behave context object to use.
-    :param name:        Optional name of async-context object (as string or None).
-    :param loop:        Optional event_loop object to use for create call.
-    :param kwargs:      Optional :class:`AsyncContext` params for create call.
-    :return: :class:`AsyncContext` object from the param:`context`.
-    """
-    if name is None:
-        name = AsyncContext.default_name
-    async_context = getattr(context, name, None)
-    if async_context is None:
-        async_context = AsyncContext(loop=loop, name=name, **kwargs)
-        setattr(context, async_context.name, async_context)
-    assert isinstance(async_context, AsyncContext)
-    assert getattr(context, async_context.name) is async_context
-    return async_context

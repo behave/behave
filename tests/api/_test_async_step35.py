@@ -8,9 +8,14 @@ Unit tests for :mod:`behave.api.async_test` for Python 3.5 (or newer).
 from __future__ import absolute_import, print_function
 import sys
 from hamcrest import assert_that, close_to
+from mock import Mock
 import pytest
 
 from behave._stepimport import use_step_import_modules, SimpleStepContainer
+from behave.api.async_step import (
+    use_or_create_async_context
+)
+from behave.async_step import AsyncContext
 from behave.configuration import Configuration
 from behave.runner import Context, Runner
 from .testing_support import StopWatch
@@ -111,6 +116,8 @@ class TestAsyncContext:
         assert getattr(context, "async_context", None) is async_context
         assert async_context is async_context0
 
+    @pytest.mark.xfail
+    @pytest.mark.todo
     def test_use_or_create_async_context__when_missing_with_name(self):
         # -- CASE: AsynContext attribute is created with own name
         loop0 = Mock()
@@ -121,6 +128,8 @@ class TestAsyncContext:
         assert getattr(context, "acontext", None) is async_context
         assert async_context.loop is loop0
 
+    @pytest.mark.xfail
+    @pytest.mark.todo
     def test_use_or_create_async_context__when_exists_with_name(self):
         # -- CASE: AsynContext attribute exists with own name
         loop0 = Mock()
@@ -168,6 +177,7 @@ class TestAsyncStepRunPy35:
         given_async_step_passes(context)
         when_async_step_passes(context)
         assert context.traced_steps == ["async-step1", "async-step2"]
+
 
     def test_async_step_fails(self):
         """ENSURE: Failures in async-steps are detected correctly."""

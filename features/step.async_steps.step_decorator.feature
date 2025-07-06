@@ -54,6 +54,7 @@ Feature: Async-Step with Step Decorator
         """
 
 
+    @use.with_python.min_version=3.11
     Scenario: Use @async_run_until_complete(timeout=...) and TIMEOUT occurs (async-function)
       Given a new working directory
       And a file named "features/steps/async_steps_timeout35.py" with:
@@ -84,7 +85,7 @@ Feature: Async-Step with Step Decorator
         """
       And the command output should contain:
         """
-        Assertion Failed: TIMEOUT-OCCURRED: timeout=0.1
+        ASSERT FAILED: TIMEOUT-OCCURRED: timeout=0.1
         """
 
     @async_step_fails
@@ -124,7 +125,7 @@ Feature: Async-Step with Step Decorator
         """
       And the command output should contain:
         """
-        Assertion Failed: XFAIL in async-step
+        ASSERT FAILED: XFAIL in async-step
         """
 
     @async_step_fails

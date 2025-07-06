@@ -642,7 +642,7 @@ def path_getrootdir(path):
 
     .. code-block:: python
 
-        rootdir = path_getrootdir(r"D:\foo\bar\one.feature")
+        rootdir = path_getrootdir("D:\\foo\\bar\\one.feature")
         assert rootdir == r"D:\"
     """
     drive, _ = os.path.splitdrive(path)

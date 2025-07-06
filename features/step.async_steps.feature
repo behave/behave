@@ -79,6 +79,7 @@ Feature: Async-Step Support
         """
       And the command output should not contain "TIMEOUT"
 
+    @use.with_python.min_version=3.11
     Scenario: Use Async-Step with Timeout and TIMEOUT occurs
       Given a new working directory
       And a file named "features/steps/async_steps_timeout35.py" with:
@@ -108,7 +109,7 @@ Feature: Async-Step Support
         """
       And the command output should contain:
         """
-        ASSERT FAILED: TIMEOUT-OCCURED: timeout=0.1
+        ASSERT FAILED: TIMEOUT-OCCURRED: timeout=0.1
         """
 
     @async_step_fails

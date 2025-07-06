@@ -10,9 +10,14 @@ from __future__ import absolute_import, print_function
 import inspect
 import sys
 
-from behave.async_step import AsyncStepFunction
 from behave.matchers import make_step_matcher
+from behave.python_feature import PythonFeature
 from behave.textutil import text as _text
+
+_PYTHON_VERSION = sys.version_info[:2]
+_FEATURE_ASYNC_FUNC = PythonFeature.has_async_function()
+if _FEATURE_ASYNC_FUNC:
+    from behave.async_step import AsyncStepFunction
 
 # limit import * to just the decorators
 # pylint: disable=undefined-all-variable
@@ -186,7 +191,7 @@ class StepRegistry(object):
         """
         def decorator(step_text, **kwargs):
             def wrapper(func):
-                if inspect.iscoroutinefunction(func):
+                if _FEATURE_ASYNC_FUNC and inspect.iscoroutinefunction(func):
                     func = AsyncStepFunction(func, **kwargs)
                 self.add_step_definition(step_type, step_text, func)
                 return func

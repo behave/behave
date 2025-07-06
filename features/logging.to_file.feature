@@ -143,7 +143,7 @@ Feature: Logging to a file
         """
 
   Scenario: Log records for passing/failing steps appear in log-file (2 Scenarios)
-    Given a file named "features/log_records_and_passes.feature" with:
+    Given a file named "features/log_records_with_passes_and_fails.feature" with:
         """
         Feature: Log Records and Passing/Failing
           Scenario: Passing
@@ -151,7 +151,7 @@ Feature: Logging to a file
               | category | level   | message |
               | root     | ERROR   | LOG_MESSAGE_1 |
               | foo      | WARNING | LOG_MESSAGE_2 |
-            When another step passing
+            When another step passes
 
           Scenario: Failing
             Given I create log records with:
@@ -159,7 +159,7 @@ Feature: Logging to a file
               | other    | INFO    | LOG_MESSAGE_3 |
             When another step fails
         """
-    When I run "behave -f plain features/log_records_and_passes.feature"
+    When I run "behave -f plain features/log_records_with_passes_and_fails.feature"
     Then it should fail
     And the command output should not contain the following log records:
         | category | level   | message       |

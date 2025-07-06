@@ -15,6 +15,7 @@ import pytest
 
 from behave._stepimport import use_step_import_modules, SimpleStepContainer
 from behave.async_step import AsyncStepFunction, StepFunctionTypeError
+from behave.python_feature import PythonLibraryFeature
 from behave.runner import Context, Runner
 
 from tests.api.testing_support import StopWatch
@@ -241,6 +242,11 @@ class TestUseAsyncStepDecorator:
         async_step_2(ctx, "ASYNC_STEP_2")
         assert_that(ctx.called).is_equal_to(["HELLO ASYNC_STEP_2"])
 
+
+@pytest.mark.skipif(not PythonLibraryFeature.has_asyncio_timeout(),
+                    reason="asyncio.timeout() is not available")
+class TestUseAsyncStepDecoratorWithTimeout:
+
     def test_with_timeout_if_no_timeout_occurs(self):
         step_container = SimpleStepContainer()
         with use_step_import_modules(step_container):
@@ -281,3 +287,41 @@ class TestUseAsyncStepDecorator:
         with pytest.raises(AssertionError):
             async_step_with_timeout_raises_error(ctx, "BAD_ASYNC_STEP_1")
         assert ctx.called == []
+
+    def test_async_step_with_task_crossing(self):
+        """
+        ENSURE: Task started in an async-step can be seen running from another step.
+        """
+        # -- PROVIDED-BY: jeteve in PR #1249
+        step_container = SimpleStepContainer()
+        with use_step_import_modules(step_container):
+            # -- STEP-DEFINITIONS EXAMPLE (as MODULE SNIPPET):
+            # VARIANT 1: Use async def step_impl()
+            # pylint: disable=import-outside-toplevel, unused-argument
+            from behave import given, when
+            from behave.api.async_step import async_run_until_complete
+            import asyncio
+
+            @given('we build an async task')
+            @async_run_until_complete
+            async def given_async_step_passes(context):
+                async def the_task():
+                    await asyncio.sleep(0.01)
+                    return "task-done"
+
+                context.the_task = asyncio.create_task(the_task())
+
+            @when('we can wait for the task in another async step')
+            @async_run_until_complete
+            async def when_async_step_passes(context):
+                await context.the_task
+
+        # pylint: enable=import-outside-toplevel, unused-argument
+        # -- RUN ASYNC-STEP: Verify that async-steps can be executed.
+        context = Context(runner=Runner(config={}))
+
+        context.the_task = None
+        given_async_step_passes(context)
+        when_async_step_passes(context)
+        assert context.the_task.done()
+        assert context.the_task.result() == "task-done"
