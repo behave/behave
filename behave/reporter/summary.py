@@ -308,6 +308,11 @@ class AbstractSummaryReporter(Reporter):
         self.print_failing_scenarios(stream=stream)
         self.print_errored_scenarios(stream=stream)
 
+    def print_duration(self, stream=None):
+        stream = stream or self.stream
+        timings = (int(self.duration / 60.0), self.duration % 60)
+        stream.write("Took %dmin %.3fs\n" % timings)
+
     # -- INTERFACE FOR: SUMMARY-REPORTER
     def on_feature(self, feature):
         raise NotImplementedError()
@@ -401,8 +406,7 @@ class SummaryReporterV1(AbstractSummaryReporter):
 
         # -- DURATION:
         if with_duration:
-            timings = (int(self.duration / 60.0), self.duration % 60)
-            stream.write('Took %dmin%06.3fs\n' % timings)
+            self.print_duration(stream)
 
     def on_feature(self, feature):
         self.process_feature(feature)
@@ -493,8 +497,7 @@ class SummaryReporterV2(AbstractSummaryReporter):  # pylint: disable=invalid-nam
 
         # -- DURATION:
         if with_duration:
-            timings = (int(self.duration / 60.0), self.duration % 60)
-            stream.write('Took %dm%02.3fs\n' % timings)
+            self.print_duration(stream)
 
     def on_feature(self, feature):
         self.summary_collector.visit_feature(feature)
