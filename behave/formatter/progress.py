@@ -54,6 +54,7 @@ class ProgressFormatterBase(Formatter):
         self.current_rule = None
         self.current_scenario = None
         self.current_feature_scenario_counts = 0
+        self.current_rule_scenario_counts = 0
         self.show_timings = config.show_timings and self.show_timings
 
     def reset(self):
@@ -64,18 +65,22 @@ class ProgressFormatterBase(Formatter):
         self.current_rule = None
         self.current_scenario = None
         self.current_feature_scenario_counts = 0
+        self.current_rule_scenario_counts = 0
 
     # -- FORMATTER API:
     def feature(self, feature):
         self.report_current_feature_completed()
-        self.current_rule = None
+
         self.current_feature = feature
+        self.current_feature_scenario_counts = 0
         self.stream.write("%s  " % six.text_type(feature.filename))
         self.stream.flush()
 
     def rule(self, rule):
         self.report_current_rule_completed()
+
         self.current_rule = rule
+        self.current_rule_scenario_counts = 0
 
     def background(self, background):
         pass
@@ -86,8 +91,11 @@ class ProgressFormatterBase(Formatter):
         But first allow to report the status on the last scenario.
         """
         self.report_current_scenario_completed()
-        self.current_feature_scenario_counts += 1
+
         self.current_scenario = scenario
+        self.current_feature_scenario_counts += 1
+        if self.current_rule:
+            self.current_rule_scenario_counts += 1
 
     def step(self, step):
         self.steps.append(step)
@@ -117,14 +125,14 @@ class ProgressFormatterBase(Formatter):
     def report_current_step_progress(self, step):
         """Report the progress on the current step.
         The default implementation is empty.
-        It should be override by a concrete class.
+        It should be overridden by a concrete class.
         """
         pass
 
     def report_current_scenario_progress(self):
         """Report the progress for the current/last scenario.
         The default implementation is empty.
-        It should be override by a concrete class.
+        It should be overridden by a concrete class.
         """
         pass
 
@@ -139,6 +147,7 @@ class ProgressFormatterBase(Formatter):
     def report_current_rule_completed(self):
         self.report_current_scenario_completed()
         self.current_rule = None
+        self.current_rule_scenario_counts = 0
 
     def report_current_scenario_completed(self):
         """Hook called when a scenario is completed to perform the last tasks.
@@ -270,12 +279,19 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
 
     # -- FORMATTER API:
     def feature(self, feature):
-        self.current_rule = None
+        self.report_current_feature_completed()
+
+        # -- NEW FEATURE STARTED:
         self.current_feature = feature
+        self.current_feature_scenario_counts = 0
         self.stream.write(u"%s    # %s\n" % (feature.name, feature.filename))
 
     def rule(self, rule):
+        self.report_current_rule_completed()
+
+        # -- NEW RULE STARTED:
         self.current_rule = rule
+        self.current_rule_scenario_counts = 0
         self.stream.write(u"\n  %s: %s    # %s\n" %
                           (rule.keyword, rule.name, rule.location))
 
@@ -284,10 +300,12 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         # -- LAST SCENARIO: Report failures (if any).
         self.report_current_scenario_completed()
 
-        # -- START SCENARIO:
+        # -- NEW SCENARIO STARTED:
         assert not self.failed_steps
-        self.current_feature_scenario_counts += 1
         self.current_scenario = scenario
+        self.current_feature_scenario_counts += 1
+        if self.current_rule:
+            self.current_rule_scenario_counts += 1
         scenario_name = scenario.name
         prefix = self.scenario_prefix
         if self.current_rule:
@@ -325,6 +343,20 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         self.current_feature = None
         self.current_feature_scenario_counts = 0
 
+    # @override
+    def report_current_rule_completed(self):
+        if not self.current_rule:
+            return
+
+        self.report_current_scenario_completed()
+        self.report_current_rule_captured_output()
+        if self.current_rule_scenario_counts == 0:
+            # -- EMPTY-LINE between last scenario and next rule.
+            self.stream.write(u"\n")
+
+        self.current_rule = None
+        self.current_rule_scenario_counts = 0
+
     def report_current_scenario_completed(self):
         if not self.current_scenario:
             return
@@ -352,6 +384,17 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         captured_output = self.current_feature.captured.make_report()
         self.stream.write(captured_output)
         self.stream.write(u" CAPTURED_SCENARIO_OUTPUT_END ----\n")
+
+    def report_current_rule_captured_output(self):
+        if (not self.current_rule
+            or not self.current_rule.status.has_failed()
+            or not self.current_rule.captured.has_output()):
+            return
+
+        # -- NORMAL CASE:
+        captured_output = self.current_rule.captured.make_report()
+        self.stream.write(captured_output)
+        self.stream.write(u" CAPTURED_RULE_OUTPUT_END ----\n")
 
     def report_current_scenario_captured_output(self):
         # -- EXCLUDE: Status.hook_error for Scenario
