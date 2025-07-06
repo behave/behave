@@ -402,7 +402,7 @@ class SummaryReporterV1(AbstractSummaryReporter):
         # -- DURATION:
         if with_duration:
             timings = (int(self.duration / 60.0), self.duration % 60)
-            stream.write('Took %dm%02.3fs\n' % timings)
+            stream.write('Took %dmin%06.3fs\n' % timings)
 
     def on_feature(self, feature):
         self.process_feature(feature)
