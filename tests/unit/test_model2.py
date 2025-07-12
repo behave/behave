@@ -212,6 +212,182 @@ Feature:
         assert scenario1_steps[0].name == expected_step_names[1][0]
         assert scenario1_steps[1].name == expected_step_names[1][1]
 
+    def test_build_scenarios_with_parameter_row_id(self):
+        text = u"""
+    Feature:
+      @name=<name>
+      Scenario Outline: <name> -- row.id=<row.id>
+        Then the name of this person is "<name>"
+
+        Examples: Persons
+          | name  |
+          | Alice |
+          | Bob   |
+
+        Examples: Cats
+          | name  |
+          | Coco |
+          | Dubidoo |
+    """
+        feature = parse_feature(text)
+        expected_scenario_names = [
+            "Alice -- row.id=1.1 -- @1.1 Persons",
+            "Bob -- row.id=1.2 -- @1.2 Persons",
+            "Coco -- row.id=2.1 -- @2.1 Cats",
+            "Dubidoo -- row.id=2.2 -- @2.2 Cats",
+        ]
+
+        scenarios = list(feature.iter_scenarios())
+        scenario_names = [scenario.name for scenario in scenarios]
+        assert expected_scenario_names == scenario_names
+
+    def test_build_scenarios_with_parameter_row_index(self):
+        text = u"""
+    Feature:
+      @name=<name>
+      Scenario Outline: <name> -- row.index=<row.index>
+        Then the name of this person is "<name>"
+
+        Examples: Persons
+          | name  |
+          | Alice |
+          | Bob   |
+
+        Examples: Cats
+          | name  |
+          | Coco |
+          | Dubidoo |
+    """
+        feature = parse_feature(text)
+        expected_scenario_names = [
+            "Alice -- row.index=1 -- @1.1 Persons",
+            "Bob -- row.index=2 -- @1.2 Persons",
+            "Coco -- row.index=1 -- @2.1 Cats",
+            "Dubidoo -- row.index=2 -- @2.2 Cats",
+        ]
+
+        scenarios = list(feature.iter_scenarios())
+        scenario_names = [scenario.name for scenario in scenarios]
+        assert expected_scenario_names == scenario_names
+
+    def test_build_scenarios_with_parameter_example_name(self):
+        text = u"""
+    Feature:
+      @name=<name>
+      Scenario Outline: <name> -- examples.name=<examples.name>
+        Then the name of this person is "<name>"
+
+        Examples: Persons
+          | name  |
+          | Alice |
+          | Bob   |
+
+        Examples: Cats
+          | name  |
+          | Coco |
+          | Dubidoo |
+    """
+        feature = parse_feature(text)
+        expected_scenario_names = [
+            "Alice -- examples.name=Persons -- @1.1 Persons",
+            "Bob -- examples.name=Persons -- @1.2 Persons",
+            "Coco -- examples.name=Cats -- @2.1 Cats",
+            "Dubidoo -- examples.name=Cats -- @2.2 Cats",
+        ]
+
+        scenarios = list(feature.iter_scenarios())
+        scenario_names = [scenario.name for scenario in scenarios]
+        assert expected_scenario_names == scenario_names
+
+    def test_build_scenarios_with_parameter_example_index(self):
+        text = u"""
+    Feature:
+      @name=<name>
+      Scenario Outline: <name> -- examples.index=<examples.index>
+        Then the name of this person is "<name>"
+
+        Examples: Persons
+          | name  |
+          | Alice |
+          | Bob   |
+
+        Examples: Cats
+          | name  |
+          | Coco |
+          | Dubidoo |
+    """
+        feature = parse_feature(text)
+        expected_scenario_names = [
+            "Alice -- examples.index=1 -- @1.1 Persons",
+            "Bob -- examples.index=1 -- @1.2 Persons",
+            "Coco -- examples.index=2 -- @2.1 Cats",
+            "Dubidoo -- examples.index=2 -- @2.2 Cats",
+        ]
+
+        scenarios = list(feature.iter_scenarios())
+        scenario_names = [scenario.name for scenario in scenarios]
+        assert expected_scenario_names == scenario_names
+
+    def test_build_scenarios_with_parametrized_scenario_tags(self):
+        """
+        Ensure that placeholders in ScenarioOutline tags are supported.
+        """
+        text = u"""
+    Feature:
+      @name=<name>
+      Scenario Outline:
+        Then the birth year of this person is "<birth year>"
+
+        Examples:
+          | name  | birth year |
+          | Alice | 1995 |
+          | Bob   | 1985 |
+    """
+        feature = parse_feature(text)
+        expected_tags = [
+            ["name=Alice"],
+            ["name=Bob"],
+        ]
+
+        scenarios = list(feature.iter_scenarios())
+        assert len(scenarios) == 2
+
+        scenario0_tags = list(scenarios[0].tags)
+        scenario1_tags = list(scenarios[1].tags)
+        assert scenario0_tags == expected_tags[0]
+        assert scenario1_tags == expected_tags[1]
+
+    def test_build_scenarios_with_parametrized_examples_tags(self):
+        """
+        Ensure that placeholders in Examples tags are supported.
+
+        RELATED TO: Issue #1246, #1240
+        """
+        text = u"""
+Feature:
+  Scenario Outline:
+    Then the birth year of this person is "<birth year>"
+
+    @name=<name>
+    Examples:
+      | name  | birth year |
+      | Alice | 1995 |
+      | Bob   | 1985 |
+"""
+        feature = parse_feature(text)
+        expected_tags = [
+            ["name=Alice"],
+            ["name=Bob"],
+        ]
+
+        scenarios = list(feature.iter_scenarios())
+        assert len(scenarios) == 2
+
+        scenario0_tags = list(scenarios[0].tags)
+        scenario1_tags = list(scenarios[1].tags)
+        assert scenario0_tags == expected_tags[0]
+        assert scenario1_tags == expected_tags[1]
+
 
 class TestTag(object):
     """

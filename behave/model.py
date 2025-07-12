@@ -1369,12 +1369,12 @@ class ScenarioOutlineBuilder(object):
         return False
 
     @classmethod
-    def make_row_tags(cls, outline_tags, row, params=None):
-        if not outline_tags:
+    def make_row_tags(cls, template_tags, row, params=None):
+        if not template_tags:
             return []
 
         tags = []
-        for tag in outline_tags:
+        for tag in template_tags:
             if cls.is_parametrized_tag(tag):
                 tag = cls.render_template(tag, row, params)
             if cls.is_parametrized_tag(tag):
@@ -1404,8 +1404,9 @@ class ScenarioOutlineBuilder(object):
     def make_scenario_for(self, example, row, scenario_template, params):
         scenario_name = self.make_scenario_name(scenario_template.name,
                                                 example, row, params)
-        row_tags = self.make_row_tags(scenario_template.tags, row, params)
-        row_tags.extend(example.tags)
+
+        scenario_template_tags = scenario_template.tags + example.tags
+        row_tags = self.make_row_tags(scenario_template_tags, row, params)
         background_steps = None
         if self.has_parametrized_steps(scenario_template.background_steps):
             background_steps = []
