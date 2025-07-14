@@ -45,10 +45,16 @@ jobs:
           cache: 'pip'
           cache-dependency-path: 'py.requirements/*.txt'
 
-      - name: Install Python package dependencies
+      - name: Install Python package dependencies (step 0)
         run: |
-           python -m pip install -U pip setuptools setuptools-scm build wheel
-           pip install -U -r py.requirements/ci.github.testing.txt
+          python -m pip install -U pip setuptools setuptools-scm build wheel
+          pip --version
+      - name: Install Python package dependencies (step 1)
+        run: |
+           pip install -r py.requirements/ci.github.testing.txt
+           pip list
+      - name: Install Python package dependencies (step 2)
+        run: |
            pip install .
       - name: Run tests
         run: pytest
