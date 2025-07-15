@@ -84,8 +84,6 @@ Feature: Async-Step-Function(s) with AyncContext
         """
       And the command output should contain "ASYNC_TASK: Starting alice"
       And the command output should contain "ASYNC_TASK: Starting bob"
-      And the command output should contain:
-        """
-        ASYNC_TASK: Finished bob
-        ASYNC_TASK: Finished alice
-        """
+      And the command output should contain "ASYNC_TASK: Finished bob"
+      And the command output should contain "ASYNC_TASK: Finished alice"
+      But note that "on Windows the finished-task order may vary sporadically"

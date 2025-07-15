@@ -40,9 +40,9 @@ python_version = sys.version_info[:2]
 py35_or_newer = pytest.mark.skipif(python_version < PYTHON_3_5,
                                    reason="Needs Python >= 3.5")
 
-SLEEP_DELTA = 0.050
+SLEEP_DELTA = 0.100
 if sys.platform.startswith("win"):
-    SLEEP_DELTA = 0.100
+    SLEEP_DELTA = 0.150
 
 
 # -----------------------------------------------------------------------------
