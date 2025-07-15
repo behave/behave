@@ -222,6 +222,7 @@ class TestUseAsyncStep:
         with pytest.raises(RuntimeError):
             async_step_with_error(ctx)
 
+    @pytest.mark.filterwarnings("ignore: 'asyncio.get_event_loop_policy' is deprecated.*:DeprecationWarning")
     def test_event_loop_is_unset(self, monkeypatch):
         step_container = SimpleStepContainer()
         with use_step_import_modules(step_container):

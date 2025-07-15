@@ -53,6 +53,7 @@ AssertionError
 
     # @require_python2
     @pytest.mark.filterwarnings("ignore:invalid escape sequence")
+    @pytest.mark.filterwarnings("ignore:.* is an invalid escape sequence.*:DeprecationWarning")
     def test__problem_exists_with_problematic_encoding(self):
         """Test ensures that problem exists with encoding=unicode-escape"""
         # -- NOTE: Explicit use of problematic encoding
