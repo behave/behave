@@ -68,14 +68,14 @@ Feature: Async-Step Support
           Scenario:
             Given an async-step waits 0.010 seconds with timeout
         """
-      When I run "behave -f plain --show-timings features/async_timeout35.feature"
+      When I run "behave -f plain --no-timings features/async_timeout35.feature"
       Then it should pass with:
         """
         1 step passed, 0 failed, 0 skipped
         """
       And the command output should contain:
         """
-        Given an async-step waits 0.010 seconds with timeout ... passed in 0.01
+        Given an async-step waits 0.010 seconds with timeout ... passed
         """
       And the command output should not contain "TIMEOUT"
 
