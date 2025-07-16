@@ -2,7 +2,7 @@
 # PYTHON PACKAGE REQUIREMENTS FOR: behave -- For testing only
 # ============================================================================
 
--r basic.txt
+# -- DISABLED: -r basic.txt
 
 # -- TESTING: Unit tests and behave self-tests.
 # PREPARED-FUTURE: behave4cmd0, behave4cmd

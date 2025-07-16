@@ -39,151 +39,151 @@
 #   * https://setuptools-scm.readthedocs.io/en/latest/usage/
 # =============================================================================
 # PYTHON3: requires = ["setuptools>=64", "setuptools_scm>=8", "wheel"]
+# PREPARED: requires = ["setuptools", "setuptools_scm", "wheel"]
 
 [build-system]
-requires = ["setuptools", "setuptools_scm", "wheel"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
-# -- DISABLED: Due to Python 2.7 support and setuptools features
-# [project]
-# name = "behave"
-# authors = [
-#    {name = "Jens Engel", email = "jenisys@noreply.github.com"},
-#    {name = "Benno Rice"},
-#    {name = "Richard Jones"},
-#]
-# maintainers = [
-#    {name = "Jens Engel", email = "jenisys@noreply.github.com"},
-#    {name = "Peter Bittner", email = "bittner@noreply.github.com"},
-#]
-# description = "behave is behaviour-driven development, Python style"
-# dynamic = ["version"]
-# readme = "README.rst"
-# requires-python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
-## DISABLED: requires-python = ">=3.6"
-# keywords = [
-#    "BDD", "behavior-driven-development", "bdd-framework",
-#    "behave", "gherkin", "cucumber-like"
-# ]
-# license = "BSD-2-Clause"
-# license-files = ["LICENSE"]
-# classifiers = [
-#    "Development Status :: 5 - Production/Stable",
-#    "Environment :: Console",
-#    "Intended Audience :: Developers",
-#    "Operating System :: OS Independent",
-#    "Programming Language :: Python :: 2",
-#    "Programming Language :: Python :: 2.7",
-#    "Programming Language :: Python :: 3",
-#    "Programming Language :: Python :: 3.5",
-#    "Programming Language :: Python :: 3.6",
-#    "Programming Language :: Python :: 3.7",
-#    "Programming Language :: Python :: 3.8",
-#    "Programming Language :: Python :: 3.9",
-#    "Programming Language :: Python :: 3.10",
-#    "Programming Language :: Python :: 3.11",
-#    "Programming Language :: Python :: 3.12",
-#    "Programming Language :: Python :: 3.13",
-#    "Programming Language :: Python :: Implementation :: CPython",
-#    "Programming Language :: Python :: Implementation :: Jython",
-#    "Programming Language :: Python :: Implementation :: PyPy",
-#    "Topic :: Software Development :: Testing",
-# ]
+# -- PREPARED: Due to Python 2.7 support and setuptools features
+[project]
+name = "behave"
+authors = [
+    {name = "Jens Engel", email = "jenisys@noreply.github.com"},
+    {name = "Benno Rice"},
+    {name = "Richard Jones"},
+]
+maintainers = [
+    {name = "Jens Engel", email = "jenisys@noreply.github.com"},
+    {name = "Peter Bittner", email = "bittner@noreply.github.com"},
+]
+description = "behave is behaviour-driven development, Python style"
+dynamic = ["version"]
+readme = "README.rst"
+requires-python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+# DISABLED: requires-python = ">=3.6"
+keywords = [
+    "BDD", "behavior-driven-development", "bdd-framework",
+    "behave", "gherkin", "cucumber-like"
+]
+license = "BSD-2-Clause"
+license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: Jython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Software Development :: Testing",
+]
+dependencies = [
+    "cucumber-tag-expressions >= 4.1.0",
+    "cucumber-expressions >= 17.1.0; python_version >= '3.8'",
+    "enum34; python_version < '3.4'",
+    "parse >= 1.18.0",
+    "parse-type >= 0.6.0",
+    "six >= 1.15.0",
+    "traceback2; python_version < '3.0'",
+
+    # -- PREPARED:
+    "win_unicode_console; python_version <= '3.9'",
+    "contextlib2;  python_version < '3.5'",
+    "colorama >= 0.3.7",
+
+    # -- SUPPORT: "pyproject.toml" (or: "behave.toml")
+    "tomli>=1.1.0; python_version >=  '3.0' and python_version < '3.11'",
+    "toml>=0.10.2; python_version <  '3.0'",  # py27 support
+]
+
+[project.urls]
+Homepage  = "https://github.com/behave/behave"
+Documentation = "https://behave.readthedocs.io/en/latest/"
+Repository = "https://github.com/behave/behave"
+Issues = "https://github.com/behave/behave/issues/"
+Changelog = "https://github.com/behave/behave/blob/main/CHANGES.rst"
+
+[project.scripts]
+behave = "behave.__main__:main"
+
 # -- PREPARED:
-# dependencies = [
-#    "cucumber-tag-expressions >= 4.1.0",
-#    "cucumber-expressions >= 17.1.0; python_version >= '3.8'",
-#    "enum34; python_version < '3.4'",
-#    "parse >= 1.18.0",
-#    "parse-type >= 0.6.0",
-#    "six >= 1.15.0",
-#    "traceback2; python_version < '3.0'",
-#
-#    # -- PREPARED:
-#    "win_unicode_console; python_version <= '3.9'",
-#    "contextlib2;  python_version < '3.5'",
-#    "colorama >= 0.3.7",
-#
-#    # -- SUPPORT: "pyproject.toml" (or: "behave.toml")
-#    "tomli>=1.1.0; python_version >=  '3.0' and python_version < '3.11'",
-#    "toml>=0.10.2; python_version <  '3.0'",  # py27 support
-# ]
+[project.optional-dependencies]
+develop = [
+    "build >= 0.5.1",
+    "twine >= 1.13.0",
+    "coverage >= 5.0",
+    "pytest >=4.2,<5.0; python_version <  '3.0'",
+    "pytest >= 5.0; python_version >= '3.0'",
+    "pytest-html >= 1.19.0,<2.0; python_version <  '3.0'",
+    "pytest-html >= 2.0;         python_version >= '3.0'",
+    "mock  <  4.0;   python_version <  '3.6'",
+    "mock  >= 4.0;   python_version >= '3.6'",
+    "PyHamcrest >= 2.0.2; python_version >= '3.0'",
+    "PyHamcrest <  2.0;   python_version <  '3.0'",
+    "pytest-cov",
+    "tox   >= 3.28.0,<4.0",   # -- HINT: tox >= 4.0 has breaking changes.
+    "virtualenv >= 20.26.6; python_version >= '3.7'",
+    "virtualenv <  20.22.0; python_version <  '3.7'",  # -- SUPPORT FOR: Python 2.7, Python <= 3.6
+    "invoke >=1.7.0,<2.0; python_version <  '3.6'",
+    "invoke >=1.7.0;      python_version >= '3.6'",
+    # -- HINT, was RENAMED: path.py => path (for python3)
+    "path    >= 13.1.0; python_version >= '3.5'",
+    "path.py >= 11.5.0; python_version <  '3.5'",
+    "pycmd",
+    "pathlib; python_version <= '3.4'",
+    "modernize >= 0.5",
+    "pylint",
+    "ruff; python_version >=  '3.7'",
+]
+docs = [
+    "sphinx >= 7.3.7;   python_version >= '3.7'",
+    "sphinx >=1.6,<4.4; python_version < '3.7'",
+    "furo >= 2024.04.27; python_version >= '3.8'",
+    # -- CONSTRAINTS UNTIL: sphinx > 5.0 is usable -- 2024-01
+    # PROBLEM: sphinxcontrib-applehelp v1.0.8 requires sphinx > 5.0
+    # SEE: https://stackoverflow.com/questions/77848565/sphinxcontrib-applehelp-breaking-sphinx-builds-with-sphinx-version-less-than-5-0
+    "sphinxcontrib-applehelp >= 1.0.8; python_version >= '3.7'",
+    "sphinxcontrib-htmlhelp >= 2.0.5;  python_version >= '3.7'",
+    # -- SPHINX-EXTENSIONS:
+    "sphinx-copybutton >= 0.5.2; python_version >= '3.7'",
+]
+formatters = [
+    "behave-html-formatter >= 0.9.10; python_version >= '3.6'",
+    "behave-html-pretty-formatter >= 1.9.1; python_version >= '3.6'"
+]
+testing = [
+    "pytest <  5.0; python_version <  '3.0'", # >= 4.2
+    "pytest >= 5.0; python_version >= '3.0'",
+    "pytest-html >= 1.19.0,<2.0; python_version <  '3.0'",
+    "pytest-html >= 2.0;         python_version >= '3.0'",
+    "mock  <  4.0;   python_version <  '3.6'",
+    "mock  >= 4.0;   python_version >= '3.6'",
+    "PyHamcrest >= 2.0.2; python_version >= '3.0'",
+    "PyHamcrest <  2.0;   python_version <  '3.0'",
+    "assertpy >= 1.1",
 
-# [project.urls]
-# Homepage  = "https://github.com/behave/behave"
-# Documentation = "https://behave.readthedocs.io/en/latest/"
-# Repository = "https://github.com/behave/behave"
-# Issues = "https://github.com/behave/behave/issues/"
-# Changelog = "https://github.com/behave/behave/blob/main/CHANGES.rst"
+    # -- HINT: path.py => path (python-install-package was renamed for python3)
+    "path >= 13.1.0;         python_version >= '3.5'",
+    "path.py >=11.5.0,<13.0; python_version <  '3.5'",
+    # -- PYTHON2 BACKPORTS:
+    "pathlib;    python_version <= '3.4'",
 
-# [project.scripts]
-# behave = "behave.__main__:main"
-
-# -- PREPARED:
-# [project.optional-dependencies]
-# develop = [
-#    "build >= 0.5.1",
-#    "twine >= 1.13.0",
-#    "coverage >= 5.0",
-#    "pytest >=4.2,<5.0; python_version <  '3.0'",
-#    "pytest >= 5.0; python_version >= '3.0'",
-#    "pytest-html >= 1.19.0,<2.0; python_version <  '3.0'",
-#    "pytest-html >= 2.0;         python_version >= '3.0'",
-#    "mock  <  4.0;   python_version <  '3.6'",
-#    "mock  >= 4.0;   python_version >= '3.6'",
-#    "PyHamcrest >= 2.0.2; python_version >= '3.0'",
-#    "PyHamcrest <  2.0;   python_version <  '3.0'",
-#    "pytest-cov",
-#    "tox   >= 3.28.0,<4.0",   # -- HINT: tox >= 4.0 has breaking changes.
-#    "virtualenv >= 20.26.6; python_version >= '3.7'",
-#    "virtualenv <  20.22.0; python_version <  '3.7'",  # -- SUPPORT FOR: Python 2.7, Python <= 3.6
-#    "invoke >=1.7.0,<2.0; python_version <  '3.6'",
-#    "invoke >=1.7.0;      python_version >= '3.6'",
-#    # -- HINT, was RENAMED: path.py => path (for python3)
-#    "path    >= 13.1.0; python_version >= '3.5'",
-#    "path.py >= 11.5.0; python_version <  '3.5'",
-#    "pycmd",
-#    "pathlib; python_version <= '3.4'",
-#    "modernize >= 0.5",
-#    "pylint",
-#    "ruff; python_version >=  '3.7'",
-#]
-# docs = [
-#    "sphinx >= 7.3.7;   python_version >= '3.7'",
-#    "sphinx >=1.6,<4.4; python_version < '3.7'",
-#    "furo >= 2024.04.27; python_version >= '3.8'",
-#    # -- CONSTRAINTS UNTIL: sphinx > 5.0 is usable -- 2024-01
-#    # PROBLEM: sphinxcontrib-applehelp v1.0.8 requires sphinx > 5.0
-#    # SEE: https://stackoverflow.com/questions/77848565/sphinxcontrib-applehelp-breaking-sphinx-builds-with-sphinx-version-less-than-5-0
-#    "sphinxcontrib-applehelp >= 1.0.8; python_version >= '3.7'",
-#    "sphinxcontrib-htmlhelp >= 2.0.5;  python_version >= '3.7'",
-#    # -- SPHINX-EXTENSIONS:
-#    "sphinx-copybutton >= 0.5.2; python_version >= '3.7'",
-# ]
- #formatters = [
-#    "behave-html-formatter >= 0.9.10; python_version >= '3.6'",
-#    "behave-html-pretty-formatter >= 1.9.1; python_version >= '3.6'"
-# ]
-# testing = [
-#    "pytest <  5.0; python_version <  '3.0'", # >= 4.2
-#    "pytest >= 5.0; python_version >= '3.0'",
-#    "pytest-html >= 1.19.0,<2.0; python_version <  '3.0'",
-#    "pytest-html >= 2.0;         python_version >= '3.0'",
-#    "mock  <  4.0;   python_version <  '3.6'",
-#    "mock  >= 4.0;   python_version >= '3.6'",
-#    "PyHamcrest >= 2.0.2; python_version >= '3.0'",
-#    "PyHamcrest <  2.0;   python_version <  '3.0'",
-#    "assertpy >= 1.1",
-#
-#    # -- HINT: path.py => path (python-install-package was renamed for python3)
-#    "path >= 13.1.0;         python_version >= '3.5'",
-#    "path.py >=11.5.0,<13.0; python_version <  '3.5'",
-#    # -- PYTHON2 BACKPORTS:
-#    "pathlib;    python_version <= '3.4'",
-#
-#    # -- EXTRA PYTHON PACKAGES: Used for some tests
-#    "freezegun >= 1.5.1; python_version > '3.7'",
-#]
+    # -- EXTRA PYTHON PACKAGES: Used for some tests
+    "freezegun >= 1.5.1; python_version > '3.7'",
+]
 ## -- BACKWORD-COMPATIBLE SECTION: Can be removed in the future
 ## HINT: Package-requirements are now part of "dependencies" parameter above.
 # toml = [
@@ -200,18 +200,18 @@ build-backend = "setuptools.build_meta"
 # -----------------------------------------------------------------------------
 # PACAKING TOOL SPECIFIC PARTS:
 # -----------------------------------------------------------------------------
-# [tool.setuptools]
-# platforms = ["any"]
-# zip-safe = true
+[tool.setuptools]
+platforms = ["any"]
+zip-safe = true
 
-# [tool.setuptools.dynamic]
-# version = {attr = "behave.version.VERSION"}
-#
-# [tool.setuptools.packages.find]
-# where = ["."]
-# include = ["behave*"]
-# exclude = ["behave4cmd0*", "tests*"]
-# namespaces = false
+[tool.setuptools.dynamic]
+version = {attr = "behave.version.VERSION"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["behave*"]
+exclude = ["behave4cmd0*", "tests*"]
+namespaces = false
 
 # -- PREPARED: SETUPTOOLS-SCM: Generate version info from git-tag(s).
 # # GIT-TAG MATCHER: Only use git-tags that start with "v", like: "v1.2.6"

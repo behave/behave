@@ -47,7 +47,7 @@ jobs:
 
       - name: Install Python package dependencies (step 0)
         run: |
-          python -m pip install -U pip setuptools setuptools-scm build wheel
+          python -m pip install -U pip setuptools build wheel
           pip --version
       - name: Install Python package dependencies (step 1)
         run: |

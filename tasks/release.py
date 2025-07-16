@@ -4,15 +4,15 @@ Tasks for releasing this project.
 
 Normal steps::
 
-
-    python setup.py sdist bdist_wheel
+    python -mbuild
+    # -- OLD: python setup.py sdist bdist_wheel
 
     twine register dist/{project}-{version}.tar.gz
     twine upload   dist/*
 
     twine upload  --skip-existing dist/*
 
-    python setup.py upload
+    # -- OLD: python setup.py upload
     # -- DEPRECATED: No longer supported -> Use RTD instead
     # -- DEPRECATED: python setup.py upload_docs
 
@@ -99,7 +99,7 @@ def bump_version(ctx, new_version, version_part=None, dry_run=False):
 def build_packages(ctx, hide=False):
     """Build packages for this release."""
     print("build_packages:")
-    ctx.run("python setup.py sdist bdist_wheel", echo=True, hide=hide)
+    ctx.run("python -mbuild", echo=True, hide=hide)
 
 
 @task
