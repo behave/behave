@@ -15,7 +15,7 @@ pytest-html >= 2.0;         python_version >= '3.0'
 mock  <  4.0;   python_version <  '3.6'
 mock  >= 4.0;   python_version >= '3.6'
 PyHamcrest >= 2.0.2; python_version >= '3.0'
-PyHamcrest <  2.0;   python_version <  '3.0'
+PyHamcrest <2.2;   python_version <  '3.0'
 assertpy >= 1.1
 
 # -- NEEDED: By some tests (as proof of concept)
