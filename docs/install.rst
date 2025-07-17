@@ -73,8 +73,6 @@ Installation Target     Description
 ``behave[develop]``     Optional packages helpful for local development.
 ``behave[formatters]``  Install formatters from `behave-contrib`_ to extend the list of
                         :ref:`formatters <id.appendix.formatters>` provided by default.
-``behave[toml]``        Optional toml package to configure behave from 'toml' files,
-                        like 'pyproject.toml' from `pep-518`_.
 ======================= ===================================================================
 
 .. _`behave-contrib`: https://github.com/behave-contrib
