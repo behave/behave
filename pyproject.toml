@@ -184,12 +184,6 @@ testing = [
     # -- EXTRA PYTHON PACKAGES: Used for some tests
     "freezegun >= 1.5.1; python_version > '3.7'",
 ]
-## -- BACKWORD-COMPATIBLE SECTION: Can be removed in the future
-## HINT: Package-requirements are now part of "dependencies" parameter above.
-# toml = [
-#    "tomli>=1.1.0; python_version >=  '3.0' and python_version < '3.11'",
-#    "toml>=0.10.2; python_version <  '3.0'",
-# ]
 
 
 # -- BECOMING-DEPRECATED: Remove it after Python 2.7 support is dropped.

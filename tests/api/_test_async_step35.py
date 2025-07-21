@@ -2,11 +2,27 @@
 # pylint: disable=invalid-name
 """
 Unit tests for :mod:`behave.api.async_test` for Python 3.5 (or newer).
+
+----
+
+::
+
+    python_implementation()
+            Returns a string identifying the Python implementation.
+
+            Currently, the following implementations are identified:
+              'CPython' (C implementation of Python),
+              'Jython' (Java implementation of Python),
+              'PyPy' (Python implementation of Python).
 """
 
 # -- IMPORTS:
 from __future__ import absolute_import, print_function
+
+import os
+from platform import python_implementation
 import sys
+
 from hamcrest import assert_that, close_to
 from mock import Mock
 import pytest
@@ -36,13 +52,19 @@ from .testing_support_async import AsyncStepTheory
 # TEST MARKERS:
 # -----------------------------------------------------------------------------
 PYTHON_3_5 = (3, 5)
+CI = os.environ.get("CI", "false").lower() == "true"
 python_version = sys.version_info[:2]
 py35_or_newer = pytest.mark.skipif(python_version < PYTHON_3_5,
                                    reason="Needs Python >= 3.5")
 
 SLEEP_DELTA = 0.100
-if sys.platform.startswith("win"):
-    SLEEP_DELTA = 0.150
+if CI:
+    # -- NEEDED-FOR: CI pipeline
+    if sys.platform.startswith("win"):
+        SLEEP_DELTA = 0.150
+    elif python_implementation() == "PyPy":
+        # -- NEEDED-FOR: pypy-3.10
+        SLEEP_DELTA = 0.250
 
 
 # -----------------------------------------------------------------------------
