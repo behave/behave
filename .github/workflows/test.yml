@@ -42,7 +42,7 @@ jobs:
         # -- PREPARED FOR: Experimental Python versions with "continue-on-error".
         experimental: [false]
         include:
-          - python-version: "3.14.0-beta.4"
+          - python-version: "3.14.0-rc.1"
             experimental: true
     steps:
       - uses: actions/checkout@v4
