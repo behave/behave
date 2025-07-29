@@ -41,7 +41,14 @@ from __future__ import absolute_import, print_function
 from collections import namedtuple
 import os
 import parse
+import six
 from behave import register_type
+
+if six.PY2:
+    # -- NEEDED-FOR: Path should be similar to Python3 implementation.
+    from pathlib2 import Path
+else:
+    from pathlib import Path
 
 
 # -----------------------------------------------------------------------------
@@ -117,6 +124,36 @@ def parse_unquoted_text(text):
     return text
 
 
+@parse.with_pattern(r'[^"]*')
+def parse_path(text):
+    """
+    Type converter that matches UNQUOTED text (using: double-quotes)
+    abd return a Path object.
+
+    EXAMPLE:
+
+    .. code-block:: python
+
+        # -- FILE: features/steps/example_steps.py
+        from pathlib import Path
+        from behave import step, register_type
+        from behave.parameter_type import parse_path
+
+        register_type(Path=parse_path)
+
+        @step('some file name "{filename:Path}" exists')
+        def step_some_file_exists(context, filename):
+            assert isinstance(filename, Path)
+            assert filename.exists()
+    """
+    return Path(text.strip())
+
+
+@parse.with_pattern(r'[^"]*')
+def parse_path_as_text(text):
+    return text.strip()
+
+
 @parse.with_pattern(r"\$\w+")  # -- ONLY FOR: $WORD
 def parse_environment_var(text, default=None):
     """
@@ -151,6 +188,7 @@ def parse_environment_var(text, default=None):
 TYPE_REGISTRY = dict(
     AnyText=parse_any_text,
     Number=parse_number,
+    Path=parse_path,
     Unquoted=parse_unquoted_text,
     EnvironmentVar=parse_environment_var,
 )

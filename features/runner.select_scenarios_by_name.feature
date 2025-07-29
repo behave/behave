@@ -55,7 +55,7 @@ Feature: Select named scenarios to run
             """
 
     Scenario: Select scenarios with name="Alice" and inspect list
-        When I run "behave -f plain --name="Alice" --dry-run features/"
+        When I run `behave -f plain --name="Alice" --dry-run features/`
         Then it should pass with:
             """
             0 features passed, 0 failed, 0 skipped, 2 untested
@@ -78,7 +78,7 @@ Feature: Select named scenarios to run
             """
 
     Scenario: Select scenarios with name="Alice" and run them
-        When I run "behave -f plain -T --name="Alice" features/"
+        When I run `behave -f plain -T --name="Alice" features/`
         Then it should pass with:
             """
             2 features passed, 0 failed, 0 skipped
@@ -101,7 +101,7 @@ Feature: Select named scenarios to run
             """
 
     Scenario: Select scenarios with name="Bob"
-        When I run "behave -f plain --name="Bob" --dry-run features/"
+        When I run `behave -f plain --name="Bob" --dry-run features/`
         Then it should pass with:
             """
             0 features passed, 0 failed, 1 skipped, 1 untested
@@ -120,7 +120,7 @@ Feature: Select named scenarios to run
             """
 
     Scenario: Select scenarios with name="Florida"
-        When I run "behave -f plain --name="Florida" --dry-run features/"
+        When I run `behave -f plain --name="Florida" --dry-run features/`
         Then it should pass with:
             """
             0 features passed, 0 failed, 0 skipped, 2 untested
@@ -139,7 +139,7 @@ Feature: Select named scenarios to run
             """
 
     Scenario: Select scenarios with name that consists of multiple words
-        When I run "behave -f plain --name="Alice and Bob" --dry-run features/"
+        When I run `behave -f plain --name="Alice and Bob" --dry-run features/`
         Then it should pass with:
             """
             0 features passed, 0 failed, 1 skipped, 1 untested
@@ -152,7 +152,7 @@ Feature: Select named scenarios to run
             """
 
     Scenario: Select scenarios by using two names
-        When I run "behave -f plain --name="Alice" --name="Florida" --dry-run features/"
+        When I run `behave -f plain --name="Alice" --name="Florida" --dry-run features/`
         Then it should pass with:
             """
             0 features passed, 0 failed, 0 skipped, 2 untested
@@ -177,7 +177,7 @@ Feature: Select named scenarios to run
             """
 
     Scenario: Select scenarios by using a regular expression
-        When I run "behave -f plain --name="Alice in .*" --dry-run features/"
+        When I run `behave -f plain --name="Alice in .*" --dry-run features/`
         Then it should pass with:
             """
             0 features passed, 0 failed, 1 skipped, 1 untested
@@ -205,7 +205,7 @@ Feature: Select named scenarios to run
         Exclude all scenarios that start with "Alice" in its name.
         NOTE: Seems to work only for not-start-with idiom.
 
-        When I run "behave -f plain --name='^(?!Alice)' --dry-run features/"
+        When I run `behave -f plain --name='^(?!Alice)' --dry-run features/`
         Then it should pass with:
             """
             0 features passed, 0 failed, 1 skipped, 1 untested
@@ -225,7 +225,7 @@ Feature: Select named scenarios to run
             """
 
     Scenario: Select scenarios by using another regular expression
-        When I run "behave -f plain --name=".* in .*" --dry-run features/"
+        When I run `behave -f plain --name=".* in .*" --dry-run features/`
         Then it should pass with:
             """
             0 features passed, 0 failed, 0 skipped, 2 untested
@@ -253,7 +253,7 @@ Feature: Select named scenarios to run
             """
 
     Scenario: Select scenarios by using two regular expressions
-        When I run "behave -f plain --name="Alice in .*" --name="Bob in .*" --dry-run features/"
+        When I run `behave -f plain --name="Alice in .*" --name="Bob in .*" --dry-run features/`
         Then it should pass with:
             """
             0 features passed, 0 failed, 0 skipped, 2 untested
@@ -281,7 +281,7 @@ Feature: Select named scenarios to run
             """
 
     Scenario: Select scenarios by using an unknown/unused name
-        When I run "behave -f plain --name="UNKNOWN" --dry-run features/"
+        When I run `behave -f plain --name="UNKNOWN" --dry-run features/`
         Then it should pass with:
             """
             0 features passed, 0 failed, 2 skipped
@@ -302,7 +302,7 @@ Feature: Select named scenarios to run
             Scenario: Something else
               When a step passes
           """
-        When I run "behave -f plain --name="Ärgernis" --dry-run features/xantippe.feature"
+        When I run `behave -f plain --name="Ärgernis" --dry-run features/xantippe.feature`
         Then it should pass with:
           """
           0 features passed, 0 failed, 0 skipped, 1 untested

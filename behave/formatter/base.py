@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from __future__ import absolute_import, print_function
-
+import codecs
 import os.path
 from behave.formatter.api import IFormatter
 from behave.textutil import (
@@ -47,8 +47,9 @@ class StreamOpener(object):
     def open(self):
         if not self.stream or self.stream.closed:
             self.ensure_dir_exists(os.path.dirname(self.name))
-            stream = open(self.name, "w")
-            # stream = codecs.open(self.name, "w", encoding=self.encoding)
+            # -- DISABLED:
+            #   stream = open(self.name, "w")
+            stream = codecs.open(self.name, "w", encoding=self.encoding)
             stream = self.ensure_stream_with_encoder(stream, self.encoding)
             self.stream = stream  # -- Keep stream for house-keeping.
             self.should_close_stream = True
