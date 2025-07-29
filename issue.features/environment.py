@@ -89,7 +89,9 @@ active_tag_matcher = ActiveTagMatcher(active_tag_value_provider)
 
 
 def print_active_tags_summary():
-    print_active_tags(active_tag_value_provider, ["python.version", "os"])
+    print_active_tags(active_tag_value_provider, [
+        "python.version", "python.implementation", "os"
+    ])
 
 
 # ---------------------------------------------------------------------------

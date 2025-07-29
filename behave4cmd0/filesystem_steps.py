@@ -4,7 +4,8 @@ import codecs
 import os
 import os.path
 import shutil
-from behave import given, when, then, step
+from behave import given, when, then, step, register_type
+from behave.parameter_type import parse_path, parse_path_as_text, parse_unquoted_text
 from behave4cmd0 import command_util, pathutil, textutil
 from behave4cmd0.step_util import (
     on_assert_failed_print_details, normalize_text_with_placeholders)
@@ -25,11 +26,18 @@ def is_encoding_valid(encoding):
     except LookupError:
         return False
 
+# -----------------------------------------------------------------------------
+# MODULE INIT
+# -----------------------------------------------------------------------------
+# PREPARED: register_type(Path=parse_path)
+register_type(Path=parse_path_as_text)
+register_type(Unquoted=parse_unquoted_text)
+
 
 # -----------------------------------------------------------------------------
 # STEPS FOR: Directories
 # -----------------------------------------------------------------------------
-@step(u'I remove the directory "{directory}"')
+@step(u'I remove the directory "{directory:Path}"')
 def step_remove_directory(context, directory):
     path_ = directory
     if not os.path.isabs(directory):
@@ -39,7 +47,7 @@ def step_remove_directory(context, directory):
     assert_that(not os.path.isdir(path_))
 
 
-@given(u'I ensure that the directory "{directory}" exists')
+@given(u'I ensure that the directory "{directory:Path}" exists')
 def step_given_ensure_that_the_directory_exists(context, directory):
     path_ = directory
     if not os.path.isabs(directory):
@@ -49,12 +57,12 @@ def step_given_ensure_that_the_directory_exists(context, directory):
     assert_that(os.path.isdir(path_))
 
 
-@given(u'I ensure that the directory "{directory}" does not exist')
+@given(u'I ensure that the directory "{directory:Path}" does not exist')
 def step_given_the_directory_should_not_exist(context, directory):
     step_remove_directory(context, directory)
 
 
-@given(u'a directory named "{path}"')
+@given(u'a directory named "{path:Path}"')
 def step_directory_named_dirname(context, path):
     assert context.workdir, "REQUIRE: context.workdir"
     path_ = os.path.join(context.workdir, os.path.normpath(path))
@@ -63,8 +71,8 @@ def step_directory_named_dirname(context, path):
     assert os.path.isdir(path_)
 
 
-@given(u'the directory "{directory}" should exist')
-@then(u'the directory "{directory}" should exist')
+@given(u'the directory "{directory:Path}" should exist')
+@then(u'the directory "{directory:Path}" should exist')
 def step_the_directory_should_exist(context, directory):
     path_ = directory
     if not os.path.isabs(directory):
@@ -72,8 +80,8 @@ def step_the_directory_should_exist(context, directory):
     assert_that(os.path.isdir(path_))
 
 
-@given(u'the directory "{directory}" should not exist')
-@then(u'the directory "{directory}" should not exist')
+@given(u'the directory "{directory:Path}" should not exist')
+@then(u'the directory "{directory:Path}" should not exist')
 def step_the_directory_should_not_exist(context, directory):
     path_ = directory
     if not os.path.isabs(directory):
@@ -81,7 +89,7 @@ def step_the_directory_should_not_exist(context, directory):
     assert_that(not os.path.isdir(path_))
 
 
-@step(u'the directory "{directory}" exists')
+@step(u'the directory "{directory:Path}" exists')
 def step_directory_exists(context, directory):
     """
     Verifies that a directory exists.
@@ -94,7 +102,7 @@ def step_directory_exists(context, directory):
     step_the_directory_should_exist(context, directory)
 
 
-@step(u'the directory "{directory}" does not exist')
+@step(u'the directory "{directory:Path}" does not exist')
 def step_directory_named_does_not_exist(context, directory):
     """
     Verifies that a directory does not exist.
@@ -110,8 +118,8 @@ def step_directory_named_does_not_exist(context, directory):
 # -----------------------------------------------------------------------------
 # FILE STEPS:
 # -----------------------------------------------------------------------------
-@step(u'a file named "{filename}" exists')
-@step(u'the file named "{filename}" exists')
+@step(u'a file named "{filename:Path}" exists')
+@step(u'the file named "{filename:Path}" exists')
 def step_file_named_filename_exists(context, filename):
     """
     Verifies that a file with this filename exists.
@@ -124,8 +132,8 @@ def step_file_named_filename_exists(context, filename):
     step_file_named_filename_should_exist(context, filename)
 
 
-@step(u'a file named "{filename}" does not exist')
-@step(u'the file named "{filename}" does not exist')
+@step(u'a file named "{filename:Path}" does not exist')
+@step(u'the file named "{filename:Path}" does not exist')
 def step_file_named_filename_does_not_exist(context, filename):
     """
     Verifies that a file with this filename does not exist.
@@ -138,16 +146,16 @@ def step_file_named_filename_does_not_exist(context, filename):
     step_file_named_filename_should_not_exist(context, filename)
 
 
-@given(u'a file named "{filename}" should exist')
-@then(u'a file named "{filename}" should exist')
+@given(u'a file named "{filename:Path}" should exist')
+@then(u'a file named "{filename:Path}" should exist')
 def step_file_named_filename_should_exist(context, filename):
     command_util.ensure_workdir_exists(context)
     filename_ = pathutil.realpath_with_context(filename, context)
     assert_that(os.path.exists(filename_) and os.path.isfile(filename_))
 
 
-@given(u'a file named "{filename}" should not exist')
-@then(u'a file named "{filename}" should not exist')
+@given(u'a file named "{filename:Path}" should not exist')
+@then(u'a file named "{filename:Path}" should not exist')
 def step_file_named_filename_should_not_exist(context, filename):
     command_util.ensure_workdir_exists(context)
     filename_ = pathutil.realpath_with_context(filename, context)
@@ -232,7 +240,45 @@ def step_the_following_files_do_not_exist_with_table(context):
 # -----------------------------------------------------------------------------
 # STEPS FOR EXISTING FILES WITH FILE CONTENTS:
 # -----------------------------------------------------------------------------
-@then(u'the file "{filename}" should contain "{text}"')
+@then(u'the file "{filename:Path}" with encoding="{encoding:Unquoted}" should contain "{text}"')
+def step_file_with_encoding_should_contain_text(context, filename, encoding, text):
+    expected_text = normalize_text_with_placeholders(context, text)
+    file_contents = pathutil.read_file_contents(filename, encoding=encoding,
+                                                context=context)
+    file_contents = file_contents.rstrip()
+    if file_contents_normalizer:
+        # -- HACK: Inject TextProcessor as text normalizer
+        file_contents = file_contents_normalizer(file_contents)
+    with on_assert_failed_print_details(file_contents, expected_text):
+        textutil.assert_normtext_should_contain(file_contents, expected_text)
+
+
+@then(u'the file "{filename:Path}" with encoding="{encoding:Unquoted}" should not contain "{text}"')
+def step_file_with_encoding_should_not_contain_text(context, filename, encoding, text):
+    expected_text = normalize_text_with_placeholders(context, text)
+    file_contents = pathutil.read_file_contents(filename, encoding=encoding,
+                                                context=context)
+    file_contents = file_contents.rstrip()
+
+    with on_assert_failed_print_details(file_contents, expected_text):
+        textutil.assert_normtext_should_not_contain(file_contents, expected_text)
+
+
+@then(u'the file "{filename:Path}" with encoding="{encoding:Unquoted}" should contain:')
+def step_file_with_encoding_should_contain_multiline_text(context, filename, encoding):
+    assert context.text is not None, "REQUIRE: multiline text"
+    step_file_with_encoding_should_contain_text(context, filename,
+                                                encoding, context.text)
+
+
+@then(u'the file "{filename:Path}" with encoding="{encoding:Unquoted}" should not contain:')
+def step_file_with_encoding_should_not_contain_multiline_text(context, filename, encoding):
+    assert context.text is not None, "REQUIRE: multiline text"
+    step_file_with_encoding_should_not_contain_text(context, filename,
+                                                    encoding, context.text)
+
+
+@then(u'the file "{filename:Path}" should contain "{text}"')
 def step_file_should_contain_text(context, filename, text):
     expected_text = normalize_text_with_placeholders(context, text)
     file_contents = pathutil.read_file_contents(filename, context=context)
@@ -244,7 +290,7 @@ def step_file_should_contain_text(context, filename, text):
         textutil.assert_normtext_should_contain(file_contents, expected_text)
 
 
-@then(u'the file "{filename}" should not contain "{text}"')
+@then(u'the file "{filename:Path}" should not contain "{text}"')
 def step_file_should_not_contain_text(context, filename, text):
     expected_text = normalize_text_with_placeholders(context, text)
     file_contents = pathutil.read_file_contents(filename, context=context)
@@ -255,15 +301,15 @@ def step_file_should_not_contain_text(context, filename, text):
     # DISABLED: assert_that(file_contents, is_not(contains_string(text)))
 
 
-@then(u'the file "{filename}" should contain')
+@then(u'the file "{filename:Path}" should contain')
 @then(u'the file "{filename}" should contain:')
 def step_file_should_contain_multiline_text(context, filename):
     assert context.text is not None, "REQUIRE: multiline text"
     step_file_should_contain_text(context, filename, context.text)
 
 
-@then(u'the file "{filename}" should not contain')
-@then(u'the file "{filename}" should not contain:')
+@then(u'the file "{filename:Path}" should not contain')
+@then(u'the file "{filename:Path}" should not contain:')
 def step_file_should_not_contain_multiline_text(context, filename):
     assert context.text is not None, "REQUIRE: multiline text"
     step_file_should_not_contain_text(context, filename, context.text)
@@ -272,8 +318,8 @@ def step_file_should_not_contain_multiline_text(context, filename):
 # -----------------------------------------------------------------------------
 # STEPS FOR CREATING FILES WITH FILE CONTENTS:
 # -----------------------------------------------------------------------------
-@given(u'a file named "{filename}" and encoding="{encoding}" with')
-@given(u'a file named "{filename}" and encoding="{encoding}" with:')
+@given(u'a file named "{filename:Path}" using encoding="{encoding:Unquoted}" with')
+@given(u'a file named "{filename:Path}" using encoding="{encoding:Unquoted}" with:')
 def step_a_file_named_filename_and_encoding_with(context, filename, encoding):
     """Creates a textual file with the content provided as docstring."""
     assert context.text is not None, "ENSURE: multiline text is provided."
@@ -284,8 +330,8 @@ def step_a_file_named_filename_and_encoding_with(context, filename, encoding):
     pathutil.create_textfile_with_contents(filename2, context.text, encoding)
 
 
-@given(u'a file named "{filename}" with')
-@given(u'a file named "{filename}" with:')
+@given(u'a file named "{filename:Path}" with')
+@given(u'a file named "{filename:Path}" with:')
 def step_a_file_named_filename_with(context, filename):
     """Creates a textual file with the content provided as docstring."""
     step_a_file_named_filename_and_encoding_with(context, filename, "UTF-8")
@@ -296,7 +342,7 @@ def step_a_file_named_filename_with(context, filename):
         context.features.append(filename)
 
 
-@given(u'an empty file named "{filename}"')
+@given(u'an empty file named "{filename:Path}"')
 def step_an_empty_file_named_filename(context, filename):
     """
     Creates an empty file.
@@ -307,8 +353,8 @@ def step_an_empty_file_named_filename(context, filename):
     pathutil.create_textfile_with_contents(filename2, "")
 
 
-@step(u'I remove the file "{filename}"')
-@step(u'I remove the file named "{filename}"')
+@step(u'I remove the file "{filename:Path}"')
+@step(u'I remove the file named "{filename:Path}"')
 def step_remove_file(context, filename):
     path_ = filename
     if not os.path.isabs(filename):

@@ -33,7 +33,7 @@ Feature: Issue #361 -- UTF-8 File with BOM
   @encoding.<encoding>
   @not.with_python.implementation=<exclude_pyimpl>
   Scenario Outline: Use step file with <case>
-    Given a file named "features/steps/my_steps.py" and encoding="<encoding>" with:
+    Given a file named "features/steps/my_steps.py" using encoding="<encoding>" with:
         """
         # -*- coding: <encoding> -*-
         '''

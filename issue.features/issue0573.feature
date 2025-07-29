@@ -29,7 +29,7 @@ Feature: Issue 573 Select scenarios fails with empty Scenarios
             """
 
     Scenario: Select scenarios by name in dry-run mode
-        When I run "behave -f plain --name="Not Empty \(with steps\)" --dry-run features/"
+        When I run `behave -f plain --name="Not Empty \(with steps\)" --dry-run features/`
         Then the command output should contain:
             """
             Feature: Alice
@@ -44,7 +44,7 @@ Feature: Issue 573 Select scenarios fails with empty Scenarios
             """
 
     Scenario: Select scenarios by name and run them
-        When I run "behave -f plain --name="Not Empty \(with steps\)" features/"
+        When I run `behave -f plain --name="Not Empty \(with steps\)" features/`
         Then the command output should contain:
             """
             Feature: Alice
@@ -59,7 +59,7 @@ Feature: Issue 573 Select scenarios fails with empty Scenarios
             """
 
     Scenario: Select scenarios by name with partial name and run them
-        When I run "behave -f plain --name="Not Empty" features/"
+        When I run `behave -f plain --name="Not Empty" features/`
         Then the command output should contain:
             """
             Feature: Alice

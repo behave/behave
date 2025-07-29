@@ -18,6 +18,9 @@ PyHamcrest >= 2.0.2; python_version >= '3.0'
 PyHamcrest <  2.0;   python_version <  '3.0'
 assertpy >= 1.1
 
+chardet
+# PREAPRED: charset-normalizer
+
 # -- NEEDED: By some tests (as proof of concept)
 # NOTE: path.py-10.1 is required for python2.6
 # HINT: path.py => path (python-install-package was renamed for python3)

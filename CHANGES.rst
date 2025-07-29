@@ -105,6 +105,7 @@ FIXED:
 * FIXED: Some tests related to python-3.11
 * FIXED: Some tests related to python-3.9
 * FIXED: active-tag logic if multiple tags with same category exists.
+* issue #1252: Wrong encoding of Unicode text (czech diacritics) in html report (submitted by: freetomik)
 * issue #1251; Installation with pip does not install dependencies (submitted by: marcindulak)
 * pull  #1249: Fixed having one event loop per async step for python >= 3.10 (provided-by: jeteve; partial)
 * issue #1233; RuntimeError: Event loop is closed" in asyncio streams (submitted by: rdpoor)
