@@ -60,8 +60,7 @@ maintainers = [
 description = "behave is behaviour-driven development, Python style"
 dynamic = ["version"]
 readme = "README.rst"
-requires-python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
-# DISABLED: requires-python = ">=3.6"
+requires-python = ">=3.10"
 keywords = [
     "BDD", "behavior-driven-development", "bdd-framework",
     "behave", "gherkin", "cucumber-like"

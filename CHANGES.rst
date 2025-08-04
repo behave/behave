@@ -1,13 +1,14 @@
 Version History
 ===============================================================================
 
-Version: 1.4.0 (planning)
+Version: 1.4.0 (unreleased)
 -------------------------------------------------------------------------------
 
 GOALS:
 
+* Support Python >= 3.10 (or newer)
 * Drop support for Python 2.7
-* MAYBE: Requires Python >= 3.7 (at least)
+* Drop support for Python 3.9 (and below)
 
 DEPRECATIONS:
 
