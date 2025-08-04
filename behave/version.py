@@ -1,2 +1,2 @@
 # -- BEHAVE-VERSION:
-VERSION = "1.2.7.dev9"
+VERSION = "1.3.0"

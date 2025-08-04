@@ -909,8 +909,11 @@ class Configuration(object):
         if command_args is None:
             command_args = []
             command_name = os.path.basename(sys.argv[0])
-            if "behave" in command_name or "behave" in sys.argv:
-                # -- ONLY USED IF: Using "behave"
+            command_name2 = sys.argv[0].replace("\\", "/")
+            if ("behave" in command_name or
+                "behave" in sys.argv or
+                "behave/__main__" in command_name2):
+                # -- ONLY USED IF: Using "behave" or "python -mbehave ..."
                 command_args = sys.argv[1:]
         elif isinstance(command_args, six.string_types):
             encoding = select_best_encoding() or "utf-8"

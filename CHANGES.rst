@@ -14,8 +14,10 @@ DEPRECATIONS:
 * DEPRECATED: ``tag-expressions v1`` (old-style tag-expressions)
 
 
-Version: 1.3.0 (planning)
+Version: 1.3.0 (2025-08-04)
 -------------------------------------------------------------------------------
+
+BASED ON: ``Version 1.2.7`` changes
 
 GOALS:
 
@@ -27,7 +29,7 @@ GOALS:
    BUT: Can be enabled via config-file parameter in "any" mode (supports: v1 and v2).
 
 
-Version: 1.2.7 (unreleased)
+Version: 1.2.7 (part of: 1.3.0)
 -------------------------------------------------------------------------------
 
 BACKWARD-INCOMPATIBLE:
