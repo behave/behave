@@ -351,7 +351,8 @@ class ActiveTagMatcher(TagMatcher):
                     current_value = self.value_provider.get(group_category, None)
                     reason = "%s (but: %s)" % (group_category, current_value)
                     self.skip_reason = reason
-                # print(f"ACTIVE_TAG.should_skip_with_tags: verdict=true, reason={self.skip_reason} (categories: {group_categories})")
+                # print(f"ACTIVE_TAG.should_skip_with_tags: verdict=true, "
+                #       f"reason={self.skip_reason} (categories: {group_categories})")
                 return True     # SHOULD-EXCLUDE: not enabled = not False
         # -- LOGICAL-AND: All parts are True
         # print(f"ACTIVE_TAG.should_skip_with_tags: verdict=false (categories: {group_categories})")
@@ -425,7 +426,8 @@ class ActiveTagMatcher(TagMatcher):
             other  | true
 
              xxx   | Use and not parts:
-                   | ((xxx == "alice") or (xxx == "bob")) and not((xxx == "charly") or (xxx == "doro"))
+                   | ((xxx == "alice") or (xxx == "bob")) and
+                   |  not((xxx == "charly") or (xxx == "doro"))
             -------+-------------------
             alice  | true
             bob    | true
@@ -442,7 +444,7 @@ class ActiveTagMatcher(TagMatcher):
             return True
 
         current_value = self.value_provider.get(group_category, Unknown)
-        # MAYBE: print(f"ACTIVE_TAG.is_tag_group_enabled:{group_category}: current_value={current_value}")
+        # print(f"ACTIVE_TAG.is_tag_group_enabled:{group_category}: current_value={current_value}")
         if current_value is Unknown and self.ignore_unknown_categories:
             # -- CASE: Unknown category, ignore it.
             return True

@@ -168,7 +168,7 @@ class TestRunner(object):
         runner_util.exec_file(filename, my_globals, my_locals)
         assert "__file__" in my_locals
         # pylint: disable=too-many-format-args
-        assert "spam" in my_locals, '"spam" variable not set in locals (%r)' % (my_globals, my_locals)
+        assert "spam" in my_locals, '"spam" variable not set in locals (%r)' % my_locals
         # pylint: enable=too-many-format-args
         assert my_locals["spam"] == filename
 
@@ -591,8 +591,6 @@ class TestFeatureDirectoryLayout2(object):
                 with runner.path_manager:
                     runner.setup_paths()
 
-        # OLD: ok_(("isdir", os.path.join(fs.base, "features", "steps"))  in fs.calls)
-        # OLD: ok_(("isfile", os.path.join(fs.base, "features", "group1", "foo.feature")) in fs.calls)
         assert ("isdir", os.path.join(fs.base, "features", "steps"))  in fs.calls
         assert ("isfile", os.path.join(fs.base, "features", "group1", "foo.feature")) in fs.calls
         assert runner.base_dir == fs.join(fs.base, "features")

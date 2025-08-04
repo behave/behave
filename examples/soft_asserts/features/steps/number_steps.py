@@ -8,11 +8,15 @@ STEPS:
     Then  the numbers "2" and "12" are in the valid range
     And   the number "4" is in the valid range
 """
+
 from __future__ import print_function
-from behave import given, when, then, step
+from behave import given, then
 from assertpy import assert_that, soft_assertions
 
 
+# -----------------------------------------------------------------------------
+# NUMBER STEPS (with soft-asserts)
+# -----------------------------------------------------------------------------
 @given(u'a minimum number value of "{min_value:d}"')
 def step_given_min_number_value(ctx, min_value):
     ctx.min_number_value = min_value
@@ -30,7 +34,6 @@ def step_then_numbers_are_valid(ctx, number1, number2):
 
 
 @then(u'the positive number "{number:d}" is in the valid range')
-# DISABLED: @soft_assertions()
 def step_then_positive_number_is_valid(ctx, number):
     # -- ALTERNATIVE: Use ContextManager instead of disabled decorator above.
     with soft_assertions():

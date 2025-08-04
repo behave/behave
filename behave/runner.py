@@ -578,7 +578,7 @@ class Context(object):
         :param mime_type:       MIME type of the binary data.
         :param data:            Bytes-like object to embed.
         """
-        is_compatible = lambda f: hasattr(f, "embedding")
+        is_compatible = lambda f: hasattr(f, "embedding")  # noqa: E731
         for formatter in filter(is_compatible, self._runner.formatters):
             formatter.embedding(mime_type, data)
 
@@ -921,7 +921,6 @@ class ModelRunner(object):
             features = self.features
 
         # -- ENSURE: context.execute_steps() works in weird cases (hooks, ...)
-        context = self.context
         self.hook_failures = 0
         # -- DISABLED:
         # self.setup_capture()

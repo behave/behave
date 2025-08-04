@@ -237,7 +237,6 @@ class Command(object):
 # -----------------------------------------------------------------------------
 def toxcmd_main(args=None):
     """Command util with subcommands for tox environments."""
-    usage = "USAGE: %(prog)s [OPTIONS] COMMAND args..."
     if args is None:
         args = sys.argv[1:]
 

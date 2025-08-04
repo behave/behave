@@ -17,7 +17,6 @@ from six import StringIO, PY2
 
 from behave._types import require_type
 from behave.constant import (
-    STORE_CAPTURED_ALWAYS,
     CAPTURE_SINK_STORE_CAPTURED_ON_SUCCESS,
     CAPTURE_SINK_SHOW_CAPTURED_ON_SUCCESS,
 )

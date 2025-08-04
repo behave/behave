@@ -94,7 +94,7 @@ def need_vendor_bundles(invoke_minversion=None):
     need_vendor_answers.append(need_vendor_bundle_invoke(invoke_minversion))
     # -- REQUIRE: path.py
     try:
-        import path
+        import path  # noqa: F401
         need_bundle = False
     except ImportError:
         need_bundle = True

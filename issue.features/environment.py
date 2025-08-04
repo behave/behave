@@ -10,14 +10,11 @@ Functionality:
 
 from __future__ import absolute_import, print_function
 import sys
-import platform
 import os.path
-import six
 from behave.active_tag.python import \
     ACTIVE_TAG_VALUE_PROVIDER as ACTIVE_TAG_VALUE_PROVIDER4PYTHON
 from behave.tag_matcher import ActiveTagMatcher, print_active_tags
 from behave4cmd0.setup_command_shell import setup_command_shell_processors4behave
-# PREPARED: from behave.tag_matcher import setup_active_tag_values
 
 
 # ---------------------------------------------------------------------------

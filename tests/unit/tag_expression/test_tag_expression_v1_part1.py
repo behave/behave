@@ -419,9 +419,6 @@ class TestTagExpressionFooOrBarAndNotZap(unittest.TestCase):
     def test_should_not_match_tags(self):
         assert not self.e.check([])
 
-    def test_should_match_foo(self):
-        assert self.e.check(['foo'])
-
     def test_should_match_bar(self):
         assert self.e.check(['bar'])
 

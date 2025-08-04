@@ -23,7 +23,8 @@ import os.path
 import sys
 import textwrap
 from jsonschema import validate
-import check_jsonschema
+# -- PREPARED: jsonschema is becoming deprecated -- USE: check_jsonschema
+# import check_jsonschema
 try:
     import json
 except ImportError:

@@ -1,10 +1,11 @@
 # -*- coding: UTF-8 -*-
 # pylint: disable=unused-wildcard-import
+# ruff: noqa: E731
+
 from __future__ import absolute_import, with_statement
 from mock import Mock, patch
 from six.moves import range     # pylint: disable=redefined-builtin
 from behave import step_registry
-from behave.matchers import ParseMatcher
 
 
 class TestStepRegistry(object):

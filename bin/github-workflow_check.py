@@ -13,7 +13,8 @@ RELATED: JSON schema for Github Action workflows
     REQUIRES:
         pip install check-jsonschema
         DOWNLOAD: https://github.com/SchemaStore/schemastore/blob/master/src/schemas/json/github-workflow.json
-    USE: check-jsonschema --schemafile github-workflow.json_schema.txt .github/workflows/release-to-pypi.yml
+    USE: check-jsonschema --schemafile github-workflow.json_schema.txt
+                          .github/workflows/release-to-pypi.yml
 
 * https://github.com/SchemaStore/schemastore/blob/master/src/schemas/json/github-action.json
 * MAYBE: https://github.com/softprops/github-actions-schemas/blob/master/workflow.json

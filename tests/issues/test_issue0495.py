@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+# ruff: noqa: E501
 """
 Explore issue #495.
 HINT: Problem can be reproduced if you remove encoding-declaration from above.
@@ -32,7 +33,8 @@ import pytest
 # def ensure_logging_setup():
 #    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
-class SimpleContext(object): pass
+class SimpleContext(object):
+    pass
 
 
 # -----------------------------------------------------------------------------

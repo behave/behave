@@ -40,7 +40,7 @@ register_type(Unquoted=parse_unquoted_text)
 # -----------------------------------------------------------------------------
 @when(u'I run "{command:Unquoted}" with locale="{locale_value:Unquoted}"')
 @when(u'I run `{command}` with locale="{locale_value:Unquoted}"')
-def step_i_run_command_with_encoding(ctx, command, locale_value):
+def step_i_run_command_with_locale(ctx, command, locale_value):
     """
     Run a command as subprocess with encoding and language,
     collect its output and return-code.

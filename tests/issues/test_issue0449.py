@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+# ruff: noqa: E501
 """
 SIMILAR: #453
 NOTE: traceback2 (backport for Python2) solves the problem.
@@ -41,10 +42,10 @@ def foo():
 
 @pytest.mark.parametrize("encoding", [None, "UTF-8", "unicode_escape"])
 def test_issue(encoding):
-    expected = u"Всё очень плохо"
+    _expected = u"Всё очень плохо"
     try:
         foo()
-    except Exception as e:
+    except Exception:
         text2 = traceback.format_exc()
 
     text3 = text(text2, encoding)

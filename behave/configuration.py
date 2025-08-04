@@ -17,7 +17,6 @@ import argparse
 from collections import namedtuple
 import json
 import logging
-from logging import _checkLevel as logging_check_level
 import os
 import re
 import sys

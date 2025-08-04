@@ -1,14 +1,14 @@
 # -*- coding: UTF-8 -*-
 # -- FILE: features/steps/my_steps.py
+# ruff: noqa: E402
 
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 from behave import when
 import os
-import sys
 
 # -- VARIANT 1:
 @when(u'I click on ${environment_variable:w}')
-def step_impl(context, environment_variable):
+def step_when_i_click_on_environment_variable(context, environment_variable):
       env_value = os.environ.get(environment_variable, None)
       if env_value is None:
            raise LookupError("Environment variable '%s' is undefined" % environment_variable)
@@ -29,7 +29,7 @@ def parse_environment_var(text):
 register_type(EnvironmentVar=parse_environment_var)
 
 @when(u'I use the environment variable {environment_variable:EnvironmentVar}')
-def step_impl(context, environment_variable):
+def step_when_i_use_environment_variable(context, environment_variable):
       env_name, env_value = environment_variable
       if env_value is None:
            raise LookupError("Environment variable '%s' is undefined" % env_name)

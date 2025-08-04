@@ -1,10 +1,11 @@
 # -*- coding: UTF-8 -*-
+# ruff: noqa: E731
 """
 Unit tests for :mod:`behave.textutil`.
 """
 
 from __future__ import absolute_import, print_function
-from behave.textutil import text, is_ascii_encoding, select_best_encoding
+from behave.textutil import text
 import pytest
 import codecs
 import six
@@ -260,8 +261,8 @@ class TestObjectToTextConversion(object):
 
         # -- FOR: pytest < 5.0
         # expected = u"AssertionError: %s" % message
+        # expected = u"%s: %s" % (exception_class.__name__, message)
         text2 = text(e.value)
-        expected = u"%s: %s" % (exception_class.__name__, message)
         assert isinstance(text2, six.text_type)
         assert exception_class.__name__ in str(e)
         assert message in text2, "OOPS: text=%r" % text2

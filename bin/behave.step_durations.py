@@ -7,20 +7,23 @@ REQUIRES: Python >= 2.6 (json module is part of Python standard library)
 LICENSE:  BSD
 """
 
-from __future__ import absolute_import
-
-__author__    = "Jens Engel"
-__copyright__ = "(c) 2013 by Jens Engel"
-__license__   = "BSD"
-VERSION = "0.1.0"
-
 # -- IMPORTS:
-from behave import json_parser
-from behave.model import ScenarioOutline
+from __future__ import absolute_import, print_function
 from optparse import OptionParser
 from operator import attrgetter
 import os.path
 import sys
+from behave import json_parser
+from behave.model import ScenarioOutline
+
+
+# ----------------------------------------------------------------------------
+# META-DATA
+# ----------------------------------------------------------------------------
+__author__    = "Jens Engel"
+__copyright__ = "(c) 2013 by Jens Engel"
+__license__   = "BSD"
+VERSION = "0.1.0"
 
 
 # ----------------------------------------------------------------------------

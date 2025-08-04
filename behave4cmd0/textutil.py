@@ -7,9 +7,11 @@ TODO:
 """
 
 from __future__ import absolute_import, print_function
+import codecs
 from hamcrest import assert_that, is_not, equal_to, contains_string
 from hamcrest import matches_regexp
-import codecs
+from hamcrest.core.helpers.hasmethod import hasmethod
+from hamcrest.library.text.substringmatcher import SubstringMatcher
 
 DEBUG = False
 
@@ -196,9 +198,6 @@ def text_normalize_line_endings(text):
 # -----------------------------------------------------------------------------
 # ASSERTIONS:
 # -----------------------------------------------------------------------------
-from hamcrest.library.text.substringmatcher import SubstringMatcher
-from hamcrest.core.helpers.hasmethod import hasmethod
-
 class StringContainsMultipleTimes(SubstringMatcher):
 
     def __init__(self, substring, expected_count):

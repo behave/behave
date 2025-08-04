@@ -124,6 +124,7 @@ class TestActiveTags(object):
 
     @pytest.mark.parametrize("case, expected, tags", [
         # -- use.with_CATEGORY=VALUE
+        # ruff: noqa: E501
         ("use.with_... 2x matches",      True, ["use.with_foo=Frank", "use.with_foo=OTHER", "use.with_bar=Bob"]),
         ("use.with_... 1x matches",     False, ["use.with_foo=Frank", "use.with_foo=OTHER", "use.with_bar=OTHER"]),
         ("use.with_... 1x matches",     False, ["use.with_foo=OTHER", "use.with_foo=Frank", "use.with_bar=OTHER"]),
@@ -364,7 +365,8 @@ class TestActiveTags(TestCase):
         test_patterns = [
             ([ traits.category1_enabled_tag, traits.category1_disabled_tag ], "case: first"),
             ([ traits.category1_disabled_tag, traits.category1_enabled_tag ], "case: last"),
-            ([ "foo", traits.category1_enabled_tag, traits.category1_disabled_tag, "bar" ], "case: middle"),
+            ([ "foo", traits.category1_enabled_tag, traits.category1_disabled_tag, "bar" ],
+             "case: middle"),
         ]
         enabled = True  # EXPECTED
         for tags, case in test_patterns:
@@ -462,7 +464,8 @@ class TestActiveTags(TestCase):
             ([ "foo" ],             "case: One non-category tag"),
             ([ "foo", "bar" ],      "case: Two non-category tags"),
             ([ traits.category1_enabled_tag ],   "case: enabled tag"),
-            ([ traits.category1_enabled_tag, traits.category1_disabled_tag ],  "case: enabled and other tag"),
+            ([ traits.category1_enabled_tag, traits.category1_disabled_tag ],
+             "case: enabled and other tag"),
             ([ traits.category1_enabled_tag, "foo" ],    "case: enabled and foo tag"),
             ([ traits.category1_disabled_tag ],            "case: other tag"),
             ([ traits.category1_disabled_tag, "foo" ],     "case: other and foo tag"),

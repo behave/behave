@@ -19,7 +19,7 @@ from behave.contrib.csv_table_from_file import (
     select_marker_tag_and_extract_filename,
     process_examples_tables_with_marker_tag_and_use_csv_file,
 )
-from behave.model import Examples, Table, Row
+from behave.model import Examples, Table
 from behave.parser import parse_feature
 # DISABLED: from behave.model_describe import ModelDescriptor
 
@@ -183,7 +183,9 @@ def test_read_examples_table_data_from_csv__raises_error_with_unsupported_file_f
     (BAD_CSV_FILE_CONTENTS1, BAD_CSV_TABLE_DATA1),
     (BAD_CSV_FILE_CONTENTS2, CSV_TABLE_DATA)
 ])
-def test_read_examples_table_data_from_csv__raises_error_with_bad_csv_file(bad_csv_contents, expected, tmp_path):
+def test_read_examples_table_data_from_csv__raises_error_with_bad_csv_file(bad_csv_contents,
+                                                                           expected,
+                                                                           tmp_path):
     csv_file = tmp_path/"bad_data.csv"
     csv_file.write_text(bad_csv_contents)
 

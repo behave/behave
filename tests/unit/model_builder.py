@@ -429,7 +429,8 @@ class ManyScenariosBuilderMixin(ScenarioBuilderMixin):
         assert isinstance(ctx, BuilderContext)
         for current in ctx:
             if not isinstance(current, (Feature, Rule)):
-                print("SKIP with_many_scenarios(%d): current=%r (expected: Feature, Rule)" % (count, current))
+                print("SKIP with_many_scenarios(%d): current=%r (expected: Feature, Rule)" % \
+                      (count, current))
                 continue
             self.add_many_scenarios(count, current=current, **scenario_kwargs)
         return BuilderContext(self, ctx.current_items)

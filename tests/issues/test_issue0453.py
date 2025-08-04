@@ -22,7 +22,7 @@ which is also correct.
 
 from __future__ import print_function
 from behave.textutil import text
-from hamcrest.core import assert_that, equal_to
+from hamcrest.core import assert_that
 from hamcrest.library import contains_string
 import six
 import pytest
@@ -51,6 +51,7 @@ def problematic_step_impl(context):
 # -----------------------------------------------------------------------------
 @pytest.mark.parametrize("encoding", [None, "UTF-8", "unicode_escape"])
 def test_issue(encoding):
+    # ruff: noqa: E501
     """
     with encoding=UTF-8:
         File "/Users/jens/se/behave_main.unicode/tests/issues/test_issue0453.py", line 31, in problematic_step_impl
@@ -64,7 +65,7 @@ def test_issue(encoding):
     """
     context = None
     text2 = b""
-    expected_text = u"по русски"
+    _expected_text = u"по русски"
     try:
         problematic_step_impl(context)
     except Exception:

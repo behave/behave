@@ -8,7 +8,6 @@ import pytest
 from behave import configuration
 from behave.configuration import (
     Configuration,
-    ConfigFileOption,
     UserData,
     configfile_options_iter
 )
@@ -179,7 +178,7 @@ class TestConfigurationUserData(TestCase):
         assert "true" == config.userdata["foo"]
         assert "true" == config.userdata["bar"]
         assert "true" == config.userdata["baz"]
-        assert True == config.userdata.getbool("foo")
+        assert config.userdata.getbool("foo") is True
 
     def test_cmdline_defines_with_empty_value(self):
         config = Configuration("-D foo=")

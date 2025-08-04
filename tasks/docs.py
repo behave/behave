@@ -100,6 +100,7 @@ def autobuild(ctx, builder="html", language=None, options=""):
     destdir = destdir.abspath()
     with cd(sourcedir):
         destdir_relative = Path(".").relpathto(destdir)
+        # ruff: noqa: E501
         command = "sphinx-autobuild {opts} -b {builder} -D language={language} {sourcedir} {destdir}" \
                     .format(builder=builder, sourcedir=".",
                             destdir=destdir_relative,

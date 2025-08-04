@@ -2,9 +2,8 @@
 Tests for :mod:`behave.model_type` module.
 """
 
-from behave.model_type import (
-    Status, ScenarioStatus, OuterStatus, FileLocation
-)
+# -- PREPARED:
+# from behave.model_type import Status, ScenarioStatus, OuterStatus, FileLocation
 import pytest
 
 todo = pytest.mark.todo()

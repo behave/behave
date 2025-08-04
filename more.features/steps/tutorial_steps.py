@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+# ruff: noqa: F811
 """
 Step implementations for tutorial example.
 """

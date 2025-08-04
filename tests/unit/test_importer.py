@@ -1,16 +1,16 @@
-# -*- coding: utf-8 -*-
+# -*- coding: UTF-8 -*-
+# ruff: noqa: E731
 """
 Tests for behave.importing.
 The module provides a lazy-loading/importing mechanism.
 """
 
-from __future__ import absolute_import
-import pytest
-from behave.importer import LazyObject, LazyDict, load_module, parse_scoped_name
+from __future__ import absolute_import, print_function
+from behave.importer import LazyObject, LazyDict, load_module
 from behave.formatter.base import Formatter
 import sys
 import types
-# import unittest
+import pytest
 
 
 class TestTheory(object):
@@ -49,9 +49,8 @@ class TestLoadModule(object):
     theory = ImportModuleTheory
 
     def test_load_module__should_fail_for_unknown_module(self):
-        with pytest.raises(ImportError) as e:
+        with pytest.raises(ImportError):
             load_module("__unknown_module__")
-        # OLD: assert_raises(ImportError, load_module, "__unknown_module__")
 
     def test_load_module__should_succeed_for_already_imported_module(self):
         module_name = "behave.importer"

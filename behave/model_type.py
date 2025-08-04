@@ -382,7 +382,7 @@ class FileLocation(object):
 
     if six.PY2:
         __unicode__ = __str__
-        __str__ = lambda self: self.__unicode__().encode("utf-8")
+        __str__ = lambda self: self.__unicode__().encode("utf-8")  # noqa: E731
 
     @classmethod
     def for_function(cls, func, curdir=None):

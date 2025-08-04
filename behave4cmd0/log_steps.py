@@ -60,7 +60,7 @@ IDEA:
 from __future__ import absolute_import, print_function
 import logging
 import sys
-from behave import given, when, then, step
+from behave import then, step
 from behave.configuration import LogLevel
 from behave.log_capture import LoggingCapture
 from behave.log_config import LoggingConfigurator
@@ -405,7 +405,7 @@ def step_use_log_record_configuration(context):
 # TODO: STEP DEFINITIONS:
 # -----------------------------------------------------------------------------
 @step('I capture log records with level "{level}" or above')
-def step_I_capture_logrecords(context, level):
+def step_I_capture_logrecords_with_level(context, level):
     raise NotImplementedError()
 
 

@@ -5,16 +5,14 @@ Unittests for :mod:`behave.capture` module.
 
 from __future__ import absolute_import, print_function
 import sys
+import pytest
+
 from behave.capture import (
     Captured, CaptureBookmark, CaptureController, ManyCaptured,
     NO_CAPTURED_DATA
 )
 from behave.configuration import Configuration
-from mock import Mock
-import pytest
-
-from behave4cmd0.failing_steps import then_it_should_fail_because
-from tests.unit.test_runner_hook import not_implemented
+# DISABLED: from behave4cmd0.failing_steps import then_it_should_fail_because
 
 
 # -----------------------------------------------------------------------------
@@ -99,7 +97,7 @@ class TestCaptured(object):
 
     def test_bool_conversion__returns_false_without_captured_output(self):
         captured = Captured()
-        assert bool(captured) == False
+        assert bool(captured) is False
         assert bool(captured.stdout) == captured.has_output()
 
     @pytest.mark.parametrize("params", [

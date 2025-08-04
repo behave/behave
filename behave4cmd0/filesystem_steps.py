@@ -4,15 +4,19 @@ import codecs
 import os
 import os.path
 import shutil
-from behave import given, when, then, step, register_type
-from behave.parameter_type import parse_path, parse_path_as_text, parse_unquoted_text
+from behave import given, then, step, register_type
+from behave.parameter_type import parse_path_as_text, parse_unquoted_text
 from behave4cmd0 import command_util, pathutil, textutil
 from behave4cmd0.step_util import (
-    on_assert_failed_print_details, normalize_text_with_placeholders)
-from behave4cmd0.command_shell_proc import \
+    normalize_text_with_placeholders,
+    on_assert_failed_print_details,
+    require_table,
+)
+from behave4cmd0.command_shell_proc import (
     TextProcessor, BehaveWinCommandOutputProcessor
-from behave4cmd0.pathutil import posixpath_normpath
+)
 from hamcrest import assert_that, has_items
+# PREPARED: from behave4cmd0.pathutil import posixpath_normpath
 
 
 file_contents_normalizer = None

@@ -170,7 +170,8 @@ class TestContextCleanup(object):
         my_cleanup.assert_called_once_with(1, 2, 3, name="alice")
 
     def test_add_cleanup__rejects_noncallable_cleanup_func(self):
-        class NonCallable(object): pass
+        class NonCallable(object):
+            pass
         non_callable = NonCallable()
         context = make_context()
 
@@ -303,6 +304,6 @@ class TestContextCleanupWithLayer(object):
         my_cleanup = Mock(spec=cleanup_func)
         context = make_context()
         with scoped_context_layer(context):   # CALLS-HERE: context._push()
-            with pytest.raises(LookupError) as error:
+            with pytest.raises(LookupError):
                 context.add_cleanup(my_cleanup, layer="other")
         my_cleanup.assert_not_called()

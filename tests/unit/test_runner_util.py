@@ -4,7 +4,7 @@ from __future__ import absolute_import, print_function
 from collections import OrderedDict
 from behave.runner_util import FeatureLineDatabase
 from behave.parser import parse_feature
-from behave.model import Feature, Rule, ScenarioOutline, Scenario, Background
+from behave.model import Feature
 import pytest
 
 
@@ -15,7 +15,7 @@ feature_text1 = u"""
     Feature: Alice
         Background: Alice.Background
           Given a background step passes
-          
+
         Scenario: A1
           Given a scenario step passes
 
@@ -26,16 +26,16 @@ feature_text1 = u"""
 
 feature_text_with_scenario_outline = u"""
     Feature: Bob
-    
+
         Scenario Outline: Bob.SO_2_<row.id>
           Given a person with name "<Name>"
           Then the person is born in <Birthyear>
-        
+
           Examples:
             | Name  | Birthyear |
             | Alice |  1990     |
             | Bob   |  1991     |
-            
+
         Scenario: Bob.S3
           Given a scenario step passes
           When a scenario step passes

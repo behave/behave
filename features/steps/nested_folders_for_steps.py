@@ -1,3 +1,4 @@
+# ruff: noqa: F811
 from behave import then, when
 
 

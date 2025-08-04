@@ -1,5 +1,5 @@
+# -*- coding: UTF-8 -*-
 from __future__ import absolute_import, with_statement
-import pytest
 from mock import patch
 from behave.log_capture import LoggingCapture
 from six.moves import range

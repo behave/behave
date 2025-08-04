@@ -53,6 +53,7 @@ def make_exception_message4abstract_method(class_name, method_name):
     # -- RAISED AS: TypeError
     # UNTIL python 3.11: Can't instantiate abstract class <CLASS> with abstract method <METHOD>
     # FROM  python 3.12: Can't instantiate abstract class <CLASS> without an implementation for abstract method '<METHOD>'
+    # ruff: noqa: E501
     message = """
 Can't instantiate abstract class {class_name} (with|without an implementation for) abstract method(s)? (')?{method_name}(')?
 """.format(class_name=class_name, method_name=method_name).strip()
@@ -227,7 +228,7 @@ custom = {this_module}:CustomTestRunner
     def test_make_runner_fails_with_unknown_module(self, capsys):
         with pytest.raises(ModuleNotFoundError) as exc_info:
             config = Configuration(["--runner=unknown_module:Runner"])
-            runner = RunnerPlugin().make_runner(config)
+            _runner = RunnerPlugin().make_runner(config)
         captured = capsys.readouterr()
 
         expected = "unknown_module"
@@ -257,7 +258,8 @@ custom = {this_module}:CustomTestRunner
 
     def test_make_runner_fails_if_runner_class_is_not_a_class(self):
         with pytest.raises(InvalidClassError) as exc_info:
-            config = Configuration(["--runner=%s:INVALID_TEST_RUNNER_CLASS0" % self.THIS_MODULE_NAME])
+            module_name = self.THIS_MODULE_NAME
+            config = Configuration(["--runner=%s:INVALID_TEST_RUNNER_CLASS0" % module_name])
             RunnerPlugin().make_runner(config)
 
         expected = "is not a class"
@@ -266,7 +268,8 @@ custom = {this_module}:CustomTestRunner
 
     def test_make_runner_fails_if_runner_class_is_not_subclass_of_runner_interface(self):
         with pytest.raises(InvalidClassError) as exc_info:
-            config = Configuration(["--runner=%s:InvalidTestRunnerNotSubclass" % self.THIS_MODULE_NAME])
+            module_name = self.THIS_MODULE_NAME
+            config = Configuration(["--runner=%s:InvalidTestRunnerNotSubclass" % module_name])
             RunnerPlugin().make_runner(config)
 
         expected = "is not a subclass-of 'behave.api.runner:ITestRunner'"

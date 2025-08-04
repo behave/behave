@@ -1,1 +1,2 @@
-class SomeError(RuntimeError): pass
+class SomeError(RuntimeError):
+    pass

@@ -219,12 +219,15 @@ class TestContext2(unittest.TestCase):
         self.context._pop()
         assert self.context.thing == "stuff"
         assert self.context.other_thing == "more stuff"
-        assert getattr(self.context, "third_thing", None) is None, "%s is not None" % self.context.third_thing
+        assert getattr(self.context, "third_thing", None) is None, \
+               "%s is not None" % self.context.third_thing
 
         self.context._pop()
         assert self.context.thing == "stuff"
-        assert getattr(self.context, "other_thing", None) is None, "%s is not None" % self.context.other_thing
-        assert getattr(self.context, "third_thing", None) is None, "%s is not None" % self.context.third_thing
+        assert getattr(self.context, "other_thing", None) is None, \
+               "%s is not None" % self.context.other_thing
+        assert getattr(self.context, "third_thing", None) is None, \
+               "%s is not None" % self.context.third_thing
 
     def test_masking_existing_user_attribute_when_verbose_causes_warning(self):
         warns = []
@@ -445,7 +448,7 @@ Then a step passes
 """.lstrip()
         with patch("behave.step_registry.registry", self.step_registry):
             try:
-                result = self.context.execute_steps(doc)
+                _result = self.context.execute_steps(doc)
             except AssertionError as e:
                 assert "FAILED SUB-STEP: When a step fails" in _text(e)
 
@@ -457,7 +460,7 @@ Then a step passes
 """.lstrip()
         with patch("behave.step_registry.registry", self.step_registry):
             try:
-                result = self.context.execute_steps(doc)
+                _result = self.context.execute_steps(doc)
             except AssertionError as e:
                 assert "UNDEFINED SUB-STEP: When a step is undefined" in _text(e)
 

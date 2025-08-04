@@ -151,7 +151,6 @@ CALLED: step2
         assert scenario.status == failed_status
         assert run_scenario_failed is True
 
-        scenario_captured = scenario.captured
         step1_captured = scenario.steps[0].captured
         step2_captured = scenario.steps[1].captured
         step3_captured = scenario.steps[2].captured
@@ -363,7 +362,7 @@ HOOK-ERROR in after_scenario: SomeError: OOPS, ERROR in Bad after-hook
 CAPTURED STDOUT: scenario
 CALLED: step1
 """.strip()
-        step1_expected = u"""
+        _step1_expected = u"""
 CAPTURED STDOUT: step
 CALLED: step1
 """.strip()

@@ -232,7 +232,7 @@ class TestFormatterModule(object):
     def test_deprecated_on_impoort(self):
         expected = "Use 'behave.formatter._registry' instead."
         with pytest.warns(DeprecationWarning, match=expected):
-            import behave.formatter.formatters
+            import behave.formatter.formatters  # noqa: F401
 
 
 class TestModellRunner(object):

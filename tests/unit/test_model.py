@@ -17,7 +17,7 @@ from behave.matchers import NoMatch
 from behave.model_type import Status
 from behave.model import Examples, Feature, Scenario, ScenarioOutline, Step
 from behave.model import Table, Row
-from behave.parser import parse_steps, parse_scenario
+from behave.parser import parse_scenario
 from behave.runner import ModelRunner, Context
 from behave._stepimport import SimpleStepContainer
 

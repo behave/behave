@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# TODO:
 # -*- coding: UTF-8 -*-
 """
 Generates documentation of behave's
@@ -7,13 +6,11 @@ Generates documentation of behave's
   * command-line options
   * configuration-file parameters
 
-REQUIRES: Python >= 2.6
+REQUIRES: Python >= 2.7
 """
 
 from __future__ import absolute_import, print_function
 import re
-import sys
-import conf
 import textwrap
 from behave import configuration
 from behave.__main__ import TAG_EXPRESSIONS_HELP

@@ -2,7 +2,7 @@
 # REQUIRES: Python >= 3.5
 
 import sys
-from behave import given, then, step
+from behave import given, then
 from behave.api.async_step import use_or_create_async_context
 from behave.python_feature import PythonFeature
 from hamcrest import assert_that, equal_to, empty

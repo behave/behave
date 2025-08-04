@@ -1,5 +1,5 @@
 from typing import List
-from behave import given, when, then
+from behave import when, then
 from behave.cucumber_expression import (
     TypeBuilder,
     define_parameter_type_with

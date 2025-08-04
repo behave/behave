@@ -6,16 +6,11 @@ Test issue #1177.
 
 # -- IMPORTS:
 from __future__ import absolute_import, print_function
-
 import sys
-
-from behave._stepimport import use_step_import_modules, SimpleStepContainer
-from behave.configuration import Configuration
-from behave.matchers import Match, StepParseError
-from behave.parser import parse_step
-from behave.runner import Context, ModelRunner
 import parse
 import pytest
+from behave._stepimport import use_step_import_modules, SimpleStepContainer
+from behave.parser import parse_step
 
 
 @parse.with_pattern(r"true|false")
@@ -33,9 +28,9 @@ def test_parse_expr(parse_bool):
     parser = parse.Parser("Light is on: {answer:Bool}",
                           extra_types=dict(Bool=parse_bool))
     result = parser.parse("Light is on: true")
-    assert result["answer"] == True
+    assert result["answer"] is True
     result = parser.parse("Light is on: false")
-    assert result["answer"] == False
+    assert result["answer"] is False
     result = parser.parse("Light is on: __NO_MATCH__")
     assert result is None
 

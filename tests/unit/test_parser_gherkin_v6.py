@@ -41,10 +41,7 @@ Keyword aliases:
 """
 
 from __future__ import absolute_import, print_function
-from behave.parser import (
-    parse_feature, parse_rule, Parser, ParserError
-)
-from behave.model import Feature, Rule, Scenario, ScenarioOutline, Background
+from behave.parser import parse_feature
 import pytest
 
 
@@ -151,7 +148,7 @@ Feature: With Rule
   Rule: R3
     Rule description line 1.
     Rule description line 2.
-    
+
     Rule description line 3.
 '''.lstrip()
         feature = parse_feature(text)
@@ -399,7 +396,7 @@ Feature: With Rule
     Scenario Outline: R5.ScenarioOutline
       Given step with name "<name>"
       When step uses "<param2>"
-      
+
       Examples:
         | name  | param2 |
         | Alice | 1      |
@@ -504,12 +501,12 @@ Feature: With Rule
     Scenario: R1.Scenario_1
       Given scenario 1 step 1
       When scenario 1 step 2
-  
+
   Rule: R2
     Scenario Outline: R2.ScenarioOutline_1
       Given step with name "<name>"
       When step uses "<param2>"
-      
+
       Examples:
         | name  | param2 |
         | Alice | 1      |
@@ -577,11 +574,11 @@ Feature: With Scenarios and Rules
   Scenario: Scenario_1
     Given scenario_1 step_1
     When  scenario_1 step_2
-    
+
   Rule: R1
     Background: R1.Background
       Given rule R1 background step_1
-      
+
     Scenario: R1.Scenario_1
       Given rule R1 scenario_1 step_1
       When  rule R1 scenario_1 step_2
@@ -667,13 +664,13 @@ class TestParser4Background(object):
         """AFFECTED: Scenarios outside of rules (before first rule)."""
         text = u'''
             Feature: With Scenarios and Rules
-            
+
               Background: Feature.Background
                 Given feature background step_1
-            
+
               Scenario: Scenario_1
                 Given scenario_1 step_1
-            
+
               Rule: R1
                 Scenario: R1.Scenario_1
                   Given rule R1 scenario_1 step_1
@@ -701,14 +698,14 @@ class TestParser4Background(object):
         """AFFECTED: Scenarios outside of rules (before first rule)."""
         text = u'''
             Feature: Scenario with disabled background
-            
+
               Background: Feature.Background
                 Given feature background step_1
-            
+
               @fixture.behave.disable_background
               Scenario: Scenario_1
                 Given scenario_1 step_1
-            
+
               Scenario: Scenario_2
                 Given scenario_2 step_1
             '''.lstrip()
@@ -743,10 +740,10 @@ class TestParser4Background(object):
     def test_parse__rule_scenarios_inherit_feature_background_without_rule_background(self):
         text = u'''
             Feature: With Background and Rule
-    
+
               Background: Feature.Background
                 Given feature background step_1
-    
+
               Rule: R1
                 Scenario: R1.Scenario_1
                   Given rule R1 scenario_1 step_1
@@ -781,7 +778,7 @@ class TestParser4Background(object):
               Rule: R1
                 Background: R1.Background
                   Given rule R1 background step_1
-                
+
                 Scenario: R1.Scenario_1
                   Given rule R1 scenario_1 step_1
             '''.lstrip()
@@ -854,7 +851,8 @@ class TestParser4Background(object):
             (u"given", u"Given", u'rule R1 scenario_1 step_1', None, None),
         ])
 
-    def test_parse__rule_scenarios_without_rule_background_when_background_inheritance_is_disabled_without(self):
+    # ruff: noqa: E501
+    def test_parse__rule_scenarios_without_rule_background_when_background_inheritance_is_disabled(self):
         # -- HINT: Background inheritance is enabled (by default).
         text = u'''
             Feature: With Feature Background Inheritance disabled
@@ -999,7 +997,7 @@ class TestParser4ScenarioOutline(object):
 
       Scenario Template: ScenarioOutline_1
         Given a step with name "<name>"
-        
+
         Examples:
           | name  |
           | Alice |

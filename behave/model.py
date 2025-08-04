@@ -15,19 +15,17 @@ import copy
 import difflib
 import logging
 import itertools
-import os
-import sys
 import time
 import six
 from six.moves import zip       # pylint: disable=redefined-builtin
 
 from behave._types import require_type
 from behave.api.pending_step import StepNotImplementedError
-from behave.capture import Captured, ManyCaptured
+from behave.capture import Captured
 from behave.model_core import (
     BasicStatement, TagAndStatusStatement, TagStatement, Replayable
 )
-from behave.model_type import Status, ScenarioStatus, OuterStatus
+from behave.model_type import Status, OuterStatus
 from behave.matchers import NoMatch
 from behave.textutil import text as _text
 if six.PY2:
@@ -1253,7 +1251,7 @@ class Scenario(TagAndStatusStatement, Replayable):
         try:
             # pylint: disable=protected-access
             runner.context._pop(capture_sink=self.capture_sink)
-        except Exception as e:                   # pylint: disable=broad-except
+        except Exception:  # pylint: disable=broad-except
             # print("CLEANUP-ERROR: {}:{}".format(e.__class__.__name__, e))
             self.set_status(Status.cleanup_error)
             failed = True

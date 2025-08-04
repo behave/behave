@@ -6,7 +6,6 @@ import sys
 import tempfile
 import unittest
 import six
-import pytest
 from mock import Mock, patch
 from behave.formatter._registry import make_formatters
 from behave.formatter import pretty
@@ -40,7 +39,7 @@ class TestGetTerminalSize(unittest.TestCase):
 
     def test_termios_fallback(self):    # pylint: disable=no-self-use
         try:
-            import termios
+            import termios  # noqa: F401
             return
         except ImportError:
             pass

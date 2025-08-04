@@ -20,14 +20,14 @@
 """
 
 import operator
-from behave import given, when, then, step
+from behave import given, then, step
 from behave._types import parse_bool
 from behave.active_tag.python import (
     ACTIVE_TAG_VALUE_PROVIDER as ACTIVE_TAG_VALUE_PROVIDER4PYTHON
 )
 from behave.model_core import TagAndStatusStatement
 from behave.tag_matcher import (
-    ActiveTagMatcher, ValueObject, NumberValueObject
+    ActiveTagMatcher, NumberValueObject
 )
 from behave.tag_expression import TagExpression
 from behave4cmd0.step_util import require_table
@@ -130,7 +130,7 @@ def step_then_following_active_tags_combinations_are_enabled(ctx):
                 "No mismatched rows: {}".format(mismatched_rows))
 
 @then(u'the following active tag combinations are enabled with inherited tags:')
-def step_then_following_active_tags_combinations_are_enabled(ctx):
+def step_then_following_active_tags_combinations_are_enabled_with_inherited_tags(ctx):
     require_table(ctx, with_columns=["tags", "inherited_tags", "enabled?"])
     assert ctx.active_value_provider, "REQUIRE: active_value_provider"
     ignore_unknown_categories = getattr(ctx,

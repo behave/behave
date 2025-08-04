@@ -169,8 +169,8 @@ def upload(ctx, repo=None, dry_run=False, skip_existing=False):
 def print_packages(packages):
     print("PACKAGES[%d]:" % len(packages))
     for package in packages:
+        # -- PREPARED: package_time = package.stat().st_mtime
         package_size = package.stat().st_size
-        package_time = package.stat().st_mtime
         print("  - %s  (size=%s)" % (package, package_size))
 
 def ensure_packages_exist(ctx, pattern=None, check_only=False):

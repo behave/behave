@@ -17,7 +17,12 @@ Create a runner as behave plugin by using its name:
 from __future__ import absolute_import, print_function
 import inspect
 from behave.api.runner import ITestRunner
-from behave.exception import ConfigError, ClassNotFoundError, InvalidClassError, ModuleNotFoundError
+from behave.exception import (
+    ConfigError,
+    ClassNotFoundError,
+    InvalidClassError,
+    # MAYBE: ModuleNotFoundError
+)
 from behave.importer import load_module, make_scoped_class_name, parse_scoped_name
 from behave._types import Unknown
 

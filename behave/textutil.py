@@ -71,7 +71,7 @@ def text_encoding(encoding=None):
     # -- SINCE: Python 3.10 -- io.text_encoding()
     text_encoding_func = getattr(io, "text_encoding", None)
     if text_encoding_func is None:
-        text_encoding_func = lambda x: x or "utf-8"
+        text_encoding_func = lambda x: x or "utf-8"  # noqa: E731
     return text_encoding_func(encoding)
 
 
@@ -143,7 +143,7 @@ def text(value, encoding=None, errors=None):
             if six.PY2:
                 try:
                     text2 = six.text_type(value)
-                except UnicodeError as e:
+                except UnicodeError:
                     # -- NOTE: value has no sane unicode conversion
                     #  encoding=unicode-escape helps recover from errors.
                     data = str(value)

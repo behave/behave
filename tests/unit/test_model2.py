@@ -4,11 +4,10 @@ Additional unit tests for :mod:`behave.model`.
 """
 
 from __future__ import absolute_import, print_function
-from behave.model import ScenarioOutline, ScenarioOutlineBuilder, Table, Tag, Row
+from behave.model import ScenarioOutlineBuilder, Tag, Row
 from behave.model_describe import ModelDescriptor
 from behave.textutil import text
 from behave.parser import parse_feature, parse_step, parse_tags
-import six
 import pytest
 
 

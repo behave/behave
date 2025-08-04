@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# ruff: noqa: F401
 """
 Use behave4cmd0 step library (predecessor of behave4cmd).
 """

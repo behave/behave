@@ -6,9 +6,8 @@ Provides some steps for testing step-definitions with `CucumberExpressions`_.
 
 from __future__ import absolute_import, print_function
 from decimal import Decimal
-from behave import given, when, then, step
+from behave import given, when, then
 from assertpy import assert_that
-import six
 
 try:
     # -- REQUIRES: Python3, Python.version >= 3.8

@@ -119,8 +119,7 @@ class TestAsyncStepFunction:
             async def async_step_is_called(ctx):
                 """ASYNC_STEP documentation is HERE."""
 
-        # step_function = step_container.step_registry.steps[0].items()[0]
-        step_function = self.find_step_function_from(step_container.step_registry,
+        _step_function = self.find_step_function_from(step_container.step_registry,
                                                      "an async-step is called",
                                                      "step")
         assert async_step_is_called.__doc__ == "ASYNC_STEP documentation is HERE."
@@ -222,6 +221,7 @@ class TestUseAsyncStep:
         with pytest.raises(RuntimeError):
             async_step_with_error(ctx)
 
+    # ruff: noqa: E501
     @pytest.mark.filterwarnings("ignore: 'asyncio.get_event_loop_policy' is deprecated.*:DeprecationWarning")
     def test_event_loop_is_unset(self, monkeypatch):
         step_container = SimpleStepContainer()

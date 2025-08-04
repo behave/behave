@@ -16,7 +16,7 @@ import sys
 from six import string_types
 
 from behave import parser as gherkin
-from behave._types import require_type, require_callable, require_not_none
+from behave._types import require_type, require_not_none
 from behave.exception import (
     FileNotFoundError,  # pylint: disable=W0622
     InvalidFileLocationError,
@@ -25,7 +25,7 @@ from behave.exception import (
 from behave.model_type import FileLocation
 from behave.model import Feature, Rule, ScenarioOutline, Scenario
 from behave.textutil import ensure_stream_with_encoder
-# LAZY: from behave.step_registry import setup_step_decorators
+# USE-LAZY-IMPORT: from behave.step_registry import setup_step_decorators
 
 
 # -----------------------------------------------------------------------------

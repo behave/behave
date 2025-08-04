@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# ruff: noqa: F401
 """
 Import all step definitions of this step-library.
 Step definitions are automatically registered in "behave.step_registry".

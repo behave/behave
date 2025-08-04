@@ -4,7 +4,7 @@ from behave import step
 
 
 @step(u'feature background step_{step_id:d}')
-def step_rule_background(ctx, step_id):
+def step_feature_background(ctx, step_id):
     print("feature background step_{0}".format(step_id))
 
 

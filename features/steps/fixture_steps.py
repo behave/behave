@@ -1,10 +1,11 @@
 # -*- coding: UTF-8 -*-
 # -- FILE: features/steps/fixture_steps.py
 
-from __future__ import print_function
-from behave import when
-import os
-import sys
+from __future__ import absolute_import, print_function
+# -- PREPARED:
+# from behave import when
+# import os
+# import sys
 
 # -- TODO:
 # # -- VARIANT 1:

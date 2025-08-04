@@ -72,7 +72,7 @@ def step_given_the_tag_expression(context, tag_expression):
 
 
 @given('the default tags "{default_tags:TagExpression}"')
-def step_given_the_tag_expression(context, default_tags):
+def step_given_the_default_tag_expression(context, default_tags):
     """
     Define a tag expression that is used later-on.
 
@@ -147,7 +147,7 @@ def step_given_named_model_elements_with_tags(context):
 
 @then('the tag expression selects model elements with')
 @then('the tag expression selects model elements with:')
-def step_given_named_model_elements_with_tags(context):
+def step_then_tag_expression_selects_model_elements_with(context):
     """
     .. code-block:: gherkin
 

@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 # -- FILE: features/environment.py
+# ruff: noqa: E402
 import os.path
 import sys
 

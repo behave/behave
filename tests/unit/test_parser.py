@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 # pylint: disable=invalid-name, line-too-long, too-many-lines, bad-whitespace
+# ruff: noqa: E501
 """
 Unit tests for Gherkin parser: :mod:`behave.parser`.
 """
@@ -1321,7 +1322,7 @@ Fonctionnalité: testing stuff
         ])
 
     def test_properly_handles_whitespace_on_keywords_that_do_not_want_it(self):
-        data = {'zh-TW': {
+        _data = {'zh-TW': {
             'and': ['*', '假設', '並且', '同時'],
             'background': ['背景'],
             'but': ['*', '但是'],

@@ -7,7 +7,8 @@ Traceback (most recent call last):
     sys.exit(main())
   File "/Library/Python/2.7/site-packages/behave/__main__.py", line 123, in main
     print(u"Exception %s: %s" % (e.__class__.__name__, text))
-UnicodeEncodeError: 'ascii' codec can't encode character u'\u2019' in position 69: ordinal not in range(128)
+UnicodeEncodeError: 'ascii' codec can't encode character u'\u2019' in position 69:
+ordinal not in range(128)
 
 
     try:

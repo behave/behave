@@ -19,7 +19,7 @@ import inspect
 import warnings
 import six
 
-from behave._types import require_type, require_callable
+from behave._types import require_type
 from behave.exception import StepFunctionTypeError
 from behave.python_feature import PythonLibraryFeature
 

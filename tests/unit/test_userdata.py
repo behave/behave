@@ -3,7 +3,11 @@
 from __future__ import absolute_import
 from behave.userdata import parse_user_define, UserData, UserDataNamespace
 from behave._types import Unknown
+from pytest import approx
 import pytest
+
+
+FLOAT_ACCURACY = 0.000091
 
 
 class TestParseUserDefine(object):
@@ -183,7 +187,7 @@ class TestUserData(object):
     def test_getbool__with_unknown_param_without_default_returns_false(self):
         userdata = UserData()
         value = userdata.getfloat("param")
-        assert value == False
+        assert (value + FLOAT_ACCURACY) == approx(FLOAT_ACCURACY)
 
     def test_getbool__with_unknown_param_returns_default_value(self):
         userdata = UserData()
@@ -239,11 +243,6 @@ class TestUserDataNamespace(object):
         config = UserDataNamespace("my.scope", userdata)
         assert config.getint("param1") == 12
 
-    def test_getint__retrieves_value_when_scoped_param_exists(self):
-        userdata = UserData({"my.scope.param2": "12"})
-        config = UserDataNamespace("my.scope", userdata)
-        assert config.getint("param2") == 12
-
     def test_getint__returns_default_when_scoped_param_not_exists(self):
         userdata = UserData({})
         config = UserDataNamespace("my.scope", userdata)
@@ -253,13 +252,13 @@ class TestUserDataNamespace(object):
     def test_getbool__retrieves_value_when_scoped_param_exists(self):
         userdata = UserData({"my.scope.param3": "yes"})
         config = UserDataNamespace("my.scope", userdata)
-        assert config.getbool("param3") == True
+        assert config.getbool("param3") is True
 
     def test_getbool__returns_default_when_scoped_param_not_exists(self):
         userdata = UserData({})
         config = UserDataNamespace("my.scope", userdata)
-        assert config.getint("UNKNOWN_PARAM", True)  == True
-        assert config.getint("UNKNOWN_PARAM", False) == False
+        assert config.getint("UNKNOWN_PARAM", True)  is True
+        assert config.getint("UNKNOWN_PARAM", False) is False
 
     def test_contains__when_scoped_param_exists(self):
         userdata = UserData({"my.scope.param": 12})
@@ -271,7 +270,7 @@ class TestUserDataNamespace(object):
         userdata = UserData({"my.scope.param": 12})
         config = UserDataNamespace("my.scope", userdata)
         assert "UNKNOWN_PARAM" not in config
-        assert not ("UNKNOWN_PARAM" in config)
+        assert not ("UNKNOWN_PARAM" in config)  # noqa: E713
 
     def test_getitem__returns_value_when_param_exists(self):
         userdata = UserData({"my.scope.param": "123"})

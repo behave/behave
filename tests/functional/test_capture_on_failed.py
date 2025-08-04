@@ -134,7 +134,6 @@ class TestCaptureOnStepsRun(object):
         assert scenario.status == failed_status
         assert run_scenario_failed is True
 
-        scenario_captured = scenario.captured
         step1_captured = scenario.steps[0].captured
         step2_captured = scenario.steps[1].captured
         step3_captured = scenario.steps[2].captured
@@ -238,7 +237,6 @@ BAD_CALLED: step2
 CAPTURED STDERR: step
 ASSERT FAILED: OOPS, FAILED in step2
 """.strip()
-        step3_expected = u""
         assert step1_captured.make_simple_report() == u""
         assert step2_captured.make_simple_report() == step2_expected
         assert step3_captured.make_simple_report() == u""
@@ -307,7 +305,7 @@ HOOK-ERROR in after_scenario: SomeError: OOPS, ERROR in Bad after-hook
 CAPTURED STDOUT: scenario
 CALLED: step1
 """.strip()
-        step1_expected = u"""
+        _step1_expected = u"""
 CAPTURED STDOUT: step
 CALLED: step1
 """.strip()

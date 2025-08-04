@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# ruff: noqa: E501, E731
 """
 Unit tests for active tag-matcher (mod:`behave.tag_matcher`).
 
@@ -10,10 +11,16 @@ Unit tests for active tag-matcher (mod:`behave.tag_matcher`).
 from __future__ import absolute_import
 from mock import Mock
 from unittest import TestCase
-import warnings
+import operator
 import pytest
 
-from behave.tag_matcher import *
+from behave.tag_matcher import (
+    ActiveTagMatcher,
+    CompositeTagMatcher,
+    PredicateTagMatcher,
+    ValueObject,
+    # PREPARED: VersionObject,
+)
 
 
 class Traits4ActiveTagMatcher(object):
@@ -432,11 +439,6 @@ class TestCompositeTagMatcher(TestCase):
 # -----------------------------------------------------------------------------
 # TEST SUPPORT FOR: ActiveTag ValueObject(s)
 # -----------------------------------------------------------------------------
-# XXX from behave.python_feature import VersionObject
-from behave.tag_matcher import ValueObject
-import operator
-
-
 class NumberValueObject(ValueObject):
     def matches(self, tag_value):
         tag_number = int(tag_value)     # HINT: Conversion from string-to-int

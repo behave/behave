@@ -1,8 +1,9 @@
-from behave import given, when, then
+# -- REQUIRES: Python3
+from behave import when, then
 from behave.cucumber_expression import (
     ParameterType,
     define_parameter_type,
-    define_parameter_type_with
+    # -- SIMILAR-TO: define_parameter_type_with
 )
 from example4me.color import Color
 

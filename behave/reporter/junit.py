@@ -81,10 +81,11 @@ from behave.model import Rule, Scenario, ScenarioOutline, Step
 from behave.model_type import Status
 from behave.formatter import ansi_escapes
 from behave.model_describe import ModelDescriptor
-from behave.summary import SummaryCollector, SummaryCounts, StatusCounts
+from behave.summary import SummaryCollector
 from behave.textutil import indent, make_indentation, text as _text
 from behave.userdata import UserDataNamespace
 import six
+
 if six.PY2:
     # -- USE: Python3 backport for better unicode compatibility.
     import traceback2 as traceback
@@ -253,7 +254,6 @@ class JUnitReporter(Reporter):
     @property
     def feature_error_counts(self):
         summary_counts4features = self._summary_collector.summary_counts.features
-        error_status_values = (Status.error, Status.hook_error)
         counts = 0
         for error_status in (Status.error, Status.hook_error):
             counts += summary_counts4features.get(error_status, 0)
@@ -444,7 +444,6 @@ class JUnitReporter(Reporter):
         case.set(u"time", _text(round(scenario.duration, 6)))
 
         step = None
-        failing_step = None
         failed_statuses = (Status.failed, )
         error_statuses = (Status.error, Status.hook_error, Status.pending, Status.undefined)
         skipped_statuses = (Status.skipped, Status.untested)

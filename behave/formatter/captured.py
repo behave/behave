@@ -112,7 +112,7 @@ class CapturedFormatter(BaseFormatter2):
         elif show_status:
             # PREPARED: annotation = f" -- status={statement.status.name}"
             annotation = " -- status={statement.status.name}".format(
-                statement
+                statement=statement
             )
 
         prefix = self.prefix

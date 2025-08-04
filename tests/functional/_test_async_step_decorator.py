@@ -4,21 +4,17 @@ Test that async-step functions (coroutines) are usable.
 REQUIRES: Python version >= 3.5
 """
 
-from __future__ import absolute_import, print_function
-
 # -- IMPORTS:
-import sys
-
+from __future__ import absolute_import, print_function
 import asyncio
-from assertpy import assert_that
+import sys
 import pytest
+from assertpy import assert_that
 
 from behave._stepimport import use_step_import_modules, SimpleStepContainer
 from behave.async_step import AsyncStepFunction, StepFunctionTypeError
 from behave.python_feature import PythonLibraryFeature
 from behave.runner import Context, Runner
-
-from tests.api.testing_support import StopWatch
 from tests.api.testing_support_async import AsyncStepTheory
 
 
@@ -191,6 +187,7 @@ class TestUseAsyncStepDecorator:
         with pytest.raises(RuntimeError):
             async_step_with_error(ctx)
 
+    # ruff: noqa: E501
     @pytest.mark.filterwarnings("ignore: 'asyncio.get_event_loop_policy' is deprecated.*:DeprecationWarning")
     def test_event_loop_is_unset(self, monkeypatch):
         step_container = SimpleStepContainer()

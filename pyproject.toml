@@ -226,6 +226,17 @@ disable = "C0330, C0326"
 max-line-length = "100"
 
 # -----------------------------------------------------------------------------
+# RUFF: https://docs.astral.sh/ruff/tutorial/#configuration
+# -----------------------------------------------------------------------------
+# ruff: noqa: E731
+[tool.ruff]
+line-length = 100
+
+# [tool.ruff.lint]
+# extend-select = ["E501"]
+# [tool.ruff.lint.pydocstyle]
+# convention = "google"
+# -----------------------------------------------------------------------------
 # CODESPELL
 # -----------------------------------------------------------------------------
 # SEE: https://github.com/codespell-project/codespell

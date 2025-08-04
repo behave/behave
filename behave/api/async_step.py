@@ -33,9 +33,9 @@ import warnings as _warnings
 from behave._types import require_callable as _require_callable
 from behave.async_step import (
     # -- PART OF API:
-    AsyncContext,
+    AsyncContext,  # noqa: F401
     use_or_assign_event_loop,
-    use_or_create_async_context,
+    use_or_create_async_context,  # noqa: F401
 
     # -- NOT PART OF API:
     AsyncStepFunction as _AsyncStepFunction,
