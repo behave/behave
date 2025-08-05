@@ -94,7 +94,7 @@ coverage:
 # coverage run -m behave --format={{BEHAVE_FORMATTER}} tools/test-features
 
 # Run tox for one Python variant
-tox *ARGS: (_ensure-install-packages "use_py27")
+tox *ARGS: (_ensure-install-packages "testing")
     tox {{ARGS}}
 
 # Cleanup most parts (but leave PRECIOUS parts).

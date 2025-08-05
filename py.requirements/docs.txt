@@ -11,7 +11,6 @@
 
 # -- DOCUMENTATION DEPENDENCIES:
 sphinx >= 7.3.7;   python_version >= '3.7'
-sphinx >=1.6,<4.4; python_version < '3.7'
 sphinx-autobuild
 urllib3 >= 2.5.0
 
@@ -29,7 +28,6 @@ sphinx-copybutton >= 0.5.2; python_version >= '3.7'
 
 # -- NEEDED FOR: RTD (as temporary fix)
 # urllib3 >= 2.5.0; python_version >= '3.8'
-# urllib3 <  2.0.0; python_version <  '3.8'
 
 # -- SUPPORT: sphinx-doc translations (prepared)
 sphinx-intl >= 0.9.11

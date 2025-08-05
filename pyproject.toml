@@ -92,20 +92,16 @@ classifiers = [
 dependencies = [
     "cucumber-tag-expressions >= 4.1.0",
     "cucumber-expressions >= 17.1.0; python_version >= '3.8'",
-    "enum34; python_version < '3.4'",
     "parse >= 1.18.0",
     "parse-type >= 0.6.0",
     "six >= 1.15.0",
-    "traceback2; python_version < '3.0'",
 
     # -- PREPARED:
-    "win_unicode_console; python_version <= '3.9'",
-    "contextlib2;  python_version < '3.5'",
+    # DISABLED: "win_unicode_console; python_version <= '3.9'",
     "colorama >= 0.3.7",
 
     # -- SUPPORT: "pyproject.toml" (or: "behave.toml")
     "tomli>=1.1.0; python_version >=  '3.0' and python_version < '3.11'",
-    "toml>=0.10.2; python_version <  '3.0'",  # py27 support
 ]
 
 [project.urls]
@@ -124,32 +120,23 @@ develop = [
     "build >= 0.5.1",
     "twine >= 1.13.0",
     "coverage >= 5.0",
-    "pytest >=4.2,<5.0; python_version <  '3.0'",
     "pytest >= 5.0; python_version >= '3.0'",
-    "pytest-html >= 1.19.0,<2.0; python_version <  '3.0'",
-    "pytest-html >= 2.0;         python_version >= '3.0'",
-    "mock  <  4.0;   python_version <  '3.6'",
+    "pytest-html >= 2.0; python_version >= '3.0'",
     "mock  >= 4.0;   python_version >= '3.6'",
     "PyHamcrest >= 2.0.2; python_version >= '3.0'",
-    "PyHamcrest <  2.0;   python_version <  '3.0'",
     "pytest-cov",
     "tox   >= 3.28.0,<4.0",   # -- HINT: tox >= 4.0 has breaking changes.
     "virtualenv >= 20.26.6; python_version >= '3.7'",
-    "virtualenv <  20.22.0; python_version <  '3.7'",  # -- SUPPORT FOR: Python 2.7, Python <= 3.6
-    "invoke >=1.7.0,<2.0; python_version <  '3.6'",
     "invoke >=1.7.0;      python_version >= '3.6'",
     # -- HINT, was RENAMED: path.py => path (for python3)
     "path    >= 13.1.0; python_version >= '3.5'",
-    "path.py >= 11.5.0; python_version <  '3.5'",
     "pycmd",
-    "pathlib; python_version <= '3.4'",
     "modernize >= 0.5",
     "pylint",
     "ruff; python_version >=  '3.7'",
 ]
 docs = [
     "sphinx >= 7.3.7;   python_version >= '3.7'",
-    "sphinx >=1.6,<4.4; python_version < '3.7'",
     "furo >= 2024.04.27; python_version >= '3.8'",
     # -- CONSTRAINTS UNTIL: sphinx > 5.0 is usable -- 2024-01
     # PROBLEM: sphinxcontrib-applehelp v1.0.8 requires sphinx > 5.0
@@ -164,23 +151,16 @@ formatters = [
     "behave-html-pretty-formatter >= 1.9.1; python_version >= '3.6'"
 ]
 testing = [
-    "pytest <  5.0; python_version <  '3.0'", # >= 4.2
     "pytest >= 5.0; python_version >= '3.0'",
-    "pytest-html >= 1.19.0,<2.0; python_version <  '3.0'",
     "pytest-html >= 2.0;         python_version >= '3.0'",
-    "mock  <  4.0;   python_version <  '3.6'",
     "mock  >= 4.0;   python_version >= '3.6'",
     "PyHamcrest >= 2.0.2; python_version >= '3.0'",
-    "PyHamcrest <  2.0;   python_version <  '3.0'",
     "assertpy >= 1.1",
     "chardet",
     # PREAPRED: "charset-normalizer",
 
     # -- HINT: path.py => path (python-install-package was renamed for python3)
     "path >= 13.1.0;         python_version >= '3.5'",
-    "path.py >=11.5.0,<13.0; python_version <  '3.5'",
-    # -- PYTHON2 BACKPORTS:
-    "pathlib;    python_version <= '3.4'",
 
     # -- EXTRA PYTHON PACKAGES: Used for some tests
     "freezegun >= 1.5.1; python_version > '3.7'",

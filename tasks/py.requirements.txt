@@ -8,18 +8,14 @@
 #  * https://www.pip-installer.org/
 # ============================================================================
 
-invoke >=1.7.0,<2.0; python_version <  '3.6'
-invoke >=1.7.0;      python_version >= '3.6'
+invoke >=1.7.0; python_version >= '3.6'
 pycmd
+
+# XXX_JE_TODO
 six >= 1.15.0
 
 # -- HINT, was RENAMED: path.py => path (for python3)
-path.py >=11.5.0,<13.0; python_version <  '3.5'
-path >= 13.1.0;         python_version >= '3.5'
-
-# -- PYTHON2 BACKPORTS:
-pathlib;    python_version <= '3.4'
-backports.shutil_which; python_version <= '3.3'
+path >= 13.1.0; python_version >= '3.5'
 
 git+https://github.com/jenisys/invoke-cleanup@v0.3.7
 
