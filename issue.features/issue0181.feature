@@ -7,7 +7,7 @@ Feature: Issue #181: Escape apostrophes in undefined steps snippets
   .
   . Behave outputs the following:
   .
-  .   @then(u'I'm redirected to https://www.example.com')
+  .   @then('I'm redirected to https://www.example.com')
   .   def step_impl(context):
   .       assert False
 
@@ -31,7 +31,7 @@ Feature: Issue #181: Escape apostrophes in undefined steps snippets
         You can implement step definitions for undefined steps with these snippets:
 
         from behave.api.pending_step import StepNotImplementedError
-        @given(u'I\'m using an "undefined step"')
+        @given('I\'m using an "undefined step"')
         def step_impl(context):
-            raise StepNotImplementedError(u'Given I\'m using an "undefined step"')
+            raise StepNotImplementedError('Given I\'m using an "undefined step"')
         """

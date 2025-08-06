@@ -30,17 +30,17 @@ Feature: Issue #92: Output from --format=plain shows skipped steps in next scena
         """
         from behave import step
 
-        @step(u'this step works')
+        @step('this step works')
         def working(context):
             pass
 
 
-        @step(u'this step fails')
+        @step('this step fails')
         def failing(context):
             assert False, 'step failed'
 
 
-        @step(u'this step appears in the wrong place')
+        @step('this step appears in the wrong place')
         def missing(context):
             pass
         """

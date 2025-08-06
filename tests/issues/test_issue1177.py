@@ -64,17 +64,17 @@ def test_syndrome(capsys):
 
         register_type(Bool=parse_bool_bad)
 
-        @then(u'first step is "{value:Bool}"')
+        @then('first step is "{value:Bool}"')
         def then_first_step(ctx, value):
             assert isinstance(value, bool), "%r" % value
 
         # -- ENSURE: No AmbiguousStepError is raised when another step is added.
-        @then(u'first step and more')
+        @then('first step and more')
         def then_second_step(ctx):
             pass
 
     # -- ENSURE: BAD-STEP-DEFINITION is not registered in step_registry
-    step = parse_step(u'Then this step is "true"')
+    step = parse_step('Then this step is "true"')
     assert this_step_registry.find_step_definition(step) is None
 
     # -- ENSURE: BAD-STEP-DEFINITION is shown in output.
@@ -96,12 +96,12 @@ def test_bad_step_is_not_registered_if_regex_compile_fails(capsys):
 
         register_type(Bool=parse_bool_bad)
 
-        @then(u'first step is "{value:Bool}"')
+        @then('first step is "{value:Bool}"')
         def then_first_step(ctx, value):
             assert isinstance(value, bool), "%r" % value
 
     # -- ENSURE: Step-definition is not registered in step-registry.
-    step = parse_step(u'Then first step is "true"')
+    step = parse_step('Then first step is "true"')
     step_matcher = this_step_registry.find_step_definition(step)
     assert step_matcher is None
 
@@ -116,11 +116,11 @@ def test_bad_step_is_registered_if_regex_compile_succeeds(capsys):
 
         register_type(Bool=parse_bool_bad)
 
-        @then(u'first step is "{value:Bool}"')
+        @then('first step is "{value:Bool}"')
         def then_first_step(ctx, value):
             assert isinstance(value, bool), "%r" % value
 
     # -- ENSURE: Step-definition is not registered in step-registry.
-    step = parse_step(u'Then first step is "true"')
+    step = parse_step('Then first step is "true"')
     step_matcher = this_step_registry.find_step_definition(step)
     assert step_matcher is not None

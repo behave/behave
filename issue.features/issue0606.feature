@@ -21,7 +21,7 @@ Feature: Issue #606 -- Name option with special unicode chars
       """
       from behave import step
 
-      @step(u'{word:w} step passes')
+      @step('{word:w} step passes')
       def step_passes(context, word):
           pass
       """

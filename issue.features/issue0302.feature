@@ -11,8 +11,8 @@ Feature: Issue #302: Cannot escape pipe in table field value
         from behave import then, step
         from hamcrest import assert_that, equal_to
 
-        @step(u'I use table data with')
-        @step(u'I use table data with:')
+        @step('I use table data with')
+        @step('I use table data with:')
         def step_use_table_data_with_table(context):
             assert context.table, "REQUIRE: context.table is provided"
             context.table.require_columns(["name", "value"])
@@ -23,7 +23,7 @@ Feature: Issue #302: Cannot escape pipe in table field value
                 value = row["value"]
                 context.table_data[name] = value
 
-        @then(u'table data "{name}" is "{value}"')
+        @then('table data "{name}" is "{value}"')
         def step_table_data_name_is_value(context, name, value):
             table_data = context.table_data
             actual_value = table_data[name]

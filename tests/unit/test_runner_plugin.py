@@ -177,7 +177,7 @@ class TestRunnerPlugin(object):
 
     def test_make_runner_with_default_from_configfile(self, tmp_path):
         config_file = tmp_path/"behave.ini"
-        config_file.write_text(u"""
+        config_file.write_text("""
 [behave]
 runner = behave.runner:Runner
 """)
@@ -214,7 +214,7 @@ runner = behave.runner:Runner
 
     def test_make_runner_with_runner_alias_from_configfile(self, tmp_path):
         config_file = tmp_path/"behave.ini"
-        config_file.write_text(u"""
+        config_file.write_text("""
 [behave.runners]
 custom = {this_module}:CustomTestRunner
 """.format(this_module=self.THIS_MODULE_NAME))

@@ -16,7 +16,7 @@ Feature: Issue #1068 -- Feature.status is Status.failed in before_scenario() Hoo
       """
       from behave import then
 
-      @then(u'{num1:d} is greater than {num2:d}')
+      @then('{num1:d} is greater than {num2:d}')
       def step_impl(context, num1, num2):
           assert num1 > num2, "FAILED: num1=%s, num2=%s" % (num1, num2)
       """

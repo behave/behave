@@ -53,7 +53,7 @@ class NoCaptured(ICaptured):
     def __init__(self):
         # -- NON_SETTABLE ATTRIBUTE-PROTOCOL:
         for param in ("stdout", "stderr", "log", "output"):
-            super(NoCaptured, self).__setattr__(param, u"")
+            super(NoCaptured, self).__setattr__(param, "")
         super(NoCaptured, self).__setattr__("name", None)
         super(NoCaptured, self).__setattr__("failed", False)
         super(NoCaptured, self).__setattr__("status", "EMPTY")
@@ -65,10 +65,10 @@ class NoCaptured(ICaptured):
         return False  # noqa
 
     def make_output(self, **kwargs):
-        return u""  # noqa
+        return ""  # noqa
 
     def make_report(self, template=None, separator=None):
-       return u""  #noqa
+       return ""  #noqa
 
     def make_simple_report(self, separator=None):
         return self.make_report()  # noqa
@@ -85,28 +85,28 @@ class Captured(ICaptured):
         "stdout", "stderr", "log", "name", "failed", "_output",
     ]
     # -- REPORT-PLACEHOLDERS: this=captured, output
-    REPORT_TEMPLATE = u"----\n{output}\n----"
-    REPORT_TEMPLATE_SIMPLE = u"{output}"
-    LINE_SEPARATOR = u"\n"
-    CAPTURED_STDOUT_SCHEMA = u"CAPTURED STDOUT: {}"
-    CAPTURED_STDERR_SCHEMA = u"CAPTURED STDERR: {}"
-    CAPTURED_LOG_SCHEMA = u"CAPTURED LOG: {}"
+    REPORT_TEMPLATE = "----\n{output}\n----"
+    REPORT_TEMPLATE_SIMPLE = "{output}"
+    LINE_SEPARATOR = "\n"
+    CAPTURED_STDOUT_SCHEMA = "CAPTURED STDOUT: {}"
+    CAPTURED_STDERR_SCHEMA = "CAPTURED STDERR: {}"
+    CAPTURED_LOG_SCHEMA = "CAPTURED LOG: {}"
 
     def __init__(self, stdout=None, stderr=None, log=None,
                  name=None, failed=False):
         self.name = name
         self.failed = failed
-        self.stdout = stdout or u""
-        self.stderr = stderr or u""
-        self.log = log or u""
+        self.stdout = stdout or ""
+        self.stderr = stderr or ""
+        self.log = log or ""
         self._output = None
 
     def reset(self):
         self.name = None
         self.failed = False
-        self.stdout = u""
-        self.stderr = u""
-        self.log = u""
+        self.stdout = ""
+        self.stderr = ""
+        self.log = ""
         self._reset_cached()
 
     def _reset_cached(self):
@@ -156,7 +156,7 @@ class Captured(ICaptured):
 
     def make_output(self, separator=None):
         if not self.has_output():
-            return u""
+            return ""
 
         # -- NOTE: Trailing whitespace is stripped from each part.
         parts = []
@@ -178,18 +178,18 @@ class Captured(ICaptured):
         :returns: Report as string.
         """
         if not self.has_output():
-            return u""
+            return ""
 
         # -- STEP: Collect report parts
         parts = []
         if self.stdout:
-            section = self.CAPTURED_STDOUT_SCHEMA.format(self.name or u"")
+            section = self.CAPTURED_STDOUT_SCHEMA.format(self.name or "")
             parts.extend([section.rstrip(), _text(self.stdout).rstrip(), ""])
         if self.stderr:
-            section = self.CAPTURED_STDERR_SCHEMA.format(self.name or u"")
+            section = self.CAPTURED_STDERR_SCHEMA.format(self.name or "")
             parts.extend([section.rstrip(), _text(self.stderr).rstrip(), ""])
         if self.log:
-            section = self.CAPTURED_LOG_SCHEMA.format(self.name or u"")
+            section = self.CAPTURED_LOG_SCHEMA.format(self.name or "")
             parts.extend([section.rstrip(), _text(self.log).rstrip(), ""])
 
         # -- STEP: Make report from report parts
@@ -228,8 +228,8 @@ class ManyCaptured(ICaptured):
         # XXX_JE_CHECK_IF_NEEDED
         "_stdout", "_stderr", "_log"
     ]
-    LINE_SEPARATOR = u"\n"
-    PART_SEPARATOR = u"\n----\n"
+    LINE_SEPARATOR = "\n"
+    PART_SEPARATOR = "\n----\n"
 
     def __init__(self, captures=None):
         self.captures = captures or []
@@ -246,7 +246,7 @@ class ManyCaptured(ICaptured):
 
     def _combine_output_for(self, name):
         parts = [getattr(x, name) for x in self.captures]
-        return u"\n".join(parts)
+        return "\n".join(parts)
 
     # -- SPECIAL:
     def add_captured(self, other, use_merge=True):
@@ -349,7 +349,7 @@ class ManyCaptured(ICaptured):
 
     def make_output(self, separator=None):
         if not self.has_output():
-            return u""
+            return ""
 
         output_parts = [captured.make_output()
                         for captured in self.captures]
@@ -358,7 +358,7 @@ class ManyCaptured(ICaptured):
 
     def make_report(self, template=None, separator=None):
         if not self.has_output():
-            return u""
+            return ""
 
         # -- WITH OUTPUT:
         separator = separator or self.PART_SEPARATOR

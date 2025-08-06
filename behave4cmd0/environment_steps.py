@@ -21,7 +21,7 @@ register_type(Unquoted=parse_unquoted_text)
 # -----------------------------------------------------------------------------
 # STEPS FOR: ENVIRONMENT VARIABLES
 # -----------------------------------------------------------------------------
-@step(u'I set the environment variable "{env_name:Unquoted}" to "{env_value:Unquoted}"')
+@step('I set the environment variable "{env_name:Unquoted}" to "{env_value:Unquoted}"')
 def step_I_set_the_environment_variable_to(ctx, env_name, env_value):
     # -- ENSURE: Cleanup and restore environment-variables after this scenario.
     use_fixture(scoped_environment, ctx)
@@ -31,7 +31,7 @@ def step_I_set_the_environment_variable_to(ctx, env_name, env_value):
     os.environ[env_name] = env_value
 
 
-@step(u'I set the following environment variables:"')
+@step('I set the following environment variables:"')
 def step_I_set_environment_variables_with_table(ctx):
     require_table(ctx, with_columns=["name", "value"])
     # -- ENSURE: Cleanup and restore environment-variables after this scenario.
@@ -46,7 +46,7 @@ def step_I_set_environment_variables_with_table(ctx):
         os.environ[name] = value
 
 
-@step(u'I inspect the following environment variables:')
+@step('I inspect the following environment variables:')
 def step_I_inspect_environment_variables_with_table(ctx):
     from behave4cmd0.step_util import require_table
     require_table(ctx, with_columns=["name"])
@@ -59,7 +59,7 @@ def step_I_inspect_environment_variables_with_table(ctx):
         expected_value = row["value"].strip()
         actual_value = os.environ.get(name, None)
         if not expected_value:
-            row.cells[value_index] = actual_value or u"__UNDEFINED__"
+            row.cells[value_index] = actual_value or "__UNDEFINED__"
 
         # -- ADD ANNOTATAION
         matched = (
@@ -77,7 +77,7 @@ def step_I_inspect_environment_variables_with_table(ctx):
         row.cells[annotation_index] = annotation
 
 
-@step(u'I remove the environment variable "{env_name:Unquoted}"')
+@step('I remove the environment variable "{env_name:Unquoted}"')
 def step_I_remove_the_environment_variable(ctx, env_name):
     if not hasattr(ctx, "environ"):
         ctx.environ = {}
@@ -87,15 +87,15 @@ def step_I_remove_the_environment_variable(ctx, env_name):
     del os.environ[env_name]
 
 
-@given(u'the environment variable "{env_name:Unquoted}" exists')
-@then(u'the environment variable "{env_name:Unquoted}" exists')
+@given('the environment variable "{env_name:Unquoted}" exists')
+@then('the environment variable "{env_name:Unquoted}" exists')
 def step_the_environment_variable_exists(ctx, env_name):
     env_variable_value = os.environ.get(env_name)
     assert_that(env_variable_value, is_not(None))
 
 
-@given(u'the environment variable "{env_name:Unquoted}" does not exist')
-@then(u'the environment variable "{env_name:Unquoted}" does not exist')
+@given('the environment variable "{env_name:Unquoted}" does not exist')
+@then('the environment variable "{env_name:Unquoted}" does not exist')
 def step_ensure_that_environment_variable_does_not_exist(ctx, env_name):
     env_variable_value = os.environ.get(env_name)
     assert_that(env_variable_value, is_(None))

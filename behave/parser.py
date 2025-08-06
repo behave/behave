@@ -181,11 +181,11 @@ class ParserError(Exception):
     def make_annotated(message, line_number, line_text=None, reason=None):
         """Make annotated message enriched w/ line_number, line_text."""
         if line_number:
-            message += u" at line %d" % line_number
+            message += " at line %d" % line_number
         if line_text:
-            message += u': "%s"' % line_text.strip()
+            message += ': "%s"' % line_text.strip()
         if reason:
-            message += u"\nREASON: %s" % reason
+            message += "\nREASON: %s" % reason
         return message
 
     def __init__(self, message, line, filename=None, line_text=None,
@@ -202,9 +202,9 @@ class ParserError(Exception):
         arg0 = _text(self.args[0])
         if self.filename:
             filename = _text(self.filename, sys.getfilesystemencoding())
-            return u'Failed to parse "%s": %s' % (filename, arg0)
+            return 'Failed to parse "%s": %s' % (filename, arg0)
         # -- OTHERWISE:
-        return u"Failed to parse <string>: %s" % arg0
+        return "Failed to parse <string>: %s" % arg0
 
     if six.PY2:
         # pylint: disable=unnecessary-lambda-assignment
@@ -302,9 +302,9 @@ class Parser(object):
         if initial_state is not None:
             self.state = initial_state
         if self.state == State.STEPS:
-            # WAS: keyword = self.match_keyword(u"scenario", line=u"Scenario:")
+            # WAS: keyword = self.match_keyword("scenario", line="Scenario:")
             keyword = self.keywords["scenario"][0]
-            self._build_scenario_statement(keyword, line=u"{0}:".format(keyword))
+            self._build_scenario_statement(keyword, line="{0}:".format(keyword))
 
         for line in text.splitlines():
             self.line += 1
@@ -349,12 +349,12 @@ class Parser(object):
 
     def _build_background_statement(self, keyword, line):
         if self.tags:
-            msg = u"Background supports no tags: @%s" % (u" @".join(self.tags))
+            msg = "Background supports no tags: @%s" % (" @".join(self.tags))
             raise ParserError(msg, self.line, self.filename, line)
         if self.scenario_container and self.scenario_container.background:
             if self.scenario_container.background.steps:
                 # -- HINT: Rule may have default background w/o steps.
-                msg = u"Second Background (can have only one)"
+                msg = "Second Background (can have only one)"
                 raise ParserError(msg, self.line, self.filename, line)
         name = line[len(keyword) + 1:].strip()
         background = model.Background(self.filename, self.line, keyword, name)
@@ -386,7 +386,7 @@ class Parser(object):
 
     def _build_examples(self, keyword, line):
         if not isinstance(self.statement, model.ScenarioOutline):
-            message = u"Examples must only appear inside scenario outline"
+            message = "Examples must only appear inside scenario outline"
             raise ParserError(message, self.line, self.filename, line)
         name = line[len(keyword) + 1:].strip()
         self.examples = model.Examples(self.filename, self.line,
@@ -484,12 +484,12 @@ class Parser(object):
         func = getattr(self, "action_" + state_name, None)
         if func is None:
             line = line.strip()
-            msg = u"Parser in unknown state %s;" % self.state
+            msg = "Parser in unknown state %s;" % self.state
             raise ParserError(msg, self.line, self.filename, line)
 
         if not func(line):
             line = line.strip()
-            msg = u'\nParser failure in state=%s' % self.state.name.lower()
+            msg = '\nParser failure in state=%s' % self.state.name.lower()
             reason = self.ask_parse_failure_oracle(line)
             raise ParserError(msg, self.line, self.filename,
                               line_text=line, reason=reason)
@@ -723,8 +723,8 @@ class Parser(object):
             # -- CASE: Handle the end of a multi-line text part.
             # Store the multi-line text in the step object (and continue).
             this_step = self.statement.steps[-1]
-            text = u"\n".join(self.lines)
-            this_step.text = model.Text(text, u"text/plain", self.multiline_start)
+            text = "\n".join(self.lines)
+            this_step.text = model.Text(text, "text/plain", self.multiline_start)
             self._normalize_step_name(this_step)
 
             # -- RESET INTERNALS: For next step
@@ -741,8 +741,8 @@ class Parser(object):
         # -- BETTER DIAGNOSTICS: May remove non-whitespace in execute_steps()
         removed_line_prefix = line[:self.multiline_leading]
         if removed_line_prefix.strip():
-            message = u"BAD-INDENT in multiline text: "
-            message += u"Line '%s' would strip leading '%s'" % \
+            message = "BAD-INDENT in multiline text: "
+            message += "Line '%s' would strip leading '%s'" % \
                         (line, removed_line_prefix)
             raise ParserError(message, self.line, self.filename)
         return True
@@ -773,7 +773,7 @@ class Parser(object):
 
         if not re.match(r"^(|.+)\|$", line):
             logger = logging.getLogger("behave")
-            logger.warning(u"Malformed table row at %s: line %i",
+            logger.warning("Malformed table row at %s: line %i",
                            self.feature.filename, self.line)
 
         # -- SUPPORT: Escaped-pipe(s) in Gherkin cell values.
@@ -787,7 +787,7 @@ class Parser(object):
         else:
             # -- CASE: Following rows of the table
             if len(cells) != len(self.table.headings):
-                raise ParserError(u"Malformed table", self.line, self.filename)
+                raise ParserError("Malformed table", self.line, self.filename)
             self.table.add_row(cells, self.line)
         return True
 
@@ -839,7 +839,7 @@ class Parser(object):
                 break   # -- COMMENT: Skip rest of line.
             else:
                 # -- BAD-TAG: Abort here.
-                message = u"tag: %s (line: %s)" % (word, line)
+                message = "tag: %s (line: %s)" % (word, line)
                 raise ParserError(message, self.line, self.filename)
         return tags
 
@@ -866,7 +866,7 @@ class Parser(object):
                         # -- BEST-EFFORT: Try to use last background.step.
                         self.last_step_type = self._select_last_background_step_type()
                         if not self.last_step_type:
-                            msg = u"{step_type}-STEP REQUIRES: An previous Given/When/Then step."
+                            msg = "{step_type}-STEP REQUIRES: An previous Given/When/Then step."
                             raise ParserError(msg.format(step_type=step_type.upper()),
                                               self.line, self.filename)
 
@@ -921,7 +921,7 @@ class Parser(object):
             self.language = DEFAULT_LANGUAGE
         self.reset()
         self.filename = filename
-        self.statement = model.Scenario(filename, 0, u"scenario", u"")
+        self.statement = model.Scenario(filename, 0, "scenario", "")
         self.state = State.STEPS
 
         for line in text.splitlines():

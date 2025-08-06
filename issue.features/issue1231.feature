@@ -19,7 +19,7 @@ Feature: Issue #1231 -- TypeConverter Error causes Error in pretty Formatter
 
       register_type(T=parse_bad_type)
 
-      @when(u'something happens with param={x:T}')
+      @when('something happens with param={x:T}')
       def when_something_happens(context, x):
           pass
       """

@@ -87,7 +87,7 @@ class RerunFormatter(Formatter):
     def report_scenario_failures(self):
         assert self.failed_scenarios
         # -- SECTION: Banner
-        message = u"# -- RERUN: %d failing scenarios during last test run.\n"
+        message = "# -- RERUN: %d failing scenarios during last test run.\n"
         self.stream.write(message % len(self.failed_scenarios))
         if self.show_timestamp:
             now = datetime.now().replace(microsecond=0)
@@ -99,15 +99,15 @@ class RerunFormatter(Formatter):
             for index, scenario in enumerate(self.failed_scenarios):
                 if current_feature != scenario.filename:
                     if current_feature is not None:
-                        self.stream.write(u"#\n")
+                        self.stream.write("#\n")
                     current_feature = scenario.filename
                     short_filename = relpath(scenario.filename, os.getcwd())
-                    self.stream.write(u"# %s\n" % short_filename)
-                self.stream.write(u"#  %4d:  %s\n" % \
+                    self.stream.write("# %s\n" % short_filename)
+                self.stream.write("#  %4d:  %s\n" % \
                                   (scenario.line, scenario.name))
             self.stream.write("\n")
 
         # -- SECTION: Scenario file locations, ala: "alice.feature:10"
         for scenario in self.failed_scenarios:
-            self.stream.write(u"%s\n" % scenario.location)
+            self.stream.write("%s\n" % scenario.location)
         self.stream.write("\n")

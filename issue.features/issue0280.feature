@@ -33,11 +33,11 @@ Feature: Issue #280: AmbiguousStep error with similar step definitions and use_s
           def add(self, value):
               self.result += value
 
-      @given(u'a calculator')
+      @given('a calculator')
       def step_impl(context):
           context.calculator = SimpleCalculator()
 
-      @then(u'the calculator result is "{expected_result:d}"')
+      @then('the calculator result is "{expected_result:d}"')
       def step_impl(context, expected_result):
           assert_that(context.calculator.result, equal_to(expected_result))
       """
@@ -56,11 +56,11 @@ Feature: Issue #280: AmbiguousStep error with similar step definitions and use_s
       use_step_matcher("re")
 
       # -- ORDERING SENSITIVE PART:
-      @step(u'I do something')
+      @step('I do something')
       def step_impl(context):
           pass
 
-      @step(u'I do something more')
+      @step('I do something more')
       def step_impl(context):
           pass
       """
@@ -98,12 +98,12 @@ Feature: Issue #280: AmbiguousStep error with similar step definitions and use_s
       use_step_matcher("re")
 
       # -- ORDERING SENSITIVE PART:
-      @when(u'I add "(?P<value>\d+)" to it')
+      @when('I add "(?P<value>\d+)" to it')
       def step_impl(context, value):
           number_value = int(value)
           context.calculator.add(number_value)
 
-      @when(u'I add "(?P<value>\d+)" to it twice')
+      @when('I add "(?P<value>\d+)" to it twice')
       def step_impl(context, value):
           number_value = int(value)
           context.calculator.add(number_value)

@@ -29,21 +29,21 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
         # -*- coding: UTF-8 -*-
         from behave import step
 
-        @step(u'{word:w} step passes')
+        @step('{word:w} step passes')
         def step_passes(context, word):
             pass
 
-        @step(u'{word:w} step passes with "{text}"')
+        @step('{word:w} step passes with "{text}"')
         def step_passes_with_text(context, word, text):
             pass
 
-        @step(u'{word:w} step fails')
+        @step('{word:w} step fails')
         def step_fails(context, word):
             assert False, "XFAIL"
 
-        @step(u'{word:w} step fails with "{text}"')
+        @step('{word:w} step fails with "{text}"')
         def step_fails_with_text(context, word, text):
-            assert False, u"XFAIL: "+ text
+            assert False, "XFAIL: "+ text
         """
       And a file named "features/steps/step_write_output.py" with:
         """
@@ -52,13 +52,13 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
         from behave import step
         import six
 
-        @step(u'I write text "{text}" to stdout')
+        @step('I write text "{text}" to stdout')
         def step_write_text(context, text):
             if six.PY2 and isinstance(text, six.text_type):
                 text = text.encode("utf-8", "replace")
             print(text)
 
-        @step(u'I write bytes "{data}" to stdout')
+        @step('I write bytes "{data}" to stdout')
         def step_write_bytes(context, data):
             if isinstance(data, six.text_type):
                 data = data.encode("unicode-escape", "replace")
@@ -216,7 +216,7 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
         """
         from behave import step
 
-        @step(u'I use a weird step and pass')
+        @step('I use a weird step and pass')
         def step_weird_pass(context):
             pass
         """
@@ -250,7 +250,7 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
         """
         from behave import step
 
-        @step(u'I use a weird step and fail')
+        @step('I use a weird step and fail')
         def step_weird_fails(context):
             assert False, "XFAIL-WEIRD"
         """
@@ -372,9 +372,9 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
         # -*- coding: UTF-8 -*-
         from behave import step
 
-        @step(u'{word:w} step fails with assert and non-ASCII text')
+        @step('{word:w} step fails with assert and non-ASCII text')
         def step_fails_with_assert_and_problematic_text(context, word):
-            assert False, u"XFAIL:¾;"
+            assert False, "XFAIL:¾;"
         """
       And a file named "features/assert_with_ptext.feature" with:
         """
@@ -416,10 +416,10 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
         # -*- coding: UTF-8 -*-
         from behave import step
 
-        @step(u'{word:w} step fails with exception and non-ASCII text')
+        @step('{word:w} step fails with exception and non-ASCII text')
         def step_fails_with_exception_and_problematic_text(context, word):
             # -- REQUIRE: UNICODE STRING, when special, non-ASCII chars are used.
-            raise RuntimeError(u"FAIL:¾;")
+            raise RuntimeError( "FAIL:¾;")
         """
       And a file named "features/exception_with_ptext.feature" with:
         """

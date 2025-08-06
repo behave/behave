@@ -36,12 +36,12 @@ class BehaveModelBuilder(object):
         self.current_feature = None
         self.current_scenario = None
 
-    def build_feature(self, name=u"", tags=None):
+    def build_feature(self, name= "", tags=None):
         if not name:
-            name = u"alice"
-        filename = u"%s.feature" % name
+            name = "alice"
+        filename = "%s.feature" % name
         line = 1
-        feature = Feature(filename, line, u"Feature", name, tags=tags)
+        feature = Feature(filename, line, "Feature", name, tags=tags)
         self.features.append(feature)
         self.current_feature = feature
         return feature
@@ -51,14 +51,14 @@ class BehaveModelBuilder(object):
             self.build_feature()
         filename = self.current_feature.filename
         line = self.current_feature.line + 1
-        scenario = Scenario(filename, line, u"Scenario", name, tags=tags)
+        scenario = Scenario(filename, line, "Scenario", name, tags=tags)
         self.current_feature.add_scenario(scenario)
         self.current_scenario = scenario
         return scenario
 
-    def build_unknown(self, statement, name=u"", row_index=None):
+    def build_unknown(self, statement, name= "", row_index=None):
         # pylint: disable=no-self-use
-        assert False, u"UNSUPPORTED: statement=%s, name=%s (row=%s)" % \
+        assert False, "UNSUPPORTED: statement=%s, name=%s (row=%s)" % \
                       (statement, name, row_index)
 
     def build_model_from_table(self, table):

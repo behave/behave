@@ -44,15 +44,15 @@ Feature: Fixture
       """
       from behave import step
 
-      @step(u'the browser is "{browser_name}"')
+      @step('the browser is "{browser_name}"')
       def step_browser_is(ctx, browser_name):
           assert ctx.browser == browser_name
 
-      @step(u'no browser info exists')
+      @step('no browser info exists')
       def step_no_browser_info(ctx):
           assert not hasattr(ctx, "browser")
 
-      @step(u'{word:w} step passes')
+      @step('{word:w} step passes')
       def step_passes(ctx, word):
           pass
       """
@@ -199,7 +199,7 @@ Feature: Fixture
         from behave import step, use_fixture
         from example4me.fixtures import foo
 
-        @step(u'I use fixture "{fixture_name}"')
+        @step('I use fixture "{fixture_name}"')
         def step_use_fixture(ctx, fixture_name):
             if fixture_name.startswith("foo"):
                 suffix = fixture_name.replace("foo", "")

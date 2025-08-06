@@ -21,7 +21,7 @@ Feature: Issue 547 -- behave crashes when adding a step definition with optional
           """
           from behave import step
 
-          @step(u'some {:opt_?}word')
+          @step('some {:opt_?}word')
           def step_impl(context, opt_):
               pass
           """
@@ -35,5 +35,5 @@ Feature: Issue 547 -- behave crashes when adding a step definition with optional
       Then it should pass
       And the command output should not contain:
         """
-        ValueError: format spec u'opt_?' not recognised
+        ValueError: format spec 'opt_?' not recognised
         """

@@ -11,11 +11,11 @@ Feature: Issue #52 Summary counts are wrong with option --tags
       """
       from behave import given
 
-      @given(u'passing')
+      @given('passing')
       def step(context):
           pass
 
-      @given(u'failing')
+      @given('failing')
       def step(context):
           assert False, "failing"
       """

@@ -40,7 +40,7 @@ Feature: Issue #148: Substeps do not fail
         """
         @When('I do something with stupid substeps')
         def step(context):
-            context.execute_steps(u'''
+            context.execute_steps('''
                 I do something stupid
                 there is a second stupid step
             ''')  # Given/When/Then keywords are missing in substeps above.
@@ -76,7 +76,7 @@ Feature: Issue #148: Substeps do not fail
         """
         @when('I do something with stupid substeps')
         def step(context):
-            context.execute_steps(u'''
+            context.execute_steps('''
                 When a step fails
                 Then a step fails
             ''')

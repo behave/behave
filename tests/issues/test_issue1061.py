@@ -19,7 +19,7 @@ class TestIssue(object):
 
     def test_scenario_inherits_tags_with_feature(self):
         """Verifies that issue #1047 is fixed."""
-        text = u"""
+        text = """
             @feature_tag1
             Feature: F1
 
@@ -33,7 +33,7 @@ class TestIssue(object):
         assert_inherited_tags_equal_to(this_scenario, ["feature_tag1"])
 
     def test_scenario_inherits_tags_with_rule(self):
-        text = u"""
+        text = """
             @feature_tag1
             Feature: F1
               @rule_tag1 @rule_tag2
@@ -49,7 +49,7 @@ class TestIssue(object):
         assert_inherited_tags_equal_to(this_scenario, inherited_tags)
 
     def test_issue_scenario_inherits_tags_with_scenario_outline_and_rule(self):
-        text = u"""
+        text = """
             @feature_tag1
             Feature: F1
               @rule_tag1 @rule_tag2

@@ -16,15 +16,15 @@ Feature: Issue #81: Allow defining steps in a separate library
         # -- ALICE-STEPS: Anonymous step names.
         from behave import given, when, then
 
-        @given(u'I use the step library "{library}"')
+        @given('I use the step library "{library}"')
         def step(context, library):
             pass
 
-        @when(u'I use steps from this step library')
+        @when('I use steps from this step library')
         def step(context):
             pass
 
-        @then(u'these steps are executed')
+        @then('these steps are executed')
         def step(context):
             pass
         """
@@ -83,15 +83,15 @@ Feature: Issue #81: Allow defining steps in a separate library
         # -- BOB-STEPS: Explicit step function names (otherwise same as alice).
         from behave import given, when, then
 
-        @given(u'I use the step library "{library}"')
+        @given('I use the step library "{library}"')
         def given_I_use_the_step_library(context, library):
             pass
 
-        @when(u'I use steps from this step library')
+        @when('I use steps from this step library')
         def when_I_use_steps_from_this_step_library(context):
             pass
 
-        @then(u'these steps are executed')
+        @then('these steps are executed')
         def then_these_steps_are_executed(context):
             pass
         """

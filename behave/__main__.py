@@ -112,31 +112,31 @@ def run_behave(config, runner_class=None):
         print("USING RUNNER: {0}".format(make_scoped_class_name(runner)))
         failed = runner.run()
     except ParserError as e:
-        print(u"ParserError: %s" % e)
+        print("ParserError: %s" % e)
     except ConfigError as e:
-        print(u"ConfigError: %s" % e)
+        print("ConfigError: %s" % e)
     except FileNotFoundError as e:
-        print(u"FileNotFoundError: %s" % e)
+        print("FileNotFoundError: %s" % e)
     except InvalidFileLocationError as e:
-        print(u"InvalidFileLocationError: %s" % e)
+        print("InvalidFileLocationError: %s" % e)
     except InvalidFilenameError as e:
-        print(u"InvalidFilenameError: %s" % e)
+        print("InvalidFilenameError: %s" % e)
     except ModuleNotFoundError as e:
-        print(u"ModuleNotFoundError: %s" % e)
+        print("ModuleNotFoundError: %s" % e)
     except ClassNotFoundError as e:
-        print(u"ClassNotFoundError: %s" % e)
+        print("ClassNotFoundError: %s" % e)
     except InvalidClassError as e:
-        print(u"InvalidClassError: %s" % e)
+        print("InvalidClassError: %s" % e)
     except ImportError as e:
-        print(u"%s: %s" % (e.__class__.__name__, e))
+        print("%s: %s" % (e.__class__.__name__, e))
         if DEBUG:
             raise
     except ConstraintError as e:
-        print(u"ConstraintError: %s" % e)
+        print("ConstraintError: %s" % e)
     except Exception as e:
         # -- DIAGNOSTICS:
         text = _text(e)
-        print(u"Exception %s: %s" % (e.__class__.__name__, text))
+        print("Exception %s: %s" % (e.__class__.__name__, text))
         raise
 
     if config.show_snippets and runner and runner.undefined_steps:
@@ -183,7 +183,7 @@ def print_language_list(file=None):
     for iso_code in sorted(iso_codes):
         native = languages[iso_code]["native"]
         name = languages[iso_code]["name"]
-        print_(u"  %s: %s / %s" % (iso_code, native, name))
+        print_("  %s: %s / %s" % (iso_code, native, name))
 
 
 def print_language_help(language, file=None):
@@ -204,12 +204,12 @@ def print_language_help(language, file=None):
         return 1
 
     trans = languages[language]
-    print_(u"Translations for %s / %s" % (trans["name"], trans["native"]))
+    print_("Translations for %s / %s" % (trans["name"], trans["native"]))
     for kw in trans:
         if kw in "name native".split():
             continue
-        print_(u"%16s: %s" % (kw.title().replace("_", " "),
-                             u", ".join(w for w in trans[kw] if w != "*")))
+        print_("%16s: %s" % (kw.title().replace("_", " "),
+                             ", ".join(w for w in trans[kw] if w != "*")))
 
 
 def print_formatters(file=None):
@@ -225,7 +225,7 @@ def print_formatters(file=None):
     formatter_items = sorted(format_items(resolved=True), key=itemgetter(0))
     formatter_names = [item[0]  for item in formatter_items]
     column_size = compute_words_maxsize(formatter_names)
-    schema = u"  %-"+ _text(column_size) +"s  %s"
+    schema = "  %-"+ _text(column_size) +"s  %s"
     problematic_formatters = []
 
     print_("AVAILABLE FORMATTERS:")
@@ -257,8 +257,8 @@ def print_runners(runner_aliases, file=None):
 
     runner_names = sorted(runner_aliases.keys())
     column_size = compute_words_maxsize(runner_names)
-    schema1 = u"  %-"+ _text(column_size) +"s  = %s%s"
-    schema2 = u"  %-"+ _text(column_size) +"s    %s"
+    schema1 = "  %-"+ _text(column_size) +"s  = %s%s"
+    schema2 = "  %-"+ _text(column_size) +"s    %s"
     problematic_runners = []
 
     print_("AVAILABLE RUNNERS:")

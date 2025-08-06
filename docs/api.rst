@@ -50,7 +50,7 @@ implementation code:
 
 .. code-block:: python
 
-    @given(u'some known state')
+    @given('some known state')
     def step_impl(context):
         setup_something(some, state)
 
@@ -84,7 +84,7 @@ will look for a step implementation decorated with either "given" or "step":
 
 .. code-block:: python
 
-    @given(u'some other known state')
+    @given('some other known state')
     def step_impl(context):
         setup_something(some, other, state)
 
@@ -124,7 +124,7 @@ You may add new types to the default parser by invoking
             return text.upper
         register_type(ToUpperCase=convert_string_to_upper_case)
 
-        @given(u'a string {param:ToUpperCase} a custom type')
+        @given('a string {param:ToUpperCase} a custom type')
         def step_impl(context, param):
             assert param.isupper()
 
@@ -156,9 +156,9 @@ This function allows you to, for example:
 
 .. code-block:: python
 
-    @when(u'I do the same thing as before with the {color:w} button')
+    @when('I do the same thing as before with the {color:w} button')
     def step_impl(context, color):
-        context.execute_steps(u'''
+        context.execute_steps('''
             When I press the big {color} button
              And I duck
         '''.format(color=color))

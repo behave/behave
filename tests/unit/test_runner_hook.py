@@ -176,7 +176,7 @@ class TestRunHooks(object):
         assert runner.config.should_capture_hooks() is True
 
         statement = Mock()
-        statement.error_message = u""
+        statement.error_message = ""
         args = (statement,)
 
         capture_sink = CaptureSinkAsCollector()
@@ -197,7 +197,7 @@ class TestRunHooks(object):
         assert runner.config.should_capture_hooks() is True
 
         statement = Mock()
-        statement.error_message = u""
+        statement.error_message = ""
         args = (statement,)
 
         capture_sink = CaptureSinkAsCollector()
@@ -218,7 +218,7 @@ class TestRunHooks(object):
         assert runner.config.should_capture_hooks() is False
 
         statement = Mock()
-        statement.error_message = u""
+        statement.error_message = ""
         args = (statement,)
         capture_sink = CaptureSinkAsCollector()
         result = runner.run_hook_with_capture(hook_name, *args,
@@ -239,7 +239,7 @@ class TestRunHooks(object):
         assert runner.config.should_capture_hooks() is True
 
         statement = Mock()
-        statement.error_message = u""
+        statement.error_message = ""
         args = (statement,)
         capture_sink = CaptureSinkAsCollector()
         result = runner.run_hook_with_capture(hook_name, *args,
@@ -272,7 +272,7 @@ class TestRunHooks(object):
         assert runner.config.should_capture_hooks() is True
 
         statement = Mock()
-        statement.error_message = u""
+        statement.error_message = ""
         args = (statement,)
         capture_sink = runner.capture_sink
         result = runner.run_hook_with_capture(hook_name, *args)

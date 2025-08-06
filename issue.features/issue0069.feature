@@ -17,17 +17,17 @@ Feature: Issue #69: JUnitReporter: Fault when processing ScenarioOutlines with f
       """
       from behave import given
 
-      @given(u'a {outcome} step with "{name}"')
+      @given('a {outcome} step with "{name}"')
       def step(context, outcome, name):
           context.name = name
           assert outcome == "passing"
 
-      @when(u'a {outcome} step with "{name}" occurs')
+      @when('a {outcome} step with "{name}" occurs')
       def step(context, outcome, name):
           assert outcome == "passing"
           assert context.name == name
 
-      @then(u'a {outcome} step with "{name}" is reached')
+      @then('a {outcome} step with "{name}" is reached')
       def step(context, outcome, name):
           assert outcome == "passing"
           assert context.name == name

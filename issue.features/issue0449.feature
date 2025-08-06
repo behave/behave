@@ -16,7 +16,7 @@ Feature: Issue #449 -- Unicode output problem when fails with Russian text
 
       @step("Russian text")
       def step_russian_text(stop):
-          assert_that(False, equal_to(True), u"Всё очень плохо") # cyrillic
+          assert_that(False, equal_to(True), "Всё очень плохо") # cyrillic
       """
     And a file named "behave.ini" with:
         """

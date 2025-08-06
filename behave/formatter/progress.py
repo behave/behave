@@ -36,7 +36,7 @@ class ProgressFormatterBase(Formatter):
         Status.untested:  "_",
         # -- STEP SPECIFIC:
         Status.untested_pending:  "p",
-        Status.untested_undefined:  "u",
+        Status.untested_undefined:  "",
         Status.undefined: "U",
         Status.pending: "P",
         Status.pending_warn: "p",
@@ -117,7 +117,7 @@ class ProgressFormatterBase(Formatter):
         self.reset()
 
     def close(self):
-        self.stream.write(u"\n")
+        self.stream.write("\n")
         self.close_stream()
 
 
@@ -160,12 +160,12 @@ class ProgressFormatterBase(Formatter):
 
     def report_current_feature_duration(self):
         if self.show_timings and self.current_feature:
-            self.stream.write(u"  # %.3fs" % self.current_feature.duration)
+            self.stream.write("  # %.3fs" % self.current_feature.duration)
         self.stream.write("\n")
 
     def report_current_scenario_duration(self):
         if self.show_timings and self.current_scenario:
-            self.stream.write(u"  # %.3fs" % self.current_scenario.duration)
+            self.stream.write("  # %.3fs" % self.current_scenario.duration)
         self.stream.write("\n")
 
     def _report_problem_steps(self, problem, steps):
@@ -174,15 +174,15 @@ class ProgressFormatterBase(Formatter):
 
         # -- NORMAL CASE:
         separator = "-" * 80
-        self.stream.write(u"%s\n" % separator)
+        self.stream.write("%s\n" % separator)
         for step in steps:
-            self.stream.write(u"%s in step '%s':\n" % (problem, step.name))
-            self.stream.write(u"  Feature:  %s\n" % step.feature.name)
-            self.stream.write(u"  Scenario: %s\n" % step.scenario.name)
-            self.stream.write(u"%s\n" % step.error_message)
+            self.stream.write("%s in step '%s':\n" % (problem, step.name))
+            self.stream.write("  Feature:  %s\n" % step.feature.name)
+            self.stream.write("  Scenario: %s\n" % step.scenario.name)
+            self.stream.write("%s\n" % step.error_message)
             if step.exception:
-                self.stream.write(u"exception: %s\n" % step.exception)
-        self.stream.write(u"%s\n" % separator)
+                self.stream.write("exception: %s\n" % step.exception)
+        self.stream.write("%s\n" % separator)
 
     def report_current_scenario_failures(self):
         self._report_problem_steps("FAILURE", self.failed_steps)
@@ -284,7 +284,7 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         # -- NEW FEATURE STARTED:
         self.current_feature = feature
         self.current_feature_scenario_counts = 0
-        self.stream.write(u"%s    # %s\n" % (feature.name, feature.filename))
+        self.stream.write("%s    # %s\n" % (feature.name, feature.filename))
 
     def rule(self, rule):
         self.report_current_rule_completed()
@@ -292,7 +292,7 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         # -- NEW RULE STARTED:
         self.current_rule = rule
         self.current_rule_scenario_counts = 0
-        self.stream.write(u"\n  %s: %s    # %s\n" %
+        self.stream.write("\n  %s: %s    # %s\n" %
                           (rule.keyword, rule.name, rule.location))
 
     def scenario(self, scenario):
@@ -309,10 +309,10 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         scenario_name = scenario.name
         prefix = self.scenario_prefix
         if self.current_rule:
-            prefix += u"  "
+            prefix += "  "
         if scenario_name:
             scenario_name += " "
-        self.stream.write(u"%s%s " % (prefix, scenario_name))
+        self.stream.write("%s%s " % (prefix, scenario_name))
         self.stream.flush()
 
     def eof(self):
@@ -322,7 +322,7 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         # -- SPECIFIC: For this more detailed formatter.
         if self.current_feature_scenario_counts > 0:
             # -- ENSURE: EMPTY-LINE between two features.
-            self.stream.write(u"\n")
+            self.stream.write("\n")
 
     def close(self):
         self.close_stream()
@@ -338,7 +338,7 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         self.report_current_feature_captured_output()
         if self.current_feature_scenario_counts > 0:
             # -- EMPTY-LINE between 2 features.
-            self.stream.write(u"\n")
+            self.stream.write("\n")
 
         self.current_feature = None
         self.current_feature_scenario_counts = 0
@@ -352,7 +352,7 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         self.report_current_rule_captured_output()
         if self.current_rule_scenario_counts == 0:
             # -- EMPTY-LINE between last scenario and next rule.
-            self.stream.write(u"\n")
+            self.stream.write("\n")
 
         self.current_rule = None
         self.current_rule_scenario_counts = 0
@@ -383,7 +383,7 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         # -- NORMAL CASE:
         captured_output = self.current_feature.captured.make_report()
         self.stream.write(captured_output)
-        self.stream.write(u" CAPTURED_SCENARIO_OUTPUT_END ----\n")
+        self.stream.write(" CAPTURED_SCENARIO_OUTPUT_END ----\n")
 
     def report_current_rule_captured_output(self):
         if (not self.current_rule
@@ -394,7 +394,7 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
         # -- NORMAL CASE:
         captured_output = self.current_rule.captured.make_report()
         self.stream.write(captured_output)
-        self.stream.write(u" CAPTURED_RULE_OUTPUT_END ----\n")
+        self.stream.write(" CAPTURED_RULE_OUTPUT_END ----\n")
 
     def report_current_scenario_captured_output(self):
         # -- EXCLUDE: Status.hook_error for Scenario
@@ -408,14 +408,14 @@ class ScenarioStepProgressFormatter(StepProgressFormatter):
 
         # -- NORMAL CASE:
         # captured_output = self.current_scenario.captured.make_report()
-        template = u"""
+        template = """
 __CAPTURED_SCENARIO_OUTPUT__________________________
 {output}
 __CAPTURED_SCENARIO_OUTPUT_END______________________
 """.strip()
         captured_output = self.current_scenario.captured.make_report(template=template)
         self.stream.write(indent(captured_output, prefix="  "))
-        self.stream.write(u"\n")
+        self.stream.write("\n")
 
     def _report_problem_steps(self, problem, problem_steps):
         if not problem_steps:
@@ -423,23 +423,23 @@ __CAPTURED_SCENARIO_OUTPUT_END______________________
 
         # -- NORMAL CASE:
         separator = "-" * 80
-        self.stream.write(u"%s\n" % separator)
+        self.stream.write("%s\n" % separator)
         unicode_errors = 0
         for step in problem_steps:
             try:
-                self.stream.write(u"%s in step '%s' (%s):\n" % \
+                self.stream.write("%s in step '%s' (%s):\n" % \
                                   (problem, step.name, step.location))
-                self.stream.write(u"%s\n" % step.error_message)
-                self.stream.write(u"%s\n" % separator)
+                self.stream.write("%s\n" % step.error_message)
+                self.stream.write("%s\n" % separator)
             except UnicodeError as e:
-                self.stream.write(u"%s while reporting failure in %s\n" % \
+                self.stream.write("%s while reporting failure in %s\n" % \
                                   (e.__class__.__name__, step.location))
-                self.stream.write(u"ERROR: %s\n" % \
+                self.stream.write("ERROR: %s\n" % \
                                   _text(e, encoding=self.stream.encoding))
                 unicode_errors += 1
 
         if unicode_errors:
-            msg = u"HINT: %d unicode errors occurred during failure reporting.\n"
+            msg = "HINT: %d unicode errors occurred during failure reporting.\n"
             self.stream.write(msg % unicode_errors)
 
     def report_current_scenario_failures(self):

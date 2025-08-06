@@ -35,15 +35,15 @@ Feature: Issue #109: Insists that implemented tests are not implemented
         """
         from behave import given, when, then
 
-        @given(u'I navigate to "{url}"')
+        @given('I navigate to "{url}"')
         def step_navigate_to_url(context, url):
             pass
 
-        @when(u'I submit the following data')
+        @when('I submit the following data')
         def step_submit_data(context):
             pass
 
-        @then(u'I see the word "{word}"')
+        @then('I see the word "{word}"')
         def step_see_word(context, word):
             pass
         """

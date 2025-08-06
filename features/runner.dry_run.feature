@@ -275,7 +275,7 @@ Feature: Runner should support a --dry-run option
         from behave import step
         from behave.exception import StepNotImplementedError
 
-        @step(u'a step is pending')
+        @step('a step is pending')
         def step_is_pending(context):
             raise StepNotImplementedError("OOPS")
         """

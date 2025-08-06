@@ -21,7 +21,7 @@ Feature: Hooks Processing in case of Errors
       """
       from behave import step
 
-      @step(u'{word:w} step passes')
+      @step('{word:w} step passes')
       def step(context, word):
           pass
       """

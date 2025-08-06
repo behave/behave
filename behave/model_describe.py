@@ -18,9 +18,9 @@ def escape_cell(cell):
     :param cell:  Table cell (as unicode string).
     :return: Escaped cell (as unicode string).
     """
-    cell = cell.replace(u'\\', u'\\\\')
-    cell = cell.replace(u'\n', u'\\n')
-    cell = cell.replace(u'|', u'\\|')
+    cell = cell.replace('\\', '\\\\')
+    cell = cell.replace('\n', '\\n')
+    cell = cell.replace('|', '\\|')
     return cell
 
 
@@ -28,7 +28,7 @@ def escape_triple_quotes(text):
     """
     Escape triple-quotes, used for multi-line text/doc-strings.
     """
-    return text.replace(u'"""', u'\\"\\"\\"')
+    return text.replace('"""', '\\"\\"\\"')
 
 
 # -----------------------------------------------------------------------------
@@ -60,17 +60,17 @@ class ModelDescriptor(object):
         # -- STEP: Build textual table description.
         lines = []
         for r, row in enumerate(all_rows):
-            line = u"|"
+            line = "|"
             for c, (cell, max_length) in enumerate(zip(row, max_lengths)):
                 pad_size = max_length - cell_lengths[r][c]
-                line += u" %s%s |" % (escape_cell(cell), " " * pad_size)
-            line += u"\n"
+                line += " %s%s |" % (escape_cell(cell), " " * pad_size)
+            line += "\n"
             lines.append(line)
 
         if indentation:
             return indent(lines, indentation)
         # -- OTHERWISE:
-        return u"".join(lines)
+        return "".join(lines)
 
     @staticmethod
     def describe_docstring(doc_string, indentation=None):
@@ -83,7 +83,7 @@ class ModelDescriptor(object):
         :return: Textual table description (as unicode string).
         """
         text = escape_triple_quotes(doc_string)
-        text = u'"""\n' + text + '\n"""\n'
+        text = '"""\n' + text + '\n"""\n'
 
         if indentation:
             text = indent(text, indentation)

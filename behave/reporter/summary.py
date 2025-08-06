@@ -134,9 +134,9 @@ def format_summary_with_schema(statement_type, status_counts,
 #             label = statement_type
 #             if counts != 1:
 #                 label += 's'
-#             part = u"%d %s %s" % (counts, label, status.name)
+#             part = "%d %s %s" % (counts, label, status.name)
 #         else:
-#             part = u"%d %s" % (counts, status.name)
+#             part = "%d %s" % (counts, status.name)
 #         parts.append(part)
 #     return ", ".join(parts) + "\n"
 
@@ -154,8 +154,8 @@ def format_summary_v1(statement_type, summary):
         name = status.name
         if status.name == "passed":
             statement = pluralize(statement_type, counts)
-            name = u"%s passed" % statement
-        part = u"%d %s" % (counts, name)
+            name = "%s passed" % statement
+        part = "%d %s" % (counts, name)
         parts.append(part)
     return ", ".join(parts) + "\n"
 
@@ -294,7 +294,7 @@ class AbstractSummaryReporter(Reporter):
 
         stream.write("\n{kind} scenarios:\n".format(kind=kind))
         for scenario in scenarios:
-            stream.write(u"  %s  %s\n" % (scenario.location, scenario.name))
+            stream.write("  %s  %s\n" % (scenario.location, scenario.name))
 
     def print_failing_scenarios(self, stream=None):
         self._do_print_problematic_scenarios("Failing", self.failed_scenarios,

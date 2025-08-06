@@ -325,8 +325,8 @@ class TestSimplifiedRegexMatcher(TestRegexMatcher):
         def step_func1(context): pass   # pylint: disable=multiple-statements
         def step_func2(context): pass   # pylint: disable=multiple-statements
         # pylint: enable=unused-argument
-        text1 = u"I do something"
-        text2 = u"I do something more"
+        text1 = "I do something"
+        text2 = "I do something more"
         matcher1 = SimplifiedRegexMatcher(step_func1, text1)
         matcher2 = SimplifiedRegexMatcher(step_func2, text2)
 

@@ -57,21 +57,21 @@ class TestFeatureRun(unittest.TestCase):
         self.run_hook = self.runner.run_hook = Mock()
 
     def test_formatter_feature_called(self):
-        feature = Feature("foo.feature", 1, u"Feature", u"foo",
+        feature = Feature("foo.feature", 1, "Feature", "foo",
                           background=Mock())
 
         feature.run(self.runner)
         self.formatters[0].feature.assert_called_with(feature)
 
     def test_formatter_background_called_when_feature_has_background(self):
-        feature = Feature("foo.feature", 1, u"Feature", u"foo",
+        feature = Feature("foo.feature", 1, "Feature", "foo",
                           background=Mock())
 
         feature.run(self.runner)
         self.formatters[0].background.assert_called_with(feature.background)
 
     def test_formatter_background_not_called_when_feature_has_no_background(self):
-        feature = Feature("foo.feature", 1, u"Feature", u"foo")
+        feature = Feature("foo.feature", 1, "Feature", "foo")
 
         feature.run(self.runner)
         assert not self.formatters[0].background.called
@@ -85,7 +85,7 @@ class TestFeatureRun(unittest.TestCase):
         self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
         self.config.name = []
 
-        feature = Feature("foo.feature", 1, u"Feature", u"foo",
+        feature = Feature("foo.feature", 1, "Feature", "foo",
                           scenarios=scenarios)
 
         feature.run(self.runner)
@@ -110,7 +110,7 @@ class TestFeatureRun(unittest.TestCase):
         self.config.name = ["first", "third"]
         self.config.name_re = Configuration.build_name_re(self.config.name)
 
-        feature = Feature("foo.feature", 1, u"Feature", u"foo",
+        feature = Feature("foo.feature", 1, "Feature", "foo",
                           scenarios=scenarios)
 
         feature.run(self.runner)
@@ -137,7 +137,7 @@ class TestFeatureRun(unittest.TestCase):
         self.config.name = ["third .*", "second .*"]
         self.config.name_re = Configuration.build_name_re(self.config.name)
 
-        feature = Feature("foo.feature", 1, u"Feature", u"foo",
+        feature = Feature("foo.feature", 1, "Feature", "foo",
                           scenarios=scenarios)
 
         feature.run(self.runner)
@@ -169,7 +169,7 @@ class TestFeatureRun(unittest.TestCase):
         self.config.name = ["(?!Alice)"]    # Exclude all scenarios with "Alice"
         self.config.name_re = Configuration.build_name_re(self.config.name)
 
-        feature = Feature("foo.feature", 1, u"Feature", u"foo",
+        feature = Feature("foo.feature", 1, "Feature", "foo",
                           scenarios=scenarios)
 
         feature.run(self.runner)
@@ -185,7 +185,7 @@ class TestFeatureRun(unittest.TestCase):
     def test_feature_hooks_not_run_if_feature_not_being_run(self):
         self.config.tag_expression.check.return_value = False  # pylint: disable=no-member
 
-        feature = Feature("foo.feature", 1, u"Feature", u"foo")
+        feature = Feature("foo.feature", 1, "Feature", "foo")
         feature.run(self.runner)
         assert not self.run_hook.called
 
@@ -223,7 +223,7 @@ class TestScenarioRun(unittest.TestCase):
         self.config.capture_log = False
         self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
         steps = [Mock(), Mock()]
-        scenario = Scenario("foo.feature", 17, u"Scenario", u"foo",
+        scenario = Scenario("foo.feature", 17, "Scenario", "foo",
                             steps=steps)
 
         scenario.run(self.runner)
@@ -238,7 +238,7 @@ class TestScenarioRun(unittest.TestCase):
         self.config.tag_expression.check.return_value = True  # pylint: disable=no-member
 
         steps = [Mock(), Mock()]
-        scenario = Scenario("foo.feature", 17, u"Scenario", u"foo",
+        scenario = Scenario("foo.feature", 17, "Scenario", "foo",
                             steps=steps)
 
         scenario.run(self.runner)
@@ -256,7 +256,7 @@ class TestScenarioRun(unittest.TestCase):
         undefined_step = Mock()
 
         steps = [passed_step, undefined_step]
-        scenario = Scenario("foo.feature", 17, u"Scenario", u"foo",
+        scenario = Scenario("foo.feature", 17, "Scenario", "foo",
                             steps=steps)
         passed_step.run.return_value = True
         passed_step.status = Status.passed
@@ -276,7 +276,7 @@ class TestScenarioRun(unittest.TestCase):
         self.config.tag_expression.check.return_value = False  # pylint: disable=no-member
 
         steps = [Mock(), Mock()]
-        scenario = Scenario("foo.feature", 17, u"Scenario", u"foo",
+        scenario = Scenario("foo.feature", 17,  "Scenario",  "foo",
                             steps=steps)
 
         scenario.run(self.runner)
@@ -287,13 +287,13 @@ class TestScenarioRun(unittest.TestCase):
     def test_scenario_hooks_not_run_if_scenario_not_being_run(self):
         self.config.tag_expression.check.return_value = False  # pylint: disable=no-member
 
-        scenario = Scenario("foo.feature", 17, u"Scenario", u"foo")
+        scenario = Scenario("foo.feature", 17,  "Scenario",  "foo")
         scenario.run(self.runner)
         assert not self.run_hook.called
 
     def test_should_run_with_name_select(self):
-        scenario_name = u"first scenario"
-        scenario = Scenario("foo.feature", 17, u"Scenario", scenario_name)
+        scenario_name = "first scenario"
+        scenario = Scenario("foo.feature", 17,  "Scenario", scenario_name)
 
         self.config.name = ["first .*", "second .*"]
         self.config.name_re = Configuration.build_name_re(self.config.name)
@@ -351,7 +351,7 @@ class TestScenarioRun2(object):
             Mock(step_type="given", name="step0", status=Status.failed),
             Mock(step_type="then", name="step1", status=Status.passed),
         ]
-        scenario = Scenario("foo.feature", 17, u"Scenario", u"foo", steps=steps)
+        scenario = Scenario("foo.feature", 17,  "Scenario",  "foo", steps=steps)
         steps[0].run.return_value = False
 
         # pylint: disable=protected-access
@@ -362,7 +362,7 @@ class TestScenarioRun2(object):
     @pytest.mark.parametrize("failed_status", [Status.error, Status.failed])
     def test_failed_step_causes_remaining_steps_to_be_skipped(self, failed_status):
         runner = self.make_runner()
-        scenario_text = u"""
+        scenario_text = """
             Scenario: Fails in step0
               Given step0
               When step1
@@ -373,20 +373,20 @@ class TestScenarioRun2(object):
         step_container = SimpleStepContainer()
         with use_step_import_modules(step_container):
             from behave import given, when
-            @when(u'step1')
+            @when('step1')
             def step_for_step1(ctx):
                 print("CALLED: step1")
                 pass
 
             if failed_status == Status.failed:
                 # -- VARIANT 1: AssertionError is raised (or: assert fails)
-                @given(u'step0')
+                @given('step0')
                 def step_for_step0A(ctx):
                     print("CALLED: step0-A")
                     raise AssertionError("FAILED-OOPS")
             else:
                 # -- VARIANT 2: Any other Exception is raised
-                @given(u'step0')
+                @given('step0')
                 def step_for_step0E(ctx):
                     print("CALLED: step0-E")
                     raise Exception("ERROR-OOPS")
@@ -406,8 +406,8 @@ class TestScenarioOutline(unittest.TestCase):
     def make_scenario_outline(**kwargs):
         filename = kwargs.pop("filename", "foo.feature")
         line_number = kwargs.pop("line", 17)
-        keyword = kwargs.pop("keyword", u"Scenario Outline")
-        name = kwargs.pop("name", u"foo")
+        keyword = kwargs.pop("keyword", "Scenario Outline")
+        name = kwargs.pop("name", "foo")
         outline = ScenarioOutline(filename=filename, line=line_number,
                                   keyword=keyword, name=name, **kwargs)
         return outline
@@ -415,10 +415,10 @@ class TestScenarioOutline(unittest.TestCase):
     @classmethod
     def make_scenario_outline_with_table(cls, table_headings, table_data, **kwargs):
         outline = cls.make_scenario_outline(**kwargs)
-        exanple = Examples(outline.filename, outline.line+10, u"Examples", u"")
-        exanple.table = Table.from_data([u"column1"], [
-            [u"cell_1_1"],
-            [u"cell_2_1"],
+        exanple = Examples(outline.filename, outline.line+10, "Examples", "")
+        exanple.table = Table.from_data(["column1"], [
+            ["cell_1_1"],
+            ["cell_2_1"],
         ])
         outline.examples.append(exanple)
         return outline
@@ -462,10 +462,10 @@ class TestScenarioOutline(unittest.TestCase):
 
     def test_run_sets_context_variable_for_outline(self):
         # pylint: disable=protected-access
-        outline = self.make_scenario_outline_with_table([u"column1"], [
-            [u"one"],
-            [u"two"],
-            [u"three"],
+        outline = self.make_scenario_outline_with_table(["column1"], [
+            ["one"],
+            ["two"],
+            ["three"],
         ])
         _generate_scenarios = outline.scenarios
 
@@ -490,10 +490,10 @@ class TestScenarioOutline(unittest.TestCase):
 
     def test_run_should_pass_when_all_examples_pass(self):
         # pylint: disable=protected-access
-        outline = self.make_scenario_outline_with_table([u"column1"], [
-            [u"one"],
-            [u"two"],
-            [u"three"],
+        outline = self.make_scenario_outline_with_table(["column1"], [
+            ["one"],
+            ["two"],
+            ["three"],
         ])
         _generate_scenarios = outline.scenarios
 
@@ -511,9 +511,9 @@ class TestScenarioOutline(unittest.TestCase):
         assert result_failed is False
 
     def test_run_should_fail_when_first_examples_fails(self):
-        outline = self.make_scenario_outline_with_table([u"column1"], [
-            [u"one"],
-            [u"two"],
+        outline = self.make_scenario_outline_with_table(["column1"], [
+            ["one"],
+            ["two"],
         ])
         _generate_scenarios = outline.scenarios
         failed = True
@@ -533,9 +533,9 @@ class TestScenarioOutline(unittest.TestCase):
         assert result_failed is True
 
     def test_run_should_fail_when_last_examples_fails(self):
-        outline = self.make_scenario_outline_with_table([u"column1"], [
-            [u"one"],
-            [u"two"],
+        outline = self.make_scenario_outline_with_table(["column1"], [
+            ["one"],
+            ["two"],
         ])
         _generate_scenarios = outline.scenarios
         failed = True
@@ -555,10 +555,10 @@ class TestScenarioOutline(unittest.TestCase):
         assert result_failed is True
 
     def test_run_should_fail_when_middle_examples_fails(self):
-        outline = self.make_scenario_outline_with_table([u"column1"], [
-            [u"one"],
-            [u"two"],
-            [u"three"],
+        outline = self.make_scenario_outline_with_table(["column1"], [
+            ["one"],
+            ["two"],
+            ["three"],
         ])
         _generate_scenarios = outline.scenarios
         failed = True
@@ -619,7 +619,7 @@ class TestStepRun(unittest.TestCase):
         self.run_hook = runner.run_hook
 
     def test_run_appends_step_to_undefined_when_no_match_found(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         self.runner.step_registry.find_match.return_value = None
         self.runner.undefined_steps = []
         self.runner.config.dry_run = False
@@ -629,7 +629,7 @@ class TestStepRun(unittest.TestCase):
         assert step.status == Status.undefined
 
     def test_run_appends_step_to_undefined_when_no_match_found_in_dry_run_mode(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         self.runner.step_registry.find_match.return_value = None
         self.runner.undefined_steps = []
         self.runner.config.dry_run = True
@@ -639,7 +639,7 @@ class TestStepRun(unittest.TestCase):
         assert step.status == Status.untested_undefined
 
     def test_run_reports_undefined_step_via_formatter_when_not_quiet(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         self.runner.step_registry.find_match.return_value = None
         assert not step.run(self.runner)
 
@@ -647,7 +647,7 @@ class TestStepRun(unittest.TestCase):
         self.formatters[0].result.assert_called_with(step)
 
     def test_run_with_no_match_does_not_touch_formatter_when_quiet(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         self.runner.step_registry.find_match.return_value = None
         assert not step.run(self.runner, quiet=True)
 
@@ -655,7 +655,7 @@ class TestStepRun(unittest.TestCase):
         assert not self.formatters[0].result.called
 
     def test_run_when_not_quiet_reports_match_and_result(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         match = Mock()
         self.runner.step_registry.find_match.return_value = match
 
@@ -668,7 +668,7 @@ class TestStepRun(unittest.TestCase):
             self.formatters[0].result.assert_called_with(step)
 
     def test_run_when_quiet_reports_nothing(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         match = Mock()
         self.runner.step_registry.find_match.return_value = match
 
@@ -681,7 +681,7 @@ class TestStepRun(unittest.TestCase):
             assert not self.formatters[0].result.called
 
     def test_run_runs_before_hook_then_match_then_after_hook(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         match = Mock()
         self.runner.step_registry.find_match.return_value = match
 
@@ -713,14 +713,14 @@ class TestStepRun(unittest.TestCase):
             ]
 
     def test_run_sets_table_if_present(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo",
+        step = Step("foo.feature", 17, "Given", "given", "foo",
                     table=Mock())
         self.runner.step_registry.find_match.return_value = Mock()
         step.run(self.runner)
         assert self.context.table == step.table
 
     def test_run_sets_text_if_present(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo",
+        step = Step("foo.feature", 17, "Given", "given", "foo",
                     text=Mock(name="text"))
         self.runner.step_registry.find_match.return_value = Mock()
         step.run(self.runner)
@@ -728,7 +728,7 @@ class TestStepRun(unittest.TestCase):
         assert self.context.text == step.text
 
     def test_run_sets_status_to_passed_if_nothing_goes_wrong(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         step.error_message = None
         self.runner.step_registry.find_match.return_value = Mock()
         step.run(self.runner)
@@ -747,7 +747,7 @@ class TestStepRun(unittest.TestCase):
         self.runner.capture_controller = CaptureController(self.runner.config)
         self.runner.capture_controller.setup_capture()
 
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         step.error_message = None
         match = Mock()
         match.run.side_effect = raiser(AssertionError("whee"))
@@ -759,7 +759,7 @@ class TestStepRun(unittest.TestCase):
 
     @patch("%s.format_exc" % traceback_modname)
     def test_run_sets_status_to_failed_on_assertion_error(self, format_exc):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         step.error_message = None
         match = Mock()
         match.run.side_effect = raiser(AssertionError("whee"))
@@ -772,7 +772,7 @@ class TestStepRun(unittest.TestCase):
 
     @patch("%s.format_exc" % traceback_modname)
     def test_run_sets_status_to_error_on_exception(self, format_exc):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         step.error_message = None
         match = Mock()
         match.run.side_effect = raiser(Exception("whee"))
@@ -785,7 +785,7 @@ class TestStepRun(unittest.TestCase):
 
     @patch("time.time")
     def test_run_calculates_duration(self, time_time):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         match = Mock()
         self.runner.step_registry.find_match.return_value = match
 
@@ -805,7 +805,7 @@ class TestStepRun(unittest.TestCase):
             assert step.duration == (23 - 17)
 
     def test_run_captures_stdout_and_logging(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         match = Mock()
         self.runner.step_registry.find_match.return_value = match
 
@@ -815,7 +815,7 @@ class TestStepRun(unittest.TestCase):
         self.runner.stop_capture.assert_called_with()
 
     def test_run_appends_any_captured_stdout_on_failure(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         match = Mock()
         self.runner.step_registry.find_match.return_value = match
         self.capture_stdout.getvalue.return_value = "frogs"
@@ -832,7 +832,7 @@ class TestStepRun(unittest.TestCase):
         assert "CAPTURED STDOUT:" in captured_output
 
     def test_run_appends_any_captured_logging_on_failure(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         match = Mock()
         self.runner.step_registry.find_match.return_value = match
         self.capture_log.getvalue.return_value = "toads"
@@ -848,7 +848,7 @@ class TestStepRun(unittest.TestCase):
         assert "toads" in captured_output
 
     def test_run_appends_any_captured_stdout_on_error(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         match = Mock()
         self.runner.step_registry.find_match.return_value = match
         self.capture_stdout.getvalue.return_value = "frogs"
@@ -864,7 +864,7 @@ class TestStepRun(unittest.TestCase):
         assert "frogs" in captured_output
 
     def test_run_appends_any_captured_logging_on_error(self):
-        step = Step("foo.feature", 17, u"Given", "given", u"foo")
+        step = Step("foo.feature", 17, "Given", "given", "foo")
         match = Mock()
         self.runner.step_registry.find_match.return_value = match
         self.capture_log.getvalue.return_value = "toads"
@@ -882,11 +882,11 @@ class TestStepRun(unittest.TestCase):
 
 class TestTableModel(object):
     # pylint: disable=invalid-name
-    HEADINGS = [u"type of stuff", u"awesomeness", u"ridiculousness"]
+    HEADINGS = ["type of stuff", "awesomeness", "ridiculousness"]
     TABLE_DATA = [
-        [u"fluffy", u"large", u"frequent"],
-        [u"lint", u"low", u"high"],
-        [u"green", u"variable", u"awkward"],
+        ["fluffy", "large", "frequent"],
+        ["lint", "low", "high"],
+        ["green", "variable", "awkward"],
     ]
 
     @classmethod
@@ -934,8 +934,8 @@ class TestTableModel(object):
 
 class TestModelRow(object):
     # pylint: disable=invalid-name, bad-whitespace
-    HEADINGS = [u"name",  u"sex",   u"age"]
-    ROW_DATA = [u"Alice", u"female", u"12"]
+    HEADINGS = ["name",  "sex",   "age"]
+    ROW_DATA = ["Alice", "female", "12"]
 
     @classmethod
     def make_row(cls):
@@ -948,9 +948,9 @@ class TestModelRow(object):
     def test_getitem_with_valid_colname(self):
         # pylint: disable=bad-whitespace
         row = self.make_row()
-        assert row["name"] == u"Alice"
-        assert row["sex"] == u"female"
-        assert row["age"] == u"12"
+        assert row["name"] == "Alice"
+        assert row["sex"] == "female"
+        assert row["age"] == "12"
 
     def test_getitem_with_unknown_colname(self):
         row = self.make_row()
@@ -960,9 +960,9 @@ class TestModelRow(object):
 
     def test_getitem_with_valid_index(self):
         row = self.make_row()
-        assert row[0] == u"Alice"
-        assert row[1] == u"female"
-        assert row[2] == u"12"
+        assert row[0] == "Alice"
+        assert row[1] == "female"
+        assert row[2] == "12"
 
     def test_getitem_with_invalid_index(self):
         row = self.make_row()
@@ -974,13 +974,13 @@ class TestModelRow(object):
     def test_get_with_valid_colname(self):
         # pylint: disable=bad-whitespace
         row = self.make_row()
-        assert row.get("name") == u"Alice"
-        assert row.get("sex") ==  u"female"
-        assert row.get("age") ==  u"12"
+        assert row.get("name") == "Alice"
+        assert row.get("sex") == "female"
+        assert row.get("age") == "12"
 
     def test_getitem_with_unknown_colname_should_return_default(self):
         row = self.make_row()
-        assert row.get("__UNKNOWN_COLUMN__", "XXX") == u"XXX"
+        assert row.get("__UNKNOWN_COLUMN__", "XXX") == "XXX"
 
     def test_as_dict(self):
         row = self.make_row()
@@ -993,9 +993,9 @@ class TestModelRow(object):
         # assert not isinstance(data2, OrderedDict)
         assert data1 == data2
         # pylint: disable=bad-whitespace
-        assert data1["name"] == u"Alice"
-        assert data1["sex"] == u"female"
-        assert data1["age"] == u"12"
+        assert data1["name"] == "Alice"
+        assert data1["sex"] == "female"
+        assert data1["age"] == "12"
 
     def test_contains(self):
         row = self.make_row()

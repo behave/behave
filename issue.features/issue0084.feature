@@ -32,11 +32,11 @@ Feature: Issue #84: behave.runner behave does not reliably detected failed test 
         """
         from behave import step
 
-        @step(u'a step passes')
+        @step('a step passes')
         def step_passes(context):
             pass
 
-        @step(u'a step fails')
+        @step('a step fails')
         def step_fails(context):
             assert False, "step: a step fails"
         """

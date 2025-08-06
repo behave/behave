@@ -81,19 +81,19 @@ def select_setup_console_encoding():
 # -----------------------------------------------------------------------------
 # STEPS
 # -----------------------------------------------------------------------------
-@given(u'I setup the console encoding to "{encoding:Unquoted}" for language "{language:Unquoted}"')
+@given('I setup the console encoding to "{encoding:Unquoted}" for language "{language:Unquoted}"')
 def step_given_setup_console_encoding_to_with_language(ctx, encoding, language=None):
     use_fixture(save_current_environment_variables_and_restore, ctx)
     setup_console_encoding = select_setup_console_encoding()
     setup_console_encoding(encoding, language=language)
 
 
-@given(u'I setup the console encoding to "{encoding:Unquoted}"')
+@given('I setup the console encoding to "{encoding:Unquoted}"')
 def step_given_setup_console_encoding_to(ctx, encoding):
     step_given_setup_console_encoding_to_with_language(ctx, encoding)
 
 
-@then(u'the chardet file encoding for "{filename}" should be "{encoding}"')
+@then('the chardet file encoding for "{filename}" should be "{encoding}"')
 def step_chardet_file_encoding_should_be(ctx, filename, encoding):
     workdir_filename = realpath_with_context(filename, ctx)
     contents_as_bytes = Path(workdir_filename).read_bytes()

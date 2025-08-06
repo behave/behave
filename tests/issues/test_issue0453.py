@@ -4,12 +4,12 @@ MAYBE: DUPLICATES: #449
 NOTE: traceback2 (backport for Python2) solves the problem.
 
 def foo(stop):
-        raise Exception(u"по русски")
+        raise Exception("по русски")
 
 Result:
 
        File "features/steps/steps.py", line 8, in foo
-          raise Exception(u"Ð¿Ð¾ Ñ�Ñ�Ñ�Ñ�ÐºÐ¸") <-- This is not
+          raise Exception("Ð¿Ð¾ Ñ�Ñ�Ñ�Ñ�ÐºÐ¸") <-- This is not
       Exception: по русски <-- This is OK
 
 It happens here (https://github.com/behave/behave/blob/master/behave/model.py#L1299)
@@ -43,7 +43,7 @@ except ImportError:
 # TEST SUPPORT:
 # -----------------------------------------------------------------------------
 def problematic_step_impl(context):
-    raise Exception(u"по русски")
+    raise Exception("по русски")
 
 
 # -----------------------------------------------------------------------------
@@ -55,17 +55,17 @@ def test_issue(encoding):
     """
     with encoding=UTF-8:
         File "/Users/jens/se/behave_main.unicode/tests/issues/test_issue0453.py", line 31, in problematic_step_impl
-            raise Exception(u"по русски")
+            raise Exception("по русски")
         Exception: \u043f\u043e \u0440\u0443\u0441\u0441\u043a\u0438
 
     with encoding=unicode_escape:
         File "/Users/jens/se/behave_main.unicode/tests/issues/test_issue0453.py", line 31, in problematic_step_impl
-            raise Exception(u"Ð¿Ð¾ ÑÑÑÑÐºÐ¸")
+            raise Exception("Ð¿Ð¾ ÑÑÑÑÐºÐ¸")
         Exception: по русски
     """
     context = None
     text2 = b""
-    _expected_text = u"по русски"
+    _expected_text = "по русски"
     try:
         problematic_step_impl(context)
     except Exception:
@@ -82,6 +82,6 @@ def test_issue(encoding):
             # DISABLED: encoding = best_encoding
 
     text3 = text(text2, encoding)
-    print(u"EXCEPTION-TEXT: %s" % text3)
-    assert_that(text3, contains_string(u'raise Exception(u"по русски"'))
-    assert_that(text3, contains_string(u"Exception: по русски"))
+    print("EXCEPTION-TEXT: %s" % text3)
+    assert_that(text3, contains_string('raise Exception("по русски")'))
+    assert_that(text3, contains_string("Exception: по русски"))

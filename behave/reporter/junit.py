@@ -118,14 +118,14 @@ def _compile_invalid_re():
         for (low, high) in illegal_unichrs
         if low < sys.maxunicode]
 
-    return re.compile(u'[%s]' % u''.join(illegal_ranges))
+    return re.compile('[%s]' % ''.join(illegal_ranges))
 
 
 _invalid_re = _compile_invalid_re()
 
 def _escape_invalid_xml_chars(text):
     # replace invalid chars with Unicode hex
-    return _invalid_re.subn(lambda c: u'U+{0:0=4}'.format(ord(c.group())), text)[0]
+    return _invalid_re.subn(lambda c: 'U+{0:0=4}'.format(ord(c.group())), text)[0]
 
 
 def escape_CDATA(text):  # pylint: disable=invalid-name
@@ -133,7 +133,7 @@ def escape_CDATA(text):  # pylint: disable=invalid-name
     # CDATA cannot contain the string "]]>" anywhere in the XML document.
     if not text:
         return text
-    text = text.replace(u']]>', u']]&gt;')
+    text = text.replace(']]>', ']]&gt;')
     return _escape_invalid_xml_chars(text)
 
 
@@ -288,9 +288,9 @@ class JUnitReporter(Reporter):
         report = FeatureReportData(feature, feature_filename)
         now = datetime.now()
 
-        suite = ElementTree.Element(u'testsuite')
+        suite = ElementTree.Element('testsuite')
         feature_name = feature.name or feature_filename
-        suite.set(u'name', u'%s.%s' % (classname, feature_name))
+        suite.set('name', '%s.%s' % (classname, feature_name))
 
         # -- BUILD-TESTCASES: From run_items (and scenarios)
         self._process_run_items_for(feature, report)
@@ -299,16 +299,16 @@ class JUnitReporter(Reporter):
         for testcase in report.testcases:
             suite.append(testcase)
 
-        suite.set(u'tests', _text(report.counts_tests))
-        suite.set(u'errors', _text(report.counts_errors))
-        suite.set(u'failures', _text(report.counts_failed))
-        suite.set(u'skipped', _text(report.counts_skipped))  # WAS: skips
-        suite.set(u'time', _text(round(feature.duration, 6)))
+        suite.set('tests', _text(report.counts_tests))
+        suite.set('errors', _text(report.counts_errors))
+        suite.set('failures', _text(report.counts_failed))
+        suite.set('skipped', _text(report.counts_skipped))  # WAS: skips
+        suite.set('time', _text(round(feature.duration, 6)))
         # -- SINCE: behave-1.2.6.dev0
         if self.show_timestamp:
-            suite.set(u'timestamp', _text(now.isoformat()))
+            suite.set('timestamp', _text(now.isoformat()))
         if self.show_hostname:
-            suite.set(u'hostname', _text(gethostname()))
+            suite.set('hostname', _text(gethostname()))
 
         if not os.path.exists(self.config.junit_directory):
             # -- ENSURE: Create multiple directory levels at once.
@@ -316,7 +316,7 @@ class JUnitReporter(Reporter):
 
         tree = ElementTreeWithCDATA(suite)
         report_dirname = self.config.junit_directory
-        report_basename = u'TESTS-%s.xml' % feature_filename
+        report_basename = 'TESTS-%s.xml' % feature_filename
         report_filename = os.path.join(report_dirname, report_basename)
         tree.write(codecs.open(report_filename, "wb"), "UTF-8")
 
@@ -370,9 +370,9 @@ class JUnitReporter(Reporter):
     def describe_step(self, step):
         status_text = _text(step.status.name)
         if self.show_timings:
-            status_text += u" in %0.3fs" % step.duration
-        text = u'%s %s ... ' % (step.keyword, step.name)
-        text += u'%s\n' % status_text
+            status_text += " in %0.3fs" % step.duration
+        text = '%s %s ... ' % (step.keyword, step.name)
+        text += '%s\n' % status_text
         if self.show_multiline:
             prefix = make_indentation(2)
             if step.text:
@@ -383,9 +383,9 @@ class JUnitReporter(Reporter):
 
     @classmethod
     def describe_tags(cls, tags):
-        text = u''
+        text = ''
         if tags:
-            text = u'@'+ u' @'.join(tags)
+            text = '@'+ ' @'.join(tags)
         return text
 
     def describe_scenario(self, scenario):
@@ -395,12 +395,12 @@ class JUnitReporter(Reporter):
         :param scenario:  Scenario that was tested.
         :return: Textual description of the scenario.
         """
-        header_line = u'\n@scenario.begin\n'
+        header_line = '\n@scenario.begin\n'
         if self.show_tags and scenario.tags:
-            header_line += u'\n  %s\n' % self.describe_tags(scenario.tags)
-        header_line += u'  %s: %s\n' % (scenario.keyword, scenario.name)
-        footer_line = u'\n@scenario.end\n' + u'-' * 80 + '\n'
-        text = u''
+            header_line += '\n  %s\n' % self.describe_tags(scenario.tags)
+        header_line += '  %s: %s\n' % (scenario.keyword, scenario.name)
+        footer_line = '\n@scenario.end\n' + '-' * 80 + '\n'
+        text = ''
         for step in scenario:
             text += self.describe_step(step)
         step_indentation = make_indentation(4)
@@ -438,10 +438,10 @@ class JUnitReporter(Reporter):
             feature_name = self.make_feature_filename(feature)
 
         case = ElementTree.Element("testcase")
-        case.set(u"classname", u"%s.%s" % (classname, feature_name))
-        case.set(u"name", scenario.name or "")
-        case.set(u"status", scenario.status.name)
-        case.set(u"time", _text(round(scenario.duration, 6)))
+        case.set("classname", "%s.%s" % (classname, feature_name))
+        case.set("name", scenario.name or "")
+        case.set("status", scenario.status.name)
+        case.set("time", _text(round(scenario.duration, 6)))
 
         step = None
         failed_statuses = (Status.failed, )
@@ -468,34 +468,34 @@ class JUnitReporter(Reporter):
             if step:
                 # -- UNDEFINED-STEP:
                 report.counts_failed += 1
-                message = u"Undefined Step: %s" % step.name.strip()
-                failure = ElementTree.Element(u"failure")
-                failure.set(u"type", u"undefined")
-                failure.set(u"message", message)
+                message = "Undefined Step: %s" % step.name.strip()
+                failure = ElementTree.Element("failure")
+                failure.set("type", "undefined")
+                failure.set("message", message)
                 case.append(failure)
 
             # -- ALWAYS ADD TO THE REPORT:
-            skip = ElementTree.Element(u'skipped')
+            skip = ElementTree.Element('skipped')
             case.append(skip)
 
         # Create stdout section for each test case
-        stdout = ElementTree.Element(u"system-out")
-        text = u""
+        stdout = ElementTree.Element("system-out")
+        text = ""
         if self.show_scenarios:
             text = self.describe_scenario(scenario)
 
         # Append the captured standard output
         if scenario.captured.stdout:
             output = _text(scenario.captured.stdout)
-            text += u"\nCaptured stdout:\n%s\n" % output
+            text += "\nCaptured stdout:\n%s\n" % output
         stdout.append(CDATA(text))
         case.append(stdout)
 
         # Create stderr section for each test case
         if scenario.captured.stderr:
-            stderr = ElementTree.Element(u"system-err")
+            stderr = ElementTree.Element("system-err")
             output = _text(scenario.captured.stderr)
-            text = u"\nCaptured stderr:\n%s\n" % output
+            text = "\nCaptured stderr:\n%s\n" % output
             stderr.append(CDATA(text))
             case.append(stderr)
 
@@ -506,11 +506,11 @@ class JUnitReporter(Reporter):
         xml_element = ElementTree.Element(element_name)
         if step:
             step_text = self.describe_step(step).rstrip()
-            text = u"\nFailing step: %s\nLocation: %s\n" % \
+            text = "\nFailing step: %s\nLocation: %s\n" % \
                    (step_text, step.location)
             message = _text(step.exception).strip()
-            xml_element.set(u'type', step.exception.__class__.__name__)
-            xml_element.set(u'message', message)
+            xml_element.set('type', step.exception.__class__.__name__)
+            xml_element.set('message', message)
             text += _text(step.error_message)
         else:
             # -- MAYBE: Hook failure before any step is executed.
@@ -520,19 +520,19 @@ class JUnitReporter(Reporter):
             scenario_error_message = scenario.error_message
             if scenario_error_message:
                 scenario_error_message = scenario_error_message.strip()
-            xml_element.set(u'type', failure_type)
-            xml_element.set(u'message', scenario_error_message or "")
+            xml_element.set('type', failure_type)
+            xml_element.set('message', scenario_error_message or "")
             traceback_lines = traceback.format_tb(scenario.exc_traceback)
-            traceback_lines.insert(0, u"Traceback:\n")
-            text = _text(u"".join(traceback_lines))
+            traceback_lines.insert(0, "Traceback:\n")
+            text = _text("".join(traceback_lines))
         xml_element.append(CDATA(text))
         return xml_element
 
     def _make_failure_element_for(self, scenario, step):
-        return self._make_problem_description_for(u"failure", scenario, step)
+        return self._make_problem_description_for("failure", scenario, step)
 
     def _make_error_element_for(self, scenario, step):
-        return self._make_problem_description_for(u"error", scenario, step)
+        return self._make_problem_description_for("error", scenario, step)
 
     def _process_run_items_for(self, parent, report):
         for run_item in parent.run_items:

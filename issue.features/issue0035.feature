@@ -7,15 +7,15 @@ Feature: Issue #35 Plain Formatter shows wrong steps when tag-selection is used
       """
       from behave import given, when, then
 
-      @given(u'the ninja has a third level black-belt')
+      @given('the ninja has a third level black-belt')
       def step(context):
           pass
 
-      @when(u'attacked by {opponent}')
+      @when('attacked by {opponent}')
       def step(context, opponent):
           pass
 
-      @then(u'the ninja should {reaction}')
+      @then('the ninja should {reaction}')
       def step(context, reaction):
           pass
       """

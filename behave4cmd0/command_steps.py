@@ -38,8 +38,8 @@ register_type(Unquoted=parse_unquoted_text)
 # -----------------------------------------------------------------------------
 # STEPS: Run commands
 # -----------------------------------------------------------------------------
-@when(u'I run "{command:Unquoted}" with locale="{locale_value:Unquoted}"')
-@when(u'I run `{command}` with locale="{locale_value:Unquoted}"')
+@when('I run "{command:Unquoted}" with locale="{locale_value:Unquoted}"')
+@when('I run `{command}` with locale="{locale_value:Unquoted}"')
 def step_i_run_command_with_locale(ctx, command, locale_value):
     """
     Run a command as subprocess with encoding and language,
@@ -63,8 +63,8 @@ def step_i_run_command_with_locale(ctx, command, locale_value):
     step_i_run_command(ctx, command, **kwargs)
 
 
-@when(u'I run "{command:Unquoted}" with encoding="{encoding:Unquoted}"')
-@when(u'I run `{command}` with encoding="{encoding:Unquoted}"')
+@when('I run "{command:Unquoted}" with encoding="{encoding:Unquoted}"')
+@when('I run `{command}` with encoding="{encoding:Unquoted}"')
 def step_i_run_command_with_encoding(ctx, command, encoding):
     """
     Run a command as subprocess with encoding,
@@ -73,8 +73,8 @@ def step_i_run_command_with_encoding(ctx, command, encoding):
     step_i_run_command(ctx, command, encoding=encoding)
 
 
-@when(u'I run "{command:Unquoted}"')
-@when(u'I run `{command}`')
+@when('I run "{command:Unquoted}"')
+@when('I run `{command}`')
 def step_i_run_command(ctx, command, encoding=None, **kwargs):
     """
     Run a command as subprocess, collect its output and returncode.
@@ -88,53 +88,53 @@ def step_i_run_command(ctx, command, encoding=None, **kwargs):
                                            **kwargs)
     command_util.workdir_save_coverage_files(ctx.workdir)
     if False and DEBUG:
-        print(u"run_command: {0}".format(command))
-        print(u"run_command.output {0}".format(ctx.command_result.output))
+        print("run_command: {0}".format(command))
+        print("run_command.output {0}".format(ctx.command_result.output))
 
 
-@when(u'I successfully run "{command:Unquoted}"')
-@when(u'I successfully run `{command}`')
+@when('I successfully run "{command:Unquoted}"')
+@when('I successfully run `{command}`')
 def step_i_successfully_run_command(ctx, command):
     step_i_run_command(ctx, command)
     step_it_should_pass(ctx)
 
 
-@then(u'it should fail with result "{result:int}"')
+@then('it should fail with result "{result:int}"')
 def step_it_should_fail_with_result(ctx, result):
     assert_that(ctx.command_result.returncode, equal_to(result))
     assert_that(result, is_not(equal_to(0)))
 
 
-@then(u'the command should fail with returncode="{result:int}"')
+@then('the command should fail with returncode="{result:int}"')
 def step_it_should_fail_with_returncode(ctx, result):
     assert_that(ctx.command_result.returncode, equal_to(result))
     assert_that(result, is_not(equal_to(0)))
 
 
-@then(u'the command returncode is "{result:int}"')
+@then('the command returncode is "{result:int}"')
 def step_the_command_returncode_is(ctx, result):
     assert_that(ctx.command_result.returncode, equal_to(result))
 
 
-@then(u'the command returncode is non-zero')
+@then('the command returncode is non-zero')
 def step_the_command_returncode_is_nonzero(ctx):
     assert_that(ctx.command_result.returncode, is_not(equal_to(0)))
 
 
-@then(u'it should pass')
+@then('it should pass')
 def step_it_should_pass(ctx):
     assert_that(ctx.command_result.returncode, equal_to(0),
                 ctx.command_result.output)
 
 
-@then(u'it should fail')
+@then('it should fail')
 def step_it_should_fail(ctx):
     assert_that(ctx.command_result.returncode, is_not(equal_to(0)),
                 ctx.command_result.output)
 
 
-@then(u'it should pass with')
-@then(u'it should pass with:')
+@then('it should pass with')
+@then('it should pass with:')
 def step_it_should_pass_with(ctx):
     '''
     EXAMPLE:
@@ -151,8 +151,8 @@ def step_it_should_pass_with(ctx):
                 ctx.command_result.output)
 
 
-@then(u'it should fail with')
-@then(u'it should fail with:')
+@then('it should fail with')
+@then('it should fail with:')
 def step_it_should_fail_with(ctx):
     '''
     EXAMPLE:
@@ -171,7 +171,7 @@ def step_it_should_fail_with(ctx):
 # -----------------------------------------------------------------------------
 # STEPS FOR: Output Comparison
 # -----------------------------------------------------------------------------
-@then(u'the command output should contain "{text}"')
+@then('the command output should contain "{text}"')
 def step_command_output_should_contain_text(ctx, text):
     '''
     EXAMPLE:
@@ -184,7 +184,7 @@ def step_command_output_should_contain_text(ctx, text):
         textutil.assert_normtext_should_contain(actual_output, expected_text)
 
 
-@then(u'the command output should not contain "{text}"')
+@then('the command output should not contain "{text}"')
 def step_command_output_should_not_contain_text(ctx, text):
     '''
     EXAMPLE:
@@ -197,7 +197,7 @@ def step_command_output_should_not_contain_text(ctx, text):
         textutil.assert_normtext_should_not_contain(actual_output, expected_text)
 
 
-@then(u'the command output should contain "{text}" {count:d} times')
+@then('the command output should contain "{text}" {count:d} times')
 def step_command_output_should_contain_text_multiple_times(ctx, text, count):
     '''
     EXAMPLE:
@@ -214,7 +214,7 @@ def step_command_output_should_contain_text_multiple_times(ctx, text, count):
                                                                count)
 
 
-@then(u'the command output should contain exactly "{text}"')
+@then('the command output should contain exactly "{text}"')
 def step_command_output_should_contain_exactly_text(ctx, text):
     """
     Verifies that the command output of the last command contains the
@@ -230,15 +230,15 @@ def step_command_output_should_contain_exactly_text(ctx, text):
     textutil.assert_text_should_contain_exactly(actual_output, expected_text)
 
 
-@then(u'the command output should not contain exactly "{text}"')
+@then('the command output should not contain exactly "{text}"')
 def step_command_output_should_not_contain_exactly_text(ctx, text):
     expected_text = normalize_text_with_placeholders(ctx, text)
     actual_output  = ctx.command_result.output
     textutil.assert_text_should_not_contain_exactly(actual_output, expected_text)
 
 
-@then(u'the command output should contain')
-@then(u'the command output should contain:')
+@then('the command output should contain')
+@then('the command output should contain:')
 def step_command_output_should_contain(ctx):
     '''
     EXAMPLE:
@@ -254,8 +254,8 @@ def step_command_output_should_contain(ctx):
     step_command_output_should_contain_text(ctx, ctx.text)
 
 
-@then(u'the command output should not contain')
-@then(u'the command output should not contain:')
+@then('the command output should not contain')
+@then('the command output should not contain:')
 def step_command_output_should_not_contain(ctx):
     '''
     EXAMPLE:
@@ -272,8 +272,8 @@ def step_command_output_should_not_contain(ctx):
     step_command_output_should_not_contain_text(ctx, text)
 
 
-@then(u'the command output should contain {count:d} times')
-@then(u'the command output should contain {count:d} times:')
+@then('the command output should contain {count:d} times')
+@then('the command output should contain {count:d} times:')
 def step_command_output_should_contain_multiple_times(ctx, count):
     '''
     EXAMPLE:
@@ -290,24 +290,24 @@ def step_command_output_should_contain_multiple_times(ctx, count):
     step_command_output_should_contain_text_multiple_times(ctx, text, count)
 
 
-@then(u'the command output should contain exactly')
-@then(u'the command output should contain exactly:')
+@then('the command output should contain exactly')
+@then('the command output should contain exactly:')
 def step_command_output_should_contain_exactly_with_multiline_text(ctx):
     assert ctx.text is not None, "REQUIRE: multi-line text"
     text = ctx.text.rstrip()
     step_command_output_should_contain_exactly_text(ctx, text)
 
 
-@then(u'the command output should not contain exactly')
-@then(u'the command output should not contain exactly:')
+@then('the command output should not contain exactly')
+@then('the command output should not contain exactly:')
 def step_command_output_should_contain_not_exactly_with_multiline_text(ctx):
     assert ctx.text is not None, "REQUIRE: multi-line text"
     text = ctx.text.rstrip()
     step_command_output_should_not_contain_exactly_text(ctx, text)
 
 
-@then(u'the command output should be')
-@then(u'the command output should be:')
+@then('the command output should be')
+@then('the command output should be:')
 def step_command_output_should_be(ctx):
     '''
     EXAMPLE:
@@ -328,8 +328,8 @@ def step_command_output_should_be(ctx):
 # -----------------------------------------------------------------------------
 # STEP DEFINITIONS: command output should/should_not match
 # -----------------------------------------------------------------------------
-@then(u'the command output should match /{pattern}/')
-@then(u'the command output should match "{pattern}"')
+@then('the command output should match /{pattern}/')
+@then('the command output should match "{pattern}"')
 def step_command_output_should_match_pattern(ctx, pattern):
     """Verifies that command output matches the ``pattern``.
 
@@ -351,24 +351,24 @@ def step_command_output_should_match_pattern(ctx, pattern):
         textutil.assert_text_should_match_pattern(text, compiled_pattern)
 
 
-@then(u'the command output should not match /{pattern}/')
-@then(u'the command output should not match "{pattern}"')
+@then('the command output should not match /{pattern}/')
+@then('the command output should not match "{pattern}"')
 def step_command_output_should_not_match_pattern(ctx, pattern):
     # steputil.assert_attribute_exists(ctx, "command_result")
     text = ctx.command_result.output
     textutil.assert_text_should_not_match_pattern(text, pattern)
 
 
-@then(u'the command output should match')
-@then(u'the command output should match:')
+@then('the command output should match')
+@then('the command output should match:')
 def step_command_output_should_match_with_multiline_text(ctx):
     assert ctx.text is not None, "ENSURE: multiline text is provided."
     pattern = ctx.text
     step_command_output_should_match_pattern(ctx, pattern)
 
 
-@then(u'the command output should not match')
-@then(u'the command output should not match:')
+@then('the command output should not match')
+@then('the command output should not match:')
 def step_command_output_should_not_match_with_multiline_text(ctx):
     assert ctx.text is not None, "ENSURE: multiline text is provided."
     pattern = ctx.text

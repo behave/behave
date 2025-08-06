@@ -18,7 +18,7 @@ Feature: Issue #83: behave.__main__:main() Various sys.exit issues
         """
         from behave import step
 
-        @step(u'a step passes')
+        @step('a step passes')
         def step_passes(context):
             pass
         """

@@ -89,15 +89,15 @@ DEBUG = False
 #         data = self.data or ""
 #         prefix = ""
 #         if isinstance(data, bytes) and not isinstance(data, basestring):
-#             prefix= u"b"
+#             prefix= "b"
 # #        str(self.text)
 # #        str(self.encoding)
 # #        str(prefix)
-# #        _ =  u"<TextProxy data[size=%d]=x'x', encoding=x>" % len(self)
-# #        _ = u"<TextProxy data[size=x]=%s'x', encoding=x>" % prefix
-# #        _ = u"<TextProxy data[size=x]=x'%s', encoding=x>" % self.text
-# #        _ = u"<TextProxy data[size=x]=x'x', encoding=%s>" % self.encoding
-#         return u"<TextProxy data[size=%d]=%s'%s', encoding=%s>" %\
+# #        _ =  "<TextProxy data[size=%d]=x'x', encoding=x>" % len(self)
+# #        _ = "<TextProxy data[size=x]=%s'x', encoding=x>" % prefix
+# #        _ = "<TextProxy data[size=x]=x'%s', encoding=x>" % self.text
+# #        _ = "<TextProxy data[size=x]=x'x', encoding=%s>" % self.encoding
+#         return "<TextProxy data[size=%d]=%s'%s', encoding=%s>" %\
 #                (len(self), prefix, self.text, self.encoding)
 #
 #     def __str__(self):

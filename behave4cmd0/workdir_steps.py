@@ -17,7 +17,7 @@ from behave4cmd0 import command_util
 # -----------------------------------------------------------------------------
 # STEPS: WORKING DIR
 # -----------------------------------------------------------------------------
-@given(u'a new working directory')
+@given('a new working directory')
 def step_a_new_working_directory(context):
     """Creates a new, empty working directory."""
     command_util.ensure_context_attribute_exists(context, "workdir", None)
@@ -28,14 +28,14 @@ def step_a_new_working_directory(context):
     command_util.ensure_workdir_exists(context)
 
 
-@given(u'I use the current directory as working directory')
+@given('I use the current directory as working directory')
 def step_use_curdir_as_working_directory(context):
     """Uses the current directory as working directory"""
     context.workdir = os.path.abspath(".")
     command_util.ensure_workdir_exists(context)
 
 
-@step(u'I use the directory "{directory}" as working directory')
+@step('I use the directory "{directory}" as working directory')
 def step_use_directory_as_working_directory(context, directory):
     """Uses the directory as new working directory"""
     command_util.ensure_context_attribute_exists(context, "workdir", None)

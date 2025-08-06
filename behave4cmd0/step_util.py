@@ -20,11 +20,11 @@ def print_differences(actual, expected):
     # diff = difflib.unified_diff(expected.splitlines(), actual.splitlines(),
     #                            "expected", "actual")
     diff = difflib.ndiff(expected.splitlines(), actual.splitlines())
-    diff_text = u"\n".join(diff)
-    print(u"DIFF (+ ACTUAL, - EXPECTED):\n{0}\n".format(diff_text))
+    diff_text = "\n".join(diff)
+    print("DIFF (+ ACTUAL, - EXPECTED):\n{0}\n".format(diff_text))
     if DEBUG:
-        print(u"expected:\n{0}\n".format(expected))
-        print(u"actual:\n{0}\n".format(actual))
+        print("expected:\n{0}\n".format(expected))
+        print("actual:\n{0}\n".format(actual))
 
 
 @contextlib.contextmanager

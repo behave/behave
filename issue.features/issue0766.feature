@@ -32,7 +32,7 @@ Feature: Issue #766 -- UnicodeEncodeError in PrettyFormatter
       """
       from behave import given
 
-      @given(u'a step with name="{name}"')
+      @given('a step with name="{name}"')
       def step_with_table_data(ctx, name):
           pass
       """

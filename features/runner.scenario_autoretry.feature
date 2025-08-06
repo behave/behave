@@ -18,7 +18,7 @@ Feature: Auto-retry failed scenarios (a number of times)
 
         unreliable_step_passed_calls = 0
 
-        @step(u'{word:w} unreliable step fails sometimes')
+        @step('{word:w} unreliable step fails sometimes')
         def step_unreliable_step_fails_sometimes(context, word):
             global unreliable_step_passed_calls
             userdata = context.config.userdata

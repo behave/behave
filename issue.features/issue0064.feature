@@ -16,11 +16,11 @@ Feature: Issue #64 Exit status not set to 1 even there are failures in certain c
       """
       from behave import given
 
-      @given(u'passing')
+      @given('passing')
       def step(context):
           pass
 
-      @given(u'failing')
+      @given('failing')
       def step(context):
           assert False, "failing"
       """

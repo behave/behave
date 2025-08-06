@@ -11,11 +11,11 @@ Feature: Duplicated Step Definitions
       """
       from behave import given, when, then
 
-      @given(u'I call Alice')
+      @given('I call Alice')
       def step(context):
           pass
 
-      @given(u'I call Alice')
+      @given('I call Alice')
       def step(context):
           pass
       """

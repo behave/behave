@@ -17,7 +17,7 @@ Feature: Issue #111: Comment following @wip tag results in scenario being ignore
         """
         from behave import step
 
-        @step(u'a step passes')
+        @step('a step passes')
         def step_passes(context):
             pass
         """

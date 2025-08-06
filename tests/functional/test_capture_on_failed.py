@@ -84,7 +84,7 @@ class TestCaptureOnStepsRun(object):
 
     def test_captured_with_passing_steps(self):
         require_store_captured_on_success_is_false()
-        scenario_text = u"""
+        scenario_text = """
             Scenario: S1
               Given step1 passes with output
               When step2 passes with output
@@ -107,16 +107,16 @@ class TestCaptureOnStepsRun(object):
         print_scenario_captured_output(scenario)
 
         # -- THEN: I check the captured output
-        assert step1_output == u""
-        assert step2_output == u""
-        assert scenario_output == u""
-        # NOT: expected = u"CALLED: step1\nCALLED: step2\n"
+        assert step1_output == ""
+        assert step2_output == ""
+        assert scenario_output == ""
+        # NOT: expected = "CALLED: step1\nCALLED: step2\n"
 
 
     @pytest.mark.parametrize("failed_status", [Status.error, Status.failed])
     def test_failed_step_causes_remaining_steps_to_be_skipped(self, failed_status):
         require_store_captured_on_success_is_false()
-        scenario_text = u"""
+        scenario_text = """
             Scenario: Fails in step2
               Given step1 passes with output
               When step2 fails with {failed_status.name}
@@ -139,12 +139,12 @@ class TestCaptureOnStepsRun(object):
         step3_captured = scenario.steps[2].captured
         step2 = scenario.steps[1]
 
-        scenario_expected = u"""
+        scenario_expected = """
 CAPTURED STDOUT: scenario
 CALLED: step1
 BAD_CALLED: step2
 """.strip()
-        step2_expected = u"""
+        step2_expected = """
 CAPTURED STDOUT: step
 BAD_CALLED: step2
 
@@ -155,9 +155,9 @@ ERROR: SomeError: OOPS, FAILED in step2
             scenario_expected = scenario_expected.replace("ERROR: SomeError:", "ASSERT FAILED:")
             step2_expected = step2_expected.replace("ERROR: SomeError:", "ASSERT FAILED:")
 
-        assert step1_captured.stdout == u""  # -- GOOD_STEP: NO_OUTPUT
+        assert step1_captured.stdout == ""  # -- GOOD_STEP: NO_OUTPUT
         assert step2_expected in step2_captured.make_simple_report()
-        assert step3_captured.stdout == u""  # -- SKIPPED
+        assert step3_captured.stdout == ""  # -- SKIPPED
         assert scenario.captured.make_simple_report() == scenario_expected
         assert "OOPS, FAILED in step2" in step2.error_message
 
@@ -166,7 +166,7 @@ class TestCaptureOnScenarioRun(object):
 
     def test_captured__good_steps_hooks_and_tags(self):
         require_store_captured_on_success_is_false()
-        scenario_text = u"""
+        scenario_text = """
             @good_fixture.one
             @good_fixture.two
             Scenario: Good
@@ -191,12 +191,12 @@ class TestCaptureOnScenarioRun(object):
 
         # -- THEN: I check the captured outputs
         scenario_output = scenario.captured.make_simple_report()
-        assert scenario_output == u""
-        assert scenario.steps[0].captured.output == u""
+        assert scenario_output == ""
+        assert scenario.steps[0].captured.output == ""
 
     def test_captured__good_hooks_tags_with_bad_step(self):
         require_store_captured_on_success_is_false()
-        scenario_text = u"""
+        scenario_text = """
             @good_fixture.one
             @good_fixture.two
             Scenario: Bad Step
@@ -225,26 +225,26 @@ class TestCaptureOnScenarioRun(object):
         step1_captured = scenario.steps[0].captured
         step2_captured = scenario.steps[1].captured
         step3_captured = scenario.steps[2].captured
-        scenario_expected = u"""
+        scenario_expected = """
 CAPTURED STDOUT: scenario
 CALLED: step1
 BAD_CALLED: step2
 """.strip()
-        step2_expected = u"""
+        step2_expected = """
 CAPTURED STDOUT: step
 BAD_CALLED: step2
 
 CAPTURED STDERR: step
 ASSERT FAILED: OOPS, FAILED in step2
 """.strip()
-        assert step1_captured.make_simple_report() == u""
+        assert step1_captured.make_simple_report() == ""
         assert step2_captured.make_simple_report() == step2_expected
-        assert step3_captured.make_simple_report() == u""
+        assert step3_captured.make_simple_report() == ""
         assert scenario.captured.make_simple_report() == scenario_expected
 
     def test_captured__bad_before_hook_and_good_steps(self):
         require_store_captured_on_success_is_false()
-        scenario_text = u"""
+        scenario_text = """
             Scenario: Bad before-hook
               Given step1 passes with output
         """
@@ -263,14 +263,14 @@ ASSERT FAILED: OOPS, FAILED in step2
         assert run_scenario_failed is True
 
         # -- THEN: I check the captured output
-        scenario_expected = u"""
+        scenario_expected = """
 CAPTURED STDOUT: before_scenario
 BAD-HOOK: Bad before-hook -- before_scenario
 HOOK-ERROR in before_scenario: AssertionError: OOPS, FAILED in Bad before-hook
 """.strip()
 
-        marker1 = u"HOOK-ERROR in before_scenario"
-        marker2 = u"AssertionError: OOPS, FAILED in Bad before-hook"
+        marker1 = "HOOK-ERROR in before_scenario"
+        marker2 = "AssertionError: OOPS, FAILED in Bad before-hook"
         scenario_output = scenario.captured.make_simple_report()
         assert marker1 in scenario_output
         assert marker2 in scenario_output
@@ -278,7 +278,7 @@ HOOK-ERROR in before_scenario: AssertionError: OOPS, FAILED in Bad before-hook
 
     def test_captured__bad_after_hook_and_good_steps(self):
         require_store_captured_on_success_is_false()
-        scenario_text = u"""
+        scenario_text = """
             Scenario: Bad after-hook
               Given step1 passes with output
         """
@@ -297,7 +297,7 @@ HOOK-ERROR in before_scenario: AssertionError: OOPS, FAILED in Bad before-hook
         assert run_scenario_failed is True
 
         # -- THEN: I check the captured output
-        scenario_expected = u"""
+        scenario_expected = """
 CAPTURED STDOUT: after_scenario
 BAD-HOOK: Bad after-hook -- after_scenario
 HOOK-ERROR in after_scenario: SomeError: OOPS, ERROR in Bad after-hook
@@ -305,12 +305,12 @@ HOOK-ERROR in after_scenario: SomeError: OOPS, ERROR in Bad after-hook
 CAPTURED STDOUT: scenario
 CALLED: step1
 """.strip()
-        _step1_expected = u"""
+        _step1_expected = """
 CAPTURED STDOUT: step
 CALLED: step1
 """.strip()
-        marker1 = u"HOOK-ERROR in after_scenario"
-        marker2 = u"SomeError: OOPS, ERROR in Bad after-hook"
+        marker1 = "HOOK-ERROR in after_scenario"
+        marker2 = "SomeError: OOPS, ERROR in Bad after-hook"
         scenario_output = scenario.captured.make_simple_report()
         assert marker1 in scenario_output
         assert marker2 in scenario_output
@@ -318,7 +318,7 @@ CALLED: step1
 
     def test_captured__bad_before_tag_and_good_hook_steps(self):
         require_store_captured_on_success_is_false()
-        scenario_text = u"""
+        scenario_text = """
             @good_fixture.one
             @bad_fixture_setup.two
             Scenario: Bad fixture-setup
@@ -338,15 +338,15 @@ CALLED: step1
         assert run_scenario_failed is True
 
         # -- THEN: I check the captured output
-        scenario_expected = u"""
+        scenario_expected = """
 CAPTURED STDOUT: before_tag
 FIXTURE-SETUP: good_fixture.one
 BAD_FIXTURE-SETUP: bad_fixture_setup.two
 FIXTURE-CLEANUP: bad_fixture_setup.two
 HOOK-ERROR in before_tag(tag=bad_fixture_setup.two): SomeError: OOPS, ERROR in bad_fixture_setup.two
 """.strip()
-        marker1 = u"HOOK-ERROR in before_tag(tag=bad_fixture_setup.two)"
-        marker2 = u"SomeError: OOPS, ERROR in bad_fixture_setup.two"
+        marker1 = "HOOK-ERROR in before_tag(tag=bad_fixture_setup.two)"
+        marker2 = "SomeError: OOPS, ERROR in bad_fixture_setup.two"
         scenario_output = scenario.captured.make_simple_report()
         assert marker1 in scenario_output
         assert marker2 in scenario_output
@@ -354,7 +354,7 @@ HOOK-ERROR in before_tag(tag=bad_fixture_setup.two): SomeError: OOPS, ERROR in b
 
     def test_captured__bad_hook_and_cleanup(self):
         require_store_captured_on_success_is_false()
-        scenario_text = u"""
+        scenario_text = """
             @bad_fixture_cleanup.two
             @bad_after_tag.three
             Scenario: Bad after-tag
@@ -377,7 +377,7 @@ HOOK-ERROR in before_tag(tag=bad_fixture_setup.two): SomeError: OOPS, ERROR in b
         assert run_scenario_failed is True
 
         # -- THEN: I check the captured output
-        scenario_expected_1 = u"""
+        scenario_expected_1 = """
 CAPTURED STDOUT: after_tag
 BAD-HOOK: tag=bad_after_tag.three
 HOOK-ERROR in after_tag(tag=bad_after_tag.three): SomeError: OOPS, ERROR in bad_after_tag.three
@@ -387,15 +387,15 @@ BAD_FIXTURE-CLEANUP: bad_fixture_cleanup.two
 CLEANUP-ERROR in cleanup_fixture: SomeError: OOPS, ERROR in bad_fixture_cleanup.two
 Traceback (most recent call last):
 """.strip()
-        scenario_expected_2 = u"""
+        scenario_expected_2 = """
   raise SomeError("OOPS, ERROR in {}".format(name))
 tests.functional.error.SomeError: OOPS, ERROR in bad_fixture_cleanup.two
 ----
 CAPTURED STDOUT: scenario
 CALLED: step1
 """.strip()
-        marker1 = u"CLEANUP-ERROR in cleanup_fixture:"
-        marker2 = u"SomeError: OOPS, ERROR in bad_fixture_cleanup.two"
+        marker1 = "CLEANUP-ERROR in cleanup_fixture:"
+        marker2 = "SomeError: OOPS, ERROR in bad_fixture_cleanup.two"
         scenario_output = scenario.captured.make_simple_report()
         assert marker1 in scenario_output
         assert marker2 in scenario_output
@@ -404,7 +404,7 @@ CALLED: step1
 
     def test_captured__bad_cleanup_and_good_hook_steps(self):
         require_store_captured_on_success_is_false()
-        scenario_text = u"""
+        scenario_text = """
             @good_fixture.one
             @bad_fixture_cleanup.two
             Scenario: Bad fixture-cleanup
@@ -425,13 +425,13 @@ CALLED: step1
         assert run_scenario_failed is True
 
         # -- THEN: I check the captured output
-        scenario_expected_1 = u"""
+        scenario_expected_1 = """
 CAPTURED STDOUT: scenario.cleanup
 BAD_FIXTURE-CLEANUP: bad_fixture_cleanup.two
 CLEANUP-ERROR in cleanup_fixture: SomeError: OOPS, ERROR in bad_fixture_cleanup.two
 Traceback (most recent call last):
 """.strip()
-        scenario_expected_2 = u"""
+        scenario_expected_2 = """
   raise SomeError("OOPS, ERROR in {}".format(name))
 tests.functional.error.SomeError: OOPS, ERROR in bad_fixture_cleanup.two
 FIXTURE-CLEANUP: good_fixture.one
@@ -439,8 +439,8 @@ FIXTURE-CLEANUP: good_fixture.one
 CAPTURED STDOUT: scenario
 CALLED: step1
 """.strip()
-        marker1 = u"CLEANUP-ERROR in cleanup_fixture:"
-        marker2 = u"SomeError: OOPS, ERROR in bad_fixture_cleanup.two"
+        marker1 = "CLEANUP-ERROR in cleanup_fixture:"
+        marker2 = "SomeError: OOPS, ERROR in bad_fixture_cleanup.two"
         scenario_output = scenario.captured.make_simple_report()
         assert marker1 in scenario_output
         assert marker2 in scenario_output
@@ -452,7 +452,7 @@ class TestCaptureOnRuleRun(object):
 
     def test_captured__good_hooks_tags_steps(self):
         require_store_captured_on_success_is_false()
-        rule_text = u"""
+        rule_text = """
             @good_fixture.one
             @good_fixture.two
             Rule: Good
@@ -479,11 +479,11 @@ class TestCaptureOnRuleRun(object):
         assert run_rule_failed is False
 
         # -- THEN: I check the captured output
-        assert rule.captured.make_simple_report() == u""
+        assert rule.captured.make_simple_report() == ""
 
     def test_captured__bad_cleanup_and_good_hooks_steps(self):
         require_store_captured_on_success_is_false()
-        rule_text = u"""
+        rule_text = """
             @good_fixture.one
             @bad_fixture_cleanup.two
             @good_fixture.three
@@ -505,21 +505,21 @@ class TestCaptureOnRuleRun(object):
         assert scenario.status == Status.passed
         assert run_rule_failed is True
 
-        rule_expected_1 = u"""
+        rule_expected_1 = """
 CAPTURED STDOUT: rule.cleanup
 FIXTURE-CLEANUP: good_fixture.three
 BAD_FIXTURE-CLEANUP: bad_fixture_cleanup.two
 CLEANUP-ERROR in cleanup_fixture: SomeError: OOPS, ERROR in bad_fixture_cleanup.two
 Traceback (most recent call last):
 """.strip()
-        rule_expected_2 = u"""
+        rule_expected_2 = """
   raise SomeError("OOPS, ERROR in {}".format(name))
 tests.functional.error.SomeError: OOPS, ERROR in bad_fixture_cleanup.two
 FIXTURE-CLEANUP: good_fixture.one
 """.strip()
         rule_output = rule.captured.make_simple_report()
-        marker1 = u"CLEANUP-ERROR in cleanup_fixture"
-        marker2 = u"SomeError: OOPS, ERROR in bad_fixture_cleanup.two"
+        marker1 = "CLEANUP-ERROR in cleanup_fixture"
+        marker2 = "SomeError: OOPS, ERROR in bad_fixture_cleanup.two"
         assert marker1 in rule_output
         assert marker2 in rule_output
         assert rule_output.startswith(rule_expected_1)
@@ -527,7 +527,7 @@ FIXTURE-CLEANUP: good_fixture.one
 
     def test_captured__bad_after_tag_and_good_hooks_steps(self):
         require_store_captured_on_success_is_false()
-        rule_text = u"""
+        rule_text = """
             @good_fixture.one
             @bad_after_tag.two
             Rule: Bad after-tag
@@ -552,21 +552,21 @@ FIXTURE-CLEANUP: good_fixture.one
         assert run_rule_failed is True
 
         # -- THEN: I check the captured output
-        rule_expected = u"""
+        rule_expected = """
 CAPTURED STDOUT: after_tag
 BAD-HOOK: tag=bad_after_tag.two
 HOOK-ERROR in after_tag(tag=bad_after_tag.two): SomeError: OOPS, ERROR in bad_after_tag.two
 """.strip()
         rule_output = rule.captured.make_simple_report()
-        marker1 = u"HOOK-ERROR in after_tag(tag=bad_after_tag.two):"
-        marker2 = u"SomeError: OOPS, ERROR in bad_after_tag.two"
+        marker1 = "HOOK-ERROR in after_tag(tag=bad_after_tag.two):"
+        marker2 = "SomeError: OOPS, ERROR in bad_after_tag.two"
         assert marker1 in rule_output
         assert marker2 in rule_output
         assert rule_output == rule_expected
 
     def test_captured__bad_cleanup_and_after_tag(self):
         require_store_captured_on_success_is_false()
-        rule_text = u"""
+        rule_text = """
             @bad_after_tag.one
             @bad_fixture_cleanup.two
             Rule: Bad after-tag
@@ -588,7 +588,7 @@ HOOK-ERROR in after_tag(tag=bad_after_tag.two): SomeError: OOPS, ERROR in bad_af
         assert scenario.status == Status.passed
         assert run_rule_failed is True
 
-        rule_expected_1 = u"""
+        rule_expected_1 = """
 CAPTURED STDOUT: after_tag
 BAD-HOOK: tag=bad_after_tag.one
 HOOK-ERROR in after_tag(tag=bad_after_tag.one): SomeError: OOPS, ERROR in bad_after_tag.one
@@ -598,16 +598,16 @@ BAD_FIXTURE-CLEANUP: bad_fixture_cleanup.two
 CLEANUP-ERROR in cleanup_fixture: SomeError: OOPS, ERROR in bad_fixture_cleanup.two
 Traceback (most recent call last):
 """.strip()
-        rule_expected_2 = u"""
+        rule_expected_2 = """
   raise SomeError("OOPS, ERROR in {}".format(name))
 tests.functional.error.SomeError: OOPS, ERROR in bad_fixture_cleanup.two
 """.strip()
 
         rule_output = rule.captured.make_simple_report()
-        marker1 = u"HOOK-ERROR in after_tag(tag=bad_after_tag.one):"
-        marker2 = u"SomeError: OOPS, ERROR in bad_after_tag.one"
-        marker3 = u"CLEANUP-ERROR in cleanup_fixture:"
-        marker4 = u"SomeError: OOPS, ERROR in bad_fixture_cleanup.two"
+        marker1 = "HOOK-ERROR in after_tag(tag=bad_after_tag.one):"
+        marker2 = "SomeError: OOPS, ERROR in bad_after_tag.one"
+        marker3 = "CLEANUP-ERROR in cleanup_fixture:"
+        marker4 = "SomeError: OOPS, ERROR in bad_fixture_cleanup.two"
         assert marker1 in rule_output
         assert marker2 in rule_output
         assert marker3 in rule_output
@@ -620,7 +620,7 @@ class TestCaptureOnFeatureRun(object):
 
     def test_captured__good_hooks_tags_steps(self):
         require_store_captured_on_success_is_false()
-        feature_text = u"""
+        feature_text = """
             @good_fixture.one
             @good_fixture.two
             Feature: Good
@@ -645,11 +645,11 @@ class TestCaptureOnFeatureRun(object):
         assert run_feature_failed is False
 
         # -- USING: STORE_CAPTURE_ON_SUCCESS=false -> NO_OUTPUT
-        assert feature.captured.make_simple_report() == u""
+        assert feature.captured.make_simple_report() == ""
 
     def test_captured__bad_cleanup_and_good_hooks_steps(self):
         require_store_captured_on_success_is_false()
-        feature_text = u"""
+        feature_text = """
             @good_fixture.one
             @bad_fixture_cleanup.two
             @good_fixture.three
@@ -671,21 +671,21 @@ class TestCaptureOnFeatureRun(object):
         assert scenario.status == Status.passed
         assert run_feature_failed is True
 
-        feature_expected_1 = u"""
+        feature_expected_1 = """
 CAPTURED STDOUT: feature.cleanup
 FIXTURE-CLEANUP: good_fixture.three
 BAD_FIXTURE-CLEANUP: bad_fixture_cleanup.two
 CLEANUP-ERROR in cleanup_fixture: SomeError: OOPS, ERROR in bad_fixture_cleanup.two
 Traceback (most recent call last):
 """.strip()
-        feature_expected_2 = u"""
+        feature_expected_2 = """
   raise SomeError("OOPS, ERROR in {}".format(name))
 tests.functional.error.SomeError: OOPS, ERROR in bad_fixture_cleanup.two
 FIXTURE-CLEANUP: good_fixture.one
 """.strip()
         feature_output = feature.captured.make_simple_report()
-        marker1 = u"CLEANUP-ERROR in cleanup_fixture"
-        marker2 = u"SomeError: OOPS, ERROR in bad_fixture_cleanup.two"
+        marker1 = "CLEANUP-ERROR in cleanup_fixture"
+        marker2 = "SomeError: OOPS, ERROR in bad_fixture_cleanup.two"
         assert marker1 in feature_output
         assert marker2 in feature_output
         assert feature_output.startswith(feature_expected_1)
@@ -693,7 +693,7 @@ FIXTURE-CLEANUP: good_fixture.one
 
     def test_captured__bad_after_tag_and_good_hooks_steps(self):
         require_store_captured_on_success_is_false()
-        feature_text = u"""
+        feature_text = """
             @good_fixture.one
             @bad_after_tag.two
             Feature: Bad after-tag
@@ -718,21 +718,21 @@ FIXTURE-CLEANUP: good_fixture.one
         assert run_feature_failed is True
 
         # -- THEN: I check the captured output
-        feature_expected = u"""
+        feature_expected = """
 CAPTURED STDOUT: after_tag
 BAD-HOOK: tag=bad_after_tag.two
 HOOK-ERROR in after_tag(tag=bad_after_tag.two): SomeError: OOPS, ERROR in bad_after_tag.two
 """.strip()
         feature_output = feature.captured.make_simple_report()
-        marker1 = u"HOOK-ERROR in after_tag(tag=bad_after_tag.two):"
-        marker2 = u"SomeError: OOPS, ERROR in bad_after_tag.two"
+        marker1 = "HOOK-ERROR in after_tag(tag=bad_after_tag.two):"
+        marker2 = "SomeError: OOPS, ERROR in bad_after_tag.two"
         assert marker1 in feature_output
         assert marker2 in feature_output
         assert feature_output == feature_expected
 
     def test_captured__bad_cleanup_and_after_tag(self):
         require_store_captured_on_success_is_false()
-        feature_text = u"""
+        feature_text = """
             @bad_after_tag.one
             @bad_fixture_cleanup.two
             Feature: Bad after-tag
@@ -754,7 +754,7 @@ HOOK-ERROR in after_tag(tag=bad_after_tag.two): SomeError: OOPS, ERROR in bad_af
         assert scenario.status == Status.passed
         assert run_feature_failed is True
 
-        feature_expected_1 = u"""
+        feature_expected_1 = """
 CAPTURED STDOUT: after_tag
 BAD-HOOK: tag=bad_after_tag.one
 HOOK-ERROR in after_tag(tag=bad_after_tag.one): SomeError: OOPS, ERROR in bad_after_tag.one
@@ -764,16 +764,16 @@ BAD_FIXTURE-CLEANUP: bad_fixture_cleanup.two
 CLEANUP-ERROR in cleanup_fixture: SomeError: OOPS, ERROR in bad_fixture_cleanup.two
 Traceback (most recent call last):
 """.strip()
-        feature_expected_2 = u"""
+        feature_expected_2 = """
   raise SomeError("OOPS, ERROR in {}".format(name))
 tests.functional.error.SomeError: OOPS, ERROR in bad_fixture_cleanup.two
 """.strip()
 
         feature_output = feature.captured.make_simple_report()
-        marker1 = u"HOOK-ERROR in after_tag(tag=bad_after_tag.one):"
-        marker2 = u"SomeError: OOPS, ERROR in bad_after_tag.one"
-        marker3 = u"CLEANUP-ERROR in cleanup_fixture:"
-        marker4 = u"SomeError: OOPS, ERROR in bad_fixture_cleanup.two"
+        marker1 = "HOOK-ERROR in after_tag(tag=bad_after_tag.one):"
+        marker2 = "SomeError: OOPS, ERROR in bad_after_tag.one"
+        marker3 = "CLEANUP-ERROR in cleanup_fixture:"
+        marker4 = "SomeError: OOPS, ERROR in bad_fixture_cleanup.two"
         assert marker1 in feature_output
         assert marker2 in feature_output
         assert marker3 in feature_output

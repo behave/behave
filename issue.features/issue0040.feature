@@ -11,17 +11,17 @@ Feature: Issue #40 Test Summary Scenario/Step Counts are incorrect for Scenario 
       """
       from behave import given, when, then
 
-      @given(u'a step {outcome} with "{name}"')
+      @given('a step {outcome} with "{name}"')
       def step(context, outcome, name):
           context.name = name
           assert outcome == "passes"
 
-      @when(u'a step {outcome} with "{name}"')
+      @when('a step {outcome} with "{name}"')
       def step(context, outcome, name):
           assert outcome == "passes"
           assert context.name == name
 
-      @then(u'a step {outcome} with "{name}"')
+      @then('a step {outcome} with "{name}"')
       def step(context, outcome, name):
           assert outcome == "passes"
           assert context.name == name

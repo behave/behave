@@ -157,14 +157,14 @@ class TestFileLocation(object):
 
     def test_string_conversion(self):
         for location in self.ordered_locations2:
-            expected = u"%s:%s" % (location.filename, location.line)
+            expected = "%s:%s" % (location.filename, location.line)
             if location.line is None:
                 expected = location.filename
             assert six.text_type(location) == expected
 
     def test_repr_conversion(self):
         for location in self.ordered_locations2:
-            expected = u'<FileLocation: filename="%s", line=%s>' % \
+            expected = '<FileLocation: filename="%s", line=%s>' % \
                        (location.filename, location.line)
             actual = repr(location)
             assert actual == expected, "FAILED: %s == %s" % (actual, expected)

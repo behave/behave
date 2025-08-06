@@ -146,8 +146,8 @@ For example:
     from behave import given, when
     from behave4example.web_browser.util import take_screenshot_and_attach_to_scenario
 
-    @given(u'I open the Google webpage')
-    @when(u'I open the Google webpage')
+    @given('I open the Google webpage')
+    @when('I open the Google webpage')
     def step_open_google_webpage(ctx):
         ctx.browser.get("https://www.google.com")
         take_screenshot_and_attach_to_scenario(ctx)

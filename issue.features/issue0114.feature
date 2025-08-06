@@ -13,7 +13,7 @@ Feature: Issue #114: Avoid unnecessary blank lines w/ --no-skipped option
         """
         from behave import step
 
-        @step(u'a step passes')
+        @step('a step passes')
         def step_passes(context):
             pass
         """

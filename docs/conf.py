@@ -114,9 +114,9 @@ if USE_SPHINX_INTERNATIONAL:
 # -----------------------------------------------------------------------------
 # GENERAL CONFIGURATION
 # -----------------------------------------------------------------------------
-project = u"behave"
-authors = u"Jens Engel, Benno Rice and Richard Jones"
-copyright = u"2012-2024, %s" % authors
+project = "behave"
+authors = "Jens Engel, Benno Rice and Richard Jones"
+copyright = "2012-2024, %s" % authors
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -316,7 +316,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ("index", "behave.tex", u"behave Documentation", authors, "manual"),
+  ("index", "behave.tex", "behave Documentation", authors, "manual"),
 ]
 
 # latex_logo = None
@@ -327,7 +327,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ("index", "behave", u"behave Documentation", [authors], 1)
+    ("index", "behave", "behave Documentation", [authors], 1)
 ]
 
 
@@ -339,7 +339,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ("index", "behave", u"behave Documentation", authors,
+  ("index", "behave", "behave Documentation", authors,
    "behave", "A test runner for behave (feature tests).", "Miscellaneous"),
 ]
 
@@ -355,7 +355,7 @@ texinfo_documents = [
 # The options element is a dictionary that lets you override
 # this config per-document.
 # For example,
-# ('index', u'MyProject', u'My Project', u'Author Name',
+# ('index',MyProject',My Project',Author Name',
 #  dict(pdf_compressed = True))
 # would mean that specific document would be compressed
 # regardless of the global pdf_compressed setting.

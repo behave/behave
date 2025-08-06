@@ -15,7 +15,7 @@ Feature: Issue #125: Duplicate "Captured stdout" if substep has failed
 
       @step('substep fails with stdout "{message}"')
       def substep_fails_with_stdout(context, message):
-          context.execute_steps(u'When a step fails with stdout "%s"' % message)
+          context.execute_steps('When a step fails with stdout "%s"' % message)
       """
 
   Scenario: Subprocess call shows generated output

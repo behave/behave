@@ -21,7 +21,7 @@ Feature: Issue #631 -- Scenario Outline variables not possible in table headings
       """
       from behave import step
 
-      @step(u'{word:w} step passes')
+      @step('{word:w} step passes')
       def step_passes(context, word):
           pass
       """
@@ -29,7 +29,7 @@ Feature: Issue #631 -- Scenario Outline variables not possible in table headings
       """
       from behave import when
 
-      @when(u'the following request is sent')
+      @when('the following request is sent')
       def step_passes(context):
           assert context.table, "REQUIRE: step.table exists"
           pass

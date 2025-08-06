@@ -432,7 +432,7 @@ class TestContext_ExecuteSteps(unittest.TestCase):
         self.context.runner = runner
 
     def test_execute_steps_with_simple_steps(self):
-        doc = u"""
+        doc = """
 Given a step passes
 Then a step passes
 """.lstrip()
@@ -441,7 +441,7 @@ Then a step passes
             assert result is True
 
     def test_execute_steps_with_failing_step(self):
-        doc = u"""
+        doc = """
 Given a step passes
 When a step fails
 Then a step passes
@@ -453,7 +453,7 @@ Then a step passes
                 assert "FAILED SUB-STEP: When a step fails" in _text(e)
 
     def test_execute_steps_with_undefined_step(self):
-        doc = u"""
+        doc = """
 Given a step passes
 When a step is undefined
 Then a step passes
@@ -465,7 +465,7 @@ Then a step passes
                 assert "UNDEFINED SUB-STEP: When a step is undefined" in _text(e)
 
     def test_execute_steps_with_text(self):
-        doc = u'''
+        doc = '''
 Given a step passes
 When a step with text:
     """
@@ -481,7 +481,7 @@ Then a step passes
             assert expected_text == ExampleSteps.text
 
     def test_execute_steps_with_table(self):
-        doc = u"""
+        doc = """
 Given a step with a table:
     | Name  | Age |
     | Alice |  12 |
@@ -491,16 +491,16 @@ Then a step passes
         with patch("behave.step_registry.registry", self.step_registry):
             # pylint: disable=bad-whitespace, bad-continuation
             result = self.context.execute_steps(doc)
-            expected_table = Table([u"Name", u"Age"], rows=[
-                    [u"Alice", u"12"],
-                    [u"Bob",   u"23"],
+            expected_table = Table([ "Name", "Age"], rows=[
+                    [ "Alice", "12"],
+                    [ "Bob",   "23"],
                 ], line=0
             )
             assert result is True
             assert expected_table == ExampleSteps.table
 
     def test_context_table_is_restored_after_execute_steps_without_table(self):
-        doc = u"""
+        doc = """
 Given a step passes
 Then a step passes
 """.lstrip()
@@ -511,7 +511,7 @@ Then a step passes
             assert self.context.table == original_table
 
     def test_context_table_is_restored_after_execute_steps_with_table(self):
-        doc = u"""
+        doc = """
 Given a step with a table:
     | Name  | Age |
     | Alice |  12 |
@@ -525,7 +525,7 @@ Then a step passes
             assert self.context.table == original_table
 
     def test_context_text_is_restored_after_execute_steps_without_text(self):
-        doc = u"""
+        doc = """
 Given a step passes
 Then a step passes
 """.lstrip()
@@ -536,7 +536,7 @@ Then a step passes
             assert self.context.text == original_text
 
     def test_context_text_is_restored_after_execute_steps_with_text(self):
-        doc = u'''
+        doc = '''
 Given a step passes
 When a step with text:
     """
@@ -553,7 +553,7 @@ When a step with text:
 
     # OLD: @raises(ValueError)
     def test_execute_steps_should_fail_when_called_without_feature(self):
-        doc = u"""
+        doc = """
 Given a passes
 Then a step passes
 """.lstrip()

@@ -37,9 +37,9 @@ AssertionError
 
     traceback_file_line_texts = [
         # -- NOTE: Cannot use: ur'C:\Users ..." => \U is a unicode escape char.
-        u'File "C:\\Users\\alice\\xxx\\behave\\model.py", line 1456, in run',
-        u'File "C:\\Users\\alice\\xxx\\behave\\model.py", line 1903, in run',
-        u'File "features\\steps\\my_steps.py", line 210, in step_impl',
+         'File "C:\\Users\\alice\\xxx\\behave\\model.py", line 1456, in run',
+         'File "C:\\Users\\alice\\xxx\\behave\\model.py", line 1903, in run',
+         'File "features\\steps\\my_steps.py", line 210, in step_impl',
     ]
 
     # @require_python2

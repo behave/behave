@@ -56,8 +56,8 @@ def make_model_element(**kwargs):
     this_args = dict(
         filename="some.feature",
         line=42,
-        keyword=u"Scenario",
-        name=u"",
+        keyword= "Scenario",
+        name= "",
         tags=None,
     )
     this_args.update(kwargs)
@@ -67,8 +67,8 @@ def make_model_element(**kwargs):
 # -----------------------------------------------------------------------------
 # STEP DEFINITIONS:
 # -----------------------------------------------------------------------------
-@given(u'I setup the current values for active tags with')
-@given(u'I setup the current values for active tags with:')
+@given('I setup the current values for active tags with')
+@given('I setup the current values for active tags with:')
 def step_given_setup_the_current_values_for_active_tags_with(ctx):
     require_table(ctx, with_columns=["category", "current_value"])
 
@@ -94,8 +94,8 @@ def step_given_setup_the_current_values_for_active_tags_with(ctx):
         active_values[category] = current_value
 
 
-@then(u'the following active tag combinations are enabled')
-@then(u'the following active tag combinations are enabled:')
+@then('the following active tag combinations are enabled')
+@then('the following active tag combinations are enabled:')
 def step_then_following_active_tags_combinations_are_enabled(ctx):
     require_table(ctx, with_columns=["tags", "enabled?"])
     assert ctx.active_value_provider, "REQUIRE: active_value_provider"
@@ -129,7 +129,7 @@ def step_then_following_active_tags_combinations_are_enabled(ctx):
     assert_that(mismatched_rows, equal_to([]),
                 "No mismatched rows: {}".format(mismatched_rows))
 
-@then(u'the following active tag combinations are enabled with inherited tags:')
+@then('the following active tag combinations are enabled with inherited tags:')
 def step_then_following_active_tags_combinations_are_enabled_with_inherited_tags(ctx):
     require_table(ctx, with_columns=["tags", "inherited_tags", "enabled?"])
     assert ctx.active_value_provider, "REQUIRE: active_value_provider"
@@ -147,8 +147,8 @@ def step_then_following_active_tags_combinations_are_enabled_with_inherited_tags
         inherited_tags = normalize_tags(row["inherited_tags"].split())
         expected_enabled = parse_bool(row["enabled?"])
 
-        model_parent  = make_model_element(keyword=u"Feature", tags=inherited_tags)
-        model_element = make_model_element(keyword=u"Scenario", tags=tags,
+        model_parent  = make_model_element(keyword= "Feature", tags=inherited_tags)
+        model_element = make_model_element(keyword= "Scenario", tags=tags,
                                           parent=model_parent)
         actual_enabled = not active_tag_matcher.should_skip(model_element,
                                                             use_inherited=True)
@@ -168,11 +168,11 @@ def step_then_following_active_tags_combinations_are_enabled_with_inherited_tags
     assert_that(mismatched_rows, equal_to([]),
                 "No mismatched rows: {}".format(mismatched_rows))
 
-@step(u'unknown categories are ignored in active tags')
+@step('unknown categories are ignored in active tags')
 def step_unknown_categories_are_ignored_in_active_tags(ctx):
     ctx.active_tags_ignore_unknown_categories = True
 
 
-@step(u'unknown categories are not ignored in active tags')
+@step('unknown categories are not ignored in active tags')
 def step_unknown_categories_are_not_ignored_in_active_tags(ctx):
     ctx.active_tags_ignore_unknown_categories = False

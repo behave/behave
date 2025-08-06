@@ -115,13 +115,13 @@ class FormatterTests(unittest.TestCase):
         f.uri("<string>")
         return f
 
-    def _feature(self, keyword=u"k\xe9yword", name=u"name", tags=None,
-                 location=u"location", # pylint: disable=unused-argument
+    def _feature(self, keyword= "k\xe9yword", name= "name", tags=None,
+                 location= "location", # pylint: disable=unused-argument
                  description=None, scenarios=None, background=None):
         if tags is None:
-            tags = [u"spam", u"ham"]
+            tags = [ "spam", "ham"]
         if description is None:
-            description = [u"description"]
+            description = [ "description"]
         if scenarios is None:
             scenarios = []
         line = self.line
@@ -130,7 +130,7 @@ class FormatterTests(unittest.TestCase):
                        description=description, scenarios=scenarios,
                        background=background)
 
-    def _scenario(self, keyword=u"k\xe9yword", name=u"name", tags=None, steps=None):
+    def _scenario(self, keyword= "k\xe9yword", name= "name", tags=None, steps=None):
         if tags is None:
             tags = []
         if steps is None:
@@ -139,7 +139,7 @@ class FormatterTests(unittest.TestCase):
         tags = [Tag(name, line) for name in tags]
         return Scenario("<string>", line, keyword, name, tags=tags, steps=steps)
 
-    def _step(self, keyword=u"k\xe9yword", step_type="given", name=u"name",
+    def _step(self, keyword= "k\xe9yword", step_type="given", name= "name",
               text=None, table=None):
         line = self.line
         return Step("<string>", line, keyword, step_type, name, text=text,
@@ -197,7 +197,7 @@ class TestTagsCount(FormatterTests):
     def test_tag_counts(self):
         p = self._formatter(_tf(), self.config)
 
-        s = self._scenario(tags=[u"ham", u"foo"])
+        s = self._scenario(tags=[ "ham", "foo"])
         f = self._feature(scenarios=[s])  # feature.tags= ham, spam
         p.feature(f)
         p.scenario(s)

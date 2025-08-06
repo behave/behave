@@ -503,7 +503,7 @@ class SummaryCounts(object):
                 # -- SHOW ONLY: NON-ZERO parts (information compression).
                 text = schema.format(name=name, value=value)
                 parts.append(text)
-        line_seperator = u"\n%s" % self.PREFIX
+        line_seperator = "\n%s" % self.PREFIX
         return line_seperator.join(parts)
 
     def __repr__(self):

@@ -37,9 +37,9 @@ Feature: Issue #510 -- JUnit XML output is not well-formed (in some cases)
       from __future__ import print_function
       from behave import step
 
-      @step(u'we print ^D')
+      @step('we print ^D')
       def step_print_special_char_control_d(context):
-          print(u"\004")
+          print("\004")
       """
     And a file named "features/special_char.feature" with:
       """
@@ -71,13 +71,13 @@ Feature: Issue #510 -- JUnit XML output is not well-formed (in some cases)
       from behave import step
       import logging
 
-      @step(u'we print ]]>')
+      @step('we print ]]>')
       def step_cdata_end(context):
-          print(u"]]>")
+          print("]]>")
 
-      @step(u'we log ]]>')
+      @step('we log ]]>')
       def step_log_cdata_end(context):
-          logging.warning(u"]]>")
+          logging.warning("]]>")
       """
     And a file named "features/cdata_end.feature" with:
       """

@@ -25,11 +25,11 @@ Feature: Issue #1158 -- ParseMatcher failing on steps with type annotations
       register_type(CommunicationState=parse_communication_state)
       use_step_matcher("parse")
 
-      @then(u'the SCADA reports that the supervisory controls communication status is {com_state:CommunicationState}')
+      @then('the SCADA reports that the supervisory controls communication status is {com_state:CommunicationState}')
       def step1_reports_communication_status(ctx, com_state):
           print("STEP_1: com_state={com_state}".format(com_state=com_state))
 
-      @then(u'the SCADA finally reports that the supervisory controls communication status is {com_state:CommunicationState}')
+      @then('the SCADA finally reports that the supervisory controls communication status is {com_state:CommunicationState}')
       def step2_finally_reports_communication_status(ctx, com_state):
           print("STEP_2: com_state={com_state}".format(com_state=com_state))
       """

@@ -119,11 +119,11 @@ class PrettyFormatter(Formatter):
         # MAYBE: self.print_comments(feature.comments, '')
         prefix = ""
         self.print_tags(feature.tags, prefix)
-        self.stream.write(u"%s: %s" % (feature.keyword, feature.name))
+        self.stream.write("%s: %s" % (feature.keyword, feature.name))
         if self.show_source:
             # pylint: disable=redefined-builtin
             this_format = self.format("comments")
-            self.stream.write(this_format.text(u" # %s" % feature.location))
+            self.stream.write(this_format.text(" # %s" % feature.location))
         self.stream.write("\n")
         self.print_description(feature.description, "  ", False)
         self.stream.flush()
@@ -181,7 +181,7 @@ class PrettyFormatter(Formatter):
         #       Step.status is not used in monochrome mode.
 
         if step.error_message:
-            self.stream.write(indent(step.error_message.strip(), u"      "))
+            self.stream.write(indent(step.error_message.strip(), "      "))
             self.stream.write("\n\n")
         self.stream.flush()
 
@@ -202,7 +202,7 @@ class PrettyFormatter(Formatter):
 
         output = self.current_scenario.captured.make_report()
         self.stream.write(output)
-        self.stream.write(u" CAPTURED_SCENARIO_OUTPUT_END ----\n")
+        self.stream.write(" CAPTURED_SCENARIO_OUTPUT_END ----\n")
 
     def _finish_current_scenario(self):
         if self.current_scenario is None:
@@ -253,9 +253,9 @@ class PrettyFormatter(Formatter):
         return this_format
 
     def table(self, table):
-        prefix = u"      "
+        prefix = "      "
         if self.current_rule:
-            prefix += u"  "
+            prefix += "  "
 
         cell_lengths = []
         all_rows = [table.headings] + table.rows
@@ -270,7 +270,7 @@ class PrettyFormatter(Formatter):
         for i, row in enumerate(all_rows):
             #for comment in row.comments:
             #    self.stream.write("      %s\n" % comment.value)
-            self.stream.write(u"%s|" % prefix)
+            self.stream.write("%s|" % prefix)
             for j, (cell, max_length) in enumerate(zip(row, max_lengths)):
                 self.stream.write(" ")
                 self.stream.write(self.color(cell, None, j))
@@ -282,13 +282,13 @@ class PrettyFormatter(Formatter):
     def doc_string(self, doc_string):
         #self.stream.write('      """' + doc_string.content_type + '\n')
         doc_string = _text(doc_string)
-        prefix = u"      "
+        prefix = "      "
         if self.current_rule:
-            prefix += u"  "
-        self.stream.write(u'%s"""\n' % prefix)
+            prefix += "  "
+        self.stream.write('%s"""\n' % prefix)
         doc_string = escape_triple_quotes(indent(doc_string, prefix))
         self.stream.write(doc_string)
-        self.stream.write(u'\n%s"""\n' % prefix)
+        self.stream.write('\n%s"""\n' % prefix)
         self.stream.flush()
 
     # def doc_string(self, doc_string):
@@ -312,15 +312,15 @@ class PrettyFormatter(Formatter):
 
     def indented_text(self, text, proceed):
         if not text:
-            return u""
+            return ""
 
         if proceed:
             indentation = self.indentations.pop(0)
         else:
             indentation = self.indentations[0]
 
-        indentation = u" " * indentation
-        return u"%s # %s" % (indentation, text)
+        indentation = " " * indentation
+        return "%s # %s" % (indentation, text)
 
     def calculate_location_indentations(self):
         line_widths = []
@@ -334,23 +334,23 @@ class PrettyFormatter(Formatter):
         if self.statement is None:
             return
 
-        prefix = u"  "
+        prefix = "  "
         if self.current_rule and self.statement.type != "rule":
             prefix += prefix
 
         self.calculate_location_indentations()
-        self.stream.write(u"\n")
+        self.stream.write("\n")
         #self.print_comments(self.statement.comments, "  ")
         if hasattr(self.statement, "tags"):
             self.print_tags(self.statement.tags, prefix)
-        self.stream.write(u"%s%s: %s " % (prefix, self.statement.keyword,
+        self.stream.write("%s%s: %s " % (prefix, self.statement.keyword,
                                           self.statement.name))
 
         location = self.indented_text(six.text_type(self.statement.location), True)
         if self.show_source:
             self.stream.write(self.format("comments").text(location))
         self.stream.write("\n")
-        #self.print_description(self.statement.description, u"    ")
+        #self.print_description(self.statement.description, "    ")
         self.statement = None
 
     def print_steps(self):
@@ -368,9 +368,9 @@ class PrettyFormatter(Formatter):
         text_format = self.format(status.name)
         arg_format = self.arg_format(status.name)
 
-        prefix = u"    "
+        prefix = "    "
         if self.current_rule:
-            prefix += u"  "
+            prefix += "  "
         #self.print_comments(step.comments, "    ")
         self.stream.write(prefix)
         self.stream.write(text_format.text(step.keyword + " "))

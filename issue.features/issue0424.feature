@@ -24,11 +24,11 @@ Feature: Issue #424 -- Unicode output problem when fails in nested steps
 
         @step('I press the big red button')
         def step_press_red_button(context):
-            assert False, u"Ungültiger Wert"  # HINT: Special chars require Unicode.
+            assert False, "Ungültiger Wert"  # HINT: Special chars require Unicode.
 
         @step('I call the nested step with the "red button"')
         def step_press_red_button(context):
-            context.execute_steps(u'When I press the big red button')
+            context.execute_steps('When I press the big red button')
         """
       And a file named "behave.ini" with:
           """

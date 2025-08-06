@@ -62,7 +62,7 @@ class TestTagInheritance4Feature(object):
     ])
     def test_no_inherited_tags(self, tags, case):
         tag_line = " ".join("@%s" % tag for tag in tags)
-        text = u"""
+        text = """
             {tag_line}
             Feature: F1
             """.format(tag_line=tag_line)
@@ -74,7 +74,7 @@ class TestTagInheritance4Feature(object):
 
 class TestTagInheritance4Rule(object):
     def test_no_inherited_tags__without_feature_tags(self):
-        text = u"""
+        text = """
         Feature: F1
           @rule_tag1
           Rule: R1
@@ -87,7 +87,7 @@ class TestTagInheritance4Rule(object):
         assert_no_tags_are_inherited(this_rule)
 
     def test_inherited_tags__with_feature_tags(self):
-        text = u"""
+        text = """
         @feature_tag1 @feature_tag2
         Feature: F2
           @rule_tag1
@@ -101,7 +101,7 @@ class TestTagInheritance4Rule(object):
         assert_inherited_tags_equal_to(this_rule, expected_feature_tags)
 
     def test_duplicated_tags_are_removed_from_inherited_tags(self):
-        text = u"""
+        text = """
         @feature_tag1 @duplicated_tag
         Feature: F2
           @rule_tag1 @duplicated_tag
@@ -116,7 +116,7 @@ class TestTagInheritance4Rule(object):
 
 class TestTagInheritance4ScenarioOutline(object):
     def test_no_inherited_tags__without_feature_tags(self):
-        text = u"""
+        text = """
         Feature: F3
             @outline_tag1
             Scenario Outline: T1
@@ -128,7 +128,7 @@ class TestTagInheritance4ScenarioOutline(object):
         assert_no_tags_are_inherited(this_scenario_outline)
 
     def test_no_inherited_tags__without_feature_and_rule_tags(self):
-        text = u"""
+        text = """
         Feature: F3
           Rule: R3
             @outline_tag1
@@ -143,7 +143,7 @@ class TestTagInheritance4ScenarioOutline(object):
         assert_no_tags_are_inherited(this_scenario_outline)
 
     def test_inherited_tags__with_feature_tags(self):
-        text = u"""
+        text = """
         @feature_tag1 @feature_tag2
         Feature: F3
             @outline_tag1
@@ -157,7 +157,7 @@ class TestTagInheritance4ScenarioOutline(object):
         assert_inherited_tags_equal_to(this_scenario_outline, expected_feature_tags)
 
     def test_inherited_tags__with_rule_tags(self):
-        text = u"""
+        text = """
         Feature: F3
           @rule_tag1 @rule_tag2
           Rule: R3
@@ -174,7 +174,7 @@ class TestTagInheritance4ScenarioOutline(object):
         assert_inherited_tags_equal_to(this_scenario_outline, expected_rule_tags)
 
     def test_inherited_tags__with_feature_and_rule_tags(self):
-        text = u"""
+        text = """
         @feature_tag1
         Feature: F3
           @rule_tag1 @rule_tag2
@@ -194,7 +194,7 @@ class TestTagInheritance4ScenarioOutline(object):
         assert_inherited_tags_equal_to(this_scenario_outline, expected_inherited_tags)
 
     def test_duplicated_tags_are_removed_from_inherited_tags(self):
-        text = u"""
+        text = """
         @feature_tag1 @duplicated_tag
         Feature: F3
           @rule_tag1 @duplicated_tag
@@ -213,7 +213,7 @@ class TestTagInheritance4ScenarioOutline(object):
 
 class TestTagInheritance4Scenario(object):
     def test_no_inherited_tags__without_feature_tags(self):
-        text = u"""
+        text = """
         Feature: F4
             @scenario_tag1
             Scenario: S4
@@ -225,7 +225,7 @@ class TestTagInheritance4Scenario(object):
         assert_no_tags_are_inherited(this_scenario)
 
     def test_no_inherited_tags__without_feature_and_rule_tags(self):
-        text = u"""
+        text = """
         Feature: F4
           Rule: R4
             @scenario_tag1
@@ -240,7 +240,7 @@ class TestTagInheritance4Scenario(object):
         assert_no_tags_are_inherited(this_scenario)
 
     def test_inherited_tags__with_feature_tags(self):
-        text = u"""
+        text = """
         @feature_tag1 @feature_tag2
         Feature: F4
             @scenario_tag1
@@ -254,7 +254,7 @@ class TestTagInheritance4Scenario(object):
         assert_inherited_tags_equal_to(this_scenario, expected_feature_tags)
 
     def test_inherited_tags__with_rule_tags(self):
-        text = u"""
+        text = """
         Feature: F3
           @rule_tag1 @rule_tag2
           Rule: R3
@@ -271,7 +271,7 @@ class TestTagInheritance4Scenario(object):
         assert_inherited_tags_equal_to(this_scenario, expected_rule_tags)
 
     def test_inherited_tags__with_feature_and_rule_tags(self):
-        text = u"""
+        text = """
         @feature_tag1
         Feature: F4
           @rule_tag1 @rule_tag2
@@ -291,7 +291,7 @@ class TestTagInheritance4Scenario(object):
         assert_inherited_tags_equal_to(this_scenario, expected_inherited_tags)
 
     def test_duplicated_tags_are_removed_from_inherited_tags(self):
-        text = u"""
+        text = """
         @feature_tag1 @duplicated_tag
         Feature: F4
           @rule_tag1 @duplicated_tag
@@ -319,7 +319,7 @@ class TestTagInheritance4ScenarioFromTemplate(object):
     """
 
     def test_no_inherited_tags__without_feature_tags(self):
-        text = u"""
+        text = """
         Feature: F5
             @template_tag1
             Scenario Outline: T5
@@ -339,7 +339,7 @@ class TestTagInheritance4ScenarioFromTemplate(object):
         assert_no_tags_are_inherited(this_scenario)
 
     def test_no_inherited_tags__without_feature_and_rule_tags(self):
-        text = u"""
+        text = """
         Feature: F5
           Rule: R5
             @template_tag1
@@ -362,7 +362,7 @@ class TestTagInheritance4ScenarioFromTemplate(object):
         assert_no_tags_are_inherited(this_scenario)
 
     def test_inherited_tags__with_feature_tags(self):
-        text = u"""
+        text = """
         @feature_tag1 @feature_tag2
         Feature: F5
             @template_tag1
@@ -382,7 +382,7 @@ class TestTagInheritance4ScenarioFromTemplate(object):
         assert_inherited_tags_equal_to(this_scenario, expected_feature_tags)
 
     def test_inherited_tags__with_rule_tags(self):
-        text = u"""
+        text = """
         Feature: F5
           @rule_tag1 @rule_tag2
           Rule: R5
@@ -406,7 +406,7 @@ class TestTagInheritance4ScenarioFromTemplate(object):
         assert_inherited_tags_equal_to(this_scenario, expected_rule_tags)
 
     def test_inherited_tags__with_feature_and_rule_tags(self):
-        text = u"""
+        text = """
         @feature_tag1
         Feature: F4
           @rule_tag1 @rule_tag2
@@ -434,7 +434,7 @@ class TestTagInheritance4ScenarioFromTemplate(object):
         assert_inherited_tags_equal_to(this_scenario, expected_inherited_tags)
 
     def test_tags_are_derived_from_template(self):
-        text = u"""
+        text = """
         Feature: F5
 
             @template_tag1 @param_name_<name>
@@ -455,7 +455,7 @@ class TestTagInheritance4ScenarioFromTemplate(object):
         assert_no_tags_are_inherited(this_scenario)
 
     def test_tags_are_derived_from_template_examples_for_table_row(self):
-        text = u"""
+        text = """
         Feature: F5
           Rule: R5
             Scenario Outline: T5
@@ -476,7 +476,7 @@ class TestTagInheritance4ScenarioFromTemplate(object):
         assert_no_tags_are_inherited(this_scenario)
 
     def test_duplicated_tags_are_removed_from_inherited_tags(self):
-        text = u"""
+        text = """
         @feature_tag1 @duplicated_tag
         Feature: F4
           @rule_tag1 @duplicated_tag

@@ -781,7 +781,7 @@ class Configuration(object):
         default_format="pretty",    # -- Used when no formatters are configured.
         default_tags="",            # -- Used when no tags are defined.
         config_tags=None,
-        scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}"
+        scenario_outline_annotation_schema="{name} -- @{row.id} {examples.name}"
     )
     cmdline_only_options = set("userdata_defines")
 
@@ -1132,7 +1132,7 @@ class Configuration(object):
         # flags = (re.UNICODE | re.LOCALE)
         # -- ENSURE: Names are all unicode/text values (for issue #606).
         names = to_texts(names)
-        pattern = u"|".join(names)
+        pattern = "|".join(names)
         return re.compile(pattern, flags=re.UNICODE)
 
     def exclude(self, filename):

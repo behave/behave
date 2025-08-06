@@ -9,7 +9,7 @@ Feature: Issue #59 Fatal error when using --format=json
       """
       from behave import given
 
-      @given(u'passing')
+      @given('passing')
       def step(context):
           pass
       """

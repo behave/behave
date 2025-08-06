@@ -22,7 +22,7 @@ def suppress_unicode_errors(stream=None, use_raise=False):
         yield
     except UnicodeError as e:
         # unicode_errors += 1
-        stream.write(u"%s while writing error message: %s\n" %
+        stream.write("%s while writing error message: %s\n" %
                      (e.__class__.__name__, e))
         if use_raise:
             raise
@@ -89,12 +89,12 @@ class PlainFormatter(Formatter):
         if tags and self.show_tags:
             indent = indent or ""
             text = " @".join(tags)
-            self.stream.write(u"%s@%s\n" % (indent, text))
+            self.stream.write("%s@%s\n" % (indent, text))
 
     def write_entity(self, entity, indent="", has_tags=True):
         if has_tags:
             self.write_tags(entity.tags, indent)
-        text = u"%s%s: %s\n" % (indent, entity.keyword, entity.name)
+        text = "%s%s: %s\n" % (indent, entity.keyword, entity.name)
         self.stream.write(text)
 
     # -- IMPLEMENT-INTERFACE FOR: Formatter
@@ -111,7 +111,7 @@ class PlainFormatter(Formatter):
         # AVOID: self.reset_steps()
         self.current_rule = rule
         indent = make_indentation(self.indent_size)
-        self.stream.write(u"\n")
+        self.stream.write("\n")
         self.write_entity(rule, indent)
 
     def background(self, background):
@@ -136,7 +136,7 @@ class PlainFormatter(Formatter):
             indent_extra = self.indent_size
 
         self.reset_steps()
-        self.stream.write(u"\n")
+        self.stream.write("\n")
         indent = make_indentation(self.indent_size + indent_extra)
         self.write_entity(scenario, indent)
 
@@ -156,9 +156,9 @@ class PlainFormatter(Formatter):
         indent = make_indentation(2 * self.indent_size + indent_extra)
         if self.show_aligned_keywords:
             # -- RIGHT-ALIGN KEYWORDS (max. keyword width: 6):
-            text = u"%s%6s %s ... " % (indent, step.keyword, step.name)
+            text = "%s%6s %s ... " % (indent, step.keyword, step.name)
         else:
-            text = u"%s%s %s ... " % (indent, step.keyword, step.name)
+            text = "%s%s %s ... " % (indent, step.keyword, step.name)
         self.stream.write(text)
 
         status_text = step.status.name
@@ -167,7 +167,7 @@ class PlainFormatter(Formatter):
 
         use_raise = self.RAISE_OUTPUT_ERRORS
         with suppress_unicode_errors(self.stream, use_raise=use_raise):
-            self.stream.write(u"%s\n" % status_text)
+            self.stream.write("%s\n" % status_text)
 
         if self.show_multiline:
             if step.text:
@@ -178,14 +178,14 @@ class PlainFormatter(Formatter):
         # -- MAYBE: SHOW ERROR after step
         if step.error_message:
             with suppress_unicode_errors(self.stream, use_raise=use_raise):
-                self.stream.write(u"%s\n" % step.error_message)
+                self.stream.write("%s\n" % step.error_message)
 
             # -- DISABLED: Use SCENARIO_CAPTURED_OUTPUT
             # if step.captured.has_output():
             #     output = step.captured.make_report()
             #     with suppress_unicode_errors(self.stream, use_raise=use_raise):
             #         self.stream.write(output)
-            #     self.stream.write(u" CAPTURED_STEP_OUTPUT_END ----\n")
+            #     self.stream.write(" CAPTURED_STEP_OUTPUT_END ----\n")
 
     def eof(self):
         self._finish_current_feature()

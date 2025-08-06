@@ -35,7 +35,7 @@ Feature: Issue #188: Better diagnostics if nested step is undefined
 
       @step('I execute nested steps with an undefined step')
       def step_passes(context):
-          context.execute_steps(u'''
+          context.execute_steps('''
             Given another step passes
             When an undefined, nested step is executed
             Then third step passes

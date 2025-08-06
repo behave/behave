@@ -16,7 +16,7 @@ Feature: StepWithCode Formatter
           """
           from behave import step
 
-          @step(u'{word:w} step passes')
+          @step('{word:w} step passes')
           def step_passes(ctx, word):
               pass
           """
@@ -44,15 +44,15 @@ Feature: StepWithCode Formatter
 
           register_type(Number=parse_number)
 
-          @given(u'I use the calculator')
+          @given('I use the calculator')
           def step_given_reset_calculator(ctx):
               ctx.calculator = Calculator()
 
-          @when(u'I add the number "{number:Number}"')
+          @when('I add the number "{number:Number}"')
           def step_when_add_number(ctx, number):
               ctx.calculator.add(number)
 
-          @then(u'the calculator shows "{expected:Number}" as result')
+          @then('the calculator shows "{expected:Number}" as result')
           def step_when_add_number(ctx, expected):
               assert_that(ctx.calculator.result).is_equal_to(expected)
           """
@@ -78,25 +78,25 @@ Feature: StepWithCode Formatter
           Scenario: C1
             Given I use the calculator
               # -- CODE: example4me/calculator_steps.py:8
-              @given(u'I use the calculator')
+              @given('I use the calculator')
               def step_given_reset_calculator(ctx):
                   ctx.calculator = Calculator()
 
             When I add the number "1"
               # -- CODE: example4me/calculator_steps.py:12
-              @when(u'I add the number "{number:Number}"')
+              @when('I add the number "{number:Number}"')
               def step_when_add_number(ctx, number):
                   ctx.calculator.add(number)
 
             And I add the number "2"
               # -- CODE: example4me/calculator_steps.py:12
-              @when(u'I add the number "{number:Number}"')
+              @when('I add the number "{number:Number}"')
               def step_when_add_number(ctx, number):
                   ctx.calculator.add(number)
 
             Then the calculator shows "3" as result
               # -- CODE: example4me/calculator_steps.py:16
-              @then(u'the calculator shows "{expected:Number}" as result')
+              @then('the calculator shows "{expected:Number}" as result')
               def step_when_add_number(ctx, expected):
                   assert_that(ctx.calculator.result).is_equal_to(expected)
         """
@@ -110,25 +110,25 @@ Feature: StepWithCode Formatter
           Scenario: C1
             Given I use the calculator  ...  passed
               # -- CODE: example4me/calculator_steps.py:8
-              @given(u'I use the calculator')
+              @given('I use the calculator')
               def step_given_reset_calculator(ctx):
                   ctx.calculator = Calculator()
 
             When I add the number "1"  ...  passed
               # -- CODE: example4me/calculator_steps.py:12
-              @when(u'I add the number "{number:Number}"')
+              @when('I add the number "{number:Number}"')
               def step_when_add_number(ctx, number):
                   ctx.calculator.add(number)
 
             And I add the number "2"  ...  passed
               # -- CODE: example4me/calculator_steps.py:12
-              @when(u'I add the number "{number:Number}"')
+              @when('I add the number "{number:Number}"')
               def step_when_add_number(ctx, number):
                   ctx.calculator.add(number)
 
             Then the calculator shows "3" as result  ...  passed
               # -- CODE: example4me/calculator_steps.py:16
-              @then(u'the calculator shows "{expected:Number}" as result')
+              @then('the calculator shows "{expected:Number}" as result')
               def step_when_add_number(ctx, expected):
                   assert_that(ctx.calculator.result).is_equal_to(expected)
         """
@@ -146,8 +146,8 @@ Feature: StepWithCode Formatter
                 self.name = name
                 self.role = role
 
-        @given(u'a company with the following persons')
-        @given(u'a company with the following persons:')
+        @given('a company with the following persons')
+        @given('a company with the following persons:')
         def step_given_company_with_persons(ctx):
             assert_that(ctx.table).is_not_none()
             company_persons = []
@@ -177,8 +177,8 @@ Feature: StepWithCode Formatter
               | Alice | CEO       |
               | Bob   | Developer |
               # -- CODE: features/steps/table_steps.py:9
-              @given(u'a company with the following persons')
-              @given(u'a company with the following persons:')
+              @given('a company with the following persons')
+              @given('a company with the following persons:')
               def step_given_company_with_persons(ctx):
                   assert_that(ctx.table).is_not_none()
                   company_persons = []
@@ -199,8 +199,8 @@ Feature: StepWithCode Formatter
         from behave import given
         from io import open
 
-        @given(u'a special file named "{filename}" with')
-        @given(u'a special file named "{filename}" with:')
+        @given('a special file named "{filename}" with')
+        @given('a special file named "{filename}" with:')
         def step_given_file_named_with_contents(ctx, filename):
             with open(filename, "w+", encoding="UTF-8") as f:
                 f.write(ctx.text)
@@ -230,8 +230,8 @@ Feature: StepWithCode Formatter
               Ipsum lorem ...
               """
               # -- CODE: features/steps/text_steps.py:4
-              @given(u'a special file named "{filename}" with')
-              @given(u'a special file named "{filename}" with:')
+              @given('a special file named "{filename}" with')
+              @given('a special file named "{filename}" with:')
               def step_given_file_named_with_contents(ctx, filename):
                   with open(filename, "w+", encoding="UTF-8") as f:
                       f.write(ctx.text)
@@ -258,19 +258,19 @@ Feature: StepWithCode Formatter
             Scenario: R1
               Given I use the calculator  ...  passed
                 # -- CODE: example4me/calculator_steps.py:8
-                @given(u'I use the calculator')
+                @given('I use the calculator')
                 def step_given_reset_calculator(ctx):
                     ctx.calculator = Calculator()
 
               When I add the number "42"  ...  passed
                 # -- CODE: example4me/calculator_steps.py:12
-                @when(u'I add the number "{number:Number}"')
+                @when('I add the number "{number:Number}"')
                 def step_when_add_number(ctx, number):
                     ctx.calculator.add(number)
 
               Then the calculator shows "42" as result  ...  passed
                 # -- CODE: example4me/calculator_steps.py:16
-                @then(u'the calculator shows "{expected:Number}" as result')
+                @then('the calculator shows "{expected:Number}" as result')
                 def step_when_add_number(ctx, expected):
                     assert_that(ctx.calculator.result).is_equal_to(expected)
         """
@@ -286,7 +286,7 @@ Feature: StepWithCode Formatter
         from behave import given, when, then
         from assertpy import assert_that
 
-        @given(u'a person named "{name}"')
+        @given('a person named "{name}"')
         def step_given_person_named(ctx, name):
             """
             __DOCSTRING_HERE: is not shown
@@ -294,7 +294,7 @@ Feature: StepWithCode Formatter
             # -- CODE: STARTS HERE.
             ctx.person_name = name
 
-        @then(u'I have met "{expected}"')
+        @then('I have met "{expected}"')
         def step_then_met_person(ctx, expected):
             """__DOCSTRING_HERE: is not shown"""
             # -- CODE: STARTS HERE.
@@ -314,13 +314,13 @@ Feature: StepWithCode Formatter
           Scenario: D1
             Given a person named "Alice"  ...  passed
               # -- CODE: features/steps/documented_steps.py:4
-              @given(u'a person named "{name}"')
+              @given('a person named "{name}"')
               def step_given_person_named(ctx, name):
                   # -- CODE: STARTS HERE.
                   ctx.person_name = name
             Then I have met "Alice"  ...  passed
               # -- CODE: features/steps/documented_steps.py:12
-              @then(u'I have met "{expected}"')
+              @then('I have met "{expected}"')
               def step_then_met_person(ctx, expected):
                   # -- CODE: STARTS HERE.
                   assert_that(ctx.person_name).is_equal_to(expected)
@@ -335,7 +335,7 @@ Feature: StepWithCode Formatter
           """
           from behave import step
 
-          @step(u'{word:w} step passes')
+          @step('{word:w} step passes')
           def step_passes(ctx, word):
               pass
           """
@@ -353,7 +353,7 @@ Feature: StepWithCode Formatter
           from behave import step
           from assertpy import assert_that
 
-          @step(u'{word:w} step fails')
+          @step('{word:w} step fails')
           def step_fails(ctx, word):
               assert_that(word).is_equal_to("__ALWAYS_FAILS__")
           """
@@ -378,13 +378,13 @@ Feature: StepWithCode Formatter
           Scenario: F1 with failing step
             Given a step passes  ...  passed
               # -- CODE: features/steps/passing_steps.py:3
-              @step(u'{word:w} step passes')
+              @step('{word:w} step passes')
               def step_passes(ctx, word):
                   pass
 
             When another step fails  ...  failed
               # -- CODE: features/steps/failing_steps.py:4
-              @step(u'{word:w} step fails')
+              @step('{word:w} step fails')
               def step_fails(ctx, word):
                   assert_that(word).is_equal_to("__ALWAYS_FAILS__")
 
@@ -417,7 +417,7 @@ Feature: StepWithCode Formatter
           Scenario: With undefined step
             Given a step passes  ...  passed
               # -- CODE: features/steps/passing_steps.py:3
-              @step(u'{word:w} step passes')
+              @step('{word:w} step passes')
               def step_passes(ctx, word):
                   pass
 

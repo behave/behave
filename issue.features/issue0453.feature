@@ -7,7 +7,7 @@ Feature: Issue #453 -- Unicode output problem when Exception is raised in step
   .
   . Result (of failed step):
   .     File "features/steps/steps.py", line 8, in foo
-  .        raise Exception(u"Ð¿Ð¾ Ñ�Ñ�Ñ�Ñ�ÐºÐ¸") <-- This is not
+  .        raise Exception("Ð¿Ð¾ Ñ�Ñ�Ñ�Ñ�ÐºÐ¸") <-- This is not
   .   Exception: по русски <-- This is OK
 
 
@@ -18,9 +18,9 @@ Feature: Issue #453 -- Unicode output problem when Exception is raised in step
         # -*- coding: UTF-8 -*-
         from behave import step
 
-        @step(u'an exception with special chars is raised')
+        @step('an exception with special chars is raised')
         def step_exception_raised(context):
-            raise Exception(u"по русски")
+            raise Exception("по русски")
         """
       And a file named "features/syndrome.feature" with:
         """
@@ -37,6 +37,6 @@ Feature: Issue #453 -- Unicode output problem when Exception is raised in step
       And the command output should contain:
         """
           File "features/steps/problematic_steps.py", line 6, in step_exception_raised
-            raise Exception(u"по русски")
+            raise Exception("по русски")
         Exception: по русски
         """

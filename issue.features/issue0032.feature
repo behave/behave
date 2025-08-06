@@ -7,7 +7,7 @@ Feature: Issue #32 "behave --junit-directory=xxx" fails if more than 1 level mus
       """
       from behave import given, when, then
 
-      @given(u'passing')
+      @given('passing')
       def step(context):
           pass
       """

@@ -18,11 +18,11 @@ Feature: Issue #1252 -- Wrong encoding of Unicode text (czech diacritics) in htm
         """
         from behave import when, then
 
-        @when(u'zadám větu "{veta}"')
+        @when('zadám větu "{veta}"')
         def step_impl(ctx, veta):
             pass
 
-        @then(u'je věta zapsána v reportu správně')
+        @then('je věta zapsána v reportu správně')
         def step_impl(ctx):
             raise Exception("Diakritika v reportu není správně zapsána.")
         """
@@ -92,12 +92,12 @@ Feature: Issue #1252 -- Wrong encoding of Unicode text (czech diacritics) in htm
         """
         from behave import when, then
 
-        @when(u'ich den Satz "{sentence}" eingebe')
+        @when('ich den Satz "{sentence}" eingebe')
         def step_when_i_enter_the_sentence(ctx, sentence):
             ctx.sentence = sentence
 
         # is the sentence written correctly in the report
-        @then(u'ist der Satz im Report korrect geschrieben (mit Sonderzeichen: "äöüß")')
+        @then('ist der Satz im Report korrect geschrieben (mit Sonderzeichen: "äöüß")')
         def step_then_sentence_is_written_correctly_in_report(ctx):
             raise Exception("Diacritics Problem: {};".format(ctx.sentence))
             # The diacritics in the report are not written correctly.

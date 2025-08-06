@@ -15,7 +15,7 @@ Feature: Assert with non-ASCII char causes UnicodeDecodeError
       """
       from behave import step
 
-      @step(u'a step fails with non-ASCII character "{char_code:d}"')
+      @step('a step fails with non-ASCII character "{char_code:d}"')
       def step_fails_with_non_ascii_text(context, char_code):
           assert 0 <= char_code <= 255, "RANGE-ERROR: char_code=%s" % char_code
           assert False, "FAIL:"+ chr(char_code) +";"

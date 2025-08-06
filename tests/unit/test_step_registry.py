@@ -16,7 +16,7 @@ class TestStepRegistry(object):
         # -- MONKEYPATCH-PROBLEM:
         with patch("behave.step_registry.make_step_matcher") as make_step_matcher:
             func = lambda x: -x
-            pattern = u"just a test string"
+            pattern = "just a test string"
             magic_object = Mock()
             make_step_matcher.return_value = magic_object
 

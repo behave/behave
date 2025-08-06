@@ -62,7 +62,7 @@ Feature: Issue #1116 -- behave erroring in pretty format in pyproject.toml
     When I run "behave features/simple.feature"
     Then it should fail with:
       """
-      ConfigParamTypeError: format = u'pretty' (expected: list<unicode>, was: unicode)
+      ConfigParamTypeError: format = 'pretty' (expected: list<unicode>, was: unicode)
       """
     And the command output should not contain:
       """

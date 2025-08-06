@@ -142,7 +142,7 @@ class SphinxStepsDocumentGenerator(object):
         step_text = step_definition.pattern
         if "`" in step_text:
             step_text = step_text.replace("`", r"\`")
-        return u"%s %s" % (step_type_text, step_text)
+        return "%s %s" % (step_type_text, step_text)
 
     def ensure_destdir_exists(self):
         assert self.destdir
@@ -244,14 +244,14 @@ The following step definitions are provided here.
 
     def write_step_module_overview(self, step_definitions):
         assert self.document
-        headings = [u"Step Definition", u"Given", u"When", u"Then", u"Step"]
+        headings = ["Step Definition", "Given", "When", "Then", "Step"]
         table = Table(headings)
         step_type_cols = {
             # -- pylint: disable=bad-whitespace
-            "given": [u"  x", u"  ",  u"  ",  u"  "],
-            "when":  [u"  ",  u"  x", u"  ",  u"  "],
-            "then":  [u"  ",  u"  ",  u"  x", u"  "],
-            "step":  [u"  x", u"  x", u"  x", u"  x"],
+            "given": ["  x", "  ",  "  ",  "  "],
+            "when":  ["  ",  "  x", "  ",  "  "],
+            "then":  ["  ",  "  ",  "  x", "  "],
+            "step":  ["  x", "  x", "  x", "  x"],
         }
         for step_definition in step_definitions:
             row = [self.describe_step_definition(step_definition)]

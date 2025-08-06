@@ -5,7 +5,7 @@ from __future__ import absolute_import, print_function
 from behave import given
 
 
-@given(u'🎸')
+@given('🎸')
 def step_impl(context):
     """Step implementation example with emoji(s)."""
     pass

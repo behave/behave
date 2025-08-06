@@ -17,18 +17,18 @@ Feature: Issue #63: 'ScenarioOutline' object has no attribute 'stdout'
           sys.stdout.write("{0}1 {1}: {2};\n".format(step, outcome, name))
           sys.stderr.write("{0}2 {1}: {2};\n".format(step, outcome, name))
 
-      @given(u'a {outcome} step with "{name}"')
+      @given('a {outcome} step with "{name}"')
       def step(context, outcome, name):
           context.name = name
           generate_output("Given", outcome, name)
           assert outcome == "passing"
 
-      @when(u'a {outcome} step with "{name}" occurs')
+      @when('a {outcome} step with "{name}" occurs')
       def step(context, outcome, name):
           generate_output("When", outcome, name)
           assert outcome == "passing"
 
-      @then(u'a {outcome} step with "{name}" is reached')
+      @then('a {outcome} step with "{name}" is reached')
       def step(context, outcome, name):
           generate_output("Then", outcome, name)
           assert outcome == "passing"

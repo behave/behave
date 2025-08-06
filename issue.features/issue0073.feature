@@ -21,7 +21,7 @@ Feature: Issue #73: the current_matcher is not predictable
         """
         from behave import step
 
-        @step(u'a step {outcome:w}')
+        @step('a step {outcome:w}')
         def step_passes(context, outcome):
             assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
         """
@@ -52,7 +52,7 @@ Feature: Issue #73: the current_matcher is not predictable
         """
         from behave import step
 
-        @step(u'a step (?P<outcome>passes|fails)')
+        @step('a step (?P<outcome>passes|fails)')
         def step_passes(context, outcome):
             assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
         """
@@ -84,7 +84,7 @@ Feature: Issue #73: the current_matcher is not predictable
          from behave import step, use_step_matcher
          use_step_matcher("parse")
 
-         @step(u'an extraordinary step {outcome:w}')
+         @step('an extraordinary step {outcome:w}')
          def step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
          """
@@ -92,7 +92,7 @@ Feature: Issue #73: the current_matcher is not predictable
         """
         from behave import step
 
-        @step(u'a step (?P<outcome>passes|fails)')
+        @step('a step (?P<outcome>passes|fails)')
         def step_passes(context, outcome):
             assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
         """
@@ -101,7 +101,7 @@ Feature: Issue #73: the current_matcher is not predictable
          from behave import step, use_step_matcher
          use_step_matcher("parse")
 
-         @step(u'another step {outcome:w}')
+         @step('another step {outcome:w}')
          def step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
          """
@@ -133,17 +133,17 @@ Feature: Issue #73: the current_matcher is not predictable
          from behave import step, use_step_matcher
 
          use_step_matcher("parse")
-         @given(u'a step {outcome:w}')
+         @given('a step {outcome:w}')
          def given_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
 
          use_step_matcher("re")
-         @given(u'another step (?P<outcome>passes|fails)')
+         @given('another step (?P<outcome>passes|fails)')
          def given_another_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
 
          use_step_matcher("parse")
-         @given(u'an extraordinary step {outcome:w}')
+         @given('an extraordinary step {outcome:w}')
          def given_extraordinary_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
          """
@@ -151,17 +151,17 @@ Feature: Issue #73: the current_matcher is not predictable
          """
          from behave import step, use_step_matcher
 
-         @when(u'a step (?P<outcome>passes|fails)')
+         @when('a step (?P<outcome>passes|fails)')
          def when_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
 
          use_step_matcher("parse")
-         @when(u'another step {outcome:w}')
+         @when('another step {outcome:w}')
          def when_another_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
 
          use_step_matcher("re")
-         @when(u'an extraordinary step (?P<outcome>passes|fails)')
+         @when('an extraordinary step (?P<outcome>passes|fails)')
          def when_extraordinary_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
          """
@@ -170,17 +170,17 @@ Feature: Issue #73: the current_matcher is not predictable
          from behave import step, use_step_matcher
 
          use_step_matcher("parse")
-         @then(u'a step {outcome:w}')
+         @then('a step {outcome:w}')
          def then_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
 
          use_step_matcher("re")
-         @then(u'another step (?P<outcome>passes|fails)')
+         @then('another step (?P<outcome>passes|fails)')
          def then_another_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
 
          use_step_matcher("parse")
-         @then(u'an extraordinary step {outcome:w}')
+         @then('an extraordinary step {outcome:w}')
          def then_extraordinary_step_passes(context, outcome):
              assert outcome == "passes", "FAIL: outcome={0}".format(outcome)
          """

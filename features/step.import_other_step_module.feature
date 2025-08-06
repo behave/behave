@@ -20,7 +20,7 @@ Feature: Ensure that a step module can import another step module
       """
       from behave import given
 
-      @given(u'I call Alice')
+      @given('I call Alice')
       def step_call_alice(context):
           pass
       """
@@ -29,11 +29,11 @@ Feature: Ensure that a step module can import another step module
       from behave import given
       from alice1_steps import step_call_alice
 
-      @given(u'I call Bob')
+      @given('I call Bob')
       def step_call_bob(context):
           pass
 
-      @given(u'I call Bob and Alice')
+      @given('I call Bob and Alice')
       def step_call_bob_and_alice(context):
           step_call_bob(context)
           step_call_alice(context)
@@ -65,7 +65,7 @@ Feature: Ensure that a step module can import another step module
       from behave import given
       import bob2_steps     # -- BAD: Import other step module, cross-wise.
 
-      @given(u'I call Alice')
+      @given('I call Alice')
       def step_call_alice(context):
           pass
       """
@@ -74,7 +74,7 @@ Feature: Ensure that a step module can import another step module
       from behave import given
       import alice2_steps     # -- BAD: Import other step module, cross-wise.
 
-      @given(u'I call Bob')
+      @given('I call Bob')
       def step_call_bob(context):
           pass
       """

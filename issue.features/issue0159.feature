@@ -13,7 +13,7 @@ Feature: Issue #159: output stream is wrapped twice in the codecs.StreamWriter
       def step_impl(context, name):
           pass
 
-      @step(u'full name is Loïc "{name}"')
+      @step('full name is Loïc "{name}"')
       def step_impl(context, name):
           pass
       """

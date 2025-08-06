@@ -9,11 +9,11 @@ Feature: Issue #673 -- @given and @Given step decorators with wildcard import
         """
         from behave import *
 
-        @given(u'a step passes')
+        @given('a step passes')
         def given_step_passes(context):
             pass
 
-        @Given(u'another step passes')
+        @Given('another step passes')
         def given_step_passes2(context):
             pass
 

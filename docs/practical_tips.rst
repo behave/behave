@@ -85,7 +85,7 @@ details. Example using :pypi:`behave-django`:
     # -- FILE: features/steps/browser_steps.py
     from behave import given, when, then
 
-    @when(u'I visit "{url}"')
+    @when('I visit "{url}"')
     def step_impl(context, url):
         context.browser.get(context.get_url(url))
 
@@ -124,7 +124,7 @@ using *behave-django*:
     # -- FILE: features/steps/browser_steps.py
     from behave import given, when, then
 
-    @when(u'I visit "{url}"')
+    @when('I visit "{url}"')
     def step_impl(context, url):
         context.browser.visit(context.get_url(url))
 

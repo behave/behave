@@ -11,8 +11,8 @@ Feature: Issue #1002 -- ScenarioOutline with Empty Placeholder Values in Example
   .  * Use "Cardinality field parser (cfparse) with optional word, like: "{param:Word?}"
   .  * Use a second step alias that matches empty string, like:
   .
-  .      @step(u'I meet with "{name}"')
-  .      @step(u'I meet with ""')
+  .      @step('I meet with "{name}"')
+  .      @step('I meet with ""')
   .      def step_meet_person_with_name(ctx, name=""):
   .          if not name:
   .              name = "NOBODY"
@@ -60,8 +60,8 @@ Feature: Issue #1002 -- ScenarioOutline with Empty Placeholder Values in Example
       # -- FILE: features/steps/steps.py
       from behave import step
 
-      @step(u'I meet with "{name}"')
-      @step(u'I meet with ""')  # -- SPECIAL CASE: Match EMPTY-STRING
+      @step('I meet with "{name}"')
+      @step('I meet with ""')  # -- SPECIAL CASE: Match EMPTY-STRING
       def step_meet_with_person(ctx, name=""):
           ctx.other_person = name
       """
@@ -88,7 +88,7 @@ Feature: Issue #1002 -- ScenarioOutline with Empty Placeholder Values in Example
 
       register_type(AnyText=parse_any_text)
 
-      @step(u'I meet with "{name:AnyText}"')
+      @step('I meet with "{name:AnyText}"')
       def step_meet_with_person(ctx, name):
           ctx.other_person = name
       """
@@ -114,7 +114,7 @@ Feature: Issue #1002 -- ScenarioOutline with Empty Placeholder Values in Example
 
       register_type(Unquoted_or_Empty=parse_unquoted_or_empty_text)
 
-      @step(u'I meet with "{name:Unquoted_or_Empty}"')
+      @step('I meet with "{name:Unquoted_or_Empty}"')
       def step_meet_with_person(ctx, name):
           # -- SUPPORTS: Unquoted text including EMPTY string
           ctx.other_person = name
@@ -144,7 +144,7 @@ Feature: Issue #1002 -- ScenarioOutline with Empty Placeholder Values in Example
       register_type(Unquoted=parse_unquoted)
       use_step_matcher("cfparse") # -- SUPPORT FOR: OptionalUnquoted
 
-      @step(u'I meet with "{name:Unquoted?}"')
+      @step('I meet with "{name:Unquoted?}"')
       def step_meet_with_person(ctx, name):
           ctx.other_person = name
       """
@@ -173,7 +173,7 @@ Feature: Issue #1002 -- ScenarioOutline with Empty Placeholder Values in Example
       register_type(Word=parse_word)
       use_step_matcher("cfparse")   # -- NEEDED FOR: Optional
 
-      @step(u'I meet with "{name:Word?}"')
+      @step('I meet with "{name:Word?}"')
       def step_meet_with_person(ctx, name):
           ctx.other_person = name
       """

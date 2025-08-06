@@ -369,7 +369,7 @@ class FileLocation(object):
         return not self.__lt__(other)
 
     def __repr__(self):
-        return u'<FileLocation: filename="%s", line=%s>' % \
+        return '<FileLocation: filename="%s", line=%s>' % \
                (self.filename, self.line)
 
     def __str__(self):
@@ -378,7 +378,7 @@ class FileLocation(object):
             filename = _text(filename, "utf-8")
         if self.line is None:
             return filename
-        return u"%s:%d" % (filename, self.line)
+        return "%s:%d" % (filename, self.line)
 
     if six.PY2:
         __unicode__ = __str__

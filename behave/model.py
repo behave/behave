@@ -349,7 +349,7 @@ class ScenarioContainer(TagAndStatusStatement, Replayable):
         if reason:
             entity_name = self.type.upper()
             logger = logging.getLogger("behave")
-            logger.warning(u"SKIP %s %s: %s", entity_name, self.name, reason)
+            logger.warning("SKIP %s %s: %s", entity_name, self.name, reason)
 
         self.clear_status()
         self.should_skip = True
@@ -788,7 +788,7 @@ class Background(BasicStatement, Replayable):
     """
     type = "background"
 
-    def __init__(self, filename, line, keyword=u"Background", name=u"",
+    def __init__(self, filename, line, keyword="Background", name="",
                  steps=None, description=None):
         super(Background, self).__init__(filename, line, keyword, name)
         self.description = description or []
@@ -1119,7 +1119,7 @@ class Scenario(TagAndStatusStatement, Replayable):
         if reason:
             scenario_type = self.__class__.__name__
             logger = logging.getLogger("behave")
-            logger.warning(u"SKIP %s %s: %s", scenario_type, self.name, reason)
+            logger.warning("SKIP %s %s: %s", scenario_type, self.name, reason)
 
         self.clear_status()
         self.should_skip = True
@@ -1282,7 +1282,7 @@ class ScenarioOutlineBuilder(object):
     """Helper class to use a ScenarioOutline as a template and
     build its scenarios (as template instances).
     """
-    annotation_schema = u"{name} -- @{row.id} {examples.name}"
+    annotation_schema = "{name} -- @{row.id} {examples.name}"
 
     def __init__(self, annotation_schema=None):
         if annotation_schema is None:
@@ -1307,7 +1307,7 @@ class ScenarioOutlineBuilder(object):
             for name, value in placeholders.items():
                 if safe_values and ("<" in value and ">" in value):
                     continue    # -- OOPS, value looks like placeholder.
-                placeholder = u"<%s>" % name
+                placeholder = "<%s>" % name
                 text = text.replace(placeholder, value)
         return text
 
@@ -1391,7 +1391,7 @@ class ScenarioOutlineBuilder(object):
             new_step.text = cls.render_template(new_step.text, row)
         if new_step.table is not None:
             for name, value in row.items():
-                placeholder = u"<%s>" % name
+                placeholder = "<%s>" % name
                 for i, cell in enumerate(new_step.table.headings):
                     new_step.table.headings[i] = cell.replace(placeholder, value)
                 for step_row in new_step.table:
@@ -1676,7 +1676,7 @@ class ScenarioOutline(Scenario):
         """
         if reason:
             logger = logging.getLogger("behave")
-            logger.warning(u"SKIP ScenarioOutline %s: %s", self.name, reason)
+            logger.warning("SKIP ScenarioOutline %s: %s", self.name, reason)
 
         self.clear_status()
         self.should_skip = True
@@ -1884,15 +1884,15 @@ class Step(BasicStatement, Replayable):
         return ScenarioOutlineBuilder.make_step_for_row(outline_step, table_row)
 
     def _process_error(self, exception, use_traceback=False, name=None):
-        schema = u"ERROR: {e_classname}: {e}"
+        schema = "ERROR: {e_classname}: {e}"
         if isinstance(exception, AssertionError):
-            schema = u"ASSERT FAILED: {e}"
+            schema = "ASSERT FAILED: {e}"
         elif not exception.args:
-            schema = u"ERROR: {e_classname}"
+            schema = "ERROR: {e_classname}"
 
         traceback_text = None
         if use_traceback:
-            schema += u"\n{traceback}"
+            schema += "\n{traceback}"
             traceback_text = _text(traceback.format_exc())
 
         # -- HINT: Some exceptions have EMPTY-ARGS
@@ -1923,13 +1923,13 @@ class Step(BasicStatement, Replayable):
         # -- OLD:
         # if exception.args:
         #     exc_message = _text(exception)
-        #     error = u"ASSERT FAILED: " + exc_message
+        #     error = "ASSERT FAILED: " + exc_message
         # else:
         #     # no assertion text; format the exception
         #     error = _text(traceback.format_exc())
         # if e.args:
         #     message = _text(e)
-        #     error = u"%s: %s" % (e.__class__.__name__, message)
+        #     error = "%s: %s" % (e.__class__.__name__, message)
         # else:
         #     # no assertion text; format the exception
         #     error = _text(traceback.format_exc())
@@ -1965,7 +1965,7 @@ class Step(BasicStatement, Replayable):
             return False
 
         keep_going = True
-        error = u""
+        error = ""
 
         if not quiet:
             for formatter in runner.formatters:
@@ -2007,7 +2007,7 @@ class Step(BasicStatement, Replayable):
                     error = self._process_error(e)
             except KeyboardInterrupt as e:
                 runner.abort(reason="KeyboardInterrupt")
-                error = u"ABORTED: By user (KeyboardInterrupt)."
+                error = "ABORTED: By user (KeyboardInterrupt)."
                 self.status = Status.error
                 self._process_error(e)
             except Exception as e:      # pylint: disable=broad-except
@@ -2119,7 +2119,7 @@ class Table(Replayable):
         self.rows.append(Row(self.headings, row, line))
         self.modified = True
 
-    def add_column(self, column_name, values=None, default_value=u""):
+    def add_column(self, column_name, values=None, default_value=""):
         """
         Adds a new column to this table.
         Uses :param:`default_value` for new cells (if :param:`values` are
@@ -2383,7 +2383,7 @@ class Tag(six.text_type):
 
     See :ref:`controlling things with tags`.
     """
-    allowed_chars = u"._-=:,;()"    # In addition to aplha-numerical chars.
+    allowed_chars = "._-=:,;()"    # In addition to aplha-numerical chars.
     quoting_chars = ("'", '"', "<", ">")
 
     def __new__(cls, name, line):
@@ -2428,14 +2428,14 @@ class Tag(six.text_type):
             if char.isalnum() or (allowed_chars and char in allowed_chars):
                 chars.append(char)
             elif char.isspace():
-                chars.append(u"_")
+                chars.append("_")
             elif char in cls.quoting_chars:
                 pass    # -- NORMALIZE: Remove any quoting chars.
             # -- MAYBE:
             # else:
             #     # -- OTHERWISE: Accept gracefully any other character.
             #     chars.append(char)
-        return u"".join(chars)
+        return "".join(chars)
 
 
 class Text(six.text_type):
@@ -2451,7 +2451,7 @@ class Text(six.text_type):
 
        Currently only "text/plain".
     """
-    def __new__(cls, value, content_type=u"text/plain", line=0):
+    def __new__(cls, value, content_type="text/plain", line=0):
         require_type(value, six.text_type)
         require_type(content_type, six.text_type)
         o = six.text_type.__new__(cls, value)

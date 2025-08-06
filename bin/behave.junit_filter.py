@@ -50,7 +50,7 @@ def path_select_files(paths, pattern="*.xml"):
     return selected
 
 def report_testcases(filename, testcases):
-    print(u"REPORT: {0}".format(filename))
+    print("REPORT: {0}".format(filename))
     for xml_testcase in testcases:
         print("  TESTCASE: {0}".format(xml_testcase.get("name")))
         xml_text = indent(xml_prettify(xml_testcase), "    ")

@@ -11,11 +11,11 @@ Feature: Issue #46 Behave returns 0 (SUCCESS) even in case of test failures
       """
       from behave import given
 
-      @given(u'passing')
+      @given('passing')
       def step(context):
           pass
 
-      @given(u'failing')
+      @given('failing')
       def step(context):
           assert False, "failing"
       """

@@ -148,7 +148,7 @@ class StepRegistry(object):
 
             if existing.matches(step_text):
                 # WHY: existing.step_type = new_step_type
-                message = u"%s has already been defined in\n  existing step %s"
+                message = "%s has already been defined in\n  existing step %s"
                 new_step = new_step_matcher.describe()
                 existing_step = existing.describe(existing.SCHEMA_AT_LOCATION)
                 raise AmbiguousStep(message % (new_step, existing_step))

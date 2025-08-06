@@ -9,7 +9,7 @@ from __future__ import absolute_import, print_function
 
 # -- TODO:
 # # -- VARIANT 1:
-# @when(u'I click on ${environment_variable:w}')
+# @when('I click on ${environment_variable:w}')
 # def step_impl(context, environment_variable):
 #       env_value = os.environ.get(environment_variable, None)
 #       if env_value is None:
@@ -30,7 +30,7 @@ from __future__ import absolute_import, print_function
 #
 # register_type(EnvironmentVar=parse_environment_var)
 #
-# @when(u'I use the environment variable {environment_variable:EnvironmentVar}')
+# @when('I use the environment variable {environment_variable:EnvironmentVar}')
 # def step_impl(context, environment_variable):
 #       env_name, env_value = environment_variable
 #       if env_value is None:

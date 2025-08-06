@@ -290,7 +290,7 @@ class TestConfigFile(object):
     @staticmethod
     def make_config_file_with_tag_expression_protocol(value, tmp_path):
         config_file = tmp_path / "behave.ini"
-        config_file.write_text(u"""
+        config_file.write_text("""
 [behave]
 tag_expression_protocol = {value}
 """.format(value=value))

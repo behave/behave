@@ -597,7 +597,7 @@ def load_step_modules(step_paths):
                 use_default_step_matcher()
 
 
-def make_undefined_step_snippet(step, language=None):
+def make_undefined_step_snippet(step, language=None, prefix=""):
     """Helper function to create an undefined-step snippet for a step.
 
     :param step: Step to use (as Step object or string).
@@ -610,13 +610,13 @@ def make_undefined_step_snippet(step, language=None):
         step = steps[0]
         require_not_none(step, message=("ParseError: %s" % step_text))
 
-    prefix = u"u"
+    prefix = prefix or ""
     single_quote = "'"
     if single_quote in step.name:
         step.name = step.name.replace(single_quote, r"\'")
 
 
-    snippet_template = u"""\
+    snippet_template = """\
 @{step_type}({prefix}'{step_pattern}')
 def step_impl(context):
     raise StepNotImplementedError({prefix}'{step_type_titled} {step_pattern}')
@@ -665,8 +665,8 @@ def print_undefined_step_snippets(undefined_steps, stream=None, colored=True):
     if not stream:
         stream = sys.stderr
 
-    step_snippets = u"\n".join(make_undefined_step_snippets(undefined_steps))
-    message = u"""
+    step_snippets = "\n".join(make_undefined_step_snippets(undefined_steps))
+    message = """
 You can implement step definitions for undefined steps with these snippets:
 
 from behave.api.pending_step import StepNotImplementedError

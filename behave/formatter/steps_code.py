@@ -54,15 +54,15 @@ class StepModelPrinter(ModelPrinter):
                 self.print_docstring(step.text, indentation=prefix)
 
     def print_step(self, step, in_rule=False):
-        schema = u"{prefix}{step.keyword} {step.name}"
+        schema = "{prefix}{step.keyword} {step.name}"
         if self.show_aligned_keywords:
-            schema = u"{prefix}{step.keyword:6s} {step.name}"
+            schema = "{prefix}{step.keyword:6s} {step.name}"
         self._print_step_with_schema(step, schema, in_rule=in_rule)
 
     def print_step_with_result(self, step, in_rule=False):
-        schema = u"{prefix}{step.keyword} {step.name}  ...  {step.status.name}"
+        schema = "{prefix}{step.keyword} {step.name}  ...  {step.status.name}"
         if self.show_aligned_keywords:
-            schema = u"{prefix}{step.keyword:6s} {step.name}  ...  {step.status.name}"
+            schema = "{prefix}{step.keyword:6s} {step.name}  ...  {step.status.name}"
         self._print_step_with_schema(step, schema, in_rule=in_rule)
 
     @classmethod

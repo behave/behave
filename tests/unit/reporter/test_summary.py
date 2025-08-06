@@ -227,7 +227,7 @@ class TestSummaryReporter(object):
     # @patch("sys.stdout")
     @pytest.mark.parametrize("output_format", OUTPUT_FORMATS)
     def test_scenario_outline_status_is_collected_and_reported(self, output_format):   # , stdout):
-        scenarios = [ ScenarioOutline(u"<string>", 0, u"scenario_outline", u"name")]
+        scenarios = [ ScenarioOutline("'<string>", 0, "scenario_outline", "name")]
         scenarios.extend(self.make_many_scenario_mocks(3))
         subscenarios = self.make_many_scenario_mocks(4)
         subscenarios[0].status = Status.passed

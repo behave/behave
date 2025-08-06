@@ -31,7 +31,7 @@ Feature: Issue #99: Layout variation "a directory containing your feature files"
         """
         from behave import step
 
-        @step(u'a step passes')
+        @step('a step passes')
         def step_passes(context):
             pass
         """

@@ -15,17 +15,17 @@ Feature: Issue #67: JSON formatter cannot serialize tables.
       """
       from behave import given, when, then
 
-      @given(u'I add the following employees')
-      @given(u'I add the following employees:')
+      @given('I add the following employees')
+      @given('I add the following employees:')
       def step(context):
           pass  # -- SKIP: Table processing here.
 
-      @when(u'I select department "{department}"')
+      @when('I select department "{department}"')
       def step(context, department):
           context.department = department
 
-      @then(u'I get the following employees')
-      @then(u'I get the following employees:')
+      @then('I get the following employees')
+      @then('I get the following employees:')
       def step(context):
           pass  # -- SKIP: Table processing here.
       """
@@ -50,7 +50,7 @@ Feature: Issue #67: JSON formatter cannot serialize tables.
       """
     But the command output should not contain:
       """
-      TypeError: <Row [u'Alice', u'Wonderland']> is not JSON serializable
+      TypeError: <Row [('Alice', 'Wonderland']> is not JSON serializable
       """
 
   Scenario: ScenarioOutline with Examples Table
@@ -58,15 +58,15 @@ Feature: Issue #67: JSON formatter cannot serialize tables.
       """
       from behave import given, when, then
 
-      @given(u'a step with "{name}"')
+      @given('a step with "{name}"')
       def step(context, name):
           context.name = name
 
-      @when(u'a step with "{name}" occurs')
+      @when('a step with "{name}" occurs')
       def step(context, name):
           assert context.name == name
 
-      @then(u'a step with "{name}" is reached')
+      @then('a step with "{name}" is reached')
       def step(context, name):
           assert context.name == name
       """

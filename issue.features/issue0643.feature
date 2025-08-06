@@ -7,7 +7,7 @@ Feature: Issue #643 -- Unable to add comments on table data lines
       """
       from behave import step
 
-      @step(u'{word:w} step passes')
+      @step('{word:w} step passes')
       def step_passes(context, word):
           pass
       """

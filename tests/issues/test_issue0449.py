@@ -15,7 +15,7 @@ special characters correctly.
 
     @step("Russian text")
     def foo(stop):
-        assert_that(False, equal_to(True), u"Всё очень плохо") # cyrillic
+        assert_that(False, equal_to(True), "Всё очень плохо") # cyrillic
 
 And I also have UTF-8 as my console charset. Running this code leads to
 "ASSERT FAILED: 'ascii' codec can't encode characters in position 0-5: ordinal not in range(128)" error.
@@ -38,19 +38,19 @@ else:
 
 
 def foo():
-    assert_that(False, equal_to(True), u"Всё очень плохо")  # cyrillic
+    assert_that(False, equal_to(True), "Всё очень плохо")  # cyrillic
 
 @pytest.mark.parametrize("encoding", [None, "UTF-8", "unicode_escape"])
 def test_issue(encoding):
-    _expected = u"Всё очень плохо"
+    _expected = "Всё очень плохо"
     try:
         foo()
     except Exception:
         text2 = traceback.format_exc()
 
     text3 = text(text2, encoding)
-    print(u"EXCEPTION-TEXT: %s" % text3)
-    print(u"text2: "+ text2)
-    assert_that(text3, contains_string(u"AssertionError: Всё очень плохо"))
+    print("EXCEPTION-TEXT: %s" % text3)
+    print("text2: "+ text2)
+    assert_that(text3, contains_string("AssertionError: Всё очень плохо"))
 
 

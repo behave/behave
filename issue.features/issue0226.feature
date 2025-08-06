@@ -20,10 +20,10 @@ Feature: UnicodeDecodeError in tracebacks (when an exception in a step implement
       if six.PY2:
           chr = unichr
 
-      @step(u'a step raises an exception with non-ASCII character "{char_code:d}"')
+      @step('a step raises an exception with non-ASCII character "{char_code:d}"')
       def step_raises_exception_with_non_ascii_text(context, char_code):
           assert 0 <= char_code <= 255, "RANGE-ERROR: char_code=%s" % char_code
-          raise RuntimeError(u"FAIL:"+ chr(char_code) +";")
+          raise RuntimeError("FAIL:"+ chr(char_code) +";")
       """
 
   Scenario Outline: Syndrome with non-ASCII char <char_code> (format=<format>)

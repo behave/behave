@@ -65,7 +65,7 @@ class TestParser4Rule(object):
 
     @pytest.mark.smoke
     def test_parses_rule(self):
-        text = u'''
+        text = '''
 Feature: With Rule
 
   A feature description line 1.
@@ -120,7 +120,7 @@ Feature: With Rule
         ])
 
     def test_parses_rule_with_tags(self):
-        text = u'''
+        text = '''
 Feature: With Rule
 
   @rule_tag1
@@ -142,7 +142,7 @@ Feature: With Rule
         assert len(rule1.scenarios) == 0
 
     def test_parses_rule_with_description(self):
-        text = u'''
+        text = '''
 Feature: With Rule
 
   Rule: R3
@@ -171,7 +171,7 @@ Feature: With Rule
         assert len(rule1.scenarios) == 0
 
     def test_parses_rule_with_background(self):
-        text = u'''
+        text = '''
 Feature: With Rule
 
   Rule: R3
@@ -201,7 +201,7 @@ Feature: With Rule
         """If a Rule has no Background,
         it inherits the Feature's Background (if one exists).
         """
-        text = u'''
+        text = '''
 Feature: With Rule
   Background: Feature.Background
     Given feature background step 1
@@ -238,7 +238,7 @@ Feature: With Rule
         """If a Rule has no Background,
         it inherits the Feature's Background (if one exists).
         """
-        text = u'''
+        text = '''
 Feature: With Rule
   Background: Feature.Background
     Given feature background step 1
@@ -280,7 +280,7 @@ Feature: With Rule
         """A Rule has empty Background (without any steps) prevents that
         Feature Background is inherited (if one exists).
         """
-        text = u'''
+        text = '''
 Feature: With Rule
   Background: Feature.Background
     Given feature background step 1
@@ -316,7 +316,7 @@ Feature: With Rule
         ])
 
     def test_parses_rule_with_scenario(self):
-        text = u'''
+        text = '''
 Feature: With Rule
 
   Rule: R4
@@ -345,7 +345,7 @@ Feature: With Rule
         ])
 
     def test_parses_rule_with_two_scenarios(self):
-        text = u'''
+        text = '''
 Feature: With Rule
 
   Rule: R4
@@ -389,7 +389,7 @@ Feature: With Rule
         ])
 
     def test_parses_rule_with_scenario_outline(self):
-        text = u'''
+        text = '''
 Feature: With Rule
 
   Rule: R5
@@ -427,7 +427,7 @@ Feature: With Rule
         ])
 
     def test_parses_rule_with_two_scenario_outlines(self):
-        text = u'''
+        text = '''
 Feature: With Rule
 
   Rule: R5
@@ -494,7 +494,7 @@ Feature: With Rule
         ])
 
     def test_parses_two_rules(self):
-        text = u'''
+        text = '''
 Feature: With Rule
 
   Rule: R1
@@ -564,7 +564,7 @@ Feature: With Rule
     # @check.duplicated
     def test_parse_background_scenario_and_rules(self):
         """HINT: Some Scenarios may exist before the first Rule."""
-        text = u'''
+        text = '''
 Feature: With Scenarios and Rules
 
   Background: Feature.Background
@@ -610,10 +610,10 @@ Feature: With Scenarios and Rules
         assert scenario1.tags == []
         assert scenario1.description == []
         assert_compare_steps(scenario1.all_steps, [
-            (u"given", u"Given", u'feature background step_1', None, None),
-            (u"when", u"When",   u'feature background step_2', None, None),
-            (u"given", u"Given", u'scenario_1 step_1', None, None),
-            (u"when", u"When",   u'scenario_1 step_2', None, None),
+            ("given", "Given",  'feature background step_1', None, None),
+            ("when", "When",    'feature background step_2', None, None),
+            ("given", "Given",  'scenario_1 step_1', None, None),
+            ("when", "When",    'scenario_1 step_2', None, None),
         ])
 
         assert rule1.name == "R1"
@@ -662,7 +662,7 @@ class TestParser4Background(object):
 
     def test_parse__norule_scenarios_use_feature_background(self):
         """AFFECTED: Scenarios outside of rules (before first rule)."""
-        text = u'''
+        text = '''
             Feature: With Scenarios and Rules
 
               Background: Feature.Background
@@ -690,13 +690,13 @@ class TestParser4Background(object):
         assert scenario1.background is feature.background
         assert scenario1.background_steps == feature.background.steps
         assert_compare_steps(scenario1.all_steps, [
-            (u"given", u"Given", u'feature background step_1', None, None),
-            (u"given", u"Given", u'scenario_1 step_1', None, None),
+            ("given", "Given",  'feature background step_1', None, None),
+            ("given", "Given",  'scenario_1 step_1', None, None),
         ])
 
     def test_parse__norule_scenarios_with_disabled_background(self):
         """AFFECTED: Scenarios outside of rules (before first rule)."""
-        text = u'''
+        text = '''
             Feature: Scenario with disabled background
 
               Background: Feature.Background
@@ -725,7 +725,7 @@ class TestParser4Background(object):
         assert scenario1.background_steps != feature.background.steps
         assert scenario1.background_steps == []
         assert_compare_steps(scenario1.all_steps, [
-            (u"given", u"Given", u'scenario_1 step_1', None, None),
+            ("given", "Given",  'scenario_1 step_1', None, None),
         ])
 
         # -- ENSURE: Disabling of background has no effect on other scenarios.
@@ -733,12 +733,12 @@ class TestParser4Background(object):
         assert scenario2.background is feature.background
         assert scenario2.background_steps == feature.background.steps
         assert_compare_steps(scenario2.all_steps, [
-            (u"given", u"Given", u'feature background step_1', None, None),
-            (u"given", u"Given", u'scenario_2 step_1', None, None),
+            ("given", "Given",  'feature background step_1', None, None),
+            ("given", "Given",  'scenario_2 step_1', None, None),
         ])
 
     def test_parse__rule_scenarios_inherit_feature_background_without_rule_background(self):
-        text = u'''
+        text = '''
             Feature: With Background and Rule
 
               Background: Feature.Background
@@ -764,12 +764,12 @@ class TestParser4Background(object):
         # assert rule1_scenario1.background is not feature.background
         assert rule1_scenario1.background_steps == feature.background.steps
         assert_compare_steps(rule1_scenario1.all_steps, [
-            (u"given", u"Given", u'feature background step_1', None, None),
-            (u"given", u"Given", u'rule R1 scenario_1 step_1', None, None),
+            ("given", "Given",  'feature background step_1', None, None),
+            ("given", "Given",  'rule R1 scenario_1 step_1', None, None),
         ])
 
     def test_parse__rule_scenarios_inherit_feature_background_with_rule_background(self):
-        text = u'''
+        text = '''
             Feature: With Feature.Background and Rule.Background
 
               Background: Feature.Background
@@ -802,14 +802,14 @@ class TestParser4Background(object):
         assert rule1_scenario1.background is rule1.background
         assert rule1_scenario1.background_steps == list(rule1.background.all_steps)
         assert_compare_steps(rule1_scenario1.all_steps, [
-            (u"given", u"Given", u'feature background step_1', None, None),
-            (u"given", u"Given", u'rule R1 background step_1', None, None),
-            (u"given", u"Given", u'rule R1 scenario_1 step_1', None, None),
+            ("given", "Given",  'feature background step_1', None, None),
+            ("given", "Given",  'rule R1 background step_1', None, None),
+            ("given", "Given",  'rule R1 scenario_1 step_1', None, None),
         ])
 
     def test_parse__rule_scenarios_with_rule_background_when_background_inheritance_is_disabled(self):
         # -- HINT: Background inheritance is enabled (by default).
-        text = u'''
+        text = '''
             Feature: With Feature Background Inheritance disabled
 
               Background: Feature.Background
@@ -847,14 +847,14 @@ class TestParser4Background(object):
         assert rule1_scenario1.background_steps == rule1.background.steps
         assert rule1_scenario1.background_steps == list(rule1.background.all_steps)
         assert_compare_steps(rule1_scenario1.all_steps, [
-            (u"given", u"Given", u'rule R1 background step_1', None, None),
-            (u"given", u"Given", u'rule R1 scenario_1 step_1', None, None),
+            ("given", "Given",  'rule R1 background step_1', None, None),
+            ("given", "Given",  'rule R1 scenario_1 step_1', None, None),
         ])
 
     # ruff: noqa: E501
     def test_parse__rule_scenarios_without_rule_background_when_background_inheritance_is_disabled(self):
         # -- HINT: Background inheritance is enabled (by default).
-        text = u'''
+        text = '''
             Feature: With Feature Background Inheritance disabled
 
               Background: Feature.Background
@@ -887,11 +887,11 @@ class TestParser4Background(object):
         assert rule1_scenario1.background_steps == rule1.background.steps
         assert rule1_scenario1.background_steps == list(rule1.background.all_steps)
         assert_compare_steps(rule1_scenario1.all_steps, [
-            (u"given", u"Given", u'rule R1 scenario_1 step_1', None, None),
+            ("given", "Given",  'rule R1 scenario_1 step_1', None, None),
         ])
 
     def test_parse__rule_scenarios_without_feature_background_and_with_rule_background(self):
-        text = u'''
+        text = '''
             Feature: Without Feature.Background and with Rule.Background
 
               Rule: R1
@@ -921,12 +921,12 @@ class TestParser4Background(object):
         assert rule1_scenario1.background_steps == rule1.background.steps
         assert rule1_scenario1.background_steps == list(rule1.background.all_steps)
         assert_compare_steps(rule1_scenario1.all_steps, [
-            (u"given", u"Given", u'rule R1 background step_1', None, None),
-            (u"given", u"Given", u'rule R1 scenario_1 step_1', None, None),
+            ("given",  "Given",  'rule R1 background step_1', None, None),
+            ("given",  "Given",  'rule R1 scenario_1 step_1', None, None),
         ])
 
     def test_parse__rule_scenarios_without_feature_and_rule_background(self):
-        text = u'''
+        text = '''
             Feature: Without Feature.Background and Rule.Background
 
               Rule: R1
@@ -951,7 +951,7 @@ class TestParser4Background(object):
         assert rule1_scenario1.background is rule1.background
         assert rule1_scenario1.background_steps == []
         assert_compare_steps(rule1_scenario1.all_steps, [
-            (u"given", u"Given", u'rule R1 scenario_1 step_1', None, None),
+            ("given",  "Given",  'rule R1 scenario_1 step_1', None, None),
         ])
 
 
@@ -961,7 +961,7 @@ class TestParser4Background(object):
 class TestParser4Scenario(object):
     def test_use_example_alias(self):
         """HINT: Some Scenarios may exist before the first Rule."""
-        text = u'''
+        text = '''
 Feature: With Example as Alias for Scenario
 
   Example: Scenario_1
@@ -992,7 +992,7 @@ Feature: With Example as Alias for Scenario
 class TestParser4ScenarioOutline(object):
     def test_use_scenario_template_alias(self):
         """HINT: Some Scenarios may exist before the first Rule."""
-        text = u'''
+        text = '''
     Feature: Use ScenarioTemplate as Alias for ScenarioOutline
 
       Scenario Template: ScenarioOutline_1

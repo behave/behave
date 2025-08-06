@@ -26,13 +26,13 @@ Feature: Issue #1020 -- Switch Step-Matcher in Step Definition File
 
       use_step_matcher("re")
 
-      @when(u'I meet with "(?P<person>Alice|Bob)"')
+      @when('I meet with "(?P<person>Alice|Bob)"')
       def step_when_I_meet(context, person):
           context.person = person
 
       use_step_matcher("parse")
 
-      @then(u'I have a lot of fun with "{person}"')
+      @then('I have a lot of fun with "{person}"')
       def step_then_I_have_fun_with(context, person):
           assert_that(person, equal_to(context.person))
       """

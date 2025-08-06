@@ -9,7 +9,7 @@ from behave.parser import parse_steps
 def test_issue_1047_step_type_for_generic_steps_is_inherited():
     """Verifies that issue #1047 is fixed."""
 
-    text = u"""\
+    text = """\
 When my step
 And my second step
 * my third step
@@ -19,7 +19,7 @@ And my second step
 
 
 def test_issue_1047_step_type_if_only_generic_steps_are_used():
-    text = u"""\
+    text = """\
 * my step
 * my another step
 """

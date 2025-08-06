@@ -22,12 +22,12 @@ Feature: Issue #112: Improvement to AmbiguousStep error
         from behave import given, when, then
 
         # -- ORDERING-IMPORTANT: From more specific steps to less specific.
-        @given(u'I buy {number:n} {items:w}')
+        @given('I buy {number:n} {items:w}')
         def step_given_I_buy2(context, number, items):
             pass
 
         # -- OTHERWISE: Generic step matches all other patterns.
-        @given(u'I buy {amount} {product}')
+        @given('I buy {amount} {product}')
         def step_given_I_buy(context, amount, product):
             pass
         """
@@ -46,12 +46,12 @@ Feature: Issue #112: Improvement to AmbiguousStep error
         from behave import given, when, then
 
         # -- ORDERING-VIOLATED: Generic step comes first.
-        @given(u'I buy {amount} {product}')
+        @given('I buy {amount} {product}')
         def step_given_I_buy(context, amount, product):
             pass
 
         # -- AMBIGUOUS-STEP: Will occur here.
-        @given(u'I buy {number:n} {items:w}')
+        @given('I buy {number:n} {items:w}')
         def step_given_I_buy2(context, number, items):
             pass
         """

@@ -10,11 +10,11 @@ Feature: Execute Steps within a Step Function (Nested Steps)
       """
       from behave import given, when, then
 
-      @given(u'I go to the supermarket')
+      @given('I go to the supermarket')
       def step_given_I_go_to_the_supermarket(context):
           context.shopping_cart = {}
 
-      @when(u'I buy {amount:n} {item:w}')
+      @when('I buy {amount:n} {item:w}')
       def step_when_I_buy(context, amount, item):
           assert amount >= 0
           if not item in context.shopping_cart:
@@ -22,14 +22,14 @@ Feature: Execute Steps within a Step Function (Nested Steps)
           context.shopping_cart[item] += amount
 
       # -- HERE: Is the interesting functionality.
-      @when(u'I buy the usual things')
+      @when('I buy the usual things')
       def step_when_I_buy_the_usual_things(context):
-          context.execute_steps(u'''
+          context.execute_steps('''
               When I buy 2 apples
               And  I buy 3 bananas
           ''')
 
-      @then(u'I have {amount:n} {item:w}')
+      @then('I have {amount:n} {item:w}')
       def step_then_I_have(context, amount, item):
           actual = context.shopping_cart.get(item, 0)
           assert amount == actual

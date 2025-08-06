@@ -33,15 +33,15 @@ class TestParser(object):
     # pylint: disable=too-many-public-methods, no-self-use
 
     def test_parses_feature_name(self):
-        feature = parse_feature(u"Feature: Stuff\n")
+        feature = parse_feature("Feature: Stuff\n")
         assert feature.name == "Stuff"
 
     def test_parses_feature_name_without_newline(self):
-        feature = parse_feature(u"Feature: Stuff")
+        feature = parse_feature("Feature: Stuff")
         assert feature.name == "Stuff"
 
     def test_parses_feature_description(self):
-        doc = u"""
+        doc = """
 Feature: Stuff
   In order to thing
   As an entity
@@ -56,7 +56,7 @@ Feature: Stuff
         ]
 
     def test_parses_feature_with_a_tag(self):
-        doc = u"""
+        doc = """
 @foo
 Feature: Stuff
   In order to thing
@@ -70,10 +70,10 @@ Feature: Stuff
             "As an entity",
             "I want to do stuff"
         ]
-        assert feature.tags == [Tag(u'foo', 1)]
+        assert feature.tags == [Tag('foo', 1)]
 
     def test_parses_feature_with_more_tags(self):
-        doc = u"""
+        doc = """
 @foo @bar @baz @qux @winkle_pickers @number8
 Feature: Stuff
   In order to thing
@@ -89,11 +89,11 @@ Feature: Stuff
         ]
         assert feature.tags == [
             Tag(name, 1)
-            for name in (u'foo', u'bar', u'baz', u'qux', u'winkle_pickers', u'number8')
+            for name in ('foo',  'bar',  'baz',  'qux',  'winkle_pickers',  'number8')
         ]
 
     def test_parses_feature_with_a_tag_and_comment(self):
-        doc = u"""
+        doc = """
 @foo    # Comment: ...
 Feature: Stuff
   In order to thing
@@ -107,10 +107,10 @@ Feature: Stuff
             "As an entity",
             "I want to do stuff"
         ]
-        assert feature.tags, [Tag(u'foo', 1)]
+        assert feature.tags, [Tag('foo', 1)]
 
     def test_parses_feature_with_more_tags_and_comment(self):
-        doc = u"""
+        doc = """
 @foo @bar @baz @qux @winkle_pickers # Comment: @number8
 Feature: Stuff
   In order to thing
@@ -126,12 +126,12 @@ Feature: Stuff
         ]
         assert feature.tags == [
             Tag(name, 1)
-            for name in (u'foo', u'bar', u'baz', u'qux', u'winkle_pickers')
+            for name in ('foo',  'bar',  'baz',  'qux',  'winkle_pickers')
         ]
-        # -- NOT A TAG: u'number8'
+        # -- NOT A TAG:  'number8'
 
     def test_parses_feature_with_background(self):
-        doc = u"""
+        doc = """
 Feature: Stuff
   Background:
     Given there is stuff
@@ -148,7 +148,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_description_and_background(self):
-        doc = u"""
+        doc = """
 Feature: Stuff
   This... is... STUFF!
 
@@ -168,7 +168,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_a_scenario(self):
-        doc = u"""
+        doc = """
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -187,7 +187,7 @@ Feature: Stuff
         ])
 
     def test_parses_lowercase_step_keywords(self):
-        doc = u"""
+        doc = """
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -206,7 +206,7 @@ Feature: Stuff
         ])
 
     def test_parses_ja_keywords(self):
-        doc = u"""
+        doc = """
 機能: Stuff
 
   シナリオ: Doing stuff
@@ -219,13 +219,13 @@ Feature: Stuff
         assert len(feature.scenarios) == 1
         assert feature.scenarios[0].name, "Doing stuff"
         assert_compare_steps(feature.scenarios[0].steps, [
-            ('given', u'前提', 'there is stuff', None, None),
-            ('when', u'もし', 'I do stuff', None, None),
-            ('then', u'ならば', 'stuff happens', None, None),
+            ('given',  '前提', 'there is stuff', None, None),
+            ('when',  'もし', 'I do stuff', None, None),
+            ('then',  'ならば', 'stuff happens', None, None),
         ])
 
     def test_parses_feature_with_description_and_background_and_scenario(self):
-        doc = u"""
+        doc = """
 Feature: Stuff
   Oh my god, it's full of stuff...
 
@@ -254,7 +254,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_multiple_scenarios(self):
-        doc = u"""
+        doc = """
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -294,7 +294,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_multiple_scenarios_with_tags(self):
-        doc = u"""
+        doc = """
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -324,7 +324,7 @@ Feature: Stuff
         ])
 
         assert feature.scenarios[1].name == "Doing other stuff"
-        assert feature.scenarios[1].tags == [Tag(u"one_tag", 1)]
+        assert feature.scenarios[1].tags == [Tag("one_tag", 1)]
         assert_compare_steps(feature.scenarios[1].steps, [
             ('when', 'When', 'stuff happens', None, None),
             ('then', 'Then', 'I am stuffed', None, None),
@@ -332,14 +332,14 @@ Feature: Stuff
 
         assert feature.scenarios[2].name == "Doing different stuff"
         assert feature.scenarios[2].tags == [
-            Tag(n, 1) for n in (u'lots', u'of', u'tags')]
+            Tag(n, 1) for n in ('lots',  'of',  'tags')]
         assert_compare_steps(feature.scenarios[2].steps, [
             ('given', 'Given', 'stuff', None, None),
             ('then', 'Then', 'who gives a stuff', None, None),
         ])
 
     def test_parses_feature_with_multiple_scenarios_and_other_bits(self):
-        doc = u"""
+        doc = """
 Feature: Stuff
   Stuffing
 
@@ -389,7 +389,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_a_step_with_a_string_argument(self):
-        doc = u'''
+        doc = '''
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -411,7 +411,7 @@ Feature: Stuff
         ])
 
     def test_parses_string_argument_correctly_handle_whitespace(self):
-        doc = u'''
+        doc = '''
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -436,7 +436,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_a_step_with_a_string_with_blank_lines(self):
-        doc = u'''
+        doc = '''
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -463,7 +463,7 @@ Feature: Stuff
     # MORE-JE-ADDED:
     def test_parses_string_argument_without_stripping_empty_lines(self):
         # -- ISSUE 44: Parser removes comments in multiline text string.
-        doc = u'''
+        doc = '''
 Feature: Multiline
 
   Scenario: Multiline Text with Comments
@@ -493,7 +493,7 @@ Feature: Multiline
         ])
 
     def test_parses_feature_with_a_step_with_a_string_with_comments(self):
-        doc = u'''
+        doc = '''
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -515,7 +515,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_a_step_with_a_table_argument(self):
-        doc = u'''
+        doc = '''
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -530,11 +530,11 @@ Feature: Stuff
         assert feature.name == "Stuff"
         assert len(feature.scenarios) == 1
         assert feature.scenarios[0].name == "Doing stuff"
-        table = Table([u'type of stuff', u'awesomeness', u'ridiculousness'],
+        table = Table([ 'type of stuff',  'awesomeness',  'ridiculousness'],
                       rows=[
-                          [u'fluffy', u'large', u'frequent'],
-                          [u'lint', u'low', u'high'],
-                          [u'green', u'variable', u'awkward'],
+                          [ 'fluffy',  'large',  'frequent'],
+                          [ 'lint',  'low',  'high'],
+                          [ 'green',  'variable',  'awkward'],
                       ],
                       line=0
         )
@@ -547,7 +547,7 @@ Feature: Stuff
     def test_parses_feature_with_table_and_escaped_pipe_in_cell_values(self):
         # -- HINT py37: DeprecationWarning: invalid escape sequence '\|'
         # USE: Double escaped-backslashes.
-        doc = u'''
+        doc = '''
 Feature:
   Scenario:
     Given we have special cell values:
@@ -559,12 +559,12 @@ Feature:
 '''.lstrip()
         feature = parse_feature(doc)
         assert len(feature.scenarios) == 1
-        table = Table([u"name", u"value"],
+        table = Table([ "name", "value"],
             rows=[
-                [u"alice",  u"one|two"],
-                [u"bob",    u"|one"],
-                [u"charly", u"one|"],
-                [u"doro",   u"one|two|three|four"],
+                [ "alice",  "one|two"],
+                [ "bob",    "|one"],
+                [ "charly", "one|"],
+                [ "doro",   "one|two|three|four"],
             ],
             line=0
         )
@@ -573,7 +573,7 @@ Feature:
         ])
 
     def test_parses_feature_with_a_scenario_outline(self):
-        doc = u'''
+        doc = '''
 Feature: Stuff
 
   Scenario Outline: Doing all sorts of stuff
@@ -593,12 +593,12 @@ Feature: Stuff
         assert len(feature.scenarios) == 1
         assert feature.scenarios[0].name == "Doing all sorts of stuff"
 
-        table = Table([u'Stuff', u'Things'],
+        table = Table([ 'Stuff',  'Things'],
             rows=[
-                [u'wool', u'felt'],
-                [u'cotton', u'thread'],
-                [u'wood', u'paper'],
-                [u'explosives', u'hilarity'],
+                [ 'wool',  'felt'],
+                [ 'cotton',  'thread'],
+                [ 'wood', 'paper'],
+                [ 'explosives', 'hilarity'],
             ],
             line=0
         )
@@ -611,7 +611,7 @@ Feature: Stuff
         ])
 
     def test_parses_feature_with_a_scenario_outline_with_multiple_examples(self):
-        doc = u'''
+        doc = '''
 Feature: Stuff
 
   Scenario Outline: Doing all sorts of stuff
@@ -640,20 +640,20 @@ Feature: Stuff
             ('then', 'Then', 'we have <Things>', None, None),
         ])
 
-        table = Table([u'Stuff', u'Things'],
+        table = Table([ 'Stuff', 'Things'],
             rows=[
-                [u'wool', u'felt'],
-                [u'cotton', u'thread'],
+                [ 'wool', 'felt'],
+                [ 'cotton', 'thread'],
             ],
             line=0
         )
         assert feature.scenarios[0].examples[0].name == "Some stuff"
         assert feature.scenarios[0].examples[0].table == table
 
-        table = Table([u'Stuff', u'Things'],
+        table = Table([ 'Stuff', 'Things'],
             rows=[
-                [u'wood', u'paper'],
-                [u'explosives', u'hilarity'],
+                [ 'wood', 'paper'],
+                [ 'explosives', 'hilarity'],
             ],
             line=0
         )
@@ -661,7 +661,7 @@ Feature: Stuff
         assert feature.scenarios[0].examples[1].table == table
 
     def test_parses_feature_with_a_scenario_outline_with_tags(self):
-        doc = u'''
+        doc = '''
 Feature: Stuff
 
   @stuff @derp
@@ -683,7 +683,7 @@ Feature: Stuff
         assert len(feature.scenarios) == 1
         assert feature.scenarios[0].name == "Doing all sorts of stuff"
         assert feature.scenarios[0].tags == [
-            Tag(u'stuff', 1), Tag(u'derp', 1)
+            Tag('stuff', 1), Tag('derp', 1)
         ]
         assert_compare_steps(feature.scenarios[0].steps, [
             ('given', 'Given', 'we have <Stuff>', None, None),
@@ -691,12 +691,12 @@ Feature: Stuff
             ('then', 'Then', 'we have <Things>', None, None),
         ])
 
-        table = Table([u'Stuff', u'Things'],
+        table = Table([ 'Stuff', 'Things'],
             rows=[
-                [u'wool', u'felt'],
-                [u'cotton', u'thread'],
-                [u'wood', u'paper'],
-                [u'explosives', u'hilarity'],
+                [ 'wool', 'felt'],
+                [ 'cotton', 'thread'],
+                [ 'wood', 'paper'],
+                [ 'explosives', 'hilarity'],
             ],
             line=0
         )
@@ -705,7 +705,7 @@ Feature: Stuff
 
     def test_parses_scenario_outline_with_tagged_examples1(self):
         # -- CASE: Examples with 1 tag-line (= 1 tag)
-        doc = u'''
+        doc = '''
 Feature: Alice
 
   @foo
@@ -724,32 +724,32 @@ Feature: Alice
         assert len(feature.scenarios) == 1
         scenario_outline = feature.scenarios[0]
         assert scenario_outline.name == "Bob"
-        assert scenario_outline.tags == [Tag(u"foo", 1)]
+        assert scenario_outline.tags == [Tag("foo", 1)]
         assert_compare_steps(scenario_outline.steps, [
             ("given", "Given", "we have <Stuff>", None, None),
         ])
 
-        table = Table([u"Stuff", u"Things"],
+        table = Table([ "Stuff", "Things"],
             rows=[
-                [u"wool", u"felt"],
-                [u"cotton", u"thread"],
+                [ "wool",  "felt"],
+                [ "cotton",  "thread"],
             ],
             line=0
         )
         assert scenario_outline.examples[0].name == "Charly"
         assert scenario_outline.examples[0].table == table
-        assert scenario_outline.examples[0].tags == [Tag(u"bar", 1)]
+        assert scenario_outline.examples[0].tags == [Tag("bar", 1)]
 
         # -- ScenarioOutline.scenarios:
         # Inherit tags from ScenarioOutline and Examples element.
         assert len(scenario_outline.scenarios) == 2
-        expected_tags = [Tag(u"foo", 1), Tag(u"bar", 1)]
+        expected_tags = [Tag("foo", 1), Tag("bar", 1)]
         assert set(scenario_outline.scenarios[0].tags) == set(expected_tags)
         assert set(scenario_outline.scenarios[1].tags), set(expected_tags)
 
     def test_parses_scenario_outline_with_tagged_examples2(self):
         # -- CASE: Examples with multiple tag-lines (= 2 tag-lines)
-        doc = u'''
+        doc = '''
 Feature: Alice
 
   @foo
@@ -769,36 +769,36 @@ Feature: Alice
         assert len(feature.scenarios) == 1
         scenario_outline = feature.scenarios[0]
         assert scenario_outline.name == "Bob"
-        assert scenario_outline.tags == [Tag(u"foo", 1)]
+        assert scenario_outline.tags == [Tag("foo", 1)]
         assert_compare_steps(scenario_outline.steps, [
             ("given", "Given", "we have <Stuff>", None, None),
         ])
 
-        table = Table([u"Stuff", u"Things"],
+        table = Table(["Stuff", "Things"],
             rows=[
-                [u"wool", u"felt"],
-                [u"cotton", u"thread"],
+                ["wool", "felt"],
+                ["cotton", "thread"],
             ],
             line=0
         )
         assert scenario_outline.examples[0].name == "Charly"
         assert scenario_outline.examples[0].table == table
-        expected_tags = [Tag(u"bar", 1), Tag(u"baz", 1)]
+        expected_tags = [Tag("bar", 1), Tag("baz", 1)]
         assert scenario_outline.examples[0].tags == expected_tags
 
         # -- ScenarioOutline.scenarios:
         # Inherit tags from ScenarioOutline and Examples element.
         assert len(scenario_outline.scenarios) == 2
         expected_tags = [
-            Tag(u"foo", 1),
-            Tag(u"bar", 1),
-            Tag(u"baz", 1)
+            Tag("foo", 1),
+            Tag("bar", 1),
+            Tag("baz", 1)
         ]
         assert set(scenario_outline.scenarios[0].tags) == set(expected_tags)
         assert set(scenario_outline.scenarios[1].tags), set(expected_tags)
 
     def test_parses_feature_with_the_lot(self):
-        doc = u'''
+        doc = '''
 # This one's got comments too.
 
 @derp
@@ -863,7 +863,7 @@ Feature: Stuff
 '''.lstrip()
         feature = parse_feature(doc)
         assert feature.name == "Stuff"
-        assert feature.tags == [Tag(u'derp', 1)]
+        assert feature.tags == [Tag('derp', 1)]
         assert feature.description == [
             "In order to test my parser",
             "As a test runner",
@@ -878,7 +878,7 @@ Feature: Stuff
         assert len(feature.scenarios) == 4
 
         assert feature.scenarios[0].name == 'Testing stuff'
-        assert feature.scenarios[0].tags == [Tag(u'fred', 1)]
+        assert feature.scenarios[0].tags == [Tag('fred', 1)]
         string = '\n'.join([
             'Yarr, my hovercraft be full of stuff.',
             "Also, I be feelin' this pirate schtick be a mite overdone, " + \
@@ -895,18 +895,18 @@ Feature: Stuff
 
         assert feature.scenarios[1].name == "Gosh this is long"
         assert feature.scenarios[1].tags == []
-        table = Table([u'length', u'width', u'height'],
+        table = Table([ 'length', 'width', 'height'],
             rows=[
-                [u'1', u'2', u'3'],
-                [u'4', u'5', u'6'],
+                [ '1', '2', '3'],
+                [ '4', '5', '6'],
             ],
             line=0
         )
         assert feature.scenarios[1].examples[0].name == "Initial"
         assert feature.scenarios[1].examples[0].table == table
-        table = Table([u'length', u'width', u'height'],
+        table = Table([ 'length', 'width', 'height'],
             rows=[
-                [u'7', u'8', u'9'],
+                [ '7', '8', '9'],
             ],
             line=0
         )
@@ -925,23 +925,23 @@ Feature: Stuff
             ('then', 'Then', "we don't really mind", None, None),
         ])
 
-        table = Table([u'Stuff', u'Things'],
+        table = Table([ 'Stuff', 'Things'],
             rows=[
-                [u'wool', u'felt'],
-                [u'cotton', u'thread'],
-                [u'wood', u'paper'],
-                [u'explosives', u'hilarity'],
+                [ 'wool', 'felt'],
+                [ 'cotton', 'thread'],
+                [ 'wood', 'paper'],
+                [ 'explosives', 'hilarity'],
             ],
             line=0
         )
         assert feature.scenarios[3].name == "Doing all sorts of stuff"
-        assert feature.scenarios[3].tags == [Tag(u'stuff', 1), Tag(u'derp', 1)]
+        assert feature.scenarios[3].tags == [Tag('stuff', 1), Tag('derp', 1)]
         assert feature.scenarios[3].examples[0].name == "Some stuff"
         assert feature.scenarios[3].examples[0].table == table
-        table = Table([u'a', u'b', u'c', u'd', u'e'],
+        table = Table([ 'a', 'b', 'c', 'd', 'e'],
             rows=[
-                [u'1', u'2', u'3', u'4', u'5'],
-                [u'6', u'7', u'8', u'9', u'10'],
+                [ '1', '2', '3', '4', '5'],
+                [ '6', '7', '8', '9', '10'],
             ],
             line=0
         )
@@ -953,7 +953,7 @@ Feature: Stuff
 
 
     def test_fails_to_parse_when_and_is_out_of_order(self):
-        text = u"""
+        text = """
 Feature: Stuff
 
   Scenario: Failing at stuff
@@ -963,7 +963,7 @@ Feature: Stuff
             parse_feature(text)
 
     def test_fails_to_parse_when_but_is_out_of_order(self):
-        text = u"""
+        text = """
 Feature: Stuff
 
   Scenario: Failing at stuff
@@ -973,7 +973,7 @@ Feature: Stuff
             parse_feature(text)
 
     def test_fails_to_parse_when_examples_is_in_the_wrong_place(self):
-        text = u"""
+        text = """
 Feature: Stuff
 
   Scenario: Failing at stuff
@@ -988,7 +988,7 @@ Feature: Stuff
 
 class TestParser4AndButSteps(object):
     def test_parse_scenario_with_and_and_but(self):
-        doc = u"""
+        doc = """
 Feature: Stuff
 
   Scenario: Doing stuff
@@ -1012,7 +1012,7 @@ Feature: Stuff
 
     @pytest.mark.parametrize("step_keyword", ["And", "But"])
     def test_parse_scenario_starts_with_and_step__without_background_steps_raises_error(self, step_keyword):
-        doc = u"""
+        doc = """
 Feature: Scenario first step uses And/But without background.steps
   Scenario: S1
     {step_keyword} with the background
@@ -1028,7 +1028,7 @@ Feature: Scenario first step uses And/But without background.steps
 
     @pytest.mark.parametrize("step_keyword", ["And", "But"])
     def test_parse_scenario_starts_with_and_step__with_feature_background_steps(self, step_keyword):
-        doc = u"""
+        doc = """
 Feature: Scenario first step uses And/But
   Background:
     Given some background
@@ -1056,7 +1056,7 @@ Feature: Scenario first step uses And/But
 
     @pytest.mark.parametrize("step_keyword", ["And", "But"])
     def test_parse_scenario_starts_with_and_step__with_rule_background_steps(self, step_keyword):
-        doc = u"""
+        doc = """
 Feature: Scenario first step uses And/But
   Rule: R1
     Background:
@@ -1087,7 +1087,7 @@ Feature: Scenario first step uses And/But
 
     @pytest.mark.parametrize("step_keyword", ["And", "But"])
     def test_parse_scenario_starts_with_and_step__with_rule_inherited_steps(self, step_keyword):
-        doc = u"""
+        doc = """
 Feature: Scenario first step uses And/But
   Background:
     Given some background
@@ -1123,7 +1123,7 @@ class TestForeign(object):
     # pylint: disable=no-self-use
 
     def test_first_line_comment_sets_language(self):
-        doc = u"""
+        doc = """
 # language: fr
 Fonctionnalit\xe9: testing stuff
   Oh my god, it's full of stuff...
@@ -1135,7 +1135,7 @@ Fonctionnalit\xe9: testing stuff
 
     def test_multiple_language_comments(self):
         # -- LAST LANGUAGE is used.
-        doc = u"""
+        doc = """
 # language: en
 # language: fr
 Fonctionnalit\xe9: testing stuff
@@ -1147,7 +1147,7 @@ Fonctionnalit\xe9: testing stuff
         assert feature.description == ["Oh my god, it's full of stuff..."]
 
     def test_language_comment_wins_over_commandline(self):
-        doc = u"""
+        doc = """
 # language: fr
 Fonctionnalit\xe9: testing stuff
   Oh my god, it's full of stuff...
@@ -1158,7 +1158,7 @@ Fonctionnalit\xe9: testing stuff
         assert feature.description == ["Oh my god, it's full of stuff..."]
 
     def test_whitespace_before_first_line_comment_still_sets_language(self):
-        doc = u"""
+        doc = """
 
 
 # language: cs
@@ -1171,7 +1171,7 @@ Po\u017eadavek: testing stuff
         assert feature.description == ["Oh my god, it's full of stuff..."]
 
     def test_anything_before_language_comment_makes_it_not_count(self):
-        text = u"""
+        text = """
 
 @wombles
 # language: cy-GB
@@ -1183,7 +1183,7 @@ Arwedd: testing stuff
 
     def test_defaults_to_DEFAULT_LANGUAGE(self):
         feature_kwd = i18n.languages[DEFAULT_LANGUAGE]['feature'][0]
-        doc = u"""
+        doc = """
 
 @wombles
 # language: cs
@@ -1196,7 +1196,7 @@ Arwedd: testing stuff
         assert feature.description == ["Oh my god, it's full of stuff..."]
 
     def test_whitespace_in_the_language_comment_is_flexible_1(self):
-        doc = u"""
+        doc = """
 #language:da
 Egenskab: testing stuff
   Oh my god, it's full of stuff...
@@ -1207,7 +1207,7 @@ Egenskab: testing stuff
         assert feature.description == ["Oh my god, it's full of stuff..."]
 
     def test_whitespace_in_the_language_comment_is_flexible_2(self):
-        doc = u"""
+        doc = """
 # language:de
 Funktionalit\xe4t: testing stuff
   Oh my god, it's full of stuff...
@@ -1218,7 +1218,7 @@ Funktionalit\xe4t: testing stuff
         assert feature.description == ["Oh my god, it's full of stuff..."]
 
     def test_whitespace_in_the_language_comment_is_flexible_3(self):
-        doc = u"""
+        doc = """
 #language: en-lol
 OH HAI: testing stuff
   Oh my god, it's full of stuff...
@@ -1229,7 +1229,7 @@ OH HAI: testing stuff
         assert feature.description == ["Oh my god, it's full of stuff..."]
 
     def test_whitespace_in_the_language_comment_is_flexible_4(self):
-        doc = u"""
+        doc = """
 #       language:     lv
 F\u012b\u010da: testing stuff
   Oh my god, it's full of stuff...
@@ -1240,7 +1240,7 @@ F\u012b\u010da: testing stuff
         assert feature.description == ["Oh my god, it's full of stuff..."]
 
     def test_parses_french(self):
-        doc = u"""
+        doc = """
 Fonctionnalit\xe9: testing stuff
   Oh my god, it's full of stuff...
 
@@ -1272,7 +1272,7 @@ Fonctionnalit\xe9: testing stuff
 
     def test_parses_french_multi_word(self):
         # codespell:ignore donné
-        doc = u"""
+        doc = """
 Fonctionnalité: testing stuff
   Oh my god, it's full of stuff...
 
@@ -1289,13 +1289,13 @@ Fonctionnalité: testing stuff
         assert feature.scenarios[0].name == "test stuff"
         # codespell:ignore donné
         assert_compare_steps(feature.scenarios[0].steps, [
-            ("given", u"Etant donné", u"I am testing stuff", None, None),
-            ("then", u"Alors", u"it should work", None, None),
+            ("given", "Etant donné", "I am testing stuff", None, None),
+            ("then", "Alors", "it should work", None, None),
         ])
     test_parses_french_multi_word.go = 1
 
     def __checkOLD_properly_handles_whitespace_on_keywords_that_do_not_want_it(self):
-        doc = u"""
+        doc = """
 # language: zh-TW
 
 \u529f\u80fd: I have no idea what I'm saying
@@ -1314,11 +1314,11 @@ Fonctionnalité: testing stuff
         assert len(feature.scenarios) == 1
         assert feature.scenarios[0].name == "No clue whatsoever"
         assert_compare_steps(feature.scenarios[0].steps, [
-            ('given', u'\u5047\u8a2d', "I've got no idea", None, None),
-            ('when', u'\u7576', 'I say things', None, None),
-            ('when', u'\u800c\u4e14', "People don't understand", None, None),
-            ('then', u'\u90a3\u9ebc', "People should laugh", None, None),
-            ('then', u'\u4f46\u662f', "I should take it well", None, None),
+            ('given', '\u5047\u8a2d', "I've got no idea", None, None),
+            ('when', '\u7576', 'I say things', None, None),
+            ('when', '\u800c\u4e14', "People don't understand", None, None),
+            ('then', '\u90a3\u9ebc', "People should laugh", None, None),
+            ('then', '\u4f46\u662f', "I should take it well", None, None),
         ])
 
     def test_properly_handles_whitespace_on_keywords_that_do_not_want_it(self):
@@ -1337,7 +1337,7 @@ Fonctionnalité: testing stuff
             'then': ['*', '那麼'],
             'when': ['*', '當']
         }}
-        doc = u"""
+        doc = """
 # language: zh-TW
 
 功能: I have no idea what I'm saying
@@ -1356,11 +1356,11 @@ Fonctionnalité: testing stuff
         assert len(feature.scenarios) == 1
         assert feature.scenarios[0].name == "No clue whatsoever"
         assert_compare_steps(feature.scenarios[0].steps, [
-            ('given', u'假如', "I've got no idea", None, None),
-            ('when', u'當', 'I say things', None, None),
-            ('when', u'並且', "People don't understand", None, None),
-            ('then', u'那麼', "People should laugh", None, None),
-            ('then', u'並且', "I should take it well", None, None),
+            ('given', '假如', "I've got no idea", None, None),
+            ('when', '當', 'I say things', None, None),
+            ('when', '並且', "People don't understand", None, None),
+            ('then', '那麼', "People should laugh", None, None),
+            ('then', '並且', "I should take it well", None, None),
         ])
 
 
@@ -1368,7 +1368,7 @@ class TestParser4ScenarioDescription(object):
     # pylint: disable=no-self-use
 
     def test_parse_scenario_description(self):
-        doc = u'''
+        doc = '''
 Feature: Scenario Description
 
   Scenario: With scenario description
@@ -1401,7 +1401,7 @@ Feature: Scenario Description
 
 
     def test_parse_scenario_with_description_but_without_steps(self):
-        doc = u'''
+        doc = '''
 Feature: Scenario Description
 
   Scenario: With description but without steps
@@ -1437,7 +1437,7 @@ Feature: Scenario Description
 
 
     def test_parse_scenario_with_description_but_without_steps_followed_by_scenario_with_tags(self):
-        doc = u'''
+        doc = '''
 Feature: Scenario Description
 
   Scenario: With description but without steps
@@ -1473,7 +1473,7 @@ Feature: Scenario Description
         ])
 
     def test_parse_two_scenarios_with_description(self):
-        doc = u'''
+        doc = '''
 Feature: Scenario Description
 
   Scenario: One with description but without steps
@@ -1526,7 +1526,7 @@ class TestParser4Tags(object):
         assert len(tags) == 3
         assert tags == [
             Tag(name, 1)
-            for name in (u'one', u'two.three-four', u'xxx' )
+            for name in ('one', 'two.three-four', 'xxx' )
         ]
 
     def test_parse_tags_with_tag_and_comment(self):
@@ -1539,7 +1539,7 @@ class TestParser4Tags(object):
         assert len(tags) == 3
         assert tags == [
             Tag(name, 1)
-            for name in (u'one', u'two.three-four', u'xxx')
+            for name in ('one', 'two.three-four', 'xxx')
         ]
 
     def test_parse_tags_with_invalid_tags(self):
@@ -1551,7 +1551,7 @@ class TestParser4Background(object):
     # pylint: disable=no-self-use
 
     def test_parse_background(self):
-        doc = u'''
+        doc = '''
 Feature: Background
 
   A feature description line 1.
@@ -1590,7 +1590,7 @@ Feature: Background
 
     def test_parse_background_with_description(self):
         # -- RELATED-TO: Issue #713
-        doc = u'''
+        doc = '''
 Feature: Background
 
   A feature description line 1.
@@ -1626,7 +1626,7 @@ Feature: Background
         assert feature.scenarios[0].name == "One"
 
     def test_parse_background_with_tags_should_fail(self):
-        text = u'''
+        text = '''
 Feature: Background with tags
   Expect that a ParserError occurs
   because Background does not support tags/tagging.
@@ -1641,7 +1641,7 @@ Feature: Background with tags
 
 
     def test_parse_two_background_should_fail(self):
-        text = u'''
+        text = '''
 Feature: Two Backgrounds
   Expect that a ParserError occurs
   because at most one Background is supported.
@@ -1657,7 +1657,7 @@ Feature: Two Backgrounds
 
 
     def test_parse_background_after_scenario_should_fail(self):
-        text = u'''
+        text = '''
 Feature: Background after Scenario
   Expect that a ParserError occurs
   because Background is only allowed before any Scenario.
@@ -1673,7 +1673,7 @@ Feature: Background after Scenario
 
 
     def test_parse_background_after_scenario_outline_should_fail(self):
-        text = u'''
+        text = '''
 Feature: Background after ScenarioOutline
   Expect that a ParserError occurs
   because Background is only allowed before any ScenarioOuline.
@@ -1698,7 +1698,7 @@ class TestParser4Steps(object):
     # pylint: disable=no-self-use
 
     def test_parse_steps_with_simple_steps(self):
-        doc = u'''
+        doc = '''
 Given a simple step
 When I have another simple step
  And I have another simple step
@@ -1716,7 +1716,7 @@ Then every step will be parsed without errors
         ])
 
     def test_parse_steps_with_multiline_text(self):
-        doc = u'''
+        doc = '''
 Given a step with multi-line text:
     """
     Lorem ipsum
@@ -1743,7 +1743,7 @@ Then every step will be parsed without errors
         ])
 
     def test_parse_steps_when_last_step_has_multiline_text(self):
-        doc = u'''
+        doc = '''
 Given a simple step
 Then the last step has multi-line text:
     """
@@ -1762,7 +1762,7 @@ Then the last step has multi-line text:
         ])
 
     def test_parse_steps_with_table(self):
-        doc = u'''
+        doc = '''
 Given a step with a table:
     | Name  | Age |
     | Alice |  12 |
@@ -1779,19 +1779,19 @@ Then every step will be parsed without errors
         assert len(steps) == 3
         # -- EXPECTED STEP DATA:
         #     SCHEMA: step_type, keyword, name, text, table
-        table1 = Table([u"Name", u"Age"],
+        table1 = Table(["Name", "Age"],
                        rows=[
-                        [ u"Alice", u"12" ],
-                        [ u"Bob",   u"23" ],
+                        [ "Alice", "12" ],
+                        [ "Bob",   "23" ],
                        ],
                        line=0
         )
-        table2 = Table([u"Country", u"Capital"],
+        table2 = Table(["Country", "Capital"],
                        rows=[
-                         [ u"France",   u"Paris" ],
-                         [ u"Germany",  u"Berlin" ],
-                         [ u"Spain",    u"Madrid" ],
-                         [ u"USA",      u"Washington" ],
+                         [ "France",   "Paris" ],
+                         [ "Germany",  "Berlin" ],
+                         [ "Spain",    "Madrid" ],
+                         [ "USA",      "Washington" ],
                        ],
                        line=0
         )
@@ -1803,7 +1803,7 @@ Then every step will be parsed without errors
         ])
 
     def test_parse_steps_when_last_step_has_a_table(self):
-        doc = u'''
+        doc = '''
 Given a simple step
 Then the last step has a final table:
     | Name   | City |
@@ -1814,10 +1814,10 @@ Then the last step has a final table:
         assert len(steps) == 2
         # -- EXPECTED STEP DATA:
         #     SCHEMA: step_type, keyword, name, text, table
-        table2 = Table([u"Name", u"City"],
+        table2 = Table(["Name", "City"],
                        rows=[
-                           [ u"Alonso", u"Barcelona" ],
-                           [ u"Bred",   u"London" ],
+                           [ "Alonso", "Barcelona" ],
+                           [ "Bred",   "London" ],
                        ],
                        line=0
         )
@@ -1827,7 +1827,7 @@ Then the last step has a final table:
         ])
 
     def test_parse_steps_with_malformed_table_fails(self):
-        text = u'''
+        text = '''
 Given a step with a malformed table:
     | Name   | City |
     | Alonso | Barcelona | 2004 |
@@ -1837,7 +1837,7 @@ Given a step with a malformed table:
             parse_steps(text)
 
     def test_parse_steps_with_multiline_text_before_any_step_fails(self):
-        text = u'''
+        text = '''
   """
   BAD MULTI-LINE TEXT (before any step)
   """
@@ -1849,7 +1849,7 @@ Given another step
         assert exc.match("Multi-line text before any step")
 
     def test_parse_steps_with_datatable_before_any_step_fails(self):
-        text = u'''
+        text = '''
           | name  | birthyear |
           | Alice | 1980 |
           | Bob   | 2005 |

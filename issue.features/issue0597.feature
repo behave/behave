@@ -26,15 +26,15 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
       # -*- coding: UTF-8 -*-
       from behave import given, when, then
 
-      @given(u'allé')
+      @given('allé')
       def given_step_alle(ctx):
           pass
 
-      @when(u'comment')
+      @when('comment')
       def when_step_comment(ctx):
           pass
 
-      @then(u'cava')
+      @then('cava')
       def then_step_cava(ctx):
           pass
       """
@@ -59,15 +59,15 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
       """
       from behave import given, when, then
 
-      @given(u'allé')
+      @given('allé')
       def given_step_alle(ctx):
           pass
 
-      @when(u'comment')
+      @when('comment')
       def when_step_comment(ctx):
           pass
 
-      @then(u'cava')
+      @then('cava')
       def then_step_cava(ctx):
           pass
       """
@@ -88,9 +88,9 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
       You can implement step definitions for undefined steps with these snippets:
 
       from behave.api.pending_step import StepNotImplementedError
-      @given(u'allé')
+      @given('allé')
       def step_impl(context):
-          raise StepNotImplementedError(u'Given allé')
+          raise StepNotImplementedError('Given allé')
       """
     But note that "python2 uses encoding=ascii"
     And note that "encoding-hint in steps file solves the problem"
@@ -102,15 +102,15 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
       """
       from behave import given, when, then
 
-      @given(u'allé')
+      @given('allé')
       def given_step_alle(ctx):
           pass
 
-      @when(u'comment')
+      @when('comment')
       def when_step_comment(ctx):
           pass
 
-      @then(u'cava')
+      @then('cava')
       def then_step_cava(ctx):
           pass
       """
@@ -128,8 +128,8 @@ Feature: Issue #597 -- Steps with accented letters doesn't seem to work
       """
     And the command output should not contain:
       """
-      @given(u'allé')
+      @given('allé')
       def step_impl(context):
-          raise StepNotImplementedError(u'Given allé')
+          raise StepNotImplementedError('Given allé')
       """
     But note that "python3 discovers encoding (or uses encoding=UTF-8)"

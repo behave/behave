@@ -247,7 +247,7 @@ class Context(object):
         cleanup_func_name = getattr(cleanup_func, "__name__", None)
         if not cleanup_func_name:
             cleanup_func_name = "%r" % cleanup_func
-        print(u"CLEANUP-ERROR in %s: %s: %s" %
+        print("CLEANUP-ERROR in %s: %s: %s" %
               (cleanup_func_name, exception.__class__.__name__, exception))
         traceback.print_exc(file=sys.stdout)
         # MAYBE: context._dump(pretty=True, prefix="Context: ")
@@ -501,14 +501,14 @@ class Context(object):
                 passed = step.run(self._runner, quiet=True, capture=False)
                 if not passed:
                     # -- ISSUE #96: Provide more substep info to diagnose problem.
-                    step_line = u"%s %s" % (step.keyword, step.name)
+                    step_line = "%s %s" % (step.keyword, step.name)
                     message = "%s SUB-STEP: %s" % \
                               (step.status.name.upper(), step_line)
                     if step.error_message:
                         message += "\nSubstep info: %s\n" % step.error_message
-                        message += u"Traceback (of failed substep):\n"
-                        message += u"".join(traceback.format_tb(step.exc_traceback))
-                    # message += u"\nTraceback (of context.execute_steps()):"
+                        message += "Traceback (of failed substep):\n"
+                        message += "".join(traceback.format_tb(step.exc_traceback))
+                    # message += "\nTraceback (of context.execute_steps()):"
                     assert False, message
 
             # -- FINALLY: Restore original context data for current step.
@@ -784,12 +784,12 @@ class ModelRunner(object):
             if self.config.verbose:
                 use_traceback = True
                 ExceptionUtil.set_traceback(e)
-            extra = u""
+            extra = ""
             if "tag" in hook_name:
                 extra = "(tag=%s)" % args[0]
 
             error_text = ExceptionUtil.describe(e, use_traceback).rstrip()
-            error_message = u"HOOK-ERROR in %s%s: %s" % (hook_name, extra, error_text)
+            error_message = "HOOK-ERROR in %s%s: %s" % (hook_name, extra, error_text)
             print(error_message)  # -- MAYBE: Use stderr
             self.hook_failures += 1
             # if "tag" in hook_name:
@@ -811,7 +811,7 @@ class ModelRunner(object):
                 if statement.error_message:
                     # -- NOTE: One exception/failure is already stored.
                     #    Append only error message.
-                    statement.error_message += u"\n"+ error_message
+                    statement.error_message += "\n"+ error_message
                 else:
                     # -- FIRST EXCEPTION/FAILURE:
                     statement.store_exception_context(e)

@@ -132,8 +132,8 @@ class TestSummaryCollector(object):
 
     def test_process_feature_with_one_passed_scenario(self):
         builder = FeatureBuilder()
-        builder.add_scenario(name=u"One").with_many_steps(2, status=Status.passed)
-        builder.add_many_scenarios(3, name=u"XFail").with_many_steps(4, outcomes=[
+        builder.add_scenario(name= "One").with_many_steps(2, status=Status.passed)
+        builder.add_many_scenarios(3, name= "XFail").with_many_steps(4, outcomes=[
             Status.passed, Status.failed, Status.untested])
         feature = builder.feature
 

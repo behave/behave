@@ -11,7 +11,7 @@ import pytest
 # ---------------------------------------------------------------------------------------
 # TEST DATA: FeatureLineDatabase
 # ---------------------------------------------------------------------------------------
-feature_text1 = u"""
+feature_text1 = """
     Feature: Alice
         Background: Alice.Background
           Given a background step passes
@@ -24,7 +24,7 @@ feature_text1 = u"""
           When a scenario step passes
     """
 
-feature_text_with_scenario_outline = u"""
+feature_text_with_scenario_outline = """
     Feature: Bob
 
         Scenario Outline: Bob.SO_2_<row.id>
@@ -41,7 +41,7 @@ feature_text_with_scenario_outline = u"""
           When a scenario step passes
     """
 
-feature_text_with_rule = u"""
+feature_text_with_rule = """
     Feature: Charly
         Background: Charly.Background
           Given a background step passes

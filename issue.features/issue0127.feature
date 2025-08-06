@@ -39,8 +39,8 @@ Feature: Issue #127: Strip trailing colons
         """
         from behave import given
 
-        @given(u'the following superusers exist')
-        @given(u'the following superusers exist:')
+        @given('the following superusers exist')
+        @given('the following superusers exist:')
         def step_given_following_superusers_exist(context):
             pass
         """
@@ -52,7 +52,7 @@ Feature: Issue #127: Strip trailing colons
         """
     And the command output should not contain:
         """
-        @given(u'the following superusers exist:')
+        @given('the following superusers exist:')
         def step_impl(context):
-            raise StepNotImplementedError(u'Given the following superusers exist:')
+            raise StepNotImplementedError('Given the following superusers exist:')
         """

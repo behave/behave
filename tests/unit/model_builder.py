@@ -268,8 +268,8 @@ class FilenameBuilderMixin(object):
 
 class FeatureBuilderMixin(FilenameBuilderMixin):
     FEATURE_DEFAULT_PARAMS = {
-        "keyword": u"Feature",
-        "name": u"",
+        "keyword": "Feature",
+        "name": "",
         "line": 0,
     }
 
@@ -362,8 +362,8 @@ class ManyRulesBuilderMixin(RuleBuilderMixin):
 
 class ScenarioBuilderMixin(object):
     SCENARIO_DEFAULT_PARAMS = {
-        "keyword": u"Scenario",
-        "name": u"",
+        "keyword": "Scenario",
+        "name": "",
         "line": 0,
     }
 
@@ -409,7 +409,7 @@ class ManyScenariosBuilderMixin(ScenarioBuilderMixin):
         offset = len(scenario_container.scenarios)
         name = scenario_kwargs.pop("name", "")
         for index in range(count):
-            scenario_name = u"{name}_{index}".format(name=name, index=index)
+            scenario_name = "{name}_{index}".format(name=name, index=index)
             scenario_kwargs["name"] = scenario_name.strip()
             self.add_scenario(current=scenario_container, **scenario_kwargs)
         return BuilderContext(self, scenario_container.scenarios[offset:])
@@ -438,9 +438,9 @@ class ManyScenariosBuilderMixin(ScenarioBuilderMixin):
 
 
 class ManyStepsBuilderMixin(object):
-    DEFAULT_STEP = u"a step passes"
-    DEFAULT_STEP_KEYWORD = u"Given"
-    DEFAULT_STEP_TYPE = u"given"
+    DEFAULT_STEP = "a step passes"
+    DEFAULT_STEP_KEYWORD = "Given"
+    DEFAULT_STEP_TYPE = "given"
 
     @property
     def steps(self):

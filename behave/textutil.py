@@ -21,7 +21,7 @@ BEHAVE_UNICODE_ERRORS = os.environ.get("BEHAVE_UNICODE_ERRORS", "replace")
 # -----------------------------------------------------------------------------
 # FUNCTIONS:
 # -----------------------------------------------------------------------------
-def make_indentation(indent_size, part=u" "):
+def make_indentation(indent_size, part=" "):
     """Creates an indentation prefix string of the given size."""
     return indent_size * part
 
@@ -36,12 +36,12 @@ def indent(text, prefix):  # pylint: disable=redefined-outer-name
     :return: Indented text (as unicode string).
     """
     lines = text
-    newline = u""
+    newline = ""
     if isinstance(text, six.string_types):
         lines = text.splitlines(True)
     elif lines and not lines[0].endswith("\n"):
         # -- TEXT LINES: Without trailing new-line.
-        newline = u"\n"
+        newline = "\n"
     # MAYBE: return newline.join([prefix + six.text_type(line, errors="replace")
     return newline.join([prefix + six.text_type(line) for line in lines])
 

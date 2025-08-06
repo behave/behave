@@ -27,9 +27,9 @@ Feature: Issue #216: ANSI escape sequences are used while using --wip option
         from behave import step, then
         from behave4cmd0.command_steps import step_command_output_should_not_contain_text
 
-        @then(u'the command output should not contain any ANSI escape sequences')
+        @then('the command output should not contain any ANSI escape sequences')
         def step_command_ouput_should_not_contain_ansi_sequences(context):
-            CSI = u"\x1b["  #< ANSI CONTROL SEQUENCE INTRODUCER (CSI).
+            CSI = "\x1b["  #< ANSI CONTROL SEQUENCE INTRODUCER (CSI).
             step_command_output_should_not_contain_text(context, CSI)
         """
     And a file named "features/scenario_with_undefined_steps.feature" with:

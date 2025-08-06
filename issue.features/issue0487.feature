@@ -8,7 +8,7 @@ Feature: Issue #487 -- UnicodeEncodeError with ZBSP in multi-line text
     .  File "/usr/bin/behave-2", line 9, in <module>
     .    load_entry_point('behave==1.2.5', 'console_scripts', 'behave')()
     .  File "/usr/lib/python2.7/site-packages/behave/__main__.py", line 111, in main
-    .     print(u"ParseError: %s" % e)
+    .     print("ParseError: %s" % e)
     . UnicodeEncodeError: 'ascii' codec can't encode characters in position 92-103: ordinal not in range(128)
     .
     . ANALYSIS:
@@ -36,7 +36,7 @@ Feature: Issue #487 -- UnicodeEncodeError with ZBSP in multi-line text
         @step('I use {special_unicode_char:w} in text:')
         def step_use_ZBSP_with_text(context, special_unicode_char):
             assert context.text
-            print(u"TEXT: %s" % context.text)
+            print("TEXT: %s" % context.text)
         """
       And a file named "behave.ini" with:
           """

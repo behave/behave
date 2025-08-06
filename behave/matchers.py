@@ -42,7 +42,7 @@ class StepParseError(ValueError):
             cause_text = ExceptionUtil.describe(exc_cause,
                                                 use_traceback=True,
                                                 prefix="CAUSED-BY: ")
-            text += u"\n" + cause_text
+            text += "\n" + cause_text
 
         ValueError.__init__(self, text)
         if exc_cause:
@@ -228,10 +228,10 @@ class Matcher(object):
     TYPE_REGISTRY = TypeRegistryNotSupported()
 
     # -- DESCRIBE-SCHEMA FOR STEP-DEFINITIONS (step-matchers):
-    SCHEMA = u"@{this.step_type}('{this.pattern}')"
-    SCHEMA_AT_LOCATION = SCHEMA + u" at {this.location}"
-    SCHEMA_WITH_LOCATION = SCHEMA + u"  # {this.location}"
-    SCHEMA_AS_STEP = u"{this.step_type} {this.pattern}"
+    SCHEMA = "@{this.step_type}('{this.pattern}')"
+    SCHEMA_AT_LOCATION = SCHEMA + " at {this.location}"
+    SCHEMA_WITH_LOCATION = SCHEMA + "  # {this.location}"
+    SCHEMA_AS_STEP = "{this.step_type} {this.pattern}"
 
     # -- IMPLEMENT ADAPTER FOR: TypeRegistry protocol
     @classmethod
@@ -355,7 +355,7 @@ class Matcher(object):
                 not isinstance(matched, MatchWithError))
 
     def __repr__(self):
-        return u"<%s: %r>" % (self.__class__.__name__, self.pattern)
+        return "<%s: %r>" % (self.__class__.__name__, self.pattern)
 
 
 class ParseMatcher(Matcher):
@@ -472,7 +472,7 @@ class CFParseMatcher(ParseMatcher):
         use_step_matcher("cfparse")
         # ... -- OMITTED: Provide type-converter function for Number
 
-        @given(u'{amount:Number+} as numbers')  # CARDINALITY-FIELD: Many-Numbers
+        @given('{amount:Number+} as numbers')  # CARDINALITY-FIELD: Many-Numbers
         def step_many_numbers(ctx, numbers):
             assert isinstance(numbers, list)
             assert isinstance(numbers[0], int)
@@ -551,7 +551,7 @@ class SimplifiedRegexMatcher(RegexMatcher):
         from behave import when, use_step_matcher
         use_step_matcher("re")
 
-        @when(u'a step passes')  # re.pattern = "^a step passes$"
+        @when('a step passes')  # re.pattern = "^a step passes$"
         def step_impl(context):
             pass
     """
@@ -578,7 +578,7 @@ class CucumberRegexMatcher(RegexMatcher):
         from behave import when, use_step_matcher
         use_step_matcher("re0")
 
-        @when(u'^a step passes$')   # re.pattern = "^a step passes$"
+        @when('^a step passes$')   # re.pattern = "^a step passes$"
         def step_impl(context): pass
     """
     NAME = "re0"

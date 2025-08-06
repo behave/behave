@@ -14,15 +14,15 @@ Feature: Issue #80: source file names not properly printed with python3
         """
         from behave import given, when, then
 
-        @given(u'a step passes')
+        @given('a step passes')
         def step(context):
             pass
 
-        @when(u'a step passes')
+        @when('a step passes')
         def step(context):
             pass
 
-        @then(u'a step passes')
+        @then('a step passes')
         def step(context):
             pass
         """

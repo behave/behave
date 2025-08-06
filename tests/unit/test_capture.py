@@ -61,38 +61,38 @@ class TestCaptured(object):
 
     def test_default_ctor(self):
         captured = Captured()
-        assert captured.stdout == u""
-        assert captured.stderr == u""
-        assert captured.log == u""
+        assert captured.stdout == ""
+        assert captured.stderr == ""
+        assert captured.log == ""
         assert not captured
 
     def test_ctor_with_params(self):
-        captured = Captured(u"Alice", u"Bob", u"Charly")
-        assert captured.stdout == u"Alice"
-        assert captured.stderr == u"Bob"
-        assert captured.log == u"Charly"
+        captured = Captured("Alice", "Bob", "Charly")
+        assert captured.stdout == "Alice"
+        assert captured.stderr == "Bob"
+        assert captured.log == "Charly"
 
-        captured = Captured(stdout=u"Alice")
-        assert captured.stdout == u"Alice"
-        assert captured.stderr == u""
-        assert captured.log == u""
+        captured = Captured(stdout= "Alice")
+        assert captured.stdout == "Alice"
+        assert captured.stderr == ""
+        assert captured.log == ""
 
-        captured = Captured(stderr=u"Bob")
-        assert captured.stdout == u""
-        assert captured.stderr == u"Bob"
-        assert captured.log == u""
+        captured = Captured(stderr= "Bob")
+        assert captured.stdout == ""
+        assert captured.stderr == "Bob"
+        assert captured.log == ""
 
-        captured = Captured(log=u"Charly")
-        assert captured.stdout == u""
-        assert captured.stderr == u""
-        assert captured.log == u"Charly"
+        captured = Captured(log= "Charly")
+        assert captured.stdout == ""
+        assert captured.stderr == ""
+        assert captured.log == "Charly"
 
     def test_reset(self):
         captured = Captured("STDOUT", "STDERR", "LOG_OUTPUT")
         captured.reset()
-        assert captured.stdout == u""
-        assert captured.stderr == u""
-        assert captured.log == u""
+        assert captured.stdout == ""
+        assert captured.stderr == ""
+        assert captured.log == ""
         assert not captured
 
     def test_bool_conversion__returns_false_without_captured_output(self):
@@ -368,14 +368,14 @@ class TestManyCapture(object):
         collector = ManyCaptured()
         collector.add_captured(captured)
         report = collector.make_report()
-        assert report == u""
+        assert report == ""
 
     def test_make_report__with_some_captured_data(self):
         captured = Captured(stdout="Alice", stderr="Bob", log="Charly")
         collector = ManyCaptured()
         collector.add_captured(captured)
         report = collector.make_report()
-        expected = u"""
+        expected = """
 ----
 CAPTURED STDOUT:
 Alice
@@ -396,7 +396,7 @@ Charly
         collector.add_captured(captured1)
         collector.add_captured(captured2)
         report = collector.make_report()
-        expected = u"""
+        expected = """
 ----
 CAPTURED STDOUT:
 Alice
@@ -420,7 +420,7 @@ Fred
         collector.add_captured(captured1)
         collector.add_captured(captured2)
         report = collector.make_report()
-        expected = u"""
+        expected = """
 ----
 CAPTURED STDOUT: C1
 Alice
@@ -680,7 +680,7 @@ class TestCaptureController(object):
     def test_make_captured_delta__without_output(self, capture_controller):
         capture_controller.start_capture()
         this_captured = capture_controller.make_captured_delta()
-        assert this_captured.output == u""
+        assert this_captured.output == ""
         assert not this_captured.has_output()
         assert this_captured is NO_CAPTURED_DATA
 
@@ -689,7 +689,7 @@ class TestCaptureController(object):
         print("HELLO Alice")
         this_captured1 = capture_controller.make_captured_delta()
         assert this_captured1.has_output()
-        assert this_captured1.output == u"HELLO Alice"
+        assert this_captured1.output == "HELLO Alice"
 
         # -- WHEN: I create another captured_delta
         this_captured2 = capture_controller.make_captured_delta()
@@ -697,14 +697,14 @@ class TestCaptureController(object):
         # -- THEN: this captured_delta contains NO_OUTPUT and is NO_CAPTURED_OUTPUT
         assert not this_captured2.has_output()
         assert this_captured2 is NO_CAPTURED_DATA
-        assert this_captured2.output == u""
+        assert this_captured2.output == ""
 
     def test_make_captured_delta__with_changed_output(self, capture_controller):
         capture_controller.start_capture()
         print("Hello Alice")
         this_captured1 = capture_controller.make_captured_delta()
         assert this_captured1.has_output()
-        assert this_captured1.output == u"Hello Alice"
+        assert this_captured1.output == "Hello Alice"
 
         # -- WHEN: I create another captured_delta after other output was captured
         print("Ciao Bob")
@@ -712,7 +712,7 @@ class TestCaptureController(object):
                                                                 failed=True)
 
         # -- THEN: this captured_delta contains NO_OUTPUT and is NO_CAPTURED_OUTPUT
-        assert this_captured2.output == u"Ciao Bob"
+        assert this_captured2.output == "Ciao Bob"
         assert this_captured2.name == "C2"
         assert this_captured2.failed is True
         assert this_captured2.has_output()
@@ -773,7 +773,7 @@ class TestCaptureController(object):
 
         # -- THEN: The captured contains the new output
         assert captured.has_output()
-        assert captured.output == u"Ciao Bob"
+        assert captured.output == "Ciao Bob"
         assert captured.name == "C2"
         assert captured.failed is True
         assert captured is not NO_CAPTURED_DATA

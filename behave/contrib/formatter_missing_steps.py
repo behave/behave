@@ -75,7 +75,7 @@ class MissingStepsFormatter(StepsUsageFormatter):
         """Writes missing step implementations by using step snippets."""
         step_snippets = make_undefined_step_snippets(self.undefined_steps)
         encoding = self.stream.encoding or "UTF-8"
-        function_separator = u"\n\n\n"
+        function_separator = "\n\n\n"
         steps_text = function_separator.join(step_snippets)
         module_text = self.template.format(encoding=encoding,
                                            undefined_step_snippets=steps_text,

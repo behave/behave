@@ -1,6 +1,6 @@
 @issue
 @not_reproducible
-Feature: Issue #142: --junit flag fails to output with step table data: TypeError: <Row [u'data', u'value']> is not JSON serializable
+Feature: Issue #142: --junit flag fails to output with step table data: TypeError: <Row [('data', 'value']> is not JSON serializable
 
       DUPLICATES: issue #67 (already fixed).
 
@@ -27,7 +27,7 @@ Feature: Issue #142: --junit flag fails to output with step table data: TypeErro
     Then it should pass
     But the command output should not contain:
         """
-        TypeError: <Row [u'behave outputs junit with tables', u'false']> is not JSON serializable
+        TypeError: <Row [('behave outputs junit with tables', 'false']> is not JSON serializable
         """
     And the command output should not contain:
         """

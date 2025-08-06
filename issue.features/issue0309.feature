@@ -15,7 +15,7 @@ Feature: Issue #309 -- behave --lang-list fails on Python3
   .     ...
   .   Languages available:
   .     File "/Users/jens/se/behave_main.fix/behave/__main__.py", line 70, in main
-  .       print(u'%s: %s / %s' % (iso_code, native, name))
+  .       print('%s: %s / %s' % (iso_code, native, name))
   .   UnicodeEncodeError: 'ascii' codec can't encode characters in position 4-10: ordinal not in range(128)
   .
   . RELATED FEATURES:

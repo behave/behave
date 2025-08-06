@@ -361,7 +361,7 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
             print("CALLED: cleanup_foo")
 
         # -- STEPS:
-        @given(u'I register a cleanup "{cleanup_name}"')
+        @given('I register a cleanup "{cleanup_name}"')
         def step_register_cleanup(context, cleanup_name):
             if cleanup_name == "cleanup_foo":
                 context.add_cleanup(cleanup_foo)

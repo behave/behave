@@ -23,7 +23,7 @@ Feature: Issue #675 -- Feature files cannot be found within symlink directories
       """
       from behave import step
 
-      @step(u'this')
+      @step('this')
       def step_impl(context):
         pass
       """

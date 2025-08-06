@@ -12,32 +12,32 @@ Feature: Issue #66: context.text and context.table are not cleared
       from hamcrest import assert_that, equal_to, is_not, is_, none
       import six
 
-      @given(u'a step with multiline text')
-      @given(u'a step with multiline text:')
+      @given('a step with multiline text')
+      @given('a step with multiline text:')
       def step(context):
           assert context.text is not None
           assert context.text, "Ensure non-empty"
           assert isinstance(context.text, six.string_types)
 
-      @given(u'a step with a table')
-      @given(u'a step with a table:')
+      @given('a step with a table')
+      @given('a step with a table:')
       def step(context):
           assert context.table is not None
 
-      @when(u'I check the "context.{name}" attribute')
+      @when('I check the "context.{name}" attribute')
       def step(context, name):
           context.name  = name
           context.value = getattr(context, name, None)
 
-      @then(u'its value is None')
+      @then('its value is None')
       def step(context):
           assert_that(context.value, is_(none()))
 
-      @then(u'its value is "{value}"')
+      @then('its value is "{value}"')
       def step(context, value):
           assert_that(context.value, equal_to(value))
 
-      @then(u'its value is not "{value}"')
+      @then('its value is not "{value}"')
       def step(context, value):
           assert_that(value, is_not(equal_to(context.value)))
       """

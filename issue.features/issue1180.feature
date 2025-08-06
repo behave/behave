@@ -36,8 +36,8 @@ Feature: Issue #1180 -- Negative Time Problem with Summary Reporter
           print("FREEZEGUN: Ignore behave modules ...")
           freezegun.configure(extend_ignore_list=["behave.model"])
 
-      @given(u'current time is fixed at "{isotime:ti}"')
-      @when(u'current time is fixed at "{isotime:ti}"')
+      @given('current time is fixed at "{isotime:ti}"')
+      @when('current time is fixed at "{isotime:ti}"')
       def step_current_time(ctx, isotime):
           time_patcher = freeze_time(isotime, real_asyncio=True)
           time_patcher.start()
@@ -47,7 +47,7 @@ Feature: Issue #1180 -- Negative Time Problem with Summary Reporter
               time_patcher.stop()
           ctx.add_cleanup(restore_time)
 
-      @then(u'today is "{today:ti}"')
+      @then('today is "{today:ti}"')
       def step_then_today_is(ctx, today):
           now = datetime.datetime.now()
           assert_that(today).is_equal_to(now)

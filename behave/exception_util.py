@@ -42,13 +42,13 @@ class ExceptionUtil(object):
     @classmethod
     def describe(cls, exception, use_traceback=False, prefix=""):
         # -- NORMAL CASE:
-        text = u"{prefix}{0}: {1}\n".format(exception.__class__.__name__,
+        text = "{prefix}{0}: {1}\n".format(exception.__class__.__name__,
                                             exception, prefix=prefix)
         if use_traceback:
             exc_traceback = cls.get_traceback(exception)
             if exc_traceback:
                 # -- NOTE: Chained-exception cause (see: PEP-3134).
-                text += u"".join(traceback.format_tb(exc_traceback))
+                text += "".join(traceback.format_tb(exc_traceback))
         return text
 
 
@@ -117,8 +117,8 @@ class ChainedExceptionUtil(ExceptionUtil):
                 cause_text = ExceptionUtil.describe(exc_cause, use_traceback,
                                                     prefix="CAUSED-BY: ")
                 parts.append(cause_text)
-        return u"\n".join(parts)
+        return "\n".join(parts)
         # if exc_cause:
         #     cause_text =
-        #     text += u"\n" + cause_text
+        #     text += "\n" + cause_text
         # return text

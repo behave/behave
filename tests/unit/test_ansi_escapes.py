@@ -16,9 +16,9 @@ from six.moves import range
 # TEST SUPPORT and TEST DATA
 # --------------------------------------------------------------------------
 TEXTS = [
-    u"lorem ipsum",
-    u"Alice and Bob",
-    u"Alice\nBob",
+    "lorem ipsum",
+    "Alice and Bob",
+    "Alice\nBob",
 ]
 ALL_COLORS = list(ansi_escapes.colors.keys())
 CURSOR_UPS = [ansi_escapes.up(count) for count in range(10)]

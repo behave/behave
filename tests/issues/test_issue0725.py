@@ -15,7 +15,7 @@ from behave.parser import parse_feature
 
 def test_issue():
     """Verifies that issue #725 is fixed."""
-    text = u'''
+    text = '''
 Feature: ScenarioOutline with description
 
   Scenario Outline: SO_1
@@ -23,7 +23,7 @@ Feature: ScenarioOutline with description
     Description line 2 for ScenarioOutline.
 
     Given a step with "<name>"
-    
+
     Examples:
       | name  |
       | Alice |

@@ -41,7 +41,7 @@ Feature: Issue #361 -- UTF-8 File with BOM
         '''
         from behave import step
 
-        @step(u'a special step')
+        @step('a special step')
         def step_impl(context):
             pass
         """

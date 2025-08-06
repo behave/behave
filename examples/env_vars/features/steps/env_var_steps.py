@@ -7,7 +7,7 @@ from behave import when
 import os
 
 # -- VARIANT 1:
-@when(u'I click on ${environment_variable:w}')
+@when('I click on ${environment_variable:w}')
 def step_when_i_click_on_environment_variable(context, environment_variable):
       env_value = os.environ.get(environment_variable, None)
       if env_value is None:
@@ -28,7 +28,7 @@ def parse_environment_var(text):
 
 register_type(EnvironmentVar=parse_environment_var)
 
-@when(u'I use the environment variable {environment_variable:EnvironmentVar}')
+@when('I use the environment variable {environment_variable:EnvironmentVar}')
 def step_when_i_use_environment_variable(context, environment_variable):
       env_name, env_value = environment_variable
       if env_value is None:

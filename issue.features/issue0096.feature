@@ -7,7 +7,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
     . final error message
     .
     .   def before_scenario(context,scenario):
-    .       context.execute_steps(u'''
+    .       context.execute_steps('''
     .           When "admin:admin" sends POST "/tasks/testStart"
     .           Then I expect HTTP code 200
     .       ''')
@@ -28,30 +28,30 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
         from behave import step
         import sys
 
-        @step(u'a step passes')
+        @step('a step passes')
         def step_passes(context):
             pass
 
-        @step(u'a step fails')
+        @step('a step fails')
         def step_fails(context):
             assert False, 'EXPECT: Step fails.'
 
-        @step(u'a step fails with stdout "{message}"')
+        @step('a step fails with stdout "{message}"')
         def step_fails_with_stdout(context, message):
             sys.stdout.write("%s\n" % message)
             assert False, 'EXPECT: Step fails with stdout.'
 
-        @step(u'a step fails with stderr "{message}"')
+        @step('a step fails with stderr "{message}"')
         def step_fails_with_stderr(context, message):
             sys.stderr.write("%s\n" % message)
             assert False, 'EXPECT: Step fails with stderr.'
 
-        @step(u'a step raises an error "{message}"')
+        @step('a step raises an error "{message}"')
         def step_raises_exception(context, message):
             raise RuntimeError(message)
 
-        @step(u'the following steps should pass')
-        @step(u'the following steps should pass:')
+        @step('the following steps should pass')
+        @step('the following steps should pass:')
         def step_following_steps_should_pass(context):
             context.execute_steps(context.text.strip())
         """
@@ -159,7 +159,7 @@ Feature: Issue #96: Sub-steps failed without any error info to help debug issue
     And a file named "features/environment.py" with:
         """
         def before_scenario(context, scenario):
-            context.execute_steps(u'''
+            context.execute_steps('''
                Given a step passes
                When a step passes
                Then a step fails

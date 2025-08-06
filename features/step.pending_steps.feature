@@ -42,15 +42,15 @@ Feature: Pending Step (Step exists with StepNotImplementedError Marker)
         from behave import given, when, then
         from behave.api.pending_step import StepNotImplementedError
 
-        @given(u'a pending step is used')
+        @given('a pending step is used')
         def step_pending_given(context):
             raise StepNotImplementedError('Given a pending step is used')
 
-        @when(u'a pending step is used')
+        @when('a pending step is used')
         def step_pending_when(context):
             raise StepNotImplementedError('When a pending step is used')
 
-        @then(u'a pending step is used')
+        @then('a pending step is used')
         def step_pending_then(context):
             raise StepNotImplementedError('Then a pending step is used')
         """

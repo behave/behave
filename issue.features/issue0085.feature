@@ -11,11 +11,11 @@ Feature: Issue #85: AssertionError with nested regex and pretty formatter
         """
         from __future__ import print_function
         from behave import given, when, then, use_step_matcher
-        @given(u'a {re_category} regular expression "{pattern}"')
+        @given('a {re_category} regular expression "{pattern}"')
         def impl(context, re_category, pattern):
             pass
 
-        @then(u'the parameter "{name}" is "{expected_value}"')
+        @then('the parameter "{name}" is "{expected_value}"')
         def impl(context, name, expected_value):
             actual_value = getattr(context, name, None)
             if actual_value is None:
@@ -23,7 +23,7 @@ Feature: Issue #85: AssertionError with nested regex and pretty formatter
             assert hasattr(context, name)
             assert actual_value == expected_value, "MISMATCH: actual({0}) == expected({1})".format(actual_value, expected_value)
 
-        @then(u'the parameter "{name}" is none')
+        @then('the parameter "{name}" is none')
         def impl(context, name):
             actual_value = getattr(context, name, None)
             assert hasattr(context, name)
@@ -35,19 +35,19 @@ Feature: Issue #85: AssertionError with nested regex and pretty formatter
 
         use_step_matcher('re')
 
-        @when(u'I try to match "(?P<foo>foo and more)"')
+        @when('I try to match "(?P<foo>foo and more)"')
         def impl(context, **kwargs):
             kwargs["regexp_case"] = "simple"
             print("CASE UNNESTED: {0}".format(kwargs))
             store_in_context(context, kwargs)
 
-        @when(u'I try to match "(?P<foo>foo(?P<bar>bar)?)"')
+        @when('I try to match "(?P<foo>foo(?P<bar>bar)?)"')
         def impl(context, **kwargs):
             kwargs["regexp_case"] = "nested"
             print("CASE NESTED: {0}".format(kwargs))
             store_in_context(context, kwargs)
 
-        @when(u'I try to match "(?P<foo>foo) (?P<bar>bar)?"')
+        @when('I try to match "(?P<foo>foo) (?P<bar>bar)?"')
         def impl(context, **kwargs):
             kwargs["regexp_case"] = "optional"
             print("CASE OPTIONAL: {0}".format(kwargs))

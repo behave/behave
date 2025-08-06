@@ -20,7 +20,7 @@ Feature: Progress3 Formatter
             def step_fails(context, word):
                 assert False, "XFAIL-STEP"
 
-            @step(u'a step raises an error "{message}"')
+            @step('a step raises an error "{message}"')
             def step_raises_exception(context, message):
                 raise RuntimeError(message)
             """

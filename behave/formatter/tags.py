@@ -102,7 +102,7 @@ class TagsFormatter(AbstractTagsFormatter):
             parts.append(list(details.keys())[0])
         else:
             for category in sorted(details):
-                text = u"%s: %d" % (category, details[category])
+                text = "%s: %d" % (category, details[category])
                 parts.append(text)
         return ", ".join(parts)
 
@@ -165,14 +165,14 @@ class TagsLocationFormatter(AbstractTagsFormatter):
         for tag_elements in self.tag_counts.values():
             locations.update([six.text_type(x.location) for x in tag_elements])
         location_column_size = compute_words_maxsize(locations)
-        schema = u"    %-" + _text(location_column_size) + "s   %s\n"
+        schema = "    %-" + _text(location_column_size) + "s   %s\n"
 
         # -- EMIT REPORT:
         self.stream.write("TAG LOCATIONS (alphabetically ordered):\n")
         for tag in sorted(self.tag_counts):
             self.stream.write("  @%s:\n" % tag)
             for element in self.tag_counts[tag]:
-                info = u"%s: %s" % (element.keyword, element.name)
+                info = "%s: %s" % (element.keyword, element.name)
                 self.stream.write(schema % (element.location, info))
             self.stream.write("\n")
         self.stream.write("\n")

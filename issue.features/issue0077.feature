@@ -39,7 +39,7 @@ Feature: Issue #77: Does not capture stdout from sub-processes
         PYTHON = sys.executable
         HERE = os.path.dirname(__file__)
 
-        @when(u'I make a subprocess call "hello {commandline}"')
+        @when('I make a subprocess call "hello {commandline}"')
         def step(context, commandline):
             result = subprocess_call_hello(commandline.split())
             assert result == 0
