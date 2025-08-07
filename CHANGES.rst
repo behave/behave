@@ -14,6 +14,14 @@ DEPRECATIONS:
 * DEPRECATED: ``tag-expressions v1`` (old-style tag-expressions)
 
 
+Version: 1.3.1 (unreleased)
+-------------------------------------------------------------------------------
+
+FIXED:
+
+* issue #1255: ImportError: cannot import name 'asynccontextmanager' not found in python 3.6 (submitted by: rzuckerm)
+
+
 Version: 1.3.0 (2025-08-04)
 -------------------------------------------------------------------------------
 

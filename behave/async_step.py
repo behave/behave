@@ -28,14 +28,17 @@ from behave.python_feature import PythonLibraryFeature
 if PythonLibraryFeature.has_asyncio_timeout():
     # -- SINCE: Python >= 3.11
     asyncio_timeout = asyncio.timeout
-else:
-    # -- CASE: Python < 3.11
+elif PythonLibraryFeature.has_contextlib_asynccontextmanager():
+    # -- CASE: 3.7 <= Python < 3.11 -- NOT-SUPPORTED, but issue a warning
     from contextlib import asynccontextmanager
     @asynccontextmanager
     async def asyncio_timeout(delay):
         warnings.warn("IGNORED: asyncio.timeout() -- REQUIRES: Python >= 3.11",
                       RuntimeWarning)
         yield
+else:
+    # -- CASE: Python < 3.7  -- NOT-SUPPORTED
+    asyncio_timeout = None
 
 
 # -----------------------------------------------------------------------------
@@ -182,9 +185,13 @@ class AsyncFunction:
         if not inspect.iscoroutinefunction(coroutine_func):
             func_type = type(coroutine_func).__name__
             raise TypeError("%s (NEEDS: async-function)" % func_type)
-        if timeout is not None and not PythonLibraryFeature.has_asyncio_timeout():
-            msg = "IGNORED: timeout (requires: asyncio.timeout() -- Python >= 3.11)"
-            warnings.warn(msg, RuntimeWarning)
+        if timeout is not None:
+            if not PythonLibraryFeature.has_asyncio_timeout():
+                msg = "IGNORED: timeout (requires: asyncio.timeout() -- Python >= 3.11)"
+                warnings.warn(msg, RuntimeWarning)
+            if asyncio_timeout is None:
+                # -- ENSURE: _coro_with_timeout() is not used.
+                timeout = None
 
         self.coro_func = coroutine_func
         self.timeout = timeout

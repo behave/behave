@@ -4,7 +4,8 @@ Provides a knowledge database if some Python features are supported
 in the current python version.
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
+import contextlib
 import sys
 
 
@@ -64,3 +65,8 @@ class PythonLibraryFeature(PythonFeature):
         .. seealso:: https://docs.python.org/3/library/asyncio-task.html#asyncio.timeout
         """
         return PYTHON_VERSION >= (3, 11)
+
+    @staticmethod
+    def has_contextlib_asynccontextmanager():
+        # -- SINCE: Python >= 3.7
+        return hasattr(contextlib, "asynccontextmanager")
