@@ -378,14 +378,6 @@ Configuration Parameters
     Invokes formatters without executing the steps.
 
 .. index::
-    single: configuration param; userdata_defines
-
-.. describe:: userdata_defines : sequence<text>
-
-    Define user-specific data for the config.userdata dictionary. Example:
-    -D foo=bar to store it in config.userdata["foo"].
-
-.. index::
     single: configuration param; exclude_re
 
 .. describe:: exclude_re : text
@@ -690,4 +682,31 @@ Configuration Parameters
     Use keywords for a language other than English.
 
 
+Additional Configuration Sections
+---------------------------------
+
+Userdata
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Define user-specific data for the config.userdata dictionary
+
+.. code-block:: ini
+
+    [behave.userdata]
+    Foo = A
+    Bar = B
+
+Alternatively, if using "pyproject.toml":
+
+.. code-block:: toml
+    :caption: FILE: pyproject.toml
+
+    [tool.behave.userdata]
+    Foo = "A"
+    Bar = "B"
+
+which is the equivalent of the command-line usage::
+
+    -D Foo=A -D Bar=B
+
+See :doc:`userdata` for usage examples, type conversion and advanced use cases.
 
