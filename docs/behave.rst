@@ -682,4 +682,28 @@ Configuration Parameters
     Use keywords for a language other than English.
 
 
+Additional Configuration Sections
+---------------------------------
+
+Userdata
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Define user-specific data for the config.userdata dictionary
+
+.. code-block:: ini
+
+    [behave.userdata]
+    Foo = A
+    Bar = B
+
+Alternatively, if using "pyproject.toml":
+
+.. code-block:: toml
+
+    [tool.behave.userdata]
+    Foo = "A"
+    Bar = "B"
+
+which is the equivalent of the command-line usage::
+
+    -D Foo=A -D Bar=B
 
