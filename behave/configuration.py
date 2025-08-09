@@ -452,6 +452,14 @@ RAW_VALUE_OPTIONS = frozenset([
     # -- MAYBE: "scenario_outline_annotation_schema",
 ])
 
+# -- SPECIAL CONFIGURATION SECTIONS
+# Maps config sections to their data names in the final config
+SPECIAL_CONFIG_SECTIONS = {
+    "formatters": "more_formatters",
+    "runners":    "more_runners", 
+    "userdata":   "userdata",
+}
+
 
 def _values_to_str(data):
     return json.loads(json.dumps(data),
@@ -570,14 +578,9 @@ def read_configparser(path):
     config_dir = os.path.dirname(path)
     format_outfiles_coupling(this_config, config_dir)
 
-    # -- STEP: Special additional configuration sections.
-    # SCHEMA: config_section: data_name
-    special_config_section_map = {
-        "behave.formatters": "more_formatters",
-        "behave.runners":    "more_runners",
-        "behave.userdata":   "userdata",
-    }
-    for section_name, data_name in special_config_section_map.items():
+    # special additional configuration sections
+    for section_suffix, data_name in SPECIAL_CONFIG_SECTIONS.items():
+        section_name = "behave." + section_suffix
         this_config[data_name] = {}
         if config.has_section(section_name):
             this_config[data_name].update(config.items(section_name))
@@ -637,12 +640,7 @@ def read_toml_config(path):
 
     # -- STEP: Special additional configuration sections.
     # SCHEMA: config_section: data_name
-    special_config_section_map = {
-        "formatters": "more_formatters",
-        "runners":    "more_runners",
-        "userdata":   "userdata",
-    }
-    for section_name, data_name in special_config_section_map.items():
+    for section_name, data_name in SPECIAL_CONFIG_SECTIONS.items():
         this_config[data_name] = {}
         try:
             section_data = config_tool["behave"][section_name]
@@ -783,7 +781,6 @@ class Configuration(object):
         config_tags=None,
         scenario_outline_annotation_schema=u"{name} -- @{row.id} {examples.name}"
     )
-    cmdline_only_options = set("userdata_defines")
 
     def __init__(self, command_args=None, load_config=True, verbose=None,
                  **kwargs):
@@ -810,7 +807,7 @@ class Configuration(object):
         parser.set_defaults(**self.defaults)
         args = parser.parse_args(command_args)
         for key, value in six.iteritems(args.__dict__):
-            if key.startswith("_") and key not in self.cmdline_only_options:
+            if key.startswith("_") or key in CONFIGFILE_EXCLUDED_OPTIONS:
                 continue
             setattr(self, key, value)
 
