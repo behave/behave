@@ -698,6 +698,7 @@ Define user-specific data for the config.userdata dictionary
 Alternatively, if using "pyproject.toml":
 
 .. code-block:: toml
+    :caption: FILE: pyproject.toml
 
     [tool.behave.userdata]
     Foo = "A"
@@ -706,4 +707,6 @@ Alternatively, if using "pyproject.toml":
 which is the equivalent of the command-line usage::
 
     -D Foo=A -D Bar=B
+
+See :doc:`userdata` for usage examples, type conversion and advanced use cases.
 
