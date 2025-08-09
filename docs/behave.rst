@@ -378,14 +378,6 @@ Configuration Parameters
     Invokes formatters without executing the steps.
 
 .. index::
-    single: configuration param; userdata_defines
-
-.. describe:: userdata_defines : sequence<text>
-
-    Define user-specific data for the config.userdata dictionary. Example:
-    -D foo=bar to store it in config.userdata["foo"].
-
-.. index::
     single: configuration param; exclude_re
 
 .. describe:: exclude_re : text
