@@ -1,13 +1,14 @@
 Version History
 ===============================================================================
 
-Version: 1.4.0 (planning)
+Version: 1.4.0 (unreleased)
 -------------------------------------------------------------------------------
 
 GOALS:
 
+* Support Python >= 3.10 (or newer)
 * Drop support for Python 2.7
-* MAYBE: Requires Python >= 3.7 (at least)
+* Drop support for Python 3.9 (and below)
 
 DEPRECATIONS:
 
@@ -20,6 +21,11 @@ Version: 1.3.1 (unreleased)
 FIXED:
 
 * issue #1255: ImportError: cannot import name 'asynccontextmanager' not found in python 3.6 (submitted by: rzuckerm)
+
+DOCUMENTATION:
+
+* Appendix: Add section with description of "Runners" extension point.
+* Appendix: Add section with "Cucumber-Expressions".
 
 
 Version: 1.3.0 (2025-08-04)

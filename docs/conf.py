@@ -59,7 +59,7 @@ extlinks = {
     "behave.example": ("https://github.com/behave/behave.example", None),
     "issue":  ("https://github.com/behave/behave/issues/%s", "issue #%s"),
     "pull":  ("https://github.com/behave/behave/issues/%s", "PR #%s"),
-    "github": ("https://github.com/%s", "github:/"),
+    "github": ("https://github.com/%s", "github:/%s"),
     "pypi": ("https://pypi.org/project/%s", "%s"),
     "python.docs": ('https://docs.python.org/3/%s', "python docs: %s"),
     "youtube": ("https://www.youtube.com/watch?v=%s", "youtube:video=%s"),
@@ -89,10 +89,10 @@ def setup(app):
 templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = ".rst"
+source_suffix = {".rst": "restructuredtext"}
 
 # The encoding of source files.
-source_encoding = "utf-8"
+source_encoding = "UTF-8"
 
 # The master toctree document.
 master_doc = "index"
@@ -116,7 +116,7 @@ if USE_SPHINX_INTERNATIONAL:
 # -----------------------------------------------------------------------------
 project = u"behave"
 authors = u"Jens Engel, Benno Rice and Richard Jones"
-copyright = u"2012-2024, %s" % authors
+copyright = u"2012-2025, %s" % authors
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

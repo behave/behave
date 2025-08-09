@@ -18,7 +18,7 @@ Once you've :doc:`installed <install>` *behave*, we recommend reading the
 * :doc:`tutorial <tutorial>` first and then
 * :doc:`feature test setup <gherkin>`,
 * :doc:`behave API <api>` and
-* :doc:`related software <related>` (things that you can combine with :pypi:`behave`)
+* :doc:`related software <appendix.related>` (things that you can combine with :pypi:`behave`)
 * finally: :doc:`how to use and configure <behave>` the :pypi:`behave` tool.
 
 There is also a :doc:`comparison <comparison>` with the other tools available.

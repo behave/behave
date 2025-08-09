@@ -36,7 +36,7 @@ The following formatters are currently supported:
 Name           Mode     Description
 ============== ======== ================================================================
 help           normal   Shows all registered formatters.
-bad_steps      dry-run  Shows BAD STEP-DEFINITIONS (if any exist).
+captured       normal   Inspect captured output.
 json           normal   JSON dump of test run
 json.pretty    normal   JSON dump of test run (human readable)
 plain          normal   Very basic formatter with maximum compatibility
@@ -47,6 +47,7 @@ progress3      normal   Shows detailed progress for each step of a scenario.
 rerun          normal   Emits scenario file locations of failing scenarios
 sphinx.steps   dry-run  Generate sphinx-based documentation for step definitions.
 steps          dry-run  Shows step definitions (step implementations).
+steps.bad      dry-run  Shows BAD STEP-DEFINITION(s) (if any exist).
 steps.catalog  dry-run  Shows non-technical documentation for step definitions.
 steps.code     dry-run  Shows executed steps combined with their code.
 steps.doc      dry-run  Shows documentation for step definitions.
@@ -67,7 +68,10 @@ tags.location  dry-run  Shows tags and the location where they are used.
 User-Defined Formatters
 -----------------------
 
-Behave allows you to provide your own formatter (class)::
+Behave allows you to provide your own formatter (class):
+
+.. code-block:: bash
+    :caption: SHELL
 
     # -- USE: Formatter class "Json2Formatter" in python module "foo.bar"
     # NOTE: Formatter must be importable from python search path.
@@ -77,8 +81,8 @@ The usage of a user-defined formatter can be simplified by providing an
 alias name for it in the configuration file:
 
 .. code-block:: ini
+    :caption: FILE: behave.ini
 
-    # -- FILE: behave.ini
     # ALIAS SUPPORTS: behave -f json2 ...
     # NOTE: Formatter aliases may override builtin formatters.
     [behave.formatters]
@@ -88,14 +92,64 @@ If your formatter can be configured, you should use the userdata concept
 to provide them. The formatter should use the attribute schema:
 
 .. code-block:: ini
+    :caption: FILE: behave.ini
 
-    # -- FILE: behave.ini
     # SCHEMA: behave.formatter.<FORMATTER_NAME>.<ATTRIBUTE_NAME>
     [behave.userdata]
     behave.formatter.json2.use_pretty = true
 
     # -- SUPPORTS ALSO:
     #    behave -f json2 -D behave.formatter.json2.use_pretty ...
+
+
+Use ``behave -f help`` to:
+
+* Inspect which formatters are currently defined/supported in your workspace
+* Check if a formatter definition has a problem (and which), like: ``ModuleNotFoundError``
+
+.. code-block:: bash
+    :caption: SHELL
+
+    $ behave -f help
+    AVAILABLE FORMATTERS:
+      captured       Inspect captured output.
+      html           Very basic HTML formatter
+      json           JSON dump of test run
+      json.pretty    JSON dump of test run (human readable)
+      null           Provides formatter that does not output anything.
+      plain          Very basic formatter with maximum compatibility
+      pretty         Standard colourised pretty formatter
+      progress       Shows dotted progress for each executed scenario.
+      progress2      Shows dotted progress for each executed step.
+      progress3      Shows detailed progress for each step of a scenario.
+      rerun          Emits scenario file locations of failing scenarios
+      sphinx.steps   Generate sphinx-based documentation for step definitions.
+      steps          Shows step definitions (step implementations).
+      steps.bad      Shows BAD STEP-DEFINITION(s) (if any exist).
+      steps.catalog  Shows non-technical documentation for step definitions.
+      steps.code     Shows executed steps combined with their code.
+      steps.doc      Shows documentation for step definitions.
+      steps.missing  Shows undefined/missing steps definitions, implements them.
+      steps.usage    Shows how step definitions are used by steps.
+      tags           Shows tags (and how often they are used).
+      tags.location  Shows tags and the location where they are used.
+
+    UNAVAILABLE FORMATTERS:
+      allure         ModuleNotFoundError: No module named 'allure_behave'
+
+
+DESIGN CONSTRAINTS:
+
+A formatter class must implement the following interface:
+
+* :class:`behave.formatter.api:IFormatter`
+* :class:`behave.formatter.api:IFormatter2` (alternative)
+
+A formatter class should be derived from the following class:
+
+* :class:`behave.formatter.api:Formatter` (aka: `behave.formatter.base:Formatter`) for :class:`~behave.formatter.api:IFormatter`
+* :class:`behave.formatter.api:BaseFormatter2` (aka: `behave.formatter.base2:BaseFormatter2`) for :class:`~behave.formatter.api:IFormatter2`
+
 
 
 More Formatters
@@ -118,8 +172,8 @@ The usage of a custom formatter can be simplified if a formatter alias is define
 EXAMPLE:
 
 .. code-block:: ini
+    :caption: FILE: behave.ini
 
-    # -- FILE: behave.ini
     # FORMATTER ALIASES: "behave -f allure" and others...
     [behave.formatters]
     allure = allure_behave.formatter:AllureFormatter
@@ -141,8 +195,8 @@ supports it. Currently only the JSON formatter supports embedding data.
 For example:
 
 .. code-block:: python
+    :caption: FILE: features/steps/screenshot_example_steps.py
 
-    # -- FILE: features/steps/screenshot_example_steps.py
     from behave import given, when
     from behave4example.web_browser.util import take_screenshot_and_attach_to_scenario
 
@@ -153,8 +207,8 @@ For example:
         take_screenshot_and_attach_to_scenario(ctx)
 
 .. code-block:: python
+    :caption: FILE: behave4example/web_browser/util.py
 
-    # -- FILE: behave4example/web_browser/util.py
     # HINTS:
     #   * EXAMPLE CODE ONLY
     #   * BROWSER-SPECIFIC: Implementation may depend on browser driver.
@@ -164,8 +218,8 @@ For example:
         ctx.attach("image/png", screenshot_image)
 
 .. code-block:: python
+    :caption: FILE: features/environment.py
 
-    # -- FILE: features/environment.py
     # EXAMPLE REQUIRES: This browser driver setup code (or something similar).
     from selenium import webdriver
 
