@@ -29,6 +29,6 @@ toml>=0.10.2; python_version <  '3.0'  # py27 support
 # SEE: https://pypi.org/project/charset-normalizer/
 # UNSUPPORTED: python_version >=2.7,<3.5
 charset-normalizer >= 3.1; python_version >= '3.8'
-charset-normalizer < 2.1; python_version == '3.5'    # python 3.5.x
+charset-normalizer <2.2; python_version == '3.5'    # python 3.5.x
 charset-normalizer < 3.1; python_version == '3.6'    # python 3.6.x
 charset-normalizer < 4.0; python_version == '3.7'    # python 3.7.x
