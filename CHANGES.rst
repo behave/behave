@@ -26,6 +26,9 @@ DOCUMENTATION:
 
 * Appendix: Add section with description of "Runners" extension point.
 * Appendix: Add section with "Cucumber-Expressions".
+* pull #1256: docs: userdata (provided by: Therdel, fixes: #1234)
+# fix #1234: userdata_defines configuration file parameter is not up to date (submitted by: vvavrychuk)
+
 
 
 Version: 1.3.0 (2025-08-04)
