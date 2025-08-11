@@ -45,7 +45,7 @@ jobs:
           - python-version: "3.14.0-rc.1"
             experimental: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       # DISABLED: name: Setup Python ${{ matrix.python-version }} on platform=${{ matrix.os }}
       - uses: actions/setup-python@v5
         with:
