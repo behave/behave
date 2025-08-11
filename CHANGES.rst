@@ -14,21 +14,31 @@ DEPRECATIONS:
 
 * DEPRECATED: ``tag-expressions v1`` (old-style tag-expressions)
 
+FIXED:
 
-Version: 1.3.1 (unreleased)
+* issue #1255: ImportError: cannot import name 'asynccontextmanager' not found in python 3.6 (submitted by: rzuckerm)
+* issue #1239: AmbiguousStep error on step import with "re" step-matcher (submitted by: VolodymyrDan00)
+
+DOCUMENTATION:
+
+* pull  #1256: docs: userdata (provided by: Therdel, fixes: #1234)
+* issue #1234: userdata_defines configuration file parameter is not up to date (submitted by: vvavrychuk)
+
+
+Version: 1.3.1 (2025-08-11, branch=release/v1.3.x)
 -------------------------------------------------------------------------------
 
 FIXED:
 
 * issue #1255: ImportError: cannot import name 'asynccontextmanager' not found in python 3.6 (submitted by: rzuckerm)
+* issue #1239: AmbiguousStep error on step import with "re" step-matcher (submitted by: VolodymyrDan00)
 
 DOCUMENTATION:
 
 * Appendix: Add section with description of "Runners" extension point.
 * Appendix: Add section with "Cucumber-Expressions".
-* pull #1256: docs: userdata (provided by: Therdel, fixes: #1234)
-# fix #1234: userdata_defines configuration file parameter is not up to date (submitted by: vvavrychuk)
-
+* pull  #1256: docs: userdata (provided by: Therdel, fixes: #1234)
+* issue #1234: userdata_defines configuration file parameter is not up to date (submitted by: vvavrychuk)
 
 
 Version: 1.3.0 (2025-08-04)
