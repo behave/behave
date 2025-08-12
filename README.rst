@@ -105,10 +105,10 @@ we recommend the `tutorial`_ and then the `feature testing language`_ and
 `api`_ references.
 
 
-.. _`Install *behave*.`: https://behave.readthedocs.io/en/stable/install.html
-.. _`tutorial`: https://behave.readthedocs.io/en/stable/tutorial.html#features
-.. _`feature testing language`: https://behave.readthedocs.io/en/stable/gherkin.html
-.. _`api`: https://behave.readthedocs.io/en/stable/api.html
+.. _`Install *behave*.`: https://behave.readthedocs.io/en/stable/install/
+.. _`tutorial`: https://behave.readthedocs.io/en/stable/tutorial/
+.. _`feature testing language`: https://behave.readthedocs.io/en/stable/gherkin/
+.. _`api`: https://behave.readthedocs.io/en/stable/api/
 
 
 More Information
