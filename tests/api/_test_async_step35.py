@@ -24,7 +24,7 @@ from platform import python_implementation
 import sys
 
 from hamcrest import assert_that, close_to
-from mock import Mock
+from unittest.mock import Mock
 import pytest
 
 from behave._stepimport import use_step_import_modules, SimpleStepContainer

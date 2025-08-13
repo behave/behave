@@ -1,7 +1,7 @@
 # pylint: disable=unused-wildcard-import
 # ruff: noqa: E731
 
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 from behave import step_registry
 
 

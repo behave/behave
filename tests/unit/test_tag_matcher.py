@@ -9,7 +9,7 @@ Unit tests for active tag-matcher (mod:`behave.tag_matcher`).
 """
 
 from __future__ import absolute_import
-from mock import Mock
+from unittest.mock import Mock
 from unittest import TestCase
 import operator
 import pytest

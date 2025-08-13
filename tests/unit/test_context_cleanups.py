@@ -13,7 +13,7 @@ OPEN ISSUES:
 from __future__ import print_function
 from behave.configuration import Configuration
 from behave.runner import Context, Runner, scoped_context_layer
-from mock import Mock
+from unittest.mock import Mock
 import pytest
 
 

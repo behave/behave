@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from __future__ import absolute_import, print_function, division
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 from behave.model import ScenarioOutline
 from behave.model_type import Status
 from behave.reporter.summary import (

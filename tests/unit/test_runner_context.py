@@ -6,7 +6,7 @@ from platform import python_implementation
 import unittest
 import warnings
 
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 import pytest
 
 from behave.configuration import Configuration

@@ -114,7 +114,6 @@ develop = [
     "coverage >= 5.0",
     "pytest >= 5.0; python_version >= '3.0'",
     "pytest-html >= 2.0; python_version >= '3.0'",
-    "mock  >= 4.0;   python_version >= '3.6'",
     "PyHamcrest >= 2.0.2; python_version >= '3.0'",
     "pytest-cov",
     "tox   >= 3.28.0,<4.0",   # -- HINT: tox >= 4.0 has breaking changes.
@@ -144,7 +143,6 @@ formatters = [
 testing = [
     "pytest >= 5.0; python_version >= '3.0'",
     "pytest-html >= 2.0;         python_version >= '3.0'",
-    "mock  >= 4.0;   python_version >= '3.6'",
     "PyHamcrest >= 2.0.2; python_version >= '3.0'",
     "assertpy >= 1.1",
     "chardet",

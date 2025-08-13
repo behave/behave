@@ -11,7 +11,7 @@ from behave.configuration import Configuration
 from behave.python_feature import PythonFeature
 from behave.runner import Context, ModelRunner
 from behave.tag_matcher import ActiveTagMatcher
-from mock import Mock
+from unittest.mock import Mock
 import pytest
 
 

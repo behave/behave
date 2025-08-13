@@ -5,7 +5,7 @@ if the TEST ASSUMPTION, that is used here, is true.
 * TEST ASSUMPTION: STORE_CAPTURED_ON_SUCCESS is False (only failures are captured)
 """
 
-from mock import Mock
+from unittest.mock import Mock
 import pytest
 
 from behave.configuration import Configuration

@@ -8,7 +8,7 @@ import sys
 import unittest
 from io import StringIO
 import pytest
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 from behave import runner_util
 from behave.runner import Context, Runner
 from behave.exception import ConfigError

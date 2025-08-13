@@ -4,7 +4,7 @@
 from __future__ import absolute_import, print_function, with_statement
 import unittest
 import pytest
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 
 from behave._stepimport import use_step_import_modules
 from behave.capture import CaptureController
