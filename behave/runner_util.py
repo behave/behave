@@ -13,7 +13,6 @@ import glob
 import os.path
 import re
 import sys
-from six import string_types
 
 from behave import parser as gherkin
 from behave._types import require_type, require_not_none
@@ -484,7 +483,7 @@ def parse_features(feature_files, language=None):
     features = []
     for location in feature_files:
         if not isinstance(location, FileLocation):
-            require_type(location, string_types)
+            require_type(location, str)
             location = FileLocation(os.path.normpath(location))
 
         if location.filename == scenario_collector.filename:
@@ -604,7 +603,7 @@ def make_undefined_step_snippet(step, language=None, prefix=""):
     :param language: i18n language, optionally needed for step text parsing.
     :return: Undefined-step snippet (as string).
     """
-    if isinstance(step, string_types):
+    if isinstance(step, str):
         step_text = step
         steps = gherkin.parse_steps(step_text, language=language)
         step = steps[0]

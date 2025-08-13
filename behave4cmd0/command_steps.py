@@ -14,7 +14,6 @@ from __future__ import absolute_import, print_function
 
 import os
 import re
-import six
 
 from behave import when, then, register_type # pylint: disable=no-name-in-module
 from behave.active_tag.python import PYTHON_VERSION
@@ -80,11 +79,9 @@ def step_i_run_command(ctx, command, encoding=None, **kwargs):
     Run a command as subprocess, collect its output and returncode.
     """
     command_util.ensure_workdir_exists(ctx)
-    if six.PY3 and encoding is not None:
-        # -- HINT: Python2 has no "encoding" parameter.
-        kwargs["encoding"] = encoding
     ctx.command_result = command_shell.run(command,
                                            cwd=ctx.workdir,
+                                           encoding=encoding,
                                            **kwargs)
     command_util.workdir_save_coverage_files(ctx.workdir)
     if False and DEBUG:

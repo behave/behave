@@ -8,12 +8,10 @@ Capture output (like: stdout, stderr, log output).
 * :class:`ICaptureSink`: CaptureSink interface for processing captured data.
 """
 
-from __future__ import absolute_import, print_function
 from contextlib import contextmanager
+from io import StringIO
 import sys
 import warnings
-
-from six import StringIO, PY2
 
 from behave._types import require_type
 from behave.constant import (
@@ -205,13 +203,8 @@ class Captured(ICaptured):
     def has_output(self):
         return bool(self.stdout or self.stderr or self.log)
 
-    if PY2:
-        # -- CONVERSION-TO-BOOL:
-        def __nonzero__(self):
-            return self.has_output()
-    else:
-        def __bool__(self):
-            return self.has_output()
+    def __bool__(self):
+        return self.has_output()
 
     def __repr__(self):
         this_output = self.output[:40]
@@ -373,12 +366,8 @@ class ManyCaptured(ICaptured):
         return self.make_report(this_template, separator=separator)
 
     # -- CONVERSION-TO-BOOL:
-    if PY2:
-        def __nonzero__(self):
-            return self.has_output()
-    else:
-        def __bool__(self):
-            return self.has_output()
+    def __bool__(self):
+        return self.has_output()
 
     # -- SPECIFIC: ManyCaptured
     def __add__(self, other):

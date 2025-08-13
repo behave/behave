@@ -1,12 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 Provides utility function for generating Sphinx-based documentation.
 """
 
-from __future__ import absolute_import
 import codecs
 from behave.textutil import compute_words_maxsize, text as _text
-import six
 
 
 # -----------------------------------------------------------------------------
@@ -99,7 +96,7 @@ class DocumentWriter(object):
         separator_parts = []
         row_schema_parts = []
         for col_index, heading in enumerate(table.headings):
-            column = [six.text_type(row[col_index]) for row in table.rows]
+            column = [str(row[col_index]) for row in table.rows]
             column.append(heading)
             column_size = compute_words_maxsize(column)
             cols_size.append(column_size)

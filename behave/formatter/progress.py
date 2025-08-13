@@ -9,9 +9,7 @@ A "dot" character that represents the result status is printed after
 executing a scope item.
 """
 
-from __future__ import absolute_import
 from behave.textutil import indent
-import six
 from behave.formatter.base import Formatter
 from behave.model_type import Status
 from behave.textutil import text as _text
@@ -73,7 +71,7 @@ class ProgressFormatterBase(Formatter):
 
         self.current_feature = feature
         self.current_feature_scenario_counts = 0
-        self.stream.write("%s  " % six.text_type(feature.filename))
+        self.stream.write("%s  " % str(feature.filename))
         self.stream.flush()
 
     def rule(self, rule):

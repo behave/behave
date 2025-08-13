@@ -1,13 +1,10 @@
-# -*- coding: utf-8 -*-
 """
 Alternative approach to test TagExpression by testing all possible combinations.
 
 REQUIRES: Python >= 2.6, because itertools.combinations() is used.
 """
 
-from __future__ import absolute_import
 import itertools
-from six.moves import range
 from behave.tag_expression.v1 import TagExpression as TagExpressionV1
 
 

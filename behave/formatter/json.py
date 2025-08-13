@@ -8,15 +8,10 @@ This module provides `JSON`_ formatters for :mod:`behave`:
 .. _JSON: https://json.org
 """
 
-from __future__ import absolute_import
 import base64
+import json
 from behave.formatter.base import Formatter
 from behave.model_type import Status
-import six
-try:
-    import json
-except ImportError:
-    import simplejson as json
 
 
 # -----------------------------------------------------------------------------
@@ -28,11 +23,11 @@ class JSONFormatter(Formatter):
     dumps_kwargs = {}
     split_text_into_lines = True   # EXPERIMENT for better readability.
 
-    json_number_types = six.integer_types + (float,)
-    json_scalar_types = json_number_types + (six.text_type, bool, type(None))
+    json_number_types = (int, float)
+    json_scalar_types = json_number_types + (str, bool, type(None))
 
     def __init__(self, stream_opener, config):
-        super(JSONFormatter, self).__init__(stream_opener, config)
+        super().__init__(stream_opener, config)
         # -- ENSURE: Output stream is open.
         self.stream = self.open()
         self.feature_count = 0
@@ -58,7 +53,7 @@ class JSONFormatter(Formatter):
             "keyword": feature.keyword,
             "name": feature.name,
             "tags": list(feature.tags),
-            "location": six.text_type(feature.location),
+            "location": str(feature.location),
             "status": None,     # Not known before feature run.
         }
         element = self.current_feature_data
@@ -70,7 +65,7 @@ class JSONFormatter(Formatter):
             "type": "background",
             "keyword": background.keyword,
             "name": background.name,
-            "location": six.text_type(background.location),
+            "location": str(background.location),
             "steps": [],
         })
         if background.name:
@@ -90,7 +85,7 @@ class JSONFormatter(Formatter):
             "keyword": scenario.keyword,
             "name": scenario.name,
             "tags": scenario.tags,
-            "location": six.text_type(scenario.location),
+            "location": str(scenario.location),
             "steps": [],
             "status": None,
         })
@@ -111,7 +106,7 @@ class JSONFormatter(Formatter):
             "keyword": step.keyword,
             "step_type": step.step_type,
             "name": step.name,
-            "location": six.text_type(step.location),
+            "location": str(step.location),
         }
 
         if step.text:
@@ -145,7 +140,7 @@ class JSONFormatter(Formatter):
             args.append(arg)
 
         match_data = {
-            "location": six.text_type(match.location) or "",
+            "location": str(match.location) or "",
             "arguments": args,
         }
         if match.location:

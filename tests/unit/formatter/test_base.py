@@ -1,24 +1,17 @@
-# -*- coding: UTF-8
 """
 Unit tests for :mod:`behave.formatter.base` module.
 """
 
-from __future__ import absolute_import, print_function
 import codecs
 import os
 import sys
+from pathlib import Path
 
-import six
 import chardet
 import pytest
 
 from behave.formatter.base import StreamOpener
 
-if six.PY2:
-    # -- NEEDED-FOR: Path should be similar to Python3 implementation.
-    from pathlib2 import Path
-else:
-    from pathlib import Path
 
 
 # -----------------------------------------------------------------------------

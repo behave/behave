@@ -12,12 +12,10 @@ Support for "async-steps", that use async-functions/coroutine-functions, like:
         await asyncio.sleep(duration)
 """
 
-from __future__ import absolute_import, print_function
 import asyncio
 import functools
 import inspect
 import warnings
-import six
 
 from behave._types import require_type
 from behave.exception import StepFunctionTypeError
@@ -136,10 +134,10 @@ class AsyncStepParams:
 
         async_context_name = None
         loop_name = None
-        if isinstance(async_context, six.string_types):
+        if isinstance(async_context, str):
             async_context_name = async_context
             async_context = None
-        if isinstance(loop, six.string_types):
+        if isinstance(loop, str):
             loop_name = loop
             loop = None
 
@@ -317,7 +315,7 @@ class AsyncContext(object):
     default_name = "async_context"
 
     def __init__(self, name=None, loop=None, should_close=False, tasks=None):
-        if name and not isinstance(name, six.string_types):
+        if name and not isinstance(name, str):
             raise TypeError("name: {!r} (expected: string)".format(name))
 
         self.loop = use_or_assign_event_loop(loop)

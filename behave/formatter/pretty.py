@@ -2,8 +2,6 @@
 
 from __future__ import absolute_import, division
 import sys
-import six
-from six.moves import range, zip
 from behave.formatter.ansi_escapes import escapes, up
 from behave.formatter.base import Formatter
 from behave.model_type import Status
@@ -42,7 +40,7 @@ def get_terminal_size():
 # -----------------------------------------------------------------------------
 class MonochromeFormat(object):
     def text(self, text):   # pylint: disable=no-self-use
-        assert isinstance(text, six.text_type)
+        assert isinstance(text, str)
         return text
 
 class ColorFormat(object):
@@ -50,7 +48,7 @@ class ColorFormat(object):
         self.status = status
 
     def text(self, text):
-        assert isinstance(text, six.text_type)
+        assert isinstance(text, str)
         return escapes[self.status] + text + escapes["reset"]
 
 
@@ -346,7 +344,7 @@ class PrettyFormatter(Formatter):
         self.stream.write("%s%s: %s " % (prefix, self.statement.keyword,
                                           self.statement.name))
 
-        location = self.indented_text(six.text_type(self.statement.location), True)
+        location = self.indented_text(str(self.statement.location), True)
         if self.show_source:
             self.stream.write(self.format("comments").text(location))
         self.stream.write("\n")
@@ -376,7 +374,7 @@ class PrettyFormatter(Formatter):
         self.stream.write(text_format.text(step.keyword + " "))
         line_length = 5 + len(step.keyword)
 
-        step_name = six.text_type(step.name)
+        step_name = str(step.name)
 
         text_start = 0
         for arg in arguments:
@@ -400,7 +398,7 @@ class PrettyFormatter(Formatter):
             line_length += (len(text))
 
         if self.show_source:
-            location = six.text_type(location)
+            location = str(location)
             if self.show_timings and status in (Status.passed, Status.failed):
                 location += " %0.3fs" % step.duration
             location = self.indented_text(location, proceed)

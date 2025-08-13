@@ -6,7 +6,6 @@ for the model elements in behave.
 
 import os.path
 import sys
-import six
 from behave.capture import ManyCaptured, CaptureSinkAsCollector
 from behave.constant import CAPTURE_SINK_STORE_CAPTURED_ON_SUCCESS
 from behave.model_type import (
@@ -22,15 +21,13 @@ class BasicStatement(object):
     STORE_CAPTURED_ON_SUCCESS = CAPTURE_SINK_STORE_CAPTURED_ON_SUCCESS
 
     def __init__(self, filename, line, keyword, name):
-        if not isinstance(keyword, six.text_type):
-            raise TypeError("keyword: {type_}:{value} (expected: {text_type})".format(
+        if not isinstance(keyword, str):
+            raise TypeError("keyword: {type_}:{value} (expected: str)".format(
                 type_=type(keyword).__name__, value=keyword,
-                text_type=six.text_type.__name__
             ))
-        if not isinstance(name, six.text_type):
-            raise TypeError("name: {type_}:{value} (expected: {text_type})".format(
+        if not isinstance(name, str):
+            raise TypeError("name: {type_}:{value} (expected: str)".format(
                 type_=type(name).__name__, value=name,
-                text_type=six.text_type.__name__
             ))
 
         filename = filename or '<string>'
@@ -194,7 +191,7 @@ class TagAndStatusStatement(BasicStatement):
         return self._cached_status
 
     def set_status(self, value):
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             value = Status.from_name(value)
         if value is Status.cleanup_error:
             if self._cached_status is Status.hook_error:

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: UTF-8 -*-
 # USAGE: convert_i18n_yaml.py [--data=i18n.yml] behave/i18n.py
 # REQUIRES: python3, to generate Unicode special-chars in readable format.
 """
@@ -8,7 +7,6 @@ Generates I18N python module based on cucumber_ `gherkin-languages.json`_.
 BASED ON:
 REQUIRES:
   * argparse
-  * six
   * PyYAML
 
 .. _cucumber: https://github.com/cucumber/common
@@ -27,16 +25,13 @@ REQUIRES:
     MISSING: "..." prefix (unicode literal prefix) is not generated w/ py3.
 """
 
-from __future__ import absolute_import, print_function
-# from __future__ import unicode_literals
+import argparse
+import json
 import os.path
+import pprint
 import sys
 from codecs import open
 from urllib.request import urlopen
-import pprint
-import json
-import argparse
-import six
 
 HERE = os.path.dirname(__file__)
 NAME = os.path.basename(__file__)
@@ -65,7 +60,7 @@ def yaml_normalize(data):
         for k in keywords:
             v = keywords[k]
             # bloody YAML parser returns a mixture of unicode and str
-            if not isinstance(v, six.text_type):
+            if not isinstance(v, str):
                 v = v.decode("UTF-8")
             keywords[k] = v.split("|")
     return data
@@ -91,7 +86,7 @@ def data_normalize(data, verbose=False):
             for k in lang_keywords:
                 if k in STEP_KEYWORDS:
                     values = lang_keywords[k]
-                    # if isinstance(values, six.string_types):
+                    # if isinstance(values, str):
                     #    continue
                     assert isinstance(values, list)
                     values2 = []

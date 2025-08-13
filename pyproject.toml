@@ -72,20 +72,12 @@ classifiers = [
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 2",
-    "Programming Language :: Python :: 2.7",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.5",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: Jython",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Software Development :: Testing",
 ]
@@ -94,10 +86,10 @@ dependencies = [
     "cucumber-expressions >= 17.1.0; python_version >= '3.8'",
     "parse >= 1.18.0",
     "parse-type >= 0.6.0",
+    # -- XXX_JE_CLEANUP_CANDIDATE:
     "six >= 1.15.0",
 
-    # -- PREPARED:
-    # DISABLED: "win_unicode_console; python_version <= '3.9'",
+    # -- DISABLED: "win_unicode_console; python_version <= '3.9'",
     "colorama >= 0.3.7",
 
     # -- SUPPORT: "pyproject.toml" (or: "behave.toml")
@@ -128,8 +120,7 @@ develop = [
     "tox   >= 3.28.0,<4.0",   # -- HINT: tox >= 4.0 has breaking changes.
     "virtualenv >= 20.26.6; python_version >= '3.7'",
     "invoke >=1.7.0;      python_version >= '3.6'",
-    # -- HINT, was RENAMED: path.py => path (for python3)
-    "path    >= 13.1.0; python_version >= '3.5'",
+    "path >= 13.1.0; python_version >= '3.5'",
     "pycmd",
     "modernize >= 0.5",
     "pylint",
@@ -157,19 +148,14 @@ testing = [
     "PyHamcrest >= 2.0.2; python_version >= '3.0'",
     "assertpy >= 1.1",
     "chardet",
-    # PREAPRED: "charset-normalizer",
+    "charset-normalizer",
 
     # -- HINT: path.py => path (python-install-package was renamed for python3)
-    "path >= 13.1.0;         python_version >= '3.5'",
+    "path >= 13.1.0; python_version >= '3.5'",
 
     # -- EXTRA PYTHON PACKAGES: Used for some tests
     "freezegun >= 1.5.1; python_version > '3.7'",
 ]
-
-
-# -- BECOMING-DEPRECATED: Remove it after Python 2.7 support is dropped.
-# [tool.distutils.bdist_wheel]
-# universal = true
 
 
 # -----------------------------------------------------------------------------
@@ -189,7 +175,7 @@ exclude = ["behave4cmd0*", "tests*"]
 namespaces = false
 
 # -- PREPARED: SETUPTOOLS-SCM: Generate version info from git-tag(s).
-# # GIT-TAG MATCHER: Only use git-tags that start with "v", like: "v1.2.6"
+# # GIT-TAG MATCHER: Only use git-tags that start with "v", like: "v1.3.0"
 # [tool.setuptools_scm]
 # git_describe_command = "git describe --match 'v[0-9]*'"
 # version_file = "behave/version.py"

@@ -102,6 +102,16 @@ class StepRegistry(object):
                 step.location == other_location and
                 other_location.filename != "<string>")
 
+    @classmethod
+    def same_step_matcher(cls, step_matcher1, step_matcher2):
+        return cls.same_step_definition(step_matcher1,
+                                        step_matcher2.pattern,
+                                        step_matcher2.location)
+        # -- ALTERNATIVE:
+        # return (step_matcher1.pattern == step_matcher2.pattern and
+        #         step_matcher1.location == step_matcher2.location and
+        #         step_matcher2.location.filename != "<string>")
+
     def on_bad_step_definition(self, step_matcher, error):
         # -- STEP: Select on_error() function
         on_error = self.error_handler.on_error
@@ -141,7 +151,7 @@ class StepRegistry(object):
         step_location = new_step_matcher.location
         step_definitions = self.steps[new_step_type]
         for existing in step_definitions:
-            if self.same_step_definition(existing, step_text, step_location):
+            if self.same_step_matcher(existing, new_step_matcher):
                 # -- EXACT-STEP: Same step function is already registered.
                 # This may occur when a step module imports another one.
                 return

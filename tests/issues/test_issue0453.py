@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 MAYBE: DUPLICATES: #449
 NOTE: traceback2 (backport for Python2) solves the problem.
@@ -20,16 +19,11 @@ To fix it, you may take e.message which is correct and traceback.format_tb(sys.e
 which is also correct.
 """
 
-from __future__ import print_function
+import traceback
+import pytest
 from behave.textutil import text
 from hamcrest.core import assert_that
 from hamcrest.library import contains_string
-import six
-import pytest
-if six.PY2:
-    import traceback2 as traceback
-else:
-    import traceback
 
 
 # -- XXX_JE_TEST_BALLOON:
@@ -74,7 +68,7 @@ def test_issue(encoding):
             if isinstance(text2, (bytes, bytearray)):
                 charset_detector = charset_normalizer.from_bytes(text2)
             else:
-                assert isinstance(text2, six.text_type)
+                assert isinstance(text2, str)
                 charset_detector = charset_normalizer.from_bytes(text2.encode())
             best_encoding = charset_detector.best().encoding
             print("CHARSET_DETECTOR.best.encoding=%s (encoding=%s)" %

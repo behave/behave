@@ -3,11 +3,9 @@
 Supports some active-tags for Python/Python version related functionality.
 """
 
-from __future__ import absolute_import, print_function
 import operator
-from platform import python_implementation
 import sys
-import six
+from platform import python_implementation
 from behave.tag_matcher import ValueObject, BoolValueObject
 
 
@@ -16,7 +14,8 @@ from behave.tag_matcher import ValueObject, BoolValueObject
 # -----------------------------------------------------------------------------
 PYTHON_VERSION = sys.version_info[:2]
 PYTHON_VERSION3 = sys.version_info[:3]
-
+PY2 = (PYTHON_VERSION[0] == 2)
+PY3 = (PYTHON_VERSION[0] == 3)
 
 # -----------------------------------------------------------------------------
 # HELPERS: ValueObjects
@@ -27,7 +26,7 @@ class VersionValueObject(ValueObject):
     """
 
     def __int__(self, value, compare_func=None):
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             value = self.to_version_tuple(value)
         super(VersionValueObject, self).__init__(value, compare_func)
 
@@ -43,7 +42,7 @@ class VersionValueObject(ValueObject):
         if isinstance(version, tuple):
             # -- ASSUME: tuple of numbers
             return version
-        elif isinstance(version, six.string_types):
+        elif isinstance(version, str):
             # -- CONVERT: string-to-tuple of numbers
             return tuple([int(x) for x in version.split(".")])
 
@@ -58,8 +57,8 @@ class VersionValueObject(ValueObject):
 #   PYTHON_VERSION  = (3, 12)
 #   PYTHON_VERSION3 = (3, 12, 7)
 ACTIVE_TAG_VALUE_PROVIDER = {
-    "python2": BoolValueObject(six.PY2),
-    "python3": BoolValueObject(six.PY3),
+    "python2": BoolValueObject(PY2),
+    "python3": BoolValueObject(PY3),
     "python.version": "%s.%s" % PYTHON_VERSION,
     "python.min_version": VersionValueObject(PYTHON_VERSION, operator.ge),
     "python.max_version": VersionValueObject(PYTHON_VERSION, operator.le),

@@ -8,7 +8,6 @@ import codecs
 import io
 import os
 import sys
-import six
 
 
 # -----------------------------------------------------------------------------
@@ -37,13 +36,13 @@ def indent(text, prefix):  # pylint: disable=redefined-outer-name
     """
     lines = text
     newline = ""
-    if isinstance(text, six.string_types):
+    if isinstance(text, str):
         lines = text.splitlines(True)
     elif lines and not lines[0].endswith("\n"):
         # -- TEXT LINES: Without trailing new-line.
         newline = "\n"
-    # MAYBE: return newline.join([prefix + six.text_type(line, errors="replace")
-    return newline.join([prefix + six.text_type(line) for line in lines])
+    # MAYBE: return newline.join([prefix + str(line, errors="replace")
+    return newline.join([prefix + str(line) for line in lines])
 
 
 def compute_words_maxsize(words):
@@ -121,16 +120,18 @@ def text(value, encoding=None, errors=None):
     if errors is None:
         errors = BEHAVE_UNICODE_ERRORS
 
-    if isinstance(value, six.text_type):
+    if isinstance(value, str):
         # -- CASE: ALREADY UNICODE (pass-through, efficiency):
         return value
-    elif isinstance(value, six.binary_type):
+    elif isinstance(value, bytes):
         # -- CASE: bytes/binary_type (Python2: str)
         try:
-            return six.text_type(value, encoding, errors)
+            # OR: text(value, encoding, errors)
+            # MAYBE: return str(value, encoding, errors)
+            return codecs.decode(value, encoding, errors)
         except UnicodeError:
             # -- BEST-EFFORT:
-            return six.u(value)
+            return codecs.decode(value, encoding, errors="replace")
     # elif isinstance(value, bytes):
     #     # -- MAYBE: filename, path, etc.
     #     try:
@@ -140,20 +141,11 @@ def text(value, encoding=None, errors=None):
     else:
         # -- CASE: CONVERT/CAST OBJECT TO TEXT/STRING
         try:
-            if six.PY2:
-                try:
-                    text2 = six.text_type(value)
-                except UnicodeError:
-                    # -- NOTE: value has no sane unicode conversion
-                    #  encoding=unicode-escape helps recover from errors.
-                    data = str(value)
-                    text2 = six.text_type(data, "unicode-escape", "replace")
-            else:
-                # PY3: Cast to string/unicode
-                text2 = six.text_type(value)
+            # PY3: Cast to string/unicode
+            text2 = str(value)
         except UnicodeError as e:
             # Python3: multi-arg call supports only string-like object: str, bytes
-            text2 = six.text_type(e)
+            text2 = str(e)
         return text2
 
 
@@ -169,16 +161,15 @@ def to_texts(args, encoding=None, errors=None):
 
 
 def ensure_stream_with_encoder(stream, encoding=None):
-    if not encoding:
-        encoding = select_best_encoding(stream)
-
-    if six.PY3:
-        return stream
-    elif hasattr(stream, "stream"):
-        return stream    # Already wrapped with a codecs.StreamWriter
-    else:
-        assert six.PY2
-        # py2 does, however, sometimes declare an encoding on sys.stdout,
-        # even if it doesn't use it (or it might be explicitly None)
-        stream = codecs.getwriter(encoding)(stream)
-        return stream
+    # if not encoding:
+    #    encoding = select_best_encoding(stream)
+    return stream
+    # -- MAYBE:
+    # if hasattr(stream, "stream"):
+    #    return stream    # Already wrapped with a codecs.StreamWriter
+    # else:
+    #     # -- PY2
+    #     # py2 does, however, sometimes declare an encoding on sys.stdout,
+    #     # even if it doesn't use it (or it might be explicitly None)
+    #     stream = codecs.getwriter(encoding)(stream)
+    #     return stream

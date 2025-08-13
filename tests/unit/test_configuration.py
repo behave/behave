@@ -3,7 +3,6 @@ from contextlib import contextmanager
 import os.path
 from pathlib import Path
 import sys
-import six
 import pytest
 from behave import configuration
 from behave.configuration import (
@@ -57,8 +56,6 @@ if sys.platform.startswith("win"):
     # -- OR: ROOTDIR_PREFIX = os.path.splitdrive(sys.executable)
     # NOTE: python2 requires lower-case drive letter.
     ROOTDIR_PREFIX_DEFAULT = "C:"
-    if six.PY2:
-        ROOTDIR_PREFIX_DEFAULT = ROOTDIR_PREFIX_DEFAULT.lower()
     ROOTDIR_PREFIX = os.environ.get("BEHAVE_ROOTDIR_PREFIX", ROOTDIR_PREFIX_DEFAULT)
 
 
@@ -96,9 +93,7 @@ class TestConfiguration(object):
         # -- WINDOWS-REQUIRES: normpath
         # DISABLED: pprint(d, sort_dicts=True)
         from pprint import pprint
-        extra_kwargs = {}
-        if six.PY3:
-            extra_kwargs = {"sort_dicts": True}
+        extra_kwargs = {"sort_dicts": True}
 
         d = configuration.read_configuration(file_path)
         pprint(d, **extra_kwargs)

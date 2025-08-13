@@ -1,10 +1,10 @@
-# -*- coding: UTF-8 -*-
 """
 Unit tests for :mod:`behave.fixture` module.
 """
 
-from __future__ import absolute_import, print_function
 import inspect
+import pytest
+
 from behave.fixture import (
     fixture, use_fixture, is_context_manager, InvalidFixtureError,
     use_fixture_by_tag, use_composite_fixture_with, fixture_call_params
@@ -12,7 +12,6 @@ from behave.fixture import (
 from behave._types import Unknown
 from behave.configuration import Configuration
 from behave.runner import Runner, Context, scoped_context_layer
-import pytest
 import six
 
 

@@ -8,10 +8,7 @@ for collection a summary counts of a test run.
 """
 # pylint: disable=useless-object-inheritance, consider-using-f-string
 
-from __future__ import absolute_import, print_function
 from collections import Counter, OrderedDict
-import six
-
 from behave._types import require_type
 from behave.model_type import Status
 from behave.model_visitor import ModelVisitor
@@ -134,7 +131,7 @@ class StatusCounts(Counter):  # pylint: disable=abstract-method
 
         for key, value in data.items():
             status = key
-            if isinstance(key, six.string_types):
+            if isinstance(key, str):
                 status = Status.from_name(key)
             elif not isinstance(key, Status):
                 raise TypeError("other.item.key: %r (expect: Status)" % key)
@@ -208,10 +205,6 @@ class StatusCounts(Counter):  # pylint: disable=abstract-method
 
     def __bool__(self):
         return self.all > 0
-
-    if six.PY2:
-        def __nonzero__(self):
-            return self.__bool__()
 
     # -- ALREADY, SEE: Counter
     # def __iadd__(self, other):
@@ -359,10 +352,6 @@ class HookErrorCounts(Counter):
     def __bool__(self):
         return self.all > 0
 
-    if six.PY2:
-        def __nonzero__(self):
-            return self.__bool__()
-
     # -- ALREADY, SEE: Counter
     # def __iadd__(self, other):
     #     require_type(other, (HookErrorCounts, Counter, dict))
@@ -509,10 +498,6 @@ class SummaryCounts(object):
     def __repr__(self):
         text = str(self).replace("\n", ";\n  ").strip()
         return "<%s: %s>" % (self.__class__.__name__, text)
-
-    if six.PY2:
-        def __nonzero__(self):
-            return self.__bool__()
 
 
 # -----------------------------------------------------------------------------

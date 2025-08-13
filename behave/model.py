@@ -10,14 +10,12 @@ This module provides the model element class that represent a behave model:
 * ...
 """
 
-from __future__ import absolute_import, with_statement, print_function
 import copy
 import difflib
 import logging
 import itertools
 import time
-import six
-from six.moves import zip       # pylint: disable=redefined-builtin
+import traceback
 
 from behave._types import require_type
 from behave.api.pending_step import StepNotImplementedError
@@ -28,11 +26,6 @@ from behave.model_core import (
 from behave.model_type import Status, OuterStatus
 from behave.matchers import NoMatch
 from behave.textutil import text as _text
-if six.PY2:
-    # -- USE PYTHON3 BACKPORT: With unicode traceback support.
-    import traceback2 as traceback
-else:
-    import traceback
 
 
 # ---------------------------------------------------------------------------
@@ -2043,7 +2036,7 @@ class Step(BasicStatement, Replayable):
 
         # -- CHECK FAILURE DETAILS:
         if self.status.has_failed():
-            require_type(error, six.text_type)
+            require_type(error, str)
             self.error_message = error
             keep_going = False
 
@@ -2131,7 +2124,7 @@ class Table(Replayable):
         :param default_value: Default value for cell (if values not provided).
         :returns: Index of new column (as number).
         """
-        # require_type(column_name, six.text_type)
+        # require_type(column_name, str)
         assert not self.has_column(column_name)
         if values is None:
             values = [default_value] * len(self.rows)
@@ -2312,7 +2305,7 @@ class Row(object):
     """
     def __init__(self, headings, cells, line=None, comments=None):
         for cell in cells:
-            require_type(cell, six.text_type,
+            require_type(cell, str,
                          message="%s:%s (excepted: text_type)" %
                                  (type(cell).__name__, cell))
 
@@ -2374,7 +2367,7 @@ class Row(object):
         return cls(headings, cells, **kwargs)
 
 
-class Tag(six.text_type):
+class Tag(str):
     """Tags appear may be associated with Features or Scenarios.
 
     They're a subclass of regular strings (unicode pre-Python 3) with an
@@ -2387,7 +2380,7 @@ class Tag(six.text_type):
     quoting_chars = ("'", '"', "<", ">")
 
     def __new__(cls, name, line):
-        o = six.text_type.__new__(cls, name)
+        o = str.__new__(cls, name)
         o.line = line
         return o
 
@@ -2416,7 +2409,7 @@ class Tag(six.text_type):
         :param allowed_chars: Optional string with additional preserved chars.
         :return: Unicode name that can be used as tag.
         """
-        require_type(text, six.text_type)
+        require_type(text, str)
         if allowed_chars is None:
             allowed_chars = cls.allowed_chars
 
@@ -2438,7 +2431,7 @@ class Tag(six.text_type):
         return "".join(chars)
 
 
-class Text(six.text_type):
+class Text(str):
     """Store multiline text from a Step definition.
 
     The attributes are:
@@ -2452,9 +2445,9 @@ class Text(six.text_type):
        Currently only "text/plain".
     """
     def __new__(cls, value, content_type="text/plain", line=0):
-        require_type(value, six.text_type)
-        require_type(content_type, six.text_type)
-        o = six.text_type.__new__(cls, value)
+        require_type(value, str)
+        require_type(content_type, str)
+        o = str.__new__(cls, value)
         o.content_type = content_type
         o.line = line
         return o

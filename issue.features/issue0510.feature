@@ -29,7 +29,7 @@ Feature: Issue #510 -- JUnit XML output is not well-formed (in some cases)
 
 
   @use.with_xmllint=yes
-  Scenario:
+  Scenario: CDATA with special character in output
     Given a new working directory
     And a file named "features/steps/special_char_steps.py" with:
       """
@@ -53,7 +53,14 @@ Feature: Issue #510 -- JUnit XML output is not well-formed (in some cases)
       1 scenario passed, 0 failed, 0 skipped
       """
     When I run "xmllint reports/TESTS-special_char.xml"
-    Then it should pass
+    Then it should pass with:
+      """
+      Captured stdout:
+      U+0004
+
+      ]]>
+      </system-out></testcase></testsuite>
+      """
     And the command output should not contain "parser error"
     And the command output should not contain:
       """
@@ -62,7 +69,7 @@ Feature: Issue #510 -- JUnit XML output is not well-formed (in some cases)
     And note that "xmllint reports additional correlated errors"
 
   @use.with_xmllint=yes
-  Scenario:
+  Scenario: CDATA with "]]>" in output
     Given a new working directory
     And a file named "features/steps/cdata_end.py" with:
       """
@@ -92,7 +99,14 @@ Feature: Issue #510 -- JUnit XML output is not well-formed (in some cases)
       1 scenario passed, 0 failed, 0 skipped
       """
     When I run "xmllint reports/TESTS-cdata_end.xml"
-    Then it should pass
+    Then it should pass with:
+      """
+      Captured stdout:
+      ]]&gt;
+
+      ]]>
+      </system-out></testcase></testsuite>
+      """
     And the command output should not contain "parser error"
     And the command output should not contain:
       """

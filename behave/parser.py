@@ -48,7 +48,6 @@ import logging
 import os
 import re
 import sys
-import six
 
 from behave._types import require_type, require_not_none
 from behave import model, i18n
@@ -76,7 +75,7 @@ def parse_file(filename, language=None):
 
 def parse_feature(text, language=None, filename=None):
     # ALL data operated on by the parser MUST be unicode
-    require_type(text, six.text_type)
+    require_type(text, str)
 
     try:
         result = Parser(language).parse(text, filename)
@@ -96,7 +95,7 @@ def parse_rule(text, language=None, filename=None):
     :param filename:  Filename (optional).
     :return: Rule object (if successful).
     """
-    require_type(text, six.text_type)
+    require_type(text, str)
     try:
         parser = Parser(language, variant="rule")
         result = parser.parse_rule(text, filename)
@@ -115,7 +114,7 @@ def parse_scenario(text, language=None, filename=None):
     :param filename:  Filename (optional).
     :return: Scenario object (if successful).
     """
-    require_type(text, six.text_type)
+    require_type(text, str)
     try:
         parser = Parser(language, variant="scenario")
         result = parser.parse_scenario(text, filename)
@@ -135,7 +134,7 @@ def parse_steps(text, language=None, filename=None):
     :param filename:  Filename (optional).
     :return: List of Step objects (if successful).
     """
-    require_type(text, six.text_type)
+    require_type(text, str)
     try:
         parser = Parser(language, variant="steps")
         result = parser.parse_steps(text, filename)
@@ -205,11 +204,6 @@ class ParserError(Exception):
             return 'Failed to parse "%s": %s' % (filename, arg0)
         # -- OTHERWISE:
         return "Failed to parse <string>: %s" % arg0
-
-    if six.PY2:
-        # pylint: disable=unnecessary-lambda-assignment
-        __unicode__ = __str__
-        __str__ = lambda self: self.__unicode__().encode("UTF-8")  # noqa: E731
 
 
 class State(Enum):
@@ -296,7 +290,7 @@ class Parser(object):
         * Parse many steps
         * Parse one step
         """
-        require_type(text, six.string_types)
+        require_type(text, str)
         require_type(initial_state, (State, NoneType))
         self.reset(filename=filename)
         if initial_state is not None:
@@ -916,7 +910,7 @@ class Parser(object):
         :param text:  Text that contains 0..* steps
         :return: List of parsed steps (as model.Step objects).
         """
-        require_type(text, six.text_type)
+        require_type(text, str)
         if not self.language:
             self.language = DEFAULT_LANGUAGE
         self.reset()

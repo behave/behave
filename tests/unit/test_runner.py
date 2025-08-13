@@ -6,7 +6,7 @@ from collections import defaultdict
 import os.path
 import sys
 import unittest
-from six import StringIO
+from io import StringIO
 import pytest
 from mock import Mock, patch
 from behave import runner_util

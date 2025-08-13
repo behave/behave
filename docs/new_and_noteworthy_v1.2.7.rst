@@ -9,6 +9,7 @@ Summary:
   to match partial tag names, like: ``@foo.*``
 * `Select-by-location for Scenario Containers`_ (Feature, Rule, ScenarioOutline)
 * `Support for emojis in feature files and steps`_
+* `Extension Point: Runner`_
 * `Improve Active-Tags Logic`_
 * `Active-Tags: Use ValueObject for better Comparisons`_
 * `Detect bad step definitions`_
@@ -187,6 +188,13 @@ Support for Emojis in Feature Files and Steps
 .. literalinclude:: ../features/steps/i18n_emoji_steps.py
     :caption: FILE: features/steps/i18n_emoji_steps.py
     :language: python
+
+
+Extension Point: Runner
+-------------------------------------------------------------------------------
+
+:pypi:`behave` has now an extension point to supply an own test runner.
+See :ref:`id.appendix.runners` for more details.
 
 
 Improve Active-Tags Logic

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # pylint: disable=C0103,R0201,W0401,W0614,W0621
 #   C0103   Invalid name (setUp(), ...)
 #   R0201   Method could be a function
@@ -6,10 +5,8 @@
 #   W0614   Unused import ... from wildcard import
 #   W0621   Redefining name ... from outer scope
 
-from __future__ import absolute_import
 import pytest
 from behave.formatter import ansi_escapes
-from six.moves import range
 
 
 # --------------------------------------------------------------------------

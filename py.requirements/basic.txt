@@ -13,8 +13,6 @@ cucumber-tag-expressions >= 4.1.0
 cucumber-expressions >= 17.1.0; python_version >= '3.8'
 parse >= 1.18.0
 parse_type >= 0.6.0
-# XXX_JE_TODO
-six >= 1.15.0
 
 # DISABLED: win_unicode_console >= 0.5;  python_version < '3.6'
 colorama >= 0.3.7
@@ -25,3 +23,6 @@ tomli>=1.1.0; python_version >=  '3.0' and python_version < '3.11'
 # -- PREPARED: charset-normalizer:
 # SEE: https://pypi.org/project/charset-normalizer/
 charset-normalizer >= 3.1; python_version >= '3.8'
+
+# -- XXX_JE_CLEANUP_CANDIDATE:
+six >= 1.15.0

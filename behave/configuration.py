@@ -13,8 +13,9 @@ This module provides the configuration for :mod:`behave`:
 """
 
 from __future__ import absolute_import, print_function
-import argparse
 from collections import namedtuple
+from configparser import ConfigParser
+import argparse
 import json
 import logging
 import os
@@ -23,7 +24,6 @@ import sys
 import shlex
 import six
 import warnings
-from six.moves import configparser
 
 from behave._types import Unknown
 from behave.exception import ConfigParamTypeError
@@ -40,12 +40,6 @@ from behave.userdata import UserData, parse_user_define
 # from behave.reporter.junit import JUnitReporter
 # from behave.reporter.summary import SummaryReporter
 # from behave.tag_expression import  make_tag_expression
-
-# -- PYTHON 2/3 COMPATIBILITY:
-# SINCE Python 3.2: ConfigParser = SafeConfigParser
-ConfigParser = configparser.ConfigParser
-if six.PY2:  # pragma: no cover
-    ConfigParser = configparser.SafeConfigParser
 
 # -- OPTIONAL TOML SUPPORT: Using "pyproject.toml" as config-file
 _TOML_AVAILABLE = True
@@ -452,6 +446,14 @@ RAW_VALUE_OPTIONS = frozenset([
     # -- MAYBE: "scenario_outline_annotation_schema",
 ])
 
+# -- SPECIAL CONFIGURATION SECTIONS
+# Maps config sections to their data names in the final config
+SPECIAL_CONFIG_SECTIONS = {
+    "behave.formatters": "more_formatters",
+    "behave.runners":    "more_runners",
+    "behave.userdata":   "userdata",
+}
+
 
 def _values_to_str(data):
     return json.loads(json.dumps(data),
@@ -562,7 +564,7 @@ def read_configparser(path):
             this_config[param_name] = config.getboolean("behave", dest)
         elif action == "append":
             value_parts = config.get("behave", dest).splitlines()
-            value_type = value_type or six.text_type
+            value_type = value_type or str
             this_config[param_name] = [value_type(part.strip()) for part in value_parts]
         elif action not in CONFIGFILE_EXCLUDED_ACTIONS:  # pragma: no cover
             raise ValueError('action "%s" not implemented' % action)
@@ -572,12 +574,7 @@ def read_configparser(path):
 
     # -- STEP: Special additional configuration sections.
     # SCHEMA: config_section: data_name
-    special_config_section_map = {
-        "behave.formatters": "more_formatters",
-        "behave.runners":    "more_runners",
-        "behave.userdata":   "userdata",
-    }
-    for section_name, data_name in special_config_section_map.items():
+    for section_name, data_name in SPECIAL_CONFIG_SECTIONS.items():
         this_config[data_name] = {}
         if config.has_section(section_name):
             this_config[data_name].update(config.items(section_name))
@@ -622,7 +619,7 @@ def read_toml_config(path):
             # -- TOML SPECIFIC:
             #  TOML has native arrays and quoted strings.
             #  There is no need to split by newlines or strip values.
-            value_type = value_type or six.text_type
+            value_type = value_type or str
             if not isinstance(raw_value, list):
                 message = "%s = %r (expected: list<%s>, was: %s)" % \
                           (param_name, raw_value, value_type.__name__,
@@ -637,15 +634,11 @@ def read_toml_config(path):
 
     # -- STEP: Special additional configuration sections.
     # SCHEMA: config_section: data_name
-    special_config_section_map = {
-        "formatters": "more_formatters",
-        "runners":    "more_runners",
-        "userdata":   "userdata",
-    }
-    for section_name, data_name in special_config_section_map.items():
+    for section_name, data_name in SPECIAL_CONFIG_SECTIONS.items():
+        this_section_name = section_name.replace("behave.", "", 1)
         this_config[data_name] = {}
         try:
-            section_data = config_tool["behave"][section_name]
+            section_data = config_tool["behave"][this_section_name]
             this_config[data_name] = _values_to_str(section_data)
         except KeyError:
             this_config[data_name] = {}
@@ -783,7 +776,6 @@ class Configuration(object):
         config_tags=None,
         scenario_outline_annotation_schema="{name} -- @{row.id} {examples.name}"
     )
-    cmdline_only_options = set("userdata_defines")
 
     def __init__(self, command_args=None, load_config=True, verbose=None,
                  **kwargs):
@@ -810,7 +802,7 @@ class Configuration(object):
         parser.set_defaults(**self.defaults)
         args = parser.parse_args(command_args)
         for key, value in six.iteritems(args.__dict__):
-            if key.startswith("_") and key not in self.cmdline_only_options:
+            if key.startswith("_"):
                 continue
             setattr(self, key, value)
 
@@ -915,11 +907,9 @@ class Configuration(object):
                 "behave/__main__" in command_name2):
                 # -- ONLY USED IF: Using "behave" or "python -mbehave ..."
                 command_args = sys.argv[1:]
-        elif isinstance(command_args, six.string_types):
+        elif isinstance(command_args, str):
             encoding = select_best_encoding() or "utf-8"
-            if six.PY2 and isinstance(command_args, six.text_type):
-                command_args = command_args.encode(encoding)
-            elif six.PY3 and isinstance(command_args, six.binary_type):
+            if isinstance(command_args, bytes):
                 command_args = command_args.decode(encoding)
             command_args = shlex.split(command_args)
         elif isinstance(command_args, (list, tuple)):
@@ -961,7 +951,7 @@ class Configuration(object):
 
         # -- EXTEND TAG-EXPRESSION: Add @wip tag
         self.tags = self.tags or []
-        if self.tags and isinstance(self.tags, six.string_types):
+        if self.tags and isinstance(self.tags, str):
             self.tags = [self.tags]
         self.tags.append("@wip")
 
@@ -1008,7 +998,7 @@ class Configuration(object):
         # -- SANITY-CHECK FIRST: Is correct type used for "config.format"
         if self.format is not None and not isinstance(self.format, list):
             parser.error("CONFIG-PARAM-TYPE-ERROR: format = %r (expected: list<%s>, was: %s)" %
-                         (self.format, six.text_type, type(self.format).__name__))
+                         (self.format, str, type(self.format).__name__))
 
         bad_formats_and_errors = self.select_bad_formats_with_errors()
         if bad_formats_and_errors:
@@ -1036,7 +1026,7 @@ class Configuration(object):
         config_tag_expression = make_tag_expression(config_tags)
         placeholder = "{config.tags}"
         placeholder_value = "{0}".format(config_tag_expression)
-        if isinstance(tags, six.string_types) and placeholder in tags:
+        if isinstance(tags, str) and placeholder in tags:
             tags = tags.replace(placeholder, placeholder_value)
         elif isinstance(tags, (list, tuple)):
             for index, item in enumerate(tags):
@@ -1049,7 +1039,7 @@ class Configuration(object):
         self.tags = tags
 
     # def _normalize_tags(self, tags):
-    #     if isinstance(tags, six.string_types):
+    #     if isinstance(tags, str):
     #         if tags.startswith('"') and tags.endswith('"'):
     #             return tags[1:-1]
     #         elif tags.startswith("'") and tags.endswith("'"):
@@ -1137,7 +1127,7 @@ class Configuration(object):
 
     def exclude(self, filename):
         if isinstance(filename, FileLocation):
-            filename = six.text_type(filename)
+            filename = str(filename)
 
         if self.include_re and self.include_re.search(filename) is None:
             return True
@@ -1189,7 +1179,7 @@ class Configuration(object):
         if self.scenario_outline_annotation_schema:
             # -- APPLY-CONFIG:
             from .model import ScenarioOutline
-            name_schema = six.text_type(self.scenario_outline_annotation_schema)
+            name_schema = str(self.scenario_outline_annotation_schema)
             ScenarioOutline.annotation_schema = name_schema.strip()
 
     def setup_stage(self, stage=None):

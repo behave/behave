@@ -48,19 +48,15 @@ Feature: Internationalization (i18n) and Problems with Unicode Strings
       And a file named "features/steps/step_write_output.py" with:
         """
         # -*- coding: UTF-8 -*-
-        from __future__ import print_function
         from behave import step
-        import six
 
         @step('I write text "{text}" to stdout')
         def step_write_text(context, text):
-            if six.PY2 and isinstance(text, six.text_type):
-                text = text.encode("utf-8", "replace")
             print(text)
 
         @step('I write bytes "{data}" to stdout')
         def step_write_bytes(context, data):
-            if isinstance(data, six.text_type):
+            if isinstance(data, str):
                 data = data.encode("unicode-escape", "replace")
             print(data)
         """

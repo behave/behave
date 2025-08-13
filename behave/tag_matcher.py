@@ -124,7 +124,7 @@ class BoolValueObject(ValueObject):
 
     @classmethod
     def to_bool(cls, value):
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             text = value.lower()
             if text in cls.TRUE_STRINGS:
                 return True

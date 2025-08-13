@@ -100,7 +100,7 @@ for fixed, keywords in configuration.OPTIONS:
         cmdline.append(cmdline_option_schema.format(
                             cmdline_option=cmdline_option, text=text))
 
-    if skip or dest in "tags_help lang_list lang_help version".split():
+    if skip or dest in configuration.CONFIGFILE_EXCLUDED_OPTIONS:
         continue
 
     # -- CASE: configuration-file parameter

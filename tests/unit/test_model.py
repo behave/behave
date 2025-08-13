@@ -5,9 +5,6 @@ from __future__ import absolute_import, print_function, with_statement
 import unittest
 import pytest
 from mock import Mock, patch
-import six
-from six.moves import range     # pylint: disable=redefined-builtin
-from six.moves import zip       # pylint: disable=redefined-builtin
 
 from behave._stepimport import use_step_import_modules
 from behave.capture import CaptureController
@@ -20,12 +17,6 @@ from behave.model import Table, Row
 from behave.parser import parse_scenario
 from behave.runner import ModelRunner, Context
 from behave._stepimport import SimpleStepContainer
-
-
-traceback_modname = "traceback"  # pylint: disable=unused-import
-if six.PY2:
-    # pylint: disable=unused-import
-    traceback_modname = "traceback2"
 
 
 # -----------------------------------------------------------------------------
@@ -757,7 +748,7 @@ class TestStepRun(unittest.TestCase):
         assert step.status == Status.failed
         assert step.error_message.startswith("ASSERT FAILED")
 
-    @patch("%s.format_exc" % traceback_modname)
+    @patch("traceback.format_exc")
     def test_run_sets_status_to_failed_on_assertion_error(self, format_exc):
         step = Step("foo.feature", 17, "Given", "given", "foo")
         step.error_message = None
@@ -770,7 +761,7 @@ class TestStepRun(unittest.TestCase):
         assert step.status == Status.failed
         assert step.error_message == format_exc.return_value
 
-    @patch("%s.format_exc" % traceback_modname)
+    @patch("traceback.format_exc")
     def test_run_sets_status_to_error_on_exception(self, format_exc):
         step = Step("foo.feature", 17, "Given", "given", "foo")
         step.error_message = None

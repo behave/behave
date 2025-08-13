@@ -1,9 +1,6 @@
-# -*- coding: UTF-8 -*-
 # ruff: noqa: F811
-from __future__ import absolute_import
 import logging
 from behave import given, when, then, register_type
-from six.moves import zip
 from assertpy import assert_that
 
 

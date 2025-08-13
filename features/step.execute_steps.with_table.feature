@@ -5,13 +5,12 @@ Feature: Execute nested steps that use a table
     And a file named "features/steps/steps.py" with:
       """
       from behave import given, when, then, step
-      import six
 
       @given('the following nested steps')
       @given('the following nested steps:')
       def step_given_following_nested_steps(context):
           assert context.text, "ENSURE: multi-line text is provided."
-          context.nested_steps = six.text_type(context.text)
+          context.nested_steps = str(context.text)
 
       @step('I execute the nested steps {comment}')
       def step_execute_nested_steps_with_table(context, comment):

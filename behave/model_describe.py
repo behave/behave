@@ -1,11 +1,7 @@
-# -*- coding: utf-8 -*-
 """
 Provides textual descriptions for :mod:`behave.model` elements.
 """
 
-from __future__ import absolute_import
-from six.moves import range     # pylint: disable=redefined-builtin
-from six.moves import zip       # pylint: disable=redefined-builtin
 from behave.textutil import indent
 
 

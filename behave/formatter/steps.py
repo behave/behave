@@ -1,13 +1,10 @@
-# -*- coding: UTF-8 -*-
 """
 Provides a formatter that provides an overview of available step definitions
 (step implementations).
 """
 
-from __future__ import absolute_import
 from operator import attrgetter
 import inspect
-from six.moves import zip
 from behave.formatter.base import Formatter
 from behave.step_registry import StepRegistry, registry
 from behave.textutil import \

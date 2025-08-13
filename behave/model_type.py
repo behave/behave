@@ -2,13 +2,10 @@
 Basic types that are used in the model classes.
 """
 
-from __future__ import absolute_import, print_function
-
 from enum import Enum
 import os.path
 import sys
 import six
-
 from behave._types import require_type
 from behave.textutil import text as _text
 
@@ -129,7 +126,7 @@ class Status(Enum):
         :param other:   Other value to compare (enum-value, string).
         :return: True, if both values are equal. False, otherwise.
         """
-        if isinstance(other, six.string_types):
+        if isinstance(other, str):
             # -- CONVENIENCE: Compare with string-name (backward-compatible)
             return self.name == other
         return super(Status, self).__eq__(other)
@@ -325,7 +322,7 @@ class FileLocation(object):
     def __eq__(self, other):
         if isinstance(other, FileLocation):
             return self.filename == other.filename and self.line == other.line
-        elif isinstance(other, six.string_types):
+        elif isinstance(other, str):
             return self.filename == other
         else:
             raise TypeError("Cannot compare FileLocation with %s:%s" % \
@@ -345,7 +342,7 @@ class FileLocation(object):
                 # -- ASSUMPTION: assert self.filename == other.filename
                 return self._line_lessthan(other.line)
 
-        elif isinstance(other, six.string_types):
+        elif isinstance(other, str):
             return self.filename < other
         else:
             raise TypeError("Cannot compare FileLocation with %s:%s" % \
@@ -374,15 +371,11 @@ class FileLocation(object):
 
     def __str__(self):
         filename = self.filename
-        if isinstance(filename, six.binary_type):
+        if isinstance(filename, bytes):
             filename = _text(filename, "utf-8")
         if self.line is None:
             return filename
         return "%s:%d" % (filename, self.line)
-
-    if six.PY2:
-        __unicode__ = __str__
-        __str__ = lambda self: self.__unicode__().encode("utf-8")  # noqa: E731
 
     @classmethod
     def for_function(cls, func, curdir=None):

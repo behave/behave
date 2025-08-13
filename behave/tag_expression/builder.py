@@ -1,7 +1,4 @@
-from __future__ import absolute_import
 from enum import Enum
-import six
-
 from behave._types import require_type
 # -- NEW TAG-EXPRESSIONSx v2 (cucumber-tag-expressions with extensions):
 from .parser import TagExpressionParser, TagExpressionError
@@ -17,7 +14,7 @@ from .v1 import TagExpression as _TagExpressionV1
 def _parse_tag_expression_v1(tag_expression_parts):
     """Parse old style tag-expressions and build a TagExpression object."""
     # -- HINT: DEPRECATING
-    if isinstance(tag_expression_parts, six.string_types):
+    if isinstance(tag_expression_parts, str):
         tag_expression_parts = tag_expression_parts.split()
     elif not isinstance(tag_expression_parts, (list, tuple)):
         raise TypeError("EXPECTED: string, sequence<string>", tag_expression_parts)
@@ -38,7 +35,7 @@ def _parse_tag_expression_v2(text_or_seq):
         sequence = text_or_seq
         terms = ["({0})".format(term) for term in sequence]
         text = " and ".join(terms)
-    elif not isinstance(text, six.string_types):
+    elif not isinstance(text, str):
         raise TypeError("EXPECTED: string, sequence<string>", text)
 
     if "@" in text:
@@ -114,7 +111,7 @@ class TagExpressionProtocol(Enum):
     @classmethod
     def use(cls, member):
         """Specify which TagExpression protocol to use per default."""
-        if isinstance(member, six.string_types):
+        if isinstance(member, str):
             name = member
             member = cls.from_name(name)
         require_type(member, TagExpressionProtocol)
@@ -194,7 +191,7 @@ def _select_tag_expression_parser4auto(text_or_seq):
         # -- CASE: sequence<string> -- Sequence of tag_expression parts
         parts = text_or_seq
         text = " ".join(parts)
-    elif not isinstance(text, six.string_types):
+    elif not isinstance(text, str):
         raise TypeError("EXPECTED: string, sequence<string>", text)
 
     text = text.replace("(", " ( ").replace(")", " ) ")

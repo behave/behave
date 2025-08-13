@@ -1,4 +1,3 @@
-# -*- coding: UTF-8
 """
 Test issue #336: Unicode problem w/ exception traceback on Windows (python2.7)
 Default encoding (unicode-escape) of text() causes problems w/
@@ -13,13 +12,8 @@ ALTERNATIVE SOLUTIONS:
   MAYBE traceback_to_text(traceback.format_exc())
 """
 
-from __future__ import print_function
 from behave.textutil import text
 import pytest
-import six
-
-# require_python2 = pytest.mark.skipif(not six.PY2, reason="REQUIRE: Python2")
-# require_python3 = pytest.mark.skipif(six.PY2, reason="REQUIRE: Python3 (or newer)")
 
 
 class TestIssue(object):
@@ -42,16 +36,14 @@ AssertionError
          'File "features\\steps\\my_steps.py", line 210, in step_impl',
     ]
 
-    # @require_python2
     def test_issue__with_default_encoding(self):
         """Test ensures that problem is fixed with default encoding"""
         text2 = text(self.traceback_bytes)
         assert isinstance(self.traceback_bytes, bytes)
-        assert isinstance(text2, six.text_type)
+        assert isinstance(text2, str)
         for file_line_text in self.traceback_file_line_texts:
             assert file_line_text in text2
 
-    # @require_python2
     @pytest.mark.filterwarnings("ignore:invalid escape sequence")
     @pytest.mark.filterwarnings("ignore:.* is an invalid escape sequence.*:DeprecationWarning")
     def test__problem_exists_with_problematic_encoding(self):
@@ -61,7 +53,7 @@ AssertionError
         text2 = text(self.traceback_bytes, problematic_encoding)
         print("TEXT: "+ text2)
         assert isinstance(self.traceback_bytes, bytes)
-        assert isinstance(text2, six.text_type)
+        assert isinstance(text2, str)
 
         # -- VERIFY BAD-OUTCOME: With problematic encoding
         file_line_text = self.traceback_file_line_texts[0]

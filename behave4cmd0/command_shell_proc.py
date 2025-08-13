@@ -1,13 +1,10 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 This module provides pre-/post-processors for the mod:`behave4cmd0.command_shell`.
 """
 
-from __future__ import absolute_import, print_function
 import re
 import sys
-from six import string_types
 
 
 # -----------------------------------------------------------------------------
@@ -226,7 +223,7 @@ class TextProcessor(CommandOutputProcessor):
         return self.command_output_processor.process_output(text)
 
     def __call__(self, command_result):
-        if isinstance(command_result, string_types):
+        if isinstance(command_result, str):
             text = command_result
             return self.command_output_processor.process_output(text)[1]
         else:

@@ -74,6 +74,7 @@ import os.path
 import codecs
 import re
 import sys
+import traceback
 from xml.etree import ElementTree
 from datetime import datetime
 from behave.reporter.base import Reporter
@@ -84,21 +85,16 @@ from behave.model_describe import ModelDescriptor
 from behave.summary import SummaryCollector
 from behave.textutil import indent, make_indentation, text as _text
 from behave.userdata import UserDataNamespace
-import six
-
-if six.PY2:
-    # -- USE: Python3 backport for better unicode compatibility.
-    import traceback2 as traceback
-else:
-    import traceback
-    unichr = chr
 
 
 def CDATA(text=None):   # pylint: disable=invalid-name
     # -- issue #70: remove_ansi_escapes(text)
     element = ElementTree.Element('![CDATA[')
-    element.text = ansi_escapes.strip_escapes(text)
+    this_text = escape_CDATA(ansi_escapes.strip_escapes(text))
+    element.text = this_text
+    # OLD: element.text = ansi_escapes.strip_escapes(text)
     return element
+
 
 def _compile_invalid_re():
     # https://stackoverflow.com/questions/1707890/fast-way-to-filter-illegal-xml-unicode-chars-in-python
@@ -114,7 +110,7 @@ def _compile_invalid_re():
     ]
 
     illegal_ranges = [
-        "%s-%s" % (unichr(low), unichr(high))
+        "%s-%s" % (chr(low), chr(high))
         for (low, high) in illegal_unichrs
         if low < sys.maxunicode]
 
@@ -151,14 +147,6 @@ class ElementTreeWithCDATA(ElementTree.ElementTree):
 
 if hasattr(ElementTree, '_serialize'):
     # pylint: disable=protected-access
-    def _serialize_xml2(write, elem, encoding, qnames, namespaces,
-                        orig=ElementTree._serialize_xml):
-        if elem.tag == '![CDATA[':
-            write("\n<%s%s]]>\n" % \
-                  (elem.tag, escape_CDATA(elem.text).encode(encoding, "xmlcharrefreplace")))
-            return
-        return orig(write, elem, encoding, qnames, namespaces)
-
     def _serialize_xml3(write, elem, qnames, namespaces,
                         short_empty_elements=None,
                         orig=ElementTree._serialize_xml):
@@ -173,12 +161,7 @@ if hasattr(ElementTree, '_serialize'):
             # python <3.3
             return orig(write, elem, qnames, namespaces)
 
-    if six.PY3:
-        ElementTree._serialize_xml = \
-            ElementTree._serialize['xml'] = _serialize_xml3
-    elif six.PY2:
-        ElementTree._serialize_xml = \
-            ElementTree._serialize['xml'] = _serialize_xml2
+    ElementTree._serialize_xml = ElementTree._serialize['xml'] = _serialize_xml3
 
 
 class FeatureReportData(object):

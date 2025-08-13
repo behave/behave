@@ -1,12 +1,6 @@
 import sys
-import six
+import traceback
 from behave._types import Unknown, require_type
-
-if six.PY2:
-    # -- USE PYTHON2 BACKPORT: With unicode support
-    import traceback2 as traceback
-else:
-    import traceback
 
 
 class ExceptionUtil(object):

@@ -14,7 +14,6 @@ import inspect
 import re
 import warnings
 
-import six
 import parse
 from parse_type import cfparse
 
@@ -35,16 +34,9 @@ class StepParseError(ValueError):
 
     def __init__(self, text=None, exc_cause=None):
         if not text and exc_cause:
-            text = six.text_type(exc_cause)
-        if exc_cause and six.PY2:
-            # -- NOTE: Python2 does not show chained-exception causes.
-            #    Therefore, provide some hint (see also: PEP-3134).
-            cause_text = ExceptionUtil.describe(exc_cause,
-                                                use_traceback=True,
-                                                prefix="CAUSED-BY: ")
-            text += "\n" + cause_text
+            text = str(exc_cause)
 
-        ValueError.__init__(self, text)
+        super().__init__(text)
         if exc_cause:
             # -- CHAINED EXCEPTION (see: PEP 3134)
             ChainedExceptionUtil.set_cause(self, exc_cause)
@@ -859,7 +851,7 @@ def has_registered_step_matcher_class(name_or_class):
             pass
     """
     step_matcher_class_mapping = _the_step_matcher_factory.step_matcher_class_mapping
-    if isinstance(name_or_class, six.string_types):
+    if isinstance(name_or_class, str):
         name = name_or_class
         return name in step_matcher_class_mapping
     if not inspect.isclass(name_or_class):

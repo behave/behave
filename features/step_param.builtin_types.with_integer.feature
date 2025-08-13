@@ -30,13 +30,12 @@ Feature: Parse integer data types in step parameters (type transformation)
     And a file named "features/steps/integer_param_steps.py" with:
         """
         from behave import then, step
-        from six import integer_types
 
         class NotMatched(object): pass
 
         @step('a integer param with "{value:d}"')
         def step_integer_param_with(context, value):
-            assert isinstance(value, integer_types), "value.type=%s" % type(value)
+            assert isinstance(value, int), "value.type=%s" % type(value)
             context.value = value
 
         @step('a integer param with "{value}"')
@@ -78,7 +77,7 @@ Feature: Parse integer data types in step parameters (type transformation)
         @then('the value should be {outcome} as integer number')
         def step_value_should_be_matched_as_number(context, outcome):
             if outcome == "matched":
-                assert isinstance(context.value, integer_types), \
+                assert isinstance(context.value, int), \
                         "Unexpected type: %s" % type(context.value)
             else:
                 assert context.value is NotMatched

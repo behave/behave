@@ -2,13 +2,6 @@
 Unit tests for :mod:`behave.contrib.csv_table_from_file`.
 """
 
-import pytest
-import six
-if six.PY2:
-    # -- Python2 protection
-    pytest.skip("REQUIRES: Python3", allow_module_level=True)
-
-
 # -----------------------------------------------------------------------------
 # IMPORTS:
 # -----------------------------------------------------------------------------
@@ -21,7 +14,7 @@ from behave.contrib.csv_table_from_file import (
 )
 from behave.model import Examples, Table
 from behave.parser import parse_feature
-# DISABLED: from behave.model_describe import ModelDescriptor
+import pytest
 
 
 # -----------------------------------------------------------------------------

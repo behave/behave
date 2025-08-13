@@ -46,23 +46,27 @@ formatted in the Windows INI style, for example:
 .. code-block:: ini
 
     [behave]
-    format=plain
-    logging_clear_handlers=yes
-    logging_filter=-suds
+    default_format = plain
+    default_tags = not (@xfail or @not_implemented)
+    junit = true
+    junit_directory = build/behave.reports
+    logging_level = WARNING
 
 Alternatively, if using "pyproject.toml" instead (note the "tool." prefix):
 
 .. code-block:: toml
 
     [tool.behave]
-    format = "plain"
-    logging_clear_handlers = true
-    logging_filter = "-suds"
+    default_format = "plain"
+    default_tags = "not (@xfail or @not_implemented)"
+    junit = true
+    junit_directory = "build/behave.reports"
+    logging_level = "WARNING"
 
 NOTE: toml does not support `'%'` interpolations.
 
-Configuration Parameter Types
------------------------------
+Configuration File Parameter Types
+----------------------------------
 
 The following types are supported (and used):
 
@@ -91,9 +95,106 @@ The following types are supported (and used):
     TOML: toml can use arrays natively.
 
 
-Configuration Parameters
+Configuration File Parameters
 -----------------------------
 
 {config}
 
+Additional Configuration File Sections
+--------------------------------------
+
+Section: behave.userdata
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This section is used to define user-specific paramters (aka: userdata)
+for the config.userdata dictionary.
+
+.. code-block:: ini
+    :caption: FILE: behave.ini
+
+    [behave.userdata]
+    foo = Alice
+    bar = Bon
+
+Alternatively, if using "pyproject.toml":
+
+.. code-block:: toml
+    :caption: FILE: pyproject.toml
+
+    [tool.behave.userdata]
+    foo = "Alice"
+    bar = "Bob"
+
+which is the equivalent of the command-line usage:
+
+.. code-block:: shell
+    :caption: SHELL
+
+    behave -D foo=Alice -D bar=Bob ...
+
+See :doc:`userdata` for usage examples, type conversion and advanced use cases.
+
+
+Section: behave.formatters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This configuration file section is used to:
+
+* Define aliases for own formatters
+* Override the mapping of builtin formatters
+
+.. code-block:: ini
+    :caption: FILE: behave.ini
+
+    [behave.formatters]
+    allure = allure_behave.formatter:AllureFormatter
+    html   = behave_html_formatter:HTMLFormatter
+    html-pretty = behave_html_pretty_formatter:PrettyHTMLFormatter
+
+.. code-block:: toml
+    :caption: FILE: pyproject.toml
+
+    [tool.behave.formatters]
+    allure = "allure_behave.formatter:AllureFormatter"
+    html   = "behave_html_formatter:HTMLFormatter"
+    html-pretty = "behave_html_pretty_formatter:PrettyHTMLFormatter"
+
+You can then use this formatter alias on the command-line (or in the config-file):
+
+.. code-block:: shell
+    :caption: SHELL
+
+    behave -f html --output=report.html ...
+
+See :ref:`id.appendix.formatters` for more information.
+
+
+Section: behave.runners
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This configuration file section is used to:
+
+* Define aliases for own test runners
+* Override the mapping of builtin test runners
+
+.. code-block:: ini
+    :caption: FILE: behave.ini
+
+    [behave.runners]
+    mine = behave4me.runner:SuperDuperRunner
+
+.. code-block:: toml
+    :caption: FILE: pyproject.toml
+
+    [behave.runners]
+    mine = "behave4me.runner:SuperDuperRunner"
+
+You can then use this runner alias on the command-line:
+
+.. code-block:: shell
+    :caption: SHELL
+
+    behave --runner=mine ...
+
+See :ref:`id.appendix.runners` for more information.
 

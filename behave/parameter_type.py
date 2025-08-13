@@ -39,16 +39,11 @@ EXAMPLE 2::
 
 from __future__ import absolute_import, print_function
 from collections import namedtuple
+from pathlib import Path
 import os
 import parse
-import six
 from behave import register_type
 
-if six.PY2:
-    # -- NEEDED-FOR: Path should be similar to Python3 implementation.
-    from pathlib2 import Path
-else:
-    from pathlib import Path
 
 
 # -----------------------------------------------------------------------------

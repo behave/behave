@@ -3,8 +3,8 @@
 
 from __future__ import absolute_import, print_function
 import codecs
+import locale
 import sys
-import six
 from behave.version import VERSION as BEHAVE_VERSION
 from behave.configuration import Configuration
 from behave.exception import (ConstraintError, ConfigError,
@@ -174,11 +174,7 @@ def print_language_list(file=None):
     from behave.i18n import languages
 
     print_ = lambda text: print(text, file=file)
-    if six.PY2:
-        # -- PYTHON2: Overcome implicit encode problems (encoding=ASCII).
-        file = codecs.getwriter("UTF-8")(file or sys.stdout)
-
-    iso_codes = languages.keys()
+    iso_codes = list(languages.keys())
     print("AVAILABLE LANGUAGES:")
     for iso_code in sorted(iso_codes):
         native = languages[iso_code]["native"]
@@ -188,23 +184,13 @@ def print_language_list(file=None):
 
 def print_language_help(language, file=None):
     from behave.i18n import languages
-    # if stream is None:
-    #     stream = sys.stdout
-    #     if six.PY2:
-    #         # -- PYTHON2: Overcome implicit encode problems (encoding=ASCII).
-    #         stream = codecs.getwriter("UTF-8")(sys.stdout)
-
     print_ = lambda text: print(text, file=file)
-    if six.PY2:
-        # -- PYTHON2: Overcome implicit encode problems (encoding=ASCII).
-        file = codecs.getwriter("UTF-8")(file or sys.stdout)
-
     if language not in languages:
-        print_("%s is not a recognised language: try --lang-list" % language)
+        print_("{} is not a recognised language: try --lang-list".format(language))
         return 1
 
     trans = languages[language]
-    print_("Translations for %s / %s" % (trans["name"], trans["native"]))
+    print("Translations for %s / %s" % (trans["name"], trans["native"]))
     for kw in trans:
         if kw in "name native".split():
             continue

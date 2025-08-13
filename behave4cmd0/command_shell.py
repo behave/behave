@@ -12,16 +12,11 @@ and running features, etc.
 
 """
 
-from __future__ import absolute_import, print_function, with_statement
 from behave4cmd0.__setup import TOP
-from behave.textutil import text as _text
 import os.path
-import six
 import subprocess
 import sys
 import shlex
-if six.PY2:
-    import codecs
 
 
 # HERE = os.path.dirname(__file__)
@@ -107,7 +102,7 @@ class Command(object):
         Make a subprocess call, collect its output and returncode.
         Returns CommandResult instance as ValueObject.
         """
-        assert isinstance(command, six.string_types)
+        assert isinstance(command, str)
         command_result = CommandResult()
         command_result.command = command
         use_shell = cls.USE_SHELL
@@ -115,11 +110,6 @@ class Command(object):
             use_shell = kwargs.pop("shell")
 
         # -- BUILD COMMAND ARGS:
-        if six.PY2 and isinstance(command, six.text_type):
-            # -- PREPARE-FOR: shlex.split()
-            # In PY2, shlex.split() requires bytes string (non-unicode).
-            # In PY3, shlex.split() accepts unicode string.
-            command = codecs.encode(command, "utf-8")
         cmdargs = shlex.split(command)
 
         # -- TRANSFORM COMMAND (optional)
@@ -142,10 +132,6 @@ class Command(object):
                             shell=use_shell,
                             cwd=cwd, **kwargs)
             out, err = process.communicate()
-            if six.PY2: # py3: we get unicode strings, py2 not
-                # default_encoding = "UTF-8"
-                out = _text(out, process.stdout.encoding)
-                err = _text(err, process.stderr.encoding)
             process.poll()
             assert process.returncode is not None
             command_result.stdout = out
@@ -208,7 +194,7 @@ def behave(cmdline, cwd=".", **kwargs):
     Run behave as subprocess command and return process/shell instance
     with results (collected output, returncode).
     """
-    assert isinstance(cmdline, six.string_types)
+    assert isinstance(cmdline, str)
     return run("behave " + cmdline, cwd=cwd, **kwargs)
 
 # -----------------------------------------------------------------------------

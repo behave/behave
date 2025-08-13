@@ -11,7 +11,6 @@ from contextlib import contextmanager
 from enum import Enum
 
 import parse
-import six
 import pytest
 # MAYBE: from assertpy import assert_that
 
@@ -115,29 +114,24 @@ def parameter_type_registry():
 # TEST SUITE -- REQUIRES: Python3, probably Python.version >= 3.8
 # -----------------------------------------------------------------------------
 if HAVE_CUCUMBER_EXPRESSIONS:
-    @pytest.mark.skipif(six.PY2, reason="REQUIRES: Python3")
     class TestBasics(object):
         """Tests that checks basic functionality."""
         pass
 
 
-    @pytest.mark.skipif(six.PY2, reason="REQUIRES: Python3")
     class TestParameterType4Int(object):
         """Using predefined :class:`ParameterType`(s) for integer numbers"""
 
 
-    @pytest.mark.skipif(six.PY2, reason="REQUIRES: Python3")
     class TestParameterType4Float(object):
         """Using predefined :class:`ParameterType`(s) for float numbers"""
 
 
-    @pytest.mark.skipif(six.PY2, reason="REQUIRES: Python3")
     class TestParameterType4String(object):
         """Using predefined :class:`ParameterType`(s) for string(s)"""
         pass
 
 
-    @pytest.mark.skipif(six.PY2, reason="REQUIRES: Python3")
     class TestParameterType4User(object):
         """Tests using own, user-defined ParameterType(s)."""
 
@@ -182,7 +176,6 @@ if HAVE_CUCUMBER_EXPRESSIONS:
             step_runner.assert_step_is_not_matched(step_text)
 
 
-    @pytest.mark.skipif(six.PY2, reason="REQUIRES: Python3")
     class TestWithTypeBuilder(object):
         """
         Use CucumberExpressions with :class:`TypeBuilder`.

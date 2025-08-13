@@ -5,7 +5,6 @@ import warnings
 from behave.formatter.base import Formatter, StreamOpener
 from behave.importer import LazyDict, LazyObject, parse_scoped_name, load_module
 from behave.exception import ClassNotFoundError
-import six
 
 
 # -----------------------------------------------------------------------------
@@ -67,7 +66,7 @@ def register_as(name, formatter_class):
     .. since:: 1.2.5
         Parameter ordering starts with name.
     """
-    if not isinstance(name, six.string_types):
+    if not isinstance(name, str):
         # -- REORDER-PARAMS: Used old ordering before behave-1.2.5 (2015).
         warnings.warn("Use parameter ordering: name, formatter_class (for: %s)"\
                       % formatter_class)
@@ -75,7 +74,7 @@ def register_as(name, formatter_class):
         name = formatter_class
         formatter_class = _formatter_class
 
-    if isinstance(formatter_class, six.string_types):
+    if isinstance(formatter_class, str):
         # -- SPEEDUP-STARTUP: Only import formatter_class when used.
         scoped_formatter_class_name = formatter_class
         formatter_class = LazyObject(scoped_formatter_class_name)

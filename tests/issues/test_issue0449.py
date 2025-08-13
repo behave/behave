@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # ruff: noqa: E501
 """
 SIMILAR: #453
@@ -9,7 +8,6 @@ special characters correctly.
 
 .. code-block:: python
 
-    # -*- coding=utf-8 -*-
     from behave import *
     from hamcrest.core import assert_that, equal_to
 
@@ -20,21 +18,16 @@ special characters correctly.
 And I also have UTF-8 as my console charset. Running this code leads to
 "ASSERT FAILED: 'ascii' codec can't encode characters in position 0-5: ordinal not in range(128)" error.
 
-That is because behave.textutil.text returns six.text_type(e) where 'e' is exception (https://github.com/behave/behave/blob/master/behave/textutil.py#L83).
+That is because behave.textutil.text returns str(e) where 'e' is exception (https://github.com/behave/behave/blob/master/behave/textutil.py#L83).
 
-Changing line 83 to six.text_type(value) solves this issue.
+Changing line 83 to str(value) solves this issue.
 """
 
-from __future__ import print_function
+import traceback
 from behave.textutil import text
 from hamcrest.core import assert_that, equal_to
 from hamcrest.library import contains_string
-import six
 import pytest
-if six.PY2:
-    import traceback2 as traceback
-else:
-    import traceback
 
 
 def foo():

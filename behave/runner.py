@@ -7,6 +7,7 @@ from __future__ import absolute_import, print_function, with_statement
 import contextlib
 import os.path
 import sys
+import traceback
 import warnings
 import weakref
 
@@ -34,13 +35,6 @@ from behave.runner_util import (
 )
 from behave.step_registry import registry as the_step_registry
 from enum import Enum
-
-if six.PY2:
-    # -- USE PYTHON3 BACKPORT: With unicode traceback support.
-    import traceback2 as traceback
-else:
-    import traceback
-
 
 
 class ContextMaskWarning(UserWarning):
@@ -445,8 +439,6 @@ class Context(object):
                 self._emit_warning(attr, params)
 
         stack_limit = 2
-        if six.PY2:
-            stack_limit += 1     # Due to traceback2 usage.
         stack_frame = traceback.extract_stack(limit=stack_limit)[0]
         self._record[attr] = stack_frame
         frame = self._stack[0]
@@ -485,7 +477,7 @@ class Context(object):
         :raises: AssertionError, if a step failure occurs.
         :raises: ValueError, if invoked without a feature context.
         """
-        require_type(steps_text, six.text_type, message="Steps must be unicode")
+        require_type(steps_text, str, message="Steps must be unicode")
         if not self.feature:
             raise ValueError("execute_steps() called outside of feature")
 

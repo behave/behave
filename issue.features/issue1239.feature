@@ -1,5 +1,4 @@
 @issue
-@not_reproducible
 Feature: Issue #1239 -- AmbiguousStep error on step import
 
   AFFECTED: behave v1.3.0, v1.2.6.dev6
@@ -8,7 +7,13 @@ Feature: Issue #1239 -- AmbiguousStep error on step import
 
   . DESCRIPTION:
   . Using step matcher "re", I get AmbiguousStep exception when I run behave.
-  . Only reproducible if I replace @given/@then step decorators with @step decorator.
+  .
+  . * Reproducible if I reimport a step-module by another step-module or python module
+  . * NOTE: This is normally a "smell" that your step-modules are not "good structured".
+  .
+  . OTHERWISE: For first scenario
+  .
+  . * Only reproducible if I replace @given/@then step decorators with @step decorator.
   .
   . BUT THEN:
   .   An AmbiguousStep error exists now,
@@ -55,7 +60,34 @@ Feature: Issue #1239 -- AmbiguousStep error on step import
             """
       '''
 
+
   Scenario: Check the syndrome
+    When I run "behave -f plain features/syndrome_1239.feature"
+    Then it should pass with:
+      """
+      1 feature passed, 0 failed, 0 skipped
+      1 scenario passed, 0 failed, 0 skipped
+      3 steps passed, 0 failed, 0 skipped
+      """
+    And the command output should not contain "AmbiguousStep:"
+    And the command output should contain:
+      '''
+      Feature: Syndrome
+        Scenario: S1
+          Given the file one/two/three.txt ... passed
+          And the file four/five.txt ... passed
+          Then the file one/two/three.txt contains: ... passed
+            """
+            BOGUS-FILE-CONTENTS: One two three
+            """
+      '''
+
+
+  Scenario: Check the syndrome with reimported step-module
+    Given a file named "features/steps/reimport_syndrome_steps.py" with:
+      """
+      import syndrome_steps
+      """
     When I run "behave -f plain features/syndrome_1239.feature"
     Then it should pass with:
       """

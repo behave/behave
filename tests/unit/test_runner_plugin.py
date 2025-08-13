@@ -1,11 +1,9 @@
-# -*- coding: UTF-8 -*-
 """
 Unit tests for :mod:`behave.runner_plugin`.
 """
 
-from __future__ import absolute_import, print_function
-import sys
 from contextlib import contextmanager
+import sys
 import os
 from pathlib import Path
 from behave import configuration
@@ -238,10 +236,7 @@ custom = {this_module}:CustomTestRunner
         # -- OOPS: No output
         print("CAPTURED-OUTPUT: %s;" % captured.out)
         print("CAPTURED-ERROR:  %s;" % captured.err)
-        # if six.PY2:
-        #     assert "No module named unknown_module" in captured.err
-        # else:
-        #     assert "No module named 'unknown_module'" in captured.out
+        # assert "No module named 'unknown_module'" in captured.out
 
     def test_make_runner_fails_with_unknown_class(self, capsys):
         with pytest.raises(ClassNotFoundError) as exc_info:

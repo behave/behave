@@ -1,11 +1,7 @@
-# -*- coding: UTF-8 -*-
-
-from __future__ import absolute_import
 import struct
 import sys
 import tempfile
 import unittest
-import six
 from mock import Mock, patch
 from behave.formatter._registry import make_formatters
 from behave.formatter import pretty
@@ -85,13 +81,8 @@ class TestGetTerminalSize(unittest.TestCase):
 
 def _tf():
     """Open a temp file that looks a bunch like stdout."""
-    if six.PY3:
-        # in python3 it's got an encoding and accepts new-style strings
-        return tempfile.TemporaryFile(mode="w", encoding="UTF-8")
-
-    # pre-python3 it's not got an encoding and accepts encoded data
-    # (old-style strings)
-    return tempfile.TemporaryFile(mode="w")
+    # -- PYTHON3: has an encoding and accepts new-style strings
+    return tempfile.TemporaryFile(mode="w", encoding="UTF-8")
 
 
 class FormatterTests(unittest.TestCase):

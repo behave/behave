@@ -16,9 +16,6 @@ Feature: UnicodeDecodeError in tracebacks (when an exception in a step implement
       """
       # -*- coding: UTF-8 -*-
       from behave import step
-      import six
-      if six.PY2:
-          chr = unichr
 
       @step('a step raises an exception with non-ASCII character "{char_code:d}"')
       def step_raises_exception_with_non_ascii_text(context, char_code):

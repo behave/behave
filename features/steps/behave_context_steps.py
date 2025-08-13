@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Step definition for Context object tests.
 
@@ -14,10 +13,8 @@ EXAMPLE
       Then the behave context should not have a parameter named "person"
 """
 
-from __future__ import absolute_import
 from behave import given, then, step
 from hamcrest import assert_that, equal_to
-import six
 
 
 # -----------------------------------------------------------------------------
@@ -67,7 +64,7 @@ def then_behave_context_should_contain_with_table(context):
         param_value = row["Value"]
         if param_value.startswith('"') and param_value.endswith('"'):
             param_value = param_value[1:-1]
-        actual = six.text_type(getattr(context, param_name, None))
+        actual = str(getattr(context, param_name, None))
         assert hasattr(context, param_name)
         assert_that(actual, equal_to(param_value))
 

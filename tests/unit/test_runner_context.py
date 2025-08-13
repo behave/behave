@@ -2,14 +2,12 @@
 Unit tests for :class:`behave.runner.Context`.
 """
 
-from __future__ import absolute_import, print_function
+from platform import python_implementation
 import unittest
 import warnings
-from platform import python_implementation
 
 from mock import Mock, patch
 import pytest
-import six
 
 from behave.configuration import Configuration
 from behave.model import Table
@@ -19,10 +17,6 @@ from behave.runner import (
     ModelRunner, scoped_context_layer
 )
 from behave.step_registry import StepRegistry
-
-
-# -- CONVENIENCE-ALIAS:
-_text = six.text_type
 
 
 class TestContext(object):
@@ -450,7 +444,7 @@ Then a step passes
             try:
                 _result = self.context.execute_steps(doc)
             except AssertionError as e:
-                assert "FAILED SUB-STEP: When a step fails" in _text(e)
+                assert "FAILED SUB-STEP: When a step fails" in str(e)
 
     def test_execute_steps_with_undefined_step(self):
         doc = """
@@ -462,7 +456,7 @@ Then a step passes
             try:
                 _result = self.context.execute_steps(doc)
             except AssertionError as e:
-                assert "UNDEFINED SUB-STEP: When a step is undefined" in _text(e)
+                assert "UNDEFINED SUB-STEP: When a step is undefined" in str(e)
 
     def test_execute_steps_with_text(self):
         doc = '''

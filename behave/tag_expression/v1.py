@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-import six
-
 class TagExpression(object):
     """
     Tag expression, as logical boolean expression, to select
@@ -132,10 +128,6 @@ class TagExpression(object):
         #                                      for or_terms in self.ands
         #                                      for or_term in or_terms])
         return "<%s: expression=%s>" % (class_name, expression)
-
-    if six.PY2:
-        __unicode__ = __str__
-        __str__ = lambda self: self.__unicode__().encode("utf-8")  # noqa: E731
 
     # -- API COMPATIBILITY TO: TagExpressions v2
     def to_string(self, pretty=True):
