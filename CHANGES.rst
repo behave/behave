@@ -12,17 +12,15 @@ GOALS:
 
 DEPRECATIONS:
 
-* DEPRECATED: ``tag-expressions v1`` (old-style tag-expressions)
+* DEPRECATED: ``tag-expressions v1`` (old-style tag-expressions support will be removed)
 
 FIXED:
 
-* issue #1255: ImportError: cannot import name 'asynccontextmanager' not found in python 3.6 (submitted by: rzuckerm)
-* issue #1239: AmbiguousStep error on step import with "re" step-matcher (submitted by: VolodymyrDan00)
+* Include changes from ``behave v1.3.1`` (#1255, #1239)
 
 DOCUMENTATION:
 
-* pull  #1256: docs: userdata (provided by: Therdel, fixes: #1234)
-* issue #1234: userdata_defines configuration file parameter is not up to date (submitted by: vvavrychuk)
+* Include changes from ``behave v1.3.1`` (#1256, #1233)
 
 
 Version: 1.3.1 (2025-08-11, branch=release/v1.3.x)
