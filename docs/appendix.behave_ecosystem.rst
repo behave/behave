@@ -74,7 +74,6 @@ Editors and Editor Plugins
 =================== ======================= =============================================================================
 Editor              Plugin                  Description
 =================== ======================= =============================================================================
-`gedit`_            `gedit_behave`_         `gedit`_ plugin for jumping between feature and step files.
 `Gherkin editor`_   ---                     An editor for writing ``*.feature`` files.
 `Notepad++`_        `NP++ gherkin`_         Notepad++ editor syntax highlighting for Gherkin.
 `Sublime Text`_     `Cucumber (ST Bundle)`_ Gherkin editor support, table formatting.
@@ -83,29 +82,13 @@ Editor              Plugin                  Description
 =================== ======================= =============================================================================
 
 .. _`Notepad++`: https://notepad-plus-plus.org/
-.. _gedit:  https://wiki.gnome.org/Apps/Gedit
 .. _vim:    https://www.vim.org/
 .. _`Sublime Text`:    https://www.sublimetext.com
 
-.. _`Gherkin editor`: https://archive.codeplex.com/?p=gherkineditor
-.. _gedit_behave:   https://gitlab.com/mcepl/gedit_behave
+.. _`Gherkin editor`: https://www.gherkineditor.com/
 .. _`NP++ gherkin`: https://productive.me/develop/cucumbergherkin-syntax-highlighting-for-notepad
 .. _vim-behave:     https://github.com/rooprob/vim-behave
 .. _vim-cucumber:   https://github.com/tpope/vim-cucumber
 .. _`Cucumber (ST Bundle)`:    https://packagecontrol.io/packages/Cucumber
 .. _Behave Step Finder: https://packagecontrol.io/packages/Behave%20Step%20Finder
-
-
-Tools
-------------------------------------------------------------------------------
-
-=========================== ===========================================================================
-Tool                        Description
-=========================== ===========================================================================
-:pypi:`cucutags`            Generate `ctags`_-like information (cross-reference index)
-                            for Gherkin feature files and behave step definitions.
-=========================== ===========================================================================
-
-.. _gitlab_cucutags:   https://gitlab.com/mcepl/cucutags
-.. _ctags:      https://ctags.sourceforge.net/
 

@@ -8,8 +8,8 @@ boilerplate code in your ``environment.py`` file.
 The `Flask documentation on testing`_ explains how to use the Werkzeug test
 client for running tests in general.
 
-.. _Flask: https://flask.pocoo.org/
-.. _Flask documentation on testing: https://flask.pocoo.org/docs/1.0/testing/
+.. _Flask: https://flask.palletsprojects.com/
+.. _Flask documentation on testing: https://flask.palletsprojects.com/en/stable/testing/
 
 Integration Example
 ===================
@@ -46,7 +46,7 @@ tutorial.
 
 Taken and adapted from Ismail Dhorat's `BDD testing example on Flaskr`_.
 
-.. _Flaskr sample application: https://flask.pocoo.org/docs/dev/tutorial/introduction/
+.. _Flaskr sample application: https://flask.palletsprojects.com/en/stable/tutorial/
 .. _BDD testing example on Flaskr: https://github.com/ismaild/flaskr-bdd
 
 
