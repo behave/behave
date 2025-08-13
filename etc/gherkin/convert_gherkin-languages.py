@@ -26,13 +26,13 @@ Generates I18N python module based on `cucumber`_ `gherkin-languages.json`_.
     BASED ON: convert_i18n_yaml.py
 """
 
+import argparse
+import json
 import os.path
+import pprint
 import sys
 from codecs import open
 from urllib.request import urlopen
-import pprint
-import json
-import argparse
 
 HERE = os.path.dirname(__file__)
 NAME = os.path.basename(__file__)
