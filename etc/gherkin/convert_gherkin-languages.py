@@ -1,13 +1,15 @@
+#!/usr/bin/env -S uv run --script
 #!/usr/bin/env python3
-# USAGE: convert_i18n_yaml.py [--data=i18n.yml] behave/i18n.py
-# REQUIRES: python3, to generate Unicode special-chars in readable format.
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
+# SEE: https://peps.python.org/pep-0723/
+# SEE: https://docs.astral.sh/uv/guides/scripts/#using-a-shebang-to-create-an-executable-file
+# -*- coding: UTF-8 -*-
+# USAGE: convert_gherkin-languages.py
 """
-Generates I18N python module based on cucumber_ `gherkin-languages.json`_.
-
-BASED ON:
-REQUIRES:
-  * argparse
-  * PyYAML
+Generates I18N python module based on `cucumber`_ `gherkin-languages.json`_.
 
 .. _cucumber: https://github.com/cucumber/common
 .. _gherkin: https://github.com/cucumber/gherkin
@@ -22,20 +24,19 @@ REQUIRES:
 .. note::
 
     BASED ON: convert_i18n_yaml.py
-    MISSING: "..." prefix (unicode literal prefix) is not generated w/ py3.
 """
 
-import argparse
-import json
 import os.path
-import pprint
 import sys
 from codecs import open
 from urllib.request import urlopen
+import pprint
+import json
+import argparse
 
 HERE = os.path.dirname(__file__)
 NAME = os.path.basename(__file__)
-__version__ = "1.0"
+__version__ = "1.1.0"
 
 STEP_KEYWORDS = ("and", "but", "given", "when", "then")
 GHERKIN_LANGUAGES_JSON_URL = \
@@ -53,17 +54,17 @@ def download_file(source_url, filename=None):
         dest_file.write(contents)
         dest_file.close()
 
-
-def yaml_normalize(data):
-    for part in data:
-        keywords = data[part]
-        for k in keywords:
-            v = keywords[k]
-            # bloody YAML parser returns a mixture of unicode and str
-            if not isinstance(v, str):
-                v = v.decode("UTF-8")
-            keywords[k] = v.split("|")
-    return data
+# -- DISABLED:
+# def yaml_normalize(data):
+#     for part in data:
+#         keywords = data[part]
+#         for k in keywords:
+#             v = keywords[k]
+#             # bloody YAML parser returns a mixture of unicode-string and bytes
+#             if not isinstance(v, str):
+#                 v = v.decode("UTF-8")
+#             keywords[k] = v.split("|")
+#     return data
 
 
 def data_normalize(data, verbose=False):
@@ -123,7 +124,7 @@ def gherkin_languages_to_python_module(gherkin_languages_path, output_file=None,
     json_encoding = "UTF-8"
     languages = json.load(open(gherkin_languages_path, encoding=json_encoding))
     languages = data_normalize(languages, verbose=verbose)
-    # languages = yaml_normalize(languages)
+    # l-- DISABLED: anguages = yaml_normalize(languages)
 
     # -- STEP 2: Generate python module with i18n data.
     header = '''# -*- coding: {encoding} -*-
@@ -140,8 +141,6 @@ Gherkin keywords in the different I18N languages, like:
 * German
 * ...
 """
-
-from __future__ import unicode_literals
 
 languages = \\
 '''.format(gherkin_languages_json_url=GHERKIN_LANGUAGES_JSON_URL, encoding=encoding)

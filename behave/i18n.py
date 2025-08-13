@@ -13,8 +13,6 @@ Gherkin keywords in the different I18N languages, like:
 * ...
 """
 
-# XXX-DISABLED: from __future__ import unicode_literals
-
 languages = \
 {'af': {'and': ['* ', 'En '],
         'background': ['Agtergrond'],
