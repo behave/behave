@@ -24,9 +24,9 @@ BREAKING CHANGES:
 * `Gherkin Parser strips no longer trailing colon from step`_
 * Capture related command line options changed (some in incompatible ways).
 
-.. _`Example Mapping`: https://cucumber.io/blog/example-mapping-introduction/
-.. _`Example Mapping Webinar`: https://cucumber.io/blog/example-mapping-webinar/
-.. _`Gherkin v6 grammar`: https://github.com/cucumber/cucumber/blob/master/gherkin/gherkin.berp
+.. _`Example Mapping`: https://cucumber.io/blog/bdd/example-mapping-introduction/
+.. _`Example Mapping Webinar`: https://cucumber.io/blog/bdd/example-mapping-webinar/
+.. _`Gherkin v6 grammar`: https://github.com/cucumber/gherkin/blob/main/gherkin.berp
 
 
 

@@ -69,7 +69,6 @@ Presentation Videos
   2012-08-12, PyCon Australia.
 
 * Selenium: `First behave python tutorial with selenium`_ (8min), 2015-01-28,
-  https://www.seleniumframework.com/python-basic/first-behave-gherkin/
 
 * Jessica Ingrasselino: `Automation with Python and Behave`_ (67min), 2015-12-16
 
@@ -177,10 +176,10 @@ JetBrains PyCharm:
 
 * Blog: `In-Depth Screencast on Testing`_ (2016-04-11; video offset=2:10min)
 * Docs: `BDD Testing Framework Support in PyCharm 2016.1
-  <https://www.jetbrains.com/help/pycharm/2016.1/bdd-testing-framework.html>`_
+  <https://www.jetbrains.com/help/pycharm/bdd-frameworks.html>`_
 
 
-.. _`Getting Started with PyCharm`: https://www.youtube.com/playlist?list=PLQ176FUIyIUZ1mwB-uImQE-gmkwzjNLjP
+.. _`Getting Started with PyCharm`: https://www.youtube.com/playlist?list=PLCTHcU1KoD98IeuVcqJ2rt1FNytfR_C90
 .. _`PyCharm In-Depth: Testing`: https://youtu.be/nmBbR97Vsv8?list=PLQ176FUIyIUZ1mwB-uImQE-gmkwzjNLjP
 .. _`In-Depth Screencast on Testing`: https://blog.jetbrains.com/pycharm/2016/04/in-depth-screencast-on-testing/
 

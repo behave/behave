@@ -8,7 +8,7 @@ to reuse step definitions in similar projects that address the same
 problem domain.
 
 .. _behave:     https://github.com/behave/behave
-.. _Selenium:   https://docs.seleniumhq.org/
+.. _Selenium:   https://selenium.dev/
 
 
 Step Libraries
@@ -44,8 +44,6 @@ Testing Domain   Name                Description
 =============== ==================== ===========================================================
 GUI             `Squish test`_       Use `Squish and Behave`_ for GUI testing (cross-platform).
 Robot Control   `behave4poppy`_      Use behave to control a robot via `pypot`_.
-Web             `pyramid_behave`_    Use `behave to test pyramid`_.
-Web             `pycabara-tutorial`_ Use pycabara (with `behave`_ and `Selenium`_).
 =============== ==================== ===========================================================
 
 .. seealso::
@@ -54,9 +52,6 @@ Web             `pycabara-tutorial`_ Use pycabara (with `behave`_ and `Selenium`
 
 
 .. _behave4poppy:   https://github.com/chbrun/behave4poppy
-.. _`Squish test`:  https://www.froglogic.com/squish/
-.. _`Squish and Behave`: https://kb.froglogic.com/display/KB/BDD+with+Squish+and+Behave
-.. _pycabara-tutorial:  https://github.com/excellaco/pycabara-tutorial
+.. _`Squish test`: https://www.qt.io/quality-assurance/squish
+.. _`Squish and Behave`: https://qatools.knowledgebase.qt.io/squish/integrations/behave/bdd-squish-behave/
 .. _pypot:          https://github.com/poppy-project/pypot
-.. _pyramid_behave: https://github.com/wwitzel3/pyramid_behave
-.. _`behave to test pyramid`:   https://blog.safaribooksonline.com/2014/01/10/using-behave-with-pyramid/

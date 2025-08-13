@@ -20,7 +20,7 @@ To update an already installed :pypi:`behave` version, use:
 
     See also `pip related information`_ for installing Python packages.
 
-.. _`pip related information`:  https://pip.pypa.io/en/latest/installing/
+.. _`pip related information`:  https://pip.pypa.io/en/latest/installation/
 
 
 Using a Source Distribution
