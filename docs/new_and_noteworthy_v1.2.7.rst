@@ -386,7 +386,7 @@ The exception is raised when the bad regular expression is compiled
 
 .. note:: More Information on BAD STEP-DEFINITIONS:
 
-    * :this_repo:`features/formatter.bad_steps.feature`
+    * :this_repo:`features/formatter.steps_bad.feature`
     * :this_repo:`features/runner.bad_steps.feature`
 
 

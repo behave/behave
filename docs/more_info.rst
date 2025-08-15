@@ -21,7 +21,7 @@ in a specific testing domain:
 * TestingBot, `Bdd with Python, Behave and WebDriver`_
 * Wayne Witzel III, `Using Behave with Pyramid`_, 2014-01-10.
 
-.. _`Getting Started with Behavior Testing in Python with Behave`: https://semaphoreci.com/community/tutorials/getting-started-with-behavior-testing-in-python-with-behave
+.. _`Getting Started with Behavior Testing in Python with Behave`: https://semaphore.io/community/tutorials/getting-started-with-behavior-testing-in-python-with-behave
 .. _`Beginning BDD with Django`: https://whoisnicoleharris.com/2015/03/16/bdd-part-one.html
 .. _`Bdd with Python, Behave and WebDriver`: https://testingbot.com/support/getting-started/behave.html
 .. _`Using Behave with Pyramid`: https://active6.blogspot.com/2014/01/using-behave-with-pyramid.html
@@ -175,8 +175,8 @@ Tool-oriented Tutorials
 JetBrains PyCharm:
 
 * Blog: `In-Depth Screencast on Testing`_ (2016-04-11; video offset=2:10min)
-* Docs: `BDD Testing Framework Support in PyCharm 2016.1
-  <https://www.jetbrains.com/help/pycharm/bdd-frameworks.html>`_
+* Docs: `BDD Testing Framework Support in PyCharm 2024.2
+  <https://www.jetbrains.com/help/pycharm/2024.2/bdd-frameworks.html>`_
 
 
 .. _`Getting Started with PyCharm`: https://www.youtube.com/playlist?list=PLCTHcU1KoD98IeuVcqJ2rt1FNytfR_C90
