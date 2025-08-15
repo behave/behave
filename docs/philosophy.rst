@@ -21,7 +21,7 @@ London, Dan North `gave the following definition of BDD`__:
   of interactions with well-defined outputs, resulting in the delivery of
   working, tested software that matters.
 
-__ https://skillsmatter.com/skillscasts/923-how-to-sell-bdd-to-the-business
+__ https://speakerdeck.com/tastapod/selling-bdd-to-the-business
 
 BDD focuses on obtaining a clear understanding of desired software behavior
 through discussion with stakeholders. It extends TDD by writing test cases

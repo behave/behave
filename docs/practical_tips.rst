@@ -89,7 +89,7 @@ details. Example using :pypi:`behave-django`:
     def step_impl(context, url):
         context.browser.get(context.get_url(url))
 
-.. _Selenium docs: https://seleniumhq.github.io/selenium/docs/api/py/api.html
+.. _Selenium docs: https://selenium.dev/selenium/docs/api/py/api.html
 
 
 Splinter (Example)
