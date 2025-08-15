@@ -214,7 +214,7 @@ For example:
     #   * BROWSER-SPECIFIC: Implementation may depend on browser driver.
     def take_screenshot_and_attach_to_scenario(ctx):
         # -- HINT: SELENIUM WITH CHROME: ctx.browser.get_screenshot_as_base64()
-        screenshot_image = ctx.browser.get_full_page_screenshot_as_png()
+        screenshot_image = ctx.browser.get_full_page_screenshot_as_png() # OUTDATED
         ctx.attach("image/png", screenshot_image)
 
 .. code-block:: python
@@ -234,8 +234,9 @@ For example:
 
     **RELATED:** Selenium webdriver details:
 
-    * Selenium webdriver (for Firefox): `selenium.webdriver.firefox.webdriver.WebDriver.get_full_page_screenshot_as_png`_
-    * Selenium webdriver (for Chrome):  `selenium.webdriver.remote.webdriver.WebDriver.get_screenshot_as_base64`_
+    * `Selenium: Take a screenshot`_
+    * `Selenium webdriver (for Firefox)`_
+    * `Selenium webdriver (for Chrome)`_
 
 
     **RELATED:** Playwright details:
@@ -243,5 +244,8 @@ For example:
     * https://playwright.dev/python/docs/api/class-locator#locator-screenshot
     * https://playwright.dev/python/docs/api/class-page#page-screenshot
 
-.. _`selenium.webdriver.firefox.webdriver.WebDriver.get_full_page_screenshot_as_png`: https://www.selenium.dev/selenium/docs/api/py/webdriver_firefox/selenium.webdriver.firefox.webdriver.html?highlight=screenshot#selenium.webdriver.firefox.webdriver.WebDriver.get_full_page_screenshot_as_png
-.. _`selenium.webdriver.remote.webdriver.WebDriver.get_screenshot_as_base64`: https://www.selenium.dev/selenium/docs/api/py/webdriver_remote/selenium.webdriver.remote.webdriver.html?highlight=get_screenshot_as_base64#selenium.webdriver.remote.webdriver.WebDriver.get_screenshot_as_base64
+.. _`Selenium: Take a screenshot`: https://www.selenium.dev/documentation/webdriver/interactions/windows/#takescreenshot
+.. _`Selenium webdriver (for Chrome)`: https://www.selenium.dev/documentation/webdriver/browsers/chrome/
+.. _`Selenium webdriver (for Firefox)`: https://www.selenium.dev/documentation/webdriver/browsers/firefox/
+.. _`Selenium remote webdriver`: https://www.selenium.dev/documentation/webdriver/drivers/remote_webdriver/
+.. _`Selenium: BrowsingContext.capture_screenshot`: https://www.selenium.dev/selenium/docs/api/py/selenium_webdriver_common_bidi/selenium.webdriver.common.bidi.browsing_context.html#selenium.webdriver.common.bidi.browsing_context.BrowsingContext.capture_screenshot

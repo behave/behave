@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=no-self-use, line-too-long
 
-from __future__ import absolute_import, print_function, with_statement
 import unittest
 import pytest
 from unittest.mock import Mock, patch

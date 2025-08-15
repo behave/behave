@@ -20,6 +20,7 @@ FIXED:
 
 DOCUMENTATION:
 
+* pull #1258: fixed dead links in documentation (provided by: sgronlund)
 * Include changes from ``behave v1.3.1`` (#1256, #1233)
 
 
