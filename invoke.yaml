@@ -38,9 +38,10 @@ cleanup:
 
 cleanup_all:
   extra_directories:
+    - .direnv
     - .hypothesis
     - .pytest_cache
-    - .direnv
+    - .ruff_cache
     - .tox
     - ".venv*"
 
