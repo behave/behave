@@ -19,8 +19,27 @@ import sys
 import shlex
 
 
-# HERE = os.path.dirname(__file__)
-# TOP  = os.path.join(HERE, "..")
+# -----------------------------------------------------------------------------
+# CONSTANTS:
+# -----------------------------------------------------------------------------
+# OR: BEHAVE_CMD_DEFAULT = "-mbehave"
+BEHAVE_CMD_DEFAULT = "-mbehave"
+BEHAVE_SEARCH_PATH = [os.getcwd(), TOP]
+
+
+def get_behave_cmd(search_path=None):
+    if search_path is None:
+        search_path = BEHAVE_SEARCH_PATH
+
+    behave_cmd = BEHAVE_CMD_DEFAULT
+    for directory in search_path:
+        this_behave_cmd = os.path.normpath("{0}/bin/behave".format(directory))
+        if os.path.exists(this_behave_cmd):
+            behave_cmd = this_behave_cmd
+            break
+    # -- DIAG: print("USING behave_cmd: {}".format(behave_cmd))
+    return behave_cmd
+
 
 # -----------------------------------------------------------------------------
 # CLASSES:
@@ -69,10 +88,8 @@ class Command(object):
     """
     DEBUG = False
     COMMAND_MAP = {
-        # OLD: "behave": os.path.normpath("{0}/bin/behave".format(TOP)),
         "behave": "{python} {behave_cmd}".format(
-            python=sys.executable,
-            behave_cmd=os.path.normpath("{0}/bin/behave".format(TOP))
+            python=sys.executable, behave_cmd=get_behave_cmd()
         ),
     }
     PREPROCESSOR_MAP = {}
