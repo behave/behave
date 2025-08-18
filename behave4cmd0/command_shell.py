@@ -12,7 +12,7 @@ and running features, etc.
 
 """
 
-from __future__ import absolute_import, print_function, with_statement
+from __future__ import absolute_import, print_function
 from behave4cmd0.__setup import TOP
 from behave.textutil import text as _text
 import os.path
@@ -24,8 +24,25 @@ if six.PY2:
     import codecs
 
 
-# HERE = os.path.dirname(__file__)
-# TOP  = os.path.join(HERE, "..")
+# -----------------------------------------------------------------------------
+# CONSTANTS:
+# -----------------------------------------------------------------------------
+# OR: BEHAVE_CMD_DEFAULT = "-mbehave"
+BEHAVE_CMD_DEFAULT = "behave"
+BEHAVE_SEARCH_PATH = [os.getcwd(), TOP]
+
+
+def get_behave_cmd(search_path=None):
+    if search_path is None:
+        search_path = BEHAVE_SEARCH_PATH
+
+    behave_cmd = BEHAVE_CMD_DEFAULT
+    for directory in search_path:
+        behave_cmd = os.path.normpath("{0}/bin/behave".format(directory))
+        if os.path.exists(behave_cmd):
+            break
+    return behave_cmd
+
 
 # -----------------------------------------------------------------------------
 # CLASSES:
@@ -74,10 +91,8 @@ class Command(object):
     """
     DEBUG = False
     COMMAND_MAP = {
-        # OLD: "behave": os.path.normpath("{0}/bin/behave".format(TOP)),
         "behave": "{python} {behave_cmd}".format(
-            python=sys.executable,
-            behave_cmd=os.path.normpath("{0}/bin/behave".format(TOP))
+            python=sys.executable, behave_cmd=get_behave_cmd()
         ),
     }
     PREPROCESSOR_MAP = {}
