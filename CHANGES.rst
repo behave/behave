@@ -26,6 +26,35 @@ DOCUMENTATION:
 * Include changes from ``behave v1.3.1`` (#1256, #1233)
 
 
+Version: 1.3.2 (unreleased, branch=release/v1.3.x)
+-------------------------------------------------------------------------------
+
+PLANNED:
+
+* Recursive discovery and import in `steps` directory will be disabled by default.
+  An expert user can enable this feature again (if he/she knows what he/she is doing).
+  RELATED TO: #1210 -- Multiple, nested steps directories under steps directory.
+
+  - REASON: Too many problems w/ Python packages using relative-imports in the `steps` directory.
+  - BEST PRACTICE: Put a Python package or step-library on the Python search path, but not in the `steps` directory.
+
+DOCUMENTATION:
+
+* RTFD: Enable PDF output format again (for download).
+* Include changes from pull #1258
+* Fix more deadlinks in docs
+
+DEVELOP:
+
+* behave4cmd0: Update version info to v1.3.1
+* behave4cmd0.command_shell: Cleanup of BEHAVE_CMD value usage.
+
+CI:
+
+* Update actions/checkout to v5 (was: v4).
+* Use astral-sh/setup-uv@v6 (was: v3).
+
+
 Version: 1.3.1 (2025-08-11, branch=release/v1.3.x)
 -------------------------------------------------------------------------------
 
@@ -38,6 +67,7 @@ DOCUMENTATION:
 
 * Appendix: Add section with description of "Runners" extension point.
 * Appendix: Add section with "Cucumber-Expressions".
+* Include changes from pull #1258
 * pull  #1256: docs: userdata (provided by: Therdel, fixes: #1234)
 * issue #1234: userdata_defines configuration file parameter is not up to date (submitted by: vvavrychuk)
 
@@ -113,6 +143,7 @@ ENHANCEMENTS:
 * Support emojis in ``*.feature`` files and steps
 * Select-by-location: Add support for "Scenario container" (Feature, Rule, ScenarioOutline) (related to: #391)
 * issue #1246: ScenarioOutline: Support template placeholders in ExamplesTable.tags (provided-by: jenisys)
+* pull #1210: Multiple, nested steps directories under steps directory (provided by: dron4ik86).
 * pull #1185: Read Examples table data from CSV file (provided-by: rajanmanwansh)
 * issue #1183: Support Background Steps with Placeholders for Scenario Outlines (submitted by: hemendra0851)
 * pull #1097: Support And-Step as initial Scenario step if Background Steps exist (provided-by: aneeshdurg)
