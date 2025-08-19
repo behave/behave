@@ -55,6 +55,7 @@ DEVELOP:
 
 CI:
 
+* Update to python-version: "3.14.0-rc.2" (was: "3.14.0-rc.1")
 * Update actions/checkout to v5 (was: v4).
 * Use astral-sh/setup-uv@v6 (was: v3).
 
