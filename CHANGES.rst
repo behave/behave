@@ -19,11 +19,15 @@ FIXED:
 * Include changes from ``behave v1.3.1`` (#1255, #1239)
 * issue #1028: use unittest.mock instead of mock (submitted by: pgajdos)
 
-
 DOCUMENTATION:
 
 * pull #1258: fixed dead links in documentation (provided by: sgronlund)
 * Include changes from ``behave v1.3.1`` (#1256, #1233)
+
+DEVELOP:
+
+* behave4cmd0: Update version info to v1.4.0
+* behave4cmd0.command_shell: Cleanup of BEHAVE_CMD value usage.
 
 
 Version: 1.3.2 (unreleased, branch=release/v1.3.x)
@@ -51,6 +55,7 @@ DEVELOP:
 
 CI:
 
+* Update to python-version: "3.14.0-rc.2" (was: "3.14.0-rc.1")
 * Update actions/checkout to v5 (was: v4).
 * Use astral-sh/setup-uv@v6 (was: v3).
 
