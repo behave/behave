@@ -7,5 +7,5 @@ Currently used to provide self-tests for `behave`_.
 .. _behave4cmd: https://github.com/behave/behave4cmd
 """
 
-# -- SAME AS: behave v1.3.1
-__version__ = "1.3.1"
+# -- BASED ON: behave v1.4.0
+__version__ = "1.4.0"
