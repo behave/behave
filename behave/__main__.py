@@ -35,11 +35,14 @@ EXAMPLES:
     --tags="@smoke and @wip"
     --tags="(@slow and not @fixme) or @smoke"
     --tags="not (@fixme or @xfail)"
+    --tags="@smoke and {config.tags}"
 
 NOTES:
 
 * The tag-prefix "@" is optional.
 * An empty tag-expression is "true" (select-anything).
+* Use "{config.tags}" placeholder on command-line
+  to use tag-expressions from the config-file (from: "tags" or "default_tags").
 
 TAG-INHERITANCE:
 
