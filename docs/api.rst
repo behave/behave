@@ -491,4 +491,17 @@ intended to be used on your `environment file functions`_.
 .. autofunction:: behave.log_capture.capture
 
 
+Configuration
+===============
+
+The configuration object, that is using :class:`~behave.configuration.Configuration` class,
+contains the data from the command-line options and the configuration file(s).
+
+.. autoclass:: behave.configuration.Configuration
+   :members:
+
+.. seealso::
+
+    See chapter :ref:`id.using_behave` for command-line options and configuration file parameter.
+
 .. include:: _common_extlinks.rst
