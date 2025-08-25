@@ -26,6 +26,7 @@ Feature: behave --tags-help option
             --tags="@smoke and @wip"
             --tags="(@slow and not @fixme) or @smoke"
             --tags="not (@fixme or @xfail)"
+            --tags="@smoke and {config.tags}"
 
         NOTES:
         * The tag-prefix "@" is optional.

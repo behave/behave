@@ -1,3 +1,5 @@
+.. _id.using_behave:
+
 ==============
 Using *behave*
 ==============
@@ -221,7 +223,7 @@ You may see the same information presented below at any time using ``behave
 .. option:: -t, --tags
 
     Only execute features or scenarios with tags matching TAG_EXPRESSION.
-    Pass "--tags-help" for more information.
+    Use :option:`--tags-help` option for more information.
 
 .. option:: -T, --no-timings
 
@@ -279,11 +281,14 @@ EXAMPLES:
     --tags="@smoke and @wip"
     --tags="(@slow and not @fixme) or @smoke"
     --tags="not (@fixme or @xfail)"
+    --tags="@smoke and {config.tags}"
 
 NOTES:
 
 * The tag-prefix "@" is optional.
 * An empty tag-expression is "true" (select-anything).
+* Use "{config.tags}" placeholder on command-line
+  to use tag-expressions from the config-file (from: "tags" or "default_tags").
 
 TAG-INHERITANCE:
 
@@ -368,187 +373,187 @@ Configuration File Parameters
 -----------------------------
 
 .. index::
-    single: configuration param; color
+    single: configuration file parameter; color
 
-.. describe:: color : Colored (Enum)
+.. confval:: color : Colored (Enum)
 
     Use colored mode or not (default: auto).
 
 .. index::
-    single: configuration param; dry_run
+    single: configuration file parameter; dry_run
 
-.. describe:: dry_run : bool
+.. confval:: dry_run : bool
 
     Invokes formatters without executing the steps.
 
 .. index::
-    single: configuration param; exclude_re
+    single: configuration file parameter; exclude_re
 
-.. describe:: exclude_re : text
+.. confval:: exclude_re : text
 
     Don't run feature files matching regular expression PATTERN.
 
 .. index::
-    single: configuration param; include_re
+    single: configuration file parameter; include_re
 
-.. describe:: include_re : text
+.. confval:: include_re : text
 
     Only run feature files matching regular expression PATTERN.
 
 .. index::
-    single: configuration param; junit
+    single: configuration file parameter; junit
 
-.. describe:: junit : bool
+.. confval:: junit : bool
 
     Output JUnit-compatible reports. When junit is enabled, all stdout and
     stderr will be redirected and dumped to the junit report,
     regardless of the "--capture" and "--no-capture" options.
 
 .. index::
-    single: configuration param; junit_directory
+    single: configuration file parameter; junit_directory
 
-.. describe:: junit_directory : text
+.. confval:: junit_directory : text
 
     Directory in which to store JUnit reports.
 
 .. index::
-    single: configuration param; jobs
+    single: configuration file parameter; jobs
 
-.. describe:: jobs : positive_number
+.. confval:: jobs : positive_number
 
     Number of concurrent jobs to use (default: 1). Only supported by test
     runners that support parallel execution.
 
 .. index::
-    single: configuration param; default_format
+    single: configuration file parameter; default_format
 
-.. describe:: default_format : text
+.. confval:: default_format : text
 
     Specify default formatter (default: pretty).
 
 .. index::
-    single: configuration param; format
+    single: configuration file parameter; format
 
-.. describe:: format : sequence<text>
+.. confval:: format : sequence<text>
 
     Specify a formatter. If none is specified the default formatter is
     used. Pass "--format help" to get a list of available formatters.
 
 .. index::
-    single: configuration param; steps_catalog
+    single: configuration file parameter; steps_catalog
 
-.. describe:: steps_catalog : bool
+.. confval:: steps_catalog : bool
 
     Show a catalog of all available step definitions. SAME AS:
     --format=steps.catalog --dry-run --no-summary -q
 
 .. index::
-    single: configuration param; scenario_outline_annotation_schema
+    single: configuration file parameter; scenario_outline_annotation_schema
 
-.. describe:: scenario_outline_annotation_schema : text
+.. confval:: scenario_outline_annotation_schema : text
 
     Specify name annotation schema for scenario outline (default="{name}
     -- @{row.id} {examples.name}").
 
 .. index::
-    single: configuration param; show_skipped
+    single: configuration file parameter; show_skipped
 
-.. describe:: show_skipped : bool
+.. confval:: show_skipped : bool
 
     Print skipped steps. This is the default behaviour. This switch is
     used to override a configuration file setting.
 
 .. index::
-    single: configuration param; show_snippets
+    single: configuration file parameter; show_snippets
 
-.. describe:: show_snippets : bool
+.. confval:: show_snippets : bool
 
     Print snippets for unimplemented steps. This is the default behaviour.
     This switch is used to override a configuration file setting.
 
 .. index::
-    single: configuration param; show_multiline
+    single: configuration file parameter; show_multiline
 
-.. describe:: show_multiline : bool
+.. confval:: show_multiline : bool
 
     Print multiline strings and tables under steps. This is the default
     behaviour. This switch is used to override a configuration file
     setting.
 
 .. index::
-    single: configuration param; name
+    single: configuration file parameter; name
 
-.. describe:: name : sequence<text>
+.. confval:: name : sequence<text>
 
     Select feature elements (scenarios, ...) to run which match part of
     the given name (regex pattern). If this option is given more than
     once, it will match against all the given names.
 
 .. index::
-    single: configuration param; capture
+    single: configuration file parameter; capture
 
-.. describe:: capture : bool
+.. confval:: capture : bool
 
     Enable capture mode (stdout/stderr/log-output). Any capture output
     will be printed on a failure/error.
 
 .. index::
-    single: configuration param; capture_stdout
+    single: configuration file parameter; capture_stdout
 
-.. describe:: capture_stdout : bool
+.. confval:: capture_stdout : bool
 
     Enable capture of stdout.
 
 .. index::
-    single: configuration param; capture_stderr
+    single: configuration file parameter; capture_stderr
 
-.. describe:: capture_stderr : bool
+.. confval:: capture_stderr : bool
 
     Enable capture of stderr.
 
 .. index::
-    single: configuration param; capture_log
+    single: configuration file parameter; capture_log
 
-.. describe:: capture_log : bool
+.. confval:: capture_log : bool
 
     Enable capture of logging output.
 
 .. index::
-    single: configuration param; capture_hooks
+    single: configuration file parameter; capture_hooks
 
-.. describe:: capture_hooks : bool
+.. confval:: capture_hooks : bool
 
     Enable capture of hooks (except: before_all).
 
 .. index::
-    single: configuration param; logging_level
+    single: configuration file parameter; logging_level
 
-.. describe:: logging_level : text
+.. confval:: logging_level : text
 
     Specify a level to capture logging at. The default is INFO - capturing
     everything.
 
 .. index::
-    single: configuration param; logging_format
+    single: configuration file parameter; logging_format
 
-.. describe:: logging_format : text
+.. confval:: logging_format : text
 
     Specify custom format to print statements. Uses the same format as
     used by standard logging handlers. The default is
     "%(levelname)s:%(name)s:%(message)s".
 
 .. index::
-    single: configuration param; logging_datefmt
+    single: configuration file parameter; logging_datefmt
 
-.. describe:: logging_datefmt : text
+.. confval:: logging_datefmt : text
 
     Specify custom date/time format to print statements. Uses the same
     format as used by standard logging handlers.
 
 .. index::
-    single: configuration param; logging_filter
+    single: configuration file parameter; logging_filter
 
-.. describe:: logging_filter : text
+.. confval:: logging_filter : text
 
     Specify which statements to filter in/out. By default, everything is
     captured. If the output is too verbose, use this option to filter
@@ -560,37 +565,37 @@ Configuration File Parameters
     rather than included.
 
 .. index::
-    single: configuration param; logging_clear_handlers
+    single: configuration file parameter; logging_clear_handlers
 
-.. describe:: logging_clear_handlers : bool
+.. confval:: logging_clear_handlers : bool
 
     Clear existing logging handlers (during capture-log).
 
 .. index::
-    single: configuration param; summary
+    single: configuration file parameter; summary
 
-.. describe:: summary : bool
+.. confval:: summary : bool
 
     Display the summary at the end of the run.
 
 .. index::
-    single: configuration param; outfiles
+    single: configuration file parameter; outfiles
 
-.. describe:: outfiles : sequence<text>
+.. confval:: outfiles : sequence<text>
 
     Write to specified file instead of stdout.
 
 .. index::
-    single: configuration param; paths
+    single: configuration file parameter; paths
 
-.. describe:: paths : sequence<text>
+.. confval:: paths : sequence<text>
 
     Specify default feature paths, used when none are provided.
 
 .. index::
-    single: configuration param; tag_expression_protocol
+    single: configuration file parameter; tag_expression_protocol
 
-.. describe:: tag_expression_protocol : TagExpressionProtocol (Enum)
+.. confval:: tag_expression_protocol : TagExpressionProtocol (Enum)
 
     Specify the tag-expression protocol to use (default: auto_detect).
     With "v1", only tag-expressions v1 are supported. With "v2", only
@@ -598,90 +603,90 @@ Configuration File Parameters
     expressions v1 and v2 are auto-detected.
 
 .. index::
-    single: configuration param; quiet
+    single: configuration file parameter; quiet
 
-.. describe:: quiet : bool
+.. confval:: quiet : bool
 
     Alias for --no-snippets --no-source.
 
 .. index::
-    single: configuration param; runner
+    single: configuration file parameter; runner
 
-.. describe:: runner : text
+.. confval:: runner : text
 
     Use own runner class, like: "behave.runner:Runner"
 
 .. index::
-    single: configuration param; show_source
+    single: configuration file parameter; show_source
 
-.. describe:: show_source : bool
+.. confval:: show_source : bool
 
     Print the file and line of the step definition with the steps. This is
     the default behaviour. This switch is used to override a
     configuration file setting.
 
 .. index::
-    single: configuration param; stage
+    single: configuration file parameter; stage
 
-.. describe:: stage : text
+.. confval:: stage : text
 
     Defines the current test stage. The test stage name is used as name
     prefix for the environment file and the steps directory (instead
     of default path names).
 
 .. index::
-    single: configuration param; stop
+    single: configuration file parameter; stop
 
-.. describe:: stop : bool
+.. confval:: stop : bool
 
     Stop running tests at the first failure.
 
 .. index::
-    single: configuration param; default_tags
+    single: configuration file parameter; default_tags
 
-.. describe:: default_tags : sequence<text>
+.. confval:: default_tags : sequence<text>
 
-    Define default tags when non are provided. See --tags for more
-    information.
+    Define default tags when non are provided. See :option:`--tags` for
+    more information.
 
 .. index::
-    single: configuration param; tags
+    single: configuration file parameter; tags
 
-.. describe:: tags : sequence<text>
+.. confval:: tags : sequence<text>
 
     Only execute certain features or scenarios based on the tag expression
     given. See below for how to code tag expressions in configuration
     files.
 
 .. index::
-    single: configuration param; show_timings
+    single: configuration file parameter; show_timings
 
-.. describe:: show_timings : bool
+.. confval:: show_timings : bool
 
     Print the time taken, in seconds, of each step after the step has
     completed. This is the default behaviour. This switch is used to
     override a configuration file setting.
 
 .. index::
-    single: configuration param; verbose
+    single: configuration file parameter; verbose
 
-.. describe:: verbose : bool
+.. confval:: verbose : bool
 
     Show the files and features loaded.
 
 .. index::
-    single: configuration param; wip
+    single: configuration file parameter; wip
 
-.. describe:: wip : bool
+.. confval:: wip : bool
 
     Only run scenarios tagged with "wip". Additionally: use the "plain"
     formatter, do not capture stdout or logging output and stop at the
     first failure.
 
 .. index::
-    single: configuration param; lang
+    single: configuration file parameter; lang
 
-.. describe:: lang : text
+.. confval:: lang : text
 
     Use keywords for a language other than English.
 

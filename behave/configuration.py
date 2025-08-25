@@ -376,13 +376,13 @@ With "auto_detect", tag-expressions v1 and v2 are auto-detected.
     ((),  # -- CONFIGFILE only
      dict(dest="default_tags", metavar="TAG_EXPRESSION", action="append",
           help="""Define default tags when non are provided.
-                  See --tags for more information.""")),
+                  See :option:`--tags` for more information.""")),
 
     (("-t", "--tags"),
      dict(action="append", metavar="TAG_EXPRESSION",
           help="""Only execute features or scenarios with tags
-                  matching TAG_EXPRESSION. Pass "--tags-help" for
-                  more information.""",
+                  matching TAG_EXPRESSION.
+                  Use :option:`--tags-help` option for more information.""",
           config_help="""Only execute certain features or scenarios based
                          on the tag expression given. See below for how to code
                          tag expressions in configuration files.""")),
@@ -746,7 +746,15 @@ def setup_config_file_parser():
     return parser
 
 class Configuration(object):
-    """Configuration object for behave and behave runners."""
+    """
+    Configuration object for behave and behave runners.
+
+    .. attribute:: tag_expression
+        :type: behave.tag_expression.v2.TagExpression | behave.tag_expression.v1.TagExpression
+
+        Provides the Tag-Expression object based on the :option:`--tags` option(s)
+        on command-line and `:confval:`default_tags` parameter in the config-file.
+    """
     # pylint: disable=too-many-instance-attributes
     defaults = dict(
         color=os.getenv("BEHAVE_COLOR", COLOR_DEFAULT),
@@ -993,7 +1001,7 @@ class Configuration(object):
 
     def show_bad_formats_and_fail(self, parser):
         """
-        Show any BAD-FORMATTER(s) and fail with ``ParseError``if any exists.
+        Show any BAD-FORMATTER(s) and fail with :class:`~behave.parser.ParseError` if any exists.
         """
         # -- SANITY-CHECK FIRST: Is correct type used for "config.format"
         if self.format is not None and not isinstance(self.format, list):

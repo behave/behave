@@ -21,6 +21,8 @@ FIXED:
 
 DOCUMENTATION:
 
+* Use "confval" directive for config-file parameters.
+* api: Add "Configuration" class description.
 * pull #1258: fixed dead links in documentation (provided by: sgronlund)
 * Include changes from ``behave v1.3.1`` (#1256, #1233)
 
@@ -45,6 +47,8 @@ PLANNED:
 DOCUMENTATION:
 
 * RTFD: Enable PDF output format again (for download).
+* Use "confval" directive for config-file parameters.
+* api: Add "Configuration" class description.
 * Include changes from pull #1258
 * Fix more deadlinks in docs
 
