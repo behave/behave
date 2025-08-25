@@ -10,7 +10,7 @@
 -r basic.txt
 
 # -- DOCUMENTATION DEPENDENCIES:
-sphinx >= 7.3.7;   python_version >= '3.7'
+sphinx >= 7.4.0;   python_version >= '3.7'
 sphinx-autobuild
 urllib3 >= 2.5.0
 

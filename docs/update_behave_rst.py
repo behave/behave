@@ -25,11 +25,33 @@ cmdline_option_schema = """\
 
     {text}
 """
+config_param_schema_OLD = """\
+.. index::
+    single: configuration file param; {param}
+
+.. confval:: {param} : {type}
+
+    {text}
+"""
+
+# -- NOTE: Using ":type:" parameter for directive is too noisy.
 config_param_schema = """\
 .. index::
-    single: configuration param; {param}
+    single: configuration file parameter; {param}
 
-.. describe:: {param} : {type}
+.. confval:: {param} : {type}
+
+    {text}
+"""
+
+# -- NOTE: Using ":default:" parameter for directive is too noisy.
+config_param_schema_with_default = """\
+.. index::
+    single: configuration file parameter; {param}
+
+.. confval:: {param}
+    :type: {type}
+    :default: {default}
 
     {text}
 """
@@ -113,7 +135,13 @@ for fixed, keywords in configuration.OPTIONS:
     if default_value and "%(default)s" in text:
         text = text.replace("%(default)s", str(default_value))
     text = textwrap.fill(text, 70, initial_indent="", subsequent_indent=indent)
-    config.append(config_param_schema.format(param=dest, type=type_name, text=text))
+    this_config_param_schema = config_param_schema
+    if default_value:
+        # DISABLED: this_config_param_schema = config_param_schema_with_default
+        this_config_param_schema = config_param_schema
+    config.append(this_config_param_schema.format(param=dest, type=type_name,
+                                                  default=default_value,
+                                                  text=text))
 
 
 # -- STEP: Generate documentation.
