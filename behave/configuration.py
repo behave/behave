@@ -178,7 +178,7 @@ OPTIONS = [
 
 
     (("-f", "--format"),
-     dict(dest="format", action="append",
+     dict(dest="format", action="append", metavar="FORMATTER",
           help="""Specify a formatter. If none is specified the default
                   formatter is used. Pass "--format help" to get a
                   list of available formatters.""")),
@@ -186,7 +186,7 @@ OPTIONS = [
     (("--steps-catalog",),
      dict(dest="steps_catalog", action="store_true",
           help="""Show a catalog of all available step definitions.
-                  SAME AS: --format=steps.catalog --dry-run --no-summary -q""")),
+                  SAME AS: "--format=steps.catalog --dry-run --no-summary -q".""")),
 
     ((),  # -- CONFIGFILE only
      dict(dest="scenario_outline_annotation_schema",
@@ -275,23 +275,26 @@ OPTIONS = [
           help="""Disable capture of hooks.""")),
 
     (("--logging-level",),
-     dict(type=LogLevel.parse_type, default=logging.INFO,
+     dict(type=LogLevel.parse_type, default=logging.INFO, metavar="LOG_LEVEL",
           help="""Specify a level to capture logging at. The default
                   is INFO - capturing everything.""")),
 
     (("--logging-format",),
-     dict(help="""Specify custom format to print statements. Uses the
+     dict(metavar="LOG_FORMAT",
+         help="""Specify custom format to print statements. Uses the
                   same format as used by standard logging handlers. The
                   default is "%%(levelname)s:%%(name)s:%%(message)s".""")),
 
     (("--logging-datefmt",),
-     dict(help="""Specify custom date/time format to print
+     dict(metavar="LOG_DATE_FORMAT",
+          help="""Specify custom date/time format to print
                   statements.
                   Uses the same format as used by standard logging
                   handlers.""")),
 
     (("--logging-filter",),
-     dict(help="""Specify which statements to filter in/out. By default,
+     dict(metavar="LOG_FILTER",
+         help="""Specify which statements to filter in/out. By default,
                   everything is captured. If the output is too verbose, use
                   this option to filter out needless output.
                   Example: --logging-filter=foo will capture statements issued
@@ -327,8 +330,8 @@ OPTIONS = [
           help="""Display the summary at the end of the run.""")),
 
     (("-o", "--outfile"),
-     dict(dest="outfiles", action="append", metavar="FILE",
-          help="Write to specified file instead of stdout.")),
+     dict(dest="outfiles", action="append", metavar="FILENAME",
+          help="Write formatter output to output-file (default: stdout).")),
 
     ((),  # -- CONFIGFILE only
      dict(dest="paths", action="append",
