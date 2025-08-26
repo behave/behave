@@ -21,7 +21,7 @@ You may see the same information presented below at any time using ``behave
 
     Disable colored mode.
 
-.. option:: --color
+.. option:: --color COLORED
 
     Use colored mode or not (default: auto).
 
@@ -29,16 +29,16 @@ You may see the same information presented below at any time using ``behave
 
     Invokes formatters without executing the steps.
 
-.. option:: -D, --define
+.. option:: -D NAME=VALUE, --define NAME=VALUE
 
     Define user-specific data for the config.userdata dictionary. Example:
     -D foo=bar to store it in config.userdata["foo"].
 
-.. option:: -e, --exclude
+.. option:: -e PATTERN, --exclude PATTERN
 
     Don't run feature files matching regular expression PATTERN.
 
-.. option:: -i, --include
+.. option:: -i PATTERN, --include PATTERN
 
     Only run feature files matching regular expression PATTERN.
 
@@ -52,24 +52,24 @@ You may see the same information presented below at any time using ``behave
     stderr will be redirected and dumped to the junit report,
     regardless of the "--capture" and "--no-capture" options.
 
-.. option:: --junit-directory
+.. option:: --junit-directory PATH
 
     Directory in which to store JUnit reports.
 
-.. option:: -j, --jobs, --parallel
+.. option:: -j NUMBER, --jobs NUMBER, --parallel NUMBER
 
     Number of concurrent jobs to use (default: 1). Only supported by test
     runners that support parallel execution.
 
-.. option:: -f, --format
+.. option:: -f FORMATTER, --format FORMATTER
 
     Specify a formatter. If none is specified the default formatter is
     used. Pass "--format help" to get a list of available formatters.
 
 .. option:: --steps-catalog
 
-    Show a catalog of all available step definitions. SAME AS:
-    --format=steps.catalog --dry-run --no-summary -q
+    Show a catalog of all available step definitions. SAME AS: "--
+    format=steps.catalog --dry-run --no-summary -q".
 
 .. option:: --no-skipped
 
@@ -99,7 +99,7 @@ You may see the same information presented below at any time using ``behave
     behaviour. This switch is used to override a configuration file
     setting.
 
-.. option:: -n, --name
+.. option:: -n NAME_PATTERN, --name NAME_PATTERN
 
     Select feature elements (scenarios, ...) to run which match part of
     the given name (regex pattern). If this option is given more than
@@ -146,23 +146,23 @@ You may see the same information presented below at any time using ``behave
 
     Disable capture of hooks.
 
-.. option:: --logging-level
+.. option:: --logging-level LOG_LEVEL
 
     Specify a level to capture logging at. The default is INFO - capturing
     everything.
 
-.. option:: --logging-format
+.. option:: --logging-format LOG_FORMAT
 
     Specify custom format to print statements. Uses the same format as
     used by standard logging handlers. The default is
     "%(levelname)s:%(name)s:%(message)s".
 
-.. option:: --logging-datefmt
+.. option:: --logging-datefmt LOG_DATE_FORMAT
 
     Specify custom date/time format to print statements. Uses the same
     format as used by standard logging handlers.
 
-.. option:: --logging-filter
+.. option:: --logging-filter LOG_FILTER
 
     Specify which statements to filter in/out. By default, everything is
     captured. If the output is too verbose, use this option to filter
@@ -188,15 +188,15 @@ You may see the same information presented below at any time using ``behave
 
     Display the summary at the end of the run.
 
-.. option:: -o, --outfile
+.. option:: -o FILENAME, --outfile FILENAME
 
-    Write to specified file instead of stdout.
+    Write formatter output to output-file (default: stdout).
 
 .. option:: -q, --quiet
 
     Alias for --no-snippets --no-source.
 
-.. option:: -r, --runner
+.. option:: -r RUNNER_CLASS, --runner RUNNER_CLASS
 
     Use own runner class, like: "behave.runner:Runner"
 
@@ -210,7 +210,7 @@ You may see the same information presented below at any time using ``behave
     the default behaviour. This switch is used to override a
     configuration file setting.
 
-.. option:: --stage
+.. option:: --stage TEXT
 
     Defines the current test stage. The test stage name is used as name
     prefix for the environment file and the steps directory (instead
@@ -220,7 +220,7 @@ You may see the same information presented below at any time using ``behave
 
     Stop running tests at the first failure.
 
-.. option:: -t, --tags
+.. option:: -t TAG_EXPRESSION, --tags TAG_EXPRESSION
 
     Only execute features or scenarios with tags matching TAG_EXPRESSION.
     Use :option:`--tags-help` option for more information.
@@ -245,7 +245,7 @@ You may see the same information presented below at any time using ``behave
     formatter, do not capture stdout or logging output and stop at the
     first failure.
 
-.. option:: --lang
+.. option:: --lang LANG
 
     Use keywords for a language other than English.
 
@@ -253,7 +253,7 @@ You may see the same information presented below at any time using ``behave
 
     List the languages available for --lang.
 
-.. option:: --lang-help
+.. option:: --lang-help LANG
 
     List the translations accepted for one language.
 
@@ -444,8 +444,8 @@ Configuration File Parameters
 
 .. confval:: steps_catalog : bool
 
-    Show a catalog of all available step definitions. SAME AS:
-    --format=steps.catalog --dry-run --no-summary -q
+    Show a catalog of all available step definitions. SAME AS: "--
+    format=steps.catalog --dry-run --no-summary -q".
 
 .. index::
     single: configuration file parameter; scenario_outline_annotation_schema
@@ -583,7 +583,7 @@ Configuration File Parameters
 
 .. confval:: outfiles : sequence<text>
 
-    Write to specified file instead of stdout.
+    Write formatter output to output-file (default: stdout).
 
 .. index::
     single: configuration file parameter; paths

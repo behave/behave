@@ -21,6 +21,7 @@ FIXED:
 
 DOCUMENTATION:
 
+* Improve command-line option descriptions (show: value).
 * Use "confval" directive for config-file parameters.
 * api: Add "Configuration" class description.
 * pull #1258: fixed dead links in documentation (provided by: sgronlund)
@@ -47,6 +48,7 @@ PLANNED:
 DOCUMENTATION:
 
 * RTFD: Enable PDF output format again (for download).
+* Improve command-line option descriptions (show: value).
 * Use "confval" directive for config-file parameters.
 * api: Add "Configuration" class description.
 * Include changes from pull #1258
