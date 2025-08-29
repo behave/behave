@@ -37,7 +37,7 @@ DEVELOP:
 * behave4cmd0.command_shell: Cleanup of BEHAVE_CMD value usage.
 
 
-Version: 1.3.2 (unreleased, branch=release/v1.3.x)
+Version: 1.3.2 (2025-08-29, branch=release/v1.3.x)
 -------------------------------------------------------------------------------
 
 CHANGED:
