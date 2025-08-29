@@ -186,6 +186,12 @@ OPTIONS = [
           help="""Specify name annotation schema for scenario outline
                   (default="{name} -- @{row.id} {examples.name}").""")),
 
+    ((),  # -- CONFIGFILE only
+     dict(dest="use_nested_step_modules", action="store_true",
+          type=bool, default=False,
+          help="""Use subdirectories of steps directory to import steps
+                  (default: false).""")),
+
     (("--no-skipped",),
      dict(dest="show_skipped", action="store_false",
           help="Don't print skipped steps (due to tags).")),
@@ -785,7 +791,8 @@ class Configuration(object):
         default_format="pretty",    # -- Used when no formatters are configured.
         default_tags="",            # -- Used when no tags are defined.
         config_tags=None,
-        scenario_outline_annotation_schema="{name} -- @{row.id} {examples.name}"
+        scenario_outline_annotation_schema="{name} -- @{row.id} {examples.name}",
+        use_nested_step_modules=False,
     )
 
     def __init__(self, command_args=None, load_config=True, verbose=None,
@@ -879,6 +886,7 @@ class Configuration(object):
         self.include_re = None
         self.exclude_re = None
         self.scenario_outline_annotation_schema = None  # pylint: disable=invalid-name
+        self.use_nested_step_modules = False
         self.steps_dir = "steps"
         self.environment_file = "environment.py"
         self.userdata_defines = None

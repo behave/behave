@@ -274,6 +274,7 @@ class TestConfigFileParser(object):
             "summary",
             "tag_expression_protocol",
             "tags",
+            "use_nested_step_modules",
             "verbose",
             "wip",
         ]

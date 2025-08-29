@@ -159,8 +159,7 @@ for fixed, keywords in configuration.OPTIONS:
         continue
 
     # -- CASE: configuration-file parameter
-    if not config_file_param or action == "store_false":
-        # -- AVOID: Duplicated descriptions, use only case:true.
+    if not config_file_param:
         continue
 
     text = re.sub(r"\s+", " ", keywords.get("config_help", keywords["help"])).strip()

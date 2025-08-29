@@ -456,6 +456,14 @@ Configuration File Parameters
     -- @{row.id} {examples.name}").
 
 .. index::
+    single: configuration file parameter; use_nested_step_modules
+
+.. confval:: use_nested_step_modules : bool
+
+    Use subdirectories of steps directory to import steps (default:
+    false).
+
+.. index::
     single: configuration file parameter; show_skipped
 
 .. confval:: show_skipped : bool

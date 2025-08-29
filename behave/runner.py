@@ -29,6 +29,7 @@ from behave.capture import (
 )
 from behave.exception import ConfigError
 from behave.formatter._registry import make_formatters
+from behave.pathutil import select_subdirectories
 from behave.runner_util import (
     collect_feature_locations, parse_features,
     exec_file, load_step_modules, PathManager
@@ -1112,13 +1113,13 @@ class Runner(ModelRunner):
             extra_step_paths = []
 
         steps_dir = os.path.join(self.base_dir, self.config.steps_dir)
-        step_paths = set()
-
-        for root, _, files in os.walk(steps_dir):
-            step_paths.add(root)
+        step_paths = [steps_dir]
+        if self.config.use_nested_step_modules:
+            print("USE_NESTED_STEP_MODULES: yes")
+            step_subdirectories = select_subdirectories(steps_dir)
+            step_paths.extend(step_subdirectories)
 
         step_paths = list(step_paths) + list(extra_step_paths)
-
         load_step_modules(step_paths)
 
     def feature_locations(self):
