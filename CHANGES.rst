@@ -14,6 +14,10 @@ DEPRECATIONS:
 
 * DEPRECATED: ``tag-expressions v1`` (old-style tag-expressions support will be removed)
 
+CHANGED:
+
+* Use "use_nested_step_modules = False" now by default (merged from: v1.3.2).
+
 FIXED:
 
 * Include changes from ``behave v1.3.1`` (#1255, #1239)
@@ -36,9 +40,9 @@ DEVELOP:
 Version: 1.3.2 (unreleased, branch=release/v1.3.x)
 -------------------------------------------------------------------------------
 
-PLANNED:
+CHANGED:
 
-* Recursive discovery and import in `steps` directory will be disabled by default.
+* Recursive discovery and import in `steps` directory is now disabled by default.
   An expert user can enable this feature again (if he/she knows what he/she is doing).
   RELATED TO: #1210 -- Multiple, nested steps directories under steps directory.
 

@@ -68,8 +68,8 @@ You may see the same information presented below at any time using ``behave
 
 .. option:: --steps-catalog
 
-    Show a catalog of all available step definitions. SAME AS:
-    --format=steps.catalog --dry-run --no-summary -q
+    Show a catalog of all available step definitions. SAME AS: "--
+    format=steps.catalog --dry-run --no-summary -q".
 
 .. option:: --no-skipped
 
@@ -444,8 +444,8 @@ Configuration File Parameters
 
 .. confval:: steps_catalog : bool
 
-    Show a catalog of all available step definitions. SAME AS:
-    --format=steps.catalog --dry-run --no-summary -q
+    Show a catalog of all available step definitions. SAME AS: "--
+    format=steps.catalog --dry-run --no-summary -q".
 
 .. index::
     single: configuration file parameter; scenario_outline_annotation_schema
@@ -454,6 +454,14 @@ Configuration File Parameters
 
     Specify name annotation schema for scenario outline (default="{name}
     -- @{row.id} {examples.name}").
+
+.. index::
+    single: configuration file parameter; use_nested_step_modules
+
+.. confval:: use_nested_step_modules : bool
+
+    Use subdirectories of steps directory to import steps (default:
+    false).
 
 .. index::
     single: configuration file parameter; show_skipped

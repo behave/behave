@@ -97,7 +97,9 @@ dependencies = [
     "parse >= 1.18.0",
     "parse-type >= 0.6.0",
     "six >= 1.15.0",
+    # -- PYTHON BACKPORTS:
     "traceback2; python_version < '3.0'",
+    "scandir>=1.10.0; python_version < '3.5'",
 
     # -- PREPARED:
     "win_unicode_console; python_version <= '3.9'",
