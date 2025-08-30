@@ -31,12 +31,10 @@ Feature: Issue #288 -- Use print function instead print statement in environment
   Scenario: Use print function with future-statement in steps/environment (PY2, PY3)
     Given a file named "features/steps/my_steps.py" with:
         """
-        from __future__ import print_function
         print("Hello step")
         """
     And a file named "features/environment.py" with:
         """
-        from __future__ import print_function
         print("Hello environment")
         """
     When I run "behave -f plain features/passing.feature"

@@ -1,7 +1,4 @@
-# -*- coding: UTF-8 -*-
-# FILE: features/environment.py
-
-from __future__ import absolute_import, print_function
+# -- FILE: features/environment.py
 import os.path
 import sys
 

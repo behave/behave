@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Provides a formatter that simplifies to rerun the failing scenarios
 of the last test run. It writes a text file with the file locations of
@@ -22,7 +21,6 @@ Normally, you put the RerunFormatter into the behave configuration file:
     outfiles = rerun_failing.features
 """
 
-from __future__ import absolute_import
 from datetime import datetime
 from os.path import relpath
 import os

@@ -1,10 +1,8 @@
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+#!/usr/bin/env python3
 """
 Explore encoding settings on a platform.
 """
 
-from __future__ import print_function
 import sys
 import platform
 import locale

@@ -18,12 +18,10 @@ Feature: Issue #1180 -- Negative Time Problem with Summary Reporter
     Given a new working directory
     And a file named "features/steps/use_behave4cmd_steps.py" with:
       """
-      from __future__ import absolute_import
       import behave4cmd0.passing_steps
       """
     And a file named "features/steps/freeze_time_steps.py" with:
       """
-      from __future__ import absolute_import
       import datetime
       import os
       from behave import given, when, then

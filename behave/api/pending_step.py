@@ -6,5 +6,4 @@ Provides the API needed for pending steps:
 * ``PendingStepError`` exception class (as alternative)
 """
 
-from __future__ import absolute_import
 from behave.exception import StepNotImplementedError, PendingStepError

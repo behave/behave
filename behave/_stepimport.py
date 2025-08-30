@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=useless-object-inheritance
 # pylint: disable=super-with-arguments
 """
@@ -11,7 +10,6 @@ This module provides low-level helper functionality during step imports.
     instead of using the global module specific variables.
 """
 
-from __future__ import absolute_import
 from contextlib import contextmanager
 from threading import Lock
 from types import ModuleType

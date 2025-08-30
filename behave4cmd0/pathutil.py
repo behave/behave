@@ -1,4 +1,3 @@
-# -*- coding -*-
 """
 Provides some command utility functions.
 
@@ -6,7 +5,6 @@ TODO:
   matcher that ignores empty lines and whitespace and has contains comparison
 """
 
-from __future__ import absolute_import, print_function
 import os.path
 import sys
 import codecs

@@ -2,7 +2,6 @@
 https://github.com/behave/behave/issues/1047
 """
 
-from __future__ import absolute_import, print_function
 from behave.parser import parse_steps
 
 

@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 # =============================================================================
 # SPHINX CONFIGURATION: behave documentation build configuration file
 # =============================================================================
 
-from __future__ import print_function
 import os.path
 import sys
 import importlib

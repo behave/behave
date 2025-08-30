@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Provides 2 dotted progress formatters:
 

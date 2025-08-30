@@ -1,10 +1,8 @@
-# -*- coding: UTF-8 -*-
 """
 Test support functionality for other tests.
 """
 
 # -- IMPORTS:
-from __future__ import absolute_import
 import time
 
 

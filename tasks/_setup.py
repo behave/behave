@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
 """
 Decides if vendor bundles are used or not.
 Setup python path accordingly.
 """
 
-from __future__ import absolute_import, print_function
 import os.path
 import sys
 

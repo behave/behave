@@ -1,10 +1,8 @@
-# -*- coding: UTF-8 -*-
 # ruff: noqa: E501
 """
 Unit tests for :mod:`behave.parameter_type` module.
 """
 
-from __future__ import absolute_import, print_function
 from contextlib import contextmanager
 import os
 from behave.parameter_type import  (

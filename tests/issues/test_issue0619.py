@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 https://github.com/behave/behave/issues/619
 
@@ -17,7 +16,6 @@ properly AttributeError when the key don't exists in the dict,
 so the default behaviour of getattr is not executed (see docs).
 """
 
-from __future__ import absolute_import
 from behave.configuration import Configuration
 from behave.runner import Context, scoped_context_layer
 from unittest.mock import Mock

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # STATUS: Basic concept works.
 """
 A **fixture** provides a concept to simplify test support functionality

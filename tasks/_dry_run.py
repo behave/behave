@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 Basic support to use a --dry-run mode w/ invoke tasks.
 
@@ -14,8 +13,6 @@ Basic support to use a --dry-run mode w/ invoke tasks.
         # -- DRY-RUN MODE: Only echos commands.
         ctx.run("rm -rf {}".format(path))
 """
-
-from __future__ import print_function
 
 class DryRunContext(object):
     PREFIX = "DRY-RUN: "

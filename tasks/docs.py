@@ -1,9 +1,7 @@
-# -*- coding: UTF-8 -*-
 """
 Provides tasks to build documentation with sphinx, etc.
 """
 
-from __future__ import absolute_import, print_function
 import os
 import sys
 from invoke import task, Collection
@@ -11,7 +9,6 @@ from invoke.util import cd
 from path import Path
 
 # -- TASK-LIBRARY:
-# PREPARED: from invoke_cleanup import cleanup_tasks, cleanup_dirs
 from invoke_cleanup import cleanup_tasks, cleanup_dirs
 
 

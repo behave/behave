@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 """
 Knowledge base of all built-in formatters.
 """
 
-from __future__ import  absolute_import
 from behave.formatter import _registry
 
 

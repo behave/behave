@@ -34,8 +34,6 @@ Feature: Issue #385 -- before_scenario called too late
         """
       And a file named "features/environment.py" with:
         """
-        from __future__ import print_function
-
         def before_feature(context, feature):
             if "skip" in feature.tags:
                 print("SKIP-FEATURE: %s" % feature.name)

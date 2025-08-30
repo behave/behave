@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # ruff: noqa: E501
 """
 Explore issue #495.

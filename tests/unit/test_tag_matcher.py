@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ruff: noqa: E501, E731
 """
 Unit tests for active tag-matcher (mod:`behave.tag_matcher`).
@@ -8,7 +7,6 @@ Unit tests for active tag-matcher (mod:`behave.tag_matcher`).
     Replace unittest.TestCase with pytest style.
 """
 
-from __future__ import absolute_import
 from unittest.mock import Mock
 from unittest import TestCase
 import operator

@@ -1,10 +1,8 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=bad-whitespace
 """
 Unit tests for tag-expression parser for TagExpression v2.
 """
 
-from __future__ import absolute_import, print_function
 from behave.tag_expression.parser import TagExpressionParser, TagExpressionError
 from cucumber_tag_expressions.parser import (
     Token, Associative, TokenType

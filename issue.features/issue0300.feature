@@ -27,7 +27,6 @@ Feature: Issue #300 -- UnicodeDecodeError when read steps.py
             """
         And a file named "features/steps/steps.py" with:
             """
-            from __future__ import unicode_literals
             from behave import step
 
             @step('{word:w} step passes')

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 Specifies the common interface for runner(s)/runner-plugin(s).
 
@@ -8,7 +7,6 @@ Specifies the common interface for runner(s)/runner-plugin(s).
 
 """
 
-from __future__ import absolute_import
 from abc import ABCMeta, abstractmethod
 from sys import version_info as _version_info
 from six import add_metaclass

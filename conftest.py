@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 Configure pytest environment.
 Add project-specific information.

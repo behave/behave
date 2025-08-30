@@ -1,7 +1,4 @@
-# -*- coding: UTF-8 -*-
 # issue #678: Support tags with commas and semicolons.
-
-from __future__ import absolute_import, print_function
 from behave import given, when, then
 
 

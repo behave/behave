@@ -1,15 +1,13 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
 """
 Generates documentation of behave's
 
   * command-line options
   * configuration-file parameters
 
-REQUIRES: Python >= 2.7
+REQUIRES: Python >= 3.0
 """
 
-from __future__ import absolute_import, print_function
 import re
 import textwrap
 from behave import configuration

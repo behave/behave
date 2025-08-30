@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Support functionality to simplify the setup for behave tests.
 
@@ -12,7 +11,6 @@ Support functionality to simplify the setup for behave tests.
         setup_command_shell_processors4behave()
 """
 
-from __future__ import absolute_import
 from .command_shell import Command
 from .command_shell_proc import BehaveWinCommandOutputProcessor
 

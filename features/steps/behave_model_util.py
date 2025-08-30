@@ -1,6 +1,3 @@
-# -*- coding: UTF-8 -*-
-
-from __future__ import absolute_import
 from behave.model import Feature, Scenario, reset_model
 from behave.model_type import Status
 from behave.runner import ModelRunner

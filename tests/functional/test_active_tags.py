@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 """
 Functionals tests for active tag-matcher (mod:`behave.tag_matcher`).
 """
 
-from __future__ import absolute_import, print_function
 import pytest
 from behave.tag_matcher import ActiveTagMatcher
 

@@ -40,7 +40,6 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
     Background: Rule Setup
       Given a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import capture_output, any_hook
 
         any_hook.show_capture_on_success = True
@@ -147,7 +146,6 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
     Scenario: Cleanup registered in before_feature hook
       Given a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
 
         any_hook.show_capture_on_success = True
@@ -212,7 +210,6 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
     Scenario: Cleanup registered in before_scenario hook
       Given a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
 
         any_hook.show_capture_on_success = True
@@ -270,7 +267,6 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
     Scenario: Cleanups are executed in reverse registration order
       Given a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
 
         any_hook.show_capture_on_success = True
@@ -339,7 +335,6 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
     Scenario: Cleanup registered in step implementation
       Given a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
 
         any_hook.show_capture_on_success = True
@@ -405,7 +400,6 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
     Scenario: Registered cleanup function args are passed to cleanup
       Given a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
 
         any_hook.show_capture_on_success = True
@@ -470,7 +464,6 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
 
       Given a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
 
         any_hook.show_capture_on_success = True
@@ -535,7 +528,7 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
         """
       And the command output should contain:
         """
-          File "features/environment.py", line 15, in bad_cleanup_bar
+          File "features/environment.py", line 14, in bad_cleanup_bar
             raise SomeError("CLEANUP-OOPS")
         """
       And the command output should contain:
@@ -561,7 +554,6 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
 
       Given a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
 
         class SomeError(RuntimeError): pass
@@ -647,7 +639,6 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
 
       Given a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
 
         class SomeError(RuntimeError): pass

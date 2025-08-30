@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: UTF-8 -*-
 """
 Provides a command container for additional tox commands, used in "tox.ini".
 

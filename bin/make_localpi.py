@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 """
 Utility script to create a pypi-like directory structure (localpi)
 from a number of Python packages in a directory of the local filesystem.
@@ -38,7 +37,6 @@ ALTERNATIVE:
     pip install --find-links=/tmp/downloads --no-index argparse Jinja2
 """
 
-from __future__ import absolute_import, print_function, with_statement
 from fnmatch import fnmatch
 import os.path
 import shutil
@@ -46,7 +44,7 @@ import sys
 
 
 __author__  = "Jens Engel"
-__version__ = "0.2"
+__version__ = "0.3"
 __license__ = "BSD"
 __copyright__ = "(c) 2013 by Jens Engel"
 

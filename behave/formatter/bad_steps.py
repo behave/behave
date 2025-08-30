@@ -16,7 +16,6 @@ CAUSED BY:
 * More strict Regular expression checks occur in newer Python versions (>= 3.11).
 """
 
-from __future__ import absolute_import, print_function
 from behave.formatter.base import Formatter
 from behave.step_registry import (
     BadStepDefinitionCollector,

@@ -1,11 +1,9 @@
-# -*- coding: UTF-8 -*-
 """
 Invoke build script (python based).
 
 .. seealso:: https://github.com/pyinvoke/invoke
 """
 
-from __future__ import print_function
 import sys
 from invoke import task, Collection
 

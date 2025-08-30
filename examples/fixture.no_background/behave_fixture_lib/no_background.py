@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # RELATED-TO: #756
 """
 Example code how to provide a behave fixture to disable the
@@ -39,7 +38,6 @@ background inheritance mechanism.
 
 """
 
-from __future__ import absolute_import, print_function
 from behave import fixture
 
 

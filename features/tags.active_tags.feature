@@ -367,12 +367,12 @@ Feature: Active Tags
         @use.with_browser=chrome
         Scenario Outline: Alice -- Anna, German -- @1.1   # features/outline1.active_tags.feature:10
           Given a step passes                             # features/steps/pass_steps.py:3
-          But note that "Anna can speak German"           # ../behave4cmd0/note_steps.py:15
+          But note that "Anna can speak German"           # ../behave4cmd0/note_steps.py:13
 
         @use.with_browser=chrome
         Scenario Outline: Alice -- Arabella, English -- @1.2   # features/outline1.active_tags.feature:11
           Given a step passes                                  # features/steps/pass_steps.py:3
-          But note that "Arabella can speak English"           # ../behave4cmd0/note_steps.py:15
+          But note that "Arabella can speak English"           # ../behave4cmd0/note_steps.py:13
         """
       And the file "behave.log" should not contain "ACTIVE-TAG DISABLED: Scenario Alice"
       But note that "we check now that tags for example rows are generated correctly"
@@ -442,5 +442,5 @@ Feature: Active Tags
         @use.with_browser=chrome
         Scenario Outline: Charly -- Arabella, English, chrome -- @1.2   # features/outline3.active_tags.feature:11
           Given a step passes                                           # features/steps/pass_steps.py:3
-          But note that "Arabella can speak English"                    # ../behave4cmd0/note_steps.py:15
+          But note that "Arabella can speak English"                    # ../behave4cmd0/note_steps.py:13
         """

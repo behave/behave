@@ -29,7 +29,6 @@ Feature: Issue #487 -- UnicodeEncodeError with ZBSP in multi-line text
       And a file named "features/steps/steps.py" with:
         """
         # -*- coding: latin-1 -*-
-        from __future__ import print_function
         from behave import step
 
         @step('I use {special_unicode_char:w} in text')

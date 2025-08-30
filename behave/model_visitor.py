@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=useless-object-inheritance,super-with-arguments
 # pylint: disable=consider-using-f-string
 """
@@ -6,7 +5,6 @@ This module provides an external visitor (using: Visitor design pattern)
 to visit a model element and its items (by traversing the model tree).
 """
 
-from __future__ import division, absolute_import, print_function
 from behave._types import require_type
 from behave.model import Feature, Rule, ScenarioOutline, Scenario, Step
 

@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+#!/usr/bin/env python3
 """
 Validate a JSON file against its JSON schema.
 
@@ -8,15 +7,10 @@ SEE ALSO:
   * https://python-jsonschema.readthedocs.org/en/latest/errors.html
 
 REQUIRES:
-  Python >= 2.6
+  Python >= 3.0
   jsonschema >= 1.3.0
   argparse
 """
-
-from __future__ import absolute_import, print_function
-
-__author__  = "Jens Engel"
-__version__ = "0.1.0"
 
 import argparse
 import os.path
@@ -33,6 +27,8 @@ except ImportError:
     except ImportError:
         sys.exit("REQUIRE: simplejson (which is not installed)")
 
+__author__  = "Jens Engel"
+__version__ = "0.1.0"
 
 # -----------------------------------------------------------------------------
 # CONSTANTS:

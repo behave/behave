@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 Test the cleanup-funcs functionality provided via
 :meth:`behave.runner.Context.add_cleanup()` method.
@@ -10,7 +9,6 @@ OPEN ISSUES:
   from on_cleanup_error() implementations ?
 """
 
-from __future__ import print_function
 from behave.configuration import Configuration
 from behave.runner import Context, Runner, scoped_context_layer
 from unittest.mock import Mock

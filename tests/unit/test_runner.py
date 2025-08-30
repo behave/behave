@@ -1,7 +1,4 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=too-many-lines, line-too-long
-
-from __future__ import absolute_import, print_function, with_statement
 from collections import defaultdict
 import os.path
 import sys

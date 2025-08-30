@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 """
 Compatibility of :module:`collections` between different Python versions.
 """
 
-from __future__ import absolute_import
 import warnings
 # pylint: disable=unused-import
 try:

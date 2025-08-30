@@ -16,7 +16,6 @@ Feature: Use substep directories
     And a file named "features/steps/use_substep_dirs.py" with:
       """
       # -- REQUIRES: path.py
-      # from __future__ import absolute_import
       from behave.runner_util import load_step_modules
       from path import Path
 

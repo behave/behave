@@ -30,7 +30,6 @@ Feature: Issue #231: Display the output of the last print command
       """
     And a file named "features/steps/steps.py" with:
       """
-      from __future__ import print_function
       from behave import step
       import sys
 

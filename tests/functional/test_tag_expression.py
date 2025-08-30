@@ -1,13 +1,12 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=bad-whitespace
 # -- PARTIALLY BASED-ON: cucumber/tag-expressions/python/tests/functional/test_tag_expressions.py
 """
 Functional tests for ``TagExpressionParser.parse()`` and ``Expression.evaluate()``.
 """
 
-from __future__ import absolute_import, print_function
-from behave.tag_expression.parser import \
+from behave.tag_expression.parser import (
     TagExpressionParser, TagExpressionError
+)
 import pytest
 
 

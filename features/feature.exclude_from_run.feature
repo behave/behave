@@ -70,7 +70,6 @@ Feature: Exclude Feature from Test Run
     Scenario: Exclude a feature from the test run (using: before_feature() hook)
       Given a file named "features/environment.py" with:
           """
-          from __future__ import absolute_import, print_function
           from behave.capture import any_hook
           any_hook.show_capture_on_success = True
 

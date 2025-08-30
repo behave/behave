@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Provides step definitions to perform tests with the Python logging subsystem.
 
@@ -57,7 +56,6 @@ IDEA:
         | bar      | CURRENT | xxx     |
 """
 
-from __future__ import absolute_import, print_function
 import logging
 import sys
 from behave import then, step

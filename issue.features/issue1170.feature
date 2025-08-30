@@ -12,7 +12,6 @@ Feature: Issue #1170 -- Tag Expression Auto Detection Problem
     Given a new working directory
     And a file named "features/steps/steps.py" with:
       """
-      from __future__ import absolute_import
       import behave4cmd0.passing_steps
       """
     And a file named "features/syndrome_1170.feature" with:

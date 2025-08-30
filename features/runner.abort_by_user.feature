@@ -225,8 +225,6 @@ Feature: Test run can be aborted by the user
         """
     And a file named "features/environment.py" with:
         """
-        from __future__ import print_function
-
         def before_feature(context, feature):
             if "user.aborts.before_feature" in feature.tags:
                 print("ABORTED in before_feature: %s" % feature.location)

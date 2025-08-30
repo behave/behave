@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-from __future__ import absolute_import, print_function
 import codecs
 import os.path
 from behave.formatter.api import IFormatter

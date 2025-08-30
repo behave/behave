@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
+#!/usr/bin/env python3
 # -- ENSURE: Use local path during development.
 import sys
 import os.path

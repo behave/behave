@@ -13,7 +13,6 @@ Feature: Issue #1202 -- pyproject.toml that does not contain any [tool] sections
     Given a new working directory
     And a file named "features/steps/use_behave4cmd_steps.py" with:
       """
-      from __future__ import absolute_import
       import behave4cmd0.passing_steps
       """
     And a file named "features/example.feature" with:

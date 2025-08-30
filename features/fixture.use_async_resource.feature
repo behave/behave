@@ -68,7 +68,6 @@ Feature: Fixture that uses an Async-Resource
   Scenario: Use AsyncResource in a fixture
     Given a file named "features/environment.py" with:
       """
-      from __future__ import absolute_import, print_function
       from behave.capture import any_hook
       from behave.fixture import fixture, use_fixture
       from example4me.async_fixture import service

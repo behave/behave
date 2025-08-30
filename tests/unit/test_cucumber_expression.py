@@ -6,7 +6,6 @@ RELATED TO:
 * Step Definitions (aka: step_matcher) with CucumberExpressions
 """
 
-from __future__ import absolute_import, print_function
 from contextlib import contextmanager
 from enum import Enum
 

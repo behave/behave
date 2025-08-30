@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 Provides a formatter that writes prototypes for missing step functions
 into a step module file by using step snippets.
@@ -6,7 +5,6 @@ into a step module file by using step snippets.
 NOTE: This is only simplistic, proof-of-concept code.
 """
 
-from __future__ import absolute_import, print_function
 from behave.runner_util import make_undefined_step_snippets
 from behave.formatter.steps import StepsUsageFormatter
 

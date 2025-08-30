@@ -9,7 +9,6 @@ Feature: Issue #85: AssertionError with nested regex and pretty formatter
     Given a new working directory
     And   a file named "features/steps/regexp_steps.py" with:
         """
-        from __future__ import print_function
         from behave import given, when, then, use_step_matcher
         @given('a {re_category} regular expression "{pattern}"')
         def impl(context, re_category, pattern):

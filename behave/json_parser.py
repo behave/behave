@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Read behave's JSON output files and store retrieved information in
 :mod:`behave.model` elements.
@@ -8,7 +7,6 @@ Utility to retrieve runtime information from behave's JSON output.
 REQUIRES: Python >= 2.6 (json module is part of Python standard library)
 """
 
-from __future__ import absolute_import
 import codecs
 from behave import model
 from behave._types import require_type

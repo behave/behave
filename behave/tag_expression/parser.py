@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 Tag expression v2 parser, based on :mod:`cucumber-tag-expressions`.
 
@@ -13,7 +12,6 @@ Extension(s):
     * https://docs.cucumber.io/cucumber/api/#tag-expressions
 """
 
-from __future__ import absolute_import
 from cucumber_tag_expressions.parser import (
     TagExpressionParser as _TagExpressionParser,
     # -- PROVIDE: Similar interface like: cucumber_tag_expressions.parser

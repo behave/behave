@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Passing steps.
 Often needed in examples.
@@ -14,7 +13,6 @@ EXAMPLES:
     Then  it should pass because "the answer is correct".
 """
 
-from __future__ import absolute_import
 from behave import step, then
 
 # -----------------------------------------------------------------------------

@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 Importer module for lazy-loading/importing modules and objects.
 
 REQUIRES: importlib (provided in Python2.7, Python3.2...)
 """
 
-from __future__ import absolute_import
 import importlib
 import inspect
 from behave._types import Unknown

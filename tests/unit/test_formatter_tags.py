@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 Test formatters:
   * behave.formatter.tags.TagsCountFormatter
   * behave.formatter.tags.TagsLocationFormatter
 """
 
-from __future__ import absolute_import
 from .test_formatter import FormatterTests as FormatterTest
 from .test_formatter import MultipleFormattersTests as MultipleFormattersTest
 

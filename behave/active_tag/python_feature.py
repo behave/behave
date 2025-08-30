@@ -1,9 +1,7 @@
-# -*- coding: UTF-8 -*-
 """
 Supports some active-tags related Python features (similar to: feature flags).
 """
 
-from __future__ import absolute_import
 from behave.tag_matcher import BoolValueObject
 from behave.python_feature import PythonFeature
 

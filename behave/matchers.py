@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-# pylint: disable=redundant-u-string-prefix
 # pylint: disable=super-with-arguments
 # pylint: disable=consider-using-f-string
 # pylint: disable=useless-object-inheritance
@@ -8,7 +6,6 @@ This module provides the step matchers functionality that matches a
 step definition (as text) with step-functions that implement this step.
 """
 
-from __future__ import absolute_import, print_function, with_statement
 import copy
 import inspect
 import re

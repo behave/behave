@@ -1,10 +1,8 @@
-# -*- coding: UTF-8 -*-
 # ruff: noqa: F811
 """
 Step implementations for tutorial example.
 """
 
-from __future__ import absolute_import, print_function
 from behave import given, when, then
 from assertpy import assert_that
 

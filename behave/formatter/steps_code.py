@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 Provides a formatter, like the "plain" formatter, that:
 
@@ -6,7 +5,6 @@ Provides a formatter, like the "plain" formatter, that:
 * Shows the step implementation (as code section)
 """
 
-from __future__ import absolute_import, print_function
 import inspect
 import sys
 

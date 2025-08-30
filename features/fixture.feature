@@ -67,7 +67,6 @@ Feature: Fixture
     Scenario: Use fixture with generator-function (setup/cleanup)
       Given a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
         from behave.fixture import fixture, use_fixture
 
@@ -119,7 +118,6 @@ Feature: Fixture
     Scenario: Use fixture with function (setup-only)
       Given a file named "features/environment.py" with:
         """
-        from __future__ import print_function
         from behave.capture import any_hook
         from behave.fixture import fixture, use_fixture
 
@@ -169,7 +167,6 @@ Feature: Fixture
       Given an empty file named "example4me/__init__.py"
       And a file named "example4me/fixtures.py" with:
         """
-        from __future__ import print_function
         from behave import fixture
 
         @fixture
@@ -181,7 +178,6 @@ Feature: Fixture
         """
       And a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
         from behave.fixture import fixture, use_fixture
         from example4me.fixtures import foo
@@ -195,7 +191,6 @@ Feature: Fixture
         """
       And a file named "features/steps/fixture_steps.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave import step, use_fixture
         from example4me.fixtures import foo
 
@@ -356,7 +351,6 @@ Feature: Fixture
     Scenario: Use multiple fixtures (with setup/cleanup)
       Given a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
         from behave.fixture import fixture, use_fixture
 
@@ -421,7 +415,6 @@ Feature: Fixture
     Scenario: Use same fixture twice with different args
       Given a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
         from behave.fixture import fixture, use_fixture
 
@@ -480,7 +473,6 @@ Feature: Fixture
     Scenario: Use invalid fixture (with two yields or more)
       Given a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
         from behave.fixture import fixture, use_fixture
 
@@ -535,7 +527,6 @@ Rule: Fixtures with Cleanup Errors
   Scenario: Fixture with cleanup-error causes failed (case: scenario)
     Given a file named "features/environment.py" with:
       """
-      from __future__ import absolute_import, print_function
       from behave.capture import any_hook
       from behave.fixture import fixture, use_fixture
 
@@ -586,7 +577,7 @@ Rule: Fixtures with Cleanup Errors
     And the command output should contain "Traceback"
     And the command output should contain:
       """
-      File "features/environment.py", line 14, in bad_with_cleanup_error
+      File "features/environment.py", line 13, in bad_with_cleanup_error
         raise SomeError("BAD_FIXTURE_CLEANUP_ERROR")
       """
     And the command output should contain:
@@ -600,7 +591,6 @@ Rule: Fixtures with Cleanup Errors
   Scenario: Multiple fixture cleanup-errors cause no abort after first error (case: scenario)
     Given a file named "features/environment.py" with:
       """
-      from __future__ import absolute_import, print_function
       from behave.capture import any_hook
       from behave.fixture import fixture, use_fixture
 

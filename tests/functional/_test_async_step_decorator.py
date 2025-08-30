@@ -5,7 +5,6 @@ REQUIRES: Python version >= 3.5
 """
 
 # -- IMPORTS:
-from __future__ import absolute_import, print_function
 import asyncio
 import sys
 import pytest

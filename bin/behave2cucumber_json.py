@@ -3,7 +3,7 @@
 # CONVERT: behave JSON dialect to cucumber JSON dialect
 # =============================================================================
 # STATUS: __PROTOTYPE__
-# REQUIRES: Python >= 2.7
+# REQUIRES: Python >= 3.0
 # REQUIRES: https://github.com/behalf-oss/behave2cucumber
 # SEE:
 # * https://github.com/behave/behave/issues/267#issuecomment-251746565
@@ -13,7 +13,6 @@ Convert a file with behave JSON data into a file with cucumber JSON data.
 Note that both JSON dialects differ slightly.
 """
 
-from __future__ import print_function
 import json
 import sys
 import os.path

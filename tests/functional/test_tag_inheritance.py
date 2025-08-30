@@ -22,7 +22,6 @@ EXAMPLES:
 * ScenarioOutline/ScenarioTemplate inherits tags from its Rule
 """
 
-from __future__ import absolute_import, print_function
 from behave.parser import parse_feature
 import pytest
 

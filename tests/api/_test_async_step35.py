@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=invalid-name
 """
 Unit tests for :mod:`behave.api.async_test` for Python 3.5 (or newer).
@@ -17,8 +16,6 @@ Unit tests for :mod:`behave.api.async_test` for Python 3.5 (or newer).
 """
 
 # -- IMPORTS:
-from __future__ import absolute_import, print_function
-
 import os
 from platform import python_implementation
 import sys

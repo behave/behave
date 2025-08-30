@@ -1,11 +1,9 @@
-# -*- coding: UTF-8 -*-
 # ruff: noqa: E731
 """
 Tests for behave.importing.
 The module provides a lazy-loading/importing mechanism.
 """
 
-from __future__ import absolute_import, print_function
 from behave.importer import LazyObject, LazyDict, load_module
 from behave.formatter.base import Formatter
 import sys

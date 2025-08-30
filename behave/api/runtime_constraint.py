@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 Simplifies to specify runtime constraints in
 

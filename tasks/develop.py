@@ -1,9 +1,7 @@
-# -*- coding: UTF-8 -*-
 """
 Development tasks
 """
 
-from __future__ import absolute_import, print_function
 from invoke import Collection, task
 from invoke.util import cd
 from path import Path

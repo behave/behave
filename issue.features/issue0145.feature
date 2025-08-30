@@ -29,7 +29,6 @@ Feature: Issue #145: before_feature/after_feature should not be skipped
         """
     And a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
 
         any_hook.show_capture_on_success = True

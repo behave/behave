@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=consider-using-f-string,redundant-u-string-prefix
 # pylint: disable=super-with-arguments,useless-object-inheritance
 # pylint: disable=line-too-long
@@ -42,7 +41,6 @@ Keyword aliases:
 """
 # pylint: enable=line-too-long
 
-from __future__ import absolute_import, with_statement
 from enum import Enum
 import logging
 import os

@@ -1,10 +1,8 @@
-# -*- coding: UTF-8 -*-
 """
 Provides a summary after each test run.
 """
 # pylint: disable=consider-using-f-string, redundant-u-string-prefix, super-with-arguments
 
-from __future__ import absolute_import, division, print_function
 import sys
 from time import time as time_now
 

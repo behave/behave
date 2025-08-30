@@ -1,6 +1,4 @@
-# -*- coding: UTF-8 -*-
 """Basic types (helper classes)."""
-from __future__ import absolute_import, print_function, division
 import types
 
 

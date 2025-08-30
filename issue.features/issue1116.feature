@@ -87,7 +87,7 @@ Feature: Issue #1116 -- behave erroring in pretty format in pyproject.toml
       Feature: F1 # features/simple.feature:1
 
         Scenario: S1               # features/simple.feature:2
-          Given a step passes      # ../behave4cmd0/passing_steps.py:23
-          When another step passes # ../behave4cmd0/passing_steps.py:23
+          Given a step passes      # ../behave4cmd0/passing_steps.py:21
+          When another step passes # ../behave4cmd0/passing_steps.py:21
       """
     But note that "the correct format config-param type was used now"

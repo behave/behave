@@ -8,7 +8,6 @@ JUNIT XML SCHEMA:
         +-- element:testcase: name="..." status="..."
 """
 
-from __future__ import absolute_import, print_function, with_statement
 import os.path
 import sys
 import argparse

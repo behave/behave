@@ -1,5 +1,4 @@
-# -*- coding: UTF-8 -*-
-# HINT: PYTHON3 only
+# -- REQUIRES: PYTHON3
 # pylint: disable=line-too-long
 """
 This module provides a functionality to read the Examples table of a ScenarioOutline

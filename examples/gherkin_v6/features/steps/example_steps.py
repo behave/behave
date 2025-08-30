@@ -1,7 +1,4 @@
-# -*- coding: UTF-8 -*-
-from __future__ import absolute_import, print_function
 from behave import step
-
 
 @step('feature background step_{step_id:d}')
 def step_feature_background(ctx, step_id):

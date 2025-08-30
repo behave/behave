@@ -1,9 +1,7 @@
-# -*- coding: UTF-8 -*-
 """
 Functionality to support user-specific configuration data (userdata).
 """
 
-from __future__ import absolute_import, print_function
 from behave._types import Unknown, parse_bool
 
 

@@ -6,7 +6,6 @@ Provide a step-matcher with `cucumber-expressions`_ for :pypi:`behave`.
 .. _cucumber-expressions: https://github.com/cucumber/cucumber-expressions
 """
 
-from __future__ import absolute_import, print_function
 from typing import Callable, List, Optional, Type
 
 from behave.exception import NotSupportedWarning

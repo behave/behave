@@ -1,9 +1,7 @@
-# -*- coding: UTF-8 -*-
 """
 This module provides Runner class to run behave feature files (or model elements).
 """
 
-from __future__ import absolute_import, print_function, with_statement
 import contextlib
 import os.path
 import sys

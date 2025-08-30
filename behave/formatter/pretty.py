@@ -1,6 +1,3 @@
-# -*- coding: utf8 -*-
-
-from __future__ import absolute_import, division
 import sys
 from behave.formatter.ansi_escapes import escapes, up
 from behave.formatter.base import Formatter

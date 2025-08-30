@@ -1,7 +1,5 @@
-# -*- coding: UTF-8 -*-
 # -- FILE: features/steps/fixture_steps.py
 
-from __future__ import absolute_import, print_function
 # -- PREPARED:
 # from behave import when
 # import os

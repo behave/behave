@@ -1,9 +1,7 @@
-# -*- coding: UTF-8
 """
 Behave steps for environment variables (process environment).
 """
 
-from __future__ import absolute_import, print_function
 import os
 from behave import given, then, step, register_type, use_fixture
 from behave.parameter_type import parse_unquoted_text

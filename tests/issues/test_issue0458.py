@@ -1,4 +1,3 @@
-# -*- coding: UTF-8
 """
 Test issue #458:
 

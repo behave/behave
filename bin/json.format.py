@@ -1,14 +1,16 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Utility script to format/beautify one or more JSON files.
 
 REQUIRES: Python >= 2.6 (json module is part of Python standard library)
 LICENSE:  BSD
+
+ALTERNATIVE:
+
+* Use "python3 -mjson.tool --ident=2 ..."
 """
 
 # -- IMPORTS:
-from __future__ import absolute_import, print_function
 import glob
 import logging
 import os.path
@@ -24,8 +26,8 @@ except ImportError:
 # CONSTANTS:
 # ----------------------------------------------------------------------------
 __author__    = "Jens Engel"
-__copyright__ = "(c) 2011-2021 by Jens Engel"
-VERSION = "0.3.0"
+__copyright__ = "(c) 2011-2025 by Jens Engel"
+VERSION = "0.4.0"
 
 DEFAULT_INDENT_SIZE = 2
 PYTHON_VERSION = sys.version_info[:2]

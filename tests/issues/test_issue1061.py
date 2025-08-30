@@ -2,7 +2,6 @@
 https://github.com/behave/behave/issues/1061
 """
 
-from __future__ import absolute_import, print_function
 from behave.parser import parse_feature
 from tests.functional.test_tag_inheritance import assert_inherited_tags_equal_to
 

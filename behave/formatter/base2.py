@@ -1,5 +1,3 @@
-from __future__ import absolute_import, print_function
-
 from behave.formatter.api import IFormatter2
 from behave.formatter.base import Formatter
 

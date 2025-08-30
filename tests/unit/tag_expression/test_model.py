@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # BASED-ON: cucumber/tag-expressions/python/tests/unit/test_model.py
 # pylint: disable=bad-whitespace
 

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=line-too-long
 """
 This module provides functionality to support "async steps" (coroutines)
@@ -27,7 +26,6 @@ EXAMPLE:
 # pylint: enable=line-too-long
 
 # -- REQUIRES: Python >= 3.5
-from __future__ import absolute_import, print_function
 import warnings as _warnings
 
 from behave._types import require_callable as _require_callable

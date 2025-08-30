@@ -1,9 +1,7 @@
-# -*- coding: UTF-8 -*-
 """
 Official API for step writers that want to use step-matchers.
 """
 
-from __future__ import absolute_import, print_function
 import warnings
 from behave import matchers as _step_matchers
 

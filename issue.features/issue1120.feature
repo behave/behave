@@ -24,7 +24,6 @@ Feature: Issue #1120 -- Logging ignoring level set in setup_logging
   Scenario: Check Syndrome
     Given a file named "features/environment.py" with:
       """
-      from __future__ import absolute_import, print_function
       import logging
       from behave.log_capture import capture
 
@@ -57,7 +56,6 @@ Feature: Issue #1120 -- Logging ignoring level set in setup_logging
   Scenario: Workaround for Syndrome (works without fix)
     Given a file named "features/environment.py" with:
       """
-      from __future__ import absolute_import, print_function
       import logging
       from behave.log_capture import capture
 

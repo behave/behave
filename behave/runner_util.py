@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=redundant-u-string-prefix
 # pylint: disable=consider-using-f-string
 # pylint: disable=useless-object-inheritance
@@ -6,7 +5,6 @@
 Contains utility functions and classes for Runners.
 """
 
-from __future__ import absolute_import, print_function
 from bisect import bisect
 from collections import OrderedDict
 import glob

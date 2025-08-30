@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
 """
 Test behave formatters:
   * behave.formatter.rerun.RerunFormatter
 """
 
-from __future__ import absolute_import
 from behave.model_type import Status
 from .test_formatter import FormatterTests as FormatterTest, _tf
 from .test_formatter import MultipleFormattersTests as MultipleFormattersTest

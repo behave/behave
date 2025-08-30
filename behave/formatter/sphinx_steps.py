@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Provides a formatter that generates Sphinx-based documentation
 of available step definitions (step implementations).
@@ -14,7 +13,6 @@ TODO:
     :mod:`docutils` are needed to generate step-label for step references.
 """
 
-from __future__ import absolute_import, print_function
 from operator import attrgetter
 import inspect
 import os.path

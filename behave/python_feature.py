@@ -1,10 +1,8 @@
-# -*- coding: UTF-8 -*-
 """
 Provides a knowledge database if some Python features are supported
 in the current python version.
 """
 
-from __future__ import absolute_import
 import sys
 
 

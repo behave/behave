@@ -1,13 +1,10 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=useless-object-inheritance,
 # pylint: disable=super-with-arguments
 # pylint: disable=consider-using-f-string
-# pylint: disable=redundant-u-string-prefix
 """
 This module provides helper class to simplify building many model elements.
 """
 
-from __future__ import absolute_import, print_function
 import functools
 from behave.model import Scenario, Step, Feature, Rule
 from behave.model_type import Status

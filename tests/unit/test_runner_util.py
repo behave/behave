@@ -1,6 +1,3 @@
-# -*- coding: UTF-8 -*-
-
-from __future__ import absolute_import, print_function
 from collections import OrderedDict
 from behave.runner_util import FeatureLineDatabase
 from behave.parser import parse_feature

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 This module provides the abstract base classes and core concepts
 for the model elements in behave.

@@ -4,8 +4,6 @@ Test that async-step functions (coroutines) are usable.
 REQUIRES: Python version >= 3.5
 """
 
-from __future__ import absolute_import, print_function
-
 from contextlib import contextmanager
 import sys
 import asyncio

@@ -1,18 +1,17 @@
-# -*- coding: UTF-8 -*-
-# FILE: issue.features/environment.py
+# -- FILE: issue.features/environment.py
 # pylint: disable=unused-argument
 """
 Functionality:
 
-  * active tags
+* active tags
 """
 
 
-from __future__ import absolute_import, print_function
 import sys
 import os.path
-from behave.active_tag.python import \
+from behave.active_tag.python import (
     ACTIVE_TAG_VALUE_PROVIDER as ACTIVE_TAG_VALUE_PROVIDER4PYTHON
+)
 from behave.tag_matcher import ActiveTagMatcher, print_active_tags
 from behave4cmd0.setup_command_shell import setup_command_shell_processors4behave
 

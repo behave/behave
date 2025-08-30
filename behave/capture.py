@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 Capture output (like: stdout, stderr, log output).
 

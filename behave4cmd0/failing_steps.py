@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Generic failing steps.
 Often needed in examples.
@@ -14,7 +13,6 @@ EXAMPLES:
     Then  it should fail because "the person is unknown".
 """
 
-from __future__ import absolute_import
 from behave import step, then
 
 # -----------------------------------------------------------------------------

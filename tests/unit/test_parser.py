@@ -1,11 +1,9 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=invalid-name, line-too-long, too-many-lines, bad-whitespace
 # ruff: noqa: E501
 """
 Unit tests for Gherkin parser: :mod:`behave.parser`.
 """
 
-from __future__ import absolute_import, print_function
 import pytest
 from behave import i18n
 from behave.model import Table, Tag

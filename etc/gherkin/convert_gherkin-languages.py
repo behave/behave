@@ -6,7 +6,6 @@
 # ///
 # SEE: https://peps.python.org/pep-0723/
 # SEE: https://docs.astral.sh/uv/guides/scripts/#using-a-shebang-to-create-an-executable-file
-# -*- coding: UTF-8 -*-
 # USAGE: convert_gherkin-languages.py
 """
 Generates I18N python module based on `cucumber`_ `gherkin-languages.json`_.

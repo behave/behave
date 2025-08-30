@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from behave.model_type import Status
 
 

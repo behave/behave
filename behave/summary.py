@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=redundant-u-string-prefix,super-with-arguments
 """
 Contains the core functionality, value objects and processor(s),

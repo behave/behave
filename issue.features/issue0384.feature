@@ -22,7 +22,6 @@ Feature: Issue #384 -- Active Tags fail with ScenarioOutline
       """
     And a file named "features/environment.py" with:
       """
-      from __future__ import absolute_import, print_function
       from behave.capture import any_hook
       from behave.tag_matcher import ActiveTagMatcher, setup_active_tag_values
 
@@ -84,12 +83,12 @@ Feature: Issue #384 -- Active Tags fail with ScenarioOutline
       @use.with_browser=chrome
       Scenario Outline: Alice -- Anna, German -- @1.1   # features/outline.active_tags.feature:10
         Given a step passes                             # features/steps/pass_steps.py:3
-        But note that "Anna can speak German"           # ../behave4cmd0/note_steps.py:15
+        But note that "Anna can speak German"           # ../behave4cmd0/note_steps.py:13
 
       @use.with_browser=chrome
       Scenario Outline: Alice -- Arabella, English -- @1.2   # features/outline.active_tags.feature:11
         Given a step passes                                  # features/steps/pass_steps.py:3
-        But note that "Arabella can speak English"           # ../behave4cmd0/note_steps.py:15
+        But note that "Arabella can speak English"           # ../behave4cmd0/note_steps.py:13
       """
     And the command output should not contain "ACTIVE-TAG DISABLED: Scenario Alice"
     But note that "we check now for the specific syndrome"

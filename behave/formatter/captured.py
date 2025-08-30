@@ -1,8 +1,7 @@
 """
-Experimental formatter to inspect captured output.
+Formatter to inspect captured output.
 """
 
-from __future__ import absolute_import, print_function
 from .base2 import BaseFormatter2
 
 # -- PREPARED:

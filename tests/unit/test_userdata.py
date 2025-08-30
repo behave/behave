@@ -1,6 +1,3 @@
-# -*- coding: UTF-8 -*-
-
-from __future__ import absolute_import
 from behave.userdata import parse_user_define, UserData, UserDataNamespace
 from behave._types import Unknown
 from pytest import approx

@@ -85,7 +85,6 @@ Feature: Issue #1068 -- Feature.status is Status.failed in before_scenario() Hoo
       """
     And a file named "features/environment.py" with:
       """
-      from __future__ import print_function
       from behave.model_core import Status
 
       def after_scenario(context, scenario):

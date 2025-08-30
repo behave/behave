@@ -4,7 +4,6 @@ Provides some steps for testing step-definitions with `CucumberExpressions`_.
 .. _CucumberExpressions: https://github.com/cucumber/cucumber-expressions
 """
 
-from __future__ import absolute_import, print_function
 from decimal import Decimal
 from behave import given, when, then
 from assertpy import assert_that

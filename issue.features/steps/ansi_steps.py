@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
 from behave import then
-from behave4cmd0.command_steps import \
-    step_command_output_should_contain_text, \
+from behave4cmd0.command_steps import (
+    step_command_output_should_contain_text,
     step_command_output_should_not_contain_text
-
+)
 # -- CONSTANTS:
 # ANSI CONTROL SEQUENCE INTRODUCER (CSI).
 CSI = "\x1b["

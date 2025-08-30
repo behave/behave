@@ -1,8 +1,6 @@
-# -*- coding: UTF-8 -*-
 # -- FILE: features/steps/my_steps.py
 # ruff: noqa: E402
 
-from __future__ import absolute_import, print_function
 from behave import when
 import os
 

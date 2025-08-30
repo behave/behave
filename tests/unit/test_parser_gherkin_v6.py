@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 Tests for Gherkin parser with `Gherkin v6 grammar`_.
 
@@ -40,7 +39,6 @@ Keyword aliases:
 .. _`Example Mapping Webinar`: https://cucumber.io/blog/example-mapping-webinar/
 """
 
-from __future__ import absolute_import, print_function
 from behave.parser import parse_feature
 import pytest
 

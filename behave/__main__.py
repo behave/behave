@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
 # ruff: noqa: E731
 
-from __future__ import absolute_import, print_function
 import codecs
 import locale
 import sys

@@ -1,4 +1,3 @@
-# -*- coding: UTF -*-
 # pylint: disable=line-too-long
 """
 Provides support functionality to retry scenarios a number of times before
@@ -33,7 +32,6 @@ EXAMPLE:
     * https://github.com/hypothesis/smokey/blob/sauce-reliability/smokey/features/environment.py
 """
 
-from __future__ import print_function
 import functools
 from behave.model import ScenarioOutline
 

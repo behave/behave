@@ -14,12 +14,10 @@ Feature: Issue #1181 -- Can I add a Formatter in the before_all() Hook
     Given a new working directory
     And a file named "features/steps/use_behave4cmd_steps.py" with:
       """
-      from __future__ import absolute_import
       import behave4cmd0.passing_steps
       """
     And a file named "features/environment.py" with:
       """
-      from __future__ import absolute_import, print_function
       from behave.formatter.base import StreamOpener
       from behave.formatter.progress import ScenarioStepProgressFormatter
 

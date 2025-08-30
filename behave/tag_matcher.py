@@ -1,10 +1,8 @@
-# -*- coding: UTF-8 -*-
 """
 Contains classes and functionality to provide the active-tag mechanism.
 Active-tags provide a skip-if logic based on tags in feature files.
 """
 
-from __future__ import absolute_import, print_function
 import logging
 import operator
 import re

@@ -1,4 +1,3 @@
-# -*- coding -*-
 """
 Provides some command utility functions.
 
@@ -6,7 +5,6 @@ TODO:
   matcher that ignores empty lines and whitespace and has contains comparison
 """
 
-from __future__ import absolute_import, print_function
 import codecs
 from hamcrest import assert_that, is_not, equal_to, contains_string
 from hamcrest import matches_regexp

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 https://github.com/behave/behave/issues/725
 
@@ -9,7 +8,6 @@ ScenarioOutlineBuilder did not copy ScenarioOutline.description
 to the Scenarios that were created from the ScenarioOutline.
 """
 
-from __future__ import absolute_import, print_function
 from behave.parser import parse_feature
 
 

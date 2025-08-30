@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # SPDX-License-Identifier: BSD-2-Clause
 """
 behave is behaviour-driven development, Python style
@@ -18,7 +17,6 @@ To get started, we recommend the `tutorial`_ and then the `test language`_ and
 .. _`api`: api.html
 """
 
-from __future__ import absolute_import
 # pylint: disable=no-name-in-module
 from behave.step_registry import given, when, then, step, Given, When, Then, Step
 # pylint: enable=no-name-in-module

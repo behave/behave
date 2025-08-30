@@ -8,7 +8,6 @@ Tries to overcome some of the setup/init problems of the logging subsystem:
   which is not the case in :mod:`behave` (log-capture is used).
 """
 
-from __future__ import absolute_import, print_function
 import logging
 import logging.config
 import sys

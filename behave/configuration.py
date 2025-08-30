@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=redundant-u-string-prefix
 # pylint: disable=consider-using-f-string
 # pylint: disable=too-many-lines
@@ -12,7 +11,6 @@ This module provides the configuration for :mod:`behave`:
 * command-line parsing and storing params in Configuration object(s)
 """
 
-from __future__ import absolute_import, print_function
 from collections import namedtuple
 from configparser import ConfigParser
 import argparse

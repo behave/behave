@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=wrong-import-position, wrong-import-order
 """
 Invoke build script.
@@ -11,8 +10,6 @@ Show all tasks with::
     * https://pyinvoke.org
     * https://github.com/pyinvoke/invoke
 """
-
-from __future__ import absolute_import
 
 # -----------------------------------------------------------------------------
 # BOOTSTRAP PATH: Use provided vendor bundle if "invoke" is not installed
@@ -72,7 +69,7 @@ namespace.configure(cleanup.namespace.configuration())
 namespace.configure(test.namespace.configuration())
 if sys.platform.startswith("win"):
     # -- OVERRIDE SETTINGS: For platform=win32, ... (Windows)
-    from ._compat_shutil import which
+    from shutil import which
     run_settings = dict(echo=True, pty=False, shell=which("cmd"))
     namespace.configure({"run": run_settings})
 else:

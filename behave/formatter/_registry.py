@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 import inspect
 import sys
 import warnings

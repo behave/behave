@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=invalid-name, bad-continuation, bad-whitespace
 """
 Provides step definitions to:
@@ -9,8 +8,6 @@ Provides step definitions to:
 TODO:
   matcher that ignores empty lines and whitespace and has contains comparison
 """
-
-from __future__ import absolute_import, print_function
 
 import os
 import re

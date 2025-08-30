@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # -- FILE: features/steps/number_steps.py
 """
 Step-functions for soft-assertion example.
@@ -9,7 +8,6 @@ STEPS:
     And   the number "4" is in the valid range
 """
 
-from __future__ import print_function
 from behave import given, then
 from assertpy import assert_that, soft_assertions
 

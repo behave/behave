@@ -1,9 +1,7 @@
-# -*- coding: UTF -*-
 """
 Unit tests for :mod:`behave.summary` module.
 """
 
-from __future__ import absolute_import, print_function
 from behave.model_type import Status, ScenarioStatus
 from behave.summary import StatusCounts, SummaryCounts, SummaryCollector
 from .model_builder import FeatureBuilder, ScenarioBuilder

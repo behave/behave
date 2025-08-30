@@ -1,6 +1,4 @@
-# -*- coding: UTF-8 -*-
 # ruff: noqa: E731
-from __future__ import absolute_import, with_statement
 import pytest
 from unittest.mock import Mock, patch
 import parse

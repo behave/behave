@@ -2,7 +2,6 @@
 Test if TagExpression protocol/version is detected correctly.
 """
 
-from __future__ import absolute_import, print_function
 import pytest
 from behave.tag_expression.builder import TagExpressionProtocol, make_tag_expression
 from behave.tag_expression.v1 import TagExpression as TagExpressionV1

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Provides a command container for additional tox commands, used in "tox.ini".
 
@@ -26,7 +26,7 @@ __license__ = "BSD"
 # -----------------------------------------------------------------------------
 # CONSTANTS:
 # -----------------------------------------------------------------------------
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 FORMATTER_CLASS = argparse.RawDescriptionHelpFormatter
 
 

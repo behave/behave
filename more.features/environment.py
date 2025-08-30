@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 from behave.tag_matcher import ActiveTagMatcher, setup_active_tag_values
 from behave.active_tag import python, python_feature
 

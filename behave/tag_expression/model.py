@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # ruff: noqa: F401
 # HINT: Import adapter only
 """
@@ -39,7 +38,6 @@ Extensions:
     assert True  == expression.evaluate(["a.one", "c"])
 """
 
-from __future__ import absolute_import, print_function
 from fnmatch import fnmatchcase
 import glob
 # -- INJECT: Cucumber TagExpression model classes

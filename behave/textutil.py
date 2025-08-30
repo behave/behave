@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 """
 Provides some utility functions related to text processing.
 """
 
-from __future__ import absolute_import, print_function
 import codecs
 import io
 import os

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 Supports some active-tags for Python/Python version related functionality.
 """

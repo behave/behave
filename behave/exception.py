@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # ruff: noqa: F401
 # pylint: disable=redefined-builtin,unused-import
 """
@@ -7,7 +6,6 @@ Behave exception classes.
 .. versionadded:: 1.2.7
 """
 
-from __future__ import absolute_import, print_function
 # -- RE-EXPORT: Exception class(es) here (provided in other places).
 #   USE MODERN EXCEPTION CLASSES: FileNotFoundError, ModuleNotFoundError
 #   COMPATIBILITY: Emulated if not supported yet by Python version.

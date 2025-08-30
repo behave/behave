@@ -10,7 +10,6 @@ Feature: Issue #1158 -- ParseMatcher failing on steps with type annotations
     Given a new working directory
     And a file named "features/steps/steps.py" with:
       """
-      from __future__ import absolute_import, print_function
       from behave import then, register_type, use_step_matcher
       from parse_type import TypeBuilder
       from enum import Enum

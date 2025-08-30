@@ -1,11 +1,9 @@
-# -*- coding: UTF-8 -*-
 """
 Unit test facade to protect pytest runner from 3.5 grammar changes:
 
 * Runs tests related to async-steps.
 """
 
-from __future__ import absolute_import, print_function
 from behave.capture import CaptureController
 from behave.configuration import Configuration
 from behave.python_feature import PythonFeature

@@ -8,7 +8,6 @@ Feature: Issue #63: 'ScenarioOutline' object has no attribute 'stdout'
     Given a new working directory
     And   a file named "features/steps/steps.py" with:
       """
-      # -- OMIT: from __future__ import print_function
       from behave import given
       import sys
 

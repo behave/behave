@@ -1,9 +1,7 @@
-# -*- coding: UTF-8
 """
 Provides behave fixtures related to environment and environment variables.
 """
 
-from __future__ import absolute_import, print_function
 import os
 from behave.fixture import fixture
 

@@ -1,14 +1,12 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Utility script to retrieve duration information from behave JSON output.
 
-REQUIRES: Python >= 2.6 (json module is part of Python standard library)
+REQUIRES: Python >= 3.0 (json module is part of Python standard library)
 LICENSE:  BSD
 """
 
 # -- IMPORTS:
-from __future__ import absolute_import, print_function
 from optparse import OptionParser
 from operator import attrgetter
 import os.path
@@ -23,7 +21,7 @@ from behave.model import ScenarioOutline
 __author__    = "Jens Engel"
 __copyright__ = "(c) 2013 by Jens Engel"
 __license__   = "BSD"
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 
 
 # ----------------------------------------------------------------------------

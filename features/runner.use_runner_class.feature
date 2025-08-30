@@ -19,8 +19,6 @@ Feature: User-provided Test Runner Class (extension-point)
         """
      And a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
-
         def before_all(ctx):
             print_test_runner_class(ctx._runner)
 
@@ -30,7 +28,6 @@ Feature: User-provided Test Runner Class (extension-point)
         """
 #    And a file named "features/environment.py" with:
 #        """
-#        from __future__ import print_function
 #        import os
 #
 #        def print_environment(pattern=None):
@@ -75,7 +72,6 @@ Feature: User-provided Test Runner Class (extension-point)
     Scenario: Use default runner from config-file (case: ITestRunner subclass)
       Given a file named "behave_example1.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.api.runner import ITestRunner
         from behave.runner import Runner as CoreRunner
 
@@ -108,7 +104,6 @@ Feature: User-provided Test Runner Class (extension-point)
     Scenario: Use default runner from config-file (case: ITestRunner.register)
       Given a file named "behave_example2.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.runner import Runner as CoreRunner
 
         class MyRunner2(object):
@@ -145,7 +140,6 @@ Feature: User-provided Test Runner Class (extension-point)
     Scenario: Use default runner from config-file (using: runner-name)
       Given a file named "behave_example3.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.api.runner import ITestRunner
         from behave.runner import Runner as CoreRunner
 
@@ -201,7 +195,6 @@ Feature: User-provided Test Runner Class (extension-point)
       Given a file named "behave.ini" does not exist
       And a file named "behave_example/good_runner.py" with:
         """
-        from __future__ import print_function
         from behave.runner import Runner
 
         class MyRunner1(Runner): pass
@@ -217,7 +210,6 @@ Feature: User-provided Test Runner Class (extension-point)
     Scenario: Use --runner=RUNNER_NAME on command-line with config-file
       Given a file named "behave_example/good_runner.py" with:
         """
-        from __future__ import print_function
         from behave.runner import Runner
 
         class MyRunner1(Runner): pass
@@ -237,7 +229,6 @@ Feature: User-provided Test Runner Class (extension-point)
     Scenario: Runner option on command-line overrides config-file
       Given a file named "behave_example/good_runner.py" with:
         """
-        from __future__ import print_function
         from behave.runner import Runner
 
         class MyRunner1(Runner): pass

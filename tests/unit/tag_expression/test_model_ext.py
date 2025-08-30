@@ -1,7 +1,4 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=bad-whitespace
-
-from __future__ import absolute_import
 from behave.tag_expression.model import Literal, Matcher, Never
 import pytest
 

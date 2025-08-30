@@ -1,10 +1,8 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=redefined-builtin,unused-import
 """
 Provides some Python3 exception classes for Python2 and early Python3 versions.
 """
 
-from __future__ import absolute_import
 import errno as _errno
 from six.moves import builtins as _builtins
 

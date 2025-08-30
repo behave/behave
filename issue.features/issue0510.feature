@@ -33,8 +33,6 @@ Feature: Issue #510 -- JUnit XML output is not well-formed (in some cases)
     Given a new working directory
     And a file named "features/steps/special_char_steps.py" with:
       """
-      # -*- coding: UTF-8 -*-
-      from __future__ import print_function
       from behave import step
 
       @step('we print ^D')
@@ -73,8 +71,6 @@ Feature: Issue #510 -- JUnit XML output is not well-formed (in some cases)
     Given a new working directory
     And a file named "features/steps/cdata_end.py" with:
       """
-      # -*- coding: UTF-8 -*-
-      from __future__ import print_function
       from behave import step
       import logging
 

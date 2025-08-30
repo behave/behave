@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 Create a runner as behave plugin by using its name:
 
@@ -14,7 +13,6 @@ Create a runner as behave plugin by using its name:
     default = behave.runner:Runner
 """
 
-from __future__ import absolute_import, print_function
 import inspect
 from behave.api.runner import ITestRunner
 from behave.exception import (

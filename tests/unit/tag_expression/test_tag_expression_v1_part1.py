@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
 from behave.tag_expression.v1 import TagExpression as TagExpressionV1
 import pytest
 import unittest

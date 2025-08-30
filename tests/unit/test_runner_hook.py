@@ -2,7 +2,6 @@
 Tests for :mod:`behave.runner` related to hook processing.
 """
 
-from __future__ import absolute_import, print_function
 from unittest.mock import Mock
 from behave.capture import CaptureSinkAsCollector
 from behave.configuration import Configuration

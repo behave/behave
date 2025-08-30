@@ -1,14 +1,13 @@
-# -*- coding: UTF-8 -*-
 """
 Unittests for :mod:`behave.capture` module.
 """
 
-from __future__ import absolute_import, print_function
 import sys
 import pytest
 
 from behave.capture import (
-    Captured, CaptureBookmark, CaptureController, ManyCaptured,
+    Captured, CaptureBookmark, CaptureController,
+    ManyCaptured,
     NO_CAPTURED_DATA
 )
 from behave.configuration import Configuration

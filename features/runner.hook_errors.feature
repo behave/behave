@@ -61,7 +61,6 @@ Feature: Hooks Processing in case of Errors
         """
     And a file named "features/environment.py" with:
         """
-        from __future__ import absolute_import, print_function
         from behave.capture import any_hook
         from example4me.hooks import (
             print_after_hook_location,
@@ -476,7 +475,7 @@ Feature: Hooks Processing in case of Errors
           """
       And the command output should contain:
           """
-          File "features/environment.py", line 20, in before_feature
+          File "features/environment.py", line 19, in before_feature
             process_hook_error_location(ctx, "before_feature")
           """
       And the command output should contain:

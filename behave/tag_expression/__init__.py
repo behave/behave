@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=C0209
 """
 Common module for tag-expressions:
@@ -12,7 +11,6 @@ Common module for tag-expressions:
     * https://docs.cucumber.io/cucumber/api/#tag-expressions
 """
 
-from __future__ import absolute_import
 from .builder import TagExpressionProtocol, make_tag_expression  # noqa: F401
 
 # -- BACKWARD-COMPATIBLE SUPPORT:

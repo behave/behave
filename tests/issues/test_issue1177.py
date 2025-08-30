@@ -5,7 +5,6 @@ Test issue #1177.
 """
 
 # -- IMPORTS:
-from __future__ import absolute_import, print_function
 import sys
 import parse
 import pytest

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # pylint: disable=line-too-long
 """
 This module provides a reporter with JUnit XML output.
@@ -69,7 +68,6 @@ Best sources are:
 """
 # pylint: enable=line-too-long
 
-from __future__ import absolute_import
 import os.path
 import codecs
 import re

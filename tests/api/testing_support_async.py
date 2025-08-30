@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """
 Unit test support for :mod:`behave.api.async_test` tests.
 """

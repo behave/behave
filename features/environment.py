@@ -1,14 +1,12 @@
-# -*- coding: UTF-8 -*-
-# FILE: features/environment.py
-
-from __future__ import absolute_import, print_function
+# -- FILE: features/environment.py
 from behave4cmd0.setup_command_shell import setup_command_shell_processors4behave
 from behave import fixture
 import behave.active_tag.python
 import behave.active_tag.python_feature
 from behave.fixture import use_fixture_by_tag
-from behave.tag_matcher import \
+from behave.tag_matcher import (
     ActiveTagMatcher, setup_active_tag_values, print_active_tags
+)
 
 # -----------------------------------------------------------------------------
 # ACTIVE TAGS:

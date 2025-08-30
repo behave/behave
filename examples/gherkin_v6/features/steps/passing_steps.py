@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 from behave import step
 
 @step('{word} step passes')

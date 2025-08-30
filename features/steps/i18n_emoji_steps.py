@@ -1,7 +1,4 @@
-# -*- coding: UTF-8 -*-
-# NEEDED-BY: features/i18n_emoji.feature
-
-from __future__ import absolute_import, print_function
+# -- NEEDED-BY: features/i18n_emoji.feature
 from behave import given
 
 
