@@ -3,14 +3,25 @@ Provides path related utility functions.
 """
 
 from __future__ import absolute_import, print_function
-import os
 from pathlib import Path
+import os
+import six
 try:
     # -- SINCE: Python 3.5
     from os import scandir
 except ImportError:
     # -- PYTHON-BACKPORT: os.scandir()
     from scandir import scandir
+
+
+# -----------------------------------------------------------------------------
+# CONSTANTS
+# -----------------------------------------------------------------------------
+PATH_LIKE = (Path, )
+if six.PY2:
+    # -- SPECIAL CASE: Python2.7 -- pathlib2 provides better support for Path.
+    from pathlib2 import Path as _Path2
+    PATH_LIKE = (Path, _Path2)
 
 
 # -----------------------------------------------------------------------------
@@ -24,9 +35,10 @@ def select_subdirectories(directory, recursive=True):
     :param recursive: If true, recursively discover subdirectories.
     :return: List of subdirectories (as Path object).
     """
-    if isinstance(directory, str):
+    directory_class = directory.__class__
+    if isinstance(directory, six.string_types):
         directory = Path(directory)
-    elif not isinstance(directory, Path):
+    elif not isinstance(directory, PATH_LIKE):
         raise TypeError("{!r} (expected: Path, str)".format(directory))
     if not directory.exists():
         return []
@@ -34,11 +46,15 @@ def select_subdirectories(directory, recursive=True):
         raise ValueError("{!r} is not a directory".format(directory))
 
     if not recursive:
-        selected = [entry.path for entry in scandir(directory) if entry.is_dir()]
+        # -- SPECIAL CASE: Python 2.7 needs scandir(string) and not Path.
+        selected = [Path(entry.path)
+                    for entry in scandir(str(directory)) if entry.is_dir()]
         return sorted(selected)
 
     # -- CASE: Recursive walk directory-tree
+    # SPECIAL CASE: Python 2.7 needs os.walk(string) and not Path.
     selected = []
-    for root_dir, _dirs, _files in os.walk(directory):
+    for root_dir, _dirs, _files in os.walk(str(directory)):
         selected.append(root_dir)
-    return sorted(selected[1:])  # -- EXCLUDE: directory (as first entry)
+    # -- EXCLUDE: directory (as first entry)
+    return sorted([Path(directory) for directory in selected[1:]])
