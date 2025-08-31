@@ -12,7 +12,7 @@ GOALS:
 
 DEPRECATIONS:
 
-* DEPRECATED: ``tag-expressions v1`` (old-style tag-expressions support will be removed)
+* DEPRECATED: ``tag-expressions v1`` (old-style tag-expressions support is removed).
 
 CHANGED:
 

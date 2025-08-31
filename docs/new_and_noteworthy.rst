@@ -12,6 +12,8 @@ This page orders the information by newest version first.
 .. toctree::
    :maxdepth: 2
 
+   new_and_noteworthy_v1.3.2
+   new_and_noteworthy_v1.3.0
    new_and_noteworthy_v1.2.7
    new_and_noteworthy_v1.2.6
    new_and_noteworthy_v1.2.5
