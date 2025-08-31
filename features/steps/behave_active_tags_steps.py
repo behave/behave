@@ -28,7 +28,7 @@ from behave.model_core import TagAndStatusStatement
 from behave.tag_matcher import (
     ActiveTagMatcher, NumberValueObject
 )
-from behave.tag_expression import TagExpression
+from behave.tag_expression import TagExpressionUtil
 from behave4cmd0.step_util import require_table
 from hamcrest import assert_that, equal_to
 
@@ -49,7 +49,7 @@ NUMBER_VALUES = set(["temperature.min_value", "temperature.max_value"])
 # -----------------------------------------------------------------------------
 def normalize_tags(tags):
     # -- STRIP: Leading '@' from tags.
-    return [TagExpression.normalize_tag(tag)  for tag in tags]
+    return TagExpressionUtil.normalize_many_tags(tags)
 
 def make_model_element(**kwargs):
     this_args = dict(

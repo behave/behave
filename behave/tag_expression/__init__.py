@@ -2,7 +2,6 @@
 """
 Common module for tag-expressions:
 
-* v1: old tag expressions (deprecating; superseded by: cucumber-tag-expressions)
 * v2: cucumber-tag-expressions (with wildcard extension)
 
 .. seealso::
@@ -11,8 +10,8 @@ Common module for tag-expressions:
     * https://docs.cucumber.io/cucumber/api/#tag-expressions
 """
 
-from .builder import TagExpressionProtocol, make_tag_expression  # noqa: F401
-
-# -- BACKWARD-COMPATIBLE SUPPORT:
-# DEPRECATING: OLD-STYLE TAG-EXPRESSIONS (v1)
-from .v1 import TagExpression   # noqa: F401
+from .builder import (
+    TagExpressionProtocol,  # noqa: F401
+    TagExpressionUtil,      # noqa: F401
+    make_tag_expression,    # noqa: F401
+)

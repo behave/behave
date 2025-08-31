@@ -605,10 +605,8 @@ Configuration File Parameters
 
 .. confval:: tag_expression_protocol : TagExpressionProtocol (Enum)
 
-    Specify the tag-expression protocol to use (default: auto_detect).
-    With "v1", only tag-expressions v1 are supported. With "v2", only
-    tag-expressions v2 are supported. With "auto_detect", tag-
-    expressions v1 and v2 are auto-detected.
+    Specify the tag-expression protocol to use (default: v2). Only tag-
+    expressions v2 are supported (since: behave v1.4.0).
 
 .. index::
     single: configuration file parameter; quiet
@@ -652,19 +650,19 @@ Configuration File Parameters
 .. index::
     single: configuration file parameter; default_tags
 
-.. confval:: default_tags : sequence<text>
+.. confval:: default_tags : text
 
-    Define default tags when non are provided. See :option:`--tags` for
-    more information.
+    Use default tags when non are provided. Alternative to :confval:`tags
+    : text` (if missing).
 
 .. index::
     single: configuration file parameter; tags
 
-.. confval:: tags : sequence<text>
+.. confval:: tags : text
 
-    Only execute certain features or scenarios based on the tag expression
-    given. See below for how to code tag expressions in configuration
-    files.
+    Select a subset of features/rules/scenarios to execute based on the
+    tag expression. See below for how to code tag expressions in
+    configuration files.
 
 .. index::
     single: configuration file parameter; show_timings

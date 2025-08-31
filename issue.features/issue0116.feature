@@ -58,7 +58,7 @@ Feature: Issue #116: SummaryReporter shows failed scenarios list
         """
 
   Scenario: Summary hides list of failed scenarios when all scenarios pass
-    When I run "behave -f plain --tags=~@xfail features/"
+    When I run `behave -f plain --tags="not @xfail" features/`
     Then it should pass with:
         """
         2 features passed, 0 failed, 0 skipped

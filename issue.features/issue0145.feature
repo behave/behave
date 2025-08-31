@@ -57,7 +57,7 @@ Feature: Issue #145: before_feature/after_feature should not be skipped
     And the behave hook "after_feature" was called
 
   Scenario: Select @feature tag and @scenario tag (logical-and, fails if not fixed)
-    When I run "behave -f plain -T --tags=@feature --tags=@scenario features/issue0145_example.feature"
+    When I run `behave -f plain -T --tags="@feature and @scenario" features/issue0145_example.feature`
     Then it should pass with:
         """
         1 feature passed, 0 failed, 0 skipped

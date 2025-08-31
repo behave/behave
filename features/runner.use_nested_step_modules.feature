@@ -20,7 +20,7 @@ Feature: Use nested step modules in the steps directory
   .   * A Python package may use relative-imports, like "from .other import foo"
   .   * Relative-imports cause exceptions if this feature is used (see below).
   .
-  - NOTES:
+  . NOTES:
   .   Identically named folders and modules in nested directories are all discovered.
 
   Background:

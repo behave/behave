@@ -88,10 +88,7 @@ Feature: Select scenarios by using tags
 
       TAG-LOGIC: not @foo
 
-      Use  '-' (minus-sign) or '~' (tilde) in front of the tag-name
-      to negate the tag-selection (excluding tags mode).
-
-      When I run "behave --tags=~@foo features/"
+      When I run `behave --tags="not @foo" features/`
       Then it should pass with:
           """
           2 features passed, 0 failed, 0 skipped
@@ -116,7 +113,7 @@ Feature: Select scenarios by using tags
 
       TAG-LOGIC: @foo and @bar
 
-      When I run "behave --tags=@foo --tags=@bar features/"
+      When I run `behave --tags="@foo and @bar" features/`
       Then it should pass with:
           """
           1 feature passed, 0 failed, 1 skipped
@@ -136,7 +133,7 @@ Feature: Select scenarios by using tags
 
       TAG-LOGIC: not @foo and not @bar
 
-      When I run "behave --tags=-@foo --tags=-@bar features/"
+      When I run `behave --tags="not @foo and not @bar" features/`
       Then it should pass with:
           """
           1 feature passed, 0 failed, 1 skipped
@@ -156,7 +153,7 @@ Feature: Select scenarios by using tags
 
       TAG-LOGIC: @foo and not @bar
 
-      When I run "behave --tags=@foo --tags=-@bar features/"
+      When I run `behave --tags="@foo and not @bar" features/`
       Then it should pass with:
           """
           2 features passed, 0 failed, 0 skipped
@@ -180,7 +177,7 @@ Feature: Select scenarios by using tags
 
       TAG-LOGIC: not @foo and @bar
 
-      When I run "behave --tags=-@foo --tags=@bar features/"
+      When I run `behave --tags="not @foo and @bar" features/`
       Then it should pass with:
           """
           2 features passed, 0 failed, 0 skipped

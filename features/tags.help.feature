@@ -69,8 +69,8 @@ Feature: behave --tags-help option
       Then it should fail with:
         """
         TagExpressionError: Syntax error. Expected operator after one
-        Expression: ( not one two )
-        ______________________^ (HERE)
+        Expression: not one two
+        ____________________^ (HERE)
         """
       And note that "the error description indicates where the problem is"
       And note that "the correct tag-expression may be: not @one and @two"

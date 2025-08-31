@@ -497,7 +497,7 @@ Feature: Hooks Processing in case of Errors
     NOTE: Except if before_feature(), before_scenario() hook skips the feature/scenario.
 
     Scenario: Skipped Feature with Hook-Error (IGNORED)
-      When I run `behave -f plain -D HOOK_ERROR_LOC=after_feature -tags="not @foo" features/passing.feature`
+      When I run `behave -f plain -D HOOK_ERROR_LOC=after_feature --tags="not @foo" features/passing.feature`
       Then it should pass with:
           """
           0 features passed, 0 failed, 1 skipped

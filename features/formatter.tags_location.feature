@@ -149,7 +149,7 @@ Feature: TagsLocation Formatter
 
 
     Scenario: Use TagsLocation formatter when tags are selected
-        When I run "behave -f tags.location --tags=@setup,@wip features/"
+        When I run `behave -f tags.location --tags="@setup or @wip" features/`
         Then it should pass with:
           """
           1 feature passed, 0 failed, 1 skipped

@@ -11,9 +11,9 @@ Provides step definitions that test tag logic for selected features, scenarios.
         | Scenario   | B3     |           | Untagged |
     When I run the behave with tags
     Then the following scenarios are selected with cmdline:
-        | cmdline                    | selected           | Logic comment |
-        | --tags=@foo                | A1, A3, B2         | @foo          |
-        | --tags=-@foo               | A1, A3, B2         | @foo          |
+        | cmdline           | selected    | Logic comment |
+        | --tags=@foo       | A1, A3, B2  | @foo          |
+        | --tags="not @foo" | A1, A3, B2  | @foo          |
 
 .. code-block:: Gherkin
 

@@ -36,7 +36,7 @@ answer = 42
     ("pyproject.toml", """[tool.behave]
 outfiles = ["/absolute/path1", "relative/path2"]
 paths = ["/absolute/path3", "relative/path4"]
-default_tags = ["(@foo and not @bar) or @zap"]
+default_tags = "(@foo and not @bar) or @zap"
 format = ["pretty", "tag-counter"]
 capture_stdout = false
 bogus = "spam"
@@ -105,7 +105,7 @@ class TestConfiguration(object):
             os.path.normpath(os.path.join(tndir, "relative/path4")),
             ]
         assert d["format"] == ["pretty", "tag-counter"]
-        assert d["default_tags"] == ["(@foo and not @bar) or @zap"]
+        assert d["default_tags"] == "(@foo and not @bar) or @zap"
         assert d["capture_stdout"] is False
         assert "bogus" not in d
         assert d["userdata"] == {"foo": "bar", "answer": "42"}
@@ -309,7 +309,6 @@ tag_expression_protocol = {value}
         self.check_tag_expression_protocol_with_valid_value(value, tmp_path)
 
     @pytest.mark.parametrize("value", [
-        "v1", "V1",
         "v2", "V2",
         "auto_detect", "AUTO_DETECT", "Auto_detect",
         # -- DEPRECATING:

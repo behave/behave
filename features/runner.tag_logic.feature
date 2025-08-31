@@ -55,18 +55,18 @@ Feature: Runner Tag logic
     And note that "are all combinations of 0..3 tags"
     When I run the behave model with "tags"
     Then the following scenarios are selected with cmdline:
-        | cmdline                             | selected?                      | Logic comment |
-        |                                     | S0, S1, S2, S3, S4, S5, S6, S7 | ALL, no selector      |
-        | --tags="@foo or @bar"               | S1, S2, S4, S5, S6, S7         | @foo or @bar          |
-        | --tags="@foo or not @bar"           | S0, S1, S3, S4, S5, S7         | @foo or not @bar      |
-        | --tags="not @foo or not @bar"       | S0, S1, S2, S3, S5, S6         | not @foo or not @bar  |
-        | --tags="@foo and @bar"              | S4, S7                         | @foo and @bar         |
-        | --tags="@foo and not @bar"          | S1, S5                         | @foo and not @bar     |
-        | --tags="not @foo and not @bar"      | S0, S3                         | not @foo and not @bar |
+        | cmdline                         | selected?                      | Logic comment |
+        |                                 | S0, S1, S2, S3, S4, S5, S6, S7 | ALL, no selector      |
+        | --tags="@foo or @bar"           | S1, S2, S4, S5, S6, S7         | @foo or @bar          |
+        | --tags="@foo or not @bar"       | S0, S1, S3, S4, S5, S7         | @foo or not @bar      |
+        | --tags="not @foo or not @bar"   | S0, S1, S2, S3, S5, S6         | not @foo or not @bar  |
+        | --tags="@foo and @bar"          | S4, S7                         | @foo and @bar         |
+        | --tags="@foo and not @bar"      | S1, S5                         | @foo and not @bar     |
+        | --tags="not @foo and not @bar"  | S0, S3                         | not @foo and not @bar |
     But note that "the following tag-expressions check backward-compatible logic"
     And the following scenarios are selected with cmdline:
-        | cmdline                             | selected?                      | Logic comment |
-        | --tags=@foo  --tags=@bar            | S4, S7                         | @foo and @bar         |
-        | --tags=@foo  --tags="not @bar"      | S1, S5                         | @foo and not @bar     |
-        | --tags="not @foo" --tags="not @bar" | S0, S3                         | not @foo and not @bar |
+        | cmdline                        | selected? | Logic comment |
+        | --tags="@foo  and @bar"        | S4, S7    | @foo and @bar         |
+        | --tags="@foo and not @bar"     | S1, S5    | @foo and not @bar     |
+        | --tags="not @foo and not @bar" | S0, S3    | not @foo and not @bar |
 

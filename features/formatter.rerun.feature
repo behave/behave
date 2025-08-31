@@ -165,7 +165,7 @@ Feature: Rerun Formatter
       if the test run was successful and no failures occurred.
 
         Given an empty file named "rerun.txt"
-        When I run "behave -f rerun -o rerun.txt -f plain -T --no-skipped --tags=~@xfail features/"
+        When I run `behave -f rerun -o rerun.txt -f plain -T --no-skipped --tags="not @xfail" features/`
         Then it should pass with:
             """
             2 features passed, 0 failed, 0 skipped

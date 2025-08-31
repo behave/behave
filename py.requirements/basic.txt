@@ -9,7 +9,7 @@
 # ============================================================================
 # MAYBE: cucumber-expressions >= 15.0.0; python_version >='3.5'
 
-cucumber-tag-expressions >= 4.1.0
+cucumber-tag-expressions >= 6.2.0
 cucumber-expressions >= 17.1.0; python_version >= '3.8'
 parse >= 1.18.0
 parse_type >= 0.6.0

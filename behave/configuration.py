@@ -339,9 +339,7 @@ OPTIONS = [
           default=TagExpressionProtocol.DEFAULT.name.lower(),
           help="""\
 Specify the tag-expression protocol to use (default: %(default)s).
-With "v1", only tag-expressions v1 are supported.
-With "v2", only tag-expressions v2 are supported.
-With "auto_detect", tag-expressions v1 and v2 are auto-detected.
+Only tag-expressions v2 are supported (since: behave v1.4.0).
 """)),
 
     (("-q", "--quiet"),
@@ -381,17 +379,17 @@ With "auto_detect", tag-expressions v1 and v2 are auto-detected.
     #    help="Fail if there are any undefined or pending steps.")),
 
     ((),  # -- CONFIGFILE only
-     dict(dest="default_tags", metavar="TAG_EXPRESSION", action="append",
-          help="""Define default tags when non are provided.
-                  See :option:`--tags` for more information.""")),
+     dict(dest="default_tags", metavar="TAG_EXPRESSION", action="store",
+          help="""Use default tags when non are provided.
+                  Alternative to :confval:`tags : text` (if missing).""")),
 
     (("-t", "--tags"),
-     dict(action="append", metavar="TAG_EXPRESSION",
+     dict(action="store", metavar="TAG_EXPRESSION",
           help="""Only execute features or scenarios with tags
                   matching TAG_EXPRESSION.
                   Use :option:`--tags-help` option for more information.""",
-          config_help="""Only execute certain features or scenarios based
-                         on the tag expression given. See below for how to code
+          config_help="""Select a subset of features/rules/scenarios to execute
+                         based on the tag expression. See below for how to code
                          tag expressions in configuration files.""")),
 
     (("-T", "--no-timings"),
@@ -757,7 +755,7 @@ class Configuration(object):
     Configuration object for behave and behave runners.
 
     .. attribute:: tag_expression
-        :type: behave.tag_expression.v2.TagExpression | behave.tag_expression.v1.TagExpression
+        :type: behave.tag_expression.v2.TagExpression
 
         Provides the Tag-Expression object based on the :option:`--tags` option(s)
         on command-line and `:confval:`default_tags` parameter in the config-file.
@@ -784,6 +782,7 @@ class Configuration(object):
         tag_expression_protocol=TagExpressionProtocol.DEFAULT,
         junit=False,
         stage=None,
+        tags=None,
         userdata={},
         # -- SPECIAL:
         default_format="pretty",    # -- Used when no formatters are configured.
@@ -967,10 +966,10 @@ class Configuration(object):
         self.capture_hooks = False
 
         # -- EXTEND TAG-EXPRESSION: Add @wip tag
-        self.tags = self.tags or []
-        if self.tags and isinstance(self.tags, str):
-            self.tags = [self.tags]
-        self.tags.append("@wip")
+        if self.tags:
+            self.tags = f"@wip and {self.tags}"
+        else:
+            self.tags = "@wip"
 
     def setup_steps_catalog_mode(self):
         # -- SHOW STEP-CATALOG: As step summary.
@@ -1037,23 +1036,22 @@ class Configuration(object):
         config_tags = self.config_tags or self.default_tags or ""
         tags = tags or self.tags or config_tags
         # DISABLED: tags = self._normalize_tags(tags)
+        if not isinstance(tags, str):
+            raise TypeError(f"{tags!r} (expected: string)")
 
         # -- STEP: Support that tags on command-line can use config-file.tags
         TagExpressionProtocol.use(self.tag_expression_protocol)
         config_tag_expression = make_tag_expression(config_tags)
         placeholder = "{config.tags}"
         placeholder_value = "{0}".format(config_tag_expression)
-        if isinstance(tags, str) and placeholder in tags:
+        if placeholder in tags:
             tags = tags.replace(placeholder, placeholder_value)
-        elif isinstance(tags, (list, tuple)):
-            for index, item in enumerate(tags):
-                if placeholder in item:
-                    new_item = item.replace(placeholder, placeholder_value)
-                    tags[index] = new_item
 
         # -- STEP: Make tag-expression
         self.tag_expression = make_tag_expression(tags)
         self.tags = tags
+        if self.verbose:
+            print(f"USING: tag_expression: {self.tag_expression}")
 
     # def _normalize_tags(self, tags):
     #     if isinstance(tags, str):
