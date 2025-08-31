@@ -7,7 +7,8 @@ The following versions of `behave` are currently being supported with security u
 | Version    | Supported           |
 | ---------- | ------------------- |
 | `HEAD`     | :white_check_mark:  |
-| `1.2.6`    | :white_check_mark:  |
+| `1.4.0`    | :white_check_mark:  |
+| `1.3.2`    | :white_check_mark:  |
 
 HINT: Older versions are not supported.
 
