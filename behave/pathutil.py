@@ -35,7 +35,6 @@ def select_subdirectories(directory, recursive=True):
     :param recursive: If true, recursively discover subdirectories.
     :return: List of subdirectories (as Path object).
     """
-    directory_class = directory.__class__
     if isinstance(directory, six.string_types):
         directory = Path(directory)
     elif not isinstance(directory, PATH_LIKE):
