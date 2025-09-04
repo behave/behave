@@ -37,6 +37,14 @@ DEVELOP:
 * behave4cmd0.command_shell: Cleanup of BEHAVE_CMD value usage.
 
 
+Version: 1.3.3 (2025-09-04, branch=release/v1.3.x)
+-------------------------------------------------------------------------------
+
+FIXED:
+
+* issue #1270: v1.3.2: Broke Python 2.7 support (submitted by: silent-observer)
+
+
 Version: 1.3.2 (2025-08-29, branch=release/v1.3.x)
 -------------------------------------------------------------------------------
 

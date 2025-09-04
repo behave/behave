@@ -3,7 +3,7 @@ Provides path related utility functions.
 """
 
 from __future__ import absolute_import, print_function
-from pathlib import Path
+from .python_feature import PYTHON_VERSION
 import os
 import six
 try:
@@ -13,15 +13,15 @@ except ImportError:
     # -- PYTHON-BACKPORT: os.scandir()
     from scandir import scandir
 
-
-# -----------------------------------------------------------------------------
-# CONSTANTS
-# -----------------------------------------------------------------------------
-PATH_LIKE = (Path, )
-if six.PY2:
+if PYTHON_VERSION < (3, 6):
     # -- SPECIAL CASE: Python2.7 -- pathlib2 provides better support for Path.
-    from pathlib2 import Path as _Path2
-    PATH_LIKE = (Path, _Path2)
+    from pathlib import Path as _OtherPath
+    from pathlib2 import Path
+    PATH_LIKE = (Path, _OtherPath)
+else:
+    # -- SINCE: Python 3.6 -- os.PathLike
+    from pathlib import Path
+    PATH_LIKE = os.PathLike
 
 
 # -----------------------------------------------------------------------------

@@ -41,13 +41,14 @@ from __future__ import absolute_import, print_function
 from collections import namedtuple
 import os
 import parse
-import six
 from behave import register_type
+from .python_feature import PYTHON_VERSION
 
-if six.PY2:
+if PYTHON_VERSION < (3, 6):
     # -- NEEDED-FOR: Path should be similar to Python3 implementation.
     from pathlib2 import Path
 else:
+    # -- SINCE: Python 3.4 -- But some minor changes in Python 3.5, too.
     from pathlib import Path
 
 
@@ -71,6 +72,29 @@ def parse_number(text):
     """
     return int(text)
 
+@parse.with_pattern(r"\w+")
+def parse_word(text):
+    """
+    Type converter that matches text without whitespace characters as one word.
+
+    :param text:  Text to use.
+    :return: Text (as string).
+    """
+    return text
+
+@parse.with_pattern(r"[a-zA-Z_]([a-zA-Z0-9_\.])+", regex_group_count=1)
+def parse_dotted_word(text):
+    """
+    Type converter that matches one dotted word, like:
+
+    * "one"
+    * "one.two"
+    * "one.two.three"
+
+    :param text:  Text to use.
+    :return: Text (as string).
+    """
+    return text
 
 @parse.with_pattern(r".*")
 def parse_any_text(text):
@@ -191,6 +215,8 @@ TYPE_REGISTRY = dict(
     Path=parse_path,
     Unquoted=parse_unquoted_text,
     EnvironmentVar=parse_environment_var,
+    Word=parse_word,
+    Dotted=parse_dotted_word,
 )
 
 
