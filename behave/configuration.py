@@ -20,7 +20,6 @@ import os
 import re
 import sys
 import shlex
-import six
 import warnings
 
 from behave._types import Unknown
@@ -700,7 +699,7 @@ def load_configuration(defaults, verbose=False):
 
     if verbose:
         print("Using CONFIGURATION DEFAULTS:")
-        for k, v in sorted(six.iteritems(defaults)):
+        for k, v in sorted(defaults.items()):
             print("%18s: %s" % (k, v))
 
 
@@ -816,7 +815,7 @@ class Configuration(object):
         parser = setup_parser()
         parser.set_defaults(**self.defaults)
         args = parser.parse_args(command_args)
-        for key, value in six.iteritems(args.__dict__):
+        for key, value in args.__dict__.items():
             if key.startswith("_"):
                 continue
             setattr(self, key, value)
@@ -896,7 +895,7 @@ class Configuration(object):
     @classmethod
     def make_defaults(cls, **kwargs):
         data = cls.defaults.copy()
-        for name, value in six.iteritems(kwargs):
+        for name, value in kwargs.items():
             data[name] = value
         return data
 

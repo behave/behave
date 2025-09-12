@@ -15,7 +15,6 @@ from threading import Lock
 from types import ModuleType
 import os.path
 import sys
-import six
 
 from behave import step_registry as _step_registry
 from behave.matchers import StepMatcherFactory
@@ -178,7 +177,7 @@ def use_step_import_modules(step_container):
         # -- CRITICAL-SECTION (multi-threading protected)
         try:
             # -- SCOPE-GUARD SETUP: Replace original modules with fake ones.
-            for module_name, fake_module in six.iteritems(import_context.modules):
+            for module_name, fake_module in import_context.modules.items():
                 orig_module = sys.modules.get(module_name, unknown)
                 orig_modules[module_name] = orig_module
                 sys.modules[module_name] = fake_module
@@ -187,7 +186,7 @@ def use_step_import_modules(step_container):
             yield import_context
         finally:
             # -- SCOPE-GUARD CLEANUP: Restore original modules.
-            for module_name, orig_module in six.iteritems(orig_modules):
+            for module_name, orig_module in orig_modules.items():
                 if orig_module is unknown:
                     del sys.modules[module_name]
                 else:
