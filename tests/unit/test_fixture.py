@@ -12,7 +12,6 @@ from behave.fixture import (
 from behave._types import Unknown
 from behave.configuration import Configuration
 from behave.runner import Runner, Context, scoped_context_layer
-import six
 
 
 # -----------------------------------------------------------------------------
@@ -58,7 +57,7 @@ class BasicFixture(object):
     def __str__(self):
         args_text = ", ".join([str(arg) for arg in self.args])
         kwargs_parts = ["%s= %s" % (key, value)
-            for key, value in sorted(six.iteritems(self.kwargs))]
+            for key, value in sorted(self.kwargs.items())]
         kwargs_text = ", ".join(kwargs_parts)
         return "%s: args=%s; kwargs=%s" % (self.name, args_text, kwargs_text)
 
