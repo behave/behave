@@ -7,7 +7,6 @@ import logging
 import operator
 import re
 import warnings
-import six
 from ._types import Unknown, require_callable
 from .compat.collections import UserDict
 from .model_core import TagAndStatusStatement
@@ -505,7 +504,7 @@ class ActiveTagMatcher(TagMatcher):
                     category_tag_pairs = category_tag_groups[category] = []
                 category_tag_pairs.append((tag, match_object))
 
-        for category, category_tag_pairs in six.iteritems(category_tag_groups):
+        for category, category_tag_pairs in category_tag_groups.items():
             yield (category, category_tag_pairs)
 
 
