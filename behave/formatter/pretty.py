@@ -131,10 +131,6 @@ class PrettyFormatter(Formatter):
         self.current_rule = rule
         self.statement = rule
 
-    def background(self, background):
-        self.replay()
-        self.statement = background
-
     def scenario(self, scenario):
         self._finish_current_scenario()
         # AVOID: self.replay()
