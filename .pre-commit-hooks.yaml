@@ -1,0 +1,6 @@
+- id: behave
+  name: behave
+  description: "Behave: BDD, Python style."
+  entry: behave
+  language: python
+  pass_filenames: false
