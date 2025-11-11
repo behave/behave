@@ -59,7 +59,7 @@ jobs:
       # - name: Show Python version
       #   run: python --version
       - name: setup-uv -- Speed-up Python package installations ...
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
           cache-dependency-glob: |
