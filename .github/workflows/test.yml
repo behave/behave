@@ -79,7 +79,7 @@ jobs:
       - name: "Run behave tests: tools/test-features ..."
         run: behave --format=progress3 tools/test-features
       - name: Upload test reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: test reports
           path: |
