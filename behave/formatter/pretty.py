@@ -1,5 +1,5 @@
 import sys
-from behave.formatter.ansi_escapes import escapes, up
+from behave.formatter.ansi_escapes import escapes
 from behave.formatter.base import Formatter
 from behave.model_type import Status
 from behave.model_describe import escape_cell, escape_triple_quotes
@@ -147,9 +147,10 @@ class PrettyFormatter(Formatter):
     def match(self, match):
         self._match = match
         self.print_statement()
-        self.print_step(Status.executing, self._match.arguments,
+        if not self.colored:
+            self.print_step(Status.executing, self._match.arguments,
                         self._match.location, proceed=self.monochrome)
-        self.stream.flush()
+            self.stream.flush()
 
     def result(self, step):
         if self.colored:
@@ -159,7 +160,6 @@ class PrettyFormatter(Formatter):
                     lines += len(step.table.rows) + 1
                 if step.text:
                     lines += len(step.text.splitlines()) + 2
-            self.stream.write(up(lines))
             arguments = []
             location = None
             if self._match:
