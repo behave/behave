@@ -333,7 +333,7 @@ class Context:
         #    capture_sink = self._runner.capture_sink
 
         try:
-            if self.config.should_capture_hooks():
+            if self._config.should_capture_hooks():
                 layer = self._stack[0].get("@layer", None)
                 name = "{}.cleanup".format(layer or "")
                 show_on_success = any_hook.show_cleanup_on_success
