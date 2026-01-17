@@ -929,6 +929,16 @@ class Scenario(TagAndStatusStatement, Replayable):
 
         .. versionadded:: 1.2.7
 
+    .. attribute:: effective_tags
+
+        A list of tags that apply to this scenario, including those inherited from
+        the Feature.
+
+        This is different from ``tags``, which only lists the tags explicitly
+        declared on the scenario itself.
+
+        .. versionadded:: 1.2.7
+
     .. _`scenario`: gherkin.html#scenarios
     """
     # pylint: disable=too-many-instance-attributes
