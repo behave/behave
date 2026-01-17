@@ -884,6 +884,16 @@ class Scenario(TagAndStatusStatement, Replayable):
        glorified strings) attached to the scenario.
        See :ref:`controlling things with tags`.
 
+    .. attribute:: effective_tags
+
+        A set of tags that apply to this scenario, including those inherited
+        from parent entities (Feature, Rule, etc.).
+
+        This is different from ``tags``, which only lists the tags explicitly
+        declared on the scenario itself.
+
+        .. versionadded:: 1.2.7
+
     .. attribute:: status
 
        Read-Only. A summary status of the scenario's run. If read before the
