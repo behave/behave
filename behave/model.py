@@ -939,7 +939,6 @@ class Scenario(TagAndStatusStatement, Replayable):
 
         .. versionadded:: 1.2.7
 
-
     .. _`scenario`: gherkin.html#scenarios
     """
     # pylint: disable=too-many-instance-attributes
