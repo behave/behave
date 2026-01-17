@@ -61,6 +61,9 @@ def _Expression_check(self, tags):
 def _Expression_to_string(self, pretty=True):
     """Provide nicer string conversion(s)."""
     text = str(self)
+    if not text and isinstance(self, True_):
+        # -- SPECIAL CASE: True_() returns empty string in cucumber-tag-expressions >= 8.0
+        text = "true"
     if pretty:
         # -- REMOVE WHITESPACE: Around parenthensis
         text = text.replace("( ", "(").replace(" )", ")")
