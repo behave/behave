@@ -19,7 +19,6 @@ from behave.exception import (
     ConfigError,
     ClassNotFoundError,
     InvalidClassError,
-    # MAYBE: ModuleNotFoundError
 )
 from behave.importer import load_module, make_scoped_class_name, parse_scoped_name
 from behave._types import Unknown

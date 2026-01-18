@@ -8,15 +8,9 @@ Specifies the common interface for runner(s)/runner-plugin(s).
 """
 
 from abc import ABCMeta, abstractmethod
-from sys import version_info as _version_info
-from six import add_metaclass
 
 
-_PYTHON_VERSION = _version_info[:2]
-
-
-@add_metaclass(ABCMeta)
-class ITestRunner(object):
+class ITestRunner(metaclass=ABCMeta):
     """Interface that a test runner-class should provide:
 
     * Constructor: with config parameter object (at least) and some kw-args.
@@ -37,13 +31,6 @@ class ITestRunner(object):
         """
         return False
 
-    # if _PYTHON_VERSION < (3, 3):
-    #     # -- HINT: @abstractproperty, deprecated since Python 3.3
-    #     from abc import abstractproperty
-    #     @abstractproperty
-    #     def undefined_steps(self):
-    #         raise NotImplementedError()
-    # else:
     @property
     @abstractmethod
     def undefined_steps(self):

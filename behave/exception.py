@@ -1,15 +1,9 @@
-# ruff: noqa: F401
-# pylint: disable=redefined-builtin,unused-import
 """
 Behave exception classes.
 
 .. versionadded:: 1.2.7
 """
 
-# -- RE-EXPORT: Exception class(es) here (provided in other places).
-#   USE MODERN EXCEPTION CLASSES: FileNotFoundError, ModuleNotFoundError
-#   COMPATIBILITY: Emulated if not supported yet by Python version.
-from behave.compat.exceptions import (FileNotFoundError, ModuleNotFoundError)  # noqa: F401
 from behave.tag_expression.parser import TagExpressionError
 
 
@@ -19,11 +13,9 @@ __all__ = [
     "ConfigError",
     "ConfigParamTypeError",
     "ConstraintError",
-    "FileNotFoundError",
     "InvalidClassError",
     "InvalidFileLocationError",
     "InvalidFilenameError",
-    "ModuleNotFoundError",
     "NotSupportedWarning",
     "ObjectNotFoundError",
     "PendingStepError",
@@ -79,10 +71,6 @@ class CleanupError(RuntimeError):
 # ---------------------------------------------------------------------------
 # EXCEPTION/ERROR CLASSES: Related to File Handling
 # ---------------------------------------------------------------------------
-# -- SINCE: Python 3.3 -- FileNotFoundError is built-in exception
-# class FileNotFoundError(LookupError):
-#    """Used if a specified file was not found."""
-#
 class InvalidFileLocationError(LookupError):
     """Used if a :class:`behave.model_core.FileLocation` is invalid.
     This occurs if the file location is no exactly correct and
@@ -97,7 +85,6 @@ class InvalidFilenameError(ValueError):
 # ---------------------------------------------------------------------------
 # EXCEPTION/ERROR CLASSES: Related to Imported Plugins
 # ---------------------------------------------------------------------------
-# RELATED: class ModuleNotFoundError(ImportError): -- Since Python 3.6
 class ClassNotFoundError(ImportError):
     """Used if module to import exists, but class with this name does not exist."""
 

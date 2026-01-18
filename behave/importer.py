@@ -7,7 +7,7 @@ REQUIRES: importlib (provided in Python2.7, Python3.2...)
 import importlib
 import inspect
 from behave._types import Unknown
-from behave.exception import ClassNotFoundError, ModuleNotFoundError
+from behave.exception import ClassNotFoundError
 
 
 def parse_scoped_name(scoped_name):
