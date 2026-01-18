@@ -6,8 +6,8 @@ import sys
 from behave.version import VERSION as BEHAVE_VERSION
 from behave.configuration import Configuration
 from behave.exception import (ConstraintError, ConfigError,
-    FileNotFoundError, InvalidFileLocationError, InvalidFilenameError,
-    ModuleNotFoundError, ClassNotFoundError, InvalidClassError,
+    InvalidFileLocationError, InvalidFilenameError,
+    ClassNotFoundError, InvalidClassError,
     TagExpressionError)
 from behave.importer import make_scoped_class_name
 from behave.parser import ParserError

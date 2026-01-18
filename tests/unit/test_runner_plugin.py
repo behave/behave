@@ -9,7 +9,7 @@ from pathlib import Path
 from behave import configuration
 from behave.api.runner import ITestRunner
 from behave.configuration import Configuration
-from behave.exception import ClassNotFoundError, InvalidClassError, ModuleNotFoundError
+from behave.exception import ClassNotFoundError, InvalidClassError
 from behave.runner import Runner as DefaultRunnerClass
 from behave.runner_plugin import RunnerPlugin
 import pytest

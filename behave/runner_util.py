@@ -15,7 +15,6 @@ import sys
 from behave import parser as gherkin
 from behave._types import require_type, require_not_none
 from behave.exception import (
-    FileNotFoundError,  # pylint: disable=W0622
     InvalidFileLocationError,
     InvalidFilenameError
 )
