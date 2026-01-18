@@ -9,7 +9,7 @@ Behave exception classes.
 # -- RE-EXPORT: Exception class(es) here (provided in other places).
 #   USE MODERN EXCEPTION CLASSES: FileNotFoundError, ModuleNotFoundError
 #   COMPATIBILITY: Emulated if not supported yet by Python version.
-from behave.compat.exceptions import (FileNotFoundError, ModuleNotFoundError)  # noqa: F401
+from builtins import (FileNotFoundError, ModuleNotFoundError)  # noqa: F401
 from behave.tag_expression.parser import TagExpressionError
 
 
