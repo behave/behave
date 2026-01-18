@@ -71,10 +71,6 @@ class CleanupError(RuntimeError):
 # ---------------------------------------------------------------------------
 # EXCEPTION/ERROR CLASSES: Related to File Handling
 # ---------------------------------------------------------------------------
-# -- SINCE: Python 3.3 -- FileNotFoundError is built-in exception
-# class FileNotFoundError(LookupError):
-#    """Used if a specified file was not found."""
-#
 class InvalidFileLocationError(LookupError):
     """Used if a :class:`behave.model_core.FileLocation` is invalid.
     This occurs if the file location is no exactly correct and
