@@ -5,10 +5,15 @@ import locale
 import sys
 from behave.version import VERSION as BEHAVE_VERSION
 from behave.configuration import Configuration
-from behave.exception import (ConstraintError, ConfigError,
-    InvalidFileLocationError, InvalidFilenameError,
-    ClassNotFoundError, InvalidClassError,
-    TagExpressionError)
+from behave.exception import (
+    ClassNotFoundError,
+    ConfigError,
+    ConstraintError,
+    InvalidClassError,
+    InvalidFileLocationError,
+    InvalidFilenameError,
+    TagExpressionError,
+)
 from behave.importer import make_scoped_class_name
 from behave.parser import ParserError
 from behave.runner import Runner    # noqa: F401
