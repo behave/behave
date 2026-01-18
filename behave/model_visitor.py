@@ -9,7 +9,7 @@ from behave._types import require_type
 from behave.model import Feature, Rule, ScenarioOutline, Scenario, Step
 
 
-class IModelVisitor(object):
+class IModelVisitor:
     """Interface that must be implemented by a ``ModelVisitor`` class.
     Each ``ModelVisitor`` can override and implement a subset or
     all visitor methods.

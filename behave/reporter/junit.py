@@ -162,7 +162,7 @@ if hasattr(ElementTree, '_serialize'):
     ElementTree._serialize_xml = ElementTree._serialize['xml'] = _serialize_xml3
 
 
-class FeatureReportData(object):
+class FeatureReportData:
     """
     Provides value object to collect JUnit report data from a Feature.
     """

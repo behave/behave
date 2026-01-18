@@ -9,7 +9,7 @@ from behave.exception import ClassNotFoundError
 # -----------------------------------------------------------------------------
 # FORMATTER BAD CASES:
 # -----------------------------------------------------------------------------
-class BadFormatterClass(object):
+class BadFormatterClass:
     """Placeholder class if a formatter class is invalid."""
     def __init__(self, name, formatter_class):
         self.name = name

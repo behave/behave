@@ -218,7 +218,7 @@ class State(Enum):
     TABLE = 9
 
 
-class Parser(object):
+class Parser:
     """Feature file parser for behave."""
     # pylint: disable=too-many-instance-attributes
     STRIP_STEPS_WITH_TRAILING_COLON = BEHAVE_STRIP_STEPS_WITH_TRAILING_COLON

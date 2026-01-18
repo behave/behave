@@ -32,7 +32,7 @@ def os_environ():
 # -----------------------------------------------------------------------------
 # TEST SUITE
 # -----------------------------------------------------------------------------
-class TestParseNumber(object):
+class TestParseNumber:
     TYPE_REGISTRY = dict(Number=parse_number)
     PATTERN = "Number: {number:Number}"
     TEXT_TEMPLATE = "Number: {}"
@@ -64,7 +64,7 @@ class TestParseNumber(object):
         self.assert_mismatch_with_parse_number(text)
 
 
-class TestParseAnyText(object):
+class TestParseAnyText:
     TYPE_REGISTRY = dict(AnyText=parse_any_text)
     PATTERN = 'AnyText: "{some:AnyText}"'
     TEXT_TEMPLATE = 'AnyText: "{}"'
@@ -104,7 +104,7 @@ class TestParseAnyText(object):
         self.assert_match_with_parse_any_and_converts_to_string(text, expected)
 
 
-class TestParseUnquotedText(object):
+class TestParseUnquotedText:
     TYPE_REGISTRY = dict(Unquoted=parse_unquoted_text)
     PATTERN = 'Unquoted: "{some:Unquoted}"'
     TEXT_TEMPLATE = 'Unquoted: "{}"'
@@ -148,7 +148,7 @@ class TestParseUnquotedText(object):
         self.assert_mismatch_with_parse_unquoted(text)
 
 
-class TestParseEnvironmentVar(object):
+class TestParseEnvironmentVar:
     TYPE_REGISTRY = dict(EnvironmentVar=parse_environment_var)
     PATTERN = 'EnvironmentVar: "{param:EnvironmentVar}"'
     TEXT_TEMPLATE = 'EnvironmentVar: "{}"'

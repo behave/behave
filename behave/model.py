@@ -1280,7 +1280,7 @@ class Scenario(TagAndStatusStatement, Replayable):
         return failed
 
 
-class ScenarioOutlineBuilder(object):
+class ScenarioOutlineBuilder:
     """Helper class to use a ScenarioOutline as a template and
     build its scenarios (as template instances).
     """
@@ -1337,7 +1337,7 @@ class ScenarioOutlineBuilder(object):
         params["examples.name"] = examples_name
         scenario_name = self.render_template(outline_name, row, params)
 
-        class Data(object):
+        class Data:
             def __init__(self, name, index):
                 self.name = name
                 self.index = index
@@ -2281,7 +2281,7 @@ class Table(Replayable):
         return table
 
 
-class Row(object):
+class Row:
     """One row of a `table`_ parsed from a *feature file*.
 
     Row data is accessible using a number of methods:

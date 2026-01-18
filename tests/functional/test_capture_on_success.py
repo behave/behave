@@ -79,7 +79,7 @@ def require_store_captured_on_success_is_true():
 # ----------------------------------------------------------------------------
 # TEST SUITE
 # ----------------------------------------------------------------------------
-class TestCaptureOnStepsRun(object):
+class TestCaptureOnStepsRun:
     """Some additional tests for "Scenario.run()" using pytest."""
 
     def test_captured_with_passing_steps(self):
@@ -179,7 +179,7 @@ ERROR: SomeError: OOPS, FAILED in step2
         assert "OOPS, FAILED in step2" in step2.error_message
 
 
-class TestCaptureOnScenarioRun(object):
+class TestCaptureOnScenarioRun:
 
     def test_captured__good_steps_hooks_and_tags(self):
         require_store_captured_on_success_is_true()
@@ -516,7 +516,7 @@ CALLED: step1
         assert scenario_output.endswith(scenario_expected_2)
 
 
-class TestCaptureOnRuleRun(object):
+class TestCaptureOnRuleRun:
 
     def test_captured__good_hooks_tags_steps(self):
         require_store_captured_on_success_is_true()
@@ -715,7 +715,7 @@ tests.functional.error.SomeError: OOPS, ERROR in bad_fixture_cleanup.two
         assert rule_output.endswith(rule_expected_2)
 
 
-class TestCaptureOnFeatureRun(object):
+class TestCaptureOnFeatureRun:
 
     def test_captured__good_hooks_tags_steps(self):
         require_store_captured_on_success_is_true()

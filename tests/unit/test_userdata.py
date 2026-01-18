@@ -7,7 +7,7 @@ import pytest
 FLOAT_ACCURACY = 0.000091
 
 
-class TestParseUserDefine(object):
+class TestParseUserDefine:
     """Test parse_user_define() function."""
 
     def test_parse__name_value(self):
@@ -48,7 +48,7 @@ class TestParseUserDefine(object):
 
 
 
-class TestUserData(object):
+class TestUserData:
     """Test UserData class."""
 
     def test_userdata_is_dictlike(self):
@@ -193,7 +193,7 @@ class TestUserData(object):
         assert value == 1.2
 
 
-class TestUserDataNamespace(object):
+class TestUserDataNamespace:
 
     def test_make_scoped(self):
         scoped_name = UserDataNamespace.make_scoped("my.scope", "param")

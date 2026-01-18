@@ -116,7 +116,7 @@ def make_log_record_output(category, level, message,
     return formatter.format(record)
 
 
-class LogRecordTable(object):
+class LogRecordTable:
 
     @classmethod
     def make_output_for_row(cls, row, format=None, datefmt=None, **kwargs):

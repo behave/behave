@@ -16,7 +16,7 @@ from behave.textutil import text
 import pytest
 
 
-class TestIssue(object):
+class TestIssue:
     # -- USE SAVED TRACEBACK: No need to require Windows platform.
     traceback_bytes = br"""\
 Traceback (most recent call last):

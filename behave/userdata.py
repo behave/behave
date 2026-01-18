@@ -123,7 +123,7 @@ class UserData(dict):
         return data
 
 
-class UserDataNamespace(object):
+class UserDataNamespace:
     """Provides a light-weight dictview to the user data that allows you
     to access all params in a namespace, that use "{namespace}.*" names.
 

@@ -9,7 +9,7 @@ import time
 # -----------------------------------------------------------------------------
 # TEST SUPPORT:
 # -----------------------------------------------------------------------------
-class StopWatch(object):
+class StopWatch:
     def __init__(self):
         self.start_time = None
         self.duration = None

@@ -7,7 +7,7 @@ import pytest
 # TEST SUITE: Model Class Extension(s)
 # -----------------------------------------------------------------------------
 # NOT-NEEDED: xfail = pytest.mark.xfail
-class TestExpression(object):
+class TestExpression:
 
     def test_check__can_be_used(self):
         tag_expression = Literal("foo")
@@ -15,7 +15,7 @@ class TestExpression(object):
         assert tag_expression.check(["other"]) is False
 
 
-class TestMatcher(object):
+class TestMatcher:
     @pytest.mark.parametrize("expected, tag, case", [
         (True, "foo.bar", "startswith_1"),
         (True, "foo.bax", "startswith_2"),
@@ -49,7 +49,7 @@ class TestMatcher(object):
         expression = Matcher("*.foo.*")
         assert expression.evaluate([tag]) == expected
 
-class TestNever(object):
+class TestNever:
     @pytest.mark.parametrize("tags, case", [
         ([], "no_tags"),
         (["foo", "bar"], "some tags"),

@@ -21,7 +21,7 @@ from behave.tag_matcher import (
 )
 
 
-class Traits4ActiveTagMatcher(object):
+class Traits4ActiveTagMatcher:
     TagMatcher = ActiveTagMatcher
     value_provider = {
         "foo": "alice",
@@ -59,7 +59,7 @@ class Traits4ActiveTagMatcher(object):
 
 
 # -- REQUIRES: pytest
-class TestActiveTagMatcher2(object):
+class TestActiveTagMatcher2:
     TagMatcher = ActiveTagMatcher
     traits = Traits4ActiveTagMatcher
 
@@ -446,7 +446,7 @@ class NumberValueObject(ValueObject):
 # -----------------------------------------------------------------------------
 # TEST SUITE WITH: ActiveTag ValueObject(s)
 # -----------------------------------------------------------------------------
-class TestActiveTagMatcherWithValueObject(object):
+class TestActiveTagMatcherWithValueObject:
     """Tests :class:`behave.tag_matcher.ValueObject` functionality.
 
     ValueObject(s) support additional comparison functions that matches

@@ -72,7 +72,7 @@ Feature: Runner Help
       Given an empty file named "behave4me/__init__.py"
       And a file named "behave4me/bad_runner.py" with:
         """
-        class InvalidRunner1(object): pass    # CASE 1: Not a subclass-of ITestRunner
+        class InvalidRunner1: pass    # CASE 1: Not a subclass-of ITestRunner
         InvalidRunner2 = True                 # CASE 2: Not a class
         """
 

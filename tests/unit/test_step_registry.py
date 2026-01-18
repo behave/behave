@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 from behave import step_registry
 
 
-class TestStepRegistry(object):
+class TestStepRegistry:
     # pylint: disable=invalid-name, no-self-use
 
     def test_add_step_definition_adds_to_lowercased_keyword(self):

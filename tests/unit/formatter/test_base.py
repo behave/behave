@@ -84,7 +84,7 @@ def clean_environment():
 # -----------------------------------------------------------------------------
 # TEST SUITE
 # -----------------------------------------------------------------------------
-class TestStreamOpener(object):
+class TestStreamOpener:
     EXAMPLE_TEXT = "Nur Äarger mit Jürgen"
     ENCODINGS = [
         "UTF-8", "UTF-8-sig",  # UTF-8 with BOM

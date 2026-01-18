@@ -10,7 +10,7 @@ from behave.reporter.summary import (
 import pytest
 
 
-class TestFormatStatus(object):
+class TestFormatStatus:
     def test_passed_entry_contains_label(self):
         format_summary = format_summary_v2
         summary = {
@@ -79,7 +79,7 @@ class TestFormatStatus(object):
         assert Status.undefined.name not in output
 
 
-class TestSummaryReporter(object):
+class TestSummaryReporter:
     OUTPUT_FORMATS = list(OUTPUT_FORMAT_MAP.keys())
 
     @staticmethod

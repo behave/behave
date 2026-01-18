@@ -27,7 +27,7 @@ VERSION = "0.2.0"
 # ----------------------------------------------------------------------------
 # FUNCTIONS:
 # ----------------------------------------------------------------------------
-class StepDurationData(object):
+class StepDurationData:
     def __init__(self, step=None):
         self.step_name = None
         self.min_duration = sys.maxint
@@ -53,7 +53,7 @@ class StepDurationData(object):
         self.durations.append(step.duration)
 
 
-class BehaveDurationData(object):
+class BehaveDurationData:
     def __init__(self):
         self.step_registry = {}
         self.all_steps = []

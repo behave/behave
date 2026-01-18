@@ -48,7 +48,7 @@ Feature: Perform Context.cleanups at the end of a test-run, feature or scenario 
         class SomeError(RuntimeError): pass
 
         # -- CLEANUP FUNCTIONS:
-        class CleanupFuntion(object):
+        class CleanupFuntion:
             def __init__(self, name=None):
                 self.name = name or ""
 

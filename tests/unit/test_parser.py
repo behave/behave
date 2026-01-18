@@ -27,7 +27,7 @@ def assert_compare_steps(steps, expected):
 # ---------------------------------------------------------------------------
 # TEST SUITE
 # ---------------------------------------------------------------------------
-class TestParser(object):
+class TestParser:
     # pylint: disable=too-many-public-methods, no-self-use
 
     def test_parses_feature_name(self):
@@ -984,7 +984,7 @@ Feature: Stuff
             parse_feature(text)
 
 
-class TestParser4AndButSteps(object):
+class TestParser4AndButSteps:
     def test_parse_scenario_with_and_and_but(self):
         doc = """
 Feature: Stuff
@@ -1117,7 +1117,7 @@ Feature: Scenario first step uses And/But
         ])
 
 
-class TestForeign(object):
+class TestForeign:
     # pylint: disable=no-self-use
 
     def test_first_line_comment_sets_language(self):
@@ -1362,7 +1362,7 @@ Fonctionnalité: testing stuff
         ])
 
 
-class TestParser4ScenarioDescription(object):
+class TestParser4ScenarioDescription:
     # pylint: disable=no-self-use
 
     def test_parse_scenario_description(self):
@@ -1511,7 +1511,7 @@ Feature: Scenario Description
         ])
 
 
-class TestParser4Tags(object):
+class TestParser4Tags:
     # pylint: disable=no-self-use
 
     def test_parse_tags_with_one_tag(self):
@@ -1545,7 +1545,7 @@ class TestParser4Tags(object):
             parse_tags('@one  invalid.tag boom')
 
 
-class TestParser4Background(object):
+class TestParser4Background:
     # pylint: disable=no-self-use
 
     def test_parse_background(self):
@@ -1689,7 +1689,7 @@ Feature: Background after ScenarioOutline
             parse_feature(text)
 
 
-class TestParser4Steps(object):
+class TestParser4Steps:
     """
     Tests parse_steps() and Parser.parse_steps() functionality.
     """

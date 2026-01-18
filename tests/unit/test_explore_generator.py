@@ -8,7 +8,7 @@ import pytest
 from contextlib import contextmanager
 
 
-class TestContextManager(object):
+class TestContextManager:
     def test_when_setup_raises_error_then_cleanup_isnot_called(self):
         @contextmanager
         def foo(checkpoints):
@@ -44,7 +44,7 @@ class TestContextManager(object):
         assert checkpoints == ["foo.setup.begin", "foo.cleanup"]
 
 
-class TestGenerator(object):
+class TestGenerator:
     def test_when_setup_raises_error_then_cleanup_isnot_called(self):
         def foo(checkpoints):
             checkpoints.append("foo.setup.begin")

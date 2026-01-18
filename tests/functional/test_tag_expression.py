@@ -14,7 +14,7 @@ import pytest
 # TEST SUITE: TagExpressionParser.parse() and Expression.evaluate(tags) chain
 # -----------------------------------------------------------------------------
 # BASED-ON: cucumber/tag-expressions/python/tests/functional/test_tag_expressions.py
-class TestTagExpression(object):
+class TestTagExpression:
     # correct_test_data = [
     #     ("a and b", "( a and b )"),
     #     ("a or (b)", "( a or b )"),
@@ -140,7 +140,7 @@ class TestTagExpression(object):
 # -----------------------------------------------------------------------------
 # TEST SUITE: TagExpressionParser Extension(s)
 # -----------------------------------------------------------------------------
-class TestTagExpressionExtension(object):
+class TestTagExpressionExtension:
     """Extension of cucumber-tag-expressions to support tag-name-matching."""
 
     @pytest.mark.parametrize("tag_expression_text, expected, tags, case", [

@@ -25,7 +25,7 @@ from behave.tag_matcher import ActiveTagMatcher
 # =============================================================================
 # TEST SUITE:
 # =============================================================================
-class TestActiveTags(object):
+class TestActiveTags:
     VALUE_PROVIDER = {
         "foo": "Frank",
         "bar": "Bob",
@@ -148,7 +148,7 @@ class TestActiveTags(object):
         self.check_should_run_with_active_tags(case, expected, tags)
 
 '''
-class Traits4ActiveTagMatcher(object):
+class Traits4ActiveTagMatcher:
     TagMatcher = ActiveTagMatcher
     value_provider = {
         "foo": "alice",
@@ -186,7 +186,7 @@ class Traits4ActiveTagMatcher(object):
 
 
 # -- REQUIRES: pytest
-class TestActiveTagMatcher2(object):
+class TestActiveTagMatcher2:
     TagMatcher = ActiveTagMatcher
     traits = Traits4ActiveTagMatcher
 

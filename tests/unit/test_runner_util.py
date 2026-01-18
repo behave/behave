@@ -62,7 +62,7 @@ feature_file_map = {
 # ---------------------------------------------------------------------------------------
 # TEST SUITE FOR: FeatureLineDatabase
 # ---------------------------------------------------------------------------------------
-class TestFeatureLineDatabase(object):
+class TestFeatureLineDatabase:
     def test_make(self):
         feature = parse_feature(feature_text1.strip(),
                                 filename="features/Alice.feature")

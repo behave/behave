@@ -20,11 +20,11 @@ def convert_model_element_tags(text):
 # -----------------------------------------------------------------------------
 # TEST DOMAIN, FIXTURES, STEP UTILS:
 # -----------------------------------------------------------------------------
-class Model(object):
+class Model:
     def __init__(self, features=None):
         self.features = features or []
 
-class BehaveModelBuilder(object):
+class BehaveModelBuilder:
     REQUIRED_COLUMNS = ["statement", "name"]
     OPTIONAL_COLUMNS = ["tags"]
 

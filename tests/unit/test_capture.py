@@ -56,7 +56,7 @@ not_implemented = pytest.mark.not_implemented()
 # -----------------------------------------------------------------------------
 # TEST SUITE:
 # -----------------------------------------------------------------------------
-class TestCaptured(object):
+class TestCaptured:
 
     def test_default_ctor(self):
         captured = Captured()
@@ -319,7 +319,7 @@ Charly
         assert captured3.make_report() == expected
 
 
-class TestManyCapture(object):
+class TestManyCapture:
     def test_add_captured__with_empty_captured_data(self):
         captured = Captured()
         collector = ManyCaptured()
@@ -443,7 +443,7 @@ Fred
         assert report == expected
 
 
-class Theory4ActiveCaptureController(object):
+class Theory4ActiveCaptureController:
     @staticmethod
     def check_invariants(controller):
         if controller.config.capture_stdout:
@@ -465,7 +465,7 @@ class Theory4ActiveCaptureController(object):
         else:
             assert controller.capture_log is None
 
-class TestCaptureBookmark(object):
+class TestCaptureBookmark:
     def test_ctor__with_default_values(self):
         bookmark = CaptureBookmark()
         assert bookmark.offset_stdout == 0
@@ -546,7 +546,7 @@ class TestCaptureBookmark(object):
         assert captured_delta is NO_CAPTURED_DATA
 
 
-class TestCaptureController(object):
+class TestCaptureController:
 
     # @pytest.no_capture
     def test_basics_using_stdfd(self):
@@ -779,20 +779,20 @@ class TestCaptureController(object):
 
 @todo
 @not_implemented
-class TestCaptureSinkAsCollector(object):
+class TestCaptureSinkAsCollector:
     pass
 
 @todo
 @not_implemented
-class TestCaptureSink2Print(object):
+class TestCaptureSink2Print:
     pass
 
 @todo
 @not_implemented
-class TestCaptureOutputToSink(object):
+class TestCaptureOutputToSink:
     pass
 
 @todo
 @not_implemented
-class TestCaptureOutputDecorator(object):
+class TestCaptureOutputDecorator:
     pass

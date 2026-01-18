@@ -186,7 +186,7 @@ class TypeRegistryNotSupported():
 # -----------------------------------------------------------------------------
 # SECTION: Step Matchers
 # -----------------------------------------------------------------------------
-class Matcher(object):
+class Matcher:
     """
     Provides an abstract base class for step-matcher classes.
 
@@ -576,7 +576,7 @@ class CucumberRegexMatcher(RegexMatcher):
 # -----------------------------------------------------------------------------
 # STEP MATCHER FACTORY (for public API)
 # -----------------------------------------------------------------------------
-class StepMatcherFactory(object):
+class StepMatcherFactory:
     """
     This class provides functionality for the public API of step-matchers.
 

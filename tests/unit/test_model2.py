@@ -35,7 +35,7 @@ def step_to_text(step, indentation="    "):
 # ----------------------------------------------------------------------------
 # TEST SUITE:
 # ----------------------------------------------------------------------------
-class TestScenarioOutlineBuilder(object):
+class TestScenarioOutlineBuilder:
     """Unit tests for the templating mechanism that is provided by the
     :class:`behave.model:ScenarioOutlineBuilder`.
     """
@@ -386,7 +386,7 @@ Feature:
         assert scenario1_tags == expected_tags[1]
 
 
-class TestTag(object):
+class TestTag:
     """
     Translation rules are:
       * alnum chars => same, kept

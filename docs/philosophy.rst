@@ -163,7 +163,7 @@ For instance as unit tests, the above examples might become:
 
 .. code-block:: python
 
- class TestList(object):
+ class TestList:
     def test_empty_list_is_false(self):
         list = []
         assertEqual(bool(list), False)
@@ -180,7 +180,7 @@ Sometimes the difference between the context, events and outcomes is made more e
 
 .. code-block:: python
 
- class TestWindow(object):
+ class TestWindow:
     def test_window_close(self):
         # Given
         window = gui.Window("My Window")

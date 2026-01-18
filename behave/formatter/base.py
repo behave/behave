@@ -10,7 +10,7 @@ from behave.textutil import (
 # -----------------------------------------------------------------------------
 # FORMATTER HELPER CLASSES
 # -----------------------------------------------------------------------------
-class StreamOpener(object):
+class StreamOpener:
     """Provides a transport vehicle to open the formatter output stream
     when the formatter needs it.
     In addition, it provides the formatter with more control:

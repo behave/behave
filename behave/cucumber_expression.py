@@ -28,7 +28,7 @@ from parse_type import TypeBuilder as _TypeBuilder
 # -----------------------------------------------------------------------------
 # STEP-MATCHER SUPPORT CLASSES FOR: CucumberExpressions
 # -----------------------------------------------------------------------------
-class TypeRegistry4ParameterType(object):
+class TypeRegistry4ParameterType:
     """
     Provides adapter to :class:`ParameterTypeRegistry`.
 

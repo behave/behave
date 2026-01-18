@@ -47,7 +47,7 @@ Feature: Use a user-defined Formatter
       """
       from behave.formatter.base import Formatter
 
-      class NotAFormatter(object): pass
+      class NotAFormatter: pass
       class SuperFormatter(Formatter):
           name = "super"
           description = "Super-duper formatter."

@@ -13,17 +13,17 @@ todo = pytest.mark.todo()
 # TEST SUITE
 # -----------------------------------------------------------------------------
 @todo
-class TestStatus(object):
+class TestStatus:
     pass
 
 @todo
-class TestScenarioStatus(object):
+class TestScenarioStatus:
     pass
 
 @todo
-class TestOuterStatus(object):
+class TestOuterStatus:
     pass
 
 @todo
-class TestFileLocation(object):
+class TestFileLocation:
     pass

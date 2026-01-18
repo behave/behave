@@ -11,7 +11,7 @@ import types
 import pytest
 
 
-class TestTheory(object):
+class TestTheory:
     """Marker for test-theory classes as syntactic sugar."""
     pass
 
@@ -43,7 +43,7 @@ class ImportModuleTheory(TestTheory):
         assert module.__name__ == name
 
 
-class TestLoadModule(object):
+class TestLoadModule:
     theory = ImportModuleTheory
 
     def test_load_module__should_fail_for_unknown_module(self):
@@ -67,7 +67,7 @@ class TestLoadModule(object):
         self.theory.assert_module_is_imported(module_name)
 
 
-class TestLazyObject(object):
+class TestLazyObject:
 
     def test_get__should_succeed_for_known_object(self):
         lazy = LazyObject("behave.importer", "LazyObject")
@@ -118,7 +118,7 @@ class LazyDictTheory(TestTheory):
         assert not isinstance(obj, LazyObject)
 
 
-class TestLazyDict(object):
+class TestLazyDict:
     theory = LazyDictTheory
 
     def test_unknown_item_access__should_raise_keyerror(self):

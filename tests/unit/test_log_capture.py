@@ -2,9 +2,9 @@ from unittest.mock import patch
 from behave.log_capture import LoggingCapture
 
 
-class TestLogCapture(object):
+class TestLogCapture:
     def test_get_value_returns_all_log_records(self):
-        class FakeConfig(object):
+        class FakeConfig:
             logging_filter = None
             logging_format = None
             logging_datefmt = None

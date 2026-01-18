@@ -16,7 +16,7 @@ DEBUG = False
 # -----------------------------------------------------------------------------
 # CLASS: TextProxy
 # -----------------------------------------------------------------------------
-# class TextProxy(object):
+# class TextProxy:
 #     """
 #     Simplifies conversion between (Unicode) string and its byte representation.
 #     Provides a ValueObject to store a string or its byte representation.

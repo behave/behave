@@ -89,7 +89,7 @@ class PhoenixTestRunner(ITestRunner):
         return self.the_runner.undefined_steps
 
 
-class RegisteredTestRunner(object):
+class RegisteredTestRunner:
     """Not derived from :class:`behave.api.runner:ITestrunner`.
     In this case, you need to register this class to the interface class.
     """
@@ -117,7 +117,7 @@ ITestRunner.register(RegisteredTestRunner)
 INVALID_TEST_RUNNER_CLASS0 = True
 
 
-class InvalidTestRunnerNotSubclass(object):
+class InvalidTestRunnerNotSubclass:
     """SYNDROME: Missing ITestRunner.register(InvalidTestRunnerNotSubclass)."""
     def __int__(self, config):
         self.undefined_steps = []
@@ -160,7 +160,7 @@ class InvalidTestRunnerWithoutUndefinedSteps(ITestRunner):
 # -----------------------------------------------------------------------------
 # TEST SUITE:
 # -----------------------------------------------------------------------------
-class TestRunnerPlugin(object):
+class TestRunnerPlugin:
     """Test the runner-plugin configuration."""
     THIS_MODULE_NAME = CustomTestRunner.__module__
 

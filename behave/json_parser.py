@@ -43,7 +43,7 @@ def parse(json_filename, encoding="UTF-8"):
 # ----------------------------------------------------------------------------
 # CLASSES:
 # ----------------------------------------------------------------------------
-class JsonParser(object):
+class JsonParser:
 
     def __init__(self):
         self.current_scenario_outline = None

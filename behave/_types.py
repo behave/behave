@@ -5,7 +5,7 @@ import types
 # -----------------------------------------------------------------------------
 # BASIC TYPES:
 # -----------------------------------------------------------------------------
-class Unknown(object):
+class Unknown:
     """
     Placeholder for unknown/missing information, distinguishable from None.
 

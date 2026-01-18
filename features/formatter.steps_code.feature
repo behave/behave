@@ -23,7 +23,7 @@ Feature: StepWithCode Formatter
       And an empty file named "example4me/__init__.py"
       And a file named "example4me/calculator.py" with:
           """
-          class Calculator(object):
+          class Calculator:
               def __init__(self, initial_value=0):
                   self.initial_value = initial_value
                   self.result = initial_value
@@ -141,7 +141,7 @@ Feature: StepWithCode Formatter
         from behave import given
         from assertpy import assert_that
 
-        class Person(object):
+        class Person:
             def __init__(self, name, role=None):
                 self.name = name
                 self.role = role

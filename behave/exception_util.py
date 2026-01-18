@@ -3,7 +3,7 @@ import traceback
 from behave._types import Unknown, require_type
 
 
-class ExceptionUtil(object):
+class ExceptionUtil:
     """
     Provides a utility class for accessing/modifying exception information.
 

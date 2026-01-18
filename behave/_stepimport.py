@@ -36,7 +36,7 @@ def setup_api_with_matcher_functions(module, step_matcher_factory):
     module.register_type = step_matcher_factory.register_type
 
 
-class SimpleStepContainer(object):
+class SimpleStepContainer:
     def __init__(self, step_registry=None):
         if step_registry is None:
             step_registry = StepRegistry()
@@ -48,7 +48,7 @@ class SimpleStepContainer(object):
 # -----------------------------------------------------------------------------
 # FAKE MODULE CLASSES: For step imports
 # -----------------------------------------------------------------------------
-# class FakeModule(object):
+# class FakeModule:
 class FakeModule(ModuleType):
     ensure_fake = True
 
@@ -123,7 +123,7 @@ class BehaveModule(FakeModule):
         self.__package__ = None
 
 
-class StepImportModuleContext(object):
+class StepImportModuleContext:
 
     def __init__(self, step_container):
         self.step_registry = step_container.step_registry
