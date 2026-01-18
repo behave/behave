@@ -1,5 +1,3 @@
-# ruff: noqa: F401
-# pylint: disable=redefined-builtin,unused-import
 """
 Behave exception classes.
 
