@@ -11,7 +11,7 @@ from behave.textutil import text
 # -----------------------------------------------------------------------------
 # TEST SUPPORT:
 # -----------------------------------------------------------------------------
-class ConvertableToUnicode(object):
+class ConvertableToUnicode:
     """Class that can be converted into a unicode string.
     If parameter is a bytes-string, it is converted into unicode.
 
@@ -42,7 +42,7 @@ class ConvertableToUnicode(object):
         return text
 
 
-class ConvertableToString(object):
+class ConvertableToString:
     encoding = "utf-8"
 
     def __init__(self, text, encoding=None):
@@ -56,7 +56,7 @@ class ConvertableToString(object):
         return text
 
 
-class ConvertableToPy2String(object):
+class ConvertableToPy2String:
     encoding = "utf-8"
 
     def __init__(self, text, encoding=None):
@@ -92,7 +92,7 @@ BYTES_TEXT_TUPLES_WITH_UTF8_ENCODING = [
 ]
 
 
-class TestTextConversion(object):
+class TestTextConversion:
     """Unit tests for the :func:`behave.textutil.text()` function."""
 
     @pytest.mark.parametrize("value", UNICODE_TEXT_VALUES)
@@ -149,7 +149,7 @@ class TestTextConversion(object):
         assert isinstance(actual_text, str)
 
 
-class TestObjectToTextConversion(object):
+class TestObjectToTextConversion:
     """Unit tests for the :func:`behave.textutil.text()` function.
     Explore case with object-to-text conversion.
     """

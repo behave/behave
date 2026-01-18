@@ -61,7 +61,7 @@ def load_module(module_name):
         raise ModuleNotFoundError(msg)
 
 
-class LazyObject(object):
+class LazyObject:
     """Provides a placeholder for an class/object that should be loaded lazily.
 
     It stores the module-name, object-name/class-name and

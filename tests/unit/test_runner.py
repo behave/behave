@@ -19,7 +19,7 @@ def create_mock_config():
     return config
 
 
-class TestRunner(object):
+class TestRunner:
     # pylint: disable=invalid-name, no-self-use
 
     def test_load_hooks_execfiles_hook_file(self):
@@ -279,7 +279,7 @@ class TestRunWithPaths(unittest.TestCase):
         assert self.runner.features == [feature] * 3
 
 
-class FsMock(object):
+class FsMock:
     def __init__(self, *paths):
         self.base = os.path.abspath(".")
         self.sep = os.path.sep
@@ -367,7 +367,7 @@ class FsMock(object):
         return orig(path)
 
 
-class TestFeatureDirectory(object):
+class TestFeatureDirectory:
     # pylint: disable=invalid-name, no-self-use
 
     def test_default_path_no_steps(self):
@@ -500,7 +500,7 @@ class TestFeatureDirectory(object):
                 # OLD: assert_raises(ConfigError, runner.setup_paths)
 
 
-class TestFeatureDirectoryLayout2(object):
+class TestFeatureDirectoryLayout2:
     # pylint: disable=invalid-name, no-self-use
 
     def test_default_path(self):

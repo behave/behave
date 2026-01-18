@@ -365,7 +365,7 @@ class HookErrorCounts(Counter):
     #     return the_sum
 
 
-class SummaryCounts(object):
+class SummaryCounts:
     """Composite value object that contains the counter objects related to:
 
     * features

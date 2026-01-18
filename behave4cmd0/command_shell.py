@@ -43,7 +43,7 @@ def get_behave_cmd(search_path=None):
 # -----------------------------------------------------------------------------
 # CLASSES:
 # -----------------------------------------------------------------------------
-class CommandResult(object):
+class CommandResult:
     """
     ValueObject to store the results of a subprocess command call.
     """
@@ -80,7 +80,7 @@ class CommandResult(object):
         self._output = None
 
 
-class Command(object):
+class Command:
     """
     Helper class to run commands as subprocess,
     collect their output and subprocess returncode.

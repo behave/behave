@@ -27,7 +27,7 @@ from behave.textutil import ensure_stream_with_encoder
 # -----------------------------------------------------------------------------
 # CLASS: FileLocationParser
 # -----------------------------------------------------------------------------
-class FileLocationParser(object):
+class FileLocationParser:
     pattern = re.compile(r"^\s*(?P<filename>.*):(?P<line>\d+)\s*$", re.UNICODE)
 
     @classmethod
@@ -51,7 +51,7 @@ class FileLocationParser(object):
 # -----------------------------------------------------------------------------
 # CLASSES:
 # -----------------------------------------------------------------------------
-class FeatureLineDatabase(object):
+class FeatureLineDatabase:
     """Helper class that supports select-by-location mechanism (FileLocation)
     within a feature file by storing the feature line numbers for each entity.
 
@@ -141,7 +141,7 @@ class FeatureLineDatabase(object):
 
 
 
-class FeatureScenarioLocationCollector(object):
+class FeatureScenarioLocationCollector:
     """
     Collects FileLocation objects for a feature.
     This is used to select a subset of scenarios in a feature that should run.
@@ -372,7 +372,7 @@ class FeatureScenarioLocationCollector2(FeatureScenarioLocationCollector):
         return selected_scenarios
 
 
-class FeatureListParser(object):
+class FeatureListParser:
     """
     Read textual file, ala '@features.txt'. This file contains:
 
@@ -434,7 +434,7 @@ class FeatureListParser(object):
             return cls.parse(contents, here)
 
 
-class PathManager(object):
+class PathManager:
     """Context manager to add paths to sys.path (python search path)
     within a scope.
     """

@@ -49,7 +49,7 @@ __license__ = "BSD"
 __copyright__ = "(c) 2013 by Jens Engel"
 
 
-class Package(object):
+class Package:
     """
     Package entity that keeps track of:
       * one or more versions of this package

@@ -19,7 +19,7 @@ def posixpath_normpath(filename):
 # -----------------------------------------------------------------------------
 # LINE PROCESSORS:
 # -----------------------------------------------------------------------------
-class LineProcessor(object):
+class LineProcessor:
     """Function-like object that may perform text-line transformations."""
     def __init__(self, marker=None):
         self.marker = marker
@@ -102,7 +102,7 @@ class ExceptionWithPathNormalizer(LineProcessor):
 # -----------------------------------------------------------------------------
 # COMMAND OUTPUT PROCESSORS:
 # -----------------------------------------------------------------------------
-class CommandPostProcessor(object):
+class CommandPostProcessor:
     """Syntactic sugar to mark a command post-processor."""
 
 

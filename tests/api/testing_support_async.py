@@ -8,7 +8,7 @@ import inspect
 # -----------------------------------------------------------------------------
 # TEST SUPPORT:
 # -----------------------------------------------------------------------------
-class AsyncStepTheory(object):
+class AsyncStepTheory:
     @staticmethod
     def ensure_normal_function(func):
         if hasattr(inspect, "isawaitable"):

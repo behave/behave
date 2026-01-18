@@ -251,7 +251,7 @@ Feature: JSON Formatter
           import parse
 
           # -- TYPES AND TYPE CONVERTERS:
-          class Color(object):
+          class Color:
               def __init__(self, color_name):
                   self.name = color_name
 

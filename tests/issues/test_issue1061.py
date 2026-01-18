@@ -9,7 +9,7 @@ from tests.functional.test_tag_inheritance import assert_inherited_tags_equal_to
 # -----------------------------------------------------------------------------
 # TEST SUITE
 # -----------------------------------------------------------------------------
-class TestIssue(object):
+class TestIssue:
     """Verifies that issue is fixed.
     Verifies basics that tag-inheritance mechanism works.
 

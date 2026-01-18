@@ -16,7 +16,7 @@ class DummyMatcher(Matcher):
     def check_match(self, step):
         return DummyMatcher.desired_result
 
-class TestMatcher(object):
+class TestMatcher:
     # pylint: disable=invalid-name, no-self-use
 
     def setUp(self):
@@ -38,7 +38,7 @@ class TestMatcher(object):
         assert match.func is func
         assert match.arguments == arguments
 
-class TestParseMatcher(object):
+class TestParseMatcher:
     # pylint: disable=invalid-name, no-self-use
     STEP_MATCHER_CLASS = ParseMatcher
 
@@ -250,7 +250,7 @@ class TestCFParseMatcher(TestParseMatcher):
         assert self.recorded_args, ((context,) == expected)
 
 
-class TestRegexMatcher(object):
+class TestRegexMatcher:
     # pylint: disable=invalid-name, no-self-use
     STEP_MATCHER_CLASS = RegexMatcher
 

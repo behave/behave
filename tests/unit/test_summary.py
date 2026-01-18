@@ -43,7 +43,7 @@ import pytest
 #                 .each_with_steps(passed=3)
 
 
-# class ScenarioStatus(object):
+# class ScenarioStatus:
 #     """Computes ``scenario.status`` from ``step.status``."""
 #     @staticmethod
 #     def from_step_status(status, dry_run=False):
@@ -66,7 +66,7 @@ def assert_counts_are_zero(counts, excluded=None):
 # -----------------------------------------------------------------------------
 # TEST SUITE
 # -----------------------------------------------------------------------------
-class TestStatusCounts(object):
+class TestStatusCounts:
     def test_ctor_all_counts_are_zero(self):
         status_counts = StatusCounts()
         assert_counts_are_zero(status_counts)
@@ -126,7 +126,7 @@ class TestStatusCounts(object):
         assert the_counts.all == expected
 
 
-class TestSummaryCollector(object):
+class TestSummaryCollector:
 
     def test_process_feature_with_one_passed_scenario(self):
         builder = FeatureBuilder()

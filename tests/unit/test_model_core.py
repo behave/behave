@@ -9,7 +9,7 @@ from behave.model_type import Status, FileLocation
 # -----------------------------------------------------------------------------
 # TESTS:
 # -----------------------------------------------------------------------------
-class TestStatus(object):
+class TestStatus:
     """Test Status enum class.
     In addition, checks if it is partly backward compatibility to
     string-based status.
@@ -54,7 +54,7 @@ class TestStatus(object):
             Status.from_name(unknown_name)
 
 
-class TestFileLocation(object):
+class TestFileLocation:
     # pylint: disable=invalid-name
     ordered_locations1 = [
         FileLocation("features/alice.feature", 1),

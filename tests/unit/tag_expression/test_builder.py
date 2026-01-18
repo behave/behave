@@ -43,7 +43,7 @@ def assert_is_tag_expression_v2(tag_expression):
 # -----------------------------------------------------------------------------
 # TEST SUITE
 # -----------------------------------------------------------------------------
-class TestTagExpressionProtocol(object):
+class TestTagExpressionProtocol:
     """
     Test TagExpressionProtocol class.
     """
@@ -65,7 +65,7 @@ class TestTagExpressionProtocol(object):
 # -----------------------------------------------------------------------------
 # TEST SUITE FOR: make_tag_expression()
 # -----------------------------------------------------------------------------
-class TestMakeTagExpression(object):
+class TestMakeTagExpression:
     """Test :func:`make_tag_expression()`."""
 
     @pytest.mark.parametrize("text", TAG_EXPRESSION_V2_GOOD_EXAMPLES)

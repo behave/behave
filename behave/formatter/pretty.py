@@ -35,12 +35,12 @@ def get_terminal_size():
 # -----------------------------------------------------------------------------
 # COLORING SUPPORT:
 # -----------------------------------------------------------------------------
-class MonochromeFormat(object):
+class MonochromeFormat:
     def text(self, text):   # pylint: disable=no-self-use
         assert isinstance(text, str)
         return text
 
-class ColorFormat(object):
+class ColorFormat:
     def __init__(self, status):
         self.status = status
 

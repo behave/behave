@@ -31,7 +31,7 @@ class AmbiguousStep(ValueError):
     pass
 
 
-class BadStepDefinitionCollector(object):
+class BadStepDefinitionCollector:
     BAD_STEP_DEFINITION_MESSAGE = """\
 BAD-STEP-DEFINITION: {step}
   LOCATION: {step_location}
@@ -77,7 +77,7 @@ class BadStepDefinitionErrorHandler(BadStepDefinitionCollector):
         raise error
 
 
-class StepRegistry(object):
+class StepRegistry:
     BAD_STEP_DEFINITION_HANDLER_CLASS = BadStepDefinitionErrorHandler
     RAISE_ERROR_ON_BAD_STEP_DEFINITION = False
 

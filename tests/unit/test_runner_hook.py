@@ -61,7 +61,7 @@ def any_tag_hook(ctx, tag):
 # -----------------------------------------------------------------------------
 # TEST SUITE
 # -----------------------------------------------------------------------------
-class TestRunHooks(object):
+class TestRunHooks:
 
     @staticmethod
     def make_runner(**config_data):

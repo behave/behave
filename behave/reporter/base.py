@@ -1,7 +1,7 @@
 from behave.model_type import Status
 
 
-class Reporter(object):
+class Reporter:
     """
     Base class for all reporters.
     A reporter provides an extension point (variant point) for the runner logic.

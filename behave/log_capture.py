@@ -11,7 +11,7 @@ from behave.log_config import (
 # -----------------------------------------------------------------------------
 # CLASSES
 # -----------------------------------------------------------------------------
-class RecordFilter(object):
+class RecordFilter:
     """Implement logging record filtering as per the configuration
     --logging-filter option.
     """

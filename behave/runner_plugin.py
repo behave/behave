@@ -24,7 +24,7 @@ from behave.importer import load_module, make_scoped_class_name, parse_scoped_na
 from behave._types import Unknown
 
 
-class RunnerPlugin(object):
+class RunnerPlugin:
     """Extension point to load a runner_class and create its runner:
 
     * create a runner by using its scoped-class-name

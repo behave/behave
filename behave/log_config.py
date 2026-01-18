@@ -22,7 +22,7 @@ _PYTHON_VERSION = sys.version_info[:2]
 # -----------------------------------------------------------------------------
 # CLASSES
 # -----------------------------------------------------------------------------
-class LoggingConfigurator(object):
+class LoggingConfigurator:
     DEFAULT_LEVEL = logging.INFO
     DEFAULT_FORMAT_STYLE = '%'
 

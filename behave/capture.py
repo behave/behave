@@ -38,7 +38,7 @@ def add_text_to(value, more_text, separator="\n"):
 # -----------------------------------------------------------------------------
 # CAPTURED CLASSES as VALUE OBJECTS
 # -----------------------------------------------------------------------------
-class ICaptured(object):
+class ICaptured:
     """MARKER-CLASS for any Captured class (as value object)."""
 
 
@@ -405,7 +405,7 @@ class ManyCaptured(ICaptured):
 # CAPTURED HELPER CLASSES
 # -----------------------------------------------------------------------------
 # XXX_MAYBE: use_any_status=True
-class CapturedQuery(object):
+class CapturedQuery:
     @staticmethod
     def select_by_status(captured, use_any_status=False):
         if captured.failed or use_any_status:
@@ -426,7 +426,7 @@ class CapturedQuery(object):
 # -----------------------------------------------------------------------------
 # CAPTURE SINKS:
 # -----------------------------------------------------------------------------
-class ICaptureSink(object):
+class ICaptureSink:
     def process_captured(self, captured):
         raise NotImplementedError()
 
@@ -496,7 +496,7 @@ class CaptureSink2Print(ICaptureSink):
 # -----------------------------------------------------------------------------
 # CAPTURE CONTROLLERS:
 # -----------------------------------------------------------------------------
-class CaptureBookmark(object):
+class CaptureBookmark:
     """Provides a reference point in time what was captured until now."""
     __slots__ = ("offset_stdout", "offset_stderr", "offset_log")
 
@@ -551,7 +551,7 @@ class CaptureBookmark(object):
 
 
 
-class CaptureController(object):
+class CaptureController:
     """Simplifies the lifecycle to capture output from various sources."""
 
     def __init__(self, config, name=None):

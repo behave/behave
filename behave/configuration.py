@@ -61,7 +61,7 @@ DEFAULT_RUNNER_CLASS_NAME = "behave.runner:Runner"
 # -----------------------------------------------------------------------------
 # CONFIGURATION DATA TYPES and TYPE CONVERTERS:
 # -----------------------------------------------------------------------------
-class LogLevel(object):
+class LogLevel:
     names = [
         "NOTSET", "CRITICAL", "FATAL", "ERROR",
         "WARNING", "WARN", "INFO", "DEBUG",
@@ -749,7 +749,7 @@ def setup_config_file_parser():
         parser.add_argument(*fixed, **keywords)
     return parser
 
-class Configuration(object):
+class Configuration:
     """
     Configuration object for behave and behave runners.
 

@@ -16,7 +16,7 @@ from behave.model_type import (
 # -----------------------------------------------------------------------------
 # ABSTRACT MODEL CLASSES (and concepts):
 # -----------------------------------------------------------------------------
-class BasicStatement(object):
+class BasicStatement:
     STORE_CAPTURED_ON_SUCCESS = CAPTURE_SINK_STORE_CAPTURED_ON_SUCCESS
 
     def __init__(self, filename, line, keyword, name):
@@ -210,7 +210,7 @@ class TagAndStatusStatement(BasicStatement):
         raise NotImplementedError()
 
 
-class Replayable(object):
+class Replayable:
     type = None
 
     def replay(self, formatter):

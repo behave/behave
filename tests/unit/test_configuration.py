@@ -80,7 +80,7 @@ def use_current_directory(directory_path):
 # -----------------------------------------------------------------------------
 # TEST SUITE:
 # -----------------------------------------------------------------------------
-class TestConfiguration(object):
+class TestConfiguration:
 
     @pytest.mark.parametrize(("filename", "contents"), list(TEST_CONFIGS))
     def test_read_file(self, filename, contents, tmp_path):
@@ -229,7 +229,7 @@ class TestConfigurationUserData(TestCase):
         assert config.userdata_defines is None
 
 
-class TestConfigFileParser(object):
+class TestConfigFileParser:
 
     def test_configfile_iter__verify_option_names(self):
         config_options = configfile_options_iter(None)
@@ -280,7 +280,7 @@ class TestConfigFileParser(object):
         assert sorted(config_options_names) == expected_names
 
 
-class TestConfigFile(object):
+class TestConfigFile:
 
     @staticmethod
     def make_config_file_with_tag_expression_protocol(value, tmp_path):

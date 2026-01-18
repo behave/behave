@@ -24,7 +24,7 @@ Feature: Parse custom data types in step parameters (type transformation)
             return int(text)
 
         register_type(Number=parse_number)
-        class NotMatched(object): pass
+        class NotMatched: pass
 
         @step('a param with "Number:{value:Number}"')
         def step_param_with_number_value(context, value):

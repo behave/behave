@@ -194,7 +194,7 @@ def discover_commands():
     return commands
 
 
-class Command(object):
+class Command:
     def __init__(self, name, func):
         assert isinstance(name, str)
         assert callable(func)

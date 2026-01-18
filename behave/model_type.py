@@ -212,7 +212,7 @@ class Status(Enum):
         return enum_value
 
 
-class ScenarioStatus(object):
+class ScenarioStatus:
     """
     Utility class that computes the Scenario status from one of its steps.
     """
@@ -242,7 +242,7 @@ class ScenarioStatus(object):
         return cls.from_step_status(step.status, dry_run=dry_run)
 
 
-class OuterStatus(object):
+class OuterStatus:
     """
     Used for feature(s) and rule(s) to derive their status
     from one of its contained model-elements (like: scenarios).
@@ -268,7 +268,7 @@ class OuterStatus(object):
 
 # @total_ordering
 # MAYBE: class FileLocation(unicode):
-class FileLocation(object):
+class FileLocation:
     """
     Provides a value object for file location objects.
     A file location consists of:
@@ -397,7 +397,7 @@ class FileLocation(object):
 
 
 
-class Argument(object):
+class Argument:
     """An argument found in a *feature file* step name.
 
     The attributes are:

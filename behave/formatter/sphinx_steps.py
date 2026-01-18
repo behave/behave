@@ -31,7 +31,7 @@ except ImportError:
 # -----------------------------------------------------------------------------
 # HELPER CLASS:
 # -----------------------------------------------------------------------------
-class StepsModule(object):
+class StepsModule:
     """
     Value object to keep track of step definitions that belong to same module.
     """
@@ -86,7 +86,7 @@ class StepsModule(object):
 # -----------------------------------------------------------------------------
 # CLASS: SphinxStepsDocumentGenerator
 # -----------------------------------------------------------------------------
-class SphinxStepsDocumentGenerator(object):
+class SphinxStepsDocumentGenerator:
     """
     Provides document generator class that generates Sphinx-based
     documentation for step definitions. The primary purpose is to:

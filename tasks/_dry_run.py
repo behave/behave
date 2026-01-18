@@ -14,7 +14,7 @@ Basic support to use a --dry-run mode w/ invoke tasks.
         ctx.run("rm -rf {}".format(path))
 """
 
-class DryRunContext(object):
+class DryRunContext:
     PREFIX = "DRY-RUN: "
     SCHEMA = "{prefix}{command}"
     SCHEMA_WITH_KWARGS = "{prefix}{command} (with kwargs={kwargs})"

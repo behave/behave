@@ -87,7 +87,7 @@ Feature: Help Formatter
       Given an empty file named "behave4me/__init__.py"
       And a file named "behave4me/bad_formatter.py" with:
         """
-        class InvalidFormatter1(object): pass    # CASE 1: Not a subclass-of Formatter
+        class InvalidFormatter1: pass    # CASE 1: Not a subclass-of Formatter
         InvalidFormatter2 = True                 # CASE 2: Not a class
         """
 

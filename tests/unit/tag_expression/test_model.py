@@ -9,7 +9,7 @@ import pytest
 # -----------------------------------------------------------------------------
 # TEST SUITE: Model Classes
 # -----------------------------------------------------------------------------
-class TestAndOperation(object):
+class TestAndOperation:
 
     @pytest.mark.parametrize("expected, tags, case", [
         (False, [],             "no_tags"),
@@ -49,7 +49,7 @@ class TestAndOperation(object):
         assert expected == str(expression)
 
 
-class TestOrOperation(object):
+class TestOrOperation:
     @pytest.mark.parametrize("expected, tags, case", [
         (False, [],         "no_tags"),
         ( True, ["a"],      "one tag: a"),
@@ -83,7 +83,7 @@ class TestOrOperation(object):
         assert expression.evaluate(tags) == expected
 
 
-class TestNotOperation(object):
+class TestNotOperation:
     @pytest.mark.parametrize("expected, tags, case", [
         ( True, [],         "no_tags"),
         (False, ["a"],      "one tag: a"),
@@ -97,7 +97,7 @@ class TestNotOperation(object):
         assert expression.evaluate(tags) == expected
 
 
-class TestTrueOperation(object):
+class TestTrueOperation:
     @pytest.mark.parametrize("expected, tags, case", [
         ( True, [],         "no_tags"),
         ( True, ["a"],      "one tag: a"),
@@ -108,7 +108,7 @@ class TestTrueOperation(object):
         assert expression.evaluate(tags) == expected
 
 
-class TestComposedExpression(object):
+class TestComposedExpression:
     @pytest.mark.parametrize("expected, tags, case", [
         ( True, [],         "no_tags"),
         ( True, ["a"],      "one tag: a"),

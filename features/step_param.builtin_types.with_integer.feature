@@ -31,7 +31,7 @@ Feature: Parse integer data types in step parameters (type transformation)
         """
         from behave import then, step
 
-        class NotMatched(object): pass
+        class NotMatched: pass
 
         @step('a integer param with "{value:d}"')
         def step_integer_param_with(context, value):

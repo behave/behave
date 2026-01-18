@@ -30,7 +30,7 @@ from hamcrest import assert_that, equal_to
 # -----------------------------------------------------------------------------
 # STEP UTILS:
 # -----------------------------------------------------------------------------
-class BasicBehaveRunner(object):
+class BasicBehaveRunner:
     def __init__(self, config=None):
         self.config = config
         self.feature_files = []

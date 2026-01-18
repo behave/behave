@@ -24,7 +24,7 @@ if PythonFeature.has_async_function():
 # -----------------------------------------------------------------------------
 # TEST SUITE -- DEPRECATED THINGS
 # -----------------------------------------------------------------------------
-class TestActiveTagMatcher(object):
+class TestActiveTagMatcher:
     def test_deprecated_should_exclude_with(self):
         active_tag_matcher = ActiveTagMatcher({})
         expected = r"Use 'should_skip_with_tags\(\)' instead"
@@ -44,7 +44,7 @@ class TestActiveTagMatcher(object):
             _ = active_tag_matcher.should_run_with([])
 
 
-class TestConfiguration(object):
+class TestConfiguration:
 
     # -- SINCE: behave v1.2.7
     def test_deprecated_use_stdout_capture__as_getter(self):
@@ -128,7 +128,7 @@ class TestConfiguration(object):
             _config = Configuration(log_capture=True, load_config=False)
 
 
-class TestCaptureController(object):
+class TestCaptureController:
     SETUP_CAPTURE_EXPECTED = "setup_capture: Avoid to use 'context' parameter"
     @staticmethod
     def make_context(config):
@@ -226,14 +226,14 @@ class TestCaptureController(object):
             capture_controller.log_capture = True
 
 
-class TestFormatterModule(object):
+class TestFormatterModule:
     def test_deprecated_on_impoort(self):
         expected = "Use 'behave.formatter._registry' instead."
         with pytest.warns(DeprecationWarning, match=expected):
             import behave.formatter.formatters  # noqa: F401
 
 
-class TestModellRunner(object):
+class TestModellRunner:
     HOOK_NAMES = [
         "before_all", "after_all",
         "before_feature", "after_feature",

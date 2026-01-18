@@ -14,7 +14,7 @@ import pytest
 # TEST SUITE: Grammar
 # -----------------------------------------------------------------------------
 # SAME-AS: cucumber/tag-expressions/python/tests/unit/test_parser:TestToken
-class TestToken(object):
+class TestToken:
 
     @pytest.mark.parametrize("token, expected", [
         (Token.OR, Associative.LEFT),
@@ -98,7 +98,7 @@ class TestToken(object):
 # -----------------------------------------------------------------------------
 # TEST SUITE: Parser
 # -----------------------------------------------------------------------------
-class TagExpressionParserTestBase(object):
+class TagExpressionParserTestBase:
     @staticmethod
     def assert_parse_expression_equals_expression_string(text, expected):
         parser = TagExpressionParser()

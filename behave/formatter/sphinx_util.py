@@ -9,7 +9,7 @@ from behave.textutil import compute_words_maxsize, text as _text
 # -----------------------------------------------------------------------------
 # SPHINX OUTPUT GENERATION FUNCTIONS:
 # -----------------------------------------------------------------------------
-class DocumentWriter(object):
+class DocumentWriter:
     """
     Provides a simple "ReStructured Text Writer" to generate
     Sphinx-based documentation.

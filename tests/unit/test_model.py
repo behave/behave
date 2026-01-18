@@ -289,7 +289,7 @@ class TestScenarioRun(unittest.TestCase):
         assert scenario.should_run_with_name_select(self.config)
 
 
-class TestScenarioRun2(object):
+class TestScenarioRun2:
     """Some additional tests for "Scenario.run()" using pytest."""
     @classmethod
     def make_runner(cls):
@@ -869,7 +869,7 @@ class TestStepRun(unittest.TestCase):
         assert "toads" in captured_output
 
 
-class TestTableModel(object):
+class TestTableModel:
     # pylint: disable=invalid-name
     HEADINGS = ["type of stuff", "awesomeness", "ridiculousness"]
     TABLE_DATA = [
@@ -921,7 +921,7 @@ class TestTableModel(object):
         assert list(table[0].items()) == list(zip(self.HEADINGS, self.TABLE_DATA[0]))
 
 
-class TestModelRow(object):
+class TestModelRow:
     # pylint: disable=invalid-name, bad-whitespace
     HEADINGS = ["name",  "sex",   "age"]
     ROW_DATA = ["Alice", "female", "12"]

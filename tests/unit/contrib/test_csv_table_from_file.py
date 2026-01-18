@@ -31,7 +31,7 @@ def table_to_list_of_dicts(table):
     return [row.as_dict() for row in table.rows]
 
 
-class ExampleBuilder(object):
+class ExampleBuilder:
     DEFAULT_FILENAME = "some.feature"
     DEFAULT_KEYWORD = "Examples"
     DEFAULT_LINE = 10

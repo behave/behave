@@ -58,7 +58,7 @@ class ContextMode(Enum):
     USER = 2
 
 
-class Context(object):
+class Context:
     """Hold contextual information during the running of tests.
 
     This object is a place to store information related to the tests you're
@@ -644,7 +644,7 @@ def path_getrootdir(path):
     return os.path.sep
 
 
-class ModelRunner(object):
+class ModelRunner:
     """Test runner for a behave model (features).
     Provides the core functionality of a test runner and
     the functional API needed by model elements.

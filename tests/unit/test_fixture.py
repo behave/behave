@@ -27,7 +27,7 @@ def make_runtime_context(runner=None):
     return Context(runner)
 
 
-class BasicFixture(object):
+class BasicFixture:
     """Helper class used in behave fixtures (test-support)."""
     def __init__(self, *args, **kwargs):
         setup_called = kwargs.pop("_setup_called", True)
@@ -111,7 +111,7 @@ def assert_fixture_cleanup_not_called(fixture_obj):
 # -----------------------------------------------------------------------------
 # TEST SUITE:
 # -----------------------------------------------------------------------------
-class TestFixtureDecorator(object):
+class TestFixtureDecorator:
     def test_decorator(self):
         @fixture
         def foo(context, *args, **kwargs):
@@ -176,7 +176,7 @@ class TestFixtureDecorator(object):
         assert isinstance(the_fixture, BarFixture)
 
     def test_decorator_with_non_callable_raises_type_error(self):
-        class NotCallable(object):
+        class NotCallable:
             pass
 
         with pytest.raises(TypeError) as exc_info:
@@ -187,7 +187,7 @@ class TestFixtureDecorator(object):
         assert "Invalid func:" in exception_text
         assert "NotCallable object" in exception_text
 
-class TestUseFixture(object):
+class TestUseFixture:
 
     def test_basic_lifecycle(self):
         # -- NOTE: Use explicit checks instead of assert-helper functions.
@@ -489,7 +489,7 @@ class TestUseFixture(object):
         assert isinstance(exc_info.value, FixtureCleanupError), "LAST-EXCEPTION-WINS"
 
 
-class TestUseFixtureByTag(object):
+class TestUseFixtureByTag:
     def test_data_schema1(self):
         @fixture
         def foo(context, *args, **kwargs):
@@ -558,7 +558,7 @@ class TestUseFixtureByTag(object):
         def foo(context, *args, **kwargs):
             pass
 
-        class BadFixtureData(object):
+        class BadFixtureData:
             def __init__(self, fixture_func, *args, **kwargs):
                 self.fixture_func = fixture_func
                 self.fixture_args = args
@@ -580,7 +580,7 @@ class TestUseFixtureByTag(object):
         assert "BadFixtureData object" in str(exc_info.value)
 
 
-class TestCompositeFixture(object):
+class TestCompositeFixture:
     def test_use_fixture(self):
         @fixture
         def fixture_foo(context, checkpoints, *args, **kwargs):
@@ -851,7 +851,7 @@ class TestCompositeFixture(object):
         ]
 
 
-class TestFixtureCleanup(object):
+class TestFixtureCleanup:
     """Check fixture-cleanup behaviour w/ different fixture implementations."""
 
     def test_setup_eror_with_plaingen_then_cleanup_is_not_called(self):

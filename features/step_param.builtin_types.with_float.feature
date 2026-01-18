@@ -29,7 +29,7 @@ Feature: Parse data types in step parameters (type transformation)
     And a file named "features/steps/float_param_steps.py" with:
         """
         from behave import then, step
-        class NotMatched(object): pass
+        class NotMatched: pass
 
         @step('a float param with "{value:g}"')
         def step_float_param_with(context, value):

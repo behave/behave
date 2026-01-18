@@ -14,7 +14,7 @@ from behave._types import Unknown
 # -----------------------------------------------------------------------------
 # BUILDER VIEW CLASSES:
 # -----------------------------------------------------------------------------
-class BuilderView(object):
+class BuilderView:
     @staticmethod
     def select_builder_attribute(builder, name, default=None):
         if name.startswith("_"):
@@ -81,7 +81,7 @@ class BuilderContext(BuilderView):
         # return super(BuilderItemView, self).__getattribute__(name)
 
 
-class  BuilderOperationsMixin(object):
+class  BuilderOperationsMixin:
     @staticmethod
     def with_names(ctx, names, default_name=None):
         assert isinstance(ctx, BuilderContext)
@@ -252,7 +252,7 @@ class  BuilderOperationsMixin(object):
 # -----------------------------------------------------------------------------
 # BUILDER MIXIN CLASSES:
 # -----------------------------------------------------------------------------
-class FilenameBuilderMixin(object):
+class FilenameBuilderMixin:
     FILENAME_SCHEMA = "features/f_{0:03d}.feature"
     COUNTER = 0
 
@@ -298,7 +298,7 @@ class ManyFeaturesBuilderMixin(FeatureBuilderMixin):
         # return BuilderSequenceView(builder=self, data=self.features, offset=offset)
 
 
-class RuleBuilderMixin(object):
+class RuleBuilderMixin:
 
     def make_rule(self, **kwargs):
         filename = kwargs.pop("filename", None)
@@ -357,7 +357,7 @@ class ManyRulesBuilderMixin(RuleBuilderMixin):
         # return BuilderSequenceView(builder=self, data=self.current_sequence())
 
 
-class ScenarioBuilderMixin(object):
+class ScenarioBuilderMixin:
     SCENARIO_DEFAULT_PARAMS = {
         "keyword": "Scenario",
         "name": "",
@@ -434,7 +434,7 @@ class ManyScenariosBuilderMixin(ScenarioBuilderMixin):
         # return BuilderSequenceView(builder=self, data=self.current_sequence())
 
 
-class ManyStepsBuilderMixin(object):
+class ManyStepsBuilderMixin:
     DEFAULT_STEP = "a step passes"
     DEFAULT_STEP_KEYWORD = "Given"
     DEFAULT_STEP_TYPE = "given"

@@ -54,7 +54,7 @@ def test_module_setup():
     assert escapes_count >= (2 + aliases_count + aliases_count)
 
 
-class TestStripEscapes(object):
+class TestStripEscapes:
 
     @pytest.mark.parametrize("text", TEXTS)
     def test_should_return_same_text_without_escapes(self, text):

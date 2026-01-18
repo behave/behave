@@ -15,7 +15,7 @@ from .model_core import TagAndStatusStatement
 # -----------------------------------------------------------------------------
 # VALUE OBJECT CLASSES FOR: Active-Tag Value Providers
 # -----------------------------------------------------------------------------
-class ValueObject(object):
+class ValueObject:
     """Value object for active-tags that holds the current value for
     one activate-tag category and its comparison function.
 
@@ -136,7 +136,7 @@ class BoolValueObject(ValueObject):
 # -----------------------------------------------------------------------------
 # CLASSES FOR: Active-Tags and ActiveTagMatchers
 # -----------------------------------------------------------------------------
-class TagMatcher(object):
+class TagMatcher:
     """Abstract base class that defines the TagMatcher protocol."""
 
     def should_skip(self, model_element, use_inherited=False):
@@ -255,7 +255,7 @@ class ActiveTagMatcher(TagMatcher):
 
     .. code-block:: python
 
-        class MyValueProvider(object):
+        class MyValueProvider:
             def get(self, category_name, default=None):
                 ...
                 return category_value   # OR: default, if category is unknown.
@@ -536,7 +536,7 @@ class CompositeTagMatcher(TagMatcher):
 # -----------------------------------------------------------------------------
 # ACTIVE TAG VALUE PROVIDER CLASSES:
 # -----------------------------------------------------------------------------
-class IActiveTagValueProvider(object):
+class IActiveTagValueProvider:
     """Protocol/Interface for active-tag value providers."""
 
     def get(self, category, default=None):

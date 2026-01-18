@@ -30,7 +30,7 @@ def escape_triple_quotes(text):
 # -----------------------------------------------------------------------------
 # CLASS:
 # -----------------------------------------------------------------------------
-class ModelDescriptor(object):
+class ModelDescriptor:
 
     @staticmethod
     def describe_table(table, indentation=None):

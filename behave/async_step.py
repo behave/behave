@@ -258,7 +258,7 @@ class AsyncStepFunction(AsyncFunction):
 # -----------------------------------------------------------------------------
 # ASYNC STEP UTILITY CLASSES:
 # -----------------------------------------------------------------------------
-class AsyncContext(object):
+class AsyncContext:
     # pylint: disable=line-too-long
     """Provides a context object for "async steps" to keep track:
 

@@ -106,7 +106,7 @@ Feature: User-provided Test Runner Class (extension-point)
         """
         from behave.runner import Runner as CoreRunner
 
-        class MyRunner2(object):
+        class MyRunner2:
             def __init__(self, config, **kwargs):
                 self.config = config
                 self._runner = CoreRunner(config)
@@ -254,8 +254,8 @@ Feature: User-provided Test Runner Class (extension-point)
         """
         from behave.api.runner import ITestRunner
 
-        class NotRunner1(object): pass
-        class NotRunner2(object):
+        class NotRunner1: pass
+        class NotRunner2:
             run = True
 
         CONSTANT_1 = 42
@@ -363,8 +363,8 @@ Feature: User-provided Test Runner Class (extension-point)
         """
         from behave.api.runner import ITestRunner
 
-        class NotRunner1(object): pass
-        class NotRunner2(object):
+        class NotRunner1: pass
+        class NotRunner2:
             run = True
 
         CONSTANT_1 = 42

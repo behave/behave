@@ -55,11 +55,11 @@ def assert_compare_steps(steps, expected):
 # TEST SUITE
 # ---------------------------------------------------------------------------
 
-class TestGherkin6Parser(object):
+class TestGherkin6Parser:
     pass
 
 
-class TestParser4Rule(object):
+class TestParser4Rule:
 
     @pytest.mark.smoke
     def test_parses_rule(self):
@@ -655,7 +655,7 @@ Feature: With Scenarios and Rules
 # ---------------------------------------------------------------------------
 # TEST SUITE: Verify Feature Background to Rule Background Inheritance
 # ---------------------------------------------------------------------------
-class TestParser4Background(object):
+class TestParser4Background:
     """Verify feature.background to rule.background inheritance, etc."""
 
     def test_parse__norule_scenarios_use_feature_background(self):
@@ -956,7 +956,7 @@ class TestParser4Background(object):
 # ---------------------------------------------------------------------------
 # TEST SUITE: Verify Alias keywords
 # ---------------------------------------------------------------------------
-class TestParser4Scenario(object):
+class TestParser4Scenario:
     def test_use_example_alias(self):
         """HINT: Some Scenarios may exist before the first Rule."""
         text = '''
@@ -987,7 +987,7 @@ Feature: With Example as Alias for Scenario
         ])
 
 
-class TestParser4ScenarioOutline(object):
+class TestParser4ScenarioOutline:
     def test_use_scenario_template_alias(self):
         """HINT: Some Scenarios may exist before the first Rule."""
         text = '''

@@ -30,7 +30,7 @@ from hamcrest import assert_that, equal_to
 # -----------------------------------------------------------------------------
 # TEST DOMAIN, FIXTURES, STEP UTILS:
 # -----------------------------------------------------------------------------
-class ModelElement(object):
+class ModelElement:
     def __init__(self, name, tags=None):
         self.name = name
         self.tags = tags or []

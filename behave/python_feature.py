@@ -15,7 +15,7 @@ PYTHON_VERSION = sys.version_info[:2]
 # -----------------------------------------------------------------------------
 # CLASSES:
 # -----------------------------------------------------------------------------
-class PythonFeature(object):
+class PythonFeature:
 
     @staticmethod
     def has_async_function():

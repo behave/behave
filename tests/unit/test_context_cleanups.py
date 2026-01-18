@@ -24,7 +24,7 @@ def cleanup_func():
 def cleanup_func_with_args(*args, **kwargs):
     pass
 
-class CleanupFunction(object):
+class CleanupFunction:
     def __init__(self, name="CLEANUP-FUNC", listener=None):
         self.name = name
         self.listener = listener
@@ -35,7 +35,7 @@ class CleanupFunction(object):
             self.listener(message)
 
 
-class CallListener(object):
+class CallListener:
     def __init__(self):
         self.collected = []
 
@@ -50,7 +50,7 @@ def make_context():
 # ------------------------------------------------------------------------------
 # TESTS:
 # ------------------------------------------------------------------------------
-class TestContextCleanup(object):
+class TestContextCleanup:
 
     def test_cleanup_func_is_called_when_context_frame_is_popped(self):
         my_cleanup = Mock(spec=cleanup_func)
@@ -168,7 +168,7 @@ class TestContextCleanup(object):
         my_cleanup.assert_called_once_with(1, 2, 3, name="alice")
 
     def test_add_cleanup__rejects_noncallable_cleanup_func(self):
-        class NonCallable(object):
+        class NonCallable:
             pass
         non_callable = NonCallable()
         context = make_context()
@@ -219,7 +219,7 @@ class TestContextCleanup(object):
         def bad_cleanup2():
             raise RuntimeError("CLEANUP_2")
 
-        class CleanupErrorCollector(object):
+        class CleanupErrorCollector:
             def __init__(self):
                 self.collected = []
             def __call__(self, context, cleanup_func, exception):
@@ -242,7 +242,7 @@ class TestContextCleanup(object):
         assert collect_cleanup_error.collected[1][:-1] == expected[1][:-1]
 
 
-class TestContextCleanupWithLayer(object):
+class TestContextCleanupWithLayer:
     """Tests :meth:`behave.runner.Context.add_cleanup()`
     with layer parameter.
 

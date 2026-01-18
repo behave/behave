@@ -20,7 +20,7 @@ except ImportError:     # pragma: no cover
 try:
     from collections import UserDict
 except ImportError:      # pragma: no cover
-    class UserDict(object):
+    class UserDict:
         """Emulate collections.UserDict class in python3."""
         def __init__(self, data=None):
             if data is None:

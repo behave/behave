@@ -59,7 +59,7 @@ def parse_number(text):
 # -----------------------------------------------------------------------------
 # TEST SUPPORT
 # -----------------------------------------------------------------------------
-class FakeContext(object):
+class FakeContext:
     def __init__(self, **kwargs):
         for name, value in kwargs.items():
             setattr(self, name, value)
@@ -73,7 +73,7 @@ def step_do_nothing(ctx, *args, **kwargs):
     print("STEP CALLED WITH: args=%r, kwargs=%r" % (args, kwargs))
 
 
-class StepRunner(object):
+class StepRunner:
     def __init__(self, step_matcher):
         self.step_matcher = step_matcher
 
@@ -113,25 +113,25 @@ def parameter_type_registry():
 # TEST SUITE -- REQUIRES: Python3, probably Python.version >= 3.8
 # -----------------------------------------------------------------------------
 if HAVE_CUCUMBER_EXPRESSIONS:
-    class TestBasics(object):
+    class TestBasics:
         """Tests that checks basic functionality."""
         pass
 
 
-    class TestParameterType4Int(object):
+    class TestParameterType4Int:
         """Using predefined :class:`ParameterType`(s) for integer numbers"""
 
 
-    class TestParameterType4Float(object):
+    class TestParameterType4Float:
         """Using predefined :class:`ParameterType`(s) for float numbers"""
 
 
-    class TestParameterType4String(object):
+    class TestParameterType4String:
         """Using predefined :class:`ParameterType`(s) for string(s)"""
         pass
 
 
-    class TestParameterType4User(object):
+    class TestParameterType4User:
         """Tests using own, user-defined ParameterType(s)."""
 
         @pytest.mark.parametrize("color_name", COLOR_NAMES)
@@ -175,7 +175,7 @@ if HAVE_CUCUMBER_EXPRESSIONS:
             step_runner.assert_step_is_not_matched(step_text)
 
 
-    class TestWithTypeBuilder(object):
+    class TestWithTypeBuilder:
         """
         Use CucumberExpressions with :class:`TypeBuilder`.
         Reuses :class:`parse_type.TypeBuilder` for "parse-expressions".

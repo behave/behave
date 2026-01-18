@@ -50,7 +50,7 @@ def assert_no_tags_are_inherited(model_element):
 # -----------------------------------------------------------------------------
 # TEST SUITE
 # -----------------------------------------------------------------------------
-class TestTagInheritance4Feature(object):
+class TestTagInheritance4Feature:
     """A Feature is the outermost model element.
     Therefore, it cannot inherit any features.
     """
@@ -71,7 +71,7 @@ class TestTagInheritance4Feature(object):
         assert_no_tags_are_inherited(this_feature)
 
 
-class TestTagInheritance4Rule(object):
+class TestTagInheritance4Rule:
     def test_no_inherited_tags__without_feature_tags(self):
         text = """
         Feature: F1
@@ -113,7 +113,7 @@ class TestTagInheritance4Rule(object):
         assert_inherited_tags_equal_to(this_rule, ["feature_tag1"])
 
 
-class TestTagInheritance4ScenarioOutline(object):
+class TestTagInheritance4ScenarioOutline:
     def test_no_inherited_tags__without_feature_tags(self):
         text = """
         Feature: F3
@@ -210,7 +210,7 @@ class TestTagInheritance4ScenarioOutline(object):
         assert_inherited_tags_equal_to(this_scenario_outline, ["feature_tag1", "rule_tag1"])
 
 
-class TestTagInheritance4Scenario(object):
+class TestTagInheritance4Scenario:
     def test_no_inherited_tags__without_feature_tags(self):
         text = """
         Feature: F4
@@ -307,7 +307,7 @@ class TestTagInheritance4Scenario(object):
         assert_inherited_tags_equal_to(this_scenario, ["feature_tag1", "rule_tag1"])
 
 
-class TestTagInheritance4ScenarioFromTemplate(object):
+class TestTagInheritance4ScenarioFromTemplate:
     """Test tag inheritance for scenarios from a ScenarioOutline or
     ScenarioTemplate (as alias for ScenarioOutline).
 

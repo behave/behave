@@ -6,7 +6,7 @@ Defines interface(s) for formatter classes.
 # -----------------------------------------------------------------------------
 # FORMATTER INTERFACE:
 # -----------------------------------------------------------------------------
-class IFormatter(object):
+class IFormatter:
     """
     Provides the main interface for formatter classes.
 

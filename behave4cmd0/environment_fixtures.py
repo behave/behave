@@ -20,7 +20,7 @@ def get_scope_name_from_context(ctx):
     return "testrun"
 
 
-class ScopedEnvironment(object):
+class ScopedEnvironment:
     """Store current environment variables and restore them afterwards."""
     def __init__(self, env=None):
         if env is None:

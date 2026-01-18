@@ -19,7 +19,7 @@ from behave.runner import (
 from behave.step_registry import StepRegistry
 
 
-class TestContext(object):
+class TestContext:
     @staticmethod
     def make_runner(config=None):
         if config is None:
@@ -348,7 +348,7 @@ class TestContext2(unittest.TestCase):
             del self.context.thing
 
 
-class ExampleSteps(object):
+class ExampleSteps:
     text = None
     table = None
 
