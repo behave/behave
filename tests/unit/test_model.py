@@ -2,11 +2,11 @@
 
 import unittest
 import pytest
+from collections import OrderedDict
 from unittest.mock import Mock, patch
 
 from behave._stepimport import use_step_import_modules
 from behave.capture import CaptureController
-from behave.compat.collections import OrderedDict
 from behave.configuration import Configuration
 from behave.matchers import NoMatch
 from behave.model_type import Status

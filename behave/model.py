@@ -2364,7 +2364,7 @@ class Row:
         """Converts the row and its cell data into a dictionary.
         :return: Row data as dictionary (without comments, line info).
         """
-        from behave.compat.collections import OrderedDict
+        from collections import OrderedDict
         return OrderedDict(self.items())
 
     @classmethod

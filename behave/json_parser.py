@@ -8,15 +8,11 @@ REQUIRES: Python >= 2.6 (json module is part of Python standard library)
 """
 
 import codecs
+import json
+
 from behave import model
 from behave._types import require_type
 from behave.model_type import Status
-
-try:
-    import json
-except ImportError:
-    # -- PYTHON 2.5 backward compatible: Use simplejson module.
-    import simplejson as json
 
 
 __author__ = "Jens Engel"

@@ -7,8 +7,8 @@ import logging
 import operator
 import re
 import warnings
+from collections import UserDict
 from ._types import Unknown, require_callable
-from .compat.collections import UserDict
 from .model_core import TagAndStatusStatement
 
 

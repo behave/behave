@@ -13,19 +13,13 @@ REQUIRES:
 """
 
 import argparse
+import json
 import os.path
 import sys
 import textwrap
 from jsonschema import validate
 # -- PREPARED: jsonschema is becoming deprecated -- USE: check_jsonschema
 # import check_jsonschema
-try:
-    import json
-except ImportError:
-    try:
-        import simplejson as json
-    except ImportError:
-        sys.exit("REQUIRE: simplejson (which is not installed)")
 
 __author__  = "Jens Engel"
 __version__ = "0.1.0"
