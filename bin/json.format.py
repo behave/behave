@@ -27,7 +27,6 @@ __copyright__ = "(c) 2011-2025 by Jens Engel"
 VERSION = "0.4.0"
 
 DEFAULT_INDENT_SIZE = 2
-PYTHON_VERSION = sys.version_info[:2]
 
 # ----------------------------------------------------------------------------
 # FUNCTIONS:
@@ -44,7 +43,7 @@ def json_format(filename, indent=DEFAULT_INDENT_SIZE, **kwargs):
     :raises:  IOError (Error 2), if file not found.
     """
     console  = kwargs.get("console", logging.getLogger("console"))
-    encoding = kwargs.get("encoding", None)
+#    encoding = kwargs.get("encoding", None)
     dry_run  = kwargs.get("dry_run", False)
     if indent is None:
         sort_keys = False
@@ -57,11 +56,7 @@ def json_format(filename, indent=DEFAULT_INDENT_SIZE, **kwargs):
 #        return 0
 
     contents = open(filename, "r").read()
-    if PYTHON_VERSION >= (3, 1):
-        # -- NOTE: encoding keyword is deprecated since python 3.1
-        data = json.loads(contents)
-    else:
-        data = json.loads(contents, encoding=encoding)
+    data = json.loads(contents)
     contents2 = json.dumps(data, indent=indent, sort_keys=sort_keys)
     contents2 = contents2.strip()
     contents2 = "%s\n" % contents2

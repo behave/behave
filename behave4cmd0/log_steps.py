@@ -57,7 +57,6 @@ IDEA:
 """
 
 import logging
-import sys
 from behave import then, step
 from behave.configuration import LogLevel
 from behave.log_capture import LoggingCapture
@@ -72,8 +71,6 @@ from behave4cmd0.filesystem_steps import (
 )
 
 
-_PYTHON_VERSION = sys.version_info[:2]
-
 
 # -----------------------------------------------------------------------------
 # STEP UTILS:
@@ -86,7 +83,7 @@ def make_log_record(category, level, message):
 
 
 def make_formatter(format=None, datefmt=None):
-    if format and _PYTHON_VERSION >= (3, 2):
+    if format:
         # -- SINCE: Python 3.2 -- logging.Formatter(..., style)
         style = LoggingConfigurator.select_format_style(format)
         return logging.Formatter(format, datefmt, style)
