@@ -44,8 +44,6 @@ if _TOML_AVAILABLE:  # pragma: no cover
     try:
         if sys.version_info >= (3, 11):
             import tomllib
-        elif sys.version_info < (3, 0):
-            import toml as tomllib
         else:
             import tomli as tomllib
     except ImportError:

@@ -12,14 +12,11 @@ ALTERNATIVE:
 
 # -- IMPORTS:
 import glob
+import json
 import logging
 import os.path
 import sys
 from optparse import OptionParser
-try:
-    import json
-except ImportError:
-    import simplejson as json   #< BACKWARD-COMPATIBLE: Python <= 2.5
 
 
 # ----------------------------------------------------------------------------
