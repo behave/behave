@@ -13,8 +13,6 @@ from behave.tag_matcher import ValueObject, BoolValueObject
 # -----------------------------------------------------------------------------
 PYTHON_VERSION = sys.version_info[:2]
 PYTHON_VERSION3 = sys.version_info[:3]
-PY2 = (PYTHON_VERSION[0] == 2)
-PY3 = (PYTHON_VERSION[0] == 3)
 
 # -----------------------------------------------------------------------------
 # HELPERS: ValueObjects
@@ -56,8 +54,8 @@ class VersionValueObject(ValueObject):
 #   PYTHON_VERSION  = (3, 12)
 #   PYTHON_VERSION3 = (3, 12, 7)
 ACTIVE_TAG_VALUE_PROVIDER = {
-    "python2": BoolValueObject(PY2),
-    "python3": BoolValueObject(PY3),
+    "python2": BoolValueObject(False),
+    "python3": BoolValueObject(True),
     "python.version": "%s.%s" % PYTHON_VERSION,
     "python.min_version": VersionValueObject(PYTHON_VERSION, operator.ge),
     "python.max_version": VersionValueObject(PYTHON_VERSION, operator.le),
