@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.14"
       - name: "Install Python package dependencies (with: uv)"
         run: |
           python -m pip install -U uv
