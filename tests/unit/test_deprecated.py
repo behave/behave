@@ -10,7 +10,6 @@ from behave.api.async_step import (
 )
 from behave.capture import CaptureController
 from behave.configuration import Configuration
-from behave.python_feature import PythonFeature
 from behave.runner import Context, ModelRunner
 from behave.tag_matcher import ActiveTagMatcher
 from unittest.mock import Mock

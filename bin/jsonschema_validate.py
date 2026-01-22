@@ -35,16 +35,12 @@ SCHEMA = os.path.join(TOP, "etc", "json", "behave.json-schema")
 # -----------------------------------------------------------------------------
 # FUNCTIONS:
 # -----------------------------------------------------------------------------
-def json_loads(text, encoding=None):
-    kwargs = {}
-    return json.loads(text, **kwargs)
-
 
 def json_load(filename, encoding=None):
     f = open(filename, "r")
     contents = f.read()
     f.close()
-    data = json_loads(contents, encoding=encoding)
+    data = json.loads(contents)
     return data
 
 

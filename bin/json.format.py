@@ -43,7 +43,6 @@ def json_format(filename, indent=DEFAULT_INDENT_SIZE, **kwargs):
     :raises:  IOError (Error 2), if file not found.
     """
     console  = kwargs.get("console", logging.getLogger("console"))
-#    encoding = kwargs.get("encoding", None)
     dry_run  = kwargs.get("dry_run", False)
     if indent is None:
         sort_keys = False
