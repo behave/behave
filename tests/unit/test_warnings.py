@@ -17,8 +17,10 @@ async def some_async_func(ctx):
 # -- REQUIRES:
 # * Python >= 3.5  -- Using async-function syntax
 # * Python <  3.11 -- NOT-SUPPORTED YET: asyncio.timeout()
-@pytest.mark.skipif(PythonLibraryFeature.has_asyncio_timeout(),
-                    reason="asyncio.timeout() is supported.")
+@pytest.mark.skipif(
+    PythonLibraryFeature.has_asyncio_timeout(),
+    reason="asyncio.timeout() is supported.",
+)
 class TestAsyncStepFunction:
     def test_warning__ctor_with_timeout(self):
         """Ensure that the ``AsyncStepFunction(..., timeout=...)`` issues a warning."""
