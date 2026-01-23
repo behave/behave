@@ -37,7 +37,9 @@ SCHEMA = os.path.join(TOP, "etc", "json", "behave.json-schema")
 # -----------------------------------------------------------------------------
 
 def json_load(filename, encoding=None):
-    f = open(filename, "r")
+    if encoding is None:
+        encoding = 'utf-8'
+    f = open(filename, "r", encoding=encoding)
     contents = f.read()
     f.close()
     data = json.loads(contents)
