@@ -25,7 +25,7 @@ class TestAsyncStepFunction:
     def test_warning__ctor_with_timeout(self):
         """Ensure that the ``AsyncStepFunction(..., timeout=...)`` issues a warning."""
         with pytest.warns(RuntimeWarning, match=r"IGNORED: timeout"):
-            _ = AsyncStepFunction(some_async_func, timeout=42)
+            AsyncStepFunction(some_async_func, timeout=42)
 
     @pytest.mark.todo
     @pytest.mark.xfail
