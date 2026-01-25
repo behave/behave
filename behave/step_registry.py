@@ -11,7 +11,6 @@ from behave.matchers import make_step_matcher
 from behave.python_feature import PythonFeature
 from behave.textutil import text as _text
 
-_PYTHON_VERSION = sys.version_info[:2]
 _FEATURE_ASYNC_FUNC = PythonFeature.has_async_function()
 if _FEATURE_ASYNC_FUNC:
     from behave.async_step import AsyncStepFunction

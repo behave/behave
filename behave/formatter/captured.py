@@ -4,13 +4,6 @@ Formatter to inspect captured output.
 
 from .base2 import BaseFormatter2
 
-# -- PREPARED:
-# import sys
-# _PYTHON_VERSION = sys.version_info[:2]
-# if _PYTHON_VERSION < (3, 6):
-#    # -- REQUIRED-BY: f-strings
-#    raise ImportError("REQUIRES: Python >= 3.6")
-
 
 # -----------------------------------------------------------------------------
 # FORMATTER CLASSES:

@@ -10,13 +10,7 @@ Tries to overcome some of the setup/init problems of the logging subsystem:
 
 import logging
 import logging.config
-import sys
 from behave.textutil import text_encoding
-
-# -----------------------------------------------------------------------------
-# CONSTANTS
-# -----------------------------------------------------------------------------
-_PYTHON_VERSION = sys.version_info[:2]
 
 
 # -----------------------------------------------------------------------------
@@ -46,7 +40,7 @@ class LoggingConfigurator:
         else:
             encoding = text_encoding(encoding)
 
-        if errors and _PYTHON_VERSION >= (3, 9):
+        if errors:
             # -- SINCE: PYTHON 3.9 -- logging.FileHandler(..., errors)
             kwargs["errors"] = errors
         handler = logging.FileHandler(filename, mode, encoding=encoding, **kwargs)
@@ -93,7 +87,7 @@ class LoggingConfigurator:
     def make_formatter(self, format=None, datefmt=None):
         format_ = format or self.config.logging_format
         datefmt = datefmt or self.config.logging_datefmt
-        if format_ and _PYTHON_VERSION >= (3, 2):
+        if format_:
             # -- SINCE: Python 3.2 -- logging.Formatter(..., style)
             style = self.select_format_style(format_)
             return logging.Formatter(format_, datefmt, style)

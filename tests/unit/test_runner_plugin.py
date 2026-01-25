@@ -3,7 +3,6 @@ Unit tests for :mod:`behave.runner_plugin`.
 """
 
 from contextlib import contextmanager
-import sys
 import os
 from pathlib import Path
 from behave import configuration
@@ -13,12 +12,6 @@ from behave.exception import ClassNotFoundError, InvalidClassError
 from behave.runner import Runner as DefaultRunnerClass
 from behave.runner_plugin import RunnerPlugin
 import pytest
-
-
-# -----------------------------------------------------------------------------
-# CONSTANTS:
-# -----------------------------------------------------------------------------
-PYTHON_VERSION = sys.version_info[:2]
 
 
 # -----------------------------------------------------------------------------
@@ -291,7 +284,6 @@ custom = {this_module}:CustomTestRunner
         assert exc_info.type is TypeError
         assert exc_info.match(expected)
 
-    @pytest.mark.skipif(PYTHON_VERSION < (3, 0), reason="TypeError is not raised.")
     def test_make_runner_fails_if_runner_class_has_no_undefined_steps(self):
         class_name = "InvalidTestRunnerWithoutUndefinedSteps"
         with pytest.raises(TypeError) as exc_info:

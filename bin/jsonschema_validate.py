@@ -30,25 +30,19 @@ __version__ = "0.1.0"
 HERE = os.path.dirname(__file__)
 TOP  = os.path.normpath(os.path.join(HERE, ".."))
 SCHEMA = os.path.join(TOP, "etc", "json", "behave.json-schema")
-PYTHON_VERSION = sys.version_info[:2]
 
 
 # -----------------------------------------------------------------------------
 # FUNCTIONS:
 # -----------------------------------------------------------------------------
-def json_loads(text, encoding=None):
-    kwargs = {}
-    if encoding and PYTHON_VERSION < (3, 1):
-        # -- NOTE: encoding keyword is deprecated since python 3.1
-        kwargs["encoding"] = encoding
-    return json.loads(text, **kwargs)
-
 
 def json_load(filename, encoding=None):
-    f = open(filename, "r")
+    if encoding is None:
+        encoding = 'utf-8'
+    f = open(filename, "r", encoding=encoding)
     contents = f.read()
     f.close()
-    data = json_loads(contents, encoding=encoding)
+    data = json.loads(contents)
     return data
 
 
