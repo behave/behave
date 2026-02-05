@@ -305,3 +305,92 @@ class TestContextCleanupWithLayer:
             with pytest.raises(LookupError):
                 context.add_cleanup(my_cleanup, layer="other")
         my_cleanup.assert_not_called()
+
+
+class TestContextCleanupWithCapture:
+    """Tests for Context cleanup with capture_hooks enabled.
+    
+    This test class covers the bug where Context._pop() uses self.config
+    instead of self._config when capture_hooks is enabled.
+    
+    The bug manifests when:
+    1. capture_hooks is enabled in configuration
+    2. Context._pop() is called
+    3. self.config tries to look up 'config' from the context stack
+    4. If 'config' is not accessible in the stack, AttributeError is raised
+    """
+
+    def test_context_pop_with_capture_hooks_enabled(self):
+        """Test that _pop() works with capture_hooks enabled.
+        
+        This test ensures that Context._pop() correctly accesses the
+        configuration object using self._config (direct attribute access)
+        rather than self.config (which searches the context stack).
+        
+        REPRODUCES: Bug where line 336 in runner.py uses self.config
+        instead of self._config.
+        """
+        # Setup: Create context with capture_hooks enabled
+        config = Configuration(load_config=False)
+        config.capture_hooks = True
+        config.stdout_capture = True
+        
+        runner = Runner(config)
+        context = Context(runner=runner)
+        
+        # Simulate a scenario where config is not in the stack
+        # (edge case that could happen due to stack manipulation)
+        del context._root["config"]
+        
+        # Verify: config is not accessible via stack lookup
+        assert "config" not in context
+        # But _config should still be accessible
+        assert hasattr(context, "_config")
+        assert context._config is config
+        
+        # Add a cleanup to verify it gets called
+        my_cleanup = Mock(spec=cleanup_func)
+        context._push(layer="scenario")
+        context.add_cleanup(my_cleanup)
+        
+        # This should fail with current code (uses self.config)
+        # but should succeed with fix (uses self._config)
+        try:
+            context._pop()
+            # If we get here, the fix is in place
+            my_cleanup.assert_called_once()
+        except AttributeError as e:
+            # This is the bug - self.config fails to find 'config' in stack
+            if "'Context' object has no attribute 'config'" in str(e):
+                pytest.fail(
+                    "BUG REPRODUCED: Context._pop() uses self.config instead of "
+                    "self._config. Line 336 in runner.py should use self._config "
+                    "to directly access the configuration object."
+                )
+            else:
+                # Some other AttributeError, re-raise it
+                raise
+
+    def test_context_pop_with_capture_hooks_and_normal_config_access(self):
+        """Test that _pop() works normally with capture_hooks enabled.
+        
+        This is a sanity check to ensure capture_hooks works in normal
+        circumstances (when config is properly in the stack).
+        """
+        config = Configuration(load_config=False)
+        config.capture_hooks = True
+        config.stdout_capture = True
+        
+        runner = Runner(config)
+        context = Context(runner=runner)
+        
+        # Normal case: config is in the stack
+        assert "config" in context
+        
+        my_cleanup = Mock(spec=cleanup_func)
+        with scoped_context_layer(context, layer="scenario"):
+            context.add_cleanup(my_cleanup)
+        
+        # This should work in both buggy and fixed versions
+        # because config is accessible in the stack
+        my_cleanup.assert_called_once()
