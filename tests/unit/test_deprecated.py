@@ -4,10 +4,7 @@ Unit test facade to protect pytest runner from 3.5 grammar changes:
 * Runs tests related to async-steps.
 """
 
-from behave.api.async_step import (
-    async_run_until_complete,
-    use_or_create_event_loop,
-)
+from behave.api.async_step import async_run_until_complete, use_or_create_event_loop
 from behave.capture import CaptureController
 from behave.configuration import Configuration
 from behave.runner import Context, ModelRunner
