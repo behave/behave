@@ -19,7 +19,7 @@ from behave.runner import (
 from behave.step_registry import StepRegistry
 
 
-class TestContext(object):
+class TestContext(unittest.TestCase):
     @staticmethod
     def make_runner(config=None):
         if config is None:
@@ -87,6 +87,16 @@ class TestContext(object):
         assert "thing" in context
         context._push()
         assert "thing" in context
+
+    def test_context_root_override_should_not_break_context(self):
+        context = self.make_context()
+
+        with context.use_with_user_mode():
+            for key in context._root.keys():
+                if key[0] != '@':
+                    context.__setattr__(key, False)
+
+        context._pop()
 
 
 class TestContext2(unittest.TestCase):
