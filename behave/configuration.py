@@ -847,7 +847,7 @@ class Configuration:
         """
         (Re-)Init this configuration object.
         """
-        self.defaults = self.make_defaults(**kwargs)
+        self.defaults = self.make_defaults(verbose=verbose, **kwargs)
         self.version = None
         self.capture = None
         self.capture_stdout = None
