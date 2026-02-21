@@ -5,7 +5,6 @@ Basic types that are used in the model classes.
 from enum import Enum
 import os.path
 import sys
-import six
 from behave._types import require_type
 from behave.textutil import text as _text
 
@@ -386,7 +385,7 @@ class FileLocation:
         :return: FileLocation object
         """
         func = unwrap_function(func)
-        function_code = six.get_function_code(func)
+        function_code = func.__code__
         filename = function_code.co_filename
         line_number = function_code.co_firstlineno
 
