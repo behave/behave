@@ -9,8 +9,6 @@ import traceback
 import warnings
 import weakref
 
-import six
-
 from behave._types import (
     require_type,
     require_not_type,
@@ -34,6 +32,18 @@ from behave.runner_util import (
 )
 from behave.step_registry import registry as the_step_registry
 from enum import Enum
+
+
+def reraise(tp, value, tb=None):
+    try:
+        if value is None:
+            value = tp()
+        if value.__traceback__ is not tb:
+            raise value.with_traceback(tb)
+        raise value
+    finally:
+        value = None
+        tb = None
 
 
 class ContextMaskWarning(UserWarning):
@@ -287,7 +297,7 @@ class Context:
         if self.fail_on_cleanup_errors and cleanup_errors:
             first_cleanup_erro_info = cleanup_errors[0]
             del cleanup_errors  # -- ENSURE: Release other exception frames.
-            six.reraise(*first_cleanup_erro_info)
+            reraise(*first_cleanup_erro_info)
 
     def _do_remaining_cleanups(self, capture_sink=None):
         """
@@ -310,7 +320,7 @@ class Context:
         if self.fail_on_cleanup_errors and cleanup_errors:
             first_cleanup_erro_info = cleanup_errors[0]
             del cleanup_errors  # -- ENSURE: Release other exception frames.
-            six.reraise(*first_cleanup_erro_info)
+            reraise(*first_cleanup_erro_info)
 
     def _push(self, layer=None):
         """Push a new layer on the context stack.
