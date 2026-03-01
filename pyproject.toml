@@ -116,7 +116,7 @@ develop = [
     "pytest-html >= 2.0; python_version >= '3.0'",
     "PyHamcrest >= 2.0.2; python_version >= '3.0'",
     "pytest-cov",
-    "tox   >= 3.28.0,<4.0",   # -- HINT: tox >= 4.0 has breaking changes.
+    "tox   >=4.46.3,<4.47",   # -- HINT: tox >= 4.0 has breaking changes.
     "virtualenv >= 20.26.6; python_version >= '3.7'",
     "invoke >=1.7.0;      python_version >= '3.6'",
     "path >= 13.1.0; python_version >= '3.5'",
