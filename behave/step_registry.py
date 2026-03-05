@@ -212,10 +212,11 @@ class StepRegistry(object):
 # -- STEP-DECORATOR PLACEHOLDERS (setup at end of this module):
 class _StepDecorator:
     def __call__(self, *args, **kwargs):
-       def decorator(func):
-           return func(*args, **kwargs)
+        def decorator(func):
+            # Placeholder: no-op decorator, just return the original function.
+            return func
 
-       return decorator
+        return decorator
 
 
 registry = StepRegistry()
