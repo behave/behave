@@ -86,8 +86,6 @@ dependencies = [
     "cucumber-expressions >= 17.1.0; python_version >= '3.8'",
     "parse >= 1.18.0",
     "parse-type >= 0.6.0",
-    # -- XXX_JE_CLEANUP_CANDIDATE:
-    "six >= 1.15.0",
 
     # -- DISABLED: "win_unicode_console; python_version <= '3.9'",
     "colorama >= 0.3.7",

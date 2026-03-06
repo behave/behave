@@ -23,6 +23,3 @@ tomli>=1.1.0; python_version >=  '3.0' and python_version < '3.11'
 # -- PREPARED: charset-normalizer:
 # SEE: https://pypi.org/project/charset-normalizer/
 charset-normalizer >= 3.1; python_version >= '3.8'
-
-# -- XXX_JE_CLEANUP_CANDIDATE:
-six >= 1.15.0
