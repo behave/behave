@@ -46,7 +46,6 @@ Feature: Use nested step modules in the steps directory
     And a file named "features/steps/nested/bob_steps.py" with:
         """
         from behave import given, when, then
-        from assertpy import assert_that
 
         class DinnerReservation:
             def __init__(self, person_name: str):
@@ -59,7 +58,7 @@ Feature: Use nested step modules in the steps directory
 
         @then('a dinner reservation for "{person_name:w}" and me was made')
         def step_impl(ctx, person_name: str):
-            assert_that(ctx.dinner_reservation.name).is_equal_to(ctx.person_name)
+            assert ctx.dinner_reservation.name == ctx.person_name
         """
     And a file named "features/f1.feature" with:
         """
@@ -94,8 +93,8 @@ Feature: Use nested step modules in the steps directory
           """
           Scenario: S1                                            # features/f1.feature:2
             Given I meet "Alice"                                  # features/steps/alice_steps.py:3
-            When I invite "Alice" for dinner                      # features/steps/nested/bob_steps.py:8
-            Then a dinner reservation for "Alice" and me was made # features/steps/nested/bob_steps.py:13
+            When I invite "Alice" for dinner                      # features/steps/nested/bob_steps.py:7
+            Then a dinner reservation for "Alice" and me was made # features/steps/nested/bob_steps.py:12
           """
         But the command output should not contain "Traceback"
 
@@ -132,12 +131,12 @@ Feature: Use nested step modules in the steps directory
             Given {word:w} step fails                           # features/steps/subdir_2/nested_steps.py:3
 
           WHEN STEP DEFINITIONS[3]:
-            When I invite "{person_name:w}" for dinner  # features/steps/nested/bob_steps.py:8
+            When I invite "{person_name:w}" for dinner  # features/steps/nested/bob_steps.py:7
             When {word:w} step passes                   # features/steps/subdir_1/nested_steps.py:3
             When {word:w} step fails                    # features/steps/subdir_2/nested_steps.py:3
 
           THEN STEP DEFINITIONS[3]:
-            Then a dinner reservation for "{person_name:w}" and me was made  # features/steps/nested/bob_steps.py:13
+            Then a dinner reservation for "{person_name:w}" and me was made  # features/steps/nested/bob_steps.py:12
             Then {word:w} step passes                                        # features/steps/subdir_1/nested_steps.py:3
             Then {word:w} step fails                                         # features/steps/subdir_2/nested_steps.py:3
 
@@ -182,12 +181,12 @@ Feature: Use nested step modules in the steps directory
             Given {word:w} step fails                           # features/steps/subdir_3/subdir_31/nested_steps.py:3
 
           WHEN STEP DEFINITIONS[3]:
-            When I invite "{person_name:w}" for dinner  # features/steps/nested/bob_steps.py:8
+            When I invite "{person_name:w}" for dinner  # features/steps/nested/bob_steps.py:7
             When {word:w} step passes                   # features/steps/subdir_1/nested_steps.py:3
             When {word:w} step fails                    # features/steps/subdir_3/subdir_31/nested_steps.py:3
 
           THEN STEP DEFINITIONS[3]:
-            Then a dinner reservation for "{person_name:w}" and me was made  # features/steps/nested/bob_steps.py:13
+            Then a dinner reservation for "{person_name:w}" and me was made  # features/steps/nested/bob_steps.py:12
             Then {word:w} step passes                                        # features/steps/subdir_1/nested_steps.py:3
             Then {word:w} step fails                                         # features/steps/subdir_3/subdir_31/nested_steps.py:3
 
@@ -234,12 +233,12 @@ Feature: Use nested step modules in the steps directory
             Given {word:w} step fails                           # features/steps/subdir_4/subdir_41/nested_steps.py:3
 
           WHEN STEP DEFINITIONS[3]:
-            When I invite "{person_name:w}" for dinner  # features/steps/nested/bob_steps.py:8
+            When I invite "{person_name:w}" for dinner  # features/steps/nested/bob_steps.py:7
             When {word:w} step passes                   # features/steps/subdir_1/nested_steps.py:3
             When {word:w} step fails                    # features/steps/subdir_4/subdir_41/nested_steps.py:3
 
           THEN STEP DEFINITIONS[3]:
-            Then a dinner reservation for "{person_name:w}" and me was made  # features/steps/nested/bob_steps.py:13
+            Then a dinner reservation for "{person_name:w}" and me was made  # features/steps/nested/bob_steps.py:12
             Then {word:w} step passes                                        # features/steps/subdir_1/nested_steps.py:3
             Then {word:w} step fails                                         # features/steps/subdir_4/subdir_41/nested_steps.py:3
 

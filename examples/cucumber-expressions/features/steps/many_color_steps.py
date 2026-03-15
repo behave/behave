@@ -5,7 +5,6 @@ from behave.cucumber_expression import (
     define_parameter_type_with
 )
 from example4me.color import Color
-from assertpy import assert_that
 
 parse_color = TypeBuilder.make_enum(Color)
 parse_colors = TypeBuilder.with_many(parse_color)
@@ -29,4 +28,4 @@ def step_when_select_many_colors(ctx, colors: List[Color]):
 @then('I have selected {int} colo(u)r(s)')
 def step_then_count_selected_colors(ctx, number_of_colors: int):
     assert isinstance(number_of_colors, int)
-    assert_that(ctx.selected_colors).is_length(number_of_colors)
+    assert len(ctx.selected_colors) == number_of_colors
