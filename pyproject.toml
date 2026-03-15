@@ -144,7 +144,6 @@ testing = [
     "pytest >= 5.0; python_version >= '3.0'",
     "pytest-html >= 2.0;         python_version >= '3.0'",
     "PyHamcrest >= 2.0.2; python_version >= '3.0'",
-    "assertpy >= 1.1",
     "chardet",
     "charset-normalizer",
 
