@@ -6,7 +6,6 @@ from behave.__main__ import run_behave
 from behave.configuration import Configuration
 from behave.tag_expression.builder import make_tag_expression
 import pytest
-from assertpy import assert_that
 
 
 def test_syndrome_with_core(capsys):
@@ -35,5 +34,5 @@ def test_syndrome_functional(tags_option, capsys):
     captured = capsys.readouterr()
     expected_part1 = "CURRENT TAG_EXPRESSION: ((fish or fries) and (beer and water))"
     expected_part2 = "means: And(Or(Tag('fish'), Tag('fries')), And(Tag('beer'), Tag('water')))"
-    assert_that(captured.out).contains(expected_part1)
-    assert_that(captured.out).contains(expected_part2)
+    assert expected_part1 in captured.out
+    assert expected_part2 in captured.out
