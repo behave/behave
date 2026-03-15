@@ -1,7 +1,6 @@
 # ruff: noqa: F811
 import logging
 from behave import given, when, then, register_type
-from assertpy import assert_that
 
 
 spam_log = logging.getLogger('spam')
@@ -20,8 +19,8 @@ def step_impl(context):
 
 @given("stuff has been set up")
 def step_impl(context):
-    assert_that(context.testing_stuff).is_equal_to(True)
-    assert_that(context.stuff_set_up).is_equal_to(True)
+    assert context.testing_stuff is True
+    assert context.stuff_set_up is True
 
 
 @when("I exercise it work")
@@ -47,7 +46,7 @@ def step_impl(context, suffix):
 
 @then('we should get the {combination}')
 def step_impl(context, combination):
-    assert_that(context.combination).is_equal_to(combination)
+    assert context.combination == combination
 
 
 @given('some body of text')
@@ -66,7 +65,7 @@ nisi ut aliquip ex ea commodo consequat.'''
 @then('the text is as expected')
 def step_impl(context):
     assert context.saved_text, 'context.saved_text is %r!!' % (context.saved_text, )
-    assert_that(context.saved_text).is_equal_to(TEXT)
+    assert context.saved_text == TEXT
 
 
 @given('some initial data')
@@ -87,15 +86,15 @@ TABLE_DATA = [
 def step_impl(context):
     assert context.saved_table, 'context.saved_table is %r!!' % (context.saved_table, )
     for expected, got in zip(TABLE_DATA, iter(context.saved_table)):
-        assert_that(expected["name"]).is_equal_to(got["name"])
-        assert_that(expected["department"]).is_equal_to(got["department"])
+        assert expected["name"] == got["name"]
+        assert expected["department"] == got["department"]
 
 
 @then('the text is substituted as expected')
 def step_impl(context):
     assert context.saved_text, 'context.saved_text is %r!!' % (context.saved_text, )
     expected = TEXT.replace('ipsum', context.active_outline['ipsum'])
-    assert_that(context.saved_text).is_equal_to(expected)
+    assert context.saved_text == expected
 
 
 TABLE_DATA = [
@@ -141,5 +140,5 @@ def step_impl(context, argument):
 
 @then('we get "{argument}" parsed')
 def step_impl(context, argument):
-    assert_that(context.argument).is_equal_to(argument)
+    assert context.argument == argument
 

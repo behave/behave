@@ -15,7 +15,6 @@ from behave.runner import Context, Runner
 
 # -- IMPORTS:
 # from hamcrest import assert_that, close_to, equal_to
-from assertpy import assert_that
 import pytest
 
 # MAYBE: from tests.api.testing_support import StopWatch
@@ -106,7 +105,7 @@ class TestAsyncStepFunction:
         ctx = Context(runner=Runner(config={}))
         ctx.called = []
         async_step_function(ctx, value=10)
-        assert_that(ctx.called).is_equal_to(["coroutine_function_3_with_10"])
+        assert ctx.called == ["coroutine_function_3_with_10"]
 
     def test_async_step_correctly(self):
         step_container = SimpleStepContainer()
@@ -137,7 +136,7 @@ class TestUseAsyncStep:
             async def async_step_is_called(ctx):
                 ctx.called.append("async_step_is_called")
                 actual_value = await async_plus_two(10)
-                assert_that(actual_value).is_equal_to(12)
+                assert actual_value == 12
 
         # pylint: enable=import-outside-toplevel, unused-argument
         # -- USES: async def step_impl(...) as async-step (coroutine)
@@ -149,7 +148,7 @@ class TestUseAsyncStep:
         ctx.called = []
         async_step_is_called(ctx)
         assert isinstance(async_step_is_called, AsyncStepFunction)
-        assert_that(ctx.called).is_equal_to(["async_step_is_called"])
+        assert ctx.called == ["async_step_is_called"]
 
     def test_async_step_with_params_can_be_called(self):
         step_container = SimpleStepContainer()
@@ -162,14 +161,14 @@ class TestUseAsyncStep:
                 assert isinstance(value, int)
                 ctx.called.append(f"async_step_is_called_with_{value}")
                 actual_value = await async_plus_two(value)
-                assert_that(actual_value).is_equal_to(value + 2)
+                assert actual_value is value + 2
 
         # -- RUN ASYNC-STEP: Verify that it is behaving correctly.
         # ENSURE: Execution of async-step matches expected duration.
         ctx = Context(runner=Runner(config={}))
         ctx.called = []
         async_step_with_params(ctx, 10)
-        assert_that(ctx.called).is_equal_to(["async_step_is_called_with_10"])
+        assert ctx.called == ["async_step_is_called_with_10"]
 
     def test_outcome_passed(self):
         step_container = SimpleStepContainer()
@@ -180,7 +179,7 @@ class TestUseAsyncStep:
             @step('an async-step should have "{name}')
             async def async_step_passes(ctx, name: str):
                 actual_name = ctx.name
-                assert_that(name).is_equal_to(actual_name)
+                assert name is actual_name
 
         # -- RUN ASYNC-STEP: Verify that it is behaving correctly.
         ctx = Context(runner=Runner(config={}))
@@ -196,7 +195,7 @@ class TestUseAsyncStep:
             @step('an async-step should have "{name}')
             async def async_step_fails(ctx, name: str):
                 actual_name = ctx.name
-                assert_that(name).is_equal_to(actual_name)
+                assert name is actual_name
 
         # -- RUN ASYNC-STEP: Verify that it is behaving correctly.
         ctx = Context(runner=Runner(config={}))
@@ -244,7 +243,7 @@ class TestUseAsyncStep:
         policy = asyncio.get_event_loop_policy()
         monkeypatch.setattr(policy, "get_event_loop", mock_get_event_loop)
         async_step_1(ctx, "ASYNC_STEP_1")
-        assert_that(ctx.called).is_equal_to(["EVENTLOOP_RUNTIME_ERROR", "HELLO ASYNC_STEP_1"])
+        assert ctx.called == ["EVENTLOOP_RUNTIME_ERROR", "HELLO ASYNC_STEP_1"]
 
     def test_event_loop_exists(self):
         step_container = SimpleStepContainer()
@@ -266,7 +265,7 @@ class TestUseAsyncStep:
         ctx = Context(runner=Runner(config={}))
         ctx.called = []
         async_step_2(ctx, "ASYNC_STEP_2")
-        assert_that(ctx.called).is_equal_to(["HELLO ASYNC_STEP_2"])
+        assert ctx.called == ["HELLO ASYNC_STEP_2"]
 
 
 @pytest.mark.skipif(not PythonLibraryFeature.has_asyncio_timeout(),
@@ -287,7 +286,7 @@ class TestAsyncStepFunctionWithTimeout:
         ctx = Context(runner=Runner(config={}))
         ctx.called = []
         async_step_with_timeout(ctx, "ASYNC_STEP_1")
-        assert_that(ctx.called).is_equal_to(["HELLO ASYNC_STEP_1"])
+        assert ctx.called == ["HELLO ASYNC_STEP_1"]
 
     def test_with_timeout_if_timeout_occurs_as_error(self):
         step_container = SimpleStepContainer()

@@ -1,5 +1,4 @@
 from behave import given, when, then
-from assertpy import assert_that
 
 
 class DinnerReservation:
@@ -14,4 +13,4 @@ def step_impl(ctx, person_name: str):
 
 @then('a dinner reservation for "{person_name:w}" and me was made')
 def step_impl(ctx, person_name: str):
-    assert_that(ctx.dinner_reservation.name).is_equal_to(ctx.person_name)
+    assert ctx.dinner_reservation is ctx.person_name
