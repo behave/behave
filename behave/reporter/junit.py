@@ -69,7 +69,6 @@ Best sources are:
 # pylint: enable=line-too-long
 
 import os.path
-import codecs
 import re
 import sys
 import traceback
@@ -299,7 +298,8 @@ class JUnitReporter(Reporter):
         report_dirname = self.config.junit_directory
         report_basename = 'TESTS-%s.xml' % feature_filename
         report_filename = os.path.join(report_dirname, report_basename)
-        tree.write(codecs.open(report_filename, "wb"), "UTF-8")
+        with open(report_filename, "wb") as f:
+            tree.write(f, "UTF-8")
 
     # -- MORE:
     # pylint: disable=line-too-long
