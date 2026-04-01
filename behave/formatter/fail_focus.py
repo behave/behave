@@ -5,10 +5,10 @@ from behave.model_type import Status
 
 
 class FailFocusFormatter(Formatter):
-    """Only shows the first failing scenario with error details."""
+    """Only shows failing scenarios with error details."""
 
     name = "fail_focus"
-    description = "Only shows the first failing scenario with error details."
+    description = "Only shows failing scenarios with error details."
 
     def __init__(self, stream_opener, config, **kwargs):
         super(FailFocusFormatter, self).__init__(stream_opener, config)
@@ -17,9 +17,11 @@ class FailFocusFormatter(Formatter):
         self.current_scenario = None
         self.steps = []
         self._has_failure = False
+        self._feature_printed = False
 
     def feature(self, feature):
         self.current_feature = feature
+        self._feature_printed = False
 
     def scenario(self, scenario):
         self._flush()
@@ -37,7 +39,7 @@ class FailFocusFormatter(Formatter):
                 self.steps[i] = step
                 break
 
-        if step.status == Status.failed:
+        if step.status.has_failed():
             self._has_failure = True
 
     def _flush(self):
@@ -48,8 +50,11 @@ class FailFocusFormatter(Formatter):
         feature = self.current_feature
         scenario = self.current_scenario
 
-        self.stream.write("Feature: %s -- %s\n" % (feature.name, feature.filename))
-        self.stream.write("\n")
+        if not self._feature_printed:
+            self.stream.write("Feature: %s -- %s\n" % (feature.name, feature.filename))
+            self.stream.write("\n")
+            self._feature_printed = True
+
         self.stream.write("  Scenario: %s  -- %s:%s\n" % (
             scenario.name, scenario.location.filename, scenario.location.line))
 
