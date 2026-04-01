@@ -247,5 +247,15 @@ class TestFailFocusFormatterSkippedScenario(unittest.TestCase):
         self.assertEqual(stream.getvalue(), "")
 
 
+class TestFailFocusFormatterRegistration(unittest.TestCase):
+    """The fail_focus formatter should be registered in the builtins."""
+
+    def test_fail_focus_formatter_is_registered(self):
+        from behave.formatter._registry import is_formatter_valid
+        from behave.formatter._builtins import setup_formatters
+        setup_formatters()
+        self.assertTrue(is_formatter_valid("fail_focus"))
+
+
 if __name__ == "__main__":
     unittest.main()
