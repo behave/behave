@@ -258,12 +258,13 @@ class TestFailFocusFormatterRegistration(unittest.TestCase):
 
 
 class TestFailFocusConfiguration(unittest.TestCase):
-    def test_fail_focus_sets_stop_and_no_snippets(self):
+    def test_fail_focus_sets_stop_and_no_snippets_and_no_summary(self):
         from behave.configuration import Configuration
         config = Configuration(command_args=["--fail-focus", "features/"],
                                load_config=False)
         self.assertTrue(config.stop)
         self.assertFalse(config.show_snippets)
+        self.assertFalse(config.summary)
 
     def test_fail_focus_sets_formatter_to_fail_focus(self):
         from behave.configuration import Configuration

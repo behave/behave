@@ -414,7 +414,8 @@ Only tag-expressions v2 are supported (since: behave v1.4.0).
      dict(action="store_true",
           help="""Focus on the first failure only. Additionally: use the
                   "fail_focus" formatter, stop at the first failure,
-                  and do not show snippets for undefined steps.""")),
+                  do not show snippets for undefined steps,
+                  and do not display the summary.""")),
 
     (("--lang",),
      dict(metavar="LANG",
@@ -991,6 +992,7 @@ class Configuration:
             self.format = ["fail_focus"]
         self.stop = True
         self.show_snippets = False
+        self.summary = False
 
     def setup_steps_catalog_mode(self):
         # -- SHOW STEP-CATALOG: As step summary.
