@@ -206,9 +206,9 @@ class TestFailFocusFormatterFeatureDeduplication(unittest.TestCase):
 
 
 class TestFailFocusFormatterUndefinedScenario(unittest.TestCase):
-    """An undefined scenario is treated as an error and should produce output."""
+    """An undefined scenario should produce no output (suppressed by --fail-focus)."""
 
-    def test_undefined_scenario_produces_output(self):
+    def test_undefined_scenario_produces_no_output(self):
         stream = io.StringIO()
         formatter = make_formatter(stream)
 
@@ -223,9 +223,7 @@ class TestFailFocusFormatterUndefinedScenario(unittest.TestCase):
         formatter.eof()
         formatter.close()
 
-        output = stream.getvalue()
-        self.assertIn("Scenario: Test Scenario", output)
-        self.assertIn("Given an undefined step ... undefined", output)
+        self.assertEqual(stream.getvalue(), "")
 
 
 class TestFailFocusFormatterSkippedScenario(unittest.TestCase):

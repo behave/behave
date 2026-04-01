@@ -39,7 +39,7 @@ class FailFocusFormatter(Formatter):
                 self.steps[i] = step
                 break
 
-        if step.status.has_failed():
+        if step.status in (Status.failed, Status.error, Status.hook_error):
             self._has_failure = True
 
     def _flush(self):
