@@ -257,5 +257,20 @@ class TestFailFocusFormatterRegistration(unittest.TestCase):
         self.assertTrue(is_formatter_valid("fail_focus"))
 
 
+class TestFailFocusConfiguration(unittest.TestCase):
+    def test_fail_focus_sets_stop_and_no_snippets(self):
+        from behave.configuration import Configuration
+        config = Configuration(command_args=["--fail-focus", "features/"],
+                               load_config=False)
+        self.assertTrue(config.stop)
+        self.assertFalse(config.show_snippets)
+
+    def test_fail_focus_sets_formatter_to_fail_focus(self):
+        from behave.configuration import Configuration
+        config = Configuration(command_args=["--fail-focus", "features/"],
+                               load_config=False)
+        self.assertIn("fail_focus", config.format)
+
+
 if __name__ == "__main__":
     unittest.main()

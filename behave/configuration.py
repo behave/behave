@@ -410,6 +410,12 @@ Only tag-expressions v2 are supported (since: behave v1.4.0).
                   "plain" formatter, do not capture stdout or logging output
                   and stop at the first failure.""")),
 
+    (("--fail-focus",),
+     dict(action="store_true",
+          help="""Focus on the first failure only. Additionally: use the
+                  "fail_focus" formatter, stop at the first failure,
+                  and do not show snippets for undefined steps.""")),
+
     (("--lang",),
      dict(metavar="LANG",
           help="Use keywords for a language other than English.")),
@@ -825,6 +831,8 @@ class Configuration:
             self.setup_steps_catalog_mode()
         if self.wip:
             self.setup_wip_mode()
+        if self.fail_focus:
+            self.setup_fail_focus_mode()
         if self.quiet:
             self.show_source = False
             self.show_snippets = False
@@ -872,6 +880,7 @@ class Configuration:
         self.default_tags = None
         self.userdata = None
         self.wip = None
+        self.fail_focus = None
         self.verbose = verbose or False
         self.formatters = []
         self.reporters = []
@@ -967,6 +976,21 @@ class Configuration:
             self.tags = f"@wip and {self.tags}"
         else:
             self.tags = "@wip"
+
+    def setup_fail_focus_mode(self):
+        # Focus on first failure only.
+        # Additionally:
+        #  * use the "fail_focus" formatter (per default)
+        #  * stop at the first failure
+        #  * do not show snippets for undefined steps
+        self.default_format = "fail_focus"
+        self.format = self.format or []
+        if self.format:
+            self.format.append("fail_focus")
+        else:
+            self.format = ["fail_focus"]
+        self.stop = True
+        self.show_snippets = False
 
     def setup_steps_catalog_mode(self):
         # -- SHOW STEP-CATALOG: As step summary.
