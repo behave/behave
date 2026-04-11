@@ -50,7 +50,7 @@ def _setup_console_encoding_on_windows(encoding, language=None):
 
     os.environ["PYTHONIOENCODING"] = encoding
     result = os.system("chcp {code_page}".format(code_page=code_page))
-    assert result is 0
+    assert result == 0
 
 
 def _setup_console_encoding_on_posix(encoding, language=None):

@@ -161,7 +161,7 @@ class TestUseAsyncStep:
                 assert isinstance(value, int)
                 ctx.called.append(f"async_step_is_called_with_{value}")
                 actual_value = await async_plus_two(value)
-                assert actual_value is value + 2
+                assert actual_value == value + 2
 
         # -- RUN ASYNC-STEP: Verify that it is behaving correctly.
         # ENSURE: Execution of async-step matches expected duration.
@@ -179,7 +179,7 @@ class TestUseAsyncStep:
             @step('an async-step should have "{name}')
             async def async_step_passes(ctx, name: str):
                 actual_name = ctx.name
-                assert name is actual_name
+                assert name == actual_name
 
         # -- RUN ASYNC-STEP: Verify that it is behaving correctly.
         ctx = Context(runner=Runner(config={}))
@@ -195,7 +195,7 @@ class TestUseAsyncStep:
             @step('an async-step should have "{name}')
             async def async_step_fails(ctx, name: str):
                 actual_name = ctx.name
-                assert name is actual_name
+                assert name == actual_name
 
         # -- RUN ASYNC-STEP: Verify that it is behaving correctly.
         ctx = Context(runner=Runner(config={}))
