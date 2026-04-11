@@ -40,7 +40,6 @@ Feature: StepWithCode Formatter
           from behave import given, when, then, step, register_type
           from behave.parameter_type import parse_number
           from example4me.calculator import Calculator
-          from assertpy import assert_that
 
           register_type(Number=parse_number)
 
@@ -54,7 +53,7 @@ Feature: StepWithCode Formatter
 
           @then('the calculator shows "{expected:Number}" as result')
           def step_when_add_number(ctx, expected):
-              assert_that(ctx.calculator.result).is_equal_to(expected)
+              assert ctx.calculator.result == expected
           """
       And a file named "features/steps/use_calculator_steps.py" with:
           """
@@ -77,28 +76,28 @@ Feature: StepWithCode Formatter
         Feature: Calculator
           Scenario: C1
             Given I use the calculator
-              # -- CODE: example4me/calculator_steps.py:8
+              # -- CODE: example4me/calculator_steps.py:7
               @given('I use the calculator')
               def step_given_reset_calculator(ctx):
                   ctx.calculator = Calculator()
 
             When I add the number "1"
-              # -- CODE: example4me/calculator_steps.py:12
+              # -- CODE: example4me/calculator_steps.py:11
               @when('I add the number "{number:Number}"')
               def step_when_add_number(ctx, number):
                   ctx.calculator.add(number)
 
             And I add the number "2"
-              # -- CODE: example4me/calculator_steps.py:12
+              # -- CODE: example4me/calculator_steps.py:11
               @when('I add the number "{number:Number}"')
               def step_when_add_number(ctx, number):
                   ctx.calculator.add(number)
 
             Then the calculator shows "3" as result
-              # -- CODE: example4me/calculator_steps.py:16
+              # -- CODE: example4me/calculator_steps.py:15
               @then('the calculator shows "{expected:Number}" as result')
               def step_when_add_number(ctx, expected):
-                  assert_that(ctx.calculator.result).is_equal_to(expected)
+                  assert ctx.calculator.result == expected
         """
       But note that "each steps contains a CODE section that shows the step implementation."
 
@@ -109,28 +108,28 @@ Feature: StepWithCode Formatter
         Feature: Calculator
           Scenario: C1
             Given I use the calculator  ...  passed
-              # -- CODE: example4me/calculator_steps.py:8
+              # -- CODE: example4me/calculator_steps.py:7
               @given('I use the calculator')
               def step_given_reset_calculator(ctx):
                   ctx.calculator = Calculator()
 
             When I add the number "1"  ...  passed
-              # -- CODE: example4me/calculator_steps.py:12
+              # -- CODE: example4me/calculator_steps.py:11
               @when('I add the number "{number:Number}"')
               def step_when_add_number(ctx, number):
                   ctx.calculator.add(number)
 
             And I add the number "2"  ...  passed
-              # -- CODE: example4me/calculator_steps.py:12
+              # -- CODE: example4me/calculator_steps.py:11
               @when('I add the number "{number:Number}"')
               def step_when_add_number(ctx, number):
                   ctx.calculator.add(number)
 
             Then the calculator shows "3" as result  ...  passed
-              # -- CODE: example4me/calculator_steps.py:16
+              # -- CODE: example4me/calculator_steps.py:15
               @then('the calculator shows "{expected:Number}" as result')
               def step_when_add_number(ctx, expected):
-                  assert_that(ctx.calculator.result).is_equal_to(expected)
+                  assert ctx.calculator.result == expected
         """
       But note that "each steps contains a CODE section that shows the step implementation"
       And note that "the step results are shown for each step (after execution)"
@@ -139,7 +138,6 @@ Feature: StepWithCode Formatter
       Given a file named "features/steps/table_steps.py" with:
         """
         from behave import given
-        from assertpy import assert_that
 
         class Person:
             def __init__(self, name, role=None):
@@ -149,7 +147,7 @@ Feature: StepWithCode Formatter
         @given('a company with the following persons')
         @given('a company with the following persons:')
         def step_given_company_with_persons(ctx):
-            assert_that(ctx.table).is_not_none()
+            assert ctx.table
             company_persons = []
             for row in ctx.table.rows:
                 name = row["Name"]
@@ -176,11 +174,11 @@ Feature: StepWithCode Formatter
               | Name  | Role      |
               | Alice | CEO       |
               | Bob   | Developer |
-              # -- CODE: features/steps/table_steps.py:9
+              # -- CODE: features/steps/table_steps.py:8
               @given('a company with the following persons')
               @given('a company with the following persons:')
               def step_given_company_with_persons(ctx):
-                  assert_that(ctx.table).is_not_none()
+                  assert ctx.table
                   company_persons = []
                   for row in ctx.table.rows:
                       name = row["Name"]
@@ -257,22 +255,22 @@ Feature: StepWithCode Formatter
           Rule: Some
             Scenario: R1
               Given I use the calculator  ...  passed
-                # -- CODE: example4me/calculator_steps.py:8
+                # -- CODE: example4me/calculator_steps.py:7
                 @given('I use the calculator')
                 def step_given_reset_calculator(ctx):
                     ctx.calculator = Calculator()
 
               When I add the number "42"  ...  passed
-                # -- CODE: example4me/calculator_steps.py:12
+                # -- CODE: example4me/calculator_steps.py:11
                 @when('I add the number "{number:Number}"')
                 def step_when_add_number(ctx, number):
                     ctx.calculator.add(number)
 
               Then the calculator shows "42" as result  ...  passed
-                # -- CODE: example4me/calculator_steps.py:16
+                # -- CODE: example4me/calculator_steps.py:15
                 @then('the calculator shows "{expected:Number}" as result')
                 def step_when_add_number(ctx, expected):
-                    assert_that(ctx.calculator.result).is_equal_to(expected)
+                    assert ctx.calculator.result == expected
         """
       But note that "each step is indented correctly"
       And note that "each step code-section is indented correctly"
@@ -284,7 +282,6 @@ Feature: StepWithCode Formatter
       Given a file named "features/steps/documented_steps.py" with:
         '''
         from behave import given, when, then
-        from assertpy import assert_that
 
         @given('a person named "{name}"')
         def step_given_person_named(ctx, name):
@@ -298,7 +295,7 @@ Feature: StepWithCode Formatter
         def step_then_met_person(ctx, expected):
             """__DOCSTRING_HERE: is not shown"""
             # -- CODE: STARTS HERE.
-            assert_that(ctx.person_name).is_equal_to(expected)
+            assert ctx.person_name == expected
         '''
       Given a file named "features/with_rule.feature" with:
         """
@@ -313,17 +310,17 @@ Feature: StepWithCode Formatter
         Feature: Using steps with docstring (not shown)
           Scenario: D1
             Given a person named "Alice"  ...  passed
-              # -- CODE: features/steps/documented_steps.py:4
+              # -- CODE: features/steps/documented_steps.py:3
               @given('a person named "{name}"')
               def step_given_person_named(ctx, name):
                   # -- CODE: STARTS HERE.
                   ctx.person_name = name
             Then I have met "Alice"  ...  passed
-              # -- CODE: features/steps/documented_steps.py:12
+              # -- CODE: features/steps/documented_steps.py:11
               @then('I have met "{expected}"')
               def step_then_met_person(ctx, expected):
                   # -- CODE: STARTS HERE.
-                  assert_that(ctx.person_name).is_equal_to(expected)
+                  assert ctx.person_name == expected
         """
       But note that "the step-function docstring is not shown in the code-section"
 
@@ -351,11 +348,10 @@ Feature: StepWithCode Formatter
       Given a file named "features/steps/failing_steps.py" with:
           """
           from behave import step
-          from assertpy import assert_that
 
           @step('{word:w} step fails')
           def step_fails(ctx, word):
-              assert_that(word).is_equal_to("__ALWAYS_FAILS__")
+              assert word == "__ALWAYS_FAILS__"
           """
       Given a file named "features/failing.feature" with:
           """
@@ -383,10 +379,10 @@ Feature: StepWithCode Formatter
                   pass
 
             When another step fails  ...  failed
-              # -- CODE: features/steps/failing_steps.py:4
+              # -- CODE: features/steps/failing_steps.py:3
               @step('{word:w} step fails')
               def step_fails(ctx, word):
-                  assert_that(word).is_equal_to("__ALWAYS_FAILS__")
+                  assert word == "__ALWAYS_FAILS__"
 
           Failing scenarios:
             features/failing.feature:3  F1 with failing step

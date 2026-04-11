@@ -7,7 +7,6 @@ from behave.fixture import fixture, use_fixture
 from behave.parameter_type import parse_unquoted_text
 from behave4cmd0.pathutil import realpath_with_context
 import chardet
-from assertpy import assert_that
 
 
 # -----------------------------------------------------------------------------
@@ -51,7 +50,7 @@ def _setup_console_encoding_on_windows(encoding, language=None):
 
     os.environ["PYTHONIOENCODING"] = encoding
     result = os.system("chcp {code_page}".format(code_page=code_page))
-    assert_that(result).is_equal_to(0)
+    assert result == 0
 
 
 def _setup_console_encoding_on_posix(encoding, language=None):
@@ -98,4 +97,4 @@ def step_chardet_file_encoding_should_be(ctx, filename, encoding):
     workdir_filename = realpath_with_context(filename, ctx)
     contents_as_bytes = Path(workdir_filename).read_bytes()
     actual_data = chardet.detect(contents_as_bytes)
-    assert_that(actual_data["encoding"]).is_equal_to(encoding)
+    assert actual_data["encoding"] is encoding

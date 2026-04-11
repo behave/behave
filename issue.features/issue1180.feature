@@ -27,7 +27,6 @@ Feature: Issue #1180 -- Negative Time Problem with Summary Reporter
       from behave import given, when, then
       from freezegun import freeze_time
       import freezegun
-      from assertpy import assert_that
 
       FREEZEGUN_IGNORE_BEHAVE = os.environ.get("FREEZEGUN_IGNORE_BEHAVE", "no") == "yes"
       if FREEZEGUN_IGNORE_BEHAVE:
@@ -48,7 +47,7 @@ Feature: Issue #1180 -- Negative Time Problem with Summary Reporter
       @then('today is "{today:ti}"')
       def step_then_today_is(ctx, today):
           now = datetime.datetime.now()
-          assert_that(today).is_equal_to(now)
+          assert today == now
       """
     And a file named "features/syndrome_1180.feature" with:
       """

@@ -11,7 +11,6 @@ from enum import Enum
 
 import parse
 import pytest
-# MAYBE: from assertpy import assert_that
 
 try:
     # -- REQUIRES: Python3, Python.version >= 3.8  (probably)
