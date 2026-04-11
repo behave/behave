@@ -4,7 +4,7 @@ Provides some steps for testing step-definitions with `CucumberExpressions`_.
 .. _CucumberExpressions: https://github.com/cucumber/cucumber-expressions
 """
 
-from pytest import approx
+from math import isclose
 from decimal import Decimal
 from behave import given, when, then
 
@@ -148,19 +148,19 @@ if HAVE_CUCUMBER_EXPRESSIONS:
     def step_then_stored_value_equals_as_float(ctx, expected):
         assert type(expected) is float
         # ctx.value might be a bigdecimal, so we convert it to float for comparison
-        assert float(ctx.value) == approx(expected, abs=FLOAT_ACCURACY)
+        assert isclose(float(ctx.value), expected, rel_tol=FLOAT_ACCURACY)
 
 
     @then('the stored value equals "{double}" as double')
     def step_then_stored_value_equals_as_double(ctx, expected):
         assert type(expected) is float
-        assert ctx.value == approx(expected, abs=FLOAT_ACCURACY)
+        assert isclose(expected, ctx.value, rel_tol=FLOAT_ACCURACY)
 
 
     @then('the stored value equals "{bigdecimal}" as bigdecimal')
     def step_then_stored_value_equals_as_bigdecimal(ctx, expected):
         assert type(expected) is Decimal
-        assert ctx.value == approx(expected, abs=Decimal(str(FLOAT_ACCURACY)))
+        assert isclose(expected, ctx.value, rel_tol=Decimal(str(FLOAT_ACCURACY)))
 
 
 # -----------------------------------------------------------------------------

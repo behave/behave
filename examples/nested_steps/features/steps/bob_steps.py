@@ -13,4 +13,4 @@ def step_impl(ctx, person_name: str):
 
 @then('a dinner reservation for "{person_name:w}" and me was made')
 def step_impl(ctx, person_name: str):
-    assert ctx.dinner_reservation is ctx.person_name
+    assert ctx.dinner_reservation.name == person_name
