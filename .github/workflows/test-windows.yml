@@ -81,6 +81,13 @@ jobs:
         run: behave --format=progress3 issue.features
       - name: "Run behave tests: tools/test-features ..."
         run: behave --format=progress3 tools/test-features
+      - name: "Run behave tests: examples ..."
+        shell: bash
+        run: |
+          uv pip install --system assertpy
+          for example in examples/*/features; do
+            behave --format=progress3 "$example"
+          done
       - name: Upload test reports
         uses: actions/upload-artifact@v6
         with:
