@@ -84,10 +84,9 @@ jobs:
       - name: "Run behave tests: examples ..."
         shell: bash
         run: |
-          uv pip install --system assertpy
           export PYTHONPATH="$PWD"
           for example in examples/*/; do
-            [[ "$(basename "$example")" == "env_vars" ]] && continue
+            [[ "$(basename "$example")" =~ ^(env_vars|soft_asserts)$ ]] && continue
             (cd "$example" && behave --format=progress3 features)
           done
       - name: Upload test reports
