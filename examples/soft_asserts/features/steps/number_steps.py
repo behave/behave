@@ -9,7 +9,7 @@ STEPS:
 """
 
 from behave import given, then
-from assertpy import soft_assertions
+from assertpy import assert_that, soft_assertions
 
 
 # -----------------------------------------------------------------------------
@@ -30,18 +30,12 @@ def step_then_number_is_valid(ctx, number):
 @then('the numbers "{number1:d}" and "{number2:d}" are in the valid range')
 @soft_assertions()
 def step_then_numbers_are_valid(ctx, number1, number2):
-    assert (
-        number1 >= ctx.min_number_value
-    ), f"Expected <{number1}> to be greater than or equal to {ctx.min_number_value}"
-    assert (
-        number2 >= ctx.min_number_value
-    ), f"Expected <{number2}> to be greater than or equal to {ctx.min_number_value}"
+    assert_that(number1).is_greater_than_or_equal_to(ctx.min_number_value)
+    assert_that(number2).is_greater_than_or_equal_to(ctx.min_number_value)
 
 
 @then('the positive number "{number:d}" is in the valid range')
 def step_then_positive_number_is_valid(ctx, number):
     with soft_assertions():
-        assert number >= 0, f"Expected <{number}> to be greater than or equal to 0"
-        assert (
-            number >= ctx.min_number_value
-        ), f"Expected <{number}> to be greater than or equal to {ctx.min_number_value}"
+        assert_that(number).is_greater_than_or_equal_to(0)
+        assert_that(number).is_greater_than_or_equal_to(ctx.min_number_value)
