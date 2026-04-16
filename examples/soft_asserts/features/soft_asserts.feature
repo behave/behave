@@ -2,6 +2,7 @@ Feature: Use Soft Assertions in behave
 
   RELATED TO: https://github.com/behave/behave/discussions/1094
 
+  @xfail
   Scenario: Failing with Soft Assertions -- CASE 1
 
     HINT:
@@ -13,7 +14,7 @@ Feature: Use Soft Assertions in behave
     Then  the numbers "2" and "12" are in the valid range
     But note that "the step-2 (then step) is expected to fail"
 
-  @behave.continue_after_failed_step
+  @xfail @behave.continue_after_failed_step
   Scenario: Failing with Soft Assertions -- CASE 2
 
     HINT: If a step in the Scenario fails, execution is continued.
@@ -24,7 +25,7 @@ Feature: Use Soft Assertions in behave
     But note that "the step-2 is expected to fail"
     But note that "the step-3 should be executed and should pass"
 
-  @behave.continue_after_failed_step
+  @xfail @behave.continue_after_failed_step
   Scenario: Failing with Soft Assertions -- CASE 1 and CASE 2
 
     Given a minimum number value of "5"
