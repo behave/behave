@@ -81,6 +81,7 @@ jobs:
       - name: "Run behave tests: examples ..."
         run: |
           uv pip install --system assertpy
+          export PYTHONPATH="$PWD"
           for example in examples/*/; do
             (cd "$example" && behave --format=progress3 features)
           done
