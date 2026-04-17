@@ -88,6 +88,16 @@ class TestContext:
         context._push()
         assert "thing" in context
 
+    def test_context_root_override_should_not_break_context(self):
+        context = self.make_context()
+
+        with context.use_with_user_mode():
+            for key in context._root.keys():
+                if key[0] != '@':
+                    context.__setattr__(key, False)
+
+        context._pop()
+
 
 class TestContext2(unittest.TestCase):
     # pylint: disable=invalid-name, protected-access, no-self-use
