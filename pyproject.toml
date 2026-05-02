@@ -89,9 +89,6 @@ dependencies = [
     # -- XXX_JE_CLEANUP_CANDIDATE:
     "six >= 1.15.0",
 
-    # -- DISABLED: "win_unicode_console; python_version <= '3.9'",
-    "colorama >= 0.3.7",
-
     # -- SUPPORT: "pyproject.toml" (or: "behave.toml")
     "tomli>=1.1.0; python_version >=  '3.0' and python_version < '3.11'",
 ]
