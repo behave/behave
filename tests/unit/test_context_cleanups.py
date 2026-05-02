@@ -13,7 +13,7 @@ from behave.configuration import Configuration
 from behave.runner import Context, Runner, scoped_context_layer
 from unittest.mock import Mock
 import pytest
-
+import traceback
 
 # ------------------------------------------------------------------------------
 # TEST SUPPORT:
@@ -212,6 +212,36 @@ class TestContextCleanup:
         # expected_args = (context, handle_cleanup_error_func,
         #                 RuntimeError("in CLEANUP call"))
         # handle_cleanup_error_func.assert_called_with(*expected_args)
+
+    def test_cleanup_error_raised_preserves_cleanup_traceback_frame(self):
+        class CleanupError(RuntimeError):
+            def __init__(self):
+                super().__init__("detailed-info")
+            
+        def bad_cleanup():
+            raise CleanupError()
+
+        context = make_context()
+        with pytest.raises(RuntimeError) as e:
+            with scoped_context_layer(context):
+                context.add_cleanup(bad_cleanup)
+
+        # -- ENSURE: The traceback frames are preserved, including the bad_cleanup frame
+        actual = [frame.name for frame in traceback.extract_tb(e.tb)]
+        wanted = [
+            "__exit__",
+            "scoped_context_layer",
+            "_pop",
+            "_do_cleanups",
+            "_do_cleanups",
+            "bad_cleanup",
+        ]
+
+        # -- ENSURE: The custom CleanupError is preserved as the exception type and message
+        # NOTE: The outermost frame is the test function, which may vary, so we skip it in the assertion.
+        assert actual[1:] == wanted
+        assert isinstance(e.value, CleanupError)
+        assert str(e.value) == CleanupError().args[0]
 
     def test_on_cleanup_error__may_be_called_several_times_per_cleanup(self):
         def bad_cleanup1():
