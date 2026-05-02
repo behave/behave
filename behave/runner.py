@@ -9,8 +9,6 @@ import traceback
 import warnings
 import weakref
 
-import six
-
 from behave._types import (
     require_type,
     require_not_type,
@@ -280,14 +278,12 @@ class Context:
             except Exception as e: # pylint: disable=broad-except
                 # pylint: disable=protected-access
                 context._root["cleanup_errors"] += 1
-                cleanup_errors.append(sys.exc_info())
+                cleanup_errors.append(e)
                 on_cleanup_error(context, cleanup_func, e)
 
         current_layer["@cleanups"] = []
         if self.fail_on_cleanup_errors and cleanup_errors:
-            first_cleanup_erro_info = cleanup_errors[0]
-            del cleanup_errors  # -- ENSURE: Release other exception frames.
-            six.reraise(*first_cleanup_erro_info)
+            raise cleanup_errors[0]
 
     def _do_remaining_cleanups(self, capture_sink=None):
         """
@@ -302,15 +298,13 @@ class Context:
             try:
                 # -- PERFORM CLEANUPS:
                 self._pop(capture_sink=capture_sink)
-            except Exception:
-                cleanup_errors.append(sys.exc_info())
+            except Exception as e:
+                cleanup_errors.append(e)
 
         # -- FINALLY: Perform cleanups on last layer (if needed).
         self._do_cleanups()
         if self.fail_on_cleanup_errors and cleanup_errors:
-            first_cleanup_erro_info = cleanup_errors[0]
-            del cleanup_errors  # -- ENSURE: Release other exception frames.
-            six.reraise(*first_cleanup_erro_info)
+            raise cleanup_errors[0]
 
     def _push(self, layer=None):
         """Push a new layer on the context stack.
