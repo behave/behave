@@ -51,6 +51,22 @@ class ValueObject:
         self._value = value
         self.compare = compare
 
+    @classmethod
+    def from_raw(cls, value):
+        """Wrap a raw provider value in the most appropriate ValueObject subclass.
+
+        Picks :class:`BoolValueObject` for ``bool`` values so that string tag
+        values like ``"true"`` / ``"false"`` are coerced before comparison —
+        otherwise ``operator.eq(True, "true")`` is always ``False`` and bool
+        active-tag matching silently never matches. See issue #1320.
+
+        Note: ``isinstance(value, bool)`` must be checked before any ``int``
+        check since ``bool`` is a subclass of ``int`` in Python.
+        """
+        if isinstance(value, bool):
+            return BoolValueObject(value)
+        return cls(value)
+
     @property
     def value(self):
         if callable(self._value):
@@ -446,7 +462,7 @@ class ActiveTagMatcher(TagMatcher):
             # -- CASE: Unknown category, ignore it.
             return True
         elif not isinstance(current_value, ValueObject):
-            current_value = ValueObject(current_value)
+            current_value = ValueObject.from_raw(current_value)
 
         positive_tags_matched = []
         negative_tags_matched = []
