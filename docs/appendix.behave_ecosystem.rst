@@ -79,10 +79,12 @@ Editor              Plugin                  Description
 `Sublime Text`_     `Cucumber (ST Bundle)`_ Gherkin editor support, table formatting.
 `Sublime Text`_     `Behave Step Finder`_   Helps to navigate to steps in behave.
 `vim`_              `vim-behave`_           `vim`_ plugin: Port of `vim-cucumber`_ to Python `behave`_.
+`Neovim`_           `behave-lsp.nvim`_      Neovim editor support, helps navigate between feature files and steps.
 =================== ======================= =============================================================================
 
 .. _`Notepad++`: https://notepad-plus-plus.org/
 .. _vim:    https://www.vim.org/
+.. _Neovim:    https://www.neovim.io/
 .. _`Sublime Text`:    https://www.sublimetext.com
 
 .. _`Gherkin editor`: https://www.gherkineditor.com/
@@ -91,4 +93,5 @@ Editor              Plugin                  Description
 .. _vim-cucumber:   https://github.com/tpope/vim-cucumber
 .. _`Cucumber (ST Bundle)`:    https://packagecontrol.io/packages/Cucumber
 .. _Behave Step Finder: https://packagecontrol.io/packages/Behave%20Step%20Finder
+.. _behave-lsp.nvim: https://github.com/HosseyNJF/behave-lsp.nvim
 
