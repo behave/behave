@@ -4,7 +4,7 @@
 Userdata
 ==================
 
-The userdata functionality allows a user to specify owm parameters and values
+The userdata functionality allows a user to specify their own parameters and values
 (or more complex configuration data) to the test run.
 
 Overview
