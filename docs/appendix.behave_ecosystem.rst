@@ -42,6 +42,7 @@ IDE             Plugin               Description
 `Eclipse`_      `Cucumber-Eclipse`_  Plugin contains editor support for Gherkin.
 `VisualStudio`_ `cuke4vs`_           VisualStudio plugin with editor support for Gherkin.
 `VSCode`_       `cucumber-official`_ Official VSCode extension for Cucumber, with Gherkin and `behave`_ support.
+`VSCode`_       `gherkin-behave`_    Full behave support including **stages**, **step libraries**, **step refactoring**, **run/debug**, etc.
 =============== ==================== ======================================================================================
 
 .. _PyCharm:        https://www.jetbrains.com/pycharm/
@@ -53,6 +54,7 @@ IDE             Plugin               Description
 .. _`Cucumber-Eclipse`: https://cucumber.github.io/cucumber-eclipse/
 .. _cuke4vs:        https://github.com/henritersteeg/cuke4vs
 .. _`cucumber-official`: https://marketplace.visualstudio.com/items?itemName=CucumberOpen.cucumber-official
+.. _`gherkin-behave`: https://marketplace.visualstudio.com/items?itemName=wirklich.gherkin-behave
 
 .. hidden_BROKEN:
 
