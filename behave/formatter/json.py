@@ -147,19 +147,58 @@ class JSONFormatter(Formatter):
             steps = self.current_feature_element["steps"]
             steps[self._step_index]["match"] = match_data
 
+    # -- CAPTURED OUTPUT: Streams provided as JSON "result" fields.
+    CAPTURED_OUTPUT_NAMES = ("stdout", "stderr", "log")
+
+    @classmethod
+    def _format_text(cls, text):
+        """Split multi-line text into a list of lines (for readability)."""
+        if cls.split_text_into_lines and "\n" in text:
+            return text.splitlines()
+        return text
+
+    @classmethod
+    def make_captured_output(cls, captured, exclude_text=None):
+        """Build the JSON "result" fields for the captured output of a step.
+
+        SINCE behave v1.2.7, captured output is stored on the model element
+        (in ``step.captured``) instead of being inlined into the step's
+        ``error_message``. This exposes it as dedicated JSON fields so that
+        JSON reports retain the captured stdout/stderr/log (esp. the
+        "Captured logging" of a failed step).
+
+        :param captured: Captured output (value object), see :class:`Captured`.
+        :param exclude_text:
+            Optional text to omit. For a failed step, the error message is also
+            stored in the captured stderr (see ``Step._process_error``); passing
+            ``step.error_message`` avoids duplicating it as ``captured_stderr``.
+        :return: Dict with ``captured_<name>`` fields (may be empty).
+
+        .. seealso:: https://github.com/behave/behave/issues/1323
+        """
+        captured_fields = {}
+        if not (captured and captured.has_output()):
+            return captured_fields
+        for name in cls.CAPTURED_OUTPUT_NAMES:
+            captured_text = getattr(captured, name, "")
+            if not captured_text or captured_text == exclude_text:
+                continue
+            captured_fields["captured_" + name] = cls._format_text(captured_text)
+        return captured_fields
+
     def result(self, step):
         steps = self.current_feature_element["steps"]
-        steps[self._step_index]["result"] = {
+        result_element = {
             "status": step.status.name,
             "duration": step.duration,
         }
+        steps[self._step_index]["result"] = result_element
         if step.error_message and step.status == Status.failed:
             # -- OPTIONAL: Provided for failed steps.
-            error_message = step.error_message
-            if self.split_text_into_lines and "\n" in error_message:
-                error_message = error_message.splitlines()
-            result_element = steps[self._step_index]["result"]
-            result_element["error_message"] = error_message
+            result_element["error_message"] = self._format_text(step.error_message)
+        result_element.update(
+            self.make_captured_output(step.captured, exclude_text=step.error_message)
+        )
         self._step_index += 1
 
     def embedding(self, mime_type, data):

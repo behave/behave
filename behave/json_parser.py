@@ -217,6 +217,14 @@ class JsonParser:
         step.status = Status.from_name(status_name)
         step.duration = duration
         step.error_message = error_message
+        # -- SINCE behave v1.2.7: Round-trip the captured output fields.
+        # RELATED: https://github.com/behave/behave/issues/1323
+        for name in ("stdout", "stderr", "log"):
+            captured_text = json_result.get("captured_" + name, None)
+            if isinstance(captured_text, list):
+                captured_text = "\n".join(captured_text)
+            if captured_text:
+                setattr(step.captured, name, captured_text)
 
     @staticmethod
     def parse_table(json_table):
