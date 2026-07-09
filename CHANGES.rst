@@ -22,6 +22,7 @@ FIXED:
 
 * Include changes from ``behave v1.3.1`` (#1255, #1239)
 * issue #1028: use unittest.mock instead of mock (submitted by: pgajdos)
+* issue #1319: send "USING RUNNER" diagnostic message to stderr instead of stdout
 
 DOCUMENTATION:
 
