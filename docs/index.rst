@@ -40,7 +40,7 @@ Contents
    userdata
    usecase_django
    usecase_flask
-   usecase_selenium
+   usecase_page_objects
    practical_tips
    comparison
    new_and_noteworthy

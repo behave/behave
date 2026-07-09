@@ -29,7 +29,7 @@ DOCUMENTATION:
 * Use "confval" directive for config-file parameters.
 * api: Add "Configuration" class description.
 * pull #1258: fixed dead links in documentation (provided by: sgronlund)
-* issue #1288: add Selenium Page Object Model documentation and example
+* issue #1288: add Page Object Model documentation and example
 * Include changes from ``behave v1.3.1`` (#1256, #1233)
 
 DEVELOP:
