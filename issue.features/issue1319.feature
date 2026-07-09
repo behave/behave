@@ -28,4 +28,4 @@ Feature: Issue #1319 -- USING RUNNER message should not go to stdout
       1 scenario passed, 0 failed, 0 skipped
       1 step passed, 0 failed, 0 skipped
       """
-    But the command output should not contain "USING RUNNER"
+    But the command stdout should not contain "USING RUNNER"
