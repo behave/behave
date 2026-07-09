@@ -10,7 +10,7 @@ Feature: Issue #990 -- os.path.relpath may fail on Windows with cross-drive path
   . SEE ALSO:
   .   * https://github.com/behave/behave/issues/990
 
-  Scenario: sphinx_steps formatter handles cross-drive paths on Windows
+  Scenario: sphinx_steps formatter runs without error
     Given a new working directory
     And a file named "features/steps/use_steplib_behave4cmd.py" with:
       """
