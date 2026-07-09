@@ -19,6 +19,12 @@ Feature: Issue #1329 -- @functools.wraps on log_capture.capture
       """
       from behave.log_capture import capture
 
+      def assert_name_preserved(func):
+          assert func.__name__ == "before_scenario", \
+              "Expected __name__ == 'before_scenario', got: %r" % func.__name__
+          return func
+
+      @assert_name_preserved
       @capture
       def before_scenario(context, scenario):
           pass
