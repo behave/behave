@@ -48,7 +48,7 @@ jobs:
         #  - python-version: "3.13"
         #    experimental: true
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       # DISABLED: name: Setup Python ${{ matrix.python-version }} on platform=${{ matrix.os }}
       - uses: actions/setup-python@v7
         with:
