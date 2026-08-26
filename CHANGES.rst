@@ -22,6 +22,12 @@ FIXED:
 
 * Include changes from ``behave v1.3.1`` (#1255, #1239)
 * issue #1028: use unittest.mock instead of mock (submitted by: pgajdos)
+* issue #1323: JSON formatter: Captured output (stdout/stderr/log) is now
+  provided as dedicated ``result`` fields (``captured_stdout``,
+  ``captured_stderr``, ``captured_log``). Previously the captured logging was
+  embedded in the step ``error_message``; the capture refactoring (v1.2.7) moved
+  it to ``step.captured``, so it went missing from JSON reports of a failed step.
+  These new, structured fields restore that information.
 
 DOCUMENTATION:
 
