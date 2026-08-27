@@ -238,6 +238,7 @@ def capture(*args, **kw):
     """
     show_on_success = kw.pop("show_on_success", capture.show_on_success)
     def create_decorator(func, level=None):
+        @functools.wraps(func)
         def f(context, *args):
             h = LoggingCapture(context.config, level=level)
             h.inveigle()

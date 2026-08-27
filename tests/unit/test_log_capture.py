@@ -1,8 +1,23 @@
+import logging
 from unittest.mock import patch
-from behave.log_capture import LoggingCapture
+from behave.log_capture import LoggingCapture, capture
 
 
 class TestLogCapture:
+    def test_capture_preserves_function_name(self):
+        @capture
+        def before_scenario(context, scenario):
+            pass
+
+        assert before_scenario.__name__ == "before_scenario"
+
+    def test_capture_with_kwargs_preserves_function_name(self):
+        @capture(level=logging.ERROR)
+        def after_scenario(context, scenario):
+            pass
+
+        assert after_scenario.__name__ == "after_scenario"
+
     def test_get_value_returns_all_log_records(self):
         class FakeConfig:
             logging_filter = None
