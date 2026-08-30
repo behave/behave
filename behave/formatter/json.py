@@ -34,12 +34,14 @@ class JSONFormatter(Formatter):
         self.current_feature_data = None
         self.current_scenario = None
         self._step_index = 0
+        self._last_embeddings = []
 
     def reset(self):
         self.current_feature = None
         self.current_feature_data = None
         self.current_scenario = None
         self._step_index = 0
+        self._last_embeddings = []
 
     # -- FORMATTER API:
     def uri(self, uri):
@@ -70,6 +72,7 @@ class JSONFormatter(Formatter):
         if background.name:
             element["name"] = background.name
         self._step_index = 0
+        self._last_embeddings = []
 
         # -- ADD BACKGROUND STEPS: Support *.feature file regeneration.
         for step_ in background.steps:
@@ -91,6 +94,7 @@ class JSONFormatter(Formatter):
         if scenario.description:
             element["description"] = scenario.description
         self._step_index = 0
+        self._last_embeddings = []
 
     @classmethod
     def make_table(cls, table):
@@ -117,6 +121,8 @@ class JSONFormatter(Formatter):
             s["table"] = self.make_table(step.table)
         element = self.current_feature_element
         element["steps"].append(s)
+        step.index_in_scenario = self._step_index
+        self._step_index += 1
 
     def match(self, match):
         args = []
@@ -142,31 +148,30 @@ class JSONFormatter(Formatter):
             "location": str(match.location) or "",
             "arguments": args,
         }
-        if match.location:
-            # -- NOTE: match.location=None occurs for undefined steps.
-            steps = self.current_feature_element["steps"]
-            steps[self._step_index]["match"] = match_data
+        self._last_match = match_data
 
     def result(self, step):
-        steps = self.current_feature_element["steps"]
-        steps[self._step_index]["result"] = {
+        current_index = step.index_in_scenario
+        current_step = self.current_feature_element["steps"][current_index]
+        current_step["result"] = {
             "status": step.status.name,
             "duration": step.duration,
         }
+        current_step["match"] = self._last_match
         if step.error_message and step.status == Status.failed:
             # -- OPTIONAL: Provided for failed steps.
             error_message = step.error_message
             if self.split_text_into_lines and "\n" in error_message:
                 error_message = error_message.splitlines()
-            result_element = steps[self._step_index]["result"]
+            result_element = current_step["result"]
             result_element["error_message"] = error_message
-        self._step_index += 1
+
+        if self._last_embeddings:
+            current_step["embeddings"] = self._last_embeddings
+            self._last_embeddings = []
 
     def embedding(self, mime_type, data):
-        step = self.current_feature_element["steps"][self._step_index]
-        if "embeddings" not in step:
-            step["embeddings"] = []
-        step["embeddings"].append({
+        self._last_embeddings.append({
             "mime_type": mime_type,
             "data": base64.b64encode(data).decode(self.stream.encoding or "utf-8"),
         })
