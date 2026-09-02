@@ -98,13 +98,17 @@ class TestContext:
         """
         context = self.make_context()
 
+        # -- SIMULATE: User masks root attributes, like in a "before_all" hook.
         with context.use_with_user_mode():
-            for key in context._root.keys():
-                if key[0] != '@':
-                    context.__setattr__(key, False)
+            for key in list(context._root.keys()):
+                if key[0] != "@":
+                    setattr(context, key, False)
 
-        # -- SHOULD-NOT-RAISE:
-        context._pop()
+        # -- SHOULD-NOT-RAISE: Cleanups must use the real config object.
+        with scoped_context_layer(context, "scenario"):
+            pass
+
+        assert len(context._stack) == 1
 
 
 class TestContext2(unittest.TestCase):
