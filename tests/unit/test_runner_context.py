@@ -103,6 +103,7 @@ class TestContext:
                 if key[0] != '@':
                     context.__setattr__(key, False)
 
+        # -- SHOULD-NOT-RAISE:
         context._pop()
 
 
