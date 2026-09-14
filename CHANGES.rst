@@ -23,6 +23,7 @@ FIXED:
 * Include changes from ``behave v1.3.1`` (#1255, #1239)
 * issue #1028: use unittest.mock instead of mock (submitted by: pgajdos)
 * pull #1297: Context._pop(): Use internal config reference to avoid cleanup-errors if "context.config" is masked (provided by: wiebren)
+* issue #1128: scenario_autoretry now resets ``runner.hook_failures`` between retry attempts
 
 DOCUMENTATION:
 

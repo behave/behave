@@ -48,7 +48,16 @@ def patch_scenario_with_autoretry(scenario, max_attempts=3):
     :param max_attempts:    How many times the scenario can be run.
     """
     def scenario_run_with_retries(scenario_run, *args, **kwargs):
+        # -- HINT: Scenario.run(runner) => First positional arg is the runner.
+        runner = args[0]
+        # -- RECORD test-runner state to restore it on each retry attempt.
+        # OTHERWISE: A failed hook (before_scenario/after_scenario) on one
+        # attempt would leak its "runner.hook_failures" into later attempts
+        # and cause the test-run to fail even if a retry attempt passed.
+        hook_failures_on_start = runner.hook_failures
         for attempt in range(1, max_attempts+1):
+            # -- RESTORE test-runner state before each (retried) scenario run.
+            runner.hook_failures = hook_failures_on_start
             if not scenario_run(*args, **kwargs):
                 if attempt > 1:
                     message = "AUTO-RETRY SCENARIO PASSED (after {0} attempts)"
