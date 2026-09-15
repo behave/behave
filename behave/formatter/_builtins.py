@@ -31,6 +31,7 @@ _BUILTIN_FORMATS = [
     ("steps.usage",   "behave.formatter.steps:StepsUsageFormatter"),
     ("sphinx.steps",  "behave.formatter.sphinx_steps:SphinxStepsFormatter"),
     ("captured", "behave.formatter.captured:CapturedFormatter"),
+    ("fail_focus", "behave.formatter.fail_focus:FailFocusFormatter"),
 ]
 
 
