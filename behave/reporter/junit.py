@@ -290,9 +290,9 @@ class JUnitReporter(Reporter):
         if self.show_hostname:
             suite.set('hostname', _text(gethostname()))
 
-        if not os.path.exists(self.config.junit_directory):
-            # -- ENSURE: Create multiple directory levels at once.
-            os.makedirs(self.config.junit_directory)
+        # -- ENSURE: Create multiple directory levels at once.
+        # RACE-FREE: Another process may create this directory concurrently.
+        os.makedirs(self.config.junit_directory, exist_ok=True)
 
         tree = ElementTreeWithCDATA(suite)
         report_dirname = self.config.junit_directory
