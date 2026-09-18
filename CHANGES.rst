@@ -26,6 +26,7 @@ FIXED:
 * pull #1297: Context._pop(): Use internal config reference to avoid cleanup-errors if "context.config" is masked (provided by: wiebren)
 * pull #1346: CaptureController: Captured output of a step was dropped or cut off after the first scenario (stale delta bookmark) (provided by: wiebren)
 * pull #1348: CapturedFormatter: Crashes if a step has captured output (provided by: wiebren)
+* issue #1308: before_scenario hook prevents capturing logs (submitted by: 0xC4N1, provided by: wiebren, pull #1347)
 
 DOCUMENTATION:
 

@@ -66,6 +66,8 @@ class LoggingCapture(BufferingHandler):
         BufferingHandler.__init__(self, 1000)
         self.config = config
         self.old_handlers = []
+        self.displaced_captures = []
+        self.active = False
         self.old_level = None
 
         # -- STEP: Create log-formatter
@@ -149,15 +151,21 @@ class LoggingCapture(BufferingHandler):
                         logger.removeHandler(handler)
 
         # sanity check: remove any existing LoggingCapture
+        # HINT: An active one belongs to an outer capture, for example of
+        # a scenario while one of its hooks is captured (nested capture).
+        # It is reinstated in abandon(), otherwise its log output is lost.
         for handler in root_logger.handlers[:]:
             if isinstance(handler, LoggingCapture):
                 root_logger.handlers.remove(handler)
+                if handler is not self:
+                    self.displaced_captures.append(handler)
             elif self.config.logging_clear_handlers:
                 self.old_handlers.append((root_logger, handler))
                 root_logger.removeHandler(handler)
 
         # right, we're it now
         root_logger.addHandler(self)
+        self.active = True
 
         # capture the level we're interested in
         self.old_level = root_logger.level
@@ -173,6 +181,14 @@ class LoggingCapture(BufferingHandler):
         for handler in root_logger.handlers[:]:
             if handler is self:
                 root_logger.handlers.remove(handler)
+
+        self.active = False
+        # -- NESTED CAPTURE: Reinstate the outer capture(s) -- but not one
+        # that was abandoned meanwhile (it would capture forever).
+        for handler in self.displaced_captures:
+            if handler.active and handler not in root_logger.handlers:
+                root_logger.addHandler(handler)
+        self.displaced_captures = []
 
         if self.config.logging_clear_handlers:
             for logger, handler in self.old_handlers:
