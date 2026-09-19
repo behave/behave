@@ -157,7 +157,10 @@ OPTIONS = [
     (("-j", "--jobs", "--parallel"),
      dict(metavar="NUMBER", dest="jobs", default=1, type=positive_number,
           help="""Number of concurrent jobs to use (default: %(default)s).
-                  Only supported by test runners that support parallel execution.
+                  Only supported by test runners that support parallel
+                  execution. The default test runner runs sequentially;
+                  parallel test runners are separately installable
+                  community runners (select one with --runner).
                   """)),
 
     ((),  # -- CONFIGFILE only

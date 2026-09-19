@@ -75,6 +75,36 @@ DESIGN CONSTRAINTS:
     See also :this_repo:`features/runner.use_runner_class.feature` for more information.
 
 
+Parallel Test Runners
+-----------------------
+
+The default test runner of :pypi:`behave` runs the features sequentially.
+Parallel test runners are separately installable community runners
+that use the runner extension point. You select such a runner like any other
+user-defined runner and use the :option:`--jobs` option
+(or the :confval:`jobs : positive_number` config-file parameter)
+to specify the number of concurrent jobs:
+
+.. code-block:: bash
+    :caption: SHELL
+
+    $ behave --runner=<SCOPED_MODULE_NAME>:<RUNNER_CLASS_NAME> --jobs=4 ...
+
+The default test runner ignores the :option:`--jobs` option.
+
+.. hint:: For implementors of a test runner with worker processes
+
+    A :class:`~behave.configuration.Configuration` object cannot be sent
+    to another process. But it remembers how it was built, so that
+    a worker process can build an equivalent one:
+
+    .. code-block:: python
+
+        config2 = Configuration(config.command_args,
+                                load_config=config.command_load_config,
+                                **config.command_kwargs)
+
+
 Failure Syndromes with User-Defined Runners
 ---------------------------------------------
 
