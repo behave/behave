@@ -145,6 +145,69 @@ class TestConfiguration:
 # -----------------------------------------------------------------------------
 # TEST SUITE:
 # -----------------------------------------------------------------------------
+class TestConfigurationCommandArgs:
+    """Test that a configuration object remembers how it was built.
+
+    USE CASE: A test runner builds an equivalent configuration object
+    in another process (like: a test runner with worker processes).
+    """
+
+    def test_command_args_as_list_are_kept(self):
+        command_args = ["--jobs=2", "--tags=@foo", "features/"]
+        config = Configuration(command_args, load_config=False)
+        assert config.command_args == command_args
+        assert config.command_load_config is False
+        assert config.command_kwargs == {}
+
+    def test_command_args_are_a_copy(self):
+        command_args = ["--tags=@foo"]
+        config = Configuration(command_args, load_config=False)
+        command_args.append("--tags=@bar")
+        assert config.command_args == ["--tags=@foo"]
+
+    def test_command_args_as_string_are_kept_as_list(self):
+        config = Configuration("--tags=@foo features/", load_config=False)
+        assert config.command_args == ["--tags=@foo", "features/"]
+
+    def test_command_args_from_sys_argv_are_kept(self, monkeypatch):
+        monkeypatch.setattr(sys, "argv", ["behave", "--tags=@foo"])
+        config = Configuration(load_config=False)
+        assert config.command_args == ["--tags=@foo"]
+
+    def test_command_args_of_other_program_are_not_used(self, monkeypatch):
+        # -- HINT: sys.argv is only used if the program is "behave".
+        monkeypatch.setattr(sys, "argv", ["other_program", "--unknown-option"])
+        config = Configuration(load_config=False)
+        assert config.command_args == []
+
+    def test_command_kwargs_are_kept(self):
+        config = Configuration([], load_config=False, stage="STAGE1")
+        assert config.command_kwargs == {"stage": "STAGE1"}
+        assert config.stage == "STAGE1"
+
+    def test_command_load_config_is_true_by_default(self):
+        config = Configuration([])
+        assert config.command_load_config is True
+
+    def test_equivalent_configuration_can_be_built(self):
+        config1 = Configuration("--jobs=2 --tags=@foo -D name=value --stage=S1",
+                                load_config=False, summary=False)
+        config2 = Configuration(config1.command_args,
+                                load_config=config1.command_load_config,
+                                **config1.command_kwargs)
+        assert config2.jobs == 2
+        assert config2.stage == "S1"
+        assert config2.summary is False
+        assert config2.userdata == {"name": "value"}
+        assert config2.tag_expression.to_string() == \
+               config1.tag_expression.to_string()
+        assert config2.command_args == config1.command_args
+        assert config2.command_kwargs == config1.command_kwargs
+
+
+# -----------------------------------------------------------------------------
+# TEST SUITE:
+# -----------------------------------------------------------------------------
 class TestConfigurationUserData(TestCase):
     """Test userdata aspects in behave.configuration.Configuration class."""
 
