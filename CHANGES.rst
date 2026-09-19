@@ -17,6 +17,7 @@ DEPRECATIONS:
 CHANGED:
 
 * Use "use_nested_step_modules = False" now by default (merged from: v1.3.2).
+* Configuration: Remember how the configuration object was built (``command_args``, ``command_kwargs``, ``command_load_config``), so that a test runner can build an equivalent one in a worker process.
 
 FIXED:
 
@@ -29,6 +30,7 @@ DOCUMENTATION:
 * Improve command-line option descriptions (show: value).
 * Use "confval" directive for config-file parameters.
 * api: Add "Configuration" class description.
+* runners: Describe that parallel test runners are separately installable community runners (``--jobs`` option, runners appendix).
 * pull #1258: fixed dead links in documentation (provided by: sgronlund)
 * issue #1288: add Page Object Model documentation and example
 * issue #980: document Formatter API with examples and IFormatter2 reference
