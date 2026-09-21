@@ -59,7 +59,9 @@ You may see the same information presented below at any time using ``behave
 .. option:: -j NUMBER, --jobs NUMBER, --parallel NUMBER
 
     Number of concurrent jobs to use (default: 1). Only supported by test
-    runners that support parallel execution.
+    runners that support parallel execution. The default test runner
+    runs sequentially; parallel test runners are separately
+    installable community runners (select one with --runner).
 
 .. option:: -f FORMATTER, --format FORMATTER
 
@@ -422,7 +424,9 @@ Configuration File Parameters
 .. confval:: jobs : positive_number
 
     Number of concurrent jobs to use (default: 1). Only supported by test
-    runners that support parallel execution.
+    runners that support parallel execution. The default test runner
+    runs sequentially; parallel test runners are separately
+    installable community runners (select one with --runner).
 
 .. index::
     single: configuration file parameter; default_format
