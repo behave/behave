@@ -29,6 +29,7 @@ FIXED:
 * pull #1348: CapturedFormatter: Crashes if a step has captured output (provided by: wiebren)
 * issue #1308: before_scenario hook prevents capturing logs (submitted by: 0xC4N1, provided by: wiebren, pull #1347)
 * issue #1128: scenario_autoretry: Reset ``runner.hook_failures`` between retry attempts (submitted by: rittneje, provided by: nikolauspschuetz, pull #1342)
+* issue #1320: Active tags: Auto-promote bool values of the value provider to BoolValueObject (provided by: gabeseltzer, pull #1321)
 
 DOCUMENTATION:
 
