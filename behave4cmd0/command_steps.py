@@ -191,6 +191,19 @@ def step_command_output_should_not_contain_text(ctx, text):
         textutil.assert_normtext_should_not_contain(actual_output, expected_text)
 
 
+@then('the command stdout should not contain "{text}"')
+def step_command_stdout_should_not_contain_text(ctx, text):
+    '''
+    EXAMPLE:
+        ...
+        then the command stdout should not contain "TEXT"
+    '''
+    expected_text = normalize_text_with_placeholders(ctx, text)
+    actual_output = ctx.command_result.stdout
+    with on_assert_failed_print_details(actual_output, expected_text):
+        textutil.assert_normtext_should_not_contain(actual_output, expected_text)
+
+
 @then('the command output should contain "{text}" {count:d} times')
 def step_command_output_should_contain_text_multiple_times(ctx, text, count):
     '''
