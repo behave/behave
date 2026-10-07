@@ -20,6 +20,7 @@ import sys
 from behave.formatter.steps import AbstractStepsFormatter
 from behave.formatter import sphinx_util
 from behave.model import Table
+from behave.model_type import make_relpath_if_possible
 try:
     # -- NEEDED FOR: step-labels (and step-refs)
     from docutils.nodes import fully_normalize_name
@@ -63,7 +64,7 @@ class StepsModule:
         if not self._filename:
             if self.step_definitions:
                 filename = inspect.getfile(self.step_definitions[0].func)
-                self._filename = os.path.relpath(filename)
+                self._filename = make_relpath_if_possible(filename)
         return self._filename
 
     @property
