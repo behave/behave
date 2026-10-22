@@ -115,7 +115,8 @@ def run_behave(config, runner_class=None):
     try:
         reset_runtime()
         runner = RunnerPlugin(runner_class).make_runner(config)
-        print("USING RUNNER: {0}".format(make_scoped_class_name(runner)))
+        print("USING RUNNER: {0}".format(make_scoped_class_name(runner)),
+              file=sys.stderr)
         failed = runner.run()
     except ParserError as e:
         print("ParserError: %s" % e)

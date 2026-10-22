@@ -30,6 +30,7 @@ FIXED:
 * issue #1308: before_scenario hook prevents capturing logs (submitted by: 0xC4N1, provided by: wiebren, pull #1347)
 * issue #1128: scenario_autoretry: Reset ``runner.hook_failures`` between retry attempts (submitted by: rittneje, provided by: nikolauspschuetz, pull #1342)
 * issue #1320: Active tags: Auto-promote bool values of the value provider to BoolValueObject (provided by: gabeseltzer, pull #1321)
+* issue #1319: send "USING RUNNER" diagnostic message to stderr instead of stdout (submitted by: rittneje, provided by: MathiasPaulenko, pull #1334)
 
 DOCUMENTATION:
 

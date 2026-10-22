@@ -34,7 +34,6 @@ Feature: Issue #1284 -- Pretty Formatter
       """
     And the command output should contain:
       """
-      USING RUNNER: behave.runner:Runner
       Feature: Syndrome 1284 # features/syndrome_1284.feature:1
 
         @dummy_test
