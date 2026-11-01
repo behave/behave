@@ -266,7 +266,10 @@ class JUnitReporter(Reporter):
         feature_filename = self.make_feature_filename(feature)
         classname = feature_filename
         report = FeatureReportData(feature, feature_filename)
-        now = datetime.now()
+        # -- TIMEZONE-AWARE: Attach the local UTC offset so that
+        # the emitted ISO timestamp is an unambiguous instant
+        # (e.g. "2021-01-01T10:15:30+09:00") for downstream consumers.
+        now = datetime.now().astimezone()
 
         suite = ElementTree.Element('testsuite')
         feature_name = feature.name or feature_filename
