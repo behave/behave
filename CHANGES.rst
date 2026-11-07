@@ -16,6 +16,7 @@ DEPRECATIONS:
 
 CHANGED:
 
+* JUnitReporter: The ``testsuite`` ``@timestamp`` is now timezone-aware (carries the local UTC offset), so it is an unambiguous instant across timezones (submitted by: ItIsUday)
 * Use "use_nested_step_modules = False" now by default (merged from: v1.3.2).
 * pull #1349: Configuration: Remember how the configuration object was built (``command_args``, ``command_kwargs``, ``command_load_config``), so that a test runner can build an equivalent one in a worker process (provided by: wiebren)
 
