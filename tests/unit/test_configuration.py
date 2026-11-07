@@ -308,6 +308,7 @@ class TestConfigFileParser:
             "default_tags",
             "dry_run",
             "exclude_re",
+            "fail_focus",
             "format",
             "include_re",
             "jobs",
