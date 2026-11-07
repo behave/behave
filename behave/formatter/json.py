@@ -160,6 +160,11 @@ class JSONFormatter(Formatter):
                 error_message = error_message.splitlines()
             result_element = steps[self._step_index]["result"]
             result_element["error_message"] = error_message
+        # -- INCLUDE: Captured logging/output in JSON report (regression in 1.3.x)
+        captured = getattr(step, "captured", None)
+        if captured and captured.output:
+            result_element = steps[self._step_index]["result"]
+            result_element["captured_logging"] = captured.output
         self._step_index += 1
 
     def embedding(self, mime_type, data):
