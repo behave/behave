@@ -22,10 +22,6 @@ behave
    :target: https://github.com/behave/behave/discussions
    :alt: Discussions at https://github.com/behave/behave/discussions
 
-.. |badge.gitter| image:: https://badges.gitter.im/join_chat.svg
-   :target: https://app.gitter.im/#/room/#behave_behave:gitter.im
-   :alt: Chat at https://gitter.im/behave/behave
-
 .. |badge.gurubase| image:: https://img.shields.io/badge/Gurubase-Ask%20behave%20Guru-006BFF
    :target: https://gurubase.io/g/behave
    :alt: Ask behave Guru at https://gurubase.io/g/behave
@@ -33,7 +29,7 @@ behave
 
 .. |logo| image:: https://raw.github.com/behave/behave/master/docs/_static/behave_logo1.png
 
-|badge.latest_version| |badge.license| |badge.CI_status| |badge.docs_status| |badge.discussions| |badge.gitter| |badge.gurubase|
+|badge.latest_version| |badge.license| |badge.CI_status| |badge.docs_status| |badge.discussions| |badge.gurubase|
 
 behave is behavior-driven development, Python style.
 
