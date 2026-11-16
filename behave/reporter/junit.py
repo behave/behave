@@ -74,13 +74,14 @@ import sys
 import traceback
 from xml.etree import ElementTree
 from datetime import datetime
+from behave import textutil
 from behave.reporter.base import Reporter
 from behave.model import Rule, Scenario, ScenarioOutline, Step
 from behave.model_type import Status
 from behave.formatter import ansi_escapes
 from behave.model_describe import ModelDescriptor
 from behave.summary import SummaryCollector
-from behave.textutil import indent, make_indentation, text as _text
+from behave.textutil import indent, make_indentation
 from behave.userdata import UserDataNamespace
 
 
@@ -119,6 +120,10 @@ _invalid_re = _compile_invalid_re()
 def _escape_invalid_xml_chars(text):
     # replace invalid chars with Unicode hex
     return _invalid_re.subn(lambda c: 'U+{0:0=4}'.format(ord(c.group())), text)[0]
+
+
+def _text(text):
+    return _escape_invalid_xml_chars(textutil.text(text))
 
 
 def escape_CDATA(text):  # pylint: disable=invalid-name
@@ -498,7 +503,7 @@ class JUnitReporter(Reporter):
                 failure_type = scenario.exception.__class__.__name__
             scenario_error_message = scenario.error_message
             if scenario_error_message:
-                scenario_error_message = scenario_error_message.strip()
+                scenario_error_message = _text(scenario_error_message).strip()
             xml_element.set('type', failure_type)
             xml_element.set('message', scenario_error_message or "")
             traceback_lines = traceback.format_tb(scenario.exc_traceback)
