@@ -1,4 +1,6 @@
-assertpy >= 1.1
+assertpy >= 1.1; platform_python_implementation != "PyPy"
+# -- assertpy 2.x cannot be imported on PyPy.
+assertpy >= 1.1, < 2; platform_python_implementation == "PyPy"
 
 -r ../../py.requirements/basic.txt
 -r ../../py.requirements/testing.txt
