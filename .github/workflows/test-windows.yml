@@ -84,7 +84,7 @@ jobs:
       - name: "Run behave tests: examples ..."
         shell: bash
         run: |
-          uv pip install --system assertpy
+          uv pip install --system -r examples/soft_asserts/py.requirements.txt
           export PYTHONPATH="$PWD"
           for example in examples/*/; do
             [[ "$(basename "$example")" == "env_vars" ]] && continue
