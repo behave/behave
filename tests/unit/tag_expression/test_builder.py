@@ -91,3 +91,14 @@ class TestMakeTagExpression:
         tag_expression = make_tag_expression(text)
         assert_is_tag_expression_v2(tag_expression)
         assert TagExpressionProtocol.current() == TagExpressionProtocol.AUTO_DETECT
+
+    @pytest.mark.parametrize("text, tags, expected", [
+        ("@owner:jane@example.com", ["owner:jane@example.com"], True),
+        ("@owner:jane@example.com", ["owner:bob@example.com"], False),
+        ("not @owner:jane@example.com", ["owner:jane@example.com"], False),
+        ("@a and (@b@c or @d)", ["a", "b@c"], True),
+    ])
+    def test_keeps_at_sign_inside_tag_name(self, text, tags, expected):
+        # -- HINT: The parser keeps an AT sign inside a tag, like "@owner:jane@example.com".
+        tag_expression = make_tag_expression(text)
+        assert tag_expression.check(tags) == expected

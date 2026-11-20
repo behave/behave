@@ -1,5 +1,6 @@
 # -- TAG-EXPRESSIONS v2 (cucumber-tag-expressions with extensions):
 from enum import Enum
+import re
 from behave._types import require_type
 from .parser import TagExpressionParser
 
@@ -14,7 +15,8 @@ class TagExpressionUtil:
         if not tag_text.startswith("@"):
             return tag_text
         # -- OTHERWISE: Strip leading '@' tag-prefix.
-        return tag_text.replace("@", "")
+        # HINT: Keep an AT sign inside the tag, like "@owner:jane@example.com".
+        return tag_text[1:]
 
     @classmethod
     def normalize_many_tags(cls, tags):
@@ -23,7 +25,8 @@ class TagExpressionUtil:
     @staticmethod
     def normalize_tag_expression(tag_expression_text):
         """Strip leading, optional tag-prefix '@' from tags."""
-        return tag_expression_text.replace("@", "")
+        # -- HINT: Only an AT sign that starts a tag (after whitespace or "(").
+        return re.sub(r"(?<![^\s(])@", "", tag_expression_text)
 
 
 def _parse_tag_expression_v2(text):
