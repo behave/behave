@@ -421,7 +421,10 @@ class SummaryReporterV1(AbstractSummaryReporter):
                 self.process_scenario(run_item)
 
     def process_feature(self, feature):
-        self.duration += feature.duration
+        if self._duration is None:
+            # -- START FROM ZERO: Not from the elapsed time of the test run.
+            self._duration = 0.0
+        self._duration += feature.duration
         self.feature_summary[feature.status.name] += 1
         self.process_run_items_for(feature)
 
