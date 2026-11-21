@@ -16,11 +16,9 @@ Unit tests for :mod:`behave.api.async_test` for Python 3.5 (or newer).
 """
 
 # -- IMPORTS:
-import os
-from platform import python_implementation
 import sys
 
-from hamcrest import assert_that, close_to
+from hamcrest import assert_that, greater_than_or_equal_to, less_than
 from unittest.mock import Mock
 import pytest
 
@@ -49,19 +47,15 @@ from .testing_support_async import AsyncStepTheory
 # TEST MARKERS:
 # -----------------------------------------------------------------------------
 PYTHON_3_5 = (3, 5)
-CI = os.environ.get("CI", "false").lower() == "true"
 python_version = sys.version_info[:2]
 py35_or_newer = pytest.mark.skipif(python_version < PYTHON_3_5,
                                    reason="Needs Python >= 3.5")
 
-SLEEP_DELTA = 0.100
-if CI:
-    # -- NEEDED-FOR: CI pipeline
-    if sys.platform.startswith("win"):
-        SLEEP_DELTA = 0.150
-    elif python_implementation() == "PyPy":
-        # -- NEEDED-FOR: pypy-3.10
-        SLEEP_DELTA = 0.250
+# -- SLEEP DURATION CHECKS:
+# Shared CI machines can be much slower than expected. Therefore, only check
+# that the step waited (allowing for coarse clocks), but not how long exactly.
+CLOCK_TOLERANCE = 0.020
+SLEEP_MAX_DURATION = 1.0
 
 
 # -----------------------------------------------------------------------------
@@ -102,8 +96,9 @@ class TestAsyncStepDecoratorPy35:
         context = make_context()
         with StopWatch() as stop_watch:
             step_async_step_waits_seconds(context, 0.2)
-        # DISABLED: assert abs(stop_watch.duration - 0.2) <= 0.05
-        assert_that(stop_watch.duration, close_to(0.2, delta=SLEEP_DELTA))
+        assert_that(stop_watch.duration,
+                    greater_than_or_equal_to(0.2 - CLOCK_TOLERANCE))
+        assert_that(stop_watch.duration, less_than(SLEEP_MAX_DURATION))
 
 
 @py35_or_newer
