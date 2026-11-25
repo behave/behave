@@ -1,6 +1,8 @@
 """Tests for JUnitReporter."""
 
+from datetime import datetime
 from unittest.mock import patch, mock_open
+from xml.etree import ElementTree
 
 from behave.reporter.junit import JUnitReporter
 
@@ -27,6 +29,25 @@ def test_feature_writes_report_file(mock_config, feature, tmp_path):
     assert len(report_files) == 1
     content = report_files[0].read_bytes()
     assert b"Test Feature" in content
+
+
+def test_feature_timestamp_is_timezone_aware(mock_config, feature, tmp_path):
+    """Verify the testsuite @timestamp is an unambiguous, timezone-aware
+    ISO-8601 instant (carries a UTC offset), not a naive local datetime.
+    """
+    reporter = JUnitReporter(mock_config)
+
+    reporter.feature(feature)
+
+    report_file = next(tmp_path.glob("TESTS-*.xml"))
+    testsuite = ElementTree.parse(str(report_file)).getroot()
+    timestamp = testsuite.get("timestamp")
+
+    # -- PARSING AN AWARE DATETIME: fromisoformat() yields a tzinfo only when
+    # the string carries an offset; a naive local timestamp leaves it None.
+    parsed = datetime.fromisoformat(timestamp)
+    assert parsed.tzinfo is not None, \
+        "timestamp %r must carry a UTC offset" % timestamp
 
 
 def test_feature_creates_missing_report_directory(mock_config, feature, tmp_path):
