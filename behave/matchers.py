@@ -522,8 +522,9 @@ class RegexMatcher(Matcher):
         for index, group in enumerate(matched.groups()):
             index += 1
             name = group_index.get(index, None)
-            args.append(Argument(matched.start(index), matched.end(index),
-                                 group, group, name))
+            if name is not None:
+                args.append(Argument(matched.start(index), matched.end(index),
+                                     group, group, name))
 
         return args
 
