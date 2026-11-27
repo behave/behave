@@ -114,7 +114,7 @@ class Context:
 
       The configuration of *behave* as determined by configuration files and
       command-line options. The attributes of this object are the same as the
-      `configuration file section names`_.
+      :ref:`configuration file section names <docid.behave.configuration-files>`.
 
     .. attribute:: active_outline
 
@@ -145,7 +145,6 @@ class Context:
     they are set. You can't delete a value set by a feature at a scenario level
     but you can delete a value set for a scenario in that scenario.
 
-    .. _`configuration file section names`: behave.html#configuration-files
     """
     # pylint: disable=too-many-instance-attributes
     LAYER_NAMES = ["testrun", "feature", "rule", "scenario"]
