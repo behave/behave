@@ -40,8 +40,8 @@ jobs:
     permissions:
       id-token: write  # REQUIRED-FOR: Trusted publishing.
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
       - name: "Install Python package dependencies (with: uv)"

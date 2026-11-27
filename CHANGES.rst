@@ -17,11 +17,20 @@ DEPRECATIONS:
 CHANGED:
 
 * Use "use_nested_step_modules = False" now by default (merged from: v1.3.2).
+* pull #1349: Configuration: Remember how the configuration object was built (``command_args``, ``command_kwargs``, ``command_load_config``), so that a test runner can build an equivalent one in a worker process (provided by: wiebren)
 
 FIXED:
 
 * Include changes from ``behave v1.3.1`` (#1255, #1239)
 * issue #1028: use unittest.mock instead of mock (submitted by: pgajdos)
+* pull #1297: Context._pop(): Use internal config reference to avoid cleanup-errors if "context.config" is masked (provided by: wiebren)
+* pull #1345: JUnitReporter: Create the report directory race-free if several processes use the same junit directory (provided by: wiebren)
+* pull #1346: CaptureController: Captured output of a step was dropped or cut off after the first scenario (stale delta bookmark) (provided by: wiebren)
+* pull #1348: CapturedFormatter: Crashes if a step has captured output (provided by: wiebren)
+* issue #1308: before_scenario hook prevents capturing logs (submitted by: 0xC4N1, provided by: wiebren, pull #1347)
+* issue #1128: scenario_autoretry: Reset ``runner.hook_failures`` between retry attempts (submitted by: rittneje, provided by: nikolauspschuetz, pull #1342)
+* issue #1320: Active tags: Auto-promote bool values of the value provider to BoolValueObject (provided by: gabeseltzer, pull #1321)
+* issue #990: use make_relpath_if_possible in sphinx_steps formatter to handle Windows cross-drive paths (submitted by: jenisys, provided by: MathiasPaulenko, pull #1335)
 * issue #1323: JSON formatter: Captured output (stdout/stderr/log) is now
   provided as dedicated ``result`` fields (``captured_stdout``,
   ``captured_stderr``, ``captured_log``). Previously the captured logging was
@@ -34,7 +43,10 @@ DOCUMENTATION:
 * Improve command-line option descriptions (show: value).
 * Use "confval" directive for config-file parameters.
 * api: Add "Configuration" class description.
+* pull #1349: runners: Describe that parallel test runners are separately installable community runners (``--jobs`` option, runners appendix) (provided by: wiebren)
 * pull #1258: fixed dead links in documentation (provided by: sgronlund)
+* issue #1288: add Page Object Model documentation and example
+* issue #980: document Formatter API with examples and IFormatter2 reference
 * Include changes from ``behave v1.3.1`` (#1256, #1233)
 
 DEVELOP:

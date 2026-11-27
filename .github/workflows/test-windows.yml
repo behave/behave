@@ -41,16 +41,16 @@ jobs:
       fail-fast: false
       matrix:
         # DISABLED: os: ["windows-latest"]
-        python-version: ["3.14", "3.13", "3.12", "3.11", "3.10"]
+        python-version: ["3.15", "3.14", "3.13", "3.12", "3.11", "3.10"]
         # -- PREPARED FOR: Experimental Python versions with "continue-on-error".
         # experimental: [false]
         # include:
         #  - python-version: "3.13"
         #    experimental: true
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       # DISABLED: name: Setup Python ${{ matrix.python-version }} on platform=${{ matrix.os }}
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
           # DISABLED: cache: 'pip'
@@ -59,7 +59,7 @@ jobs:
       # - name: Show Python version
       #   run: python --version
       - name: setup-uv -- Speed-up Python package installations ...
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v10.4.0
         with:
           enable-cache: true
           cache-dependency-glob: |
@@ -84,7 +84,7 @@ jobs:
       - name: "Run behave tests: examples ..."
         shell: bash
         run: |
-          uv pip install --system assertpy
+          uv pip install --system -r examples/soft_asserts/py.requirements.txt
           export PYTHONPATH="$PWD"
           for example in examples/*/; do
             [[ "$(basename "$example")" == "env_vars" ]] && continue

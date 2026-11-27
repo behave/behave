@@ -92,8 +92,9 @@ class CapturedFormatter(BaseFormatter2):
         statement_name = statement.name
         if this_type == "Step":
             # PREPARED; statement_name = f"{statement.step_type.title()} {statement.name}"
-            statement_name = "{statement.step_type.title()} {statement.name}".format(
-                statement=statement
+            # HINT: str.format() cannot call a method in a replacement field.
+            statement_name = "{step_type} {statement.name}".format(
+                step_type=statement.step_type.title(), statement=statement
             )
         annotation = ""
         if position:
@@ -129,9 +130,9 @@ ____CAPTURED: {this.status} _______________________
 {output}
 ____CAPTURED_END________________________________
 """.strip()
-        part_template = "{output}"
+        # -- HINT: Parts are shown by using their simple report (output only).
         captured_view = captured.select_by_status(show_on_success)
-        report = captured_view.make_report(template=template, part_template=part_template)
+        report = captured_view.make_report(template=template)
         return report
 
     def print_captured(self, captured, statement=None, position=None):

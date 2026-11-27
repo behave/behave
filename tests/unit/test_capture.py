@@ -676,6 +676,30 @@ class TestCaptureController:
         assert not this_captured2.stderr.startswith(this_captured1.stderr)
         capture_controller.stop_capture()
 
+    def test_make_captured_delta__after_new_setup_capture(self, capture_controller):
+        # -- REGRESSION: Bookmark of the old capture buffers was kept.
+        # Output of the first step(s) of the next scenario was dropped
+        # or lost its first part (beginning of lines was missing).
+        capture_controller.start_capture()
+        print("SCENARIO_1: A rather long line of output")
+        this_captured1 = capture_controller.make_captured_delta()
+        assert this_captured1.stdout == \
+            "SCENARIO_1: A rather long line of output\n"
+        capture_controller.stop_capture()
+
+        # -- NEXT SCENARIO: Uses new capture buffers.
+        capture_controller.setup_capture()
+        capture_controller.start_capture()
+        print("SCENARIO_2: Short")
+        this_captured2 = capture_controller.make_captured_delta()
+        assert this_captured2.stdout == "SCENARIO_2: Short\n"
+
+        print("SCENARIO_2: Another line that is longer than the first one")
+        this_captured3 = capture_controller.make_captured_delta()
+        assert this_captured3.stdout == \
+            "SCENARIO_2: Another line that is longer than the first one\n"
+        capture_controller.stop_capture()
+
     def test_make_captured_delta__without_output(self, capture_controller):
         capture_controller.start_capture()
         this_captured = capture_controller.make_captured_delta()

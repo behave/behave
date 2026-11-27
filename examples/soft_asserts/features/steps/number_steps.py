@@ -28,10 +28,10 @@ def step_then_number_is_valid(ctx, number):
 
 
 @then('the numbers "{number1:d}" and "{number2:d}" are in the valid range')
-@soft_assertions()
 def step_then_numbers_are_valid(ctx, number1, number2):
-    assert_that(number1).is_greater_than_or_equal_to(ctx.min_number_value)
-    assert_that(number2).is_greater_than_or_equal_to(ctx.min_number_value)
+    with soft_assertions():
+        assert_that(number1).is_greater_than_or_equal_to(ctx.min_number_value)
+        assert_that(number2).is_greater_than_or_equal_to(ctx.min_number_value)
 
 
 @then('the positive number "{number:d}" is in the valid range')

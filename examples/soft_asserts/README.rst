@@ -9,8 +9,9 @@ in ``behave`` by using the ``assertpy`` package.
 
 HINT:
 
-* Python2.7: "@soft_assertions()" decorator does not seem to work.
-  Use ContextManager solution instead, like: ``with soft_assertions(): ...``
+* Use ``soft_assertions()`` as a context manager, like:
+  ``with soft_assertions(): ...``
+  Since ``assertpy`` 2.x, it can no longer be used as a decorator.
 
 
 Bootstrap

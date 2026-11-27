@@ -157,7 +157,10 @@ OPTIONS = [
     (("-j", "--jobs", "--parallel"),
      dict(metavar="NUMBER", dest="jobs", default=1, type=positive_number,
           help="""Number of concurrent jobs to use (default: %(default)s).
-                  Only supported by test runners that support parallel execution.
+                  Only supported by test runners that support parallel
+                  execution. The default test runner runs sequentially;
+                  parallel test runners are separately installable
+                  community runners (select one with --runner).
                   """)),
 
     ((),  # -- CONFIGFILE only
@@ -756,6 +759,35 @@ class Configuration:
 
         Provides the Tag-Expression object based on the :option:`--tags` option(s)
         on command-line and `:confval:`default_tags` parameter in the config-file.
+
+    .. attribute:: command_args
+        :type: list[str]
+
+        Command-line args that were used to build this configuration object
+        (the ``sys.argv[1:]`` fallback and a ``str`` value are resolved).
+
+    .. attribute:: command_kwargs
+        :type: dict
+
+        Keyword args that were used to build this configuration object
+        (to hand-over/overwrite default values).
+
+    .. attribute:: command_load_config
+        :type: bool
+
+        Indicates if the config-file(s) were loaded to build this
+        configuration object.
+
+    These three attributes describe how this configuration object was built.
+    A test runner can use them to build an equivalent configuration object
+    in another process (like: a test runner with worker processes)::
+
+        config2 = Configuration(config.command_args,
+                                load_config=config.command_load_config,
+                                **config.command_kwargs)
+
+    .. versionadded:: 1.4.0
+        ``command_args``, ``command_kwargs``, ``command_load_config``
     """
     # pylint: disable=too-many-instance-attributes
     defaults = dict(
@@ -808,6 +840,11 @@ class Configuration:
 
         # -- STEP: Load config-file(s) and parse command-line
         command_args = self.make_command_args(command_args, verbose=verbose)
+        # -- REMEMBER: How this configuration object was built.
+        # USE CASE: A test runner recreates it in another process.
+        self.command_args = list(command_args)
+        self.command_kwargs = dict(kwargs)
+        self.command_load_config = load_config
         if load_config:
             load_configuration(self.defaults, verbose=self.verbose)
         parser = setup_parser()
@@ -848,6 +885,9 @@ class Configuration:
         (Re-)Init this configuration object.
         """
         self.defaults = self.make_defaults(**kwargs)
+        self.command_args = None
+        self.command_kwargs = None
+        self.command_load_config = None
         self.version = None
         self.capture = None
         self.capture_stdout = None

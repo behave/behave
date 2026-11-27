@@ -88,6 +88,222 @@ alias name for it in the configuration file:
     [behave.formatters]
     json2 = foo.bar:Json2Formatter
 
+Formatter API
+-------------
+
+A formatter receives events as behave processes each feature file. The
+interface is defined in :class:`behave.formatter.api:IFormatter`. The
+base class :class:`behave.formatter.base:Formatter` provides no-op
+defaults for every method except ``close()`` (which you must implement),
+so you only override the ones you care about.
+
+**Methods (in call order):**
+
+``uri(uri)``
+    Fired before processing a feature file. Receives the filename.
+
+``feature(feature)``
+    Called before a feature runs. Receives a
+    :class:`~behave.model.Feature` object.
+
+``rule(rule)``
+    Called before a rule runs. Receives a
+    :class:`~behave.model.Rule` object.
+
+``background(background)``
+    Fired after ``feature()`` or ``rule()``, before any scenarios.
+    Receives a :class:`~behave.model.Background` object.
+
+``scenario(scenario)``
+    Called before a scenario runs. Receives a
+    :class:`~behave.model.Scenario` object.
+
+``step(step)``
+    Called before each step is matched and executed. Behave calls this
+    for all steps in a scenario before running any of them.
+
+``match(match)``
+    Fired when a step has been matched against its step definition.
+    Receives a ``Match`` object, or ``NoMatch`` for undefined steps.
+
+``result(step)``
+    Called after a step finishes. The step object carries its status
+    (``passed``, ``failed``, ``skipped``, ``undefined``).
+
+``eof()``
+    Fired after a feature file is fully processed.
+
+``close()``
+    Called when the formatter is done. Close any open streams here.
+
+The call sequence for one feature looks like this:
+
+.. code-block:: text
+
+    uri(filename)
+    feature(feature)
+    background(background)      # if present
+    scenario(scenario)
+    step(step_1)
+    step(step_2)
+    match(match_1)
+    result(step_1)
+    match(match_2)
+    result(step_2)
+    eof()
+
+For multiple scenarios, ``scenario()`` / ``step()`` / ``match()`` /
+``result()`` repeat per scenario.
+
+.. note::
+
+    ``step()`` is called for all steps in a scenario before any
+    ``match()`` or ``result()``. This is different from what you might
+    expect. If you need to print steps as they run, buffer them in
+    ``step()`` and emit output in ``result()``.
+
+
+Writing a Custom Formatter
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Subclass :class:`behave.formatter.base:Formatter` and set ``name`` and
+``description`` class attributes. Behave calls ``__init__`` with a
+``stream_opener`` and the ``config`` object.
+
+The smallest useful formatter does almost nothing. It just prints the
+feature name when a feature starts:
+
+.. code-block:: python
+
+    # -- FILE: my_formatters/hello.py
+    from behave.formatter.base import Formatter
+
+
+    class HelloFormatter(Formatter):
+        name = "hello"
+        description = "Prints the feature name and exits"
+
+        def __init__(self, stream_opener, config):
+            super().__init__(stream_opener, config)
+            self.stream = self.open()
+
+        def feature(self, feature):
+            self.stream.write(f"Feature: {feature.name}\n")
+
+        def close(self):
+            self.close_stream()
+
+Run it:
+
+.. code-block:: bash
+
+    $ behave -f my_formatters.hello:HelloFormatter features/login.feature
+    Feature: Login
+
+That is the whole pattern. Everything else is just more methods.
+
+A slightly more useful formatter prints one line per scenario with its
+status:
+
+.. code-block:: python
+
+    # -- FILE: my_formatters/scenario_status.py
+    from behave.formatter.base import Formatter
+    from behave.model_type import Status
+
+
+    class ScenarioStatusFormatter(Formatter):
+        name = "scenario-status"
+        description = "Prints one line per scenario with its status"
+
+        def __init__(self, stream_opener, config):
+            super().__init__(stream_opener, config)
+            self.stream = self.open()
+            self.current_scenario = None
+
+        def scenario(self, scenario):
+            self.current_scenario = scenario
+
+        def result(self, step):
+            # -- Wait for the last step to finish before printing.
+            if step.status.is_final() and self.current_scenario:
+                status = self.current_scenario.status.name
+                name = self.current_scenario.name
+                self.stream.write(f"{status}: {name}\n")
+
+        def eof(self):
+            self.stream.flush()
+
+Use it from the command line:
+
+.. code-block:: bash
+
+    $ behave -f my_formatters.scenario_status:ScenarioStatusFormatter features/login.feature
+    passed: Valid user can log in
+    failed: Wrong password shows an error
+    skipped: Admin login via SSO
+
+Or register an alias in your config file:
+
+.. code-block:: ini
+
+    # -- FILE: behave.ini
+    [behave.formatters]
+    scenario-status = my_formatters.scenario_status:ScenarioStatusFormatter
+
+Then:
+
+.. code-block:: bash
+
+    behave -f scenario-status
+
+If your formatter needs configuration, read it from ``config.userdata``
+using the ``behave.formatter.<name>.<key>`` schema:
+
+.. code-block:: ini
+
+    # -- FILE: behave.ini
+    [behave.userdata]
+    behave.formatter.scenario-status.show_tags = true
+
+Access it in your formatter:
+
+.. code-block:: python
+
+    show_tags = self.config.userdata.getbool(
+        "behave.formatter.scenario-status.show_tags", default=False
+    )
+
+
+IFormatter2 (Alternative Interface)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:class:`behave.formatter.api:IFormatter2` provides a simpler, paired
+interface with ``on_*`` methods instead of the streaming model above:
+
+================================ ============================
+Method                            When it runs
+================================ ============================
+``on_testrun_start()``            Before any features
+``on_file_start(uri)``           Before each feature file
+``on_feature_start(feature)``    Before each feature
+``on_rule_start(rule)``          Before each rule
+``on_scenario_start(scenario)``  Before each scenario
+``on_step_start(step)``          Before each step
+``on_step_end(step)``            After each step
+``on_scenario_end(scenario)``    After each scenario
+``on_rule_end(rule)``            After each rule
+``on_feature_end(feature)``      After each feature
+``on_file_end(uri)``             After each feature file
+``on_testrun_end()``             After all features
+================================ ============================
+
+Subclass :class:`behave.formatter.api:BaseFormatter2` to use this
+interface. Note that ``IFormatter2`` needs an adapter to work with
+behave's runner, so ``IFormatter`` is the standard choice for most
+formatters.
+
+
 If your formatter can be configured, you should use the userdata concept
 to provide them. The formatter should use the attribute schema:
 

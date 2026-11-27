@@ -672,6 +672,9 @@ class CaptureController:
         self._stdout_offset = 0
         self._stderr_offset = 0
         self._log_offset = 0
+        # -- NEW CAPTURE BUFFERS: Offsets of the old ones are wrong now.
+        # OTHERWISE: make_captured_delta() drops output (or parts of it).
+        self.delta_bookmark = CaptureBookmark()
 
     def start_capture(self):
         if self.config.capture_stdout:

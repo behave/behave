@@ -88,6 +88,28 @@ class TestContext:
         context._push()
         assert "thing" in context
 
+    def test_context_root_override_should_not_break_context(self):
+        """
+        When a user overrides a root attribute of the context, like "config",
+        then popping the context layer still works.
+
+        The cleanup path has to reach the real config object, not whatever the
+        user happens to have stored under that name.
+        """
+        context = self.make_context()
+
+        # -- SIMULATE: User masks root attributes, like in a "before_all" hook.
+        with context.use_with_user_mode():
+            for key in list(context._root.keys()):
+                if key[0] != "@":
+                    setattr(context, key, False)
+
+        # -- SHOULD-NOT-RAISE: Cleanups must use the real config object.
+        with scoped_context_layer(context, "scenario"):
+            pass
+
+        assert len(context._stack) == 1
+
 
 class TestContext2(unittest.TestCase):
     # pylint: disable=invalid-name, protected-access, no-self-use
