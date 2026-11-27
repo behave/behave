@@ -31,6 +31,7 @@ FIXED:
 * issue #1128: scenario_autoretry: Reset ``runner.hook_failures`` between retry attempts (submitted by: rittneje, provided by: nikolauspschuetz, pull #1342)
 * issue #1320: Active tags: Auto-promote bool values of the value provider to BoolValueObject (provided by: gabeseltzer, pull #1321)
 * issue #990: use make_relpath_if_possible in sphinx_steps formatter to handle Windows cross-drive paths (submitted by: jenisys, provided by: MathiasPaulenko, pull #1335)
+* issue #1323: JSON formatter: Include captured stdout/stderr/log of a step as ``captured_stdout``, ``captured_stderr``, ``captured_log`` result fields (provided by: nikolauspschuetz, pull #1328)
 
 DOCUMENTATION:
 
