@@ -31,12 +31,7 @@ FIXED:
 * issue #1128: scenario_autoretry: Reset ``runner.hook_failures`` between retry attempts (submitted by: rittneje, provided by: nikolauspschuetz, pull #1342)
 * issue #1320: Active tags: Auto-promote bool values of the value provider to BoolValueObject (provided by: gabeseltzer, pull #1321)
 * issue #990: use make_relpath_if_possible in sphinx_steps formatter to handle Windows cross-drive paths (submitted by: jenisys, provided by: MathiasPaulenko, pull #1335)
-* issue #1323: JSON formatter: Captured output (stdout/stderr/log) is now
-  provided as dedicated ``result`` fields (``captured_stdout``,
-  ``captured_stderr``, ``captured_log``). Previously the captured logging was
-  embedded in the step ``error_message``; the capture refactoring (v1.2.7) moved
-  it to ``step.captured``, so it went missing from JSON reports of a failed step.
-  These new, structured fields restore that information.
+* issue #1323: JSON formatter: Include captured stdout/stderr/log of a step as ``captured_stdout``, ``captured_stderr``, ``captured_log`` result fields (provided by: nikolauspschuetz, pull #1328)
 
 DOCUMENTATION:
 
