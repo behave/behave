@@ -34,6 +34,7 @@ FIXED:
 
 DOCUMENTATION:
 
+* issue #1344: Fix the configuration files link in the Context API documentation.
 * Improve command-line option descriptions (show: value).
 * Use "confval" directive for config-file parameters.
 * api: Add "Configuration" class description.
