@@ -31,6 +31,7 @@ FIXED:
 * issue #1128: scenario_autoretry: Reset ``runner.hook_failures`` between retry attempts (submitted by: rittneje, provided by: nikolauspschuetz, pull #1342)
 * issue #1320: Active tags: Auto-promote bool values of the value provider to BoolValueObject (provided by: gabeseltzer, pull #1321)
 * issue #990: use make_relpath_if_possible in sphinx_steps formatter to handle Windows cross-drive paths (submitted by: jenisys, provided by: MathiasPaulenko, pull #1335)
+* issue #906: JSON formatter: ``context.attach()`` in the ``after_scenario`` hook raised "IndexError: list index out of range", or attached to the skipped step after a failed step. It now attaches to the last step that ran (submitted by: tongilcoto, provided by: Mohanad49)
 
 DOCUMENTATION:
 

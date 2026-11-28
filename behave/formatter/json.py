@@ -34,12 +34,14 @@ class JSONFormatter(Formatter):
         self.current_feature_data = None
         self.current_scenario = None
         self._step_index = 0
+        self._step_running = False
 
     def reset(self):
         self.current_feature = None
         self.current_feature_data = None
         self.current_scenario = None
         self._step_index = 0
+        self._step_running = False
 
     # -- FORMATTER API:
     def uri(self, uri):
@@ -70,6 +72,7 @@ class JSONFormatter(Formatter):
         if background.name:
             element["name"] = background.name
         self._step_index = 0
+        self._step_running = False
 
         # -- ADD BACKGROUND STEPS: Support *.feature file regeneration.
         for step_ in background.steps:
@@ -91,6 +94,7 @@ class JSONFormatter(Formatter):
         if scenario.description:
             element["description"] = scenario.description
         self._step_index = 0
+        self._step_running = False
 
     @classmethod
     def make_table(cls, table):
@@ -142,6 +146,8 @@ class JSONFormatter(Formatter):
             "location": str(match.location) or "",
             "arguments": args,
         }
+        # -- STEP STARTS: Its hooks and the step itself run until result().
+        self._step_running = True
         if match.location:
             # -- NOTE: match.location=None occurs for undefined steps.
             steps = self.current_feature_element["steps"]
@@ -161,9 +167,19 @@ class JSONFormatter(Formatter):
             result_element = steps[self._step_index]["result"]
             result_element["error_message"] = error_message
         self._step_index += 1
+        self._step_running = False
 
     def embedding(self, mime_type, data):
-        step = self.current_feature_element["steps"][self._step_index]
+        steps = self.current_feature_element["steps"]
+        step_index = self._step_index
+        if not self._step_running and step_index > 0:
+            # -- OUTSIDE OF A STEP: For example, in the after_scenario() hook.
+            # result() has already moved past the last step that ran.
+            # Attach to that step (the failed step if one failed),
+            # not to the next step that was skipped or to no step at all.
+            # SEE: https://github.com/behave/behave/issues/906
+            step_index -= 1
+        step = steps[step_index]
         if "embeddings" not in step:
             step["embeddings"] = []
         step["embeddings"].append({
